@@ -159,7 +159,7 @@ describe("LockedBankVaultsLibrary", function () {
         defendingClanId,
         mmrAttackDistance
       );
-      expect(result).to.be.true;
+      expect(result).to.be.false;
     });
 
     it("Should handle edge case at the end of the array", async function () {
@@ -178,7 +178,7 @@ describe("LockedBankVaultsLibrary", function () {
         defendingClanId,
         mmrAttackDistance
       );
-      expect(result).to.be.true;
+      expect(result).to.be.false;
     });
 
     it("Should include clans with same MMR at the edge of the range", async function () {

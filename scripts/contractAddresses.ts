@@ -57,7 +57,7 @@ if (!isBeta) {
   clans = "0x334caa8907bdf49470f7b085380c25431ef96f6d";
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
   bank = "0xe183a43881eac74808c55bdb2a073929602af4db"; // beacon
-  playersLibrary = "0x05dc512b2c33c5e68c8fad0badf8a4a0b12d0439";
+  playersLibrary = "0x0DAbE42562B15614887C68fe486E9B81CB5DDbE9";
   playersImplQueueActions = "0xb86cadad55067e24540c6d781d16778f887bf62f";
   playersImplProcessActions = "0xe2a9b8c9cee566ae94758510aeaca20476eff97f";
   playersImplRewards = "0xfb2aa5afc0de399c76d570ac9bc446940367cfba";
@@ -72,7 +72,7 @@ if (!isBeta) {
   genericInstantVRFActionStrategy = "0x6270b82049724ff6d7a78b71f2273bba03bfcdfc";
   eggInstantVRFActionStrategy = "0x7797fd3904fc399184d2a549dff025210d62e645";
   lockedBankVaults = "0x65e944795d00cc287bdace77d57571fc4deff3e0";
-  lockedBankVaultsLibrary = "0xbb1177a1c27487ec5725caf6974802233d88b84c";
+  lockedBankVaultsLibrary = "0x54a6a6e5b219325dc3e1b092e1639e035eb01d3f";
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
   decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
@@ -114,7 +114,7 @@ if (!isBeta) {
   genericInstantVRFActionStrategy = "0xc4c92d3987cc0bad3219e696653eb87eddda78c6";
   eggInstantVRFActionStrategy = "0x941369948CC8a4b5b8eFb1F688Eddfe26A736039";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
-  lockedBankVaultsLibrary = "0x6b83db9a324190046d83a180286f593ded02b53c";
+  lockedBankVaultsLibrary = "0xdc91803bb7c5e2a9306f6b6ba9ef50d837ed8d1b";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
