@@ -224,13 +224,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     setInitialMMR(_initialMMR);
   }
 
-  function _checkTierExists(uint _tierId) private view {
-    Tier storage tier = tiers[_tierId];
-    if (tier.id == 0) {
-      revert TierDoesNotExist();
-    }
-  }
-
   function createClan(
     uint _playerId,
     string calldata _name,
@@ -336,15 +329,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit InvitesDeletedByClan(_clanId, _invitedPlayerIds, _playerId);
   }
 
-  function _inviteMember(uint _clanId, uint _member) private {
-    Clan storage clan = clans[_clanId];
-    if (clan.inviteRequests[_member]) {
-      revert AlreadySentInvite();
-    }
-
-    clan.inviteRequests[_member] = true;
-  }
-
   function inviteMember(
     uint _clanId,
     uint _member,
@@ -415,37 +399,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _acceptInvite(_clanId, _playerId, _gateKeepTokenId);
   }
 
-  function _requestToJoin(uint _clanId, uint _playerId, uint _gateKeepTokenId) private {
-    Clan storage clan = clans[_clanId];
-    if (clan.createdTimestamp == 0) {
-      revert ClanDoesNotExist();
-    }
-
-    if (clan.disableJoinRequests) {
-      revert JoinRequestsDisabled();
-    }
-
-    _checkGateKeeping(_clanId, _gateKeepTokenId);
-
-    PlayerInfo storage player = playerInfo[_playerId];
-
-    if (isMemberOfAnyClan(_playerId)) {
-      revert AlreadyInClan();
-    }
-
-    uint playerRequestedClanId = player.requestedClanId;
-    if (playerRequestedClanId != 0) {
-      if (playerRequestedClanId == _clanId) {
-        revert AlreadySentJoinRequest();
-      }
-      emit JoinRequestRemoved(playerRequestedClanId, _playerId);
-    }
-
-    player.requestedClanId = uint32(_clanId);
-
-    emit JoinRequestSent(_clanId, _playerId);
-  }
-
   function requestToJoin(
     uint _clanId,
     uint _playerId,
@@ -478,20 +431,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
 
     emit JoinRequestsRemovedByClan(_clanId, _joinRequestPlayerIds, _playerId);
-  }
-
-  function _acceptJoinRequest(uint _clanId, uint _newMemberPlayedId) private {
-    Clan storage clan = clans[_clanId];
-    clan.inviteRequests[_newMemberPlayedId] = false;
-    clan.memberCount = uint16(clan.memberCount.inc());
-
-    PlayerInfo storage player = playerInfo[_newMemberPlayedId];
-    if (player.requestedClanId != _clanId) {
-      revert NoJoinRequest();
-    }
-    player.clanId = uint32(_clanId);
-    player.requestedClanId = 0;
-    player.rank = ClanRank.COMMONER;
   }
 
   function acceptJoinRequest(
@@ -906,6 +845,67 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       }
     }
     tiers[tierId] = _tier;
+  }
+
+  function _checkTierExists(uint _tierId) private view {
+    Tier storage tier = tiers[_tierId];
+    if (tier.id == 0) {
+      revert TierDoesNotExist();
+    }
+  }
+
+  function _inviteMember(uint _clanId, uint _member) private {
+    Clan storage clan = clans[_clanId];
+    if (clan.inviteRequests[_member]) {
+      revert AlreadySentInvite();
+    }
+
+    clan.inviteRequests[_member] = true;
+  }
+
+  function _requestToJoin(uint _clanId, uint _playerId, uint _gateKeepTokenId) private {
+    Clan storage clan = clans[_clanId];
+    if (clan.createdTimestamp == 0) {
+      revert ClanDoesNotExist();
+    }
+
+    if (clan.disableJoinRequests) {
+      revert JoinRequestsDisabled();
+    }
+
+    _checkGateKeeping(_clanId, _gateKeepTokenId);
+
+    PlayerInfo storage player = playerInfo[_playerId];
+
+    if (isMemberOfAnyClan(_playerId)) {
+      revert AlreadyInClan();
+    }
+
+    uint playerRequestedClanId = player.requestedClanId;
+    if (playerRequestedClanId != 0) {
+      if (playerRequestedClanId == _clanId) {
+        revert AlreadySentJoinRequest();
+      }
+      emit JoinRequestRemoved(playerRequestedClanId, _playerId);
+    }
+
+    player.requestedClanId = uint32(_clanId);
+
+    emit JoinRequestSent(_clanId, _playerId);
+  }
+
+  function _acceptJoinRequest(uint _clanId, uint _newMemberPlayedId) private {
+    Clan storage clan = clans[_clanId];
+    clan.inviteRequests[_newMemberPlayedId] = false;
+    clan.memberCount = uint16(clan.memberCount.inc());
+
+    PlayerInfo storage player = playerInfo[_newMemberPlayedId];
+    if (player.requestedClanId != _clanId) {
+      revert NoJoinRequest();
+    }
+    player.clanId = uint32(_clanId);
+    player.requestedClanId = 0;
+    player.rank = ClanRank.COMMONER;
   }
 
   function addTiers(Tier[] calldata _tiers) external onlyOwner {
