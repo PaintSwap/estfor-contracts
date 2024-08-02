@@ -110,6 +110,11 @@ export const allTerritories: TerritoryInput[] = [
   },
 ];
 
+// 400 for 10% ones, 250 for 3% and 0 for 2%
+export const allMinimumMMRs = [
+  400, 400, 400, 400, 400, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+];
+
 export const allBattleSkills = [
   Skill.MELEE,
   Skill.RANGED,

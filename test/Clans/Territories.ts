@@ -935,6 +935,43 @@ describe("Territories", function () {
     expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(0);
   });
 
+  it("Must have at least minimum MMR to attack a territory", async () => {
+    const {
+      playerNFT,
+      avatarId,
+      clans,
+      clanId,
+      playerId,
+      territories,
+      combatantsHelper,
+      owner,
+      alice,
+      origName,
+      initialMMR,
+    } = await loadFixture(clanFixture);
+
+    const territoryId = 1;
+    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+
+    await combatantsHelper
+      .connect(alice)
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], playerId);
+
+    // Must be minimum clan MMR to attack this territory
+    await territories.setMinimumMMRs([territoryId], [initialMMR + 1]);
+
+    await expect(
+      territories.connect(alice).attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()})
+    ).to.be.revertedWithCustomError(territories, "NotEnoughMMR");
+
+    await territories.setMinimumMMRs([territoryId], [initialMMR]);
+    await expect(
+      territories.connect(alice).attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()})
+    ).to.not.be.reverted;
+  });
+
   it("Cannot be used to attack a territory if you are defending a locked bank vault", async () => {});
 
   it("Leaving clan during a pending attack before oracle is called (can you join another clan and do anything?)", async () => {});

@@ -126,6 +126,7 @@
     "setPetsImageBaseURI": "npx hardhat run scripts/setPetsImageBaseURI.ts",
     "setPlayersImageBaseURI": "npx hardhat run scripts/setPlayersImageBaseURI.ts",
     "setMinItemQuantityBeforeSellsAllowed": "npx hardhat run scripts/setMinItemQuantityBeforeSellsAllowed.ts",
+    "setTerritoryMinimumMMRs": "npx hardhat run scripts/setTerritoryMinimumMMRs.ts",
     "addInstantVRFActionStrategies": "npx hardhat run scripts/addInstantVRFActionStrategies.ts",
     "setMMRAttackDistance": "npx hardhat run scripts/setMMRAttackDistance.ts",
     "pauseGame": "npx hardhat run scripts/pauseGame.ts",
