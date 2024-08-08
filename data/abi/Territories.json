@@ -176,6 +176,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "minimumMMR",
+        "type": "uint256"
+      }
+    ],
+    "name": "NotEnoughMMR",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "NotInitializing",
     "type": "error"
@@ -752,6 +763,25 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256[]",
+        "name": "territoryIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "minimumMMRs",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "SetMinimumMMRs",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "movingAverage",
         "type": "uint256"
@@ -1239,6 +1269,11 @@
             "internalType": "uint40",
             "name": "lastClaimTimestamp",
             "type": "uint40"
+          },
+          {
+            "internalType": "uint16",
+            "name": "minimumMMR",
+            "type": "uint16"
           }
         ],
         "internalType": "struct Territories.Territory[]",
@@ -1549,6 +1584,24 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_territoryIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_minimumMMRs",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "setMinimumMMRs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "sponsorWallet",
     "outputs": [
@@ -1595,6 +1648,11 @@
         "internalType": "uint40",
         "name": "lastClaimTimestamp",
         "type": "uint40"
+      },
+      {
+        "internalType": "uint16",
+        "name": "minimumMMR",
+        "type": "uint16"
       }
     ],
     "stateMutability": "view",
