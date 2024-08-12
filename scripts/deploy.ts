@@ -78,7 +78,7 @@ import {avatarIds, avatarInfos} from "./data/avatars";
 import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
-import {allTerritories, allBattleSkills} from "./data/territories";
+import {allTerritories, allBattleSkills, allMinimumMMRs} from "./data/territories";
 import {allInstantVRFActions} from "./data/instantVRFActions";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
@@ -733,6 +733,14 @@ async function main() {
       console.error(`Error: ${error}`);
     }
   }
+
+  const territoryIds = allTerritories.map((territory) => {
+    return territory.territoryId;
+  });
+
+  tx = await territories.setMinimumMMRs(territoryIds, allMinimumMMRs);
+  await tx.wait();
+  console.log("territories.setMinimumMMRs");
 
   tx = await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
   await tx.wait();

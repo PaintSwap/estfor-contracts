@@ -36,6 +36,7 @@ contract Territories is
   event AddTerritories(TerritoryInput[] territories);
   event EditTerritories(TerritoryInput[] territories);
   event RemoveTerritories(uint[] territoryIds);
+  event SetMinimumMMRs(uint[] territoryIds, uint16[] minimumMMRs);
   event AttackTerritory(
     uint clanId,
     uint territoryId,
@@ -115,6 +116,7 @@ contract Territories is
   error BlockAttacksCooldown();
   error CannotAttackSelf();
   error CallerNotSamWitchVRF();
+  error NotEnoughMMR(uint256 minimumMMR);
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -127,6 +129,7 @@ contract Territories is
     uint40 clanIdOccupier;
     uint88 unclaimedEmissions;
     uint40 lastClaimTimestamp;
+    uint16 minimumMMR;
   }
 
   struct ClanInfo {
@@ -548,8 +551,13 @@ contract Territories is
       revert CannotAttackSelf();
     }
 
-    if (territories[_territoryId].territoryId != _territoryId) {
+    Territory storage territory = territories[_territoryId];
+    if (territory.territoryId != _territoryId) {
       revert InvalidTerritory();
+    }
+
+    if (territory.minimumMMR > clans.getMMR(_clanId)) {
+      revert NotEnoughMMR(territory.minimumMMR);
     }
 
     ClanInfo storage clanInfo = clanInfos[_clanId];
@@ -616,7 +624,8 @@ contract Territories is
         clanIdOccupier: 0,
         percentageEmissions: territoryInput.percentageEmissions,
         unclaimedEmissions: 0,
-        lastClaimTimestamp: 0
+        lastClaimTimestamp: 0,
+        minimumMMR: 0
       });
       _totalEmissionPercentage += territoryInput.percentageEmissions;
     }
@@ -697,6 +706,17 @@ contract Territories is
 
     totalEmissionPercentage = uint16(_totalEmissionPercentage);
     emit RemoveTerritories(_territoryIds);
+  }
+
+  function setMinimumMMRs(uint[] calldata _territoryIds, uint16[] calldata _minimumMMRs) external onlyOwner {
+    if (_territoryIds.length != _minimumMMRs.length) {
+      revert LengthMismatch();
+    }
+
+    for (uint i; i < _territoryIds.length; ++i) {
+      territories[_territoryIds[i]].minimumMMR = _minimumMMRs[i];
+    }
+    emit SetMinimumMMRs(_territoryIds, _minimumMMRs); // TODO: Currently not used elsewhere
   }
 
   function setComparableSkills(Skill[] calldata _skills) public onlyOwner {
