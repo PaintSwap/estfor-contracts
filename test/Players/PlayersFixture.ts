@@ -1,4 +1,4 @@
-import {InstantVRFActionType, Skill} from "@paintswap/estfor-definitions/types";
+import {Skill} from "@paintswap/estfor-definitions/types";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {

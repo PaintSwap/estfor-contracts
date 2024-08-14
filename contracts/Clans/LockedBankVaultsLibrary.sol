@@ -168,9 +168,8 @@ library LockedBankVaultsLibrary {
     uint _clanId,
     uint _defendingClanId,
     IClans _clans,
-    uint _mmrAttackDistance,
-    mapping(uint clanId => ClanInfo _clanInfo) storage _clanInfos
-  ) external {
+    uint _mmrAttackDistance
+  ) external view {
     (uint clanIndex, uint defendingClanIndex) = _getClanIndices(_sortedClansByMMR, _clanId, _defendingClanId);
     uint48[] memory modifiedSortedClansByMMR;
     if (clanIndex == type(uint256).max) {
@@ -179,7 +178,6 @@ library LockedBankVaultsLibrary {
         _clans.getMMR(_clanId),
         uint32(_clanId)
       );
-      _clanInfos[_clanId].isInMMRArray = true;
       if (clanIndex <= defendingClanIndex) {
         ++defendingClanIndex;
       }
