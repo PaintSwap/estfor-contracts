@@ -2,7 +2,6 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {playersFixture} from "../Players/PlayersFixture";
 import {ethers} from "hardhat";
 import {expect} from "chai";
-import {isBeta} from "../../scripts/utils";
 
 export async function clanFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -47,6 +46,7 @@ export async function clanFixture() {
   // All these must match the constants inside LockedBankVaults.sol
   const MAX_LOCKED_VAULTS = 100;
   // This must match the constructor of LockedBankVaults.sol
+  const isBeta = true;
   const attackingCooldown = isBeta ? 1.5 * 60 : 4 * 3600;
   const reattackingCooldown = isBeta ? 3 * 60 : 24 * 3600;
   const combatantChangeCooldown = isBeta ? 5 * 60 : 3 * 86400;

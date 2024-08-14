@@ -98,9 +98,8 @@ describe("LockedBankVaults", function () {
   });
 
   it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
-    const {lockedBankVaults, combatantsHelper, clanId, playerId, alice, combatantChangeCooldown} = await loadFixture(
-      clanFixture
-    );
+    const {lockedBankVaultsLibrary, combatantsHelper, clanId, playerId, alice, combatantChangeCooldown} =
+      await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
     // Clear player id part so we can hit the custom error we want
@@ -108,12 +107,12 @@ describe("LockedBankVaults", function () {
 
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId)
-    ).to.be.revertedWithCustomError(lockedBankVaults, "ClanCombatantsChangeCooldown");
+    ).to.be.revertedWithCustomError(lockedBankVaultsLibrary, "ClanCombatantsChangeCooldown");
 
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown - 5]);
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId)
-    ).to.be.revertedWithCustomError(lockedBankVaults, "ClanCombatantsChangeCooldown");
+    ).to.be.revertedWithCustomError(lockedBankVaultsLibrary, "ClanCombatantsChangeCooldown");
     await ethers.provider.send("evm_increaseTime", [5]);
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
   });
@@ -2629,7 +2628,7 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
     });
 
-    it("Attacking should not modify the MMR arrays if the attack is not in the ranking yet", async () => {
+    it("Attacking should not modify the MMR arrays if the attacker is not in the ranking yet", async () => {
       const {
         clans,
         lockedBankVaults,
@@ -2679,6 +2678,54 @@ describe("LockedBankVaults", function () {
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([0]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId]);
+    });
+
+    it("Attacking should not modify the MMR arrays if the attacker loses and is not in the ranking yet", async () => {
+      const {
+        clans,
+        lockedBankVaults,
+        combatantsHelper,
+        territories,
+        clanId,
+        playerId,
+        playerNFT,
+        avatarId,
+        origName,
+        alice,
+        bob,
+        clanName,
+        discord,
+        telegram,
+        twitter,
+        imageId,
+        tierId,
+        brush,
+        players,
+      } = await loadFixture(clanFixture);
+
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+
+      // Create a new clan to attack/defend between each other
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
+      await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
+      const bobClanId = clanId + 1;
+      await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
+
+      // Increase odds of winning by maxing out their stats
+      for (let i = 0; i < allBattleSkills.length; ++i) {
+        await players.testModifyXP(alice.address, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+      }
+
+      // Attacker loses (most likely)
+      await lockedBankVaults
+        .connect(bob)
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+
+      let clanInfo = await lockedBankVaults.getClanInfo(clanId);
+      expect(clanInfo.isInMMRArray).to.eq(true);
+      clanInfo = await lockedBankVaults.getClanInfo(bobClanId);
+      expect(clanInfo.isInMMRArray).to.eq(false);
     });
 
     it("TODO - Test attacking vaults with a clan not in the ranking and which has a higher index that the attacking clan", async () => {});

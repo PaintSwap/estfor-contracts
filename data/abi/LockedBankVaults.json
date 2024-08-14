@@ -41,11 +41,6 @@
   },
   {
     "inputs": [],
-    "name": "ClanCombatantsChangeCooldown",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "FunctionMustBeCalledThroughActiveProxy",
     "type": "error"
   },

@@ -97,7 +97,6 @@ contract LockedBankVaults is
   error OnlyTerritories();
   error OnlyCombatantsHelper();
   error TransferFailed();
-  error ClanCombatantsChangeCooldown();
   error CannotChangeCombatantsDuringAttack();
   error NotAdminAndBeta();
   error NotEnoughFTM();
@@ -288,7 +287,7 @@ contract LockedBankVaults is
     emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
-  // Some vaults may no longer be attackable if they don't have any funds, so force the MMR to be re-calculated.
+  // Some vaults may no longer be attackable if they don't have any funds, so force the MMR arrays to be re-calculated.
   function forceMMRUpdate(uint[] calldata _clanIds) external {
     uint[] memory clanIdsToDelete = LockedBankVaultsLibrary.forceMMRUpdate(
       sortedClansByMMR,
@@ -342,14 +341,7 @@ contract LockedBankVaults is
     }
 
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
-    LockedBankVaultsLibrary.checkWithinRange(
-      sortedClansByMMR,
-      _clanId,
-      _defendingClanId,
-      clans,
-      mmrAttackDistance,
-      clanInfos
-    );
+    LockedBankVaultsLibrary.checkWithinRange(sortedClansByMMR, _clanId, _defendingClanId, clans, mmrAttackDistance);
 
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.currentlyAttacking = true;
