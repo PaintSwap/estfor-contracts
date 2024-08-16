@@ -188,7 +188,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       if (missingRequiredHandEquipment) {
         if (i == 0) {
           // Clear the state and make sure the next queued action can finish
-          clearActionProcessed(currentActionProcessed);
+          _clearActionProcessed(currentActionProcessed);
         }
         ++numActionsSkipped;
         startTime += queuedAction.timespan;
@@ -509,7 +509,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           currentActionProcessed.baseInputItemsConsumedNum = baseInputItemsConsumedNum;
         }
       } else {
-        clearActionProcessed(currentActionProcessed);
+        _clearActionProcessed(currentActionProcessed);
       }
 
       // Total XP gained
@@ -1093,7 +1093,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
   }
 
-  function clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private pure {
+  function _clearActionProcessed(PendingQueuedActionData memory currentActionProcessed) private pure {
     // Clear it
     currentActionProcessed.skill1 = Skill.NONE;
     currentActionProcessed.xpGained1 = 0;
