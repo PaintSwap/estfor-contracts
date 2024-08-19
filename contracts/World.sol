@@ -22,8 +22,6 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   event RequestFulfilledV2(uint requestId, uint randomWord);
   event AddActionsV2(Action[] actions);
   event EditActionsV2(Action[] actions);
-  event AddDynamicActions(uint16[] actionIds);
-  event RemoveDynamicActions(uint16[] actionIds);
   event AddActionChoicesV4(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event EditActionChoicesV4(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event RemoveActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds);
@@ -243,32 +241,6 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
 
   function getActionRewards(uint _actionId) external view returns (ActionRewards memory) {
     return actionRewards[_actionId];
-  }
-
-  // TODO Delete after upgrading the player impls
-  function getPermissibleItemsForAction(
-    uint _actionId
-  )
-    external
-    view
-    returns (
-      uint16 handItemTokenIdRangeMin,
-      uint16 handItemTokenIdRangeMax,
-      bool actionChoiceRequired,
-      Skill skill,
-      uint32 minXP,
-      bool actionAvailable
-    )
-  {
-    ActionInfo storage actionInfo = actions[_actionId];
-    return (
-      actionInfo.handItemTokenIdRangeMin,
-      actionInfo.handItemTokenIdRangeMax,
-      actionInfo.actionChoiceRequired,
-      actionInfo.skill,
-      actionInfo.minXP,
-      actionInfo.isAvailable
-    );
   }
 
   function getActionInfo(uint _actionId) external view returns (ActionInfo memory info) {
