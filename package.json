@@ -19,8 +19,8 @@
     "@openzeppelin/contracts": "^4.8.2",
     "@openzeppelin/contracts-upgradeable": "^4.8.2",
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
-    "@paintswap/estfor-definitions": "^1.0.227",
-    "@solidity-parser/parser": "./modules/parser",
+    "@paintswap/estfor-definitions": "^1.0.228",
+    "@solidity-parser/parser": "^0.18.0",
     "@typechain/ethers-v5": "^10.2.0",
     "@typechain/hardhat": "^6.1.5",
     "@types/chai": "^4.3.4",
@@ -48,15 +48,7 @@
     "typechain": "^8.1.1",
     "typescript": "^5.0.2"
   },
-  "resolutions": {
-    "prettier-plugin-solidity/@solidity-parser/parser": "./modules/parser",
-    "solhint/@solidity-parser/parser": "./modules/parser",
-    "sol2uml/@solidity-parser/parser": "./modules/parser",
-    "solidity-coverage/@solidity-parser/parser": "./modules/parser",
-    "hardhat/solc": "^0.8.19"
-  },
   "scripts": {
-    "preinstall": "git submodule update --init --recursive && cd modules/parser && npx -y shx test -d \"./dist\" && echo \"@solidity-parser/parser already built\" || (npm install && npm run build:node && npm run build:browser && npm run generate-types && npx shx mkdir -p dist/antlr && npx shx cp \"./src/antlr/*tokens\" dist/antlr)",
     "console": "npx hardhat console",
     "lint": "npx solhint ./contracts/*",
     "compile": "npx hardhat compile",
