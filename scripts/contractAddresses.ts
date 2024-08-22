@@ -98,7 +98,7 @@ if (!isBeta) {
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
-  playersLibrary = "0x0abc509929f6bfc27938f3709caf333bbae716cf";
+  playersLibrary = "0xa603b1b306032218032716e326d40ba37dd38c7d";
   playersImplQueueActions = "0xbbe4d7d9027e22562386cb794c618cde55ef04be";
   playersImplProcessActions = "0xb42935f9a62dc3c6f6898d54400b8c6b68a29f22";
   playersImplRewards = "0x45cac1133b81181af3d0543c33a3e7c568579592";

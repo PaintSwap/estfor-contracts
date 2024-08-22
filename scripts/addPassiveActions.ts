@@ -14,40 +14,21 @@ async function main() {
   ) as PassiveActions;
 
   const actionsToReduce = [
-    EstforConstants.PASSIVE_ACTION_EGG_TIER1,
-    EstforConstants.PASSIVE_ACTION_EGG_TIER2,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER2,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER2,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER2,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER2,
-
-    EstforConstants.PASSIVE_ACTION_EGG_TIER3,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER3,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER3,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER3,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER3,
-
-    EstforConstants.PASSIVE_ACTION_EGG_TIER4,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER4,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER4,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER4,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER4,
-
-    EstforConstants.PASSIVE_ACTION_EGG_TIER5,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER5,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER5,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER5,
-    EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER5,
+    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER2,
+    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER3,
+    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4,
+    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER5,
   ];
 
-  const values = [0, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const values = [0, 0, 0, 0];
   const map = new Map();
   actionsToReduce.forEach((key, index) => {
     map.set(key, values[index]);
   });
 
-  const actions = isBeta
-    ? allPassiveActions.map((passiveAction) => {
+  let actions = allPassiveActions.filter((action) => actionsToReduce.includes(action.actionId));
+  actions = isBeta
+    ? actions.map((passiveAction) => {
         const actionId = passiveAction.actionId;
 
         let durationDays = map.has(actionId) ? map.get(actionId) : passiveAction.info.durationDays;
@@ -59,9 +40,9 @@ async function main() {
           },
         };
       })
-    : allPassiveActions;
+    : actions;
 
-  if (actions.length !== 21) {
+  if (actions.length !== actionsToReduce.length) {
     console.log("Cannot find actions");
   } else {
     await passiveActions.addActions(actions);

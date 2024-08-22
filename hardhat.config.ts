@@ -101,7 +101,7 @@ const config: HardhatUserConfig = {
     fantom: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("50", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("30", "gwei").toNumber(),
     },
     fantom_testnet: {
       url: process.env.FTM_RPC_TESTNET,

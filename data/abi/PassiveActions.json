@@ -32,6 +32,11 @@
   },
   {
     "inputs": [],
+    "name": "ActionNotAvailable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "AddressIsNotContract",
     "type": "error"
   },
@@ -568,6 +573,25 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "actionIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isAvailable",
+        "type": "bool"
+      }
+    ],
+    "name": "SetAvailableActions",
     "type": "event"
   },
   {
@@ -1203,6 +1227,24 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_actionIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isAvailable",
+        "type": "bool"
+      }
+    ],
+    "name": "setAvailable",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

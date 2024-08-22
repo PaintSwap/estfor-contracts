@@ -871,4 +871,31 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await passiveActions.connect(alice).claim(playerId);
   });
+
+  it("Unavailable passive action cannot be started, but can be looted", async function () {
+    const {passiveActions, itemNFT, alice, playerId} = await loadFixture(playersFixture);
+    const passiveActionInput: PassiveActionInput = {
+      ...defaultPassiveActionInput,
+      info: {
+        ...defaultPassiveActionInput.info,
+        durationDays: 1,
+      },
+      guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}],
+    };
+    await passiveActions.addActions([passiveActionInput]);
+    await itemNFT.testMint(alice.address, EstforConstants.POISON, 1);
+    await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
+
+    await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);
+
+    await passiveActions.setAvailable([passiveActionInput.actionId], false);
+    await expect(
+      passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0)
+    ).to.be.revertedWithCustomError(passiveActions, "ActionNotAvailable");
+
+    await passiveActions.connect(alice).claim(playerId);
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.MAGICAL_LOG)).to.eq(
+      passiveActionInput.guaranteedRewards[0].rate * passiveActionInput.info.durationDays
+    );
+  });
 });

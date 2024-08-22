@@ -486,10 +486,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function _checkBasePet(BasePetInput calldata _basePetInput, uint index) private pure {
     bool isSkillSet = _basePetInput.skillEnhancements[index] != Skill.NONE;
-
     if (!isSkillSet) {
       return;
     }
+
     // Check percentage values are correct
     if (_basePetInput.skillPercentageMaxs[index] == 0 && _basePetInput.skillFixedMaxs[index] == 0) {
       revert MustHaveAtLeastPercentageOrFixedSet();
