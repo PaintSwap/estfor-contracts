@@ -129,7 +129,7 @@ library PetNFTLibrary {
       return "Crystal";
     }
     if (_skin == PetSkin.ANNIVERSARY1) {
-      return "Anniversary 1";
+      return "Anniv1";
     }
     revert InvalidSkin(_skin);
   }
