@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {COOKED_MINNUS, QUEST_SUPPLY_RUN} from "@paintswap/estfor-definitions/constants";
-import {Skill, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
+import {QueuedActionInput, Skill, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
@@ -1307,6 +1307,106 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 10);
     });
 
+    it("Attack, use defensive scrolls ", async function () {
+      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned, world} =
+        await loadFixture(playersFixtureMagic);
+
+      const scrollsConsumedRate = 1 * RATE_MUL; // per hour
+      let tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [2],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.DEFENCE,
+            skillDiff: 100,
+            rate: scrollsConsumedRate,
+            inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
+            inputAmounts: [1, 2],
+          },
+        ]
+      );
+
+      const choiceId = getActionChoiceId(tx);
+      const queuedActionDefence: QueuedActionInput = {...queuedAction, choiceId};
+
+      await players.connect(alice).startActions(playerId, [queuedActionDefence], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+        startXP + Math.floor(queuedActionDefence.timespan * 1.1)
+      );
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+        // This shouldn't be boosted by magic boost
+        BigNumber.from(Math.floor(queuedActionDefence.timespan / 3)),
+        BigNumber.from(Math.floor(queuedActionDefence.timespan / 3) - 1),
+      ]);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+
+      // Check food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 1);
+
+      // Use at least 1 scroll per monster
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(200 - 20);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 10);
+    });
+
+    it("Attack, use health scrolls ", async function () {
+      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned, world} =
+        await loadFixture(playersFixtureMagic);
+
+      const scrollsConsumedRate = 1 * RATE_MUL; // per hour
+      let tx = await world.addActionChoices(
+        EstforConstants.NONE,
+        [2],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.HEALTH,
+            skillDiff: 100,
+            rate: scrollsConsumedRate,
+            inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
+            inputAmounts: [1, 2],
+          },
+        ]
+      );
+
+      const choiceId = getActionChoiceId(tx);
+      const queuedActionDefence: QueuedActionInput = {...queuedAction, choiceId};
+
+      await players.connect(alice).startActions(playerId, [queuedActionDefence], EstforTypes.ActionQueueStatus.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+        startXP + Math.floor(queuedActionDefence.timespan * 1.1)
+      );
+      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+        // This shouldn't be boosted by magic boost
+        BigNumber.from(Math.floor(queuedActionDefence.timespan / 3)),
+        BigNumber.from(Math.floor(queuedActionDefence.timespan / 3) - 1),
+      ]);
+      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+
+      // Check the drops are as expected
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
+      );
+
+      // No food is consumed
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000);
+
+      // Use at least 1 scroll per monster
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.AIR_SCROLL)).to.eq(200 - 20);
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(100 - 10);
+    });
+
     it("Have no scrolls first then process with them", async function () {});
 
     it("In-progress combat update", async function () {
@@ -1593,8 +1693,6 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
     });
 
-    //    it("Defence", async function () {
-    //   });
     it("No-Bonus XP", async function () {
       const {players, playerNFT, itemNFT, alice, timespan, dropRate, queuedAction, numSpawned} = await loadFixture(
         playersFixtureMagic

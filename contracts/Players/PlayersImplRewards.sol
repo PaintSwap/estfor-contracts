@@ -147,6 +147,13 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       CombatStats memory combatStats;
       if (isCombat) {
         combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, xp_[_playerId]);
+        if (queuedAction.choiceId != 0) {
+          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
+            combatStats,
+            actionChoice.skill,
+            actionChoice.skillDiff
+          );
+        }
 
         // Update combat stats from the pet if it is still valid.
         // The pet enhancements only take into account base hero stats, not any bonuses from equipment.
