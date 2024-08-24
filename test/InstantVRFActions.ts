@@ -835,7 +835,7 @@ describe("Instant VRF actions", function () {
       actionType: EstforTypes.InstantVRFActionType.FORGING,
     };
 
-    it.only("Random reward validation", async function () {
+    it("Random reward validation", async function () {
       const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(forgingFixture);
 
       let randomRewards = [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 0}];
