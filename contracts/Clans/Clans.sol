@@ -246,7 +246,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     nextClanId = uint80(nextClanId.inc());
     Clan storage clan = clans[clanId];
     clan.owner = uint80(_playerId);
-    clan.tierId = 1; // Updated later in _upgradeClan if it's > 1
+    clan.tierId = _tierId;
     clan.imageId = _imageId;
     clan.memberCount = 1;
     clan.createdTimestamp = uint40(block.timestamp);
@@ -262,11 +262,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _checkSocials(_discord, _telegram, _twitter);
     string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram, _twitter);
     emit ClanCreated(clanId, _playerId, clanInfo, _imageId, _tierId);
-    if (_tierId != 1) {
-      _upgradeClan(clanId, _playerId, _tierId);
-    } else {
-      _pay(tier.price);
-    }
+    _pay(tier.price);
 
     bankFactory.createBank(msg.sender, clanId);
   }

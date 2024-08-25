@@ -1195,19 +1195,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint16[]",
-        "name": "actionIds",
-        "type": "uint16[]"
-      }
-    ],
-    "name": "AddDynamicActions",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "address",
         "name": "previousAdmin",
         "type": "address"
@@ -2110,19 +2097,6 @@
       }
     ],
     "name": "RemoveActionChoicesV2",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint16[]",
-        "name": "actionIds",
-        "type": "uint16[]"
-      }
-    ],
-    "name": "RemoveDynamicActions",
     "type": "event"
   },
   {
@@ -3490,50 +3464,6 @@
         "internalType": "uint256",
         "name": "numSpawned",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_actionId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getPermissibleItemsForAction",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "handItemTokenIdRangeMin",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "handItemTokenIdRangeMax",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bool",
-        "name": "actionChoiceRequired",
-        "type": "bool"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "skill",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint32",
-        "name": "minXP",
-        "type": "uint32"
-      },
-      {
-        "internalType": "bool",
-        "name": "actionAvailable",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",

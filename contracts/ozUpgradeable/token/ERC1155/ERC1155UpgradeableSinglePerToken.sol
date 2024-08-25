@@ -213,7 +213,7 @@ contract ERC1155UpgradeableSinglePerToken is
       revert ERC1155InsufficientBalance();
     }
     if (from != to) {
-      _updateOwner(id, to);
+      _updateOwner(id, from, to);
     }
 
     emit TransferSingle(operator, from, to, id, amount);
@@ -260,7 +260,7 @@ contract ERC1155UpgradeableSinglePerToken is
         revert ERC1155InsufficientBalance();
       }
       if (from != to) {
-        _updateOwner(id, to);
+        _updateOwner(id, from, to);
       }
     }
 
@@ -330,7 +330,7 @@ contract ERC1155UpgradeableSinglePerToken is
     unchecked {
       ++_totalSupplyAll;
     }
-    _updateOwner(id, to);
+    _updateOwner(id, address(0), to);
 
     emit TransferSingle(operator, address(0), to, id, amount);
 
@@ -367,7 +367,7 @@ contract ERC1155UpgradeableSinglePerToken is
         revert ERC1155MintingMoreThanOneSameNFT();
       }
 
-      _updateOwner(ids[i], to);
+      _updateOwner(ids[i], address(0), to);
     }
 
     unchecked {
@@ -409,7 +409,7 @@ contract ERC1155UpgradeableSinglePerToken is
     unchecked {
       --_totalSupplyAll;
     }
-    _updateOwner(id, address(0));
+    _updateOwner(id, from, address(0));
 
     emit TransferSingle(operator, from, address(0), id, amount);
 
@@ -446,7 +446,7 @@ contract ERC1155UpgradeableSinglePerToken is
         revert ERC115BurnAmountExceedsBalance();
       }
 
-      _updateOwner(id, address(0));
+      _updateOwner(id, from, address(0));
     }
 
     unchecked {
@@ -589,7 +589,7 @@ contract ERC1155UpgradeableSinglePerToken is
     return _owner[id];
   }
 
-  function _updateOwner(uint256 id, address to) internal virtual {
+  function _updateOwner(uint256 id, address /*from*/, address to) internal virtual {
     _owner[id] = to;
   }
 }

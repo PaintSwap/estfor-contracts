@@ -645,9 +645,6 @@ describe("Clans", function () {
           price: 10,
           minimumAge: 0,
         },
-      ]);
-
-      await clans.addTiers([
         {
           id: 3,
           maxMemberCapacity: 20,
@@ -667,12 +664,11 @@ describe("Clans", function () {
       );
 
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-      const brushAmount = (await clans.tiers(4)).price;
-      expect(brushAmount).to.eq(0);
       await brush.mint(bob.address, 1000);
       await brush.connect(bob).approve(clans.address, 1000);
-      await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, 2);
-      expect(await brush.balanceOf(bob.address)).to.eq(1000 - (await clans.tiers(2)).price.toNumber());
+      const tierId = 2;
+      await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, tierId);
+      expect(await brush.balanceOf(bob.address)).to.eq(1000 - (await clans.tiers(tierId)).price.toNumber());
     });
 
     it("Anyone can upgrade", async function () {
@@ -681,21 +677,23 @@ describe("Clans", function () {
       await expect(clans.connect(alice).upgradeClan(clanId, playerId, 2)).to.be.revertedWith(
         "ERC20: insufficient allowance"
       );
-      const brushAmount = (await clans.tiers(2)).price;
+      const tierId = 2;
+      const brushAmount = (await clans.tiers(tierId)).price;
       await brush.mint(alice.address, brushAmount.sub(1));
       await brush.connect(alice).approve(clans.address, brushAmount);
-      await expect(clans.connect(alice).upgradeClan(clanId, playerId, 2)).to.be.revertedWith(
+      await expect(clans.connect(alice).upgradeClan(clanId, playerId, tierId)).to.be.revertedWith(
         "ERC20: transfer amount exceeds balance"
       );
       await brush.mint(alice.address, 1);
-      await clans.connect(alice).upgradeClan(clanId, playerId, 2);
+      await clans.connect(alice).upgradeClan(clanId, playerId, tierId);
       const clan = await clans.clans(clanId);
       expect(clan.tierId).to.eq(2);
+      expect(await brush.balanceOf(alice.address)).to.eq(0);
     });
 
     it("Pay for tier 1 if it has a cost", async () => {
       const {clans, clanId, playerId, alice, imageId, tierId, clanName, discord, telegram, twitter, brush} =
-        await loadFixture(clanFixture);
+        await loadFixture(upgradedClansFixture);
 
       const price = BigNumber.from(1);
       const tiers: Tier[] = [
@@ -716,6 +714,32 @@ describe("Clans", function () {
       // Check creating a tier 1 clan that has a cost correctly takes the brush
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, imageId, tierId);
       await expect(await brush.balanceOf(alice.address)).to.eq(0);
+    });
+
+    it("Check costs are expected when creating a higher tier clan when tier 1 has a cost", async () => {
+      const {clans, imageId, discord, telegram, twitter, brush, playerNFT, avatarId, bob} = await loadFixture(
+        upgradedClansFixture
+      );
+
+      const price = BigNumber.from(1);
+      const tiers: Tier[] = [
+        {
+          id: 1,
+          maxMemberCapacity: 1,
+          maxBankCapacity: 1,
+          maxImageId: 50,
+          price,
+          minimumAge: 0,
+        },
+      ];
+      await clans.editTiers(tiers);
+
+      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+      const tierId = 2;
+      await brush.mint(bob.address, 1000);
+      await brush.connect(bob).approve(clans.address, 1000);
+      await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, tierId);
+      expect(await brush.balanceOf(bob.address)).to.eq(1000 - (await clans.tiers(tierId)).price.toNumber());
     });
 
     it("Pay the difference for incremental upgrades", async function () {

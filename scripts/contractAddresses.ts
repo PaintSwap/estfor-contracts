@@ -98,7 +98,7 @@ if (!isBeta) {
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
-  playersLibrary = "0x0abc509929f6bfc27938f3709caf333bbae716cf";
+  playersLibrary = "0xa603b1b306032218032716e326d40ba37dd38c7d";
   playersImplQueueActions = "0xbbe4d7d9027e22562386cb794c618cde55ef04be";
   playersImplProcessActions = "0xb42935f9a62dc3c6f6898d54400b8c6b68a29f22";
   playersImplRewards = "0x45cac1133b81181af3d0543c33a3e7c568579592";
@@ -121,7 +121,7 @@ if (!isBeta) {
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
-  petNFTLibrary = "0x7b84ff0313ef08ddee716cf3430b9ab1204d76bc";
+  petNFTLibrary = "0x04a11e4afd667ca55b10d834a7367c4bed107750";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
   passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
 }

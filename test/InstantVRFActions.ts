@@ -790,6 +790,41 @@ describe("Instant VRF actions", function () {
         await expect(instantVRFActions.addActions([instantVRFActionInput])).to.not.be.reverted;
       });
     });
+
+    it("Unavailable instant VRF action cannot be started, but can be looted", async function () {
+      const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
+
+      const instantVRFActionInput: InstantVRFActionInput = {
+        ...defaultInstantVRFActionInput,
+      };
+
+      await instantVRFActions.addActions([instantVRFActionInput]);
+      await itemNFT.testMints(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+
+      const actionAmount = 2;
+      await instantVRFActions.setAvailable([instantVRFActionInput.actionId], false);
+      await expect(
+        instantVRFActions
+          .connect(alice)
+          .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
+            value: await instantVRFActions.requestCost(actionAmount),
+          })
+      ).to.be.revertedWithCustomError(instantVRFActions, "ActionNotAvailable");
+
+      await instantVRFActions.setAvailable([instantVRFActionInput.actionId], true);
+      await instantVRFActions
+        .connect(alice)
+        .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
+          value: await instantVRFActions.requestCost(actionAmount),
+        });
+      await instantVRFActions.setAvailable([instantVRFActionInput.actionId], false);
+
+      // Even if the action is unavailable you can do the VRF response correctly.
+      const requestId = 1;
+      await expect(fulfillRandomWords(requestId, instantVRFActions, mockVRF))
+        .to.emit(instantVRFActions, "CompletedInstantVRFActions")
+        .withArgs(alice.address, playerId, requestId, [RUNITE_ARROW], [2], []);
+    });
   });
 
   describe("Forging/Generic random rewards", function () {
@@ -872,21 +907,6 @@ describe("Instant VRF actions", function () {
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
         "RandomRewardChanceMustBeInOrder"
-      );
-
-      randomRewards = [
-        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 2, amount: 1},
-        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 1},
-      ];
-
-      instantVRFActionInput.data = ethers.utils.defaultAbiCoder.encode(
-        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, randomRewards]
-      );
-
-      await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
-        genericInstantVRFActionStrategy,
-        "RandomRewardItemNoDuplicates"
       );
 
       randomRewards = [

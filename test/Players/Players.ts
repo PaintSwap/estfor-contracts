@@ -2122,6 +2122,41 @@ describe("Players", function () {
     );
   });
 
+  it("Check looting with temporary actions", async function () {
+    const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const {queuedAction, rate, action} = await setupBasicWoodcutting(itemNFT, world);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+
+    const actionInput = {...action};
+    actionInput.info.isAvailable = false; // Woodcutting log no longer available
+    await world.editActions([actionInput]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "ActionNotAvailable");
+
+    const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
+
+    // Allow to queue something else if using keeping last in progress
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedActionFishing], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+
+    // But can still loot it
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    const balanceBefore = await itemNFT.balanceOf(alice.address, EstforConstants.LOG);
+    await players.connect(alice).processActions(playerId);
+    // Should get the loot
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      Number(balanceBefore) + Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
+    );
+    // Still cannot queue it
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "ActionNotAvailable");
+  });
+
   it.skip("Travelling", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupTravelling(world, 0.125 * RATE_MUL, 0, 1);

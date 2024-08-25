@@ -886,6 +886,14 @@ async function main() {
     EstforConstants.INFUSED_SCORCHING_CHAPS,
     EstforConstants.INFUSED_SCORCHING_BRACERS,
     EstforConstants.INFUSED_SCORCHING_BOOTS,
+    EstforConstants.ANNIV1_CHEST,
+    EstforConstants.ANNIV1_RING,
+    EstforConstants.ANNIV1_EGG_TIER1,
+    EstforConstants.ANNIV1_EGG_TIER2,
+    EstforConstants.ANNIV1_EGG_TIER3,
+    EstforConstants.ANNIV1_EGG_TIER4,
+    EstforConstants.ANNIV1_EGG_TIER5,
+    EstforConstants.ANNIV1_KEY,
   ];
 
   // Only works if not trying to sell anything

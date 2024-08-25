@@ -262,7 +262,7 @@ library PlayersLibrary {
     } else if (_skill == Skill.RANGED) {
       attack = _combatStats.ranged;
       defence = _enemyCombatStats.rangedDefence;
-    } else if (_skill == Skill.MAGIC) {
+    } else if (_skill == Skill.MAGIC || _skill == Skill.DEFENCE || _skill == Skill.HEALTH) {
       attack = _combatStats.magic;
       defence = _enemyCombatStats.magicDefence;
     } else {
@@ -283,10 +283,11 @@ library PlayersLibrary {
     if (_actionChoice.skill == Skill.MELEE) {
       dmgDealt = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
     } else if (_actionChoice.skill == Skill.RANGED) {
-      _combatStats.ranged += _actionChoice.skillDiff; // Extra/Reduced ranged damage
       dmgDealt = dmg(_combatStats.ranged, _enemyCombatStats.rangedDefence, _alphaCombat, _betaCombat, _elapsedTime);
-    } else if (_actionChoice.skill == Skill.MAGIC) {
-      _combatStats.magic += _actionChoice.skillDiff; // Extra/Reduced magic damage
+    } else if (
+      _actionChoice.skill == Skill.MAGIC || _actionChoice.skill == Skill.DEFENCE || _actionChoice.skill == Skill.HEALTH
+    ) {
+      // Assumes this is a magic action
       dmgDealt = dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
     } else {
       assert(false);
@@ -801,6 +802,27 @@ library PlayersLibrary {
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.rangedDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
+  }
+
+  function updateCombatStatsFromSkill(
+    CombatStats memory _combatStats,
+    Skill _skill,
+    int16 _skillDiff
+  ) external pure returns (CombatStats memory combatStats) {
+    combatStats = _combatStats;
+    if (_skill == Skill.MELEE) {} else if (_skill == Skill.RANGED) {
+      combatStats.ranged += _skillDiff; // Extra/Reduced ranged damage
+    } else if (_skill == Skill.MAGIC) {
+      combatStats.magic += _skillDiff; // Extra/Reduced magic damage
+    } else if (_skill == Skill.DEFENCE) {
+      combatStats.meleeDefence += _skillDiff;
+      combatStats.rangedDefence += _skillDiff;
+      combatStats.magicDefence += _skillDiff;
+    } else if (_skill == Skill.HEALTH) {
+      combatStats.health += _skillDiff;
+    } else {
+      assert(false);
+    }
   }
 
   function updateCombatStatsFromAttire(

@@ -2743,6 +2743,37 @@ export const allActions: ActionInput[] = [
     },
   },
   {
+    actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW,
+    info: {
+      skill: Skill.COMBAT,
+      isAvailable: true,
+      isDynamic: false,
+      actionChoiceRequired: true,
+      xpPerHour: 250,
+      numSpawned: 10 * 1000,
+      minXP: 0,
+      handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+      handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.SMALL_BONE, rate: 3 * 10},
+      {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 3 * 10},
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.COIN, chance: 2731, amount: 1}],
+    combatStats: {
+      melee: 1,
+      magic: 0,
+      ranged: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 100,
+    },
+  },
+  {
     actionId: EstforConstants.ACTION_CRAFTING_ITEM,
     info: {
       skill: Skill.CRAFTING,

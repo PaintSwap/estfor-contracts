@@ -113,7 +113,7 @@ Clans [0xd35410f526db135f09bb8e2bb066c8a63135d812](https://ftmscan.com/address/0
 WishingWell [0xdd1131f57e5e416622fa2b61d4108822e8cc38dc](https://ftmscan.com/address/0xdd1131f57e5e416622fa2b61d4108822e8cc38dc)  
 Bank Beacon [0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e](https://ftmscan.com/address/0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e)
 
-PlayersLibrary [0x0abc509929f6bfc27938f3709caf333bbae716cf](https://ftmscan.com/address/0x0abc509929f6bfc27938f3709caf333bbae716cf)  
+PlayersLibrary [0xa603b1b306032218032716e326d40ba37dd38c7d](https://ftmscan.com/address/0xa603b1b306032218032716e326d40ba37dd38c7d)  
 PlayersImplQueueActions [0xbbe4d7d9027e22562386cb794c618cde55ef04be](https://ftmscan.com/address/0xbbe4d7d9027e22562386cb794c618cde55ef04be)  
 PlayersImplProcessActions [0xb42935f9a62dc3c6f6898d54400b8c6b68a29f22](https://ftmscan.com/address/0xb42935f9a62dc3c6f6898d54400b8c6b68a29f22)  
 PlayersImplRewards [0x45cac1133b81181af3d0543c33a3e7c568579592](https://ftmscan.com/address/0x45cac1133b81181af3d0543c33a3e7c568579592)  
@@ -137,7 +137,7 @@ Territories [0xf31517db9f0987002f3a0fb4f787dfb9e892f184](https://ftmscan.com/add
 CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.com/address/0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c)  
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
-PetNFTLibrary [0x7b84ff0313ef08ddee716cf3430b9ab1204d76bc](https://ftmscan.com/address/0x7b84ff0313ef08ddee716cf3430b9ab1204d76bc)  
+PetNFTLibrary [0x04a11e4afd667ca55b10d834a7367c4bed107750](https://ftmscan.com/address/0x04a11e4afd667ca55b10d834a7367c4bed107750)  
 PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/0xa6489181b24e966402891225c65f8e2d136ddd2e)  
 PassiveActions [0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6](https://ftmscan.com/address/0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6)
 

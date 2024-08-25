@@ -4,7 +4,7 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicPetMeleeCombat, getXPFromLevel} from "./utils";
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {PetSkin, Skill} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "../../scripts/data/pets";
 import {NO_DONATION_AMOUNT} from "../utils";
 
@@ -245,5 +245,19 @@ describe("Pets", function () {
     await ethers.provider.send("evm_increaseTime", [72]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
+  });
+
+  it("Cannot transfer an anniversary pet", async function () {
+    const {petNFT, owner, alice} = await loadFixture(playersFixture);
+
+    const basePet = allBasePets.find((pet) => pet.skin === PetSkin.ANNIV1) as EstforTypes.BasePetInput;
+    expect(basePet.skin).to.eq(PetSkin.ANNIV1);
+    await petNFT.addBasePets([basePet]);
+    await petNFT.mint(alice.address, basePet.baseId, 0);
+
+    const petId = 1;
+    await expect(petNFT.connect(alice).safeTransferFrom(alice.address, owner.address, petId, 1, "0x"))
+      .to.be.revertedWithCustomError(petNFT, "CannotTransferThisPet")
+      .withArgs(petId);
   });
 });

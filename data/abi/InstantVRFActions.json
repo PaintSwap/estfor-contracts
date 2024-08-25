@@ -21,6 +21,11 @@
   },
   {
     "inputs": [],
+    "name": "ActionNotAvailable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "AddressIsNotContract",
     "type": "error"
   },
@@ -467,6 +472,25 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256[]",
+        "name": "actionIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isAvailable",
+        "type": "bool"
+      }
+    ],
+    "name": "SetAvailableActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "gasCostPerUnit",
         "type": "uint256"
@@ -823,6 +847,24 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "_actionIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isAvailable",
+        "type": "bool"
+      }
+    ],
+    "name": "setAvailable",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_gasCostPerUnit",
         "type": "uint256"
@@ -907,19 +949,6 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "version",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ]

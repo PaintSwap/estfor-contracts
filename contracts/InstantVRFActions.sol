@@ -11,7 +11,7 @@ import {PetNFT} from "./PetNFT.sol";
 import {Players} from "./Players/Players.sol";
 import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 
-import {Skill, EquipPosition, IS_FULL_MODE_BIT} from "./globals/players.sol";
+import {Skill, EquipPosition, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./globals/players.sol";
 import {InstantVRFActionInput, InstantVRFActionType} from "./globals/rewards.sol";
 import {NONE} from "./globals/items.sol";
 
@@ -38,10 +38,12 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint[] producedPetTokenIds
   );
   event AddStrategies(InstantVRFActionType[] actionTypes, address[] strategies);
+  event SetAvailableActions(uint256[] actionIds, bool isAvailable); // TODO: Combine this with InstantVRFActionsInput later
 
   error ActionIdZeroNotAllowed();
   error ActionDoesNotExist();
   error ActionAlreadyExists();
+  error ActionNotAvailable();
   error IncorrectInputAmounts();
   error InputSpecifiedWithoutAmount();
   error InputAmountsMustBeInOrder();
@@ -73,7 +75,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint8 inputAmount2;
     uint16 inputTokenId3;
     uint24 inputAmount3;
-    bytes1 packedData; // last bit is full mode only
+    bytes1 packedData; // worldLocation first bit, second bit isAvailable, last bit isFullModeOnly
     address strategy;
     // No free slots
   }
@@ -165,13 +167,17 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint totalAmount;
     uint numRandomWords;
     for (uint i; i < _actionIds.length; ++i) {
-      if (!_actionExists(_actionIds[i])) {
+      uint16 actionId = _actionIds[i];
+      if (!_actionExists(actionId)) {
         revert ActionDoesNotExist();
       }
-      if (!isPlayerUpgraded && _isActionFullMode(_actionIds[i])) {
+      if (!_isActionAvailable(actionId)) {
+        revert ActionNotAvailable();
+      }
+      if (!isPlayerUpgraded && _isActionFullMode(actionId)) {
         revert PlayerNotUpgraded();
       }
-      playerActionInfos[_playerId].actionIdAmountPairs[i * 2] = _actionIds[i];
+      playerActionInfos[_playerId].actionIdAmountPairs[i * 2] = actionId;
       playerActionInfos[_playerId].actionIdAmountPairs[i * 2 + 1] = uint16(_actionAmounts[i]);
       totalAmount += _actionAmounts[i];
       numRandomWords += _actionAmounts[i] / 16 + ((_actionAmounts[i] % 16) == 0 ? 0 : 1);
@@ -371,10 +377,15 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
+  function _isActionAvailable(uint16 _actionId) private view returns (bool) {
+    return uint8(actions[_actionId].packedData >> IS_AVAILABLE_BIT) & 1 == 1;
+  }
+
   function _packAction(
     InstantVRFActionInput calldata _actionInput
   ) private view returns (InstantVRFAction memory instantVRFAction) {
     bytes1 packedData = bytes1(uint8(_actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
     instantVRFAction = InstantVRFAction({
       inputTokenId1: _actionInput.inputTokenIds.length > 0 ? _actionInput.inputTokenIds[0] : NONE,
       inputAmount1: _actionInput.inputAmounts.length > 0 ? uint8(_actionInput.inputAmounts[0]) : 0,
@@ -438,11 +449,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     return baseRequestCost + (movingAverageGasPrice * _actionAmounts * gasCostPerUnit);
   }
 
-  // Delete later
-  function version() external view returns (uint) {
-    return 1;
-  }
-
   function addStrategies(
     InstantVRFActionType[] calldata _instantVRFActionTypes,
     address[] calldata _strategies
@@ -503,6 +509,21 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
   function setPetNFT(PetNFT _petNFT) external onlyOwner {
     petNFT = _petNFT;
+  }
+
+  function setAvailable(uint256[] calldata _actionIds, bool _isAvailable) external onlyOwner {
+    for (uint16 i; i < _actionIds.length; ++i) {
+      bytes1 packedData = actions[_actionIds[i]].packedData;
+      bytes1 mask = bytes1(uint8(1 << IS_AVAILABLE_BIT));
+      if (_isAvailable) {
+        packedData |= mask;
+      } else {
+        packedData &= ~mask;
+      }
+
+      actions[_actionIds[i]].packedData = packedData;
+    }
+    emit SetAvailableActions(_actionIds, _isAvailable);
   }
 
   // solhint-disable-next-line no-empty-blocks

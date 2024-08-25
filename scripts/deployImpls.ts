@@ -31,25 +31,26 @@ async function main() {
   }
   console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
 
-  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address);
+  //  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
+  //    await deployPlayerImplementations(playersLibrary.address);
 
   // Single
-  /* const playersImplMisc = await ethers.deployContract("PlayersImplMisc1", {
+  const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
     libraries: {PlayersLibrary: playersLibrary.address},
   });
-  console.log(`PlayersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
-  await playersImplMisc.deployed(); */
+  await playersImplRewards.deployed();
+  console.log(`PlayersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
 
+  /*
   if (chainId == 250) {
     await verifyContracts([
-      playersImplQueueActions.address,
-      playersImplProcessActions.address,
+      //      playersImplQueueActions.address,
+      //      playersImplProcessActions.address,
       playersImplRewards.address,
-      playersImplMisc.address,
-      playersImplMisc1.address,
+      //      playersImplMisc.address,
+      //      playersImplMisc1.address,
     ]);
-  }
+  } */
 
   /* Use these when keeping old implementations
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
@@ -60,11 +61,11 @@ async function main() {
   */
   const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)).connect(owner) as Players;
   const tx = await players.setImpls(
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
+    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
+    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
     playersImplRewards.address,
-    playersImplMisc.address,
-    playersImplMisc1.address
+    PLAYERS_IMPL_MISC_ADDRESS,
+    PLAYERS_IMPL_MISC1_ADDRESS
   );
   await tx.wait();
 }

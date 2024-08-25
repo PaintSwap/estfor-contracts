@@ -9,7 +9,8 @@ enum PetSkin {
   OG,
   ONEKIN,
   FROST,
-  CRYSTAL
+  CRYSTAL,
+  ANNIV1
 }
 
 enum PetEnhancementType {

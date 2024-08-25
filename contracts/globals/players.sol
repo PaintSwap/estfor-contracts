@@ -222,9 +222,9 @@ struct ActionChoice {
   uint32 minXP2;
   Skill minSkill3;
   uint32 minXP3;
-  uint24 newInputAmount1; // alternative inputAmount1
-  uint24 newInputAmount2; // alternative inputAmount2
-  uint24 newInputAmount3; // alternative inputAmount3
+  uint24 newInputAmount1; // alternative inputAmount1 which is larger
+  uint24 newInputAmount2; // alternative inputAmount2 which is larger
+  uint24 newInputAmount3; // alternative inputAmount3 which is larger
 }
 
 struct ActionChoiceV2 {
@@ -412,6 +412,8 @@ struct ItemInput {
 uint constant MAX_UNIQUE_TICKETS_ = 64;
 uint constant IS_FULL_MODE_BIT = 7;
 
+// Passive/InstantVRF action
+uint constant IS_AVAILABLE_BIT = 1;
+
 // Queued action
-uint constant IS_VALID_BIT = 0;
 uint constant HAS_PET_BIT = 1;

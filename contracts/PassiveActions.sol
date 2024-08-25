@@ -33,10 +33,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint[] amounts,
     bool startingAnother
   );
+  event SetAvailableActions(uint256[] actionIds, bool isAvailable); // TODO: Combine this with PassiveActionInput later
 
   error NotOwnerOfPlayerAndActive();
   error NotPassiveVial();
   error InvalidActionId();
+  error ActionNotAvailable();
   error ActionAlreadyExists(uint16 actionId);
   error ActionDoesNotExist();
   error ActionIdZeroNotAllowed();
@@ -94,7 +96,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16 minLevel3;
     uint8 skipSuccessPercent;
     bool hasRandomRewards;
-    bytes1 packedData; // worldLocation first bit, last bit isFullModeOnly
+    bytes1 packedData; // worldLocation first bit, second bit isAvailable, last bit isFullModeOnly
   }
 
   struct PendingPassiveActionState {
@@ -149,7 +151,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16 _actionId,
     uint16 _boostItemTokenId
   ) external isOwnerOfPlayerAndActive(_playerId) {
-    // Has one already started?
+    // Cannot start a passive action when one is active already for this player
     if (activePassiveActions[_playerId].actionId != NONE) {
       (bool finished, , , , ) = finishedInfo(_playerId);
       if (finished) {
@@ -165,6 +167,10 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
 
     _checkMinLevelRequirements(_playerId, _actionId);
+
+    if (!_isActionAvailable(_actionId)) {
+      revert ActionNotAvailable();
+    }
 
     if (_isActionFullMode(_actionId) && !players.isPlayerUpgraded(_playerId)) {
       revert PlayerNotUpgraded();
@@ -493,11 +499,16 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
+  function _isActionAvailable(uint16 _actionId) private view returns (bool) {
+    return uint8(actions[_actionId].packedData >> IS_AVAILABLE_BIT) & 1 == 1;
+  }
+
   function _packAction(
     PassiveActionInfoInput calldata _actionInfo,
     bool _hasRandomRewards
   ) private pure returns (PassiveAction memory passiveAction) {
     bytes1 packedData = bytes1(uint8(_actionInfo.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
     passiveAction = PassiveAction({
       durationDays: _actionInfo.durationDays,
       minSkill1: _actionInfo.minSkills.length > 0 ? _actionInfo.minSkills[0] : Skill.NONE,
@@ -626,6 +637,21 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       _setAction(_passiveActionInputs[i]);
     }
     emit EditPassiveActions(_passiveActionInputs);
+  }
+
+  function setAvailable(uint256[] calldata _actionIds, bool _isAvailable) external onlyOwner {
+    for (uint16 i; i < _actionIds.length; ++i) {
+      bytes1 packedData = actions[_actionIds[i]].packedData;
+      bytes1 mask = bytes1(uint8(1 << IS_AVAILABLE_BIT));
+      if (_isAvailable) {
+        packedData |= mask;
+      } else {
+        packedData &= ~mask;
+      }
+
+      actions[_actionIds[i]].packedData = packedData;
+    }
+    emit SetAvailableActions(_actionIds, _isAvailable);
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -1068,6 +1068,109 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "_combatStats",
+        "type": "tuple"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "_skill",
+        "type": "Skill"
+      },
+      {
+        "internalType": "int16",
+        "name": "_skillDiff",
+        "type": "int16"
+      }
+    ],
+    "name": "updateCombatStatsFromSkill",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "melee",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magic",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "ranged",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "combatStats",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_from",
         "type": "address"

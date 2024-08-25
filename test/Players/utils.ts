@@ -1,5 +1,5 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {Equipment, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
+import {ActionInput, Equipment, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {ItemNFT, World} from "../../typechain-types";
@@ -17,28 +17,28 @@ export const setupBasicWoodcutting = async function (
   xpPerHour = 3600,
   rewards = EstforConstants.LOG
 ) {
-  const tx = await world.addActions([
-    {
-      actionId: ACTION_WOODCUTTING_LOG,
-      info: {
-        skill: EstforTypes.Skill.WOODCUTTING,
-        xpPerHour,
-        minXP: 0,
-        isDynamic: false,
-        worldLocation: 0,
-        isFullModeOnly: false,
-        numSpawned: 0,
-        handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
-        handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
-        isAvailable: true,
-        actionChoiceRequired: false,
-        successPercent: 100,
-      },
-      guaranteedRewards: [{itemTokenId: rewards, rate}],
-      randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
+  const action: ActionInput = {
+    actionId: ACTION_WOODCUTTING_LOG,
+    info: {
+      skill: EstforTypes.Skill.WOODCUTTING,
+      xpPerHour,
+      minXP: 0,
+      isDynamic: false,
+      worldLocation: 0,
+      isFullModeOnly: false,
+      numSpawned: 0,
+      handItemTokenIdRangeMin: EstforConstants.BRONZE_AXE,
+      handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      successPercent: 100,
     },
-  ]);
+    guaranteedRewards: [{itemTokenId: rewards, rate}],
+    randomRewards: [],
+    combatStats: EstforTypes.emptyCombatStats,
+  };
+
+  const tx = await world.addActions([action]);
   const actionId = await getActionId(tx);
 
   const timespan = 3600;
@@ -61,7 +61,7 @@ export const setupBasicWoodcutting = async function (
     },
   ]);
 
-  return {queuedAction, rate};
+  return {queuedAction, rate, actionId, action};
 };
 
 export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World) {

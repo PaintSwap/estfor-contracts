@@ -140,11 +140,6 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
         if (_randomRewards[i].chance <= _randomRewards[i + 1].chance) {
           revert RandomRewardChanceMustBeInOrder();
         }
-        for (uint j; j < _randomRewards.length; ++j) {
-          if (j != i && _randomRewards[i].itemTokenId == _randomRewards[j].itemTokenId) {
-            revert RandomRewardItemNoDuplicates();
-          }
-        }
       }
     }
   }
@@ -186,6 +181,11 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
         _randomRewards.length > 9 ? _randomRewards[9].amount : 0
       ]
     });
+  }
+
+  // TODO, Delete later if there are other changes made in this file. Just to change up the bytecode for a rogue deployment
+  function version() external view returns (uint) {
+    return 1;
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -74,6 +74,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   error NotPlayersOrAdminAndBeta();
   error IllegalNameStart();
   error SameName();
+  error CannotTransferThisPet(uint256 petId);
 
   struct BasePetInput {
     string description;
@@ -431,11 +432,15 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     }
   }
 
-  function _updateOwner(uint256 _id, address _to) internal override {
-    bool isBurnt = _to == address(0);
-    if (isBurnt) {
+  function _updateOwner(uint256 _id, address _from, address _to) internal override {
+    if (_to == address(0)) {
+      // Burnt
       delete pets[_id];
     } else {
+      // Cannot transfer anniversary pets
+      if (_from != address(0) && basePetMetadatas[pets[_id].baseId].skin == PetSkin.ANNIV1) {
+        revert CannotTransferThisPet(_id);
+      }
       pets[_id].owner = _to;
       pets[_id].lastAssignmentTimestamp = uint40(block.timestamp);
     }
@@ -486,10 +491,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function _checkBasePet(BasePetInput calldata _basePetInput, uint index) private pure {
     bool isSkillSet = _basePetInput.skillEnhancements[index] != Skill.NONE;
-
     if (!isSkillSet) {
       return;
     }
+
     // Check percentage values are correct
     if (_basePetInput.skillPercentageMaxs[index] == 0 && _basePetInput.skillFixedMaxs[index] == 0) {
       revert MustHaveAtLeastPercentageOrFixedSet();
