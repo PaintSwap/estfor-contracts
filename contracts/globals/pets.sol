@@ -10,7 +10,7 @@ enum PetSkin {
   ONEKIN,
   FROST,
   CRYSTAL,
-  ANNIVERSARY1
+  ANNIV1
 }
 
 enum PetEnhancementType {

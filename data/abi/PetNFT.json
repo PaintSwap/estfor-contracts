@@ -25,6 +25,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "petId",
+        "type": "uint256"
+      }
+    ],
+    "name": "CannotTransferThisPet",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "ERC1155InsufficientBalance",
     "type": "error"
