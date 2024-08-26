@@ -389,8 +389,8 @@ async function main() {
     await verifyContracts([eggInstantVRFActionStrategy.address]);
     await verifyContracts([petNFT.address]);
     await verifyContracts([petNFTLibrary.address]);
-    await verifyContracts([LOCKED_BANK_VAULTS_ADDRESS]);
-    await verifyContracts([LOCKED_BANK_VAULTS_LIBRARY_ADDRESS]);
+    await verifyContracts([lockedBankVaults.address]);
+    await verifyContracts([lockedBankVaultsLibrary.address]);
     await verifyContracts([combatantsHelper.address]);
     await verifyContracts([decoratorProvider.address]);
     await verifyContracts([royaltyReceiver.address]);
