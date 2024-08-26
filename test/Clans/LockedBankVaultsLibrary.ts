@@ -265,5 +265,227 @@ describe("LockedBankVaultsLibrary", function () {
       );
       expect(result).to.be.false;
     });
+
+    it("Should include clans with same MMR at the beginning of the range", async function () {
+      const {lockedBankVaultsLibrary} = await loadFixture(clanFixture);
+
+      const sortedClanIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const sortedClansByMMR = [500, 500, 500, 600, 700, 800, 800, 900, 1000, 1000];
+      let clanId = 0; // MMR 500
+      let defendingClanId = 3; // MMR 600
+      const mmrAttackDistance = 1;
+      let result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      clanId = 1;
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      clanId = 2;
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      ++defendingClanId;
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.false;
+
+      clanId = 5; // first 800 MMR
+      defendingClanId = 6; // second 800 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 7; // 900 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 8; // First 1000 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.false;
+
+      clanId = 6; // second 800 MMR
+      defendingClanId = 5; // first 800 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 4; // 700 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 3; // 600 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.false;
+
+      clanId = 9; // second 1000 MMR
+      defendingClanId = 8; // first 1000 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 7; // 900 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 6; // 800 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.false;
+
+      clanId = 8; // first 1000 MMR
+      defendingClanId = 9; // second 1000 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 7; // 900 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      defendingClanId = 6; // 800 MMR
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.false;
+    });
+
+    it("Should include clans with same MMR at the beginning of the range, extremes", async function () {
+      const {lockedBankVaultsLibrary} = await loadFixture(clanFixture);
+
+      const sortedClanIds = [0, 1, 2, 3, 4, 5, 6];
+      const sortedClansByMMR = [400, 500, 500, 500, 500, 500, 600];
+      let clanId = 1; // first MMR 500
+      let defendingClanId = 5; // MMR 600
+
+      const mmrAttackDistance = 3;
+      let result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      clanId = 5; // last MMR 500
+      defendingClanId = 0; // MMR 400
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+
+      clanId = 6; // MMR 600
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.false;
+
+      defendingClanId = 1; // first MMR 500
+      result = await lockedBankVaultsLibrary.isWithinRange(
+        sortedClanIds,
+        sortedClansByMMR,
+        clanId,
+        defendingClanId,
+        mmrAttackDistance
+      );
+      expect(result).to.be.true;
+    });
   });
 });
