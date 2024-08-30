@@ -82,7 +82,7 @@ EggInstantVRFActionStrategy [0x7797fd3904fc399184d2a549dff025210d62e645](https:/
 VRFRequestInfo [0x8c3dcf7b09ea620b265d9daab237f29f485f725b](https://ftmscan.com/address/0x8c3dcf7b09ea620b265d9daab237f29f485f725b)
 
 LockedBankVaults [0x65e944795d00cc287bdace77d57571fc4deff3e0](https://ftmscan.com/address/0x65e944795d00cc287bdace77d57571fc4deff3e0)  
-LockedBankVaultsLibrary [0x31c248c2f2c867dfeaa8f03c50ddabc8f14d00c0](https://ftmscan.com/address/0x31c248c2f2c867dfeaa8f03c50ddabc8f14d00c0)  
+LockedBankVaultsLibrary [0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8](https://ftmscan.com/address/0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8)  
 Territories [0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170](https://ftmscan.com/address/0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170)  
 CombatantsHelper [0x8fedf83c55012acff7115b8fa164095721953c39](https://ftmscan.com/address/0x8fedf83c55012acff7115b8fa164095721953c39)  
 DecoratorProvider [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.com/address/0xba2f8cff9ea18f3687eb685f0c1bcd509b539963)
