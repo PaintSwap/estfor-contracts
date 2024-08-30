@@ -40,6 +40,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClanDoesntExist",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "ClanIsBlockingAttacks",
     "type": "error"

@@ -55506,7 +55506,7 @@
             "label": "actions",
             "offset": 0,
             "slot": "201",
-            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)25021_storage)",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)25603_storage)",
             "contract": "GenericInstantVRFActionStrategy",
             "src": "contracts\\InstantVRFActionStrategies\\GenericInstantVRFActionStrategy.sol:26"
           },
@@ -55540,11 +55540,11 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_mapping(t_uint256,t_struct(InstantVRFAction)25021_storage)": {
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)25603_storage)": {
             "label": "mapping(uint256 => struct GenericInstantVRFActionStrategy.InstantVRFAction)",
             "numberOfBytes": "32"
           },
-          "t_struct(InstantVRFAction)25021_storage": {
+          "t_struct(InstantVRFAction)25603_storage": {
             "label": "struct GenericInstantVRFActionStrategy.InstantVRFAction",
             "members": [
               {
@@ -67508,6 +67508,2794 @@
             "numberOfBytes": "32"
           },
           "t_struct(Vault)23594_storage": {
+            "label": "struct Vault",
+            "members": [
+              {
+                "label": "claimed",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint40",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint80",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "timestamp1",
+                "type": "t_uint40",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "amount1",
+                "type": "t_uint80",
+                "offset": 21,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint48": {
+            "label": "uint48",
+            "numberOfBytes": "6"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          },
+          "t_uint88": {
+            "label": "uint88",
+            "numberOfBytes": "11"
+          },
+          "t_uint96": {
+            "label": "uint96",
+            "numberOfBytes": "12"
+          }
+        }
+      }
+    },
+    "3fec74664bfb49c795e8b91c9288ce9472695a708f49af571cc2a1c1339bcb02": {
+      "address": "0x64115B6Ada225eAD7807D23F72005D4A768b5Bb8",
+      "txHash": "0x684d41b51e7f8ca9acc41faa49ac0e4d6cd24221fab63db5e587b35991e0a35a",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "brush",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(IBrushToken)37003",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:140"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(IPlayers)37318",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:141"
+          },
+          {
+            "label": "bankFactory",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_contract(IBankFactory)36991",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:142"
+          },
+          {
+            "label": "playerNFT",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_contract(IERC1155)4773",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:143"
+          },
+          {
+            "label": "nextClanId",
+            "offset": 20,
+            "slot": "204",
+            "type": "t_uint80",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:144"
+          },
+          {
+            "label": "initialMMR",
+            "offset": 30,
+            "slot": "204",
+            "type": "t_uint16",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:145"
+          },
+          {
+            "label": "pool",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_address",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:146"
+          },
+          {
+            "label": "editNameCost",
+            "offset": 20,
+            "slot": "205",
+            "type": "t_uint80",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:147"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_address",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:148"
+          },
+          {
+            "label": "clans",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_uint256,t_struct(Clan)6841_storage)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:149"
+          },
+          {
+            "label": "playerInfo",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_mapping(t_uint256,t_struct(PlayerInfo)6849_storage)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:150"
+          },
+          {
+            "label": "tiers",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_mapping(t_uint256,t_struct(Tier)6862_storage)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:151"
+          },
+          {
+            "label": "lowercaseNames",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_mapping(t_string_memory_ptr,t_bool)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:152"
+          },
+          {
+            "label": "ownerlessClanTimestamps",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_mapping(t_uint256,t_uint40)",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:153"
+          },
+          {
+            "label": "paintswapMarketplaceWhitelist",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_address",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:154"
+          },
+          {
+            "label": "territories",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_contract(IClanMemberLeftCB)37013",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:155"
+          },
+          {
+            "label": "lockedBankVaults",
+            "offset": 0,
+            "slot": "214",
+            "type": "t_contract(IClanMemberLeftCB)37013",
+            "contract": "Clans",
+            "src": "contracts\\Clans\\Clans.sol:156"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(NFTInfo)6867_storage)dyn_storage": {
+            "label": "struct Clans.NFTInfo[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IBankFactory)36991": {
+            "label": "contract IBankFactory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)37003": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IClanMemberLeftCB)37013": {
+            "label": "contract IClanMemberLeftCB",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IERC1155)4773": {
+            "label": "contract IERC1155",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlayers)37318": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_enum(ClanRank)35346": {
+            "label": "enum ClanRank",
+            "members": ["NONE", "COMMONER", "SCOUT", "TREASURER", "LEADER", "OWNER"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_string_memory_ptr,t_bool)": {
+            "label": "mapping(string => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Clan)6841_storage)": {
+            "label": "mapping(uint256 => struct Clans.Clan)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerInfo)6849_storage)": {
+            "label": "mapping(uint256 => struct Clans.PlayerInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Tier)6862_storage)": {
+            "label": "mapping(uint256 => struct Clans.Tier)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint40)": {
+            "label": "mapping(uint256 => uint40)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Clan)6841_storage": {
+            "label": "struct Clans.Clan",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_uint80",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "imageId",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "memberCount",
+                "type": "t_uint16",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "createdTimestamp",
+                "type": "t_uint40",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "tierId",
+                "type": "t_uint8",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "disableJoinRequests",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "mmr",
+                "type": "t_uint16",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "inviteRequests",
+                "type": "t_mapping(t_uint256,t_bool)",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "gateKeptNFTs",
+                "type": "t_array(t_struct(NFTInfo)6867_storage)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(NFTInfo)6867_storage": {
+            "label": "struct Clans.NFTInfo",
+            "members": [
+              {
+                "label": "nft",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "nftType",
+                "type": "t_uint80",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerInfo)6849_storage": {
+            "label": "struct Clans.PlayerInfo",
+            "members": [
+              {
+                "label": "clanId",
+                "type": "t_uint32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "rank",
+                "type": "t_enum(ClanRank)35346",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "requestedClanId",
+                "type": "t_uint32",
+                "offset": 5,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Tier)6862_storage": {
+            "label": "struct Clans.Tier",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "maxMemberCapacity",
+                "type": "t_uint16",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "maxBankCapacity",
+                "type": "t_uint16",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "maxImageId",
+                "type": "t_uint24",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "minimumAge",
+                "type": "t_uint40",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint80",
+                "offset": 13,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          }
+        }
+      }
+    },
+    "514f4e680fcf304f5d9d26fe9a3a3e144b4b6d1a2ae0b5474fc9274ae10bae18": {
+      "address": "0xaaAA5d685416d26e193B926BB63Ad6C539B26101",
+      "txHash": "0x1d3693d416bb8dd2c92a92c62b98a73e9d982082bd8a0bd18098cafac8777bad",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(ItemNFT)15269",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:88"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(Players)21717",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:89"
+          },
+          {
+            "label": "playerActionInfos",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_uint256,t_struct(PlayerActionInfo)11347_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:90"
+          },
+          {
+            "label": "actions",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)11364_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:91"
+          },
+          {
+            "label": "requestIdToPlayer",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_bytes32,t_struct(Player)11369_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:92"
+          },
+          {
+            "label": "strategies",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_enum(InstantVRFActionType)38003,t_address)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:93"
+          },
+          {
+            "label": "vrfRequestInfo",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_contract(VRFRequestInfo)31198",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:95"
+          },
+          {
+            "label": "gasCostPerUnit",
+            "offset": 20,
+            "slot": "207",
+            "type": "t_uint64",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:96"
+          },
+          {
+            "label": "oracle",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_address",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:98"
+          },
+          {
+            "label": "samWitchVRF",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_contract(ISamWitchVRF)38910",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:99"
+          },
+          {
+            "label": "petNFT",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_contract(PetNFT)17796",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:100"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint16)10_storage": {
+            "label": "uint16[10]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ISamWitchVRF)38910": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)15269": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)17796": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Players)21717": {
+            "label": "contract Players",
+            "numberOfBytes": "20"
+          },
+          "t_contract(VRFRequestInfo)31198": {
+            "label": "contract VRFRequestInfo",
+            "numberOfBytes": "20"
+          },
+          "t_enum(InstantVRFActionType)38003": {
+            "label": "enum InstantVRFActionType",
+            "members": ["NONE", "GENERIC", "FORGING", "EGG"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_struct(Player)11369_storage)": {
+            "label": "mapping(bytes32 => struct InstantVRFActions.Player)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(InstantVRFActionType)38003,t_address)": {
+            "label": "mapping(enum InstantVRFActionType => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)11364_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.InstantVRFAction)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerActionInfo)11347_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.PlayerActionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantVRFAction)11364_storage": {
+            "label": "struct InstantVRFActions.InstantVRFAction",
+            "members": [
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint8",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "strategy",
+                "type": "t_address",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Player)11369_storage": {
+            "label": "struct InstantVRFActions.Player",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "playerId",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerActionInfo)11347_storage": {
+            "label": "struct InstantVRFActions.PlayerActionInfo",
+            "members": [
+              {
+                "label": "actionIdAmountPairs",
+                "type": "t_array(t_uint16)10_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "3809db0c1a10c9703a99bc618dc63dfcdcc253048396e16247610733857a0fc8": {
+      "address": "0x7B12f3Cea1561F15C00bEBFAAa7b430FC813c229",
+      "txHash": "0xde0c5e942a6445a83dfaa4d3fd306469f181eb9de402a592b289238240449855",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "actions",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)19978_storage)",
+            "contract": "GenericInstantVRFActionStrategy",
+            "src": "contracts\\InstantVRFActionStrategies\\GenericInstantVRFActionStrategy.sol:26"
+          },
+          {
+            "label": "instantVRFActions",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_address",
+            "contract": "GenericInstantVRFActionStrategy",
+            "src": "contracts\\InstantVRFActionStrategies\\GenericInstantVRFActionStrategy.sol:27"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint16)30_storage": {
+            "label": "uint16[30]",
+            "numberOfBytes": "64"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)19978_storage)": {
+            "label": "mapping(uint256 => struct GenericInstantVRFActionStrategy.InstantVRFAction)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantVRFAction)19978_storage": {
+            "label": "struct GenericInstantVRFActionStrategy.InstantVRFAction",
+            "members": [
+              {
+                "label": "randomRewardInfo",
+                "type": "t_array(t_uint16)30_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "6193916d43977a9f3524af02c63ddd1b3b7d76c0dc5976ebbc5b78823ad4acd7": {
+      "address": "0x02d9d1eb7dBd58125570f9E6F0A38cdB5b7fDBC2",
+      "txHash": "0x947eabfc740f77f7b080a857b057cec5ef82c3798d1bcf99ca0279f853e86172",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\introspection\\ERC165Upgradeable.sol:40"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC1155UpgradeableSinglePerToken",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155UpgradeableSinglePerToken.sol:44"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC1155UpgradeableSinglePerToken",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155UpgradeableSinglePerToken.sol:47"
+          },
+          {
+            "label": "_uri",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_string_storage",
+            "contract": "ERC1155UpgradeableSinglePerToken",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155UpgradeableSinglePerToken.sol:50"
+          },
+          {
+            "label": "_totalSupplyAll",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_uint40",
+            "contract": "ERC1155UpgradeableSinglePerToken",
+            "src": "contracts\\ozUpgradeable\\token\\ERC1155\\ERC1155UpgradeableSinglePerToken.sol:52"
+          },
+          {
+            "label": "nextPetId",
+            "offset": 5,
+            "slot": "254",
+            "type": "t_uint40",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:98"
+          },
+          {
+            "label": "instantVRFActions",
+            "offset": 10,
+            "slot": "254",
+            "type": "t_address",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:99"
+          },
+          {
+            "label": "basePetMetadatas",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_mapping(t_uint256,t_struct(BasePetMetadata)10980_storage)",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:102"
+          },
+          {
+            "label": "pets",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_mapping(t_uint256,t_struct(Pet)10931_storage)",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:103"
+          },
+          {
+            "label": "names",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_mapping(t_uint256,t_string_storage)",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:104"
+          },
+          {
+            "label": "lowercaseNames",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_string_memory_ptr,t_bool)",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:105"
+          },
+          {
+            "label": "lastAssignmentTimestamps",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_uint256,t_uint40)",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:106"
+          },
+          {
+            "label": "imageBaseUri",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_string_storage",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:107"
+          },
+          {
+            "label": "royaltyReceiver",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_address",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:110"
+          },
+          {
+            "label": "royaltyFee",
+            "offset": 20,
+            "slot": "261",
+            "type": "t_uint8",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:111"
+          },
+          {
+            "label": "adminAccess",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_contract(AdminAccess)6214",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:113"
+          },
+          {
+            "label": "isBeta",
+            "offset": 20,
+            "slot": "262",
+            "type": "t_bool",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:114"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_address",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:116"
+          },
+          {
+            "label": "brush",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_contract(IBrushToken)12158",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:117"
+          },
+          {
+            "label": "editNameCost",
+            "offset": 20,
+            "slot": "264",
+            "type": "t_uint72",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:118"
+          },
+          {
+            "label": "brushBurntPercentage",
+            "offset": 29,
+            "slot": "264",
+            "type": "t_uint8",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:119"
+          },
+          {
+            "label": "brushPoolPercentage",
+            "offset": 30,
+            "slot": "264",
+            "type": "t_uint8",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:120"
+          },
+          {
+            "label": "brushDevPercentage",
+            "offset": 31,
+            "slot": "264",
+            "type": "t_uint8",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:121"
+          },
+          {
+            "label": "brushTerritoriesPercentage",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_uint8",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:122"
+          },
+          {
+            "label": "territories",
+            "offset": 1,
+            "slot": "265",
+            "type": "t_address",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:123"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_address",
+            "contract": "PetNFT",
+            "src": "contracts\\PetNFT.sol:124"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(AdminAccess)6214": {
+            "label": "contract AdminAccess",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)12158": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_enum(PetEnhancementType)10910": {
+            "label": "enum PetEnhancementType",
+            "members": [
+              "NONE",
+              "MELEE",
+              "MAGIC",
+              "RANGED",
+              "DEFENCE",
+              "HEALTH",
+              "MELEE_AND_DEFENCE",
+              "MAGIC_AND_DEFENCE",
+              "RANGED_AND_DEFENCE"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(PetSkin)10900": {
+            "label": "enum PetSkin",
+            "members": ["NONE", "DEFAULT", "OG", "ONEKIN", "FROST", "CRYSTAL", "ANNIV1"],
+            "numberOfBytes": "1"
+          },
+          "t_enum(Skill)10852": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "AGILITY",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_bool)": {
+            "label": "mapping(string => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_string_storage)": {
+            "label": "mapping(uint256 => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(BasePetMetadata)10980_storage)": {
+            "label": "mapping(uint256 => struct BasePetMetadata)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Pet)10931_storage)": {
+            "label": "mapping(uint256 => struct Pet)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint40)": {
+            "label": "mapping(uint256 => uint40)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(BasePetMetadata)10980_storage": {
+            "label": "struct BasePetMetadata",
+            "members": [
+              {
+                "label": "description",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "tier",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "skin",
+                "type": "t_enum(PetSkin)10900",
+                "offset": 1,
+                "slot": "1"
+              },
+              {
+                "label": "enhancementType",
+                "type": "t_enum(PetEnhancementType)10910",
+                "offset": 2,
+                "slot": "1"
+              },
+              {
+                "label": "skillEnhancement1",
+                "type": "t_enum(Skill)10852",
+                "offset": 3,
+                "slot": "1"
+              },
+              {
+                "label": "skillFixedMin1",
+                "type": "t_uint8",
+                "offset": 4,
+                "slot": "1"
+              },
+              {
+                "label": "skillFixedMax1",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "1"
+              },
+              {
+                "label": "skillFixedIncrement1",
+                "type": "t_uint8",
+                "offset": 6,
+                "slot": "1"
+              },
+              {
+                "label": "skillPercentageMin1",
+                "type": "t_uint8",
+                "offset": 7,
+                "slot": "1"
+              },
+              {
+                "label": "skillPercentageMax1",
+                "type": "t_uint8",
+                "offset": 8,
+                "slot": "1"
+              },
+              {
+                "label": "skillPercentageIncrement1",
+                "type": "t_uint8",
+                "offset": 9,
+                "slot": "1"
+              },
+              {
+                "label": "skillMinLevel1",
+                "type": "t_uint8",
+                "offset": 10,
+                "slot": "1"
+              },
+              {
+                "label": "skillEnhancement2",
+                "type": "t_enum(Skill)10852",
+                "offset": 11,
+                "slot": "1"
+              },
+              {
+                "label": "skillFixedMin2",
+                "type": "t_uint8",
+                "offset": 12,
+                "slot": "1"
+              },
+              {
+                "label": "skillFixedMax2",
+                "type": "t_uint8",
+                "offset": 13,
+                "slot": "1"
+              },
+              {
+                "label": "skillFixedIncrement2",
+                "type": "t_uint8",
+                "offset": 14,
+                "slot": "1"
+              },
+              {
+                "label": "skillPercentageMin2",
+                "type": "t_uint8",
+                "offset": 15,
+                "slot": "1"
+              },
+              {
+                "label": "skillPercentageMax2",
+                "type": "t_uint8",
+                "offset": 16,
+                "slot": "1"
+              },
+              {
+                "label": "skillPercentageIncrement2",
+                "type": "t_uint8",
+                "offset": 17,
+                "slot": "1"
+              },
+              {
+                "label": "skillMinLevel2",
+                "type": "t_uint8",
+                "offset": 18,
+                "slot": "1"
+              },
+              {
+                "label": "fixedStarThreshold",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "1"
+              },
+              {
+                "label": "percentageStarThreshold",
+                "type": "t_uint16",
+                "offset": 21,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Pet)10931_storage": {
+            "label": "struct Pet",
+            "members": [
+              {
+                "label": "skillEnhancement1",
+                "type": "t_enum(Skill)10852",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "skillFixedEnhancement1",
+                "type": "t_uint8",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "skillPercentageEnhancement1",
+                "type": "t_uint8",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "skillEnhancement2",
+                "type": "t_enum(Skill)10852",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "skillFixedEnhancement2",
+                "type": "t_uint8",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "skillPercentageEnhancement2",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "lastAssignmentTimestamp",
+                "type": "t_uint40",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "baseId",
+                "type": "t_uint24",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint72": {
+            "label": "uint72",
+            "numberOfBytes": "9"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "afa56e6c3bf2aa9b7914e415e1a231e642bb980126ba42808907c55ee60720ed": {
+      "address": "0x8cd85503785939406c49d5A3688cf38a89f715F5",
+      "txHash": "0xcc4add1b438dd8a4e360826a7fd7f32d476a2b3f3ac55c9bd4292c0c0bcf76a3",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "contracts\\ozUpgradeable\\security\\ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "contracts\\ozUpgradeable\\security\\ReentrancyGuardUpgradeable.sol:84"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_contract(IPlayers)46369",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:119"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_contract(ItemNFT)20690",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:120"
+          },
+          {
+            "label": "world",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_contract(World)43328",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:121"
+          },
+          {
+            "label": "lastQueueId",
+            "offset": 20,
+            "slot": "253",
+            "type": "t_uint80",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:122"
+          },
+          {
+            "label": "actions",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_mapping(t_uint256,t_struct(PassiveAction)21094_storage)",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:123"
+          },
+          {
+            "label": "actionRewards",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_mapping(t_uint256,t_struct(ActionRewards)45898_storage)",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:124"
+          },
+          {
+            "label": "activePassiveActions",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_mapping(t_uint256,t_struct(ActivePassiveInfo)21122_storage)",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:125"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IPlayers)46369": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)20690": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(World)43328": {
+            "label": "contract World",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Skill)44698": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "AGILITY",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_uint256,t_struct(ActionRewards)45898_storage)": {
+            "label": "mapping(uint256 => struct ActionRewards)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ActivePassiveInfo)21122_storage)": {
+            "label": "mapping(uint256 => struct PassiveActions.ActivePassiveInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PassiveAction)21094_storage)": {
+            "label": "mapping(uint256 => struct PassiveActions.PassiveAction)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ActionRewards)45898_storage": {
+            "label": "struct ActionRewards",
+            "members": [
+              {
+                "label": "guaranteedRewardTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate1",
+                "type": "t_uint16",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardTokenId2",
+                "type": "t_uint16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate2",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardTokenId3",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate3",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId1",
+                "type": "t_uint16",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance1",
+                "type": "t_uint16",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount1",
+                "type": "t_uint8",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId2",
+                "type": "t_uint16",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance2",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount2",
+                "type": "t_uint8",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId3",
+                "type": "t_uint16",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance3",
+                "type": "t_uint16",
+                "offset": 24,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount3",
+                "type": "t_uint8",
+                "offset": 26,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId4",
+                "type": "t_uint16",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance4",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount4",
+                "type": "t_uint8",
+                "offset": 31,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ActivePassiveInfo)21122_storage": {
+            "label": "struct PassiveActions.ActivePassiveInfo",
+            "members": [
+              {
+                "label": "actionId",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "queueId",
+                "type": "t_uint96",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "startTime",
+                "type": "t_uint40",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "boostItemTokenId",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PassiveAction)21094_storage": {
+            "label": "struct PassiveActions.PassiveAction",
+            "members": [
+              {
+                "label": "durationDays",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint24",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint24",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill1",
+                "type": "t_enum(Skill)44698",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "minLevel1",
+                "type": "t_uint16",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill2",
+                "type": "t_enum(Skill)44698",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "minLevel2",
+                "type": "t_uint16",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill3",
+                "type": "t_enum(Skill)44698",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "minLevel3",
+                "type": "t_uint16",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "skipSuccessPercent",
+                "type": "t_uint8",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "hasRandomRewards",
+                "type": "t_bool",
+                "offset": 26,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 27,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          },
+          "t_uint96": {
+            "label": "uint96",
+            "numberOfBytes": "12"
+          }
+        }
+      }
+    },
+    "a66c31c21ae2f25d64702d5fb7dc4031c32272219e7e633c2b90caaaf07be50f": {
+      "address": "0xf35340d0849044e25B921D83e2415d6FE478e216",
+      "txHash": "0xf2675eafad32a4eadb0e3f396b70f6092dfbc2cc52305d9d0aa5cf9179d2a8da",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "dummy",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "RrpRequesterV0Upgradeable",
+            "src": "contracts\\legacy\\RrpRequesterV0Upgradeable.sol:6"
+          },
+          {
+            "label": "_initialized",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:66",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 21,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\Initializable.sol:71"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:215"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "contracts\\ozUpgradeable\\proxy\\utils\\UUPSUpgradeable.sol:116"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "contracts\\ozUpgradeable\\utils\\ContextUpgradeable.sol:35"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts\\ozUpgradeable\\access\\OwnableUpgradeable.sol:101"
+          },
+          {
+            "label": "comparableSkills",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_array(t_enum(Skill)24056)dyn_storage",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:115"
+          },
+          {
+            "label": "nextPendingAttackId",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_uint64",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:116"
+          },
+          {
+            "label": "preventAttacks",
+            "offset": 8,
+            "slot": "202",
+            "type": "t_bool",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:117"
+          },
+          {
+            "label": "clanInfos",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_uint256,t_struct(ClanInfo)23786_storage)",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:118"
+          },
+          {
+            "label": "pendingAttacks",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_uint256,t_struct(PendingAttack)6818_storage)",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:119"
+          },
+          {
+            "label": "requestToPendingAttackIds",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_bytes32,t_uint256)",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:120"
+          },
+          {
+            "label": "lastClanBattles",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(ClanBattleInfo)23744_storage))",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:121"
+          },
+          {
+            "label": "clans",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_contract(IClans)25459",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:122"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_contract(IPlayers)25724",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:123"
+          },
+          {
+            "label": "brush",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_contract(IBrushToken)25388",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:124"
+          },
+          {
+            "label": "territories",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_contract(ITerritories)25779",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:125"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_contract(ItemNFT)15409",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:126"
+          },
+          {
+            "label": "adminAccess",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_contract(AdminAccess)5870",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:127"
+          },
+          {
+            "label": "isBeta",
+            "offset": 20,
+            "slot": "212",
+            "type": "t_bool",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:128"
+          },
+          {
+            "label": "bankFactory",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_contract(IBankFactory)25376",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:129"
+          },
+          {
+            "label": "combatantsHelper",
+            "offset": 0,
+            "slot": "214",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:130"
+          },
+          {
+            "label": "combatantChangeCooldown",
+            "offset": 20,
+            "slot": "214",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:131"
+          },
+          {
+            "label": "pool",
+            "offset": 0,
+            "slot": "215",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:132"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "216",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:133"
+          },
+          {
+            "label": "airnode",
+            "offset": 0,
+            "slot": "217",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:136"
+          },
+          {
+            "label": "sponsorWallet",
+            "offset": 0,
+            "slot": "218",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:137"
+          },
+          {
+            "label": "endpointIdUint256",
+            "offset": 0,
+            "slot": "219",
+            "type": "t_bytes32",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:138"
+          },
+          {
+            "label": "endpointIdUint256Array",
+            "offset": 0,
+            "slot": "220",
+            "type": "t_bytes32",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:139"
+          },
+          {
+            "label": "indexGasPrice",
+            "offset": 0,
+            "slot": "221",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:141"
+          },
+          {
+            "label": "movingAverageGasPrice",
+            "offset": 1,
+            "slot": "221",
+            "type": "t_uint64",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:142"
+          },
+          {
+            "label": "baseAttackCost",
+            "offset": 9,
+            "slot": "221",
+            "type": "t_uint88",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:143"
+          },
+          {
+            "label": "expectedGasLimitFulfill",
+            "offset": 20,
+            "slot": "221",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:144"
+          },
+          {
+            "label": "prices",
+            "offset": 0,
+            "slot": "222",
+            "type": "t_array(t_uint64)4_storage",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:145"
+          },
+          {
+            "label": "oracle",
+            "offset": 0,
+            "slot": "223",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:147"
+          },
+          {
+            "label": "mmrAttackDistance",
+            "offset": 20,
+            "slot": "223",
+            "type": "t_uint16",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:148"
+          },
+          {
+            "label": "Ka",
+            "offset": 22,
+            "slot": "223",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:149"
+          },
+          {
+            "label": "Kd",
+            "offset": 23,
+            "slot": "223",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:150"
+          },
+          {
+            "label": "attackingCooldown",
+            "offset": 24,
+            "slot": "223",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:151"
+          },
+          {
+            "label": "reattackingCooldown",
+            "offset": 27,
+            "slot": "223",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:152"
+          },
+          {
+            "label": "samWitchVRF",
+            "offset": 0,
+            "slot": "224",
+            "type": "t_contract(ISamWitchVRF)25767",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:154"
+          },
+          {
+            "label": "lockFundsPeriod",
+            "offset": 20,
+            "slot": "224",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:155"
+          },
+          {
+            "label": "sortedClansByMMR",
+            "offset": 0,
+            "slot": "225",
+            "type": "t_array(t_uint48)dyn_storage",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:161"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_enum(Skill)24056)dyn_storage": {
+            "label": "enum Skill[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(Vault)23755_storage)dyn_storage": {
+            "label": "struct Vault[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint48)dyn_storage": {
+            "label": "uint48[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint64)4_storage": {
+            "label": "uint64[4]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(AdminAccess)5870": {
+            "label": "contract AdminAccess",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBank)25350": {
+            "label": "contract IBank",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBankFactory)25376": {
+            "label": "contract IBankFactory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)25388": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IClans)25459": {
+            "label": "contract IClans",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlayers)25724": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISamWitchVRF)25767": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ITerritories)25779": {
+            "label": "contract ITerritories",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)15409": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Skill)24056": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "AGILITY",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(ClanBattleInfo)23744_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct ClanBattleInfo))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ClanBattleInfo)23744_storage)": {
+            "label": "mapping(uint256 => struct ClanBattleInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ClanInfo)23786_storage)": {
+            "label": "mapping(uint256 => struct ClanInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PendingAttack)6818_storage)": {
+            "label": "mapping(uint256 => struct LockedBankVaults.PendingAttack)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ClanBattleInfo)23744_storage": {
+            "label": "struct ClanBattleInfo",
+            "members": [
+              {
+                "label": "lastClanIdAttackOtherClanIdCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "numReattacks",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "lastOtherClanIdAttackClanIdCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "numReattacksOtherClan",
+                "type": "t_uint8",
+                "offset": 11,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ClanInfo)23786_storage": {
+            "label": "struct ClanInfo",
+            "members": [
+              {
+                "label": "bank",
+                "type": "t_contract(IBank)25350",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "totalBrushLocked",
+                "type": "t_uint96",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "attackingCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "assignCombatantsCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 5,
+                "slot": "1"
+              },
+              {
+                "label": "currentlyAttacking",
+                "type": "t_bool",
+                "offset": 10,
+                "slot": "1"
+              },
+              {
+                "label": "gasPaid",
+                "type": "t_uint88",
+                "offset": 11,
+                "slot": "1"
+              },
+              {
+                "label": "defendingVaultsOffset",
+                "type": "t_uint24",
+                "offset": 22,
+                "slot": "1"
+              },
+              {
+                "label": "blockAttacksTimestamp",
+                "type": "t_uint40",
+                "offset": 25,
+                "slot": "1"
+              },
+              {
+                "label": "blockAttacksCooldownHours",
+                "type": "t_uint8",
+                "offset": 30,
+                "slot": "1"
+              },
+              {
+                "label": "isInMMRArray",
+                "type": "t_bool",
+                "offset": 31,
+                "slot": "1"
+              },
+              {
+                "label": "playerIds",
+                "type": "t_array(t_uint48)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "defendingVaults",
+                "type": "t_array(t_struct(Vault)23755_storage)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "superAttackCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(PendingAttack)6818_storage": {
+            "label": "struct LockedBankVaults.PendingAttack",
+            "members": [
+              {
+                "label": "clanId",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "defendingClanId",
+                "type": "t_uint40",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "attackInProgress",
+                "type": "t_bool",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "extraRollsAttacker",
+                "type": "t_uint8",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "extraRollsDefender",
+                "type": "t_uint8",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Vault)23755_storage": {
             "label": "struct Vault",
             "members": [
               {

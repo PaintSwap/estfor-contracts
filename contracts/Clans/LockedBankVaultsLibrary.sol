@@ -29,6 +29,7 @@ library LockedBankVaultsLibrary {
   error NothingToClaim();
   error NotALockedVaultDefenceItem();
   error BlockAttacksCooldown();
+  error ClanDoesntExist(uint256 clanId);
 
   function initializeMMR(
     uint48[] storage _sortedClansByMMR,
@@ -266,40 +267,79 @@ library LockedBankVaultsLibrary {
     (uint clanIndex, uint defendingClanIndex) = _getClanIndicesMemory(sortedClansByMMR, _clanId, _defendingClanId);
 
     if (clanIndex == type(uint256).max) {
-      revert OutsideMMRRange();
+      revert ClanDoesntExist(_clanId);
     }
     if (defendingClanIndex == type(uint256).max) {
-      revert OutsideMMRRange();
+      revert ClanDoesntExist(_defendingClanId);
     }
 
     return _isWithinRange(sortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance);
   }
 
+  // Range is not taken into account for the attacker with the same MMR as surrounding clans.
+  // So with this array [400, 500, 500, 500, 600] with a range of 1, any attacker at 500 can attack the defender at 400 and 600
+  // If there are any duplicates at the edge of the range, then the attacker can attack any with that MMR
+  // So with the above array the 400 MMR clan can attack any 500 MMR clans with a range of 1
   function _isWithinRange(
     uint48[] memory _sortedClansByMMR,
     uint256 _clanIdIndex,
     uint256 _defendingClanIdIndex,
     uint256 _mmrAttackDistance
   ) private pure returns (bool) {
-    // Calculate direct distance
+    // If they are within range then just return
     uint256 directDistance = (_clanIdIndex > _defendingClanIdIndex)
       ? _clanIdIndex - _defendingClanIdIndex
       : _defendingClanIdIndex - _clanIdIndex;
-
     if (_mmrAttackDistance >= directDistance) {
+      return true;
+    }
+
+    // Have the same MMR
+    uint256 defenderMMR = _getMMR(_sortedClansByMMR[_defendingClanIdIndex]);
+    uint256 attackerMMR = _getMMR(_sortedClansByMMR[_clanIdIndex]);
+    if (defenderMMR == attackerMMR) {
+      return true;
+    }
+
+    // Find the lower and upper bounds of clans with the same MMR as the attacking clan so that
+    uint256 attackerLowerBound = _clanIdIndex;
+    uint256 attackerUpperBound = _clanIdIndex;
+
+    while (
+      attackerLowerBound > 0 &&
+      _getMMR(_sortedClansByMMR[attackerLowerBound - 1]) == _getMMR(_sortedClansByMMR[_clanIdIndex])
+    ) {
+      --attackerLowerBound;
+    }
+
+    while (
+      attackerUpperBound < _sortedClansByMMR.length - 1 &&
+      _getMMR(_sortedClansByMMR[attackerUpperBound + 1]) == _getMMR(_sortedClansByMMR[_clanIdIndex])
+    ) {
+      ++attackerUpperBound;
+    }
+
+    uint256 boundDistance = _defendingClanIdIndex > _clanIdIndex
+      ? _defendingClanIdIndex - attackerUpperBound
+      : attackerLowerBound - _defendingClanIdIndex;
+    if (_mmrAttackDistance >= boundDistance) {
       return true;
     }
 
     // If outside range, check if MMR is the same as the MMR as that at the edge of the range
     int256 rangeEdgeIndex = int256(
-      _defendingClanIdIndex > _clanIdIndex ? _clanIdIndex + _mmrAttackDistance : _clanIdIndex - _mmrAttackDistance
+      _defendingClanIdIndex > _clanIdIndex
+        ? attackerUpperBound + _mmrAttackDistance
+        : attackerLowerBound - _mmrAttackDistance
     );
 
-    if (rangeEdgeIndex < 0 || rangeEdgeIndex >= int256(_sortedClansByMMR.length)) {
-      return false;
+    if (rangeEdgeIndex < 0) {
+      rangeEdgeIndex = 0;
+    } else if (rangeEdgeIndex >= int256(_sortedClansByMMR.length)) {
+      rangeEdgeIndex = int256(_sortedClansByMMR.length - 1);
     }
 
-    return _getMMR(_sortedClansByMMR[_defendingClanIdIndex]) == _getMMR(_sortedClansByMMR[uint256(rangeEdgeIndex)]);
+    return defenderMMR == _getMMR(_sortedClansByMMR[uint256(rangeEdgeIndex)]);
   }
 
   function blockAttacks(
