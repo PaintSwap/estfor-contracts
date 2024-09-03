@@ -1970,6 +1970,47 @@ describe("Players", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
   });
 
+  it("Check that only upgraded players can start a non-full mode only actionChoice, where action is set to full mode only", async function () {
+    const {playerId, players, itemNFT, world, alice, playerNFT, brush, upgradePlayerBrushPrice, origName} =
+      await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await world.editActions([
+      {
+        actionId: 1,
+        info: {
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 0,
+          minXP: 0,
+          isDynamic: false,
+          worldLocation: 0,
+          isFullModeOnly: true,
+          numSpawned: 0,
+          handItemTokenIdRangeMin: EstforConstants.NONE,
+          handItemTokenIdRangeMax: EstforConstants.NONE,
+          isAvailable: true,
+          actionChoiceRequired: true,
+          successPercent: 100,
+        },
+        guaranteedRewards: [],
+        randomRewards: [],
+        combatStats: EstforTypes.emptyCombatStats,
+      },
+    ]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
+    // Upgrade and try again
+    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.mint(alice.address, upgradePlayerBrushPrice);
+    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+  });
+
   it("Check that only upgraded players can start a full mode only action", async function () {
     const {playerId, world, players, brush, alice, playerNFT, origName, upgradePlayerBrushPrice} = await loadFixture(
       playersFixture

@@ -288,11 +288,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
     } else if (_queuedActionInput.choiceId != NONE) {
       revert ActionChoiceIdNotRequired();
-    } else {
-      // Check if the action requires full mode. Done here as don't want to check if both action and actionChoice are full mode only
-      if (actionInfo.isFullModeOnly && !isPlayerUpgraded) {
-        revert PlayerNotUpgraded();
-      }
+    }
+
+    if (actionInfo.isFullModeOnly && !isPlayerUpgraded) {
+      revert PlayerNotUpgraded();
     }
 
     if (_queuedActionInput.timespan == 0) {
