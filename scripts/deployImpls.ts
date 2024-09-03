@@ -60,11 +60,11 @@ async function main() {
   */
   const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)).connect(owner) as Players;
   const tx = await players.setImpls(
-    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
+    playersImplQueueActions.address,
+    playersImplProcessActions.address,
     playersImplRewards.address,
-    PLAYERS_IMPL_MISC_ADDRESS,
-    PLAYERS_IMPL_MISC1_ADDRESS
+    playersImplMisc.address,
+    playersImplMisc1.address
   );
   await tx.wait();
 }
