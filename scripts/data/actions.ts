@@ -2746,7 +2746,7 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW,
     info: {
       skill: Skill.COMBAT,
-      isAvailable: true,
+      isAvailable: false,
       isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 250,
