@@ -1,8 +1,14 @@
 import {ethers} from "hardhat";
-import {INSTANT_VRF_ACTIONS_ADDRESS, PASSIVE_ACTIONS_ADDRESS} from "./contractAddresses";
-import {InstantVRFActions, PassiveActions} from "../typechain-types";
-import {allPassiveActions} from "./data/passiveActions";
-import {allInstantVRFActions} from "./data/instantVRFActions";
+import {
+  INSTANT_ACTIONS_ADDRESS,
+  INSTANT_VRF_ACTIONS_ADDRESS,
+  PASSIVE_ACTIONS_ADDRESS,
+  WORLD_ADDRESS,
+} from "./contractAddresses";
+import {InstantActions, InstantVRFActions, PassiveActions, World} from "../typechain-types";
+import {EstforConstants} from "@paintswap/estfor-definitions";
+import {InstantActionType} from "@paintswap/estfor-definitions/types";
+import {allActions} from "./data/actions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -12,34 +18,68 @@ async function main() {
     } on chain id ${await owner.getChainId()}`
   );
 
-  const isAvailable = true;
+  const isAvailable = false;
+  // DONE
+  const world = (await ethers.getContractAt("World", WORLD_ADDRESS)).connect(owner) as World;
+
+  const actionIds = new Set([EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW]);
+  const actions = allActions.filter((action) => actionIds.has(action.actionId));
+
+  if (actions.length !== actionIds.size) {
+    console.log("Cannot find actions");
+    return;
+  } else {
+    const tx = await world.editActions(actions);
+    await tx.wait();
+    console.log("Edit available actions");
+  }
 
   // Passive actions
+  // TODO: Don't remove these yet, wait a few months
   const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)).connect(
     owner
   ) as PassiveActions;
 
-  const passiveActionIds = allPassiveActions.map((passiveAction) => {
-    return passiveAction.actionId;
-  });
-  if (passiveActionIds.length !== allPassiveActions.length) {
-    console.log("Cannot find actions");
-  } else {
-    await passiveActions.setAvailable(passiveActionIds, isAvailable);
-  }
+  const passiveActionIdsToRemove = [EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4];
+  let tx = await passiveActions.setAvailable(passiveActionIdsToRemove, isAvailable);
+  await tx.wait();
+  console.log("Set available passive actions");
+
+  // Instant VRF actions
+  // TODO: Don't remove these yet, wait a few months
+  const instantVRFActionIds = [
+    EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER1,
+    EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER2,
+    EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER3,
+    EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER4,
+    EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER5,
+    EstforConstants.INSTANT_VRF_ACTION_THIEVING_ANNIV1_CHEST,
+  ];
 
   const instantVRFActions = (await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS)).connect(
     owner
   ) as InstantVRFActions;
+  tx = await instantVRFActions.setAvailable(instantVRFActionIds, isAvailable);
+  await tx.wait();
+  console.log("Set available instant VRF actions");
 
-  const instantVRFActionIds = allInstantVRFActions.map((instantVRFAction) => {
-    return instantVRFAction.actionId;
-  });
-  if (instantVRFActionIds.length !== allInstantVRFActions.length) {
-    console.log("Cannot find actions");
-  } else {
-    await instantVRFActions.setAvailable(instantVRFActionIds, isAvailable);
-  }
+  // Instant Actions (DONE)
+  const instantActionIds = [
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_CHEST,
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_EGG_TIER1,
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_KEY,
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_RING,
+  ];
+  const instantActions = (await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)).connect(
+    owner
+  ) as InstantActions;
+
+  tx = await instantActions.removeActions(
+    [InstantActionType.GENERIC, InstantActionType.GENERIC, InstantActionType.GENERIC, InstantActionType.GENERIC],
+    instantActionIds
+  );
+  await tx.wait();
+  console.log("Set available instant actions");
 }
 
 main().catch((error) => {
