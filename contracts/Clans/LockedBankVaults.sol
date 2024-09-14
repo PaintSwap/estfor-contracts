@@ -20,7 +20,7 @@ import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 
-import {BattleResultEnum, ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, ClanInfo, Vault, ClanBattleInfo} from "../globals/clans.sol";
+import {BattleResultEnum, ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, VaultClanInfo, Vault, ClanBattleInfo} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
 import {BoostType, Skill} from "../globals/misc.sol";
 import {NONE} from "../globals/items.sol";
@@ -115,7 +115,7 @@ contract LockedBankVaults is
   Skill[] private comparableSkills;
   uint64 private nextPendingAttackId;
   bool private preventAttacks;
-  mapping(uint clanId => ClanInfo clanInfo) private clanInfos;
+  mapping(uint clanId => VaultClanInfo clanInfo) private clanInfos;
   mapping(uint pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
   mapping(bytes32 requestId => uint pendingAttackId) private requestToPendingAttackIds;
   mapping(uint clanId => mapping(uint otherClanId => ClanBattleInfo battleInfo)) public lastClanBattles; // Always ordered from lowest clanId to highest
@@ -280,7 +280,7 @@ contract LockedBankVaults is
     uint _combatantCooldownTimestamp,
     uint _leaderPlayerId
   ) external override onlyCombatantsHelper {
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = clanInfos[_clanId];
     LockedBankVaultsLibrary.checkCanAssignCombatants(clanInfo, _playerIds);
     clanInfo.playerIds = _playerIds;
     clanInfo.assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
@@ -343,14 +343,13 @@ contract LockedBankVaults is
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
     LockedBankVaultsLibrary.checkWithinRange(sortedClansByMMR, _clanId, _defendingClanId, clans, mmrAttackDistance);
 
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.currentlyAttacking = true;
 
     uint64 _nextPendingAttackId = nextPendingAttackId++;
 
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + attackingCooldown);
     clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
-    clanInfo.gasPaid = uint88(msg.value);
     if (isUsingSuperAttack) {
       clanInfo.superAttackCooldownTimestamp = uint40(superAttackCooldownTimestamp);
     }
@@ -530,7 +529,7 @@ contract LockedBankVaults is
 
   function lockFunds(uint _clanId, address _from, uint _playerId, uint _amount) external onlyTerritories {
     _lockFunds(_clanId, _from, _playerId, _amount);
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = clanInfos[_clanId];
     if (!clanInfo.isInMMRArray) {
       LockedBankVaultsLibrary.insertMMRArray(sortedClansByMMR, clans.getMMR(_clanId), uint32(_clanId));
       clanInfo.isInMMRArray = true;
@@ -542,7 +541,7 @@ contract LockedBankVaults is
 
   function clanMemberLeft(uint _clanId, uint _playerId) external override onlyClans {
     // Remove a player combatant if they are currently assigned in this clan
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = clanInfos[_clanId];
     if (clanInfo.playerIds.length != 0) {
       uint searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, _playerId);
       if (searchIndex != type(uint).max) {
@@ -608,7 +607,7 @@ contract LockedBankVaults is
     if (_amount == 0) {
       return;
     }
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = clanInfos[_clanId];
     uint totalBrushLocked = clanInfo.totalBrushLocked;
     clanInfo.totalBrushLocked = uint96(totalBrushLocked + _amount);
     uint40 lockingTimestamp = uint40(block.timestamp + lockFundsPeriod);
@@ -640,7 +639,7 @@ contract LockedBankVaults is
     return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
   }
 
-  function getClanInfo(uint _clanId) external view returns (ClanInfo memory) {
+  function getClanInfo(uint _clanId) external view returns (VaultClanInfo memory) {
     return clanInfos[_clanId];
   }
 

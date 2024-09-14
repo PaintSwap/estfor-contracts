@@ -34,14 +34,14 @@ struct Vault {
   uint80 amount1;
 }
 
-struct ClanInfo {
+struct VaultClanInfo {
   IBank bank;
   uint96 totalBrushLocked;
   // New storage slot
   uint40 attackingCooldownTimestamp;
   uint40 assignCombatantsCooldownTimestamp;
   bool currentlyAttacking;
-  uint88 gasPaid;
+  uint88 gasPaid; // TODO remove in migration
   uint24 defendingVaultsOffset;
   uint40 blockAttacksTimestamp;
   uint8 blockAttacksCooldownHours;

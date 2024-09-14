@@ -137,7 +137,7 @@ contract Territories is
     uint40 attackingCooldownTimestamp;
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
-    uint88 gasPaid;
+    uint88 gasPaid; // TODO remove in migration
     uint40 blockAttacksTimestamp;
     uint8 blockAttacksCooldownHours; // Have many hours after blockAttacksTimestamp there is a cooldown for
     uint48[] playerIds;
@@ -328,7 +328,6 @@ contract Territories is
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
     ClanInfo storage clanInfo = clanInfos[_clanId];
     clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
-    clanInfo.gasPaid = uint88(msg.value);
 
     clanInfo.currentlyAttacking = true;
 

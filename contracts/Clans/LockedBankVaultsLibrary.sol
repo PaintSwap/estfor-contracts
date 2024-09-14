@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {ClanInfo, ClanBattleInfo, Vault, MAX_CLAN_COMBATANTS} from "../globals/clans.sol";
+import {VaultClanInfo, ClanBattleInfo, Vault, MAX_CLAN_COMBATANTS} from "../globals/clans.sol";
 import {Item, EquipPosition, BoostType} from "../globals/players.sol";
 import {IItemNFT} from "../interfaces/IItemNFT.sol";
 import {IClans} from "../interfaces/IClans.sol";
@@ -34,7 +34,7 @@ library LockedBankVaultsLibrary {
   function initializeMMR(
     uint48[] storage _sortedClansByMMR,
     IClans _clans,
-    mapping(uint clanId => ClanInfo _clanInfo) storage _clanInfos,
+    mapping(uint clanId => VaultClanInfo _clanInfo) storage _clanInfos,
     uint[] calldata _clanIds,
     uint16[] calldata _mmrs
   ) external {
@@ -52,7 +52,7 @@ library LockedBankVaultsLibrary {
   function forceMMRUpdate(
     uint48[] storage _sortedClansByMMR,
     IClans _clans,
-    mapping(uint clanId => ClanInfo _clanInfo) storage _clanInfos,
+    mapping(uint clanId => VaultClanInfo _clanInfo) storage _clanInfos,
     uint[] calldata _clanIds
   ) external returns (uint[] memory clanIdsToDelete) {
     // Create an array to mark elements for deletion
@@ -100,7 +100,7 @@ library LockedBankVaultsLibrary {
 
   function claimFunds(
     uint48[] storage _sortedClansByMMR,
-    ClanInfo storage _clanInfo,
+    VaultClanInfo storage _clanInfo,
     uint256 _clanId
   ) external returns (uint256 total, uint256 numLocksClaimed) {
     uint defendingVaultsOffset = _clanInfo.defendingVaultsOffset;
@@ -191,7 +191,7 @@ library LockedBankVaultsLibrary {
     }
   }
 
-  function _hasLockedFunds(ClanInfo storage _clanInfo) internal view returns (bool) {
+  function _hasLockedFunds(VaultClanInfo storage _clanInfo) internal view returns (bool) {
     uint length = _clanInfo.defendingVaults.length;
     if (length == 0) {
       return false;
@@ -345,7 +345,7 @@ library LockedBankVaultsLibrary {
   function blockAttacks(
     IItemNFT _itemNFT,
     uint16 _itemTokenId,
-    ClanInfo storage _clanInfo
+    VaultClanInfo storage _clanInfo
   ) external returns (uint256 blockAttacksTimestamp) {
     Item memory item = _itemNFT.getItem(_itemTokenId);
     if (item.equipPosition != EquipPosition.LOCKED_VAULT || item.boostType != BoostType.PVP_BLOCK) {
@@ -371,7 +371,7 @@ library LockedBankVaultsLibrary {
     uint256 _attackingClanId,
     uint256 _defendingClanId,
     bool _didAttackersWin,
-    mapping(uint clanId => ClanInfo clanInfo) storage _clanInfos
+    mapping(uint clanId => VaultClanInfo clanInfo) storage _clanInfos
   ) external returns (int256 attackingMMRDiff, int256 defendingMMRDiff) {
     (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndices(
       _sortedClansByMMR,
@@ -453,11 +453,11 @@ library LockedBankVaultsLibrary {
     uint256 _maxLockedVaults,
     uint256 _numPackedVaults,
     IItemNFT _itemNFT,
-    mapping(uint clanId => ClanInfo clanInfo) storage _clanInfos,
+    mapping(uint clanId => VaultClanInfo clanInfo) storage _clanInfos,
     mapping(uint clanId => mapping(uint otherClanId => ClanBattleInfo battleInfo)) storage _lastClanBattles
   ) external view returns (bool isReattacking, bool isUsingSuperAttack, uint superAttackCooldownTimestamp) {
     // Must have at least 1 combatant
-    ClanInfo storage clanInfo = _clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = _clanInfos[_clanId];
     if (clanInfo.playerIds.length == 0) {
       revert NoCombatants();
     }
@@ -467,7 +467,7 @@ library LockedBankVaultsLibrary {
     }
 
     // Does this clan have any brush to even attack?
-    ClanInfo storage defendingClanInfo = _clanInfos[_defendingClanId];
+    VaultClanInfo storage defendingClanInfo = _clanInfos[_defendingClanId];
     if (defendingClanInfo.totalBrushLocked == 0) {
       revert NoBrushToAttack();
     }
@@ -574,7 +574,7 @@ library LockedBankVaultsLibrary {
 
   function getIdleClans(
     uint48[] storage _sortedClansByMMR,
-    mapping(uint clanId => ClanInfo _clanInfo) storage _clanInfos,
+    mapping(uint clanId => VaultClanInfo _clanInfo) storage _clanInfos,
     IClans _clans
   ) external view returns (uint256[] memory clanIds) {
     uint256 origLength = _sortedClansByMMR.length;
@@ -614,7 +614,7 @@ library LockedBankVaultsLibrary {
     return low;
   }
 
-  function checkCanAssignCombatants(ClanInfo storage _clanInfo, uint48[] calldata _playerIds) external view {
+  function checkCanAssignCombatants(VaultClanInfo storage _clanInfo, uint48[] calldata _playerIds) external view {
     if (_clanInfo.currentlyAttacking) {
       revert CannotChangeCombatantsDuringAttack();
     }
@@ -632,7 +632,7 @@ library LockedBankVaultsLibrary {
   function clearCooldowns(
     uint _clanId,
     uint[] calldata _otherClanIds,
-    ClanInfo storage _clanInfo,
+    VaultClanInfo storage _clanInfo,
     mapping(uint clanId => mapping(uint otherClanId => ClanBattleInfo battleInfo)) storage _lastClanBattles
   ) external {
     _clanInfo.attackingCooldownTimestamp = 0;

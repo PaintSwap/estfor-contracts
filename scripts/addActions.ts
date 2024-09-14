@@ -10,10 +10,10 @@ async function main() {
 
   const world = (await ethers.getContractAt("World", WORLD_ADDRESS)).connect(owner) as World;
 
-  const _actions = new Set([EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW]);
-  const actions = allActions.filter((action) => _actions.has(action.actionId));
+  const actionIds = new Set([EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW]);
+  const actions = allActions.filter((action) => actionIds.has(action.actionId));
 
-  if (actions.length !== _actions.size) {
+  if (actions.length !== actionIds.size) {
     console.log("Cannot find actions");
   } else {
     const tx = await world.connect(owner).addActions(actions);

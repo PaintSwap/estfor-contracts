@@ -1008,7 +1008,7 @@
             "type": "uint40"
           }
         ],
-        "internalType": "struct ClanInfo",
+        "internalType": "struct VaultClanInfo",
         "name": "",
         "type": "tuple"
       }
