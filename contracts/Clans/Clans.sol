@@ -700,7 +700,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       revert TwitterTooLong();
     }
 
-    if (!EstforLibrary.containsValidTwitterCharacters(_twitter)) {
+    if (!EstforLibrary.containsBaselineSocialNameCharacters(_twitter)) {
       revert TwitterInvalidCharacters();
     }
   }
