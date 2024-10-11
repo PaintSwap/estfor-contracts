@@ -20,7 +20,7 @@ import {SolcUserConfig} from "hardhat/types";
 const defaultConfig: SolcUserConfig = {
   version: "0.8.20",
   settings: {
-    evmVersion: "paris",
+    evmVersion: "shanghai",
     optimizer: {
       enabled: true,
       runs: 9999999,
