@@ -14,7 +14,7 @@ import "hardhat-gas-reporter";
 import "hardhat-storage-layout";
 import "hardhat-abi-exporter";
 import "solidity-coverage";
-import {ethers} from "ethers";
+import {ethers, parseUnits} from "ethers";
 import {SolcUserConfig} from "hardhat/types";
 
 const defaultConfig: SolcUserConfig = {
@@ -101,12 +101,12 @@ const config: HardhatUserConfig = {
     fantom: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("30", "gwei").toNumber(),
+      gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
     fantom_testnet: {
       url: process.env.FTM_RPC_TESTNET,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("150", "gwei").toNumber(),
+      gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
   },
   mocha: {
