@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol";
+import "@openzeppelin/contracts/interfaces/IERC165.sol";
 import "../../proxy/utils/Initializable.sol";
 
 /**
@@ -20,7 +20,7 @@ import "../../proxy/utils/Initializable.sol";
  *
  * Alternatively, {ERC165Storage} provides an easier to use but more expensive implementation.
  */
-abstract contract ERC165Upgradeable is Initializable, IERC165Upgradeable {
+abstract contract ERC165Upgradeable is Initializable, IERC165 {
   function __ERC165_init() internal onlyInitializing {}
 
   function __ERC165_init_unchained() internal onlyInitializing {}
@@ -29,7 +29,7 @@ abstract contract ERC165Upgradeable is Initializable, IERC165Upgradeable {
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-    return interfaceId == type(IERC165Upgradeable).interfaceId;
+    return interfaceId == type(IERC165).interfaceId;
   }
 
   /**

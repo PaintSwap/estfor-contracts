@@ -20,18 +20,18 @@ contract BrushNonTransferrable is ERC20Upgradeable, UUPSUpgradeable, OwnableUpgr
   function initialize() external initializer {
     __ERC20_init("BrushNonTransferrable", "FAKEBRUSH");
     __UUPSUpgradeable_init();
-    __Ownable_init();
+    __Ownable_init(_msgSender());
   }
 
   function mint(address _to, uint256 _amount) external onlyOwner {
     _mint(_to, _amount);
   }
 
-  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
+  function _update(address from, address to, uint256 amount) internal override {
     if (from != address(0) && from != owner() && to != owner()) {
       revert TransferFailed();
     }
-    super._beforeTokenTransfer(from, to, amount);
+    super._update(from, to, amount);
   }
 
   // solhint-disable-next-line no-empty-blocks

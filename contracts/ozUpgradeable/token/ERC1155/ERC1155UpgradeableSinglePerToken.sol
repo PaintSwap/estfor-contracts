@@ -3,9 +3,10 @@
 
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable.sol";
+import "@openzeppelin/contracts/interfaces/IERC1155.sol";
+import "@openzeppelin/contracts/interfaces/IERC1155Receiver.sol";
+import "@openzeppelin/contracts/interfaces/IERC1155MetadataURI.sol";
+
 import "../../utils/AddressUpgradeable.sol";
 import "../../utils/ContextUpgradeable.sol";
 import "../../proxy/utils/Initializable.sol";
@@ -22,8 +23,8 @@ contract ERC1155UpgradeableSinglePerToken is
   Initializable,
   ContextUpgradeable,
   ERC165Upgradeable,
-  IERC1155Upgradeable,
-  IERC1155MetadataURIUpgradeable
+  IERC1155,
+  IERC1155MetadataURI
 {
   using AddressUpgradeable for address;
 
@@ -80,10 +81,10 @@ contract ERC1155UpgradeableSinglePerToken is
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(ERC165Upgradeable, IERC165Upgradeable) returns (bool) {
+  ) public view virtual override(ERC165Upgradeable, IERC165) returns (bool) {
     return
-      interfaceId == type(IERC1155Upgradeable).interfaceId ||
-      interfaceId == type(IERC1155MetadataURIUpgradeable).interfaceId ||
+      interfaceId == type(IERC1155).interfaceId ||
+      interfaceId == type(IERC1155MetadataURI).interfaceId ||
       super.supportsInterface(interfaceId);
   }
 
@@ -538,10 +539,10 @@ contract ERC1155UpgradeableSinglePerToken is
     bytes memory data
   ) private {
     if (to.isContract()) {
-      try IERC1155ReceiverUpgradeable(to).onERC1155Received(operator, from, id, amount, data) returns (
+      try IERC1155Receiver(to).onERC1155Received(operator, from, id, amount, data) returns (
         bytes4 response
       ) {
-        if (response != IERC1155ReceiverUpgradeable.onERC1155Received.selector) {
+        if (response != IERC1155Receiver.onERC1155Received.selector) {
           revert ERC1155ReceiverRejectedTokens();
         }
       } catch Error(string memory reason) {
@@ -561,10 +562,10 @@ contract ERC1155UpgradeableSinglePerToken is
     bytes memory data
   ) private {
     if (to.isContract()) {
-      try IERC1155ReceiverUpgradeable(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (
+      try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (
         bytes4 response
       ) {
-        if (response != IERC1155ReceiverUpgradeable.onERC1155BatchReceived.selector) {
+        if (response != IERC1155Receiver.onERC1155BatchReceived.selector) {
           revert ERC1155ReceiverRejectedTokens();
         }
       } catch Error(string memory reason) {

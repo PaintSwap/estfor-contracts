@@ -3,10 +3,11 @@
 
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/proxy/beacon/IBeaconUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol";
+import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import "@openzeppelin/contracts/interfaces/IERC1967.sol";
+import "@openzeppelin/contracts/interfaces/draft-IERC1822.sol";
 import "../../utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol";
+import "@openzeppelin/contracts/utils/StorageSlot.sol";
 import "../utils/Initializable.sol";
 
 /**
@@ -49,7 +50,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
    * @dev Returns the current implementation address.
    */
   function _getImplementation() internal view returns (address) {
-    return StorageSlotUpgradeable.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+    return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
   }
 
   /**
@@ -59,7 +60,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
     if (!AddressUpgradeable.isContract(newImplementation)) {
       revert NewImplementationIsNotAContract();
     }
-    StorageSlotUpgradeable.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+    StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
   }
 
   /**
@@ -93,10 +94,10 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
     // Upgrades from old implementations will perform a rollback test. This test requires the new
     // implementation to upgrade back to the old, non-ERC1822 compliant, implementation. Removing
     // this special case will break upgrade paths from old UUPS implementation to new ones.
-    if (StorageSlotUpgradeable.getBooleanSlot(_ROLLBACK_SLOT).value) {
+    if (StorageSlot.getBooleanSlot(_ROLLBACK_SLOT).value) {
       _setImplementation(newImplementation);
     } else {
-      try IERC1822ProxiableUpgradeable(newImplementation).proxiableUUID() returns (bytes32 slot) {
+      try IERC1822Proxiable(newImplementation).proxiableUUID() returns (bytes32 slot) {
         if (slot != _IMPLEMENTATION_SLOT) {
           revert UnsupportedProxiableUUID();
         }
@@ -123,7 +124,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
    * @dev Returns the current admin.
    */
   function _getAdmin() internal view returns (address) {
-    return StorageSlotUpgradeable.getAddressSlot(_ADMIN_SLOT).value;
+    return StorageSlot.getAddressSlot(_ADMIN_SLOT).value;
   }
 
   /**
@@ -133,7 +134,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
     if (newAdmin == address(0)) {
       revert NewAdminIsZeroAddress();
     }
-    StorageSlotUpgradeable.getAddressSlot(_ADMIN_SLOT).value = newAdmin;
+    StorageSlot.getAddressSlot(_ADMIN_SLOT).value = newAdmin;
   }
 
   /**
@@ -161,7 +162,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
    * @dev Returns the current beacon.
    */
   function _getBeacon() internal view returns (address) {
-    return StorageSlotUpgradeable.getAddressSlot(_BEACON_SLOT).value;
+    return StorageSlot.getAddressSlot(_BEACON_SLOT).value;
   }
 
   /**
@@ -171,10 +172,10 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
     if (!AddressUpgradeable.isContract(newBeacon)) {
       revert NewBeaconIsNotAContract();
     }
-    if (!AddressUpgradeable.isContract(IBeaconUpgradeable(newBeacon).implementation())) {
+    if (!AddressUpgradeable.isContract(IBeacon(newBeacon).implementation())) {
       revert BeaconImplementationIsNotAContract();
     }
-    StorageSlotUpgradeable.getAddressSlot(_BEACON_SLOT).value = newBeacon;
+    StorageSlot.getAddressSlot(_BEACON_SLOT).value = newBeacon;
   }
 
   /**
@@ -187,7 +188,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
     _setBeacon(newBeacon);
     emit BeaconUpgraded(newBeacon);
     if (data.length > 0 || forceCall) {
-      _functionDelegateCall(IBeaconUpgradeable(newBeacon).implementation(), data);
+      _functionDelegateCall(IBeacon(newBeacon).implementation(), data);
     }
   }
 

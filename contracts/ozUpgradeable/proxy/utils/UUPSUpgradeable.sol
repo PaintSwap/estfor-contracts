@@ -3,7 +3,8 @@
 
 pragma solidity ^0.8.20;
 
-import {IERC1822ProxiableUpgradeable} from "@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol";
+// import {IERC1822ProxiableUpgradeable} from "@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol";
+import {IERC1822Proxiable} from "@openzeppelin/contracts/interfaces/draft-IERC1822.sol";
 import {ERC1967UpgradeUpgradeable} from "../ERC1967/ERC1967UpgradeUpgradeable.sol";
 import "./Initializable.sol";
 
@@ -19,7 +20,7 @@ import "./Initializable.sol";
  *
  * _Available since v4.1._
  */
-abstract contract UUPSUpgradeable is Initializable, IERC1822ProxiableUpgradeable, ERC1967UpgradeUpgradeable {
+abstract contract UUPSUpgradeable is Initializable, IERC1822Proxiable, ERC1967UpgradeUpgradeable {
   error FunctionMustBeCalledThroughDelegateCall();
   error FunctionMustBeCalledThroughActiveProxy();
   error FunctionMustNotBeCalledThroughDelegateCall();
