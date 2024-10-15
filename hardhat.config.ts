@@ -97,12 +97,12 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
     },
     fantom: {
-      url: process.env.FANTOM_RPC,
+      url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
     fantom_testnet: {
-      url: process.env.FANTOM_TESTNET_RPC,
+      url: process.env.FTM_TESTNET_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
