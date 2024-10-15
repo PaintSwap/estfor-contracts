@@ -604,6 +604,8 @@ describe("Rewards", function () {
       const equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
 
       let baseEquipment = equipments[0];
+      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.be.eq(0);
+
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
       expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(
@@ -617,7 +619,8 @@ describe("Rewards", function () {
       tierId = 2;
       await clans.connect(alice).upgradeClan(clanId, playerId, tierId);
 
-      await timeTravelToNextCheckpoint();
+      await timeTravel24Hours();
+
       await players.connect(alice).processActions(playerId);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
 
@@ -2012,12 +2015,7 @@ describe("Rewards", function () {
       const actionId = await getActionId(tx, world);
       const numHours = 23;
 
-      // Make sure it passes the next checkpoint so there are no issues running
-      const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
-      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
-      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-
+      await timeTravelToNextCheckpoint();
       await requestAndFulfillRandomWords(world, mockVRF);
       await requestAndFulfillRandomWords(world, mockVRF);
 

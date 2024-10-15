@@ -18,7 +18,7 @@ export const getActionChoiceId = async (tx: ContractTransactionResponse, contrac
 
 export const getActionChoiceIds = async (
   tx: ContractTransactionResponse,
-  contract: BaseContract,
+  contract: BaseContract
 ): Promise<number[]> => {
   return (await getEventLog(tx, contract, "AddActionChoicesV4")).actionChoiceIds;
 };
@@ -35,7 +35,7 @@ export const fulfillRandomWords = async (
   requestId: number,
   contract: BaseContract,
   mockVRF: MockVRF,
-  gasPrice = 0n,
+  gasPrice = 0n
 ): Promise<ContractTransactionResponse> => {
   return mockVRF.fulfill(requestId, await contract.getAddress(), {gasPrice});
 };
@@ -66,7 +66,7 @@ export const NO_DONATION_AMOUNT = 0n;
 export const getEventLog = async (
   tx: ContractTransactionResponse,
   contract: BaseContract,
-  eventName: string,
+  eventName: string
 ): Promise<any> => {
   const receipt = (await tx.wait()) as ContractTransactionReceipt; // Wait for the transaction receipt
   return receipt.logs
@@ -81,7 +81,7 @@ export const getEventLog = async (
 };
 export const timeTravelToNextCheckpoint = async () => {
   const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-  return timeTravel(Math.floor((timestamp / 86400) * 86400 + 86400) - timestamp + 1);
+  return timeTravel(Math.floor(timestamp / 86400) * 86400 + 86400 - timestamp + 1);
 };
 
 export const timeTravel24Hours = async () => {
