@@ -16,7 +16,7 @@ import {parseUnits} from "ethers";
 import {SolcUserConfig} from "hardhat/types";
 
 const defaultConfig: SolcUserConfig = {
-  version: "0.8.26",
+  version: "0.8.28",
   settings: {
     evmVersion: "shanghai",
     optimizer: {

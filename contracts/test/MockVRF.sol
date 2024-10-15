@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.26;
+pragma solidity ^0.8.28;
 
 interface IFulfillRandomWords {
   function fulfillRandomWords(bytes32 requestId, uint[] calldata randomWords) external;

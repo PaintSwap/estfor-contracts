@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.26;
+pragma solidity ^0.8.28;
 
 import {ERC1155UpgradeableSinglePerToken} from "./ozUpgradeable/token/ERC1155/ERC1155UpgradeableSinglePerToken.sol";
 import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
