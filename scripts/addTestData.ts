@@ -4,6 +4,8 @@ import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
 import {createPlayer, isDevNetwork} from "./utils";
+import {parseEther} from "ethers";
+import {timeTravel} from "../test/utils";
 
 export const addTestData = async (
   itemNFT: ItemNFT,
@@ -12,7 +14,7 @@ export const addTestData = async (
   shop: Shop,
   brush: MockBrushToken,
   clans: Clans,
-  bankFactory: BankFactory
+  bankFactory: BankFactory,
 ) => {
   const [owner, alice] = await ethers.getSigners();
 
@@ -38,13 +40,13 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  let gasLimit = await players.estimateGas.startActions(
+  let gasLimit = await players.startActions.estimateGas(
     playerId,
     [queuedActionWoodcutting],
-    EstforTypes.ActionQueueStatus.NONE
+    EstforTypes.ActionQueueStatus.NONE,
   );
   let tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
+    gasLimit: gasLimit + 300000n,
   });
 
   await tx.wait();
@@ -52,7 +54,7 @@ export const addTestData = async (
 
   if (isDevNetwork(network)) {
     console.log("Increase time");
-    await ethers.provider.send("evm_increaseTime", [10000]);
+    await timeTravel(10000);
   } else {
     // Wait 1 minute till you get some
     await new Promise((r) => setTimeout(r, 60 * 1000));
@@ -60,12 +62,12 @@ export const addTestData = async (
 
   // Because of the speed multiplier, gas estimates may not be accurate as other things could be minted by the time the tx is executed,
   // so adding 300k gas to be safe
-  gasLimit = await players.estimateGas.processActions(playerId);
-  tx = await players.processActions(playerId, {gasLimit: gasLimit.add(300000)});
+  gasLimit = await players.processActions.estimateGas(playerId);
+  tx = await players.processActions(playerId, {gasLimit: gasLimit + 300000n});
   await tx.wait();
   console.log("Process woodcutting action");
 
-  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
+  console.log("Number of logs ", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toString());
 
   // Next firemaking
   const queuedActionFiremaking: EstforTypes.QueuedActionInput = {
@@ -79,42 +81,42 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  gasLimit = await players.estimateGas.startActions(
+  gasLimit = await players.startActions.estimateGas(
     playerId,
     [queuedActionFiremaking],
-    EstforTypes.ActionQueueStatus.NONE
+    EstforTypes.ActionQueueStatus.NONE,
   );
   tx = await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
+    gasLimit: gasLimit + 300000n,
   });
   await tx.wait();
   console.log("Start firemaking action");
 
   if (isDevNetwork(network)) {
     console.log("Increase time 2");
-    await ethers.provider.send("evm_increaseTime", [300]);
+    await timeTravel(300);
   }
 
-  gasLimit = await players.estimateGas.processActions(playerId);
+  gasLimit = await players.processActions.estimateGas(playerId);
   tx = await players.processActions(playerId, {
-    gasLimit: gasLimit.add(300000),
+    gasLimit: gasLimit + 300000n,
   });
   await tx.wait();
   console.log("Process actions (firemaking)");
 
   console.log(
     "Number of logs after firemaking ",
-    (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber()
+    (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toString(),
   );
 
   // Start another action
-  gasLimit = await players.estimateGas.startActions(
+  gasLimit = await players.startActions.estimateGas(
     playerId,
     [queuedActionWoodcutting],
-    EstforTypes.ActionQueueStatus.NONE
+    EstforTypes.ActionQueueStatus.NONE,
   );
   tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
+    gasLimit: gasLimit + 300000n,
   });
   await tx.wait();
   console.log("Start an unprocessed action");
@@ -122,6 +124,7 @@ export const addTestData = async (
   if (isDevNetwork(network)) {
     console.log("Increase time 3");
     await ethers.provider.send("evm_increaseTime", [1000000]);
+    await ethers.provider.send("evm_mine", []);
   }
 
   tx = await itemNFT.testMint(owner.address, EstforConstants.BRONZE_HELMET, 1);
@@ -140,27 +143,27 @@ export const addTestData = async (
     leftHandEquipmentTokenId: EstforConstants.NONE,
   };
 
-  gasLimit = await players.estimateGas.startActions(playerId, [queuedActionCombat], EstforTypes.ActionQueueStatus.NONE);
+  gasLimit = await players.startActions.estimateGas(playerId, [queuedActionCombat], EstforTypes.ActionQueueStatus.NONE);
   tx = await players.startActions(playerId, [queuedActionCombat], EstforTypes.ActionQueueStatus.NONE, {
-    gasLimit: gasLimit.add(300000),
+    gasLimit: gasLimit + 300000n,
   });
   await tx.wait();
   console.log("Start a combat action");
 
-  if (network.chainId == 31337) {
+  if (network.chainId == 31337n) {
     console.log("Increase time 4");
-    await ethers.provider.send("evm_increaseTime", [10]);
+    await timeTravel(10);
   }
 
-  gasLimit = await players.estimateGas.processActions(playerId);
+  gasLimit = await players.processActions.estimateGas(playerId);
   tx = await players.processActions(playerId, {
-    gasLimit: gasLimit.add(300000),
+    gasLimit: gasLimit + 300000n,
   });
   await tx.wait();
   console.log("Process actions (melee combat)");
 
   // Buy from shop
-  tx = await brush.approve(shop.address, ethers.utils.parseEther("100"));
+  tx = await brush.approve(await shop.getAddress(), parseEther("100"));
   await tx.wait();
   console.log("Approve brush");
 
@@ -169,7 +172,7 @@ export const addTestData = async (
   console.log("Buy from shop");
 
   // Transfer some brush to the pool so we can sell something
-  tx = await brush.transfer(shop.address, "100000");
+  tx = await brush.transfer(await shop.getAddress(), "100000");
   await tx.wait();
   console.log("Transfer some brush");
 
@@ -178,7 +181,7 @@ export const addTestData = async (
   tx = await itemNFT.testMints(
     owner.address,
     [EstforConstants.MAGIC_FIRE_STARTER, EstforConstants.TITANIUM_ARMOR],
-    [minItemQuantityBeforeSellsAllowed, 1]
+    [minItemQuantityBeforeSellsAllowed, 1],
   );
   await tx.wait();
   console.log("Mint enough magic fire starters that they can be sold");
@@ -191,6 +194,7 @@ export const addTestData = async (
     } catch {
       console.log("Increase time 5");
       await ethers.provider.send("evm_increaseTime", [86400 * 2]);
+      await ethers.provider.send("evm_mine", []);
       tx = await shop.sell(EstforConstants.MAGIC_FIRE_STARTER, 1, 1);
       await tx.wait();
       console.log("Sell");
@@ -213,17 +217,18 @@ export const addTestData = async (
     await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStatus.NONE);
     console.log(
       "Number of logs before quest",
-      (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber()
+      (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toString(),
     );
     await ethers.provider.send("evm_increaseTime", [1000]);
+    await ethers.provider.send("evm_mine", []);
     await players.deactivateQuest(playerId); // Deactivate the quest so we can activate it again
-    console.log("Number of logs after quest", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toNumber());
+    console.log("Number of logs after quest", (await itemNFT.balanceOf(owner.address, EstforConstants.LOG)).toString());
     await players.activateQuest(playerId, QUEST_BURN_BAN); // Deactivate the quest so we can activate it again
     console.log("Make progress on the quest");
   }
 
   // Create a clan
-  await brush.approve(clans.address, ethers.utils.parseEther("1000"));
+  await brush.approve(await clans.getAddress(), parseEther("1000"));
 
   const imageId = 2;
   const tierId = 1;
@@ -234,14 +239,14 @@ export const addTestData = async (
     "fantomfoundation",
     "fantomFDN",
     imageId,
-    tierId
+    tierId,
   );
   await tx.wait();
   console.log("Create clan");
 
   const clanId = 1;
-  const clanBankAddress = ethers.utils.getContractAddress({
-    from: bankFactory.address,
+  const clanBankAddress = ethers.getCreateAddress({
+    from: await bankFactory.getAddress(),
     nonce: clanId,
   });
   // Send some item to the bank

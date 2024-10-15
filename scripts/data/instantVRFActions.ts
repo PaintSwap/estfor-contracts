@@ -1,12 +1,15 @@
-import {ethers} from "ethers";
+import {AbiCoder} from "ethers"; // ethers v6
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {InstantVRFActionInput, InstantVRFActionType} from "@paintswap/estfor-definitions/types";
+
+const abiCoder = new AbiCoder();
+
 export const allInstantVRFActions: InstantVRFActionInput[] = [
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_HELMET,
     inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_HELMET],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -17,7 +20,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ORICHALCUM_HELMET_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.ORICHALCUM_HELMET_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -26,7 +29,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_ARMOR,
     inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_ARMOR],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -37,7 +40,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ORICHALCUM_ARMOR_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.ORICHALCUM_ARMOR_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -46,7 +49,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_TASSETS,
     inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_TASSETS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -57,7 +60,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ORICHALCUM_TASSETS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.ORICHALCUM_TASSETS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -66,7 +69,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_GAUNTLETS,
     inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -77,7 +80,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ORICHALCUM_GAUNTLETS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.ORICHALCUM_GAUNTLETS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -86,7 +89,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_BOOTS,
     inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_BOOTS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -97,7 +100,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ORICHALCUM_BOOTS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.ORICHALCUM_BOOTS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -106,7 +109,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_SHIELD,
     inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_SHIELD],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -117,7 +120,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ORICHALCUM_SHIELD_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.ORICHALCUM_SHIELD_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -126,7 +129,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_DRAGONSTONE_AMULET,
     inputTokenIds: [EstforConstants.INFUSED_DRAGONSTONE_AMULET],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -137,7 +140,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.DRAGONSTONE_AMULET_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.DRAGONSTONE_AMULET_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -146,7 +149,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_HAT,
     inputTokenIds: [EstforConstants.INFUSED_MASTER_HAT],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -157,7 +160,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MASTER_HAT_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.MASTER_HAT_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -166,7 +169,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BODY,
     inputTokenIds: [EstforConstants.INFUSED_MASTER_BODY],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -177,7 +180,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MASTER_BODY_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.MASTER_BODY_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -186,7 +189,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_TROUSERS,
     inputTokenIds: [EstforConstants.INFUSED_MASTER_TROUSERS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -197,7 +200,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MASTER_TROUSERS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.MASTER_TROUSERS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -206,7 +209,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BRACERS,
     inputTokenIds: [EstforConstants.INFUSED_MASTER_BRACERS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -217,7 +220,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MASTER_BRACERS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.MASTER_BRACERS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -226,7 +229,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BOOTS,
     inputTokenIds: [EstforConstants.INFUSED_MASTER_BOOTS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -237,7 +240,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.MASTER_BOOTS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.MASTER_BOOTS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -246,7 +249,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_SWORD,
     inputTokenIds: [EstforConstants.INFUSED_ORICHALCUM_SWORD],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -257,7 +260,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ORICHALCUM_SWORD_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.ORICHALCUM_SWORD_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -266,7 +269,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_DRAGONSTONE_STAFF,
     inputTokenIds: [EstforConstants.INFUSED_DRAGONSTONE_STAFF],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -277,7 +280,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.DRAGONSTONE_STAFF_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.DRAGONSTONE_STAFF_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -286,7 +289,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_GODLY_BOW,
     inputTokenIds: [EstforConstants.INFUSED_GODLY_BOW],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -297,7 +300,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.GODLY_BOW_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.GODLY_BOW_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -306,7 +309,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_COWL,
     inputTokenIds: [EstforConstants.INFUSED_SCORCHING_COWL],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -317,7 +320,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.SCORCHING_COWL_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.SCORCHING_COWL_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -326,7 +329,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BODY,
     inputTokenIds: [EstforConstants.INFUSED_SCORCHING_BODY],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -337,7 +340,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.SCORCHING_BODY_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.SCORCHING_BODY_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -346,7 +349,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_CHAPS,
     inputTokenIds: [EstforConstants.INFUSED_SCORCHING_CHAPS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -357,7 +360,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.SCORCHING_CHAPS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.SCORCHING_CHAPS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -366,7 +369,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BRACERS,
     inputTokenIds: [EstforConstants.INFUSED_SCORCHING_BRACERS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -377,7 +380,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.SCORCHING_BRACERS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.SCORCHING_BRACERS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -386,7 +389,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BOOTS,
     inputTokenIds: [EstforConstants.INFUSED_SCORCHING_BOOTS],
     inputAmounts: [1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -397,7 +400,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.SCORCHING_BOOTS_4, chance: 3932, amount: 1},
           {itemTokenId: EstforConstants.SCORCHING_BOOTS_5, chance: 655, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.FORGING,
@@ -406,7 +409,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_1,
     inputTokenIds: [EstforConstants.FISHING_CHEST_1, EstforConstants.AQUA_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -421,7 +424,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 328, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -430,7 +433,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_2,
     inputTokenIds: [EstforConstants.FISHING_CHEST_2, EstforConstants.AQUA_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -445,7 +448,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT, chance: 328, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -454,7 +457,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_3,
     inputTokenIds: [EstforConstants.FISHING_CHEST_3, EstforConstants.AQUA_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -470,7 +473,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -479,7 +482,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_4,
     inputTokenIds: [EstforConstants.FISHING_CHEST_4, EstforConstants.AQUA_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -495,7 +498,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
           {itemTokenId: EstforConstants.ETCHED_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -504,7 +507,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_5,
     inputTokenIds: [EstforConstants.FISHING_CHEST_5, EstforConstants.AQUA_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -520,7 +523,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
           {itemTokenId: EstforConstants.ETCHED_RING, chance: 131, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -529,7 +532,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_1,
     inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_1, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -543,7 +546,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 328, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -552,7 +555,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_2,
     inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_2, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -567,7 +570,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT, chance: 328, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -576,7 +579,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_3,
     inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_3, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -592,7 +595,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -601,7 +604,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_4,
     inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_4, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -617,7 +620,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
           {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -626,7 +629,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_5,
     inputTokenIds: [EstforConstants.WOODCUTTING_CHEST_5, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -642,7 +645,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
           {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 131, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -651,7 +654,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_1,
     inputTokenIds: [EstforConstants.MINING_CHEST_1, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -666,7 +669,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 328, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -675,7 +678,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_2,
     inputTokenIds: [EstforConstants.MINING_CHEST_2, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -690,7 +693,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 655, amount: 1},
           {itemTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT, chance: 328, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -699,7 +702,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_3,
     inputTokenIds: [EstforConstants.MINING_CHEST_3, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -715,7 +718,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.PANGSTEN_RING, chance: 721, amount: 1},
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -724,7 +727,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_4,
     inputTokenIds: [EstforConstants.MINING_CHEST_4, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -740,7 +743,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 131, amount: 1},
           {itemTokenId: EstforConstants.OCULITE_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -749,7 +752,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_5,
     inputTokenIds: [EstforConstants.MINING_CHEST_5, EstforConstants.NATURE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -765,7 +768,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.CANVITE_RING, chance: 459, amount: 1},
           {itemTokenId: EstforConstants.OCULITE_RING, chance: 131, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -774,7 +777,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_DRAGON_CHEST,
     inputTokenIds: [EstforConstants.DRAGON_CHEST, EstforConstants.DRAGON_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -790,7 +793,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
           {itemTokenId: EstforConstants.NOVIAN_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -799,7 +802,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_BONE_CHEST,
     inputTokenIds: [EstforConstants.BONE_CHEST, EstforConstants.BONE_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -815,7 +818,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.COIN, chance: 2621, amount: 1},
           {itemTokenId: EstforConstants.NOVIAN_RING, chance: 66, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -824,7 +827,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_ANNIV1_CHEST,
     inputTokenIds: [EstforConstants.ANNIV1_CHEST, EstforConstants.ANNIV1_KEY],
     inputAmounts: [1, 1],
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
       [
         0,
@@ -840,7 +843,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.ANNIV1_EGG_TIER2, chance: 3277, amount: 1},
           {itemTokenId: EstforConstants.ANNIV1_EGG_TIER3, chance: 1311, amount: 1},
         ],
-      ]
+      ],
     ),
     isFullModeOnly: true,
     actionType: InstantVRFActionType.GENERIC,
@@ -850,12 +853,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.EGG_TIER1],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER1,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER1, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER1},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -864,12 +867,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.EGG_TIER2],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER2,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER2, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER2},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -878,12 +881,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.EGG_TIER3],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER3,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER3, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER3},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -892,12 +895,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.EGG_TIER4],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER4,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER4, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER4},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -906,12 +909,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.EGG_TIER5],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_EGG_TIER5,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER5, rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER5},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -920,9 +923,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER1],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER1,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER1, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER1}]
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER1, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER1}],
     ),
     isFullModeOnly: true,
   },
@@ -931,9 +934,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER2],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER2,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER2, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER2}]
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER2, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER2}],
     ),
     isFullModeOnly: true,
   },
@@ -942,9 +945,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER3],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER3,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER3, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER3}]
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER3, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER3}],
     ),
     isFullModeOnly: true,
   },
@@ -953,9 +956,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER4],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER4,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER4, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER4}]
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER4, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER4}],
     ),
     isFullModeOnly: true,
   },
@@ -964,9 +967,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER5],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER5,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER5, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER5}]
+      [0, {rewardBasePetIdMin: EstforConstants.OG_MIN_TIER5, rewardBasePetIdMax: EstforConstants.OG_MAX_TIER5}],
     ),
     isFullModeOnly: true,
   },
@@ -975,9 +978,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER1],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER1,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER1, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER1}]
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER1, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER1}],
     ),
     isFullModeOnly: true,
   },
@@ -986,9 +989,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER2],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER2,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER2, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER2}]
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER2, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER2}],
     ),
     isFullModeOnly: true,
   },
@@ -997,9 +1000,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER3],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER3,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER3, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER3}]
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER3, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER3}],
     ),
     isFullModeOnly: true,
   },
@@ -1008,9 +1011,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER4],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER4,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER4, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER4}]
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER4, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER4}],
     ),
     isFullModeOnly: true,
   },
@@ -1019,9 +1022,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER5],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER5,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER5}]
+      [0, {rewardBasePetIdMin: EstforConstants.ONEKIN_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ONEKIN_MAX_TIER5}],
     ),
     isFullModeOnly: true,
   },
@@ -1030,9 +1033,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER1],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER1,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER1, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER1}]
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER1, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER1}],
     ),
     isFullModeOnly: true,
   },
@@ -1041,9 +1044,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER2],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER2,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER2, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER2}]
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER2, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER2}],
     ),
     isFullModeOnly: true,
   },
@@ -1052,9 +1055,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER3],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER3,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER3, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER3}]
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER3, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER3}],
     ),
     isFullModeOnly: true,
   },
@@ -1063,9 +1066,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER4],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER4,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER4, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER4}]
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER4, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER4}],
     ),
     isFullModeOnly: true,
   },
@@ -1074,9 +1077,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER5],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER5,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER5, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER5}]
+      [0, {rewardBasePetIdMin: EstforConstants.FROST_MIN_TIER5, rewardBasePetIdMax: EstforConstants.FROST_MAX_TIER5}],
     ),
     isFullModeOnly: true,
   },
@@ -1085,12 +1088,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER1],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER1,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER1, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER1},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -1099,12 +1102,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER2],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER2,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER2, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER2},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -1113,12 +1116,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER3],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER3,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER3, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER3},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -1127,12 +1130,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER4],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER4,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER4, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER4},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -1141,12 +1144,12 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER5],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER5,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [
         0,
         {rewardBasePetIdMin: EstforConstants.CRYSTAL_MIN_TIER5, rewardBasePetIdMax: EstforConstants.CRYSTAL_MAX_TIER5},
-      ]
+      ],
     ),
     isFullModeOnly: true,
   },
@@ -1155,9 +1158,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER1],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER1,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER1, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER1}]
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER1, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER1}],
     ),
     isFullModeOnly: true,
   },
@@ -1166,9 +1169,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER2],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER2,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER2, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER2}]
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER2, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER2}],
     ),
     isFullModeOnly: true,
   },
@@ -1177,9 +1180,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER3],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER3,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER3, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER3}]
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER3, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER3}],
     ),
     isFullModeOnly: true,
   },
@@ -1188,9 +1191,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER4],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER4,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER4, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER4}]
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER4, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER4}],
     ),
     isFullModeOnly: true,
   },
@@ -1199,9 +1202,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER5],
     inputAmounts: [1],
     actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV1_EGG_TIER5,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER5}]
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER5}],
     ),
     isFullModeOnly: true,
   },

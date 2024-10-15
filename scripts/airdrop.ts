@@ -3,10 +3,11 @@ import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {addresses, quantities} from "./data/alphaBetaTesters";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ItemNFT} from "../typechain-types";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Airdrop some items: ${owner.address} on chain: ${await owner.getChainId()}`);
+  console.log(`Airdrop some items: ${owner.address} on chain: ${await getChainId(owner)}`);
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
 

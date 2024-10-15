@@ -1,54 +1,43 @@
 import {EstforTypes} from "@paintswap/estfor-definitions";
-import {BaseContract, ContractTransaction, ethers} from "ethers";
+import {BaseContract, Block, ContractTransactionReceipt, ContractTransactionResponse} from "ethers";
 import {MockVRF, World} from "../typechain-types";
 import {expect} from "chai";
+import {ethers} from "hardhat";
 
-export const getRequestId = async (tx: ContractTransaction): Promise<number> => {
-  const receipt = await tx.wait();
-  const event = receipt?.events?.filter((x) => {
-    return x.event == "RequestSent";
-  })[0].args;
-  return event?.requestId.toNumber();
+export const getRequestId = async (tx: ContractTransactionResponse, contract: BaseContract): Promise<number> => {
+  return Number((await getEventLog(tx, contract, "RequestSent")).requestId);
 };
 
-export const getActionId = async (tx: ContractTransaction): Promise<number> => {
-  const receipt = await tx.wait();
-  const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionsV2";
-  })[0].args;
-  return event?.actions[0].actionId;
+export const getActionId = async (tx: ContractTransactionResponse, contract: BaseContract): Promise<number> => {
+  return Number((await getEventLog(tx, contract, "AddActionsV2")).actions[0].actionId);
 };
 
-export const getActionChoiceId = async (tx: ContractTransaction): Promise<number> => {
-  const receipt = await tx.wait();
-  const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionChoicesV4";
-  })[0].args;
-  return event?.actionChoiceIds[0];
+export const getActionChoiceId = async (tx: ContractTransactionResponse, contract: BaseContract): Promise<number> => {
+  return Number((await getEventLog(tx, contract, "AddActionChoicesV4")).actionChoiceIds[0]);
 };
 
-export const getActionChoiceIds = async (tx: ContractTransaction): Promise<number[]> => {
-  const receipt = await tx.wait();
-  const event = receipt?.events?.filter((x) => {
-    return x.event == "AddActionChoicesV4";
-  })[0].args;
-  return event?.actionChoiceIds;
+export const getActionChoiceIds = async (
+  tx: ContractTransactionResponse,
+  contract: BaseContract,
+): Promise<number[]> => {
+  return (await getEventLog(tx, contract, "AddActionChoicesV4")).actionChoiceIds;
 };
 
 export const requestAndFulfillRandomWords = async (world: World, mockVRF: MockVRF) => {
   const tx = await world.requestRandomWords();
-  let requestId = await getRequestId(tx);
+  let requestId = await getRequestId(tx, world);
+  expect(requestId).to.not.eq(null);
   expect(requestId).to.not.eq(0);
-  await fulfillRandomWords(requestId, world, mockVRF);
+  await fulfillRandomWords(requestId as number, world, mockVRF);
 };
 
 export const fulfillRandomWords = async (
   requestId: number,
   contract: BaseContract,
   mockVRF: MockVRF,
-  gasPrice = ethers.BigNumber.from(0)
-): Promise<ContractTransaction> => {
-  return mockVRF.fulfill(requestId, contract.address, {gasPrice});
+  gasPrice = 0n,
+): Promise<ContractTransactionResponse> => {
+  return mockVRF.fulfill(requestId, await contract.getAddress(), {gasPrice});
 };
 
 export const bronzeHelmetStats: EstforTypes.CombatStats = {
@@ -62,13 +51,46 @@ export const bronzeHelmetStats: EstforTypes.CombatStats = {
 };
 
 // Should match the PlayersBase contract constants
-export const MAX_TIME = 86400; // 1 day
-export const START_XP = 374;
+export const MAX_TIME = 86400n; // 1 day
+export const START_XP = 374n;
 // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
-export const MAX_SUCCESS_PERCENT_CHANCE = 90;
+export const MAX_SUCCESS_PERCENT_CHANCE = 90n;
 export const MAX_UNIQUE_TICKETS = 64; // This also affects passive action max days
 
 export const SPAWN_MUL = 1000;
 export const RATE_MUL = 1000;
 export const GUAR_MUL = 10;
-export const NO_DONATION_AMOUNT = 0;
+export const NO_DONATION_AMOUNT = 0n;
+
+// Helper function to retrieve the event and return the desired property (e.g., actionId)
+export const getEventLog = async (
+  tx: ContractTransactionResponse,
+  contract: BaseContract,
+  eventName: string,
+): Promise<any> => {
+  const receipt = (await tx.wait()) as ContractTransactionReceipt; // Wait for the transaction receipt
+  return receipt.logs
+    .map((log) => {
+      try {
+        return contract.interface.parseLog(log); // Parse the log using the contract ABI
+      } catch (error) {
+        return null; // Ignore logs that don't match the contract ABI
+      }
+    })
+    .find((parsedLog) => parsedLog && parsedLog.name === eventName)?.args; // Filter for the specific event
+};
+export const timeTravelToNextCheckpoint = async () => {
+  const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
+  await ethers.provider.send("evm_increaseTime", [Math.floor((timestamp / 86400) * 86400 + 86400) - timestamp + 1]);
+  await ethers.provider.send("evm_mine", []);
+};
+
+export const timeTravel24Hours = async () => {
+  await ethers.provider.send("evm_increaseTime", [86400]);
+  await ethers.provider.send("evm_mine", []);
+};
+
+export const timeTravel = async (seconds: number) => {
+  await ethers.provider.send("evm_increaseTime", [seconds]);
+  await ethers.provider.send("evm_mine", []);
+};

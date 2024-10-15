@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {BattleResult, clanFixture} from "./utils";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
-import {BigNumber, ethers} from "ethers";
+
 import {createPlayer} from "../../scripts/utils";
 import {getXPFromLevel} from "../Players/utils";
 
@@ -20,14 +20,14 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
 
     let res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.true;
 
@@ -35,14 +35,14 @@ describe("ClanBattleLibrary", function () {
     randomWordB = 0;
 
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.true;
 
@@ -50,14 +50,14 @@ describe("ClanBattleLibrary", function () {
     randomWordB = 1;
 
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.false;
   });
@@ -76,33 +76,33 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
 
     await createPlayer(playerNFT, avatarId, owner, "New name", true);
-    await players.testModifyXP(owner.address, playerId.add(1), skills[0], getXPFromLevel(20), true);
-    const clanMembersB = [playerId.add(1)];
+    await players.testModifyXP(owner.address, playerId + 1n, skills[0], getXPFromLevel(20), true);
+    const clanMembersB = [playerId + 1n];
     let res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.false;
 
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     const upgrade = true;
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", upgrade);
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.true;
   });
@@ -120,31 +120,31 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
 
     await createPlayer(playerNFT, avatarId, owner, "New name", true);
-    await players.testModifyXP(owner.address, playerId.add(1), skills[0], getXPFromLevel(20), true);
-    const clanMembersB = [playerId.add(1)];
+    await players.testModifyXP(owner.address, playerId + 1n, skills[0], getXPFromLevel(20), true);
+    const clanMembersB = [playerId + 1n];
     let res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.false;
 
     extraRollsA = 1;
 
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.true;
   });
@@ -153,7 +153,7 @@ describe("ClanBattleLibrary", function () {
     const {alice, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
 
     let clanMembersA = [playerId];
-    let clanMembersB: BigNumber[] = [];
+    let clanMembersB: bigint[] = [];
     const skills = [Skill.FISHING];
     const randomWordA = 1;
     const randomWordB = 3;
@@ -161,14 +161,14 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
     let res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
 
     expect(res.didAWin).to.be.true;
@@ -177,14 +177,14 @@ describe("ClanBattleLibrary", function () {
     clanMembersA = [];
     clanMembersB = [playerId];
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.false;
     expect(res.battleResults[0]).to.eq(BattleResult.LOSE);
@@ -194,7 +194,7 @@ describe("ClanBattleLibrary", function () {
     const {alice, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
 
     let clanMembersA = [playerId];
-    let clanMembersB = [ethers.BigNumber.from(0)];
+    let clanMembersB = [0n];
     const skills = [Skill.FISHING];
     const randomWordA = 1;
     const randomWordB = 3;
@@ -202,29 +202,29 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
     let res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
 
     expect(res.didAWin).to.be.true;
 
-    clanMembersA = [ethers.BigNumber.from(0)];
+    clanMembersA = [0n];
     clanMembersB = [playerId];
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.false;
   });
@@ -242,14 +242,14 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(alice.address, playerId, skills[0], getXPFromLevel(20), true); // Get 2 rolls each
 
     let res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.true;
 
@@ -260,14 +260,14 @@ describe("ClanBattleLibrary", function () {
 
     clanMembersA = [playerId, newPlayerId];
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.true;
 
@@ -277,14 +277,14 @@ describe("ClanBattleLibrary", function () {
     clanMembersA = [playerId, playerId];
     clanMembersB = [playerId, newPlayerId];
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.false;
   });
@@ -305,28 +305,28 @@ describe("ClanBattleLibrary", function () {
     const extraRollsA = 0;
     const extraRollsB = 0;
     let res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.false;
 
     await players.testModifyXP(alice.address, playerId, skills[0], getXPFromLevel(40), true); // Get 3 rolls
 
     res = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
     expect(res.didAWin).to.be.true;
   });
@@ -349,14 +349,14 @@ describe("ClanBattleLibrary", function () {
       const randomWordB = 1;
 
       const res = await clanBattleLibrary.doBattleLib(
-        players.address,
+        await players.getAddress(),
         clanMembersA,
         clanMembersB,
         skills,
         randomWordA,
         randomWordB,
         extraRollsA,
-        extraRollsB
+        extraRollsB,
       );
 
       if (res.didAWin) {
@@ -398,14 +398,14 @@ describe("ClanBattleLibrary", function () {
 
     // Initial result
     const initialWinner = await clanBattleLibrary.doBattleLib(
-      players.address,
+      await players.getAddress(),
       clanMembersA,
       clanMembersB,
       skills,
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB
+      extraRollsB,
     );
 
     let success = false;
@@ -413,14 +413,14 @@ describe("ClanBattleLibrary", function () {
       const randomWordA = i;
       const randomWordB = 1;
       const winner = await clanBattleLibrary.doBattleLib(
-        players.address,
+        await players.getAddress(),
         clanMembersA,
         clanMembersB,
         skills,
         randomWordA,
         randomWordB,
         extraRollsA,
-        extraRollsB
+        extraRollsB,
       );
 
       if (initialWinner != winner) {

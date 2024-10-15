@@ -3,10 +3,11 @@ import {allItems} from "./data/items";
 import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ItemNFT} from "../typechain-types";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Edit items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
   /*

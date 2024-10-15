@@ -25,6 +25,7 @@ import {avatarIds, avatarInfos} from "./data/avatars";
 import {allItems} from "./data/items";
 import {ShopItem, allShopItems} from "./data/shopItems";
 import {QuestInput, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
+import {parseEther} from "ethers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -40,7 +41,7 @@ async function main() {
   /* Overhaul upgrade #1
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   const playersLibrary = await PlayersLibrary.deploy();
-  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
+  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   let players = Players.attach(PLAYERS_ADDRESS);
@@ -49,18 +50,18 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
   })) as Players;
-  await players.deployed();
+  await players.waitForDeployment();
   console.log("Deployed Players");
 
   // Update player impls
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address);
+    await deployPlayerImplementations((await playersLibrary.getAddress()));
   let tx = await players.setImpls(
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
-    playersImplRewards.address,
-    playersImplMisc.address,
-    playersImplMisc1.address
+    (await playersImplQueueActions.getAddress()),
+    (await playersImplProcessActions.getAddress()),
+    (await playersImplRewards.getAddress()),
+    (await playersImplMisc.getAddress()),
+    (await playersImplMisc1.getAddress())
   );
   await tx.wait();
   console.log("setImpls");
@@ -77,16 +78,16 @@ async function main() {
   // Update daily reward pools
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
   const worldLibrary = await WorldLibrary.deploy();
-  console.log(`worldLibrary = "${worldLibrary.address.toLowerCase()}"`);
+  console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
 
-  const World = (await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}})).connect(
+  const World = (await ethers.getContractFactory("World", {libraries: {WorldLibrary: (await worldLibrary.getAddress())}})).connect(
     owner
   );
   const world = (await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   })) as World;
-  await world.deployed();
+  await world.waitForDeployment();
   console.log("world upgraded");
 
   await setDailyAndWeeklyRewards(world);
@@ -95,26 +96,26 @@ async function main() {
   // ItemNFT
   const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
   const itemNFTLibrary = await ItemNFTLibrary.deploy();
-  await itemNFTLibrary.deployed();
-  console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
+  await itemNFTLibrary.waitForDeployment();
+  console.log(`itemNFTLibrary = "${(await itemNFTLibrary.getAddress()).toLowerCase()}"`);
 
   const ItemNFT = (
-    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
+    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: (await itemNFTLibrary.getAddress())}})
   ).connect(owner);
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
   });
-  await itemNFT.deployed();
+  await itemNFT.waitForDeployment();
   console.log(`itemNFT deployed`);
   */
 
   /* Overhaul upgrade #2
   const estforLibrary = await ethers.deployContract("EstforLibrary");
-  console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
+  console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
 
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
-  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
+  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
   const Players = (
     await ethers.getContractFactory("Players")
@@ -124,25 +125,25 @@ async function main() {
     unsafeAllow: ["delegatecall", "external-library-linking"],
     timeout,
   })) as Players;
-  await players.deployed();
+  await players.waitForDeployment();
   console.log("Deployed Players");
 
   // Update player impls
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address);
+    await deployPlayerImplementations((await playersLibrary.getAddress()));
   let tx = await players.setImpls(
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
-    playersImplRewards.address,
-    playersImplMisc.address,
-    playersImplMisc1.address
+    (await playersImplQueueActions.getAddress()),
+    (await playersImplProcessActions.getAddress()),
+    (await playersImplRewards.getAddress()),
+    (await playersImplMisc.getAddress()),
+    (await playersImplMisc1.getAddress())
   );
   await tx.wait();
   console.log("setImpls");
 
   const Clans = (
     await ethers.getContractFactory("Clans", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: (await estforLibrary.getAddress())},
     })
   ).connect(owner);
   const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
@@ -150,8 +151,8 @@ async function main() {
     unsafeAllow: ["external-library-linking"],
     timeout,
   });
-  await clans.deployed();
-  console.log(`clans = "${clans.address.toLowerCase()}"`);
+  await clans.waitForDeployment();
+  console.log(`clans = "${await clans.getAddress().toLowerCase()}"`);
 
   const psMarketplaceWhitelist = "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD";
   tx = await clans.setPaintSwapMarketplaceWhitelist(psMarketplaceWhitelist);
@@ -160,7 +161,7 @@ async function main() {
 
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: (await estforLibrary.getAddress())},
     })
   ).connect(owner);
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
@@ -168,13 +169,13 @@ async function main() {
     unsafeAllow: ["external-library-linking"],
     timeout,
   });
-  await playerNFT.deployed();
+  await playerNFT.waitForDeployment();
   console.log("Deployed");
-  tx = await playerNFT.setUpgradeCost(ethers.utils.parseEther("1208924")); // To prevent anyone doing it early
+  tx = await playerNFT.setUpgradeCost(parseEther("1208924")); // To prevent anyone doing it early
   await tx.wait();
 
   // Check a clan leader
-  const clanId = (await clans.nextClanId()).add(1);
+  const clanId = (await clans.nextClanId())+ 1n;
   console.log("Before clan rank", (await clans.playerInfo(2258)).rank);
   for (let i = ethers.BigNumber.from(1); i.lt(clanId); i = i.add(100)) {
     const tx = await clans.tempUpdateClanRankLeaders(i, i.add(99));
@@ -222,26 +223,26 @@ async function main() {
   // Overhaul upgrade #3
   const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
-  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
+  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
     timeout,
-  })) as Players;
-  await players.deployed();
+  })) as unknown as Players;
+
   console.log("Deployed Players");
 
   // Update player impls
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address);
+    await deployPlayerImplementations(await playersLibrary.getAddress());
   let tx = await players.setImpls(
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
-    playersImplRewards.address,
-    playersImplMisc.address,
-    playersImplMisc1.address
+    await playersImplQueueActions.getAddress(),
+    await playersImplProcessActions.getAddress(),
+    await playersImplRewards.getAddress(),
+    await playersImplMisc.getAddress(),
+    await playersImplMisc1.getAddress(),
   );
   await tx.wait();
   console.log("setImpls");
@@ -249,14 +250,14 @@ async function main() {
   // ItemNFT
   const itemNFTLibrary = await ethers.getContractAt("ItemNFTLibrary", ITEM_NFT_LIBRARY_ADDRESS);
   const ItemNFT = (
-    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
+    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}})
   ).connect(owner);
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
   });
-  await itemNFT.deployed();
+  await itemNFT.waitForDeployment();
   console.log("itemNFT deployed");
 
   const items = allItems.filter(
@@ -266,7 +267,7 @@ async function main() {
       item.tokenId === EstforConstants.MEDIUM_ELIXIUM ||
       item.tokenId === EstforConstants.LARGE_ELIXIUM ||
       item.tokenId === EstforConstants.EXTRA_LARGE_ELIXIUM ||
-      item.tokenId === EstforConstants.FLUX
+      item.tokenId === EstforConstants.FLUX,
   );
 
   if (items.length !== 6) {
@@ -280,7 +281,7 @@ async function main() {
   // Update player upgrade cost
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     })
   ).connect(owner);
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
@@ -289,8 +290,8 @@ async function main() {
     unsafeSkipStorageCheck: true,
     timeout,
   });
-  await playerNFT.deployed();
-  tx = await playerNFT.setUpgradeCost(ethers.utils.parseEther("1400")); // 30% discount
+  await playerNFT.waitForDeployment();
+  tx = await playerNFT.setUpgradeCost(parseEther("1400")); // 30% discount
   await tx.wait();
 
   const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
@@ -298,18 +299,18 @@ async function main() {
   await tx.wait();
 
   const worldLibrary = await ethers.deployContract("WorldLibrary");
-  console.log(`worldLibrary = "${worldLibrary.address.toLowerCase()}"`);
+  console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
 
-  const World = (await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}})).connect(
-    owner
-  );
+  const World = (
+    await ethers.getContractFactory("World", {libraries: {WorldLibrary: await worldLibrary.getAddress()}})
+  ).connect(owner);
   const world = (await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     unsafeSkipStorageCheck: true,
     timeout,
-  })) as World;
-  await world.deployed();
+  })) as unknown as World;
+
   console.log("world upgraded");
 
   // Add new forging action
@@ -329,7 +330,7 @@ async function main() {
       action.actionId === EstforConstants.ACTION_COMBAT_ROCKHAWK ||
       action.actionId === EstforConstants.ACTION_COMBAT_QRAKUR ||
       action.actionId === EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON ||
-      action.actionId === EstforConstants.ACTION_COMBAT_ERKAD
+      action.actionId === EstforConstants.ACTION_COMBAT_ERKAD,
   );
 
   tx = await world.editActions(actions);
@@ -379,7 +380,7 @@ async function main() {
     .addBulkActionChoices(
       [alchemyActionId, forgingActionId],
       [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
-      [newActionChoicesAlchemy, allActionChoicesForging]
+      [newActionChoicesAlchemy, allActionChoicesForging],
     );
   await tx.wait();
 
@@ -404,7 +405,7 @@ async function main() {
     timeout,
     unsafeSkipStorageCheck: true,
   });
-  await quests.deployed();
+  await quests.waitForDeployment();
   console.log("Deployed quests");
 
   // Add the new quest
@@ -418,18 +419,18 @@ async function main() {
 
   // verify all the contracts
   await verifyContracts([
-    players.address,
-    playerNFT.address,
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
-    playersImplRewards.address,
-    playersImplMisc.address,
-    playersImplMisc1.address,
-    estforLibrary.address,
-    playersLibrary.address,
-    world.address,
-    worldLibrary.address,
-    instantActions.address,
+    await players.getAddress(),
+    await playerNFT.getAddress(),
+    await playersImplQueueActions.getAddress(),
+    await playersImplProcessActions.getAddress(),
+    await playersImplRewards.getAddress(),
+    await playersImplMisc.getAddress(),
+    await playersImplMisc1.getAddress(),
+    await estforLibrary.getAddress(),
+    await playersLibrary.getAddress(),
+    await world.getAddress(),
+    await worldLibrary.getAddress(),
+    await instantActions.getAddress(),
   ]);
 }
 

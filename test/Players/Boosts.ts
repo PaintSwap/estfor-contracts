@@ -1,13 +1,15 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {getStorageAt, loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
-import {BigNumber} from "ethers";
 import {ethers} from "hardhat";
 import {GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, getActionId, requestAndFulfillRandomWords} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking, setupBasicAlchemy} from "./utils";
 import {defaultActionInfo, noAttire} from "@paintswap/estfor-definitions/types";
 import {createPlayer} from "../../scripts/utils";
+import {Block, keccak256, parseEther, zeroPadBytes, zeroPadValue} from "ethers";
+
+const abiCoder = new ethers.AbiCoder();
 
 describe("Boosts", function () {
   this.retries(3);
@@ -34,7 +36,7 @@ describe("Boosts", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -44,18 +46,19 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-      queuedAction.timespan + (boostDuration * boostValue) / 100
+      queuedAction.timespan + (boostDuration * boostValue) / 100,
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL)),
     );
   });
 
@@ -80,7 +83,7 @@ describe("Boosts", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -90,18 +93,19 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-      queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
+      queuedAction.timespan + (queuedAction.timespan * boostValue) / 100,
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL)),
     );
   });
 
@@ -127,7 +131,7 @@ describe("Boosts", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
-      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+      const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
         .startActionsExtra(
@@ -137,9 +141,10 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStatus.NONE,
         );
       await ethers.provider.send("evm_increaseTime", [86400]);
+      await ethers.provider.send("evm_mine", []);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [86400]); // boost has expired
       await ethers.provider.send("evm_mine", []);
@@ -149,7 +154,7 @@ describe("Boosts", function () {
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-        queuedAction.timespan + (queuedAction.timespan * boostValue) / 100 + queuedAction.timespan
+        queuedAction.timespan + (queuedAction.timespan * boostValue) / 100 + queuedAction.timespan,
       );
     });
 
@@ -175,7 +180,7 @@ describe("Boosts", function () {
       queuedActionFinishAfterBoost.timespan = 86400 - queuedAction.timespan;
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
-      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+      const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
         .startActionsExtra(
@@ -185,9 +190,8 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStatus.NONE,
         );
-      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await players
         .connect(alice)
         .startActions(playerId, [queuedActionFinishAfterBoost], EstforTypes.ActionQueueStatus.NONE);
@@ -195,8 +199,15 @@ describe("Boosts", function () {
       await ethers.provider.send("evm_mine", []);
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-        queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100,
-        queuedActionFinishAfterBoost.timespan + (queuedActionFinishAfterBoost.timespan * boostValue) / 100 + 1,
+        BigInt(
+          queuedActionFinishAfterBoost.timespan +
+            Math.floor((queuedActionFinishAfterBoost.timespan * boostValue) / 100),
+        ),
+        BigInt(
+          queuedActionFinishAfterBoost.timespan +
+            Math.floor((queuedActionFinishAfterBoost.timespan * boostValue) / 100) +
+            1,
+        ),
       ]);
     });
 
@@ -220,7 +231,7 @@ describe("Boosts", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
-      const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+      const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
         .startActionsExtra(
@@ -230,18 +241,19 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStatus.NONE,
         );
       await ethers.provider.send("evm_increaseTime", [120]);
+      await ethers.provider.send("evm_mine", []);
       const slot = 253;
-      const encoding = ethers.utils.defaultAbiCoder.encode(["uint256", "uint256"], [playerId, slot]);
-      const hash = ethers.utils.keccak256(encoding);
-      let boostInfoStorage = await ethers.provider.getStorageAt(players.address, hash);
-      expect(boostInfoStorage).to.not.eq(ethers.utils.hexZeroPad("0x0", 32));
+      const encoding = abiCoder.encode(["uint256", "uint256"], [playerId, slot]);
+      const hash = keccak256(encoding);
+      let boostInfoStorage = await getStorageAt(await players.getAddress(), hash);
+      expect(boostInfoStorage).to.not.eq(zeroPadValue("0x00", 32));
 
       await players.connect(alice).processActions(playerId);
-      boostInfoStorage = await ethers.provider.getStorageAt(players.address, hash);
-      expect(boostInfoStorage).to.eq(ethers.utils.hexZeroPad("0x0", 32));
+      boostInfoStorage = await getStorageAt(await players.getAddress(), hash);
+      expect(boostInfoStorage).to.eq(zeroPadValue("0x00", 32));
     });
   });
 
@@ -266,7 +278,7 @@ describe("Boosts", function () {
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
     await itemNFT.testMint(alice.address, EstforConstants.COMBAT_BOOST, 1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -276,7 +288,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -287,14 +299,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -319,7 +331,7 @@ describe("Boosts", function () {
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -329,7 +341,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
@@ -339,14 +351,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -371,7 +383,7 @@ describe("Boosts", function () {
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -381,21 +393,21 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(
-      queuedAction.timespan + (boostDuration * boostValue) / 100
+      queuedAction.timespan + (boostDuration * boostValue) / 100,
     );
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-      queuedAction.timespan + (boostDuration * boostValue) / 100
+      queuedAction.timespan + (boostDuration * boostValue) / 100,
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL)),
     );
   });
 
@@ -419,7 +431,7 @@ describe("Boosts", function () {
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -429,19 +441,19 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     // Currently only minted through donation thresholds
-    await brush.mint(alice.address, ethers.utils.parseEther("10000"));
-    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("10000"));
+    await brush.mint(alice.address, parseEther("10000"));
+    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("10000"));
 
     const raffleCost = await wishingWell.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
     expect(await players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
       wishingWell,
-      "LastGlobalDonationThreshold"
+      "LastGlobalDonationThreshold",
     );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -452,14 +464,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -483,7 +495,7 @@ describe("Boosts", function () {
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -493,20 +505,20 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     // Currently only minted through donation thresholds
-    await brush.mint(alice.address, ethers.utils.parseEther("10000"));
-    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("10000"));
+    await brush.mint(alice.address, parseEther("10000"));
+    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("10000"));
 
     const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextGlobalThreshold).to.be.gt(0);
 
-    await players.connect(alice).donate(0, nextGlobalThreshold.sub(ethers.utils.parseEther("1")));
-    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("2")))
+    await players.connect(alice).donate(0, nextGlobalThreshold - parseEther("1"));
+    await expect(players.connect(alice).donate(playerId, parseEther("2")))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("1000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .withArgs(parseEther("1000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -517,14 +529,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -575,7 +587,7 @@ describe("Boosts", function () {
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -585,12 +597,12 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     // Currently only minted through donation thresholds
-    await brush.mint(alice.address, ethers.utils.parseEther("100000"));
-    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("100000"));
+    await brush.mint(alice.address, parseEther("100000"));
+    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
 
     const clanId = 1;
     const clanDonationInfo = await wishingWell.clanDonationInfo(clanId);
@@ -600,23 +612,23 @@ describe("Boosts", function () {
     const raffleCost = await wishingWell.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
 
-    await wishingWell.setClanDonationThresholdIncrement(raffleCost.mul(2));
+    await wishingWell.setClanDonationThresholdIncrement(raffleCost * 2n);
 
     await expect(players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
       wishingWell,
-      "LastClanDonationThreshold"
+      "LastClanDonationThreshold",
     );
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
     await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
-    await brush.mint(bob.address, ethers.utils.parseEther("100000"));
-    await brush.connect(bob).approve(wishingWell.address, ethers.utils.parseEther("100000"));
+    await brush.mint(bob.address, parseEther("100000"));
+    await brush.connect(bob).approve(await wishingWell.getAddress(), parseEther("100000"));
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
-      .withArgs(clanId, raffleCost.mul(2), EstforConstants.CLAN_BOOSTER_2)
+      .withArgs(clanId, raffleCost * 2n, EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -627,14 +639,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -710,7 +722,7 @@ describe("Boosts", function () {
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
     await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -720,28 +732,28 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     // Currently only minted through donation thresholds
-    await brush.mint(alice.address, ethers.utils.parseEther("100000"));
-    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("100000"));
+    await brush.mint(alice.address, parseEther("100000"));
+    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
 
     const clanId = 1;
     const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
     const nextClanThreshold = await wishingWell.getNextClanThreshold(clanId);
 
-    const maxThreshold = nextClanThreshold.gt(nextGlobalThreshold) ? nextClanThreshold : nextGlobalThreshold;
+    const maxThreshold = nextClanThreshold > nextGlobalThreshold ? nextClanThreshold : nextGlobalThreshold;
 
     const raffleCost = await wishingWell.getRaffleEntryCost();
-    expect(raffleCost).to.be.gt(0);
+    expect(raffleCost).to.be.gt(0n);
 
     await wishingWell.setClanDonationThresholdIncrement(raffleCost);
 
-    await players.connect(alice).donate(0, maxThreshold.sub(ethers.utils.parseEther("1")));
+    await players.connect(alice).donate(0, maxThreshold - parseEther("1"));
     await expect(players.connect(alice).donate(playerId, raffleCost))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("1000").toString(), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .withArgs(parseEther("1000").toString(), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2);
 
@@ -753,14 +765,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -834,14 +846,14 @@ describe("Boosts", function () {
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
-    await brush.mint(alice.address, ethers.utils.parseEther("100000"));
-    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("100000"));
+    await brush.mint(alice.address, parseEther("100000"));
+    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
 
     const clanId = 1;
     const raffleCost = await wishingWell.getRaffleEntryCost();
     await wishingWell.setClanDonationThresholdIncrement(raffleCost);
 
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await expect(
       players
         .connect(alice)
@@ -852,8 +864,8 @@ describe("Boosts", function () {
           NOW,
           0,
           raffleCost,
-          EstforTypes.ActionQueueStatus.NONE
-        )
+          EstforTypes.ActionQueueStatus.NONE,
+        ),
     )
       .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2)
@@ -868,8 +880,8 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
 
     // Change to the next booster. This is combat XP, so it should give the same overall boost
@@ -878,15 +890,15 @@ describe("Boosts", function () {
     await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
-    await brush.mint(bob.address, ethers.utils.parseEther("100000"));
-    await brush.connect(bob).approve(wishingWell.address, ethers.utils.parseEther("100000"));
+    await brush.mint(bob.address, parseEther("100000"));
+    await brush.connect(bob).approve(await wishingWell.getAddress(), parseEther("100000"));
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
-      .withArgs(clanId, raffleCost.mul(2), EstforConstants.CLAN_BOOSTER_3)
+      .withArgs(clanId, raffleCost * 2n, EstforConstants.CLAN_BOOSTER_3)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
     const extraBoostedTime = NOW1 - NOW - boostDuration / 2 - 1;
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + 1]);
@@ -911,8 +923,8 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
 
     // The new boost should be valid from the current time and not include anymore of the old one. So 1.5 boostDuration's worth
@@ -925,15 +937,15 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP - 1);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -990,13 +1002,13 @@ describe("Boosts", function () {
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
     // Currently only minted through donation thresholds
-    await brush.mint(alice.address, ethers.utils.parseEther("10000"));
-    await brush.connect(alice).approve(wishingWell.address, ethers.utils.parseEther("10000"));
+    await brush.mint(alice.address, parseEther("10000"));
+    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("10000"));
 
     const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextGlobalThreshold).to.be.gt(0);
 
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await expect(
       players
         .connect(alice)
@@ -1007,8 +1019,8 @@ describe("Boosts", function () {
           NOW,
           0,
           nextGlobalThreshold,
-          EstforTypes.ActionQueueStatus.NONE
-        )
+          EstforTypes.ActionQueueStatus.NONE,
+        ),
     )
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(nextGlobalThreshold, EstforConstants.PRAY_TO_THE_BEARDIE_2)
@@ -1022,16 +1034,16 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
 
     await expect(players.connect(alice).donate(0, nextGlobalThreshold))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(nextGlobalThreshold.mul(2), EstforConstants.PRAY_TO_THE_BEARDIE_3)
+      .withArgs(nextGlobalThreshold * 2n, EstforConstants.PRAY_TO_THE_BEARDIE_3)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
-    const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
     let extraBoostedTime = NOW1 - NOW - boostDuration / 2 - 1;
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + boostDuration + 1]);
@@ -1057,14 +1069,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
 
     // The next global boost should have an effect
     await expect(players.connect(alice).donate(0, nextGlobalThreshold))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(nextGlobalThreshold.mul(3), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .withArgs(nextGlobalThreshold * 3n, EstforConstants.PRAY_TO_THE_BEARDIE)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + boostDuration + boostDuration + 1]);
@@ -1077,21 +1089,21 @@ describe("Boosts", function () {
           boostDuration +
           boostDuration +
           ((boostDuration / 2 + extraBoostedTime) * boostValue) / 100 +
-          (boostDuration * nextBoostValue) / 100
+          (boostDuration * nextBoostValue) / 100,
       ) - 1;
     healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
-      meleeXP + healthXP,
-      meleeXP + healthXP - 1,
+      BigInt(meleeXP + healthXP),
+      BigInt(meleeXP + healthXP - 1),
     ]);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
-      BigNumber.from(healthXP),
-      BigNumber.from(healthXP - 1),
+      BigInt(healthXP),
+      BigInt(healthXP - 1),
     ]);
   });
 
@@ -1128,7 +1140,7 @@ describe("Boosts", function () {
     const queuedAction = {...queuedActionWoodcutting, timespan: 3600 * 8};
 
     await itemNFT.testMints(alice.address, [EstforConstants.XP_BOOST, EstforConstants.GATHERING_BOOST], [2, 2]);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1138,9 +1150,10 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_mine", []);
 
     // Change to gathering boost
     await players
@@ -1152,9 +1165,10 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.APPEND
+        EstforTypes.ActionQueueStatus.APPEND,
       );
     await ethers.provider.send("evm_increaseTime", [3600 * 6]);
+    await ethers.provider.send("evm_mine", []);
     // Back to XP boost
     await players
       .connect(alice)
@@ -1165,21 +1179,22 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.APPEND
+        EstforTypes.ActionQueueStatus.APPEND,
       );
     await ethers.provider.send("evm_increaseTime", [3600]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
 
     // 2 hours boosted XP, 6 hours not boosted in total
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.deep.oneOf([
-      BigNumber.from(8 * 3600 + (2 * 3600 * boostValue) / 100),
-      BigNumber.from(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1),
+      BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100),
+      BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1),
     ]);
 
     // 2 hours gathering boost, check drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((8 * 3600 * rate) / (3600 * GUAR_MUL)) +
-        Math.floor((2 * 3600 * rate * boostValue) / (3600 * GUAR_MUL * 100))
+        Math.floor((2 * 3600 * rate * boostValue) / (3600 * GUAR_MUL * 100)),
     );
   });
 
@@ -1212,7 +1227,7 @@ describe("Boosts", function () {
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1222,19 +1237,20 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor(
         (queuedAction.timespan * rate) / (3600 * GUAR_MUL) +
-          (boostDuration * boostValue * rate) / (100 * GUAR_MUL * 3600)
-      )
+          (boostDuration * boostValue * rate) / (100 * GUAR_MUL * 3600),
+      ),
     );
   });
 
@@ -1260,7 +1276,7 @@ describe("Boosts", function () {
     const minLevel = 1;
     const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1270,7 +1286,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -1332,17 +1348,19 @@ describe("Boosts", function () {
       },
     ]);
 
-    const actionId = await getActionId(tx);
+    const actionId = await getActionId(tx, world);
 
     const numHours = 2;
 
     // Make sure it passes the next checkpoint so there are no issues running
-    const {timestamp} = await ethers.provider.getBlock("latest");
+    const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     const timespan = 3600 * numHours;
@@ -1359,7 +1377,7 @@ describe("Boosts", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1369,18 +1387,20 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await players.connect(alice).processActions(playerId);
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))
+      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600)),
     );
   });
 
@@ -1427,15 +1447,17 @@ describe("Boosts", function () {
       },
     ]);
 
-    const actionId = await getActionId(tx);
+    const actionId = await getActionId(tx, world);
 
     // Make sure it passes the next checkpoint so there are no issues running
-    const {timestamp} = await ethers.provider.getBlock("latest");
+    const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     const timespan = 3600 * 2;
@@ -1452,7 +1474,7 @@ describe("Boosts", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 2);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(2);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1462,28 +1484,32 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
 
     await ethers.provider.send("evm_increaseTime", [3600 + 60]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     let pendingRandomRewards = await players.getPendingRandomRewards(playerId);
     expect(pendingRandomRewards.length).to.eq(1);
     expect(pendingRandomRewards[0].xpElapsedTime).to.eq(3600);
     expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour);
     await ethers.provider.send("evm_increaseTime", [3600 + 60]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId); // Still in same action
     pendingRandomRewards = await players.getPendingRandomRewards(playerId);
     expect(pendingRandomRewards.length).to.eq(2);
     expect(pendingRandomRewards[1].xpElapsedTime).to.eq(3600);
     expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 2);
     await ethers.provider.send("evm_increaseTime", [100]); // Next action
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 2); // Thieving is untouched
     pendingRandomRewards = await players.getPendingRandomRewards(playerId);
     expect(pendingRandomRewards.length).to.eq(2); // Not added as there was no xp time Action still going so no pending random rewards
     await ethers.provider.send("evm_increaseTime", [7200]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 4);
     pendingRandomRewards = await players.getPendingRandomRewards(playerId);
@@ -1491,8 +1517,10 @@ describe("Boosts", function () {
     expect(pendingRandomRewards[2].xpElapsedTime).to.eq(7200);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     await players
@@ -1504,7 +1532,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
   });
@@ -1552,17 +1580,19 @@ describe("Boosts", function () {
       },
     ]);
 
-    const actionId = await getActionId(tx);
+    const actionId = await getActionId(tx, world);
 
     const numHours = 2;
 
     // Make sure it passes the next checkpoint so there are no issues running
-    const {timestamp} = await ethers.provider.getBlock("latest");
+    const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     const timespan = 3600 * numHours;
@@ -1579,7 +1609,7 @@ describe("Boosts", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1589,21 +1619,23 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await players.connect(alice).processActions(playerId);
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))
+      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600)),
     );
   });
 
@@ -1638,10 +1670,10 @@ describe("Boosts", function () {
         EstforConstants.PAPER,
         EstforConstants.GATHERING_BOOST,
       ],
-      [startingAmount, startingAmount, startingAmount, 1]
+      [startingAmount, startingAmount, startingAmount, 1],
     );
 
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1651,10 +1683,11 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.ALCHEMY)).to.eq(queuedAction.timespan);
 
@@ -1662,8 +1695,8 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL)).to.eq(
       Math.floor(
         (queuedAction.timespan * rate * outputAmount) / (3600 * RATE_MUL) +
-          (boostDuration * boostValue * rate * outputAmount) / (100 * RATE_MUL * 3600)
-      )
+          (boostDuration * boostValue * rate * outputAmount) / (100 * RATE_MUL * 3600),
+      ),
     );
     expect(outputBalance).to.be.greaterThan(65535);
   });

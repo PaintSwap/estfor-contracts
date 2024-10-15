@@ -1,5 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
+import {MaxUint256} from "ethers";
 import {ethers} from "hardhat";
 
 describe("EstforLibrary", function () {
@@ -55,9 +56,8 @@ describe("EstforLibrary", function () {
   });
 
   it("Validate telegram handle", async () => {
-    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits, telegramSymbols} = await loadFixture(
-      deployContracts
-    );
+    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits, telegramSymbols} =
+      await loadFixture(deployContracts);
     const allowedCharacters = upperCaseLetters + lowerCaseLetters + digits + telegramSymbols;
     expect(await estforLibrary.containsValidTelegramCharacters(allowedCharacters)).to.be.true;
 
@@ -71,19 +71,19 @@ describe("EstforLibrary", function () {
     const {estforLibrary} = await loadFixture(deployContracts);
 
     let res = await estforLibrary.binarySearchMemory([1], 4);
-    expect(res).to.eq(ethers.constants.MaxUint256);
+    expect(res).to.eq(MaxUint256);
 
     res = await estforLibrary.binarySearchMemory([1], 1);
     expect(res).to.eq(0);
 
     res = await estforLibrary.binarySearchMemory([2], 1);
-    expect(res).to.eq(ethers.constants.MaxUint256);
+    expect(res).to.eq(MaxUint256);
 
     res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 4);
     expect(res).to.eq(2);
 
     res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 5);
-    expect(res).to.eq(ethers.constants.MaxUint256);
+    expect(res).to.eq(MaxUint256);
 
     res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 1);
     expect(res).to.eq(0);
@@ -92,7 +92,7 @@ describe("EstforLibrary", function () {
     expect(res).to.eq(4);
 
     res = await estforLibrary.binarySearchMemory([1, 2, 4, 7, 12], 0);
-    expect(res).to.eq(ethers.constants.MaxUint256);
+    expect(res).to.eq(MaxUint256);
 
     res = await estforLibrary.binarySearchMemory([0, 1, 2, 4, 7, 12], 0);
     expect(res).to.eq(0);

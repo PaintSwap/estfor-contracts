@@ -1,11 +1,11 @@
 import {ethers} from "hardhat";
 import {WORLD_ADDRESS} from "./contractAddresses";
-import {setDailyAndWeeklyRewards} from "./utils";
+import {getChainId, setDailyAndWeeklyRewards} from "./utils";
 import {World} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Set daily rewards using account: ${owner.address} as owner on chain id ${await owner.getChainId()}`);
+  console.log(`Set daily rewards using account: ${owner.address} as owner on chain id ${await getChainId(owner)}`);
 
   const world = (await ethers.getContractAt("World", WORLD_ADDRESS)) as World;
   /*

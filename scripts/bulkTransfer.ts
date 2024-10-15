@@ -1,10 +1,11 @@
 import {ethers} from "hardhat";
 import {BANK_FACTORY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Bulk transfer using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Bulk transfer using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
@@ -44,7 +45,7 @@ async function main() {
 
   // From clan
   const clanId = 1;
-  const clanBankAddress = ethers.utils.getContractAddress({
+  const clanBankAddress = ethers.getCreateAddress({
     from: BANK_FACTORY_ADDRESS,
     nonce: clanId,
   });

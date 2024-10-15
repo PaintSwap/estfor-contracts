@@ -1,16 +1,16 @@
 import {ethers, upgrades} from "hardhat";
-import {verifyContracts} from "./utils";
+import {getChainId, verifyContracts} from "./utils";
 import {WFTM_ADDRESS} from "./contractAddresses";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(
-    `Deploying non transferrable brush with the account: ${owner.address} on chain id ${await owner.getChainId()}`
+    `Deploying non transferrable brush with the account: ${owner.address} on chain id ${await getChainId(owner)}`,
   );
 
   const BrushNonTransferrable = await ethers.getContractFactory("BrushNonTransferrable");
   const brushNonTransferrable = await upgrades.deployProxy(BrushNonTransferrable);
-  console.log(`Deployed brushNonTransferrable: `, brushNonTransferrable.address);
+  console.log(`Deployed brushNonTransferrable: `, await brushNonTransferrable.getAddress());
 
   let tx = await brushNonTransferrable.mint(owner.address, 10000);
   await tx.wait();
@@ -19,10 +19,10 @@ async function main() {
   const uniswapFactory = "0x152ee697f2e276fa89e96742e9bb9ab1f2e61be3";
   const IUniswapV2Factory = await ethers.getContractAt("IUniswapV2Factory", uniswapFactory);
 
-  tx = await IUniswapV2Factory.createPair(brushNonTransferrable.address, WFTM_ADDRESS);
+  tx = await IUniswapV2Factory.createPair(await brushNonTransferrable.getAddress(), WFTM_ADDRESS);
   await tx.wait(3);
   console.log("Created pair");
-  const pair = await IUniswapV2Factory.getPair(brushNonTransferrable.address, WFTM_ADDRESS);
+  const pair = await IUniswapV2Factory.getPair(await brushNonTransferrable.getAddress(), WFTM_ADDRESS);
   console.log("Pair", pair);
 
   tx = await brushNonTransferrable.transfer(pair, 10000);
@@ -41,7 +41,7 @@ async function main() {
   const balance = IUniswapV2Pair.balanceOf(owner.address);
   console.log("BalanceOf", await balance);
 
-  await verifyContracts([brushNonTransferrable.address]);
+  await verifyContracts([await brushNonTransferrable.getAddress()]);
 }
 
 main().catch((error) => {

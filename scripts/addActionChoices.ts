@@ -3,10 +3,11 @@ import {WORLD_ADDRESS} from "./contractAddresses";
 import {allActionChoicesRanged} from "./data/actionChoices";
 import {allActionChoiceIdsRanged} from "./data/actionChoiceIds";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add action choices using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Add action choices using account: ${owner.address} on chain id ${await getChainId(owner)}`);
   const world = (await ethers.getContractAt("World", WORLD_ADDRESS)).connect(owner);
 
   const newActionChoiceIds = new Set([

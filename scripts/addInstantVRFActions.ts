@@ -1,15 +1,16 @@
-import {ethers, upgrades} from "hardhat";
-import {GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS, INSTANT_VRF_ACTIONS_ADDRESS} from "./contractAddresses";
+import {ethers} from "hardhat";
+import {INSTANT_VRF_ACTIONS_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allInstantVRFActions} from "./data/instantVRFActions";
 import {InstantVRFActions} from "../typechain-types";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add instant VRF actions using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Add instant VRF actions using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const instantVRFActions = (await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS)).connect(
-    owner
+    owner,
   ) as InstantVRFActions;
 
   const actionsToUpdate = new Set([

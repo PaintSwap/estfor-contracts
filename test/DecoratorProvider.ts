@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {playersFixture} from "./Players/PlayersFixture";
+import {DecoratorProvider} from "../typechain-types";
 
 describe("DecoratorProvider", function () {
   async function deployContracts() {
@@ -10,22 +11,22 @@ describe("DecoratorProvider", function () {
 
     // Add an lp token
     const lp = await ethers.deployContract("MockBrushToken");
-    await decorator.add("2000", lp.address, true);
+    await decorator.add("2000", await lp.getAddress(), true);
 
     // Mock territories
-    const mockTerritories = await ethers.deployContract("MockTerritories", [brush.address]);
+    const mockTerritories = await ethers.deployContract("MockTerritories", [await brush.getAddress()]);
 
     const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
     const pid = 0;
-    const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
-      decorator.address,
-      artGallery.address,
-      mockTerritories.address,
-      brush.address,
-      playerNFT.address,
+    const decoratorProvider = (await upgrades.deployProxy(DecoratorProvider, [
+      await decorator.getAddress(),
+      await artGallery.getAddress(),
+      await mockTerritories.getAddress(),
+      await brush.getAddress(),
+      await playerNFT.getAddress(),
       dev.address,
       pid,
-    ]);
+    ])) as unknown as DecoratorProvider;
 
     return {...fixture, decoratorProvider, pid, lp, mockTerritories};
   }
@@ -35,11 +36,11 @@ describe("DecoratorProvider", function () {
 
     const amount = 100;
     await lp.mint(owner.address, amount);
-    await lp.approve(decoratorProvider.address, amount);
+    await lp.approve(await decoratorProvider.getAddress(), amount);
     // Takes it all
     await decoratorProvider.deposit();
-    expect(await lp.balanceOf(decoratorProvider.address)).to.eq(0);
-    expect(await lp.balanceOf(decorator.address)).to.eq(amount);
+    expect(await lp.balanceOf(await decoratorProvider.getAddress())).to.eq(0);
+    expect(await lp.balanceOf(await decorator.getAddress())).to.eq(amount);
     expect(await lp.balanceOf(owner.address)).to.eq(0);
   });
 
@@ -50,20 +51,19 @@ describe("DecoratorProvider", function () {
 
     const amount = 100;
     await lp.mint(owner.address, amount);
-    await lp.approve(decoratorProvider.address, amount * 2);
+    await lp.approve(await decoratorProvider.getAddress(), amount * 2);
     await decoratorProvider.deposit();
 
-    await ethers.provider.send("evm_increaseTime", [1]);
-
     // Will fail until we need it double the rewards
-    await expect(decoratorProvider.connect(alice).harvest(playerId)).to.be.revertedWith(
-      "ERC20: transfer amount exceeds balance"
+    await expect(decoratorProvider.connect(alice).harvest(playerId)).to.be.revertedWithCustomError(
+      brush,
+      "ERC20InsufficientBalance",
     );
-    await brush.mint(decoratorProvider.address, brushPerSecond.mul(3).div(2));
+    await brush.mint(await decoratorProvider.getAddress(), (brushPerSecond * 3n) / 2n);
     await decoratorProvider.connect(alice).harvest(playerId);
-    expect(await brush.balanceOf(artGallery.address)).to.eq(brushPerSecond.mul(3).div(2));
+    expect(await brush.balanceOf(await artGallery.getAddress())).to.eq((brushPerSecond * 3n) / 2n);
 
-    expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(1);
+    expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(1n);
   });
 
   it("Retrieve art gallery rewards", async function () {
@@ -73,14 +73,16 @@ describe("DecoratorProvider", function () {
 
     const amount = 100;
     await lp.mint(owner.address, amount);
-    await lp.approve(decoratorProvider.address, amount * 2);
+    await lp.approve(await decoratorProvider.getAddress(), amount * 2);
     await decoratorProvider.deposit();
 
-    await ethers.provider.send("evm_increaseTime", [1]);
-    await brush.mint(decoratorProvider.address, brushPerSecond);
+    // await ethers.provider.send("evm_increaseTime", [1]);
+    // await ethers.provider.send("evm_mine", []);
+    await brush.mint(await decoratorProvider.getAddress(), brushPerSecond);
     await decoratorProvider.connect(alice).harvest(playerId);
 
     await ethers.provider.send("evm_increaseTime", [artGalleryLockPeriod]);
+    await ethers.provider.send("evm_mine", []);
     await decoratorProvider.unlockFromArtGallery();
 
     // unlock from the art gallery
@@ -92,18 +94,18 @@ describe("DecoratorProvider", function () {
 
     // Add an lp token
     const lp = await ethers.deployContract("MockBrushToken");
-    await decorator.add("2000", lp.address, true);
+    await decorator.add("2000", await lp.getAddress(), true);
 
     // Deposit
     const amount = 100;
     await lp.mint(owner.address, amount);
-    await lp.approve(decoratorProvider.address, amount * 2);
+    await lp.approve(await decoratorProvider.getAddress(), amount * 2);
     await expect(decoratorProvider.deposit()).to.be.revertedWithCustomError(decoratorProvider, "ZeroBalance");
     await decoratorProvider.setPID(1);
     await decoratorProvider.deposit();
 
-    expect(await lp.balanceOf(decoratorProvider.address)).to.eq(0);
-    expect(await lp.balanceOf(decorator.address)).to.eq(amount);
+    expect(await lp.balanceOf(await decoratorProvider.getAddress())).to.eq(0);
+    expect(await lp.balanceOf(await decorator.getAddress())).to.eq(amount);
     expect(await lp.balanceOf(owner.address)).to.eq(0);
   });
 
@@ -112,23 +114,26 @@ describe("DecoratorProvider", function () {
 
     const amount = 100;
     await lp.mint(owner.address, amount);
-    await lp.approve(decoratorProvider.address, amount);
+    await lp.approve(await decoratorProvider.getAddress(), amount);
     await decoratorProvider.deposit();
 
     await ethers.provider.send("evm_increaseTime", [1]);
+    await ethers.provider.send("evm_mine", []);
 
     // Will fail until we need it double the rewards
-    const minInterval = (await decoratorProvider.MIN_HARVEST_INTERVAL()).toNumber();
-    await brush.mint(decoratorProvider.address, brushPerSecond.mul(minInterval + 10));
+    const minInterval = await decoratorProvider.MIN_HARVEST_INTERVAL();
+    await brush.mint(await decoratorProvider.getAddress(), brushPerSecond * (minInterval + 10n));
     await decoratorProvider.connect(alice).harvest(playerId);
 
     await ethers.provider.send("evm_increaseTime", [1]);
+    await ethers.provider.send("evm_mine", []);
     await expect(decoratorProvider.connect(alice).harvest(playerId)).to.be.revertedWithCustomError(
       decoratorProvider,
-      "HarvestingTooSoon"
+      "HarvestingTooSoon",
     );
 
-    await ethers.provider.send("evm_increaseTime", [minInterval]);
+    await ethers.provider.send("evm_increaseTime", [Number(minInterval)]);
+    await ethers.provider.send("evm_mine", []);
     await expect(decoratorProvider.connect(alice).harvest(playerId)).to.not.be.reverted;
   });
 
@@ -137,7 +142,7 @@ describe("DecoratorProvider", function () {
 
     const amount = 100;
     await lp.mint(owner.address, amount);
-    await lp.approve(decoratorProvider.address, amount);
+    await lp.approve(await decoratorProvider.getAddress(), amount);
     await decoratorProvider.deposit();
 
     await ethers.provider.send("evm_increaseTime", [1]);

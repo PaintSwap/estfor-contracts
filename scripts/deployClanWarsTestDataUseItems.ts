@@ -7,21 +7,22 @@ import {
 } from "./contractAddresses";
 import {CombatantsHelper, ItemNFT, LockedBankVaults, Territories} from "../typechain-types";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner, alice] = await ethers.getSigners();
-  console.log(`Deploying clan wars test data: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Deploying clan wars test data: ${owner.address} on chain id ${await getChainId(owner)}`);
   // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
   // const alice = await ethers.getImpersonatedSigner("0xBa00694692267ed0B5154d48Fcb4D435D0B24d3F");
 
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
   const lockedBankVaults = (await ethers.getContractAt(
     "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS
+    LOCKED_BANK_VAULTS_ADDRESS,
   )) as LockedBankVaults;
   const combatantsHelper = (await ethers.getContractAt(
     "CombatantsHelper",
-    COMBATANTS_HELPER_ADDRESS
+    COMBATANTS_HELPER_ADDRESS,
   )) as CombatantsHelper;
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)).connect(owner) as ItemNFT;
@@ -36,12 +37,12 @@ async function main() {
   let tx = await itemNFT.testMints(
     alice.address,
     [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD],
-    [2, 2, 2]
+    [2, 2, 2],
   );
   tx = await itemNFT.testMints(
     owner.address,
     [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD],
-    [2, 2, 2]
+    [2, 2, 2],
   );
   console.log("Mints");
 

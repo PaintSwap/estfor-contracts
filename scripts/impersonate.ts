@@ -53,27 +53,27 @@ async function main() {
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
-  })) as Players;
+  })) as unknown as Players;
 
   // Set the implementations
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address);
+    await deployPlayerImplementations(await playersLibrary.getAddress());
 
   const tx = await players
     .connect(owner)
     .setImpls(
-      playersImplQueueActions.address,
-      playersImplProcessActions.address,
-      playersImplRewards.address,
-      playersImplMisc.address,
-      playersImplMisc1.address
+      await playersImplQueueActions.getAddress(),
+      await playersImplProcessActions.getAddress(),
+      await playersImplRewards.getAddress(),
+      await playersImplMisc.getAddress(),
+      await playersImplMisc1.getAddress(),
     );
   await tx.wait();
   /*
   // PlayerNFT
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: (await estforLibrary.getAddress())},
     })
   ).connect(owner);
   const playerNFT = (await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
@@ -97,7 +97,7 @@ async function main() {
 
   const World = (
     await ethers.getContractFactory("World", {
-      libraries: {WorldLibrary: worldLibrary.address},
+      libraries: {WorldLibrary: (await worldLibrary.getAddress())},
     })
   ).connect(owner);
   const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
@@ -109,7 +109,7 @@ async function main() {
   const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
 
   const ItemNFT = (
-    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}})
+    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: (await itemNFTLibrary.getAddress())}})
   ).connect(owner);
   const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
@@ -119,7 +119,7 @@ async function main() {
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
   const Promotions = (
     await ethers.getContractFactory("Promotions", {
-      libraries: {PromotionsLibrary: promotionsLibrary.address},
+      libraries: {PromotionsLibrary: (await promotionsLibrary.getAddress())},
     })
   ).connect(owner);
   const promotions = (await upgrades.upgradeProxy(PROMOTIONS_ADDRESS, Promotions, {
@@ -129,7 +129,7 @@ async function main() {
 
   const Clans = (
     await ethers.getContractFactory("Clans", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: (await estforLibrary.getAddress())},
     })
   ).connect(owner);
   const clans = (await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
@@ -142,8 +142,8 @@ async function main() {
   const LockedBankVaults = (
     await ethers.getContractFactory("LockedBankVaults", {
       libraries: {
-        EstforLibrary: estforLibrary.address,
-        LockedBankVaultsLibrary: lockedBankVaultsLibrary.address,
+        EstforLibrary: (await estforLibrary.getAddress()),
+        LockedBankVaultsLibrary: (await lockedBankVaultsLibrary.getAddress()),
       },
     })
   ).connect(owner);
@@ -161,7 +161,7 @@ async function main() {
   const petNFTLibrary = (await ethers.deployContract("PetNFTLibrary")) as PetNFTLibrary;
   const PetNFT = (
     await ethers.getContractFactory("PetNFT", {
-      libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: petNFTLibrary.address},
+      libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: (await petNFTLibrary.getAddress())},
     })
   ).connect(owner);
   const petNFT = (await upgrades.upgradeProxy(PET_NFT_ADDRESS, PetNFT, {
@@ -169,7 +169,7 @@ async function main() {
     unsafeAllow: ["external-library-linking"],
     timeout: 10000,
   })) as PetNFT;
-  await petNFT.deployed();
+  await petNFT.waitForDeployment();
 
   const EggInstantVRFActionStrategy = (await ethers.getContractFactory("EggInstantVRFActionStrategy")).connect(owner);
   const eggInstantVRFActionStrategy = (await upgrades.upgradeProxy(
@@ -180,7 +180,7 @@ async function main() {
       timeout: 100000,
     }
   )) as EggInstantVRFActionStrategy;
-  await eggInstantVRFActionStrategy.deployed();
+  await eggInstantVRFActionStrategy.waitForDeployment();
 
   const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(owner);
   const instantVRFActions = (await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {

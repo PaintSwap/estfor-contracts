@@ -3,10 +3,11 @@ import {QUESTS_ADDRESS} from "./contractAddresses";
 import {MinRequirementArray, QuestInput, allQuests, allQuestsMinRequirements} from "./data/quests";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {Quests} from "../typechain-types";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit quest using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Edit quest using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const quests = (await ethers.getContractAt("Quests", QUESTS_ADDRESS)) as Quests;
   const questsRaw = new Set([EstforConstants.QUEST_NEW_ALCHEMY, EstforConstants.QUEST_FLEX_THE_BOW]);

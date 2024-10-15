@@ -1,10 +1,11 @@
 import {ethers} from "hardhat";
 import {PET_NFT_ADDRESS} from "./contractAddresses";
 import {allBasePets} from "./data/pets";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit base pets using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Edit base pets using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const petNFT = (await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS)).connect(owner);
 

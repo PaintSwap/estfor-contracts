@@ -9,13 +9,14 @@ import {InstantActions, InstantVRFActions, PassiveActions, World} from "../typec
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {InstantActionType} from "@paintswap/estfor-definitions/types";
 import {allActions} from "./data/actions";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(
     `Edit passive & instant VRF actions is available using account: ${
       owner.address
-    } on chain id ${await owner.getChainId()}`
+    } on chain id ${await getChainId(owner)}`,
   );
 
   const isAvailable = false;
@@ -37,7 +38,7 @@ async function main() {
   // Passive actions
   // TODO: Don't remove these yet, wait a few months
   const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)).connect(
-    owner
+    owner,
   ) as PassiveActions;
 
   const passiveActionIdsToRemove = [EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4];
@@ -57,7 +58,7 @@ async function main() {
   ];
 
   const instantVRFActions = (await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS)).connect(
-    owner
+    owner,
   ) as InstantVRFActions;
   tx = await instantVRFActions.setAvailable(instantVRFActionIds, isAvailable);
   await tx.wait();
@@ -71,12 +72,12 @@ async function main() {
     EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_RING,
   ];
   const instantActions = (await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)).connect(
-    owner
+    owner,
   ) as InstantActions;
 
   tx = await instantActions.removeActions(
     [InstantActionType.GENERIC, InstantActionType.GENERIC, InstantActionType.GENERIC, InstantActionType.GENERIC],
-    instantActionIds
+    instantActionIds,
   );
   await tx.wait();
   console.log("Set available instant actions");

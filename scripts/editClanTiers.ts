@@ -1,11 +1,11 @@
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS} from "./contractAddresses";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
-import {isBeta} from "./utils";
+import {getChainId, isBeta} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit clan tiers using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Edit clan tiers using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const clanTiers = isBeta ? allClanTiersBeta : allClanTiers;
   const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);

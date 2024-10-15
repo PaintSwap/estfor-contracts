@@ -9,11 +9,11 @@ import {
   PLAYERS_IMPL_REWARDS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
-import {deployPlayerImplementations, verifyContracts} from "./utils";
+import {deployPlayerImplementations, getChainId, verifyContracts} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  const chainId = await owner.getChainId();
+  const chainId = await getChainId(owner);
   console.log(`Deploying player implementation contracts with the account: ${owner.address} on chain id ${chainId}`);
 
   // Players
@@ -22,32 +22,32 @@ async function main() {
   let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {
     playersLibrary = await PlayersLibrary.deploy();
-    await playersLibrary.deployed();
-    if (chainId == 250) {
-      await verifyContracts([playersLibrary.address]);
+
+    if (chainId == 250n) {
+      await verifyContracts([await playersLibrary.getAddress()]);
     }
   } else {
-    playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
+    playersLibrary = (await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS)) as unknown as PlayersLibrary;
   }
-  console.log(`playersLibrary = "${playersLibrary.address.toLowerCase()}"`);
+  console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-    await deployPlayerImplementations(playersLibrary.address);
+    await deployPlayerImplementations(await playersLibrary.getAddress());
   /*
   // Single
   const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: (await playersLibrary.getAddress())},
   });
-  await playersImplRewards.deployed();
-  console.log(`PlayersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
+  await playersImplRewards.waitForDeployment();
+  console.log(`PlayersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 */
-  if (chainId == 250) {
+  if (chainId == 250n) {
     await verifyContracts([
-      playersImplQueueActions.address,
-      playersImplProcessActions.address,
-      playersImplRewards.address,
-      playersImplMisc.address,
-      playersImplMisc1.address,
+      await playersImplQueueActions.getAddress(),
+      await playersImplProcessActions.getAddress(),
+      await playersImplRewards.getAddress(),
+      await playersImplMisc.getAddress(),
+      await playersImplMisc1.getAddress(),
     ]);
   }
 
@@ -60,11 +60,11 @@ async function main() {
   */
   const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)).connect(owner) as Players;
   const tx = await players.setImpls(
-    playersImplQueueActions.address,
-    playersImplProcessActions.address,
-    playersImplRewards.address,
-    playersImplMisc.address,
-    playersImplMisc1.address
+    await playersImplQueueActions.getAddress(),
+    await playersImplProcessActions.getAddress(),
+    await playersImplRewards.getAddress(),
+    await playersImplMisc.getAddress(),
+    await playersImplMisc1.getAddress(),
   );
   await tx.wait();
 }

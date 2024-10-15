@@ -1,5 +1,4 @@
-import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-import {BigNumber} from "ethers";
+import {Block, Contract, Network, parseEther} from "ethers";
 import {ethers, run} from "hardhat";
 import {
   MockBrushToken,
@@ -17,8 +16,9 @@ import {
   World,
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
-import {Network} from "@ethersproject/providers";
 import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
+import {getEventLog} from "../test/utils";
+import {HardhatEthersSigner, SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -29,14 +29,11 @@ export const createPlayer = async (
   discord = "",
   twitter = "",
   telegram = "",
-  upgrade = false
-): Promise<BigNumber> => {
+  upgrade = false,
+): Promise<bigint> => {
   const tx = await playerNFT.connect(account).mint(avatarId, name, discord, twitter, telegram, upgrade, makeActive);
-  const receipt = await tx.wait();
-  const event = receipt?.events?.filter((x) => {
-    return x.event == "NewPlayerV2";
-  })[0].args;
-  return event?.playerId;
+
+  return (await getEventLog(tx, playerNFT, "NewPlayerV2")).playerId;
 };
 export type AvatarInfo = {
   name: string;
@@ -63,7 +60,7 @@ export const verifyContract = async (address: string, constructorArguments: any[
 };
 
 export const isDevNetwork = (network: Network): boolean => {
-  return network.chainId == 31337 || network.chainId == 1337;
+  return network.chainId == 31337n || network.chainId == 1337n;
 };
 
 export const setDailyAndWeeklyRewards = async (world: World) => {
@@ -94,32 +91,27 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
   const playersImplQueueActions = (await ethers.deployContract("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
   })) as PlayersImplQueueActions;
-  console.log(`playersImplQueueActions = "${playersImplQueueActions.address.toLowerCase()}"`);
-  await playersImplQueueActions.deployed();
+  console.log(`playersImplQueueActions = "${(await playersImplQueueActions.getAddress()).toLowerCase()}"`);
 
   const playersImplProcessActions = (await ethers.deployContract("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
   })) as PlayersImplProcessActions;
-  console.log(`playersImplProcessActions = "${playersImplProcessActions.address.toLowerCase()}"`);
-  await playersImplProcessActions.deployed();
+  console.log(`playersImplProcessActions = "${(await playersImplProcessActions.getAddress()).toLowerCase()}"`);
 
   const playersImplRewards = (await ethers.deployContract("PlayersImplRewards", {
     libraries: {PlayersLibrary: playersLibraryAddress},
   })) as PlayersImplRewards;
-  console.log(`playersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
-  await playersImplRewards.deployed();
+  console.log(`playersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc = (await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: playersLibraryAddress},
   })) as PlayersImplMisc;
-  console.log(`playersImplMisc = "${playersImplMisc.address.toLowerCase()}"`);
-  await playersImplMisc.deployed();
+  console.log(`playersImplMisc = "${(await playersImplMisc.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc1 = (await ethers.deployContract("PlayersImplMisc1", {
     libraries: {PlayersLibrary: playersLibraryAddress},
   })) as PlayersImplMisc1;
-  console.log(`playersImplMisc1 = "${playersImplMisc1.address.toLowerCase()}"`);
-  await playersImplMisc1.deployed();
+  console.log(`playersImplMisc1 = "${(await playersImplMisc1.getAddress()).toLowerCase()}"`);
 
   return {
     playersImplQueueActions,
@@ -133,7 +125,7 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
 export const deployMockPaintSwapContracts = async (
   brush: MockBrushToken,
   router: MockRouter,
-  wftm: MockWrappedFantom
+  wftm: MockWrappedFantom,
 ): Promise<{
   paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   paintSwapDecorator: TestPaintSwapDecorator;
@@ -144,27 +136,27 @@ export const deployMockPaintSwapContracts = async (
   const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
 
   const paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-  await paintSwapMarketplaceWhitelist.deployed();
-  console.log(`paintSwapMarketplaceWhitelist = "${paintSwapMarketplaceWhitelist.address.toLowerCase()}"`);
+
+  console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
   const artGalleryLockPeriod = 3600;
-  const brushPerSecond = ethers.utils.parseEther("2");
-  const paintSwapArtGallery = await TestPaintSwapArtGallery.deploy(brush.address, artGalleryLockPeriod);
-  await paintSwapArtGallery.deployed();
-  console.log(`paintSwapArtGallery = "${paintSwapArtGallery.address.toLowerCase()}"`);
-  const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+  const brushPerSecond = parseEther("2");
+  const paintSwapArtGallery = await TestPaintSwapArtGallery.deploy(await brush.getAddress(), artGalleryLockPeriod);
+
+  console.log(`paintSwapArtGallery = "${(await paintSwapArtGallery.getAddress()).toLowerCase()}"`);
+  const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
   const paintSwapDecorator = await TestPaintSwapDecorator.deploy(
-    brush.address,
-    paintSwapArtGallery.address,
-    router.address,
-    wftm.address,
+    await brush.getAddress(),
+    await paintSwapArtGallery.getAddress(),
+    await router.getAddress(),
+    await wftm.getAddress(),
     brushPerSecond,
-    NOW
+    NOW,
   );
-  await paintSwapDecorator.deployed();
-  console.log(`paintSwapDecorator = "${paintSwapDecorator.address.toLowerCase()}"`);
+
+  console.log(`paintSwapDecorator = "${(await paintSwapDecorator.getAddress()).toLowerCase()}"`);
   const lp = await ethers.deployContract("MockBrushToken");
-  await paintSwapDecorator.add("2000", lp.address, true);
-  await paintSwapArtGallery.transferOwnership(paintSwapDecorator.address);
+  await paintSwapDecorator.add("2000", await lp.getAddress(), true);
+  await paintSwapArtGallery.transferOwnership(await paintSwapDecorator.getAddress());
 
   return {paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery};
 };
@@ -178,3 +170,16 @@ export const TIER_3_DAILY_REWARD_START_XP = 33_913;
 export const TIER_4_DAILY_REWARD_START_XP = 195_864;
 export const TIER_5_DAILY_REWARD_START_XP = 784_726;
 export const TIER_6_DAILY_REWARD_START_XP = 2_219_451;
+
+export const getChainId = async (signer: HardhatEthersSigner) => {
+  const chainId = await signer.provider?.getNetwork().then((network) => network.chainId);
+  return chainId;
+};
+
+export const estimateGas = async (signer: SignerWithAddress, contract: Contract, args: any[]) => {
+  const gasLimit = await signer.estimateGas({
+    to: await contract.getAddress(),
+    data: contract.interface.encodeFunctionData("startActions", args),
+  });
+  return gasLimit;
+};

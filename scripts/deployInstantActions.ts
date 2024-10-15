@@ -10,11 +10,11 @@ async function main() {
   const instantActions = await upgrades.deployProxy(InstantActions, [PLAYERS_ADDRESS, ITEM_NFT_ADDRESS], {
     kind: "uups",
   });
-  await instantActions.deployed();
-  console.log(`instantActions = "${instantActions.address.toLowerCase()}"`);
+  await instantActions.waitForDeployment();
+  console.log(`instantActions = "${(await instantActions.getAddress()).toLowerCase()}"`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  await itemNFT.setInstantActions(instantActions.address);
+  await itemNFT.setInstantActions(await instantActions.getAddress());
 }
 
 main().catch((error) => {

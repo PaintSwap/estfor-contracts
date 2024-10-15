@@ -3,10 +3,12 @@ import {ethers} from "hardhat";
 import {PROMOTIONS_ADDRESS} from "./contractAddresses";
 import {Promotions} from "../typechain-types";
 import {Promotion} from "@paintswap/estfor-definitions/types";
+import {getChainId} from "./utils";
+import {parseEther} from "ethers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit a promotion using account: ${owner.address} on chain id: ${await owner.getChainId()}`);
+  console.log(`Edit a promotion using account: ${owner.address} on chain id: ${await getChainId(owner)}`);
   const promotions = (await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)) as Promotions;
 
   /*
@@ -57,7 +59,7 @@ async function main() {
     minTotalXP: 0,
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
-    brushCostMissedDay: ethers.utils.parseEther("25"),
+    brushCostMissedDay: parseEther("25"),
     brushCost: "0",
     redeemCodeLength: 0,
     adminOnly: false,
@@ -69,7 +71,9 @@ async function main() {
     numDaysHitNeededForStreakBonus: 20,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
-    randomStreakBonusItemTokenIds1: [EstforConstants.SECRET_EGG_3, EstforConstants.SECRET_EGG_4],
+    randomStreakBonusItemTokenIds1: [
+      //  EstforConstants.SECRET_EGG_3, EstforConstants.SECRET_EGG_4
+    ],
     randomStreakBonusAmounts1: [1, 1],
     randomStreakBonusItemTokenIds2: [],
     randomStreakBonusAmounts2: [],

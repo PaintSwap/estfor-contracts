@@ -16,15 +16,13 @@ import {
 } from "../typechain-types";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allInstantVRFActions} from "./data/instantVRFActions";
-import {verifyContracts} from "./utils";
+import {getChainId, verifyContracts} from "./utils";
 
 const timeout = 600 * 1000; // 10 minutes
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(
-    `Deploying instant VRF test data using account: ${owner.address} on chain id ${await owner.getChainId()}`
-  );
+  console.log(`Deploying instant VRF test data using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
@@ -40,38 +38,40 @@ async function main() {
     {
       kind: "uups",
       timeout,
-    }
-  )) as InstantVRFActions;
-  await instantVRFActions.deployed();
-  console.log(`instantVRFActions = "${instantVRFActions.address.toLowerCase()}"`);
+    },
+  )) as unknown as InstantVRFActions;
+
+  console.log(`instantVRFActions = "${(await instantVRFActions.getAddress()).toLowerCase()}"`);
 
   const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
   const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
     GenericInstantVRFActionStrategy,
-    [instantVRFActions.address],
+    [await instantVRFActions.getAddress()],
     {
       kind: "uups",
-    }
-  )) as GenericInstantVRFActionStrategy;
-  console.log(`genericInstantVRFActionStrategy = "${genericInstantVRFActionStrategy.address.toLowerCase()}"`);
+    },
+  )) as unknown as GenericInstantVRFActionStrategy;
+  console.log(
+    `genericInstantVRFActionStrategy = "${(await genericInstantVRFActionStrategy.getAddress()).toLowerCase()}"`,
+  );
 
   const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
   const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
     EggInstantVRFActionStrategy,
-    [instantVRFActions.address],
+    [await instantVRFActions.getAddress()],
     {
       kind: "uups",
-    }
-  )) as EggInstantVRFActionStrategy;
-  console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
+    },
+  )) as unknown as EggInstantVRFActionStrategy;
+  console.log(`eggInstantVRFActionStrategy = "${(await eggInstantVRFActionStrategy.getAddress()).toLowerCase()}"`);
 
   let tx = await instantVRFActions.addStrategies(
     [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],
     [
-      genericInstantVRFActionStrategy.address,
-      genericInstantVRFActionStrategy.address,
-      eggInstantVRFActionStrategy.address,
-    ]
+      await genericInstantVRFActionStrategy.getAddress(),
+      await genericInstantVRFActionStrategy.getAddress(),
+      await eggInstantVRFActionStrategy.getAddress(),
+    ],
   );
   await tx.wait();
   console.log("instantVRFActions.addStrategies");
@@ -86,19 +86,19 @@ async function main() {
   }
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
-  tx = await itemNFT.setInstantVRFActions(instantVRFActions.address);
+  tx = await itemNFT.setInstantVRFActions(await instantVRFActions.getAddress());
   await tx.wait();
   console.log("itemNFT setInstantVRFActions");
 
   const petNFT = (await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS)) as PetNFT;
-  tx = await petNFT.setInstantVRFActions(instantVRFActions.address);
+  tx = await petNFT.setInstantVRFActions(await instantVRFActions.getAddress());
   await tx.wait();
   console.log("petNFT setInstantVRFActions");
 
   await verifyContracts([
-    instantVRFActions.address,
-    genericInstantVRFActionStrategy.address,
-    eggInstantVRFActionStrategy.address,
+    await instantVRFActions.getAddress(),
+    await genericInstantVRFActionStrategy.getAddress(),
+    await eggInstantVRFActionStrategy.getAddress(),
   ]);
 }
 

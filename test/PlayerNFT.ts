@@ -6,6 +6,7 @@ import {createPlayer} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
+import {parseEther} from "ethers";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
@@ -19,7 +20,7 @@ describe("PlayerNFT", function () {
     const avatarId = 1;
     await expect(createPlayer(playerNFT, avatarId, alice, emptyName, true)).to.be.revertedWithCustomError(
       playerNFT,
-      "NameTooShort"
+      "NameTooShort",
     );
   });
 
@@ -30,7 +31,7 @@ describe("PlayerNFT", function () {
     const makeActive = true;
     await expect(createPlayer(playerNFT, avatarId, alice, nameTooLong, makeActive)).to.be.revertedWithCustomError(
       playerNFT,
-      "NameTooLong"
+      "NameTooLong",
     );
   });
 
@@ -43,16 +44,16 @@ describe("PlayerNFT", function () {
     await createPlayer(playerNFT, avatarId, alice, name, makeActive);
     await expect(createPlayer(playerNFT, avatarId, alice, name, true)).to.be.revertedWithCustomError(
       playerNFT,
-      "NameAlreadyExists"
+      "NameAlreadyExists",
     );
     // Add a space at the end check it's also detected as being the same
     await expect(createPlayer(playerNFT, avatarId, alice, name + " ", true)).to.be.revertedWithCustomError(
       playerNFT,
-      "NameAlreadyExists"
+      "NameAlreadyExists",
     );
     await expect(createPlayer(playerNFT, avatarId, alice, name.toLowerCase(), true)).to.be.revertedWithCustomError(
       playerNFT,
-      "NameAlreadyExists"
+      "NameAlreadyExists",
     );
   });
 
@@ -72,7 +73,7 @@ describe("PlayerNFT", function () {
   it("Minting with an upgrade should cost brush", async function () {
     const {playerNFT, players, alice, brush, upgradePlayerBrushPrice} = await loadFixture(deployContracts);
     const brushAmount = upgradePlayerBrushPrice;
-    await brush.connect(alice).approve(playerNFT.address, brushAmount);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), brushAmount);
     await brush.mint(alice.address, brushAmount);
 
     const discord = "";
@@ -89,7 +90,7 @@ describe("PlayerNFT", function () {
       discord,
       twitter,
       telegram,
-      true
+      true,
     );
     expect(await brush.balanceOf(alice.address)).to.eq(0);
 
@@ -101,19 +102,19 @@ describe("PlayerNFT", function () {
   it("Edit Name", async function () {
     const {playerId, playerNFT, alice, brush, origName, editNameBrushPrice} = await loadFixture(deployContracts);
     const name = "My name is edited";
-    await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice.mul(3));
+    await brush.connect(alice).approve(await playerNFT.getAddress(), editNameBrushPrice * 3n);
 
     const discord = "";
     const twitter = "";
     const telegram = "";
     await expect(
-      playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram, false)
-    ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
-    await brush.mint(alice.address, editNameBrushPrice.mul(3));
+      playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram, false),
+    ).to.be.revertedWithCustomError(brush, "ERC20InsufficientBalance");
+    await brush.mint(alice.address, editNameBrushPrice * 3n);
 
     await expect(playerNFT.editPlayer(playerId, name, discord, twitter, telegram, false)).to.be.revertedWithCustomError(
       playerNFT,
-      "NotOwnerOfPlayer"
+      "NotOwnerOfPlayer",
     );
     expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.true;
 
@@ -126,7 +127,7 @@ describe("PlayerNFT", function () {
     // Duplicate
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "name", makeActive);
     await expect(
-      playerNFT.connect(alice).editPlayer(newPlayerId, name, discord, twitter, telegram, false)
+      playerNFT.connect(alice).editPlayer(newPlayerId, name, discord, twitter, telegram, false),
     ).to.be.revertedWithCustomError(playerNFT, "NameAlreadyExists");
   });
 
@@ -140,7 +141,7 @@ describe("PlayerNFT", function () {
       .withArgs(playerId, alice.address, origName, 0, discord, twitter, telegram, false);
 
     // Name changed should be true if name changed
-    await brush.connect(alice).approve(playerNFT.address, editNameBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), editNameBrushPrice);
     await brush.mint(alice.address, editNameBrushPrice);
     const newName = "New name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, false))
@@ -155,8 +156,8 @@ describe("PlayerNFT", function () {
     const twitter = "1231231";
     const telegram = "";
 
-    const brushAmount = editNameBrushPrice.add(upgradePlayerBrushPrice.mul(2));
-    await brush.connect(alice).approve(playerNFT.address, brushAmount);
+    const brushAmount = editNameBrushPrice + upgradePlayerBrushPrice * 2n;
+    await brush.connect(alice).approve(await playerNFT.getAddress(), brushAmount);
     await brush.mint(alice.address, brushAmount);
 
     const newName = "new name";
@@ -166,15 +167,13 @@ describe("PlayerNFT", function () {
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001, 0);
 
-    expect(await brush.balanceOf(alice.address)).to.eq(
-      brushAmount.sub(editNameBrushPrice.add(upgradePlayerBrushPrice))
-    );
+    expect(await brush.balanceOf(alice.address)).to.eq(brushAmount - (editNameBrushPrice + upgradePlayerBrushPrice));
 
     // 75% goes to the dev address & 25% goes to the treasury for player upgrades. For editing name, 25% goes to the dev address & 50% goes to the treasury (25% burnt)
-    expect(await brush.balanceOf(dev.address)).to.eq(
-      upgradePlayerBrushPrice.div(4).mul(3).add(editNameBrushPrice.div(4))
+    expect(await brush.balanceOf(dev.address)).to.eq((upgradePlayerBrushPrice / 4n) * 3n + editNameBrushPrice / 4n);
+    expect(await brush.balanceOf(await shop.getAddress())).to.eq(
+      upgradePlayerBrushPrice / 4n + editNameBrushPrice / 2n,
     );
-    expect(await brush.balanceOf(shop.address)).to.eq(upgradePlayerBrushPrice.div(4).add(editNameBrushPrice.div(2)));
 
     // Check upgraded flag
     const player = await players.players(playerId);
@@ -182,7 +181,7 @@ describe("PlayerNFT", function () {
 
     // Upgrading should fail the second time
     await expect(
-      playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true)
+      playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true),
     ).to.be.revertedWithCustomError(players, "AlreadyUpgraded");
 
     // Check avatar ids are as expected
@@ -206,11 +205,11 @@ describe("PlayerNFT", function () {
     const telegram = "";
 
     const brushAmount = upgradePlayerBrushPrice;
-    await brush.connect(alice).approve(playerNFT.address, brushAmount);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), brushAmount);
     await brush.mint(alice.address, brushAmount);
 
     const upgrade = true;
-    const playerId = prevPlayerId.add(1);
+    const playerId = prevPlayerId + 1n;
     await expect(playerNFT.connect(alice).mint(1, "name", discord, twitter, telegram, upgrade, true))
       .to.emit(playerNFT, "NewPlayerV2")
       .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, 0, true)
@@ -220,8 +219,8 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     // 75% goes to the dev address & 25% goes to the treasury for player upgrades
-    expect(await brush.balanceOf(dev.address)).to.eq(upgradePlayerBrushPrice.div(4).mul(3));
-    expect(await brush.balanceOf(shop.address)).to.eq(upgradePlayerBrushPrice.div(4));
+    expect(await brush.balanceOf(dev.address)).to.eq((upgradePlayerBrushPrice / 4n) * 3n);
+    expect(await brush.balanceOf(await shop.getAddress())).to.eq(upgradePlayerBrushPrice / 4n);
 
     // Check upgraded flag
     const player = await players.players(playerId);
@@ -277,7 +276,7 @@ describe("PlayerNFT", function () {
     const incorrectAvatarId = 500;
     await expect(createPlayer(playerNFT, incorrectAvatarId, alice, "New name", true)).to.be.revertedWithCustomError(
       playerNFT,
-      "BaseAvatarNotExists"
+      "BaseAvatarNotExists",
     );
   });
 
@@ -288,7 +287,7 @@ describe("PlayerNFT", function () {
     // Cannot use it on an evolved avatar, only the base
     await expect(createPlayer(playerNFT, 10001, alice, "New name", true)).to.be.revertedWithCustomError(
       playerNFT,
-      "BaseAvatarNotExists"
+      "BaseAvatarNotExists",
     );
   });
 
@@ -321,18 +320,18 @@ describe("PlayerNFT", function () {
     // Confirm that external_url points to main estfor site
     const isBeta = false;
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     });
-    const editNameBrushPrice = ethers.utils.parseEther("1");
-    const upgradePlayerBrushPrice = ethers.utils.parseEther("2");
+    const editNameBrushPrice = parseEther("1");
+    const upgradePlayerBrushPrice = parseEther("2");
     const imageBaseUri = "ipfs://";
     const playerNFTNotBeta = (await upgrades.deployProxy(
       PlayerNFT,
       [
-        brush.address,
-        shop.address,
+        await brush.getAddress(),
+        await shop.getAddress(),
         dev.address,
-        royaltyReceiver.address,
+        await royaltyReceiver.getAddress(),
         editNameBrushPrice,
         upgradePlayerBrushPrice,
         imageBaseUri,
@@ -341,37 +340,37 @@ describe("PlayerNFT", function () {
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
-      }
-    )) as PlayerNFT;
+      },
+    )) as unknown as PlayerNFT;
 
     const players = await upgrades.deployProxy(
       Players,
       [
-        itemNFT.address,
-        playerNFTNotBeta.address,
-        petNFT.address,
-        world.address,
-        adminAccess.address,
-        quests.address,
-        clans.address,
-        wishingWell.address,
-        playersImplQueueActions.address,
-        playersImplProcessActions.address,
-        playersImplRewards.address,
-        playersImplMisc.address,
-        playersImplMisc1.address,
+        await itemNFT.getAddress(),
+        await playerNFTNotBeta.getAddress(),
+        await petNFT.getAddress(),
+        await world.getAddress(),
+        await adminAccess.getAddress(),
+        await quests.getAddress(),
+        await clans.getAddress(),
+        await wishingWell.getAddress(),
+        await playersImplQueueActions.getAddress(),
+        await playersImplProcessActions.getAddress(),
+        await playersImplRewards.getAddress(),
+        await playersImplMisc.getAddress(),
+        await playersImplMisc1.getAddress(),
         isBeta,
       ],
       {
         kind: "uups",
         unsafeAllow: ["delegatecall", "external-library-linking"],
-      }
+      },
     );
 
-    await itemNFT.setPlayers(players.address);
-    await itemNFT.setBankFactory(bankFactory.address);
-    await itemNFT.setPromotions(players.address);
-    await playerNFTNotBeta.setPlayers(players.address);
+    await itemNFT.setPlayers(await players.getAddress());
+    await itemNFT.setBankFactory(await bankFactory.getAddress());
+    await itemNFT.setPromotions(await players.getAddress());
+    await playerNFTNotBeta.setPlayers(await players.getAddress());
     await playerNFTNotBeta.setAvatars([avatarId], [avatarInfo]);
 
     const origName = "0xSamWitch";
@@ -413,19 +412,19 @@ describe("PlayerNFT", function () {
     const isBeta = false;
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     });
-    const editNameBrushPrice = ethers.utils.parseEther("1");
-    const upgradePlayerBrushPrice = ethers.utils.parseEther("2");
+    const editNameBrushPrice = parseEther("1");
+    const upgradePlayerBrushPrice = parseEther("2");
 
     const imageBaseUri = "ipfs://";
     const playerNFTNotBeta = (await upgrades.deployProxy(
       PlayerNFT,
       [
-        brush.address,
-        shop.address,
+        await brush.getAddress(),
+        await shop.getAddress(),
         dev.address,
-        royaltyReceiver.address,
+        await royaltyReceiver.getAddress(),
         editNameBrushPrice,
         upgradePlayerBrushPrice,
         imageBaseUri,
@@ -434,8 +433,8 @@ describe("PlayerNFT", function () {
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
-      }
-    )) as PlayerNFT;
+      },
+    )) as unknown as PlayerNFT;
 
     expect(await playerNFTNotBeta.name()).to.be.eq("Estfor Players");
     expect(await playerNFTNotBeta.symbol()).to.be.eq("EK_P");
@@ -453,7 +452,7 @@ describe("PlayerNFT", function () {
       EstforConstants.TOTEM_STAFF,
       EstforConstants.BASIC_BOW,
     ]);
-    expect(balances).to.eql(balances.map(() => ethers.BigNumber.from("1")));
+    expect(balances).to.eql(balances.map(() => 1n));
   });
 
   it("totalSupply", async function () {

@@ -3,14 +3,14 @@ import {PASSIVE_ACTIONS_ADDRESS} from "./contractAddresses";
 import {PassiveActions} from "../typechain-types";
 import {allPassiveActions} from "./data/passiveActions";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {isBeta} from "./utils";
+import {getChainId, isBeta} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit passive actions using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Edit passive actions using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)).connect(
-    owner
+    owner,
   ) as PassiveActions;
 
   const actionsToReduce = [

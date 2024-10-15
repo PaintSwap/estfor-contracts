@@ -36,6 +36,7 @@ import {
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
+import {Block, parseEther} from "ethers";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
@@ -54,66 +55,75 @@ export const playersFixture = async function () {
 
   // Create the world
   const worldLibrary = (await ethers.deployContract("WorldLibrary")) as WorldLibrary;
-  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-  const world = (await upgrades.deployProxy(World, [mockVRF.address], {
+  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: await worldLibrary.getAddress()}});
+  const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
     kind: "uups",
     unsafeAllow: ["delegatecall", "external-library-linking"],
-  })) as World;
+  })) as unknown as World;
 
   await setDailyAndWeeklyRewards(world);
 
   const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [brush.address, dev.address], {
+  const shop = (await upgrades.deployProxy(Shop, [await brush.getAddress(), dev.address], {
     kind: "uups",
-  })) as Shop;
+  })) as unknown as Shop;
 
   const router = (await ethers.deployContract("MockRouter")) as MockRouter;
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = (await upgrades.deployProxy(
     RoyaltyReceiver,
-    [router.address, shop.address, dev.address, brush.address, alice.address],
+    [await router.getAddress(), await shop.getAddress(), dev.address, await brush.getAddress(), alice.address],
     {
       kind: "uups",
-    }
-  )) as RoyaltyReceiver;
+    },
+  )) as unknown as RoyaltyReceiver;
 
   const admins = [owner.address, alice.address];
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
   const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, admins], {
     kind: "uups",
-  })) as AdminAccess;
+  })) as unknown as AdminAccess;
 
   const isBeta = true;
 
   const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
   const itemNFTLibrary = await ItemNFTLibrary.deploy();
-  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: itemNFTLibrary.address}});
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {
+    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+  });
   const itemsUri = "ipfs://";
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [world.address, shop.address, royaltyReceiver.address, adminAccess.address, itemsUri, isBeta],
+    [
+      await world.getAddress(),
+      await shop.getAddress(),
+      await royaltyReceiver.getAddress(),
+      await adminAccess.getAddress(),
+      itemsUri,
+      isBeta,
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-    }
-  )) as ItemNFT;
+    },
+  )) as unknown as ItemNFT;
 
-  await shop.setItemNFT(itemNFT.address);
+  await shop.setItemNFT(await itemNFT.getAddress());
   // Create NFT contract which contains all the players
   const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {EstforLibrary: estforLibrary.address},
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
   });
-  const editNameBrushPrice = ethers.utils.parseEther("1");
-  const upgradePlayerBrushPrice = ethers.utils.parseEther("1");
+  const editNameBrushPrice = parseEther("1");
+  const upgradePlayerBrushPrice = parseEther("1");
   const imageBaseUri = "ipfs://";
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
     [
-      brush.address,
-      shop.address,
+      await brush.getAddress(),
+      await shop.getAddress(),
       dev.address,
-      royaltyReceiver.address,
+      await royaltyReceiver.getAddress(),
       editNameBrushPrice,
       upgradePlayerBrushPrice,
       imageBaseUri,
@@ -122,190 +132,204 @@ export const playersFixture = async function () {
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-    }
-  )) as PlayerNFT;
+    },
+  )) as unknown as PlayerNFT;
 
   const promotionsLibrary = (await ethers.deployContract("PromotionsLibrary")) as PromotionsLibrary;
   const Promotions = await ethers.getContractFactory("Promotions", {
-    libraries: {PromotionsLibrary: promotionsLibrary.address},
+    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()},
   });
   const promotions = (await upgrades.deployProxy(
     Promotions,
-    [adminAccess.address, itemNFT.address, playerNFT.address, isBeta],
+    [await adminAccess.getAddress(), await itemNFT.getAddress(), await playerNFT.getAddress(), isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-    }
-  )) as Promotions;
+    },
+  )) as unknown as Promotions;
 
-  const buyPath: [string, string] = [alice.address, brush.address];
+  const buyPath: [string, string] = [alice.address, await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
-  const quests = (await upgrades.deployProxy(Quests, [world.address, router.address, buyPath], {
+  const quests = (await upgrades.deployProxy(Quests, [await world.getAddress(), await router.getAddress(), buyPath], {
     kind: "uups",
-  })) as Quests;
+  })) as unknown as Quests;
 
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
   const initialMMR = 500;
 
   const Clans = await ethers.getContractFactory("Clans", {
-    libraries: {EstforLibrary: estforLibrary.address},
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
   });
   const clans = (await upgrades.deployProxy(
     Clans,
     [
-      brush.address,
-      playerNFT.address,
-      shop.address,
+      await brush.getAddress(),
+      await playerNFT.getAddress(),
+      await shop.getAddress(),
       dev.address,
       editNameBrushPrice,
-      paintSwapMarketplaceWhitelist.address,
+      await paintSwapMarketplaceWhitelist.getAddress(),
       initialMMR,
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-    }
-  )) as Clans;
+    },
+  )) as unknown as Clans;
 
   const WishingWell = await ethers.getContractFactory("WishingWell");
   const wishingWell = (await upgrades.deployProxy(
     WishingWell,
     [
-      brush.address,
-      playerNFT.address,
-      shop.address,
-      world.address,
-      clans.address,
-      ethers.utils.parseEther("5"),
-      ethers.utils.parseEther("1000"),
-      ethers.utils.parseEther("250"),
+      await brush.getAddress(),
+      await playerNFT.getAddress(),
+      await shop.getAddress(),
+      await world.getAddress(),
+      await clans.getAddress(),
+      parseEther("5"),
+      parseEther("1000"),
+      parseEther("250"),
       isBeta,
     ],
     {
       kind: "uups",
-    }
-  )) as WishingWell;
+    },
+  )) as unknown as WishingWell;
 
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   const PetNFT = await ethers.getContractFactory("PetNFT", {
-    libraries: {EstforLibrary: estforLibrary.address, PetNFTLibrary: petNFTLibrary.address},
+    libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
   });
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
     [
-      brush.address,
-      royaltyReceiver.address,
+      await brush.getAddress(),
+      await royaltyReceiver.getAddress(),
       imageBaseUri,
       dev.address,
       editNameBrushPrice,
-      adminAccess.address,
+      await adminAccess.getAddress(),
       isBeta,
     ],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-    }
-  )) as PetNFT;
-  await petNFT.deployed();
+    },
+  )) as unknown as PetNFT;
 
   // This contains all the player data
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplProcessActions = await ethers.deployContract("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1", {
-    libraries: {PlayersLibrary: playersLibrary.address},
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
 
   const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.deployProxy(
     Players,
     [
-      itemNFT.address,
-      playerNFT.address,
-      petNFT.address,
-      world.address,
-      adminAccess.address,
-      quests.address,
-      clans.address,
-      wishingWell.address,
-      playersImplQueueActions.address,
-      playersImplProcessActions.address,
-      playersImplRewards.address,
-      playersImplMisc.address,
-      playersImplMisc1.address,
+      await itemNFT.getAddress(),
+      await playerNFT.getAddress(),
+      await petNFT.getAddress(),
+      await world.getAddress(),
+      await adminAccess.getAddress(),
+      await quests.getAddress(),
+      await clans.getAddress(),
+      await wishingWell.getAddress(),
+      await playersImplQueueActions.getAddress(),
+      await playersImplProcessActions.getAddress(),
+      await playersImplRewards.getAddress(),
+      await playersImplMisc.getAddress(),
+      await playersImplMisc1.getAddress(),
       isBeta,
     ],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-    }
-  )) as Players;
+    },
+  )) as unknown as Players;
 
   const Bank = await ethers.getContractFactory("Bank");
-  const bank = (await upgrades.deployBeacon(Bank)) as Bank;
+  const bank = (await upgrades.deployBeacon(Bank)) as unknown as Bank;
 
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = (await upgrades.deployProxy(
     BankRegistry,
-    [itemNFT.address, playerNFT.address, clans.address, players.address],
+    [await itemNFT.getAddress(), await playerNFT.getAddress(), await clans.getAddress(), await players.getAddress()],
     {
       kind: "uups",
-    }
-  )) as BankRegistry;
+    },
+  )) as unknown as BankRegistry;
 
   const BankFactory = await ethers.getContractFactory("BankFactory");
-  const bankFactory = (await upgrades.deployProxy(BankFactory, [bankRegistry.address, bank.address], {
-    kind: "uups",
-  })) as BankFactory;
+  const bankFactory = (await upgrades.deployProxy(
+    BankFactory,
+    [await bankRegistry.getAddress(), await bank.getAddress()],
+    {
+      kind: "uups",
+    },
+  )) as unknown as BankFactory;
 
   const InstantActions = await ethers.getContractFactory("InstantActions");
-  const instantActions = (await upgrades.deployProxy(InstantActions, [players.address, itemNFT.address], {
-    kind: "uups",
-  })) as InstantActions;
+  const instantActions = (await upgrades.deployProxy(
+    InstantActions,
+    [await players.getAddress(), await itemNFT.getAddress()],
+    {
+      kind: "uups",
+    },
+  )) as unknown as InstantActions;
 
   const oracleAddress = dev.address;
 
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
   const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
     kind: "uups",
-  })) as VRFRequestInfo;
+  })) as unknown as VRFRequestInfo;
 
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
-    [players.address, itemNFT.address, petNFT.address, oracleAddress, mockVRF.address, vrfRequestInfo.address],
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await petNFT.getAddress(),
+      oracleAddress,
+      await mockVRF.getAddress(),
+      await vrfRequestInfo.getAddress(),
+    ],
     {
       kind: "uups",
-    }
-  )) as InstantVRFActions;
+    },
+  )) as unknown as InstantVRFActions;
 
   const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
   const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
     GenericInstantVRFActionStrategy,
-    [instantVRFActions.address],
+    [await instantVRFActions.getAddress()],
     {
       kind: "uups",
-    }
-  )) as GenericInstantVRFActionStrategy;
+    },
+  )) as unknown as GenericInstantVRFActionStrategy;
 
   const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
   const eggInstantVRFActionStrategy = (await upgrades.deployProxy(
     EggInstantVRFActionStrategy,
-    [instantVRFActions.address],
+    [await instantVRFActions.getAddress()],
     {
       kind: "uups",
-    }
-  )) as EggInstantVRFActionStrategy;
+    },
+  )) as unknown as EggInstantVRFActionStrategy;
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
@@ -313,50 +337,56 @@ export const playersFixture = async function () {
   const wftm = await MockWrappedFantom.deploy();
 
   const artGalleryLockPeriod = 3600;
-  const artGallery = await ethers.deployContract("TestPaintSwapArtGallery", [brush.address, artGalleryLockPeriod]);
-  const brushPerSecond = ethers.utils.parseEther("2");
-  const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+  const artGallery = await ethers.deployContract("TestPaintSwapArtGallery", [
+    await brush.getAddress(),
+    artGalleryLockPeriod,
+  ]);
+  const brushPerSecond = parseEther("2");
+  const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
   const decorator = await ethers.deployContract("TestPaintSwapDecorator", [
-    brush.address,
-    artGallery.address,
-    router.address,
-    wftm.address,
+    await brush.getAddress(),
+    await artGallery.getAddress(),
+    await router.getAddress(),
+    await wftm.getAddress(),
     brushPerSecond,
     NOW,
   ]);
 
-  await artGallery.transferOwnership(decorator.address);
+  await artGallery.transferOwnership(await decorator.getAddress());
 
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   const mmrAttackDistance = 4;
   const lockedFundsPeriod = 7 * 86400; // 7 days
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
-    libraries: {EstforLibrary: estforLibrary.address, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
+    libraries: {
+      EstforLibrary: await estforLibrary.getAddress(),
+      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+    },
   });
   const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
     [
-      players.address,
-      clans.address,
-      brush.address,
-      bankFactory.address,
-      itemNFT.address,
-      shop.address,
+      await players.getAddress(),
+      await clans.getAddress(),
+      await brush.getAddress(),
+      await bankFactory.getAddress(),
+      await itemNFT.getAddress(),
+      await shop.getAddress(),
       dev.address,
       oracleAddress,
-      mockVRF.address,
+      await mockVRF.getAddress(),
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
-      adminAccess.address,
+      await adminAccess.getAddress(),
       isBeta,
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-    }
-  )) as LockedBankVaults;
+    },
+  )) as unknown as LockedBankVaults;
 
   // Set K values to 3, 3 to make it easier to get consistent values close to each for same MMR testing
   await lockedBankVaults.setKValues(3, 3);
@@ -366,77 +396,84 @@ export const playersFixture = async function () {
     Territories,
     [
       allTerritories,
-      players.address,
-      clans.address,
-      brush.address,
-      lockedBankVaults.address,
-      itemNFT.address,
+      await players.getAddress(),
+      await clans.getAddress(),
+      await brush.getAddress(),
+      await lockedBankVaults.getAddress(),
+      await itemNFT.getAddress(),
       oracleAddress,
-      mockVRF.address,
+      await mockVRF.getAddress(),
       allBattleSkills,
-      adminAccess.address,
+      await adminAccess.getAddress(),
       isBeta,
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-    }
-  )) as Territories;
+    },
+  )) as unknown as Territories;
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
-    libraries: {EstforLibrary: estforLibrary.address},
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
   });
   const combatantsHelper = (await upgrades.deployProxy(
     CombatantsHelper,
-    [players.address, clans.address, territories.address, lockedBankVaults.address, adminAccess.address, isBeta],
+    [
+      await players.getAddress(),
+      await clans.getAddress(),
+      await territories.getAddress(),
+      await lockedBankVaults.getAddress(),
+      await adminAccess.getAddress(),
+      isBeta,
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-    }
-  )) as CombatantsHelper;
+    },
+  )) as unknown as CombatantsHelper;
 
   const PassiveActions = await ethers.getContractFactory("PassiveActions", {
-    libraries: {WorldLibrary: worldLibrary.address},
+    libraries: {WorldLibrary: await worldLibrary.getAddress()},
   });
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
-    [players.address, itemNFT.address, world.address],
+    [await players.getAddress(), await itemNFT.getAddress(), await world.getAddress()],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-    }
-  )) as PassiveActions;
+    },
+  )) as unknown as PassiveActions;
 
-  await world.setQuests(quests.address);
-  await world.setWishingWell(wishingWell.address);
+  await world.setQuests(await quests.getAddress());
+  await world.setWishingWell(await wishingWell.getAddress());
 
-  await itemNFT.setPlayers(players.address);
-  await playerNFT.setPlayers(players.address);
-  await petNFT.setPlayers(players.address);
-  await quests.setPlayers(players.address);
-  await clans.setPlayers(players.address);
-  await wishingWell.setPlayers(players.address);
+  await itemNFT.setPlayers(await players.getAddress());
+  await playerNFT.setPlayers(await players.getAddress());
+  await petNFT.setPlayers(await players.getAddress());
+  await quests.setPlayers(await players.getAddress());
+  await clans.setPlayers(await players.getAddress());
+  await wishingWell.setPlayers(await players.getAddress());
 
-  await itemNFT.setBankFactory(bankFactory.address);
-  await clans.setBankFactory(bankFactory.address);
+  await itemNFT.setBankFactory(await bankFactory.getAddress());
+  await clans.setBankFactory(await bankFactory.getAddress());
 
-  await itemNFT.setPromotions(promotions.address);
-  await itemNFT.setPassiveActions(passiveActions.address);
-  await itemNFT.setInstantActions(instantActions.address);
+  await itemNFT.setPromotions(await promotions.getAddress());
+  await itemNFT.setPassiveActions(await passiveActions.getAddress());
+  await itemNFT.setInstantActions(await instantActions.getAddress());
 
-  await itemNFT.setInstantVRFActions(instantVRFActions.address);
-  await petNFT.setInstantVRFActions(instantVRFActions.address);
+  await itemNFT.setInstantVRFActions(await instantVRFActions.getAddress());
+  await petNFT.setInstantVRFActions(await instantVRFActions.getAddress());
 
   await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
 
-  await bankRegistry.setLockedBankVaults(lockedBankVaults.address);
+  await bankRegistry.setLockedBankVaults(await lockedBankVaults.getAddress());
 
-  await clans.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
-  await itemNFT.setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
-  await royaltyReceiver.setTerritories(territories.address);
-  await petNFT.setTerritories(territories.address);
-  await territories.setCombatantsHelper(combatantsHelper.address);
-  await lockedBankVaults.setAddresses(territories.address, combatantsHelper.address);
+  await clans.setTerritoriesAndLockedBankVaults(await territories.getAddress(), await lockedBankVaults.getAddress());
+  await itemNFT.setTerritoriesAndLockedBankVaults(await territories.getAddress(), await lockedBankVaults.getAddress());
+  await royaltyReceiver.setTerritories(await territories.getAddress());
+  await petNFT.setTerritories(await territories.getAddress());
+  await territories.setCombatantsHelper(await combatantsHelper.getAddress());
+  await lockedBankVaults.setAddresses(await territories.getAddress(), await combatantsHelper.getAddress());
 
   await players.setAlphaCombatHealing(0); // This was introduced later, so to not mess up existing tests reset this to 0
 

@@ -7,7 +7,9 @@ import {
 } from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers} from "hardhat";
+import {AbiCoder, hexlify, keccak256, randomBytes} from "ethers";
+
+const abiCoder = new AbiCoder();
 
 describe("EggInstantVRFActionStrategy", function () {
   const rewardBasePetIdMin = 2;
@@ -18,9 +20,9 @@ describe("EggInstantVRFActionStrategy", function () {
     inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER1],
     inputAmounts: [1],
     actionId: 1,
-    data: ethers.utils.defaultAbiCoder.encode(
+    data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin, rewardBasePetIdMax}]
+      [0, {rewardBasePetIdMin, rewardBasePetIdMax}],
     ),
     isFullModeOnly: false,
   };
@@ -30,7 +32,7 @@ describe("EggInstantVRFActionStrategy", function () {
     const instantVRFActionInput = {...defaultInstantVRFActionInput};
     await expect(eggInstantVRFActionStrategy.setAction(instantVRFActionInput)).to.be.revertedWithCustomError(
       eggInstantVRFActionStrategy,
-      "OnlyInstantVRFActions"
+      "OnlyInstantVRFActions",
     );
   });
 
@@ -44,7 +46,7 @@ describe("EggInstantVRFActionStrategy", function () {
 
     let num = 1;
     let paddedHex = leftAlignAsBytes2(num);
-    let bytes = ethers.utils.keccak256(paddedHex);
+    let bytes = keccak256(paddedHex);
     let randomWord = parseInt(bytes.slice(2, 6), 16);
     const actionAmount = 1;
 
@@ -60,7 +62,7 @@ describe("EggInstantVRFActionStrategy", function () {
     expect(num % oldNum).to.eq(0);
 
     paddedHex = leftAlignAsBytes2(num);
-    bytes = ethers.utils.keccak256(paddedHex);
+    bytes = keccak256(paddedHex);
     randomWord = parseInt(bytes.slice(2, 6), 16);
 
     res = await eggInstantVRFActionStrategy.getRandomRewards(actionId, actionAmount, [paddedHex], 0);
@@ -73,13 +75,13 @@ describe("EggInstantVRFActionStrategy", function () {
     await eggInstantVRFActionStrategy.setInstantVRFActions(alice.address);
     const instantVRFActionInput = {
       ...defaultInstantVRFActionInput,
-      data: ethers.utils.defaultAbiCoder.encode(
+      data: abiCoder.encode(
         ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-        [0, {rewardBasePetIdMin: 2, rewardBasePetIdMax: 1}]
+        [0, {rewardBasePetIdMin: 2, rewardBasePetIdMax: 1}],
       ),
     };
     await expect(
-      eggInstantVRFActionStrategy.connect(alice).setAction(instantVRFActionInput)
+      eggInstantVRFActionStrategy.connect(alice).setAction(instantVRFActionInput),
     ).to.be.revertedWithCustomError(eggInstantVRFActionStrategy, "BasePetIdMinGreaterThanMax");
   });
 
@@ -93,7 +95,7 @@ describe("EggInstantVRFActionStrategy", function () {
 
     // Construct the padded hexadecimal string with zeros on the right
     const num = 1;
-    const firstWord = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+    const firstWord = hexlify(randomBytes(32));
     const paddedHex1 = leftAlignAsBytes2(num);
     const paddedHex2 = leftAlignAsBytes2(num + 1);
 
@@ -104,10 +106,10 @@ describe("EggInstantVRFActionStrategy", function () {
       actionId,
       actionAmount,
       [firstWord, secondWord],
-      startIndex
+      startIndex,
     );
 
-    let bytes = ethers.utils.keccak256(secondWord);
+    let bytes = keccak256(secondWord);
     const firstPetRandomWord = parseInt(bytes.slice(2, 6), 16);
     const secondPetRandomWord = parseInt(bytes.slice(6, 10), 16);
 

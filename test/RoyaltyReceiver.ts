@@ -16,14 +16,16 @@ describe("RoyaltyReceiver", function () {
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = (await upgrades.deployProxy(
       RoyaltyReceiver,
-      [router.address, pool.address, dev.address, brush.address, wftm],
+      [await router.getAddress(), pool.address, dev.address, await brush.getAddress(), wftm],
       {
         kind: "uups",
-      }
-    )) as RoyaltyReceiver;
+      },
+    )) as unknown as RoyaltyReceiver;
 
-    const mockTerritories = (await ethers.deployContract("MockTerritories", [brush.address])) as MockTerritories;
-    await royaltyReceiver.setTerritories(mockTerritories.address);
+    const mockTerritories = (await ethers.deployContract("MockTerritories", [
+      await brush.getAddress(),
+    ])) as MockTerritories;
+    await royaltyReceiver.setTerritories(await mockTerritories.getAddress());
 
     return {
       RoyaltyReceiver,
@@ -44,12 +46,12 @@ describe("RoyaltyReceiver", function () {
 
     const beforeBalance = await ethers.provider.getBalance(dev.address);
     await alice.sendTransaction({
-      to: royaltyReceiver.address,
+      to: await royaltyReceiver.getAddress(),
       value: 100,
     });
 
     // 1/3 to dao
-    expect(await ethers.provider.getBalance(dev.address)).to.equal(beforeBalance.add(33));
+    expect(await ethers.provider.getBalance(dev.address)).to.equal(beforeBalance + 33n);
 
     // 2/3 buys brush and sends to pool
     expect(await brush.balanceOf(pool.address)).to.equal(6);
@@ -59,14 +61,14 @@ describe("RoyaltyReceiver", function () {
     const {mockTerritories, brush, royaltyReceiver} = await loadFixture(deployContracts);
 
     const MIN_BRUSH_TO_DISTRIBUTE = await royaltyReceiver.MIN_BRUSH_TO_DISTRIBUTE();
-    await brush.mint(royaltyReceiver.address, MIN_BRUSH_TO_DISTRIBUTE.sub(1));
+    await brush.mint(await royaltyReceiver.getAddress(), MIN_BRUSH_TO_DISTRIBUTE - 1n);
     expect(await royaltyReceiver.canDistribute()).to.be.false;
     expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(0);
     await expect(royaltyReceiver.distributeBrush()).to.be.revertedWithCustomError(
       royaltyReceiver,
-      "BrushTooLowToDistribute"
+      "BrushTooLowToDistribute",
     );
-    await brush.mint(royaltyReceiver.address, 1);
+    await brush.mint(await royaltyReceiver.getAddress(), 1);
     expect(await royaltyReceiver.canDistribute()).to.be.true;
     await royaltyReceiver.distributeBrush();
     expect(await royaltyReceiver.canDistribute()).to.be.false;

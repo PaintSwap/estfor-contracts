@@ -5,6 +5,7 @@ import {BasePetInput, PetEnhancementType, PetSkin, Skill} from "@paintswap/estfo
 import {ethers, upgrades} from "hardhat";
 import {PetNFT} from "../typechain-types";
 import {getXPFromLevel} from "./Players/utils";
+import {parseEther} from "ethers";
 
 describe("PetNFT", function () {
   async function deployContracts() {
@@ -116,7 +117,7 @@ describe("PetNFT", function () {
     const randomWord = 1;
     await expect(petNFT.connect(alice).mint(alice.address, baseId, randomWord)).to.be.revertedWithCustomError(
       petNFT,
-      "PetDoesNotExist"
+      "PetDoesNotExist",
     );
   });
 
@@ -125,22 +126,30 @@ describe("PetNFT", function () {
 
     // Confirm that external_url points to main estfor site
     const isBeta = false;
-    const editNameCost = ethers.utils.parseEther("1");
+    const editNameCost = parseEther("1");
     const imageBaseUri = "ipfs://";
     const petNFTNotBeta = (await upgrades.deployProxy(
       PetNFT,
-      [brush.address, royaltyReceiver.address, imageBaseUri, dev.address, editNameCost, adminAccess.address, isBeta],
+      [
+        await brush.getAddress(),
+        await royaltyReceiver.getAddress(),
+        imageBaseUri,
+        await dev.getAddress(),
+        editNameCost,
+        await adminAccess.getAddress(),
+        isBeta,
+      ],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
-      }
-    )) as PetNFT;
+      },
+    )) as unknown as PetNFT;
 
     const randomWord = 1;
     await petNFTNotBeta.addBasePets([pet]);
     await expect(petNFTNotBeta.mint(alice.address, baseId, randomWord)).to.be.revertedWithCustomError(
       petNFTNotBeta,
-      "NotMinter"
+      "NotMinter",
     );
     await petNFTNotBeta.setInstantVRFActions(alice.address);
     await petNFTNotBeta.connect(alice).mint(alice.address, baseId, randomWord);
@@ -178,16 +187,24 @@ describe("PetNFT", function () {
     expect(await petNFT.symbol()).to.be.eq("EK_PETS_B");
 
     const isBeta = false;
-    const editNameCost = ethers.utils.parseEther("1");
+    const editNameCost = parseEther("1");
     const imageBaseUri = "ipfs://";
     const petNFTNotBeta = (await upgrades.deployProxy(
       PetNFT,
-      [brush.address, royaltyReceiver.address, imageBaseUri, dev.address, editNameCost, adminAccess.address, isBeta],
+      [
+        await brush.getAddress(),
+        await royaltyReceiver.getAddress(),
+        imageBaseUri,
+        dev.address,
+        editNameCost,
+        await adminAccess.getAddress(),
+        isBeta,
+      ],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"],
-      }
-    )) as PetNFT;
+      },
+    )) as unknown as PetNFT;
 
     expect(await petNFTNotBeta.name()).to.be.eq("Estfor Pets");
     expect(await petNFTNotBeta.symbol()).to.be.eq("EK_PETS");
@@ -198,7 +215,7 @@ describe("PetNFT", function () {
 
     await expect(petNFT.connect(alice).assignPet(alice.address, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
-      "PlayerDoesNotOwnPet"
+      "PlayerDoesNotOwnPet",
     );
   });
 
@@ -213,7 +230,7 @@ describe("PetNFT", function () {
 
     await expect(petNFT.connect(alice).assignPet(alice.address, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
-      "LevelNotHighEnough"
+      "LevelNotHighEnough",
     );
 
     await players.connect(alice).testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(2), true);
@@ -230,18 +247,18 @@ describe("PetNFT", function () {
 
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
-      "NotPlayersOrAdminAndBeta"
+      "NotPlayersOrAdminAndBeta",
     );
 
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
-      "NotPlayersOrAdminAndBeta"
+      "NotPlayersOrAdminAndBeta",
     );
 
     await petNFT.setPlayers(bob.address);
     await expect(petNFT.connect(bob).assignPet(alice.address, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
-      "NotPlayersOrAdminAndBeta"
+      "NotPlayersOrAdminAndBeta",
     );
   });
 
@@ -254,7 +271,7 @@ describe("PetNFT", function () {
     modifiedPet.skillPercentageMaxs[0] = 0;
     await expect(petNFT.addBasePets([modifiedPet])).to.be.revertedWithCustomError(
       petNFT,
-      "MustHaveAtLeastPercentageOrFixedSet"
+      "MustHaveAtLeastPercentageOrFixedSet",
     );
 
     modifiedPet.skillPercentageMins[0] = 1;
@@ -287,7 +304,7 @@ describe("PetNFT", function () {
     modifiedPet.skillFixedMaxs[1] = 1;
     await expect(petNFT.editBasePets([modifiedPet])).to.be.revertedWithCustomError(
       petNFT,
-      "SkillFixedIncrementCannotBeZero"
+      "SkillFixedIncrementCannotBeZero",
     );
     modifiedPet.skillFixedIncrements[1] = 1;
     await expect(petNFT.editBasePets([modifiedPet])).to.not.be.reverted;
@@ -296,7 +313,7 @@ describe("PetNFT", function () {
     modifiedPet.skillPercentageIncrements[1] = 0;
     await expect(petNFT.editBasePets([modifiedPet])).to.be.revertedWithCustomError(
       petNFT,
-      "SkillPercentageIncrementCannotBeZero"
+      "SkillPercentageIncrementCannotBeZero",
     );
 
     modifiedPet.skillPercentageIncrements[1] = 1;
@@ -309,26 +326,27 @@ describe("PetNFT", function () {
       const {petNFT, playerId, brush, editNameBrushPrice, owner, alice} = await loadFixture(deployContracts);
 
       const name = "My pet name is1";
-      await brush.connect(alice).approve(petNFT.address, editNameBrushPrice.mul(3));
+      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
 
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
 
-      await expect(petNFT.connect(alice).editPet(playerId, petId, name)).to.be.revertedWith(
-        "ERC20: transfer amount exceeds balance"
+      await expect(petNFT.connect(alice).editPet(playerId, petId, name)).to.be.revertedWithCustomError(
+        brush,
+        "ERC20InsufficientBalance",
       );
-      await brush.mint(alice.address, editNameBrushPrice.mul(3));
+      await brush.mint(alice.address, editNameBrushPrice * 3n);
 
-      await expect(petNFT.connect(alice).editPet(playerId.add(1), petId, name)).to.be.revertedWithCustomError(
+      await expect(petNFT.connect(alice).editPet(playerId + 1n, petId, name)).to.be.revertedWithCustomError(
         petNFT,
-        "NotOwnerOfPlayer"
+        "NotOwnerOfPlayer",
       );
 
       await petNFT.connect(alice).safeTransferFrom(alice.address, owner.address, petId, 1, "0x");
       await expect(petNFT.connect(alice).editPet(playerId, petId, name)).to.be.revertedWithCustomError(
         petNFT,
-        "NotOwnerOfPet"
+        "NotOwnerOfPet",
       );
       await petNFT.safeTransferFrom(owner.address, alice.address, petId, 1, "0x");
       await expect(petNFT.connect(alice).editPet(playerId, petId, name))
@@ -338,18 +356,18 @@ describe("PetNFT", function () {
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
       await expect(petNFT.connect(alice).editPet(playerId, petId + 1, name)).to.be.revertedWithCustomError(
         petNFT,
-        "NameAlreadyExists"
+        "NameAlreadyExists",
       );
     });
 
     it("Changing from previous name should relinquish it", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(petNFT.address, editNameBrushPrice.mul(3));
+      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
-      await brush.mint(alice.address, editNameBrushPrice.mul(3));
+      await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       const newName = "CHOO CHOO";
       await petNFT.connect(alice).editPet(playerId, petId, newName);
@@ -360,33 +378,33 @@ describe("PetNFT", function () {
     it("Editing name without actually changing it should revert", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(petNFT.address, editNameBrushPrice.mul(3));
+      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
-      await brush.mint(alice.address, editNameBrushPrice.mul(3));
+      await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       const newName = "CHOO CHOO";
       await petNFT.connect(alice).editPet(playerId, petId, newName);
       await expect(petNFT.connect(alice).editPet(playerId, petId, newName)).to.be.revertedWithCustomError(
         petNFT,
-        "SameName"
+        "SameName",
       );
     });
 
     it("Max 15 charactes for the name", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(petNFT.address, editNameBrushPrice.mul(3));
+      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
-      await brush.mint(alice.address, editNameBrushPrice.mul(3));
+      await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       let newName = "1234567890123456";
       await expect(petNFT.connect(alice).editPet(playerId, petId, newName)).to.be.revertedWithCustomError(
         petNFT,
-        "NameTooLong"
+        "NameTooLong",
       );
       newName = newName.slice(0, newName.length - 1);
       await expect(petNFT.connect(alice).editPet(playerId, petId, newName)).to.not.be.reverted;
@@ -396,55 +414,55 @@ describe("PetNFT", function () {
       // Check "Pet " is not allowed, doesn't matter about case. "PET " should also not be allowed
       const {petNFT, playerId, brush, editNameBrushPrice, owner, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(petNFT.address, editNameBrushPrice.mul(3));
+      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
-      await brush.mint(alice.address, editNameBrushPrice.mul(3));
+      await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       let illegalName = "Pet sdfs";
       await expect(petNFT.connect(alice).editPet(playerId, petId, illegalName)).to.be.revertedWithCustomError(
         petNFT,
-        "IllegalNameStart"
+        "IllegalNameStart",
       );
 
       illegalName = "PET sdfs";
       await expect(petNFT.connect(alice).editPet(playerId, petId, illegalName)).to.be.revertedWithCustomError(
         petNFT,
-        "IllegalNameStart"
+        "IllegalNameStart",
       );
     });
 
     it("Check brush payment goes to expected addresses", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice, dev, territories} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(petNFT.address, editNameBrushPrice.mul(3));
+      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
-      await brush.mint(alice.address, editNameBrushPrice.mul(3));
+      await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       const newName = "New name";
       await petNFT.connect(alice).editPet(playerId, petId, newName);
 
-      const brushBurntPercentage = 25;
-      const brushPoolPercentage = 0;
-      const brushDevPercentage = 25;
-      const brushTerritoriesPercentage = 50;
+      const brushBurntPercentage = 25n;
+      const brushPoolPercentage = 0n;
+      const brushDevPercentage = 25n;
+      const brushTerritoriesPercentage = 50n;
 
       await petNFT.setBrushDistributionPercentages(
         brushBurntPercentage,
         brushPoolPercentage,
         brushDevPercentage,
-        brushTerritoriesPercentage
+        brushTerritoriesPercentage,
       );
 
-      expect(await brush.balanceOf(alice.address)).to.eq(editNameBrushPrice.mul(2));
-      expect(await brush.balanceOf(dev.address)).to.eq(editNameBrushPrice.mul(brushDevPercentage).div(100));
-      expect(await brush.balanceOf(territories.address)).to.eq(
-        editNameBrushPrice.mul(brushTerritoriesPercentage).div(100)
+      expect(await brush.balanceOf(alice.address)).to.eq(editNameBrushPrice * 2n);
+      expect(await brush.balanceOf(dev.address)).to.eq((editNameBrushPrice * brushDevPercentage) / 100n);
+      expect(await brush.balanceOf(await territories.getAddress())).to.eq(
+        (editNameBrushPrice * brushTerritoriesPercentage) / 100n,
       );
-      expect(await brush.amountBurnt()).to.eq(editNameBrushPrice.mul(brushBurntPercentage).div(100));
+      expect(await brush.amountBurnt()).to.eq((editNameBrushPrice * brushBurntPercentage) / 100n);
     });
   });
 

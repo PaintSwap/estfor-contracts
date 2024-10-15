@@ -7,6 +7,7 @@ import {ethers, upgrades} from "hardhat";
 import {getActionId, RATE_MUL, requestAndFulfillRandomWords, SPAWN_MUL} from "./utils";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
 import {MockVRF, World} from "../typechain-types";
+import {Block} from "ethers";
 
 describe("World", function () {
   const deployContracts = async function () {
@@ -26,11 +27,13 @@ describe("World", function () {
     // Create the world
     const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
     const worldLibrary = await WorldLibrary.deploy();
-    const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: worldLibrary.address}});
-    const world = (await upgrades.deployProxy(World, [mockVRF.address], {
+    const World = await ethers.getContractFactory("World", {
+      libraries: {WorldLibrary: await worldLibrary.getAddress()},
+    });
+    const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-    })) as World;
+    })) as unknown as World;
 
     await setDailyAndWeeklyRewards(world);
 
@@ -51,9 +54,8 @@ describe("World", function () {
 
   describe("Seed", function () {
     it("Requesting random words", async function () {
-      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
-        deployContracts
-      );
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} =
+        await loadFixture(deployContracts);
       await world.requestRandomWords();
 
       const startOffset = numDaysRandomWordsInitialized;
@@ -64,78 +66,78 @@ describe("World", function () {
       expect(randomWord).to.eq(0);
 
       // Retrieve the random number
-      await mockVRF.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, await world.getAddress());
       randomWord = await world.randomWords(requestId);
       expect(randomWord).to.not.eq(0);
 
       // Try fulfill same request should fail
-      await expect(mockVRF.fulfill(requestId, world.address)).to.be.reverted;
+      await expect(mockVRF.fulfill(requestId, await world.getAddress())).to.be.reverted;
 
       // Requesting new random word too soon
       await expect(world.requestRandomWords()).to.be.reverted;
 
       // Increase time and check it works
-      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
+      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime.toString()]);
+      await ethers.provider.send("evm_mine", []);
       await world.requestRandomWords();
-      requestId = await world.requestIds(startOffset + 1);
-      await mockVRF.fulfill(requestId, world.address);
+      requestId = await world.requestIds(startOffset + 1n);
+      await mockVRF.fulfill(requestId, await world.getAddress());
 
       // Increase it 2x more, should allow 2 random seeds to be requested
-      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime * 2]);
+      await ethers.provider.send("evm_increaseTime", [Number(minRandomWordsUpdateTime * 2n)]);
+      await ethers.provider.send("evm_mine", []);
       await world.requestRandomWords();
-      requestId = await world.requestIds(startOffset + 2);
-      await mockVRF.fulfill(requestId, world.address);
+      requestId = await world.requestIds(startOffset + 2n);
+      await mockVRF.fulfill(requestId, await world.getAddress());
       await world.requestRandomWords();
-      requestId = await world.requestIds(startOffset + 3);
-      await mockVRF.fulfill(requestId, world.address);
+      requestId = await world.requestIds(startOffset + 3n);
+      await mockVRF.fulfill(requestId, await world.getAddress());
       await expect(world.requestRandomWords()).to.be.reverted;
-      await expect(world.requestIds(startOffset + 4)).to.be.reverted;
+      await expect(world.requestIds(startOffset + 4n)).to.be.reverted;
     });
 
     it("getRandomWord", async function () {
-      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
-        deployContracts
-      );
-      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} =
+        await loadFixture(deployContracts);
+      const {timestamp: currentTimestamp} = (await ethers.provider.getBlock("latest")) as Block;
       expect(await world.hasRandomWord(currentTimestamp)).to.be.false;
-      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
+      await ethers.provider.send("evm_increaseTime", [Number(minRandomWordsUpdateTime)]);
+      await ethers.provider.send("evm_mine", []);
       await world.requestRandomWords();
-      await expect(world.requestIds(numDaysRandomWordsInitialized + 1)).to.be.reverted;
+      await expect(world.requestIds(numDaysRandomWordsInitialized + 1n)).to.be.reverted;
       let requestId = await world.requestIds(numDaysRandomWordsInitialized);
-      await mockVRF.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, await world.getAddress());
       expect(await world.hasRandomWord(currentTimestamp)).to.be.false;
       await world.requestRandomWords();
-      requestId = await world.requestIds(numDaysRandomWordsInitialized + 1);
-      await mockVRF.fulfill(requestId, world.address);
+      requestId = await world.requestIds(numDaysRandomWordsInitialized + 1n);
+      await mockVRF.fulfill(requestId, await world.getAddress());
       expect(await world.hasRandomWord(currentTimestamp)).to.be.true;
       await expect(world.getRandomWord(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
       // Before 5 day offset
-      await expect(world.getRandomWord(currentTimestamp - minRandomWordsUpdateTime * 6)).to.be.revertedWithCustomError(
-        world,
-        "NoValidRandomWord"
-      );
+      await expect(
+        world.getRandomWord(BigInt(currentTimestamp) - minRandomWordsUpdateTime * 6n),
+      ).to.be.revertedWithCustomError(world, "NoValidRandomWord");
       // After offset
-      await expect(world.getRandomWord(currentTimestamp + minRandomWordsUpdateTime)).to.be.revertedWithCustomError(
-        world,
-        "NoValidRandomWord"
-      );
+      await expect(
+        world.getRandomWord(BigInt(currentTimestamp) + minRandomWordsUpdateTime),
+      ).to.be.revertedWithCustomError(world, "NoValidRandomWord");
     });
 
     it("Get multiple words", async function () {
-      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
-        deployContracts
-      );
-      const {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} =
+        await loadFixture(deployContracts);
+      const {timestamp: currentTimestamp} = (await ethers.provider.getBlock("latest")) as Block;
       await expect(world.getMultipleWords(currentTimestamp)).to.be.revertedWithCustomError(world, "NoValidRandomWord");
-      await ethers.provider.send("evm_increaseTime", [minRandomWordsUpdateTime]);
+      await ethers.provider.send("evm_increaseTime", [Number(minRandomWordsUpdateTime)]);
+      await ethers.provider.send("evm_mine", []);
       await world.requestRandomWords();
       let requestId = await world.requestIds(numDaysRandomWordsInitialized);
-      await mockVRF.fulfill(requestId, world.address);
+      await mockVRF.fulfill(requestId, await world.getAddress());
       await expect(world.getMultipleWords(currentTimestamp)).to.be.revertedWithCustomError(world, "NoValidRandomWord");
       await world.requestRandomWords();
-      requestId = await world.requestIds(numDaysRandomWordsInitialized + 1);
-      await expect(mockVRF.fulfill(requestId, world.address)).to.not.be.reverted;
+      requestId = await world.requestIds(numDaysRandomWordsInitialized + 1n);
+      await expect(mockVRF.fulfill(requestId, await world.getAddress())).to.not.be.reverted;
     });
 
     it("Test new random rewards", async function () {
@@ -145,9 +147,10 @@ describe("World", function () {
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
-      let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
-      let timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay) + 1; // Start next monday
+      let {timestamp: current1} = (await ethers.provider.getBlock("latest")) as Block;
+      let timestamp = Math.floor((current1 - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay) + 1; // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+      await ethers.provider.send("evm_mine", []);
 
       let dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
 
@@ -164,9 +167,10 @@ describe("World", function () {
       // Do another week check that the dailyRewards are different
       expect(await world.getActiveDailyAndWeeklyRewards(1, playerId)).to.not.eql(dailyRewards);
       dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
-      ({timestamp: currentTimestamp} = await ethers.provider.getBlock("latest"));
-      timestamp = currentTimestamp + oneWeek; // Start next monday
+      let {timestamp: current2} = (await ethers.provider.getBlock("latest")) as Block;
+      timestamp = current2 + oneWeek; // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+      await ethers.provider.send("evm_mine", []);
       error = false;
       while (!error) {
         try {
@@ -186,9 +190,10 @@ describe("World", function () {
       const playerId = 1;
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
-      let {timestamp: currentTimestamp} = await ethers.provider.getBlock("latest");
+      let {timestamp: currentTimestamp} = (await ethers.provider.getBlock("latest")) as Block;
       let timestamp = Math.floor((currentTimestamp - 4 * oneDay) / oneWeek) * oneWeek + (oneWeek + 4 * oneDay) + 1; // Start next monday
       await ethers.provider.send("evm_setNextBlockTimestamp", [timestamp]);
+      await ethers.provider.send("evm_mine", []);
 
       // Keep requesting
       while (true) {
@@ -239,8 +244,9 @@ describe("World", function () {
           combatStats: EstforTypes.emptyCombatStats,
         },
       ]);
-      const actionId = await getActionId(tx);
-      expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
+      const actionId = await getActionId(tx, world);
+      const {skill} = await world.actions(actionId);
+      expect(skill).to.eq(BigInt(EstforTypes.Skill.COMBAT));
 
       actionInfo.xpPerHour = 20;
       await world.editActions([
@@ -306,7 +312,7 @@ describe("World", function () {
           combatStats: EstforTypes.emptyCombatStats,
         },
       ]);
-      const actionId = await getActionId(tx);
+      const actionId = await getActionId(tx, world);
       expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
 
       await world.editActions([
@@ -357,8 +363,8 @@ describe("World", function () {
               inputTokenIds: [EstforConstants.AIR_SCROLL],
               inputAmounts: [1],
             },
-          ]
-        )
+          ],
+        ),
       ).to.be.revertedWithCustomError(world, "ActionChoiceIdZeroNotAllowed");
     });
 
@@ -396,16 +402,16 @@ describe("World", function () {
               inputAmounts: [1],
             },
           ],
-        ]
+        ],
       );
 
       // Check that they exist
       expect((await world.getActionChoice(EstforConstants.NONE, 1)).skill).to.eq(EstforTypes.Skill.MAGIC);
       expect((await world.getActionChoice(EstforConstants.ACTION_ALCHEMY_ITEM, 2)).skill).to.eq(
-        EstforTypes.Skill.ALCHEMY
+        EstforTypes.Skill.ALCHEMY,
       );
       expect((await world.getActionChoice(EstforConstants.ACTION_ALCHEMY_ITEM, 3)).skill).to.eq(
-        EstforTypes.Skill.ALCHEMY
+        EstforTypes.Skill.ALCHEMY,
       );
     });
 
@@ -425,19 +431,19 @@ describe("World", function () {
 
       actionChoiceInput.inputAmounts[0] = 4;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
 
       actionChoiceInput.inputAmounts[0] = 1;
       actionChoiceInput.inputAmounts[1] = 4;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
 
       actionChoiceInput.inputAmounts[1] = 2;
       actionChoiceInput.inputAmounts[2] = 1;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
 
       actionChoiceInput.inputAmounts[2] = 3;
@@ -464,12 +470,12 @@ describe("World", function () {
       };
 
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "TooManyInputItems");
 
       actionChoiceInput.inputTokenIds = [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "LengthMismatch");
 
       actionChoiceInput.inputTokenIds = [
@@ -478,7 +484,7 @@ describe("World", function () {
         EstforConstants.BRONZE_ARROW,
       ];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "InputItemNoDuplicates");
     });
 
@@ -499,17 +505,17 @@ describe("World", function () {
       };
 
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "TooManyMinSkills");
 
       actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "LengthMismatch");
 
       actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.WOODCUTTING];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "MinimumSkillsNoDuplicates");
     });
 
@@ -530,13 +536,13 @@ describe("World", function () {
       };
 
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "OutputAmountCannotBeZero");
 
       actionChoiceInput.outputAmount = 1;
       actionChoiceInput.outputTokenId = EstforConstants.NONE;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
       ).to.be.revertedWithCustomError(worldLibrary, "OutputTokenIdCannotBeEmpty");
     });
 
@@ -557,7 +563,7 @@ describe("World", function () {
             inputTokenIds: [EstforConstants.AIR_SCROLL],
             inputAmounts: [1],
           },
-        ]
+        ],
       );
 
       await world.editActionChoices(
@@ -572,7 +578,7 @@ describe("World", function () {
             inputTokenIds: [EstforConstants.AIR_SCROLL],
             inputAmounts: [2],
           },
-        ]
+        ],
       );
 
       let actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
@@ -591,7 +597,7 @@ describe("World", function () {
             inputTokenIds: [EstforConstants.AIR_SCROLL],
             inputAmounts: [10],
           },
-        ]
+        ],
       );
       actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
       expect(actionChoice.inputAmount1).to.eq(10);
@@ -616,8 +622,8 @@ describe("World", function () {
               minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
               minXPs: [1, 2, 3],
             },
-          ]
-        )
+          ],
+        ),
       ).to.be.revertedWithCustomError(worldLibrary, "FirstMinSkillMustBeActionChoiceSkill");
 
       await expect(
@@ -636,8 +642,8 @@ describe("World", function () {
               minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
               minXPs: [1, 2, 3],
             },
-          ]
-        )
+          ],
+        ),
       ).to.not.be.reverted;
     });
 
@@ -659,7 +665,7 @@ describe("World", function () {
             minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
             minXPs: [1, 2, 3],
           },
-        ]
+        ],
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
@@ -688,7 +694,7 @@ describe("World", function () {
             inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.MITHRIL_ARROW],
             inputAmounts: [1, 256, 6553],
           },
-        ]
+        ],
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
@@ -732,7 +738,7 @@ describe("World", function () {
 
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "GuaranteedRewardsNoDuplicates"
+        "GuaranteedRewardsNoDuplicates",
       );
       action.guaranteedRewards[0].itemTokenId = SHADOW_SCROLL;
       await expect(world.addActions([action])).to.not.be.reverted;
@@ -769,17 +775,17 @@ describe("World", function () {
 
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "RandomRewardsMustBeInOrder"
+        "RandomRewardsMustBeInOrder",
       );
       action.randomRewards[0].chance = 300;
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "RandomRewardsMustBeInOrder"
+        "RandomRewardsMustBeInOrder",
       );
       action.randomRewards[1].chance = 250;
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "RandomRewardsMustBeInOrder"
+        "RandomRewardsMustBeInOrder",
       );
       action.randomRewards[2].chance = 225;
       await expect(world.addActions([action])).to.not.be.reverted;
@@ -847,7 +853,7 @@ describe("World", function () {
 
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         world,
-        "NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards"
+        "NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards",
       );
       action.info.actionChoiceRequired = false;
       await expect(world.addActions([action])).to.not.be.reverted;

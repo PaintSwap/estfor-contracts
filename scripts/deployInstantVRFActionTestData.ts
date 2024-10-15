@@ -2,16 +2,15 @@ import {ethers} from "hardhat";
 import {INSTANT_VRF_ACTIONS_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {InstantVRFActions} from "../typechain-types";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(
-    `Deploying instant VRF test data using account: ${owner.address} on chain id ${await owner.getChainId()}`
-  );
+  console.log(`Deploying instant VRF test data using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const instantVRFActions = (await ethers.getContractAt(
     "InstantVRFActions",
-    INSTANT_VRF_ACTIONS_ADDRESS
+    INSTANT_VRF_ACTIONS_ADDRESS,
   )) as InstantVRFActions;
 
   const amount = 64;
@@ -25,7 +24,7 @@ async function main() {
       EstforConstants.SECRET_EGG_4_TIER3,
       EstforConstants.EGG_TIER3,
     ],
-    [12, 12, 12, 12, 16]
+    [12, 12, 12, 12, 16],
   );
   await tx.wait();
   console.log("test Mint");
@@ -43,7 +42,7 @@ async function main() {
     [12, 12, 12, 12, 16],
     {
       value: await instantVRFActions.requestCost(amount),
-    }
+    },
   );
   await tx.wait();
 }

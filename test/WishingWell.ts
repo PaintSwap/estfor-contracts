@@ -6,6 +6,7 @@ import {requestAndFulfillRandomWords} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
+import {Block, parseEther} from "ethers";
 
 describe("WishingWell", function () {
   async function deployContracts() {
@@ -14,15 +15,16 @@ describe("WishingWell", function () {
     const {alice, wishingWell, brush, itemNFT, world, mockVRF} = baseFixture;
 
     // Make sure it passes the next checkpoint so there are no issues running
-    const {timestamp} = await ethers.provider.getBlock("latest");
+    const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
     const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
     const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
     await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
-    const totalBrush = ethers.utils.parseEther("100000");
+    const totalBrush = parseEther("100000");
     await brush.mint(alice.address, totalBrush);
-    await brush.connect(alice).approve(wishingWell.address, totalBrush);
+    await brush.connect(alice).approve(await wishingWell.getAddress(), totalBrush);
 
     const boostDuration = 3600;
     await itemNFT.addItems([
@@ -117,27 +119,27 @@ describe("WishingWell", function () {
     const {wishingWell, alice} = await loadFixture(deployContracts);
     await expect(wishingWell.connect(alice).donate(alice.address, 0, 100)).to.be.revertedWithCustomError(
       wishingWell,
-      "NotPlayers"
+      "NotPlayers",
     );
   });
 
   it("Donate without using a player", async function () {
     const {shop, players, brush, alice, totalBrush} = await loadFixture(deployContracts);
-    await players.connect(alice).donate(0, ethers.utils.parseEther("1"));
-    expect(await brush.balanceOf(alice.address)).to.eq(totalBrush.sub(ethers.utils.parseEther("1")));
-    expect(await brush.balanceOf(shop.address)).to.eq(ethers.utils.parseEther("1"));
+    await players.connect(alice).donate(0, parseEther("1"));
+    expect(await brush.balanceOf(alice.address)).to.eq(totalBrush - parseEther("1"));
+    expect(await brush.balanceOf(await shop.getAddress())).to.eq(parseEther("1"));
   });
 
   it("Donate with player", async function () {
     const {shop, players, brush, alice, totalBrush, playerId} = await loadFixture(deployContracts);
-    const amount = ethers.utils.parseEther("1");
+    const amount = parseEther("1");
     await players.connect(alice).donate(playerId, amount);
-    expect(await brush.balanceOf(alice.address)).to.eq(totalBrush.sub(amount));
-    expect(await brush.balanceOf(shop.address)).to.eq(amount);
+    expect(await brush.balanceOf(alice.address)).to.eq(totalBrush - amount);
+    expect(await brush.balanceOf(await shop.getAddress())).to.eq(amount);
 
-    await expect(players.connect(alice).donate(playerId.add(1), amount)).to.be.revertedWithCustomError(
+    await expect(players.connect(alice).donate(playerId + 1n, amount)).to.be.revertedWithCustomError(
       players,
-      "NotOwnerOfPlayer"
+      "NotOwnerOfPlayer",
     );
   });
 
@@ -150,6 +152,7 @@ describe("WishingWell", function () {
     await players.connect(alice).donate(playerId, raffleEntryCost);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.true;
@@ -183,9 +186,9 @@ describe("WishingWell", function () {
 
     let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
-    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("0.1"))).to.revertedWithCustomError(
+    await expect(players.connect(alice).donate(playerId, parseEther("0.1"))).to.revertedWithCustomError(
       wishingWell,
-      "MinimumOneBrush"
+      "MinimumOneBrush",
     );
   });
 
@@ -212,26 +215,26 @@ describe("WishingWell", function () {
 
     let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
-    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1.1")))
+    await expect(players.connect(alice).donate(playerId, parseEther("1.1")))
       .to.emit(wishingWell, "Donate")
-      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0)
+      .withArgs(alice.address, playerId, parseEther("1"), 0, 0)
       .and.to.emit(wishingWell, "DonateToClan")
-      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), clanId);
+      .withArgs(alice.address, playerId, parseEther("1"), clanId);
 
     // But it takes 1.1 brush from you
-    expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance.sub(ethers.utils.parseEther("1.1")));
+    expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance - parseEther("1.1"));
 
-    expect(await wishingWell.getTotalDonated()).to.eq(ethers.utils.parseEther("1"));
-    expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("1"));
+    expect(await wishingWell.getTotalDonated()).to.eq(parseEther("1"));
+    expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(parseEther("1"));
 
-    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1.99")))
+    await expect(players.connect(alice).donate(playerId, parseEther("1.99")))
       .to.emit(wishingWell, "Donate")
-      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0)
+      .withArgs(alice.address, playerId, parseEther("1"), 0, 0)
       .and.to.emit(wishingWell, "DonateToClan")
-      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), clanId);
+      .withArgs(alice.address, playerId, parseEther("1"), clanId);
 
-    expect(await wishingWell.getTotalDonated()).to.eq(ethers.utils.parseEther("2"));
-    expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(ethers.utils.parseEther("2"));
+    expect(await wishingWell.getTotalDonated()).to.eq(parseEther("2"));
+    expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(parseEther("2"));
   });
 
   it("Reach minimum to get a ticket", async function () {
@@ -239,12 +242,12 @@ describe("WishingWell", function () {
 
     let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(1);
-    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1")))
+    await expect(players.connect(alice).donate(playerId, parseEther("1")))
       .to.emit(wishingWell, "Donate")
-      .withArgs(alice.address, playerId, ethers.utils.parseEther("1"), 0, 0);
+      .withArgs(alice.address, playerId, parseEther("1"), 0, 0);
     expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.false;
 
-    await players.connect(alice).donate(playerId, raffleEntryCost.sub(1));
+    await players.connect(alice).donate(playerId, raffleEntryCost - 1n);
     expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.false;
 
     // Now check that minimum works
@@ -259,15 +262,17 @@ describe("WishingWell", function () {
     const {wishingWell, players, alice, world, mockVRF, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost));
     await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
 
     let lotteryId = await wishingWell.lastLotteryId();
     expect(lotteryId).to.eq(2);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.be.revertedWithCustomError(
       wishingWell,
-      "OracleNotCalledYet"
+      "OracleNotCalledYet",
     );
     await requestAndFulfillRandomWords(world, mockVRF);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.not.be.reverted;
@@ -293,51 +298,50 @@ describe("WishingWell", function () {
     const nextThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextThreshold).to.be.gt(0);
 
-    await players.connect(alice).donate(0, nextThreshold.sub(ethers.utils.parseEther("2")));
-    await expect(players.connect(alice).donate(playerId, ethers.utils.parseEther("1"))).to.not.emit(
+    await players.connect(alice).donate(0, nextThreshold - parseEther("2"));
+    await expect(players.connect(alice).donate(playerId, parseEther("1"))).to.not.emit(
       wishingWell,
-      "LastGlobalDonationThreshold"
+      "LastGlobalDonationThreshold",
     );
 
-    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1").toString()))
+    await expect(players.connect(alice).donate(0, parseEther("1").toString()))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("1000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .withArgs(parseEther("1000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
-    expect(await wishingWell.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("2000"));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(parseEther("2000"));
 
-    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1500")))
+    await expect(players.connect(alice).donate(0, parseEther("1500")))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE_3)
+      .withArgs(parseEther("2000"), EstforConstants.PRAY_TO_THE_BEARDIE_3)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     // Donated 500 above the old threshold, should be
-    expect(await wishingWell.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("3000"));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(parseEther("3000"));
 
     // Should go back to the start
-    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("499"))).to.not.emit(
+    await expect(players.connect(alice).donate(0, parseEther("499"))).to.not.emit(
       wishingWell,
-      "LastGlobalDonationThreshold"
+      "LastGlobalDonationThreshold",
     );
-    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("1")))
+    await expect(players.connect(alice).donate(0, parseEther("1")))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("3000"), EstforConstants.PRAY_TO_THE_BEARDIE)
+      .withArgs(parseEther("3000"), EstforConstants.PRAY_TO_THE_BEARDIE)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
     // Go over multiple increments
-    await expect(players.connect(alice).donate(0, ethers.utils.parseEther("3500")))
+    await expect(players.connect(alice).donate(0, parseEther("3500")))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
-      .withArgs(ethers.utils.parseEther("6000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
+      .withArgs(parseEther("6000"), EstforConstants.PRAY_TO_THE_BEARDIE_2)
       .and.to.emit(players, "ConsumeGlobalBoostVial");
 
-    expect(await wishingWell.getTotalDonated()).to.eq(ethers.utils.parseEther("6500"));
-    expect(await wishingWell.getNextGlobalThreshold()).to.eq(ethers.utils.parseEther("7000"));
+    expect(await wishingWell.getTotalDonated()).to.eq(parseEther("6500"));
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(parseEther("7000"));
   });
 
   it("Check clan boost rotation", async function () {
-    const {wishingWell, players, alice, playerId, raffleEntryCost, brush, clans, bob, totalBrush} = await loadFixture(
-      deployContracts
-    );
+    const {wishingWell, players, alice, playerId, raffleEntryCost, brush, clans, bob, totalBrush} =
+      await loadFixture(deployContracts);
 
     // Be a member of a clan
     const clanId = 1;
@@ -357,7 +361,7 @@ describe("WishingWell", function () {
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     await brush.mint(bob.address, totalBrush);
-    await brush.connect(bob).approve(wishingWell.address, totalBrush);
+    await brush.connect(bob).approve(await wishingWell.getAddress(), totalBrush);
 
     await wishingWell.setClanDonationThresholdIncrement(raffleEntryCost);
 
@@ -373,7 +377,7 @@ describe("WishingWell", function () {
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
-      .withArgs(clanId, raffleEntryCost.mul(2), EstforConstants.CLAN_BOOSTER_3)
+      .withArgs(clanId, raffleEntryCost * 2n, EstforConstants.CLAN_BOOSTER_3)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
     expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
@@ -381,24 +385,24 @@ describe("WishingWell", function () {
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
-      .withArgs(clanId, raffleEntryCost.mul(3), EstforConstants.CLAN_BOOSTER)
+      .withArgs(clanId, raffleEntryCost * 3n, EstforConstants.CLAN_BOOSTER)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
     expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_3);
 
-    await expect(players.connect(alice).donate(playerId, raffleEntryCost.mul(7).add(ethers.utils.parseEther("1"))))
+    await expect(players.connect(alice).donate(playerId, raffleEntryCost * 7n + parseEther("1")))
       .to.emit(wishingWell, "LastClanDonationThreshold")
-      .withArgs(clanId, raffleEntryCost.mul(10), EstforConstants.CLAN_BOOSTER_2)
+      .withArgs(clanId, raffleEntryCost * 10n, EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
-    expect(ethers.utils.parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost.mul(10).add(ethers.utils.parseEther("1"))
+    expect(parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+      raffleEntryCost * 10n + parseEther("1"),
     );
 
-    expect(await wishingWell.getNextClanThreshold(clanId)).to.eq(raffleEntryCost.mul(11));
+    expect(await wishingWell.getNextClanThreshold(clanId)).to.eq(raffleEntryCost * 11n);
   });
 
   it("Check claiming previous claims works up to 3 other lotteries ago", async function () {
@@ -422,9 +426,10 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(wishingWell.address, totalBrush);
+    await brush.connect(owner).approve(await wishingWell.getAddress(), totalBrush);
     for (let i = 0; i < 3; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser" + i, false);
       await players.connect(owner).donate(newPlayerId, raffleEntryCost);
@@ -432,6 +437,7 @@ describe("WishingWell", function () {
 
     // Should no longer be claimable
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
@@ -444,11 +450,13 @@ describe("WishingWell", function () {
     lotteryId = await wishingWell.lastLotteryId();
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "should work now" + i, false);
       await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     }
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
@@ -463,12 +471,14 @@ describe("WishingWell", function () {
     lotteryId = await wishingWell.lastLotteryId();
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(playerId);
     expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(lotteryId);
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
     await players.connect(owner).donate(newPlayerId, raffleEntryCost);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(playerId);
     expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId);
@@ -476,7 +486,7 @@ describe("WishingWell", function () {
     await players.connect(alice).processActions(playerId); // claim the rewards
 
     expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(newPlayerId);
-    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 1);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 1n);
 
     expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(0);
     expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(0);
@@ -491,42 +501,44 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(wishingWell.address, totalBrush);
+    await brush.connect(owner).approve(await wishingWell.getAddress(), totalBrush);
     for (let i = 0; i < 2; ++i) {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).donate(playerId, raffleEntryCost);
     }
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(playerId);
     expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId);
     expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(playerId);
-    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 1);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 1n);
     expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(playerId);
-    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(lotteryId + 2);
+    expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(lotteryId + 2n);
 
     await players.connect(alice).processActions(playerId);
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.be.true;
     expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(playerId);
-    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId + 1);
+    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId + 1n);
     expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(playerId);
-    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 2);
+    expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(lotteryId + 2n);
     expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(0);
     expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(0);
 
     await players.connect(alice).processActions(playerId);
-    expect(await wishingWell.hasClaimedReward(lotteryId + 1)).to.be.true;
+    expect(await wishingWell.hasClaimedReward(lotteryId + 1n)).to.be.true;
     expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(playerId);
-    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId + 2);
+    expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(lotteryId + 2n);
     expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(0);
     expect(await wishingWell.lastUnclaimedWinners(3)).to.eq(0);
     expect(await wishingWell.lastUnclaimedWinners(4)).to.eq(0);
     expect(await wishingWell.lastUnclaimedWinners(5)).to.eq(0);
 
     await players.connect(alice).processActions(playerId);
-    expect(await wishingWell.hasClaimedReward(lotteryId + 2)).to.be.true;
+    expect(await wishingWell.hasClaimedReward(lotteryId + 2n)).to.be.true;
     expect(await wishingWell.lastUnclaimedWinners(0)).to.eq(0);
     expect(await wishingWell.lastUnclaimedWinners(1)).to.eq(0);
     expect(await wishingWell.lastUnclaimedWinners(2)).to.eq(0);
@@ -547,7 +559,7 @@ describe("WishingWell", function () {
       0,
       0,
       raffleEntryCost, // donation
-      EstforTypes.ActionQueueStatus.NONE
+      EstforTypes.ActionQueueStatus.NONE,
     );
 
     // Should have the implicit boost
@@ -557,9 +569,8 @@ describe("WishingWell", function () {
   });
 
   it("Get extra XP boost as part of queueing a wishingWell, do not override lottery winnings", async function () {
-    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockVRF, wishingWell} = await loadFixture(
-      deployContracts
-    );
+    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockVRF, wishingWell} =
+      await loadFixture(deployContracts);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -569,6 +580,7 @@ describe("WishingWell", function () {
     await players.connect(alice).donate(playerId, raffleEntryCost);
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+    await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
 
     const winnerInfo = await wishingWell.winners(lotteryId);
@@ -583,8 +595,8 @@ describe("WishingWell", function () {
         0,
         0,
         raffleEntryCost, // donation
-        EstforTypes.ActionQueueStatus.NONE
-      )
+        EstforTypes.ActionQueueStatus.NONE,
+      ),
     )
       .to.emit(wishingWell, "ClaimedLotteryWinnings")
       .withArgs(lotteryId, 1, EstforConstants.LUCKY_POTION, 1);
@@ -616,20 +628,20 @@ describe("WishingWell", function () {
     let tierId = 1;
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
-    await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
-    expect(ethers.utils.parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost.mul(2)
+    await players.connect(alice).donate(playerId, raffleEntryCost * 2n);
+    expect(parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
+      raffleEntryCost * 2n,
     );
   });
 
   it("setGlobalDonationThresholdIncrement()", async function () {
     const {wishingWell, players, alice, playerId, raffleEntryCost} = await loadFixture(deployContracts);
 
-    await players.connect(alice).donate(playerId, raffleEntryCost.mul(2));
-    await wishingWell.setGlobalDonationThresholdIncrement(raffleEntryCost.mul(3));
-    expect(await wishingWell.getNextGlobalThreshold()).to.eq(raffleEntryCost.mul(3));
+    await players.connect(alice).donate(playerId, raffleEntryCost * 2n);
+    await wishingWell.setGlobalDonationThresholdIncrement(raffleEntryCost * 3n);
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(raffleEntryCost * 3n);
     await players.connect(alice).donate(playerId, raffleEntryCost); // Hit it
-    await wishingWell.setGlobalDonationThresholdIncrement(raffleEntryCost.mul(2));
-    expect(await wishingWell.getNextGlobalThreshold()).to.eq(raffleEntryCost.mul(5));
+    await wishingWell.setGlobalDonationThresholdIncrement(raffleEntryCost * 2n);
+    expect(await wishingWell.getNextGlobalThreshold()).to.eq(raffleEntryCost * 5n);
   });
 });

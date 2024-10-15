@@ -3,11 +3,13 @@ import {ethers} from "hardhat";
 import {PROMOTIONS_ADDRESS} from "./contractAddresses";
 import {Promotions} from "../typechain-types";
 import {Promotion} from "@paintswap/estfor-definitions/types";
+import {getChainId} from "./utils";
+import {parseEther} from "ethers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
 
-  console.log(`Add a promotion using account: ${owner.address} on chain id: ${await owner.getChainId()}`);
+  console.log(`Add a promotion using account: ${owner.address} on chain id: ${await getChainId(owner)}`);
   const promotions = (await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)) as Promotions;
 
   /*
@@ -42,7 +44,7 @@ async function main() {
     minTotalXP: 0,
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
-    brushCostMissedDay: ethers.utils.parseEther("25"),
+    brushCostMissedDay: parseEther("25"),
     brushCost: "0",
     redeemCodeLength: 0,
     adminOnly: false,

@@ -1,9 +1,10 @@
 import {ethers, upgrades} from "hardhat";
 import {BAZAAR_ADDRESS, ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Set bazaar using account: ${owner.address} on chain ${await owner.getChainId()}`);
+  console.log(`Set bazaar using account: ${owner.address} on chain ${await getChainId(owner)}`);
 
   const timeout = 600 * 1000; // 10 minutes
 

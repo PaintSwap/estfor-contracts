@@ -27,6 +27,7 @@ import {avatarIds, avatarInfos} from "../../scripts/data/avatars";
 import {allXPThresholdRewards} from "../../scripts/data/xpThresholdRewards";
 import {allItems} from "../../scripts/data/items";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
+import {Block} from "ethers";
 
 describe("Fuzz testing", async function () {
   // TODO - Add fuzz testing for clans
@@ -87,7 +88,7 @@ describe("Fuzz testing", async function () {
         allActionChoicesMelee,
         allActionChoicesMagic,
         allActionChoicesRanged,
-      ]
+      ],
     );
 
     const boosts = [
@@ -113,7 +114,7 @@ describe("Fuzz testing", async function () {
       let rightHandEquipmentTokenId = EstforConstants.NONE;
       let leftHandEquipmentTokenId = EstforConstants.NONE;
       let actionChoice = null;
-      let minXP = 0;
+      let minXP = 0n;
       if (action.info.actionChoiceRequired) {
         if (isCombat) {
           const choiceIds = [
@@ -185,7 +186,7 @@ describe("Fuzz testing", async function () {
           rightHandItem.minXP != 0 &&
           hasItemMinimumRequirements
         ) {
-          hasItemMinimumRequirements = (await players.xp(playerId, rightHandItem.skill)).gte(rightHandItem.minXP);
+          hasItemMinimumRequirements = (await players.xp(playerId, rightHandItem.skill)) >= rightHandItem.minXP;
         } else if (!rightHandItem) {
           hasItemMinimumRequirements = false;
         }
@@ -193,7 +194,7 @@ describe("Fuzz testing", async function () {
       if (leftHandEquipmentTokenId != EstforConstants.NONE) {
         leftHandItem = allItems.find((inputItem) => inputItem.tokenId == leftHandEquipmentTokenId);
         if (leftHandItem && leftHandItem.skill != Skill.NONE && leftHandItem.minXP != 0 && hasItemMinimumRequirements) {
-          hasItemMinimumRequirements = (await players.xp(playerId, leftHandItem.skill)).gte(leftHandItem.minXP);
+          hasItemMinimumRequirements = (await players.xp(playerId, leftHandItem.skill)) >= leftHandItem.minXP;
         } else if (!leftHandItem) {
           hasItemMinimumRequirements = false;
         }
@@ -202,14 +203,14 @@ describe("Fuzz testing", async function () {
       const timespan = Math.floor(Math.random() * 24 * 3601); // Up to 24 hours
       let hasActionMinimumRequirements = true;
       if (!isCombat) {
-        hasActionMinimumRequirements = (await players.xp(playerId, action.info.skill)).gte(action.info.minXP);
+        hasActionMinimumRequirements = (await players.xp(playerId, action.info.skill)) >= action.info.minXP;
       }
       const correctChoiceId =
         (!action.info.actionChoiceRequired && choiceId == EstforConstants.NONE) ||
         (action.info.actionChoiceRequired && choiceId != EstforConstants.NONE);
       let hasActionChoiceMinimumRequirements = true;
       if (actionChoice != null) {
-        hasActionChoiceMinimumRequirements = (await players.xp(playerId, actionChoice.skill)).gte(minXP);
+        hasActionChoiceMinimumRequirements = (await players.xp(playerId, actionChoice.skill)) >= minXP;
       }
 
       const correctCombatStyle = (combatStyle == EstforTypes.CombatStyle.NONE) !== isCombat;
@@ -239,12 +240,13 @@ describe("Fuzz testing", async function () {
       const actionQueueLength = (await players.getActionQueue(playerId)).length;
       if (actionQueueLength == 3) {
         // Check if the first action has finished
-        const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+        const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         const firstAction = (await players.getActionQueue(playerId))[0];
         if ((await players.players(playerId)).currentActionStartTime + firstAction.timespan >= NOW) {
           await ethers.provider.send("evm_increaseTime", [
-            (await players.players(playerId)).currentActionStartTime + firstAction.timespan - NOW,
+            (await players.players(playerId)).currentActionStartTime + firstAction.timespan - BigInt(NOW),
           ]);
+          await ethers.provider.send("evm_mine", []);
         }
       }
 
@@ -254,7 +256,7 @@ describe("Fuzz testing", async function () {
           hasActionMinimumRequirements,
           hasActionChoiceMinimumRequirements,
           correctCombatStyle,
-          correctChoiceId
+          correctChoiceId,
         );
         if (!hasActionMinimumRequirements) {
           console.log(action);
@@ -264,7 +266,7 @@ describe("Fuzz testing", async function () {
         await expect(
           players
             .connect(alice)
-            .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS)
+            .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS),
         ).to.be.reverted;
       } else {
         console.log("Right hand", rightHandEquipmentTokenId);
@@ -276,6 +278,7 @@ describe("Fuzz testing", async function () {
       }
 
       await ethers.provider.send("evm_increaseTime", [Math.floor(Math.random() * 24 * 3600)]);
+      await ethers.provider.send("evm_mine", []);
     }
 
     // Confirm Level 100 of all skills are reached

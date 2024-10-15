@@ -17,68 +17,68 @@ import {
   SHOP_ADDRESS,
 } from "./contractAddresses";
 import {allTerritories, allBattleSkills} from "./data/territories";
-import {verifyContracts} from "./utils";
-import {DecoratorProvider, ItemNFT} from "../typechain-types";
+import {getChainId, verifyContracts} from "./utils";
+import {BankRegistry, Clans, DecoratorProvider, ItemNFT, LockedBankVaults, Territories} from "../typechain-types";
 import "dotenv/config";
 import {allItems} from "./data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
-import {FeeData} from "@ethersproject/providers";
+import {FeeData} from "ethers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  console.log(`Deploying clan wars contracts: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Deploying clan wars contracts: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const timeout = 600 * 1000; // 10 minutes
 
   const estforLibrary = await ethers.deployContract("EstforLibrary");
-  await estforLibrary.deployed();
-  console.log(`estforLibrary = "${estforLibrary.address.toLowerCase()}"`);
+
+  console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
 
   // Clan
   const Clans = (
     await ethers.getContractFactory("Clans", {
-      libraries: {EstforLibrary: estforLibrary.address},
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     })
   ).connect(owner);
-  const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
+  const clans = (await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-  });
-  await clans.deployed();
-  console.log(`clans = "${clans.address.toLowerCase()}"`);
+  })) as unknown as Clans;
+
+  console.log(`clans = "${(await clans.getAddress()).toLowerCase()}"`);
 
   const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
-  await itemNFTLibrary.deployed();
-  console.log(`itemNFTLibrary = "${itemNFTLibrary.address.toLowerCase()}"`);
+  await itemNFTLibrary.waitForDeployment();
+  console.log(`itemNFTLibrary = "${(await itemNFTLibrary.getAddress()).toLowerCase()}"`);
   const ItemNFT = (
     await ethers.getContractFactory("ItemNFT", {
-      libraries: {ItemNFTLibrary: itemNFTLibrary.address},
+      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
     })
   ).connect(owner);
   const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-  })) as ItemNFT;
-  await itemNFT.deployed();
-  console.log(`itemNFT = "${itemNFT.address.toLowerCase()}"`);
+  })) as unknown as ItemNFT;
+
+  console.log(`itemNFT = "${(await itemNFT.getAddress()).toLowerCase()}"`);
 
   // Had issues deploying locked bank vault & territories without manually increasing gas limit.
   // TODO: If upgrading OZ can use txOverrides for gas limit
   const FEE_DATA = {
-    maxFeePerGas: ethers.utils.parseUnits("35", "gwei"),
-    maxPriorityFeePerGas: ethers.utils.parseUnits("35", "gwei"),
-  } as FeeData;
+    maxFeePerGas: ethers.parseUnits("35", "gwei"),
+    maxPriorityFeePerGas: ethers.parseUnits("35", "gwei"),
+  } as unknown as FeeData;
 
-  const provider = new ethers.providers.FallbackProvider([ethers.provider], 1);
+  const provider = new ethers.FallbackProvider([ethers.getDefaultProvider()], 1);
   provider.getFeeData = async () => FEE_DATA;
 
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string, provider);
   signer.estimateGas = async () => {
-    return ethers.BigNumber.from(6_600_000);
+    return 6_600_000n;
   };
 
   const isBeta = process.env.IS_BETA == "true";
@@ -86,16 +86,16 @@ async function main() {
   const mmrAttackDistance = isBeta ? 1 : 4;
   const lockedFundsPeriod = (isBeta ? 1 : 7) * 86400; // 7 days
   const LockedBankVaults = (
-    await ethers.getContractFactory("LockedBankVaults", {libraries: {EstforLibrary: estforLibrary.address}})
+    await ethers.getContractFactory("LockedBankVaults", {libraries: {EstforLibrary: await estforLibrary.getAddress()}})
   ).connect(signer);
-  const lockedBankVaults = await upgrades.deployProxy(
+  const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
     [
       PLAYERS_ADDRESS,
       CLANS_ADDRESS,
       BRUSH_ADDRESS,
       BANK_FACTORY_ADDRESS,
-      itemNFT.address,
+      await itemNFT.getAddress(),
       SHOP_ADDRESS,
       DEV_ADDRESS,
       ORACLE_ADDRESS,
@@ -110,21 +110,21 @@ async function main() {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
       timeout,
-    }
-  );
-  await lockedBankVaults.deployed();
-  console.log(`lockedBankVaults = "${lockedBankVaults.address.toLowerCase()}"`);
+    },
+  )) as unknown as LockedBankVaults;
+
+  console.log(`lockedBankVaults = "${(await lockedBankVaults.getAddress()).toLowerCase()}"`);
 
   const Territories = (await ethers.getContractFactory("Territories")).connect(signer);
-  const territories = await upgrades.deployProxy(
+  const territories = (await upgrades.deployProxy(
     Territories,
     [
       allTerritories,
       PLAYERS_ADDRESS,
       CLANS_ADDRESS,
       BRUSH_ADDRESS,
-      lockedBankVaults.address,
-      itemNFT.address,
+      await lockedBankVaults.getAddress(),
+      await itemNFT.getAddress(),
       ORACLE_ADDRESS,
       SAMWITCH_VRF_ADDRESS,
       allBattleSkills,
@@ -135,25 +135,32 @@ async function main() {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
       timeout,
-    }
-  );
-  await territories.deployed();
-  console.log(`territories = "${territories.address.toLowerCase()}"`);
+    },
+  )) as unknown as Territories;
+
+  console.log(`territories = "${(await territories.getAddress()).toLowerCase()}"`);
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
-    libraries: {EstforLibrary: estforLibrary.address},
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
   });
   const combatantsHelper = await upgrades.deployProxy(
     CombatantsHelper,
-    [PLAYERS_ADDRESS, clans.address, territories.address, lockedBankVaults.address, ADMIN_ACCESS_ADDRESS, isBeta],
+    [
+      PLAYERS_ADDRESS,
+      await clans.getAddress(),
+      await territories.getAddress(),
+      await lockedBankVaults.getAddress(),
+      ADMIN_ACCESS_ADDRESS,
+      isBeta,
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
       timeout,
-    }
+    },
   );
-  await combatantsHelper.deployed();
-  console.log(`combatantsHelper = "${combatantsHelper.address.toLowerCase()}"`);
+  await combatantsHelper.waitForDeployment();
+  console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
   const paintSwapArtGallery = "0x9076C96e01F6F13e1eC4832354dF970d245e124F";
   const paintSwapDecorator = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
@@ -167,18 +174,18 @@ async function main() {
     decoratorProvider = (await upgrades.deployProxy(DecoratorProvider, [
       paintSwapDecorator,
       paintSwapArtGallery,
-      territories.address,
+      await territories.getAddress(),
       BRUSH_ADDRESS,
       PLAYER_NFT_ADDRESS,
       DEV_ADDRESS,
       pid,
-    ])) as DecoratorProvider;
-    await decoratorProvider.deployed();
-    console.log(`decoratorProvider = "${decoratorProvider.address.toLowerCase()}"`);
+    ])) as unknown as DecoratorProvider;
+
+    console.log(`decoratorProvider = "${(await decoratorProvider.getAddress()).toLowerCase()}"`);
 
     // deposit
     const lp = await ethers.getContractAt("MockBrushToken", FAKE_BRUSH_WFTM_LP_ADDRESS);
-    let tx = await lp.connect(owner).approve(decoratorProvider.address, ethers.constants.MaxUint256);
+    let tx = await lp.connect(owner).approve(await decoratorProvider.getAddress(), ethers.MaxInt256);
     console.log("Approve lp for decorator provider");
     await tx.wait();
     tx = await decoratorProvider.connect(owner).deposit();
@@ -187,9 +194,9 @@ async function main() {
   } else {
     decoratorProvider = (await ethers.getContractAt(
       "DecoratorProvider",
-      DECORATOR_PROVIDER_ADDRESS
+      DECORATOR_PROVIDER_ADDRESS,
     )) as DecoratorProvider;
-    const tx = await decoratorProvider.connect(owner).setTerritories(territories.address);
+    const tx = await decoratorProvider.connect(owner).setTerritories(await territories.getAddress());
     await tx.wait();
     console.log("decoratorProvider.setTerritories");
   }
@@ -197,21 +204,21 @@ async function main() {
   // Bank
   const Bank = (await ethers.getContractFactory("Bank")).connect(owner);
   const bank = await upgrades.upgradeBeacon(BANK_ADDRESS, Bank);
-  console.log(`Deployed bank beacon = "${bank.address.toLowerCase()}"`);
-  await bank.deployed();
+  console.log(`Deployed bank beacon = "${(await bank.getAddress()).toLowerCase()}"`);
+  await bank.waitForDeployment();
 
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
   console.log(`bankImplAddress = "${bankImplAddress}"`);
 
   const BankRegistry = (await ethers.getContractFactory("BankRegistry")).connect(owner);
-  const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
+  const bankRegistry = (await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
     kind: "uups",
     timeout,
-  });
-  await bankRegistry.deployed();
-  console.log(`bankRegistry = "${bankRegistry.address.toLowerCase()}"`);
+  })) as unknown as BankRegistry;
 
-  let tx = await bankRegistry.connect(owner).setLockedBankVaults(lockedBankVaults.address);
+  console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`);
+
+  let tx = await bankRegistry.connect(owner).setLockedBankVaults(await lockedBankVaults.getAddress());
   await tx.wait();
   console.log("bankRegistry.setLockedBankVaults");
   if (isBeta) {
@@ -221,10 +228,14 @@ async function main() {
     console.log("bankRegistry.setBankImpl");
   }
 
-  tx = await clans.connect(owner).setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  tx = await clans
+    .connect(owner)
+    .setTerritoriesAndLockedBankVaults(await territories.getAddress(), await lockedBankVaults.getAddress());
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
-  tx = await itemNFT.connect(owner).setTerritoriesAndLockedBankVaults(territories.address, lockedBankVaults.address);
+  tx = await itemNFT
+    .connect(owner)
+    .setTerritoriesAndLockedBankVaults(await territories.getAddress(), await lockedBankVaults.getAddress());
   await tx.wait();
   console.log("itemNFT.setTerritoriesAndLockedBankVaults");
 
@@ -233,7 +244,7 @@ async function main() {
     (item) =>
       item.tokenId === EstforConstants.PROTECTION_SHIELD ||
       item.tokenId === EstforConstants.DEVILISH_FINGERS ||
-      item.tokenId === EstforConstants.MIRROR_SHIELD
+      item.tokenId === EstforConstants.MIRROR_SHIELD,
   );
 
   if (items.length !== 3) {
@@ -266,29 +277,30 @@ async function main() {
     }
   }
 
-  const clanWars = [lockedBankVaults, territories];
+  const clanWars = [lockedBankVaults];
   for (const clanWar of clanWars) {
     try {
-      tx = await clanWar.connect(owner).setAddresses(territories.address, combatantsHelper.address);
+      tx = await clanWar
+        .connect(owner)
+        .setAddresses(await territories.getAddress(), await combatantsHelper.getAddress());
       await tx.wait();
-      console.log("setAddresses");
     } catch (error) {
       console.error(`Error: ${error}`);
     }
   }
 
-  if ((await owner.getChainId()) == 250) {
+  if ((await getChainId(owner)) == 250n) {
     await verifyContracts([
-      decoratorProvider.address,
-      itemNFT.address,
-      clans.address,
-      bank.address,
+      await decoratorProvider.getAddress(),
+      await itemNFT.getAddress(),
+      await clans.getAddress(),
+      await bank.getAddress(),
       bankImplAddress,
-      lockedBankVaults.address,
-      territories.address,
-      bankRegistry.address,
+      await lockedBankVaults.getAddress(),
+      await territories.getAddress(),
+      await bankRegistry.getAddress(),
       bankImplAddress,
-      combatantsHelper.address,
+      await combatantsHelper.getAddress(),
     ]);
   }
 }

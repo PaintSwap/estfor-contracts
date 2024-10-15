@@ -1,12 +1,13 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
+import {AdminAccess} from "../typechain-types";
 
 describe("AdminAccess", function () {
   async function deployContracts() {
     const [owner, alice, bob] = await ethers.getSigners();
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
-    const adminAccess = await upgrades.deployProxy(AdminAccess, [[], []]);
+    const adminAccess = (await upgrades.deployProxy(AdminAccess, [[], []])) as unknown as AdminAccess;
     return {adminAccess, AdminAccess, owner, alice, bob};
   }
 
@@ -33,7 +34,7 @@ describe("AdminAccess", function () {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await expect(adminAccess.connect(alice).addPromotionalAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner"
+        "CallerIsNotOwner",
       );
     });
   });
@@ -50,7 +51,7 @@ describe("AdminAccess", function () {
       await adminAccess.addPromotionalAdmins([owner.address, alice.address]);
       await expect(adminAccess.connect(alice).addPromotionalAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner"
+        "CallerIsNotOwner",
       );
     });
   });
@@ -61,14 +62,14 @@ describe("AdminAccess", function () {
       await adminAccess.addAdmins([owner.address, alice.address]);
       expect(await adminAccess.isAdmin(owner.address)).to.be.true;
       expect(await adminAccess.isAdmin(alice.address)).to.be.true;
-      expect(await adminAccess.isAdmin(adminAccess.address)).to.be.false;
+      expect(await adminAccess.isAdmin(await adminAccess.getAddress())).to.be.false;
     });
 
     it("Revert if not called by owner", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await expect(adminAccess.connect(alice).addAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner"
+        "CallerIsNotOwner",
       );
     });
   });
@@ -85,7 +86,7 @@ describe("AdminAccess", function () {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await expect(adminAccess.connect(alice).addAdmin(owner.address)).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner"
+        "CallerIsNotOwner",
       );
     });
   });
@@ -104,7 +105,7 @@ describe("AdminAccess", function () {
       await adminAccess.addAdmins([owner.address, alice.address]);
       await expect(adminAccess.connect(alice).removeAdmin(owner.address)).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner"
+        "CallerIsNotOwner",
       );
     });
   });

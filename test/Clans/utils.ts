@@ -31,10 +31,7 @@ export async function clanFixture() {
   const tier = await clans.tiers(tierId);
 
   // Figure out what the address would be
-  const bankAddress = ethers.utils.getContractAddress({
-    from: bankFactory.address,
-    nonce: clanId,
-  });
+  const bankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
 
   await expect(clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, imageId, tierId))
     .to.emit(clans, "ClanCreated")

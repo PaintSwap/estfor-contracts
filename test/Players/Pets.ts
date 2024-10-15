@@ -7,6 +7,7 @@ import {setupBasicPetMeleeCombat, getXPFromLevel} from "./utils";
 import {PetSkin, Skill} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "../../scripts/data/pets";
 import {NO_DONATION_AMOUNT} from "../utils";
+import {Block} from "ethers";
 
 describe("Pets", function () {
   it("Queue a pet which you don't have a balance for", async function () {
@@ -14,11 +15,11 @@ describe("Pets", function () {
       await loadFixture(playersFixture);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await expect(
-      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
     ).to.be.revertedWithCustomError(players, "PetNotOwned");
   });
 
@@ -38,11 +39,11 @@ describe("Pets", function () {
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
     await expect(
-      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     // Upgrade player, can now equip pet
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -50,6 +51,7 @@ describe("Pets", function () {
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [72]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
@@ -69,18 +71,20 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [62]);
+    await ethers.provider.send("evm_mine", []);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5));
 
     await ethers.provider.send("evm_increaseTime", [10]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
@@ -106,13 +110,13 @@ describe("Pets", function () {
     basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
     await petNFT.mint(alice.address, basePet.baseId, 0);
-    const {timestamp: NOW} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -120,12 +124,13 @@ describe("Pets", function () {
     let pet = await petNFT.getPet(petId);
     expect(pet.lastAssignmentTimestamp).to.eq(NOW);
     await petNFT.connect(alice).safeTransferFrom(alice.address, owner.address, petId, 1, "0x");
-    const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
+    const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
     pet = await petNFT.getPet(petId);
     expect(pet.owner).to.eq(owner.address);
     expect(pet.lastAssignmentTimestamp).to.eq(NOW1);
     await petNFT.safeTransferFrom(owner.address, alice.address, petId, 1, "0x");
     await ethers.provider.send("evm_increaseTime", [72]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5)); // No XP gained
   });
@@ -156,7 +161,7 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -170,16 +175,18 @@ describe("Pets", function () {
       .burn(
         alice.address,
         EstforConstants.COOKED_MINNUS,
-        await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)
+        await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS),
       );
     // Died so no XP gained
     expect((await players.getActionQueue(playerId)).length).to.eq(2);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
 
     expect((await players.getActionQueue(playerId)).length).to.eq(1);
     await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 20000);
     await ethers.provider.send("evm_increaseTime", [72]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36); // Now gain some XP
   });
@@ -199,7 +206,7 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -212,10 +219,11 @@ describe("Pets", function () {
         0,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStatus.NONE,
       );
 
     await ethers.provider.send("evm_increaseTime", [72]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
@@ -236,13 +244,14 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
     await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [72]);
+    await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });

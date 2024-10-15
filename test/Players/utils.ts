@@ -14,8 +14,8 @@ export const setupBasicWoodcutting = async function (
   itemNFT: ItemNFT,
   world: World,
   rate = 100 * GUAR_MUL,
-  xpPerHour = 3600,
-  rewards = EstforConstants.LOG
+  xpPerHour = 3600n,
+  rewards = EstforConstants.LOG,
 ) {
   const action: ActionInput = {
     actionId: ACTION_WOODCUTTING_LOG,
@@ -39,7 +39,7 @@ export const setupBasicWoodcutting = async function (
   };
 
   const tx = await world.addActions([action]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -88,7 +88,7 @@ export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World)
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -139,7 +139,7 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   // Logs go in, nothing comes out
   tx = await world.addActionChoices(
@@ -156,9 +156,9 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
         minSkills: minXP > 0 ? [EstforTypes.Skill.FIREMAKING] : [],
         minXPs: minXP > 0 ? [minXP] : [],
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -226,7 +226,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     combatStats: monsterCombatStats,
   };
   let tx = await world.addActions([combatAction]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   tx = await world.addActionChoices(
     EstforConstants.NONE,
@@ -236,9 +236,9 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
         ...defaultActionChoice,
         skill: EstforTypes.Skill.MELEE,
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
   await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
   await itemNFT.testMint(alice.address, EstforConstants.BRONZE_HELMET, 1);
 
@@ -323,7 +323,7 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
       combatStats: monsterCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
   tx = await world.addActionChoices(
     EstforConstants.NONE,
     [1],
@@ -332,9 +332,9 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
         ...defaultActionChoice,
         skill: EstforTypes.Skill.MELEE,
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInputV2 = {
@@ -366,7 +366,7 @@ export const setupBasicCooking = async function (
   itemNFT: ItemNFT,
   world: World,
   successPercent: number,
-  minLevel: number
+  minLevel: number,
 ) {
   const [owner, alice] = await ethers.getSigners();
 
@@ -394,7 +394,7 @@ export const setupBasicCooking = async function (
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   // Food goes in, cooked food comes out, 50% burnt, 25% success + 25 level diff
   tx = await world.addActionChoices(
@@ -414,9 +414,9 @@ export const setupBasicCooking = async function (
         minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
         minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
   const timespan = 3600;
 
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -453,7 +453,7 @@ export const setupBasicCrafting = async function (
   itemNFT: ItemNFT,
   world: World,
   rate = 1 * RATE_MUL,
-  outputAmount: number = 1
+  outputAmount: number = 1,
 ) {
   let tx = await world.addActions([
     {
@@ -477,7 +477,7 @@ export const setupBasicCrafting = async function (
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   // Logs go in, nothing comes out
   tx = await world.addActionChoices(
@@ -494,9 +494,9 @@ export const setupBasicCrafting = async function (
         outputTokenId: EstforConstants.SAPPHIRE_AMULET,
         outputAmount,
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -530,7 +530,7 @@ export const setupBasicAlchemy = async function (
   itemNFT: ItemNFT,
   world: World,
   rate = 1 * RATE_MUL,
-  outputAmount: number = 1
+  outputAmount: number = 1,
 ) {
   let tx = await world.addActions([
     {
@@ -554,7 +554,7 @@ export const setupBasicAlchemy = async function (
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   // Logs go in, nothing comes out
   tx = await world.addActionChoices(
@@ -571,9 +571,9 @@ export const setupBasicAlchemy = async function (
         outputTokenId: EstforConstants.ANCIENT_SCROLL,
         outputAmount,
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -617,7 +617,7 @@ export const setupBasicFletching = async function (
   itemNFT: ItemNFT,
   world: World,
   rate = 1 * RATE_MUL,
-  outputAmount: number = 1
+  outputAmount: number = 1,
 ) {
   let tx = await world.addActions([
     {
@@ -641,7 +641,7 @@ export const setupBasicFletching = async function (
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   // Create Bronze arrows
   tx = await world.addActionChoices(
@@ -658,9 +658,9 @@ export const setupBasicFletching = async function (
         outputTokenId: EstforConstants.BRONZE_ARROW,
         outputAmount,
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -704,7 +704,7 @@ export const setupBasicForging = async function (
   itemNFT: ItemNFT,
   world: World,
   rate = 1 * RATE_MUL,
-  outputAmount: number = 1
+  outputAmount: number = 1,
 ) {
   let tx = await world.addActions([
     {
@@ -728,7 +728,7 @@ export const setupBasicForging = async function (
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
 
   // Create Small Lump
   tx = await world.addActionChoices(
@@ -746,9 +746,9 @@ export const setupBasicForging = async function (
         outputTokenId: EstforConstants.BRONZE_ARROW,
         outputAmount,
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -788,7 +788,7 @@ export const setupBasicForging = async function (
   return {queuedAction, rate, choiceId};
 };
 
-export const setupTravelling = async function (world: World, rate = 0.125 * RATE_MUL, from = 0, to = 1) {
+export const setupTravelling = async function (world: World, rate = RATE_MUL / 8, from = 0, to = 1) {
   const ACTION_TRAVEL_0 = 1000;
   let tx = await world.addActions([
     {
@@ -812,7 +812,7 @@ export const setupTravelling = async function (world: World, rate = 0.125 * RATE
       combatStats: EstforTypes.emptyCombatStats,
     },
   ]);
-  const actionId = await getActionId(tx);
+  const actionId = await getActionId(tx, world);
   const ACTIONCHOICE_WALK_TO_1 = 1;
   // Walking from location 0 to 1
   tx = await world.addActionChoices(
@@ -829,9 +829,9 @@ export const setupTravelling = async function (world: World, rate = 0.125 * RATE
         outputAmount: to, // World location end
         rate,
       },
-    ]
+    ],
   );
-  const choiceId = await getActionChoiceId(tx);
+  const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = (3600 * RATE_MUL) / rate;
   const queuedAction: EstforTypes.QueuedActionInput = {
@@ -853,7 +853,7 @@ export function checkPendingQueuedActionState(
   consumed: Equipment[],
   produced: Equipment[],
   xpGained: number,
-  elapsedTime: number | number[]
+  elapsedTime: bigint | bigint[],
 ) {
   expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
   expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);

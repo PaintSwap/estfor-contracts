@@ -43,21 +43,21 @@ describe("Instant actions", function () {
       instantActionInput.inputAmounts[0] = 4;
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "InputAmountsMustBeInOrder"
+        "InputAmountsMustBeInOrder",
       );
 
       instantActionInput.inputAmounts[0] = 1;
       instantActionInput.inputAmounts[1] = 4;
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "InputAmountsMustBeInOrder"
+        "InputAmountsMustBeInOrder",
       );
 
       instantActionInput.inputAmounts[1] = 2;
       instantActionInput.inputAmounts[2] = 1;
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "InputAmountsMustBeInOrder"
+        "InputAmountsMustBeInOrder",
       );
 
       instantActionInput.inputAmounts[2] = 3;
@@ -75,19 +75,19 @@ describe("Instant actions", function () {
 
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "TooManyInputItems"
+        "TooManyInputItems",
       );
 
       instantActionInput.inputTokenIds = [BRONZE_ARROW, IRON_ARROW];
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "LengthMismatch"
+        "LengthMismatch",
       );
 
       instantActionInput.inputTokenIds = [BRONZE_ARROW, IRON_ARROW, BRONZE_ARROW];
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "InputItemNoDuplicates"
+        "InputItemNoDuplicates",
       );
     });
 
@@ -104,19 +104,19 @@ describe("Instant actions", function () {
 
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "TooManyMinSkills"
+        "TooManyMinSkills",
       );
 
       instantActionInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING];
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "LengthMismatch"
+        "LengthMismatch",
       );
 
       instantActionInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.WOODCUTTING];
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "MinimumSkillsNoDuplicates"
+        "MinimumSkillsNoDuplicates",
       );
     });
 
@@ -133,14 +133,14 @@ describe("Instant actions", function () {
 
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "OutputAmountCannotBeZero"
+        "OutputAmountCannotBeZero",
       );
 
       instantActionInput.outputAmount = 1;
       instantActionInput.outputTokenId = NONE;
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "OutputTokenIdCannotBeEmpty"
+        "OutputTokenIdCannotBeEmpty",
       );
     });
 
@@ -162,7 +162,7 @@ describe("Instant actions", function () {
         playerId,
         [instantActionInput.actionId],
         [1],
-        actionType
+        actionType,
       );
       expect(instantActionState.consumedTokenIds.length).to.eq(3);
       expect(instantActionState.consumedTokenIds[0]).to.eq(BRONZE_ARROW);
@@ -178,7 +178,7 @@ describe("Instant actions", function () {
       await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])
+        await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW]),
       ).to.deep.eq([2, 1, 0, 2]);
     });
 
@@ -207,13 +207,13 @@ describe("Instant actions", function () {
       await itemNFT.testMints(
         alice.address,
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
-        [6, 6, 6, 6, 6, 6]
+        [6, 6, 6, 6, 6, 6],
       );
 
       await expect(
         instantActions
           .connect(alice)
-          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType)
+          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType),
       )
         .to.emit(instantActions, "DoInstantActions")
         .withArgs(
@@ -225,7 +225,7 @@ describe("Instant actions", function () {
           [2, 4, 6, 4, 5, 6],
           [RUNITE_ARROW, RUNITE_BAR],
           [4, 2],
-          actionType
+          actionType,
         );
 
       expect(
@@ -238,7 +238,7 @@ describe("Instant actions", function () {
           IRON_BAR,
           ADAMANTINE_BAR,
           RUNITE_BAR,
-        ])
+        ]),
       ).to.deep.eq([4, 2, 0, 4, 2, 1, 0, 2]);
     });
 
@@ -254,7 +254,7 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "ActionAlreadyExists"
+        "ActionAlreadyExists",
       );
     });
 
@@ -268,7 +268,7 @@ describe("Instant actions", function () {
       };
       await expect(instantActions.connect(alice).addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "CallerIsNotOwner"
+        "CallerIsNotOwner",
       );
       await instantActions.addActions([instantActionInput]);
     });
@@ -285,7 +285,7 @@ describe("Instant actions", function () {
         await instantActions.addActions([instantActionInput]);
         await expect(instantActions.connect(alice).editActions([instantActionInput])).to.be.revertedWithCustomError(
           instantActions,
-          "CallerIsNotOwner"
+          "CallerIsNotOwner",
         );
         await instantActions.editActions([instantActionInput]);
       });
@@ -300,7 +300,7 @@ describe("Instant actions", function () {
         };
         await expect(instantActions.editActions([instantActionInput])).to.be.revertedWithCustomError(
           instantActions,
-          "ActionDoesNotExist"
+          "ActionDoesNotExist",
         );
         await instantActions.addActions([instantActionInput]);
         const newinstantActionInput = {
@@ -324,7 +324,7 @@ describe("Instant actions", function () {
         await instantActions.addActions([instantActionInput]);
         await expect(instantActions.connect(alice).removeActions([actionType], [1])).to.be.revertedWithCustomError(
           instantActions,
-          "CallerIsNotOwner"
+          "CallerIsNotOwner",
         );
       });
 
@@ -332,7 +332,7 @@ describe("Instant actions", function () {
         const {instantActions} = await loadFixture(playersFixture);
         await expect(instantActions.removeActions([actionType], [1])).to.be.revertedWithCustomError(
           instantActions,
-          "ActionDoesNotExist"
+          "ActionDoesNotExist",
         );
         const instantActionInput: InstantActionInput = {
           ...defaultInstantActionInput,
@@ -359,14 +359,14 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput]);
 
       await expect(
-        instantActions.doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.doInstantActions(playerId, [instantActionInput.actionId], [1], actionType),
       ).to.be.revertedWithCustomError(instantActions, "NotOwnerOfPlayerAndActive");
     });
 
     it("Cannot do an action which does not exist", async function () {
       const {playerId, instantActions, alice} = await loadFixture(playersFixture);
       await expect(
-        instantActions.connect(alice).doInstantActions(playerId, [0], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [0], [1], actionType),
       ).to.be.revertedWithCustomError(instantActions, "InvalidActionId");
     });
 
@@ -384,19 +384,19 @@ describe("Instant actions", function () {
 
       await itemNFT.testMint(alice.address, BRONZE_ARROW, 1);
       await expect(
-        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType),
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
       await players.testModifyXP(alice.address, playerId, Skill.WOODCUTTING, 1, true);
 
       await expect(
-        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType),
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
       await players.testModifyXP(alice.address, playerId, Skill.FIREMAKING, 2, true);
 
       await expect(
-        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType),
       ).to.not.be.reverted;
     });
 
@@ -417,7 +417,7 @@ describe("Instant actions", function () {
       await instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])
+        await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW]),
       ).to.deep.eq([4, 2, 0, 4]);
     });
 
@@ -483,15 +483,15 @@ describe("Instant actions", function () {
       await itemNFT.testMint(alice.address, BRONZE_ARROW, 2);
 
       await expect(
-        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType),
       ).to.be.revertedWithCustomError(instantActions, "PlayerNotUpgraded");
       // Upgrade player
       await brush.mint(alice.address, upgradePlayerBrushPrice);
-      await brush.connect(alice).approve(playerNFT.address, upgradePlayerBrushPrice);
+      await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
       await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
       await expect(
-        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType)
+        instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [2], actionType),
       ).to.not.be.reverted;
     });
   });
@@ -535,7 +535,7 @@ describe("Instant actions", function () {
       };
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "IncorrectInputAmounts"
+        "IncorrectInputAmounts",
       );
 
       instantActionInput.inputTokenIds = [IRON_ARROW, IRON_ARROW];
@@ -543,7 +543,7 @@ describe("Instant actions", function () {
 
       await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "IncorrectInputAmounts"
+        "IncorrectInputAmounts",
       );
     });
 
@@ -614,7 +614,7 @@ describe("Instant actions", function () {
         playerId,
         [instantActionInput.actionId, instantActionInput1.actionId],
         [2, 1],
-        actionType
+        actionType,
       );
       expect(instantActionState.consumedTokenIds.length).to.eq(2);
       expect(instantActionState.consumedTokenIds[0]).to.eq(BRONZE_ARROW);
@@ -628,7 +628,7 @@ describe("Instant actions", function () {
       await expect(
         instantActions
           .connect(alice)
-          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType)
+          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [2, 1], actionType),
       )
         .to.emit(instantActions, "DoInstantActions")
         .withArgs(
@@ -640,7 +640,7 @@ describe("Instant actions", function () {
           [2, 1],
           [RUNITE_ARROW],
           [5],
-          actionType
+          actionType,
         );
 
       expect(await itemNFT.balanceOfs(alice.address, [BRONZE_ARROW, BRONZE_BAR, RUNITE_ARROW])).to.deep.eq([4, 5, 5]);
@@ -672,7 +672,7 @@ describe("Instant actions", function () {
       await expect(
         instantActions
           .connect(alice)
-          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [1, 1], actionType)
+          .doInstantActions(playerId, [instantActionInput.actionId, instantActionInput1.actionId], [1, 1], actionType),
       ).to.be.revertedWithCustomError(instantActions, "InvalidOutputTokenId");
     });
   });
@@ -690,13 +690,13 @@ describe("Instant actions", function () {
 
     await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
       instantActions,
-      "UnsupportedActionType"
+      "UnsupportedActionType",
     );
 
     await expect(
       instantActions
         .connect(alice)
-        .doInstantActions(playerId, [instantActionInput.actionId], [2], InstantActionType.NONE)
+        .doInstantActions(playerId, [instantActionInput.actionId], [2], InstantActionType.NONE),
     ).to.be.revertedWithCustomError(instantActions, "UnsupportedActionType");
   });
 });

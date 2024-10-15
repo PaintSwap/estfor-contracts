@@ -12,10 +12,12 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {WishingWell} from "../typechain-types";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
+import {getChainId} from "./utils";
+import {parseEther} from "ethers";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Edit various costs using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Edit various costs using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const isBeta = process.env.IS_BETA == "true";
 
@@ -39,18 +41,18 @@ async function main() {
   console.log("Edited shop items");
 
   // Wishing well
-  const wishingWellCost = isBeta ? ethers.utils.parseEther("4") : ethers.utils.parseEther("10");
+  const wishingWellCost = isBeta ? parseEther("4") : parseEther("10");
   const wishingWell = (await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS)) as WishingWell;
   tx = await wishingWell.setRaffleEntryCost(wishingWellCost);
   console.log("Update wishing well raffle cost");
 
   const playerNFT = await ethers.getContractAt("PlayerNFT", PLAYER_NFT_ADDRESS);
-  const upgradeCost = isBeta ? ethers.utils.parseEther("11") : ethers.utils.parseEther("700");
+  const upgradeCost = isBeta ? parseEther("11") : parseEther("700");
   tx = await playerNFT.setUpgradeCost(upgradeCost);
   await tx.wait();
   console.log("Edit upgrade player cost");
 
-  const editNameCost = isBeta ? ethers.utils.parseEther("2") : ethers.utils.parseEther("300");
+  const editNameCost = isBeta ? parseEther("2") : parseEther("300");
   tx = await playerNFT.setEditNameCost(editNameCost);
   await tx.wait();
   console.log("Edit player name cost");
@@ -63,14 +65,14 @@ async function main() {
   console.log("Edited clan tiers");
 
   // Edit clan editing prices
-  const editClanNameCost = isBeta ? ethers.utils.parseEther("2") : ethers.utils.parseEther("300");
+  const editClanNameCost = isBeta ? parseEther("2") : parseEther("300");
   tx = await clans.setEditNameCost(editClanNameCost);
   await tx.wait();
   console.log("Clan edit name cost");
 
   // Edit pet name cost
   const petNFT = await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS);
-  const editPetNameCost = isBeta ? ethers.utils.parseEther("0") : ethers.utils.parseEther("1");
+  const editPetNameCost = isBeta ? parseEther("0") : parseEther("1");
   tx = await petNFT.setEditNameCost(editPetNameCost);
   await tx.wait();
   console.log("Pet edit name cost");

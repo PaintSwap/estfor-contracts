@@ -1,15 +1,15 @@
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS, LOCKED_BANK_VAULTS_ADDRESS} from "./contractAddresses";
 import {LockedBankVaults} from "../typechain-types";
-import {isBeta} from "./utils";
+import {getChainId, isBeta} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Initialize clan MMRs using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Initialize clan MMRs using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const lockedBankVaults = (await ethers.getContractAt(
     "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS
+    LOCKED_BANK_VAULTS_ADDRESS,
   )) as LockedBankVaults;
 
   const clanIds = [

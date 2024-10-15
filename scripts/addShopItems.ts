@@ -3,10 +3,11 @@ import {SHOP_ADDRESS} from "./contractAddresses";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {isBeta} from "./utils";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Add shop items using account: ${owner.address} on chain id ${await owner.getChainId()}`);
+  console.log(`Add shop items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const _allShopItems = isBeta ? allShopItemsBeta : allShopItems;
   const items = new Set([EstforConstants.CAGE, EstforConstants.LARGE_NET]);
