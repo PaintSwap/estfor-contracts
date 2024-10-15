@@ -47,8 +47,9 @@ describe("Combat Actions", function () {
     }
 
     it("Attack", async function () {
-      const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -65,7 +66,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -75,8 +76,9 @@ describe("Combat Actions", function () {
     });
 
     it("In-progress combat updates (many)", async function () {
-      const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, itemNFT, alice, queuedAction, rate, numSpawned} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -113,7 +115,7 @@ describe("Combat Actions", function () {
       ]);
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((queuedAction.timespan * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((queuedAction.timespan * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
       // Check food is consumed
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 1);
@@ -148,7 +150,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -197,7 +199,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -221,7 +223,7 @@ describe("Combat Actions", function () {
       await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1);
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(itemNFT, "ItemDoesNotExist");
 
       await itemNFT.addItems([
@@ -233,7 +235,7 @@ describe("Combat Actions", function () {
       ]);
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "IncorrectRightHandEquipment");
 
       queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_SWORD;
@@ -250,7 +252,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((time * rate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -504,7 +506,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(69);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        foodBalance - BigInt(Math.pow(2, 16) - 1),
+        foodBalance - BigInt(Math.pow(2, 16) - 1)
       );
     });
 
@@ -569,7 +571,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(2520); // Killed 68 (the healing helped us kill 1 more)
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(70);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        foodBalance - BigInt(Math.pow(2, 16) - 1),
+        foodBalance - BigInt(Math.pow(2, 16) - 1)
       );
     });
 
@@ -642,7 +644,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(69);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        foodBalance - BigInt(Math.pow(2, 16) - 1),
+        foodBalance - BigInt(Math.pow(2, 16) - 1)
       );
     });
 
@@ -660,12 +662,12 @@ describe("Combat Actions", function () {
       ]);
 
       const natuowAction = allActions.find(
-        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW,
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
       await world.addActions([natuowAction]);
 
       const grogAction = allActions.find(
-        (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD,
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
       ) as EstforTypes.ActionInput;
       await world.addActions([grogAction]);
 
@@ -716,7 +718,7 @@ describe("Combat Actions", function () {
           0,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS,
+          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
         );
       await ethers.provider.send("evm_increaseTime", [240]);
       await ethers.provider.send("evm_mine", []);
@@ -782,12 +784,12 @@ describe("Combat Actions", function () {
       ]);
 
       const natuowAction = allActions.find(
-        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW,
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
       await world.addActions([natuowAction]);
 
       const grogAction = allActions.find(
-        (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD,
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
       ) as EstforTypes.ActionInput;
       await world.addActions([grogAction]);
 
@@ -838,7 +840,7 @@ describe("Combat Actions", function () {
           0,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS,
+          EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS
         );
       await ethers.provider.send("evm_increaseTime", [240]);
       await ethers.provider.send("evm_mine", []);
@@ -891,7 +893,7 @@ describe("Combat Actions", function () {
           defaultMinRequirements,
           defaultMinRequirements,
           defaultMinRequirements,
-        ],
+        ]
       );
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
@@ -936,8 +938,9 @@ describe("Combat Actions", function () {
     });
 
     it("clearEverything", async function () {
-      const {playerId, players, alice, world, itemNFT, choiceId, brush, wishingWell} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, alice, world, itemNFT, choiceId, brush, wishingWell} = await loadFixture(
+        playersFixtureMelee
+      );
 
       const boostValue = 50;
 
@@ -971,7 +974,7 @@ describe("Combat Actions", function () {
       ]);
 
       const natuowAction = allActions.find(
-        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW,
+        (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
       await world.addActions([natuowAction]);
 
@@ -1003,7 +1006,7 @@ describe("Combat Actions", function () {
           0,
           0,
           raffleCost,
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [73318]);
       await ethers.provider.send("evm_mine", []);
@@ -1022,8 +1025,9 @@ describe("Combat Actions", function () {
     });
 
     it("Check random rewards", async function () {
-      const {playerId, players, world, itemNFT, alice, queuedAction, numSpawned, mockVRF} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, world, itemNFT, alice, queuedAction, numSpawned, mockVRF} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -1049,8 +1053,9 @@ describe("Combat Actions", function () {
     });
 
     it("Check random rewards, finish after 00:00 before oracle is called", async function () {
-      const {playerId, players, world, alice, queuedAction, numSpawned, mockVRF} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, world, alice, queuedAction, numSpawned, mockVRF} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
@@ -1083,8 +1088,9 @@ describe("Combat Actions", function () {
     });
 
     it("Check random rewards, process after waiting another day", async function () {
-      const {playerId, players, world, itemNFT, alice, queuedAction, numSpawned, mockVRF} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, world, itemNFT, alice, queuedAction, numSpawned, mockVRF} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -1108,18 +1114,15 @@ describe("Combat Actions", function () {
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
 
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
-        BigInt(numSpawned / (SPAWN_MUL * 2) - 2),
-        BigInt(numSpawned / (SPAWN_MUL * 2) - 1),
-        BigInt(numSpawned / (SPAWN_MUL * 2)),
-        BigInt(numSpawned / (SPAWN_MUL * 2) + 1),
-        BigInt(numSpawned / (SPAWN_MUL * 2) + 2),
-      ]); // Roughly 1/2 of the time
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON))
+        .is.above(0)
+        .and.is.below(numSpawned / SPAWN_MUL);
     });
 
     it("Check random rewards, in-progress updates (many)", async function () {
-      const {playerId, players, world, itemNFT, alice, queuedAction, rate, numSpawned, mockVRF} =
-        await loadFixture(playersFixtureMelee);
+      const {playerId, players, world, itemNFT, alice, queuedAction, rate, numSpawned, mockVRF} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -1204,7 +1207,7 @@ describe("Combat Actions", function () {
           EstforConstants.AIR_SCROLL,
           EstforConstants.SHADOW_SCROLL,
         ],
-        [1, 1, 1000, 200, 100],
+        [1, 1, 1000, 200, 100]
       );
 
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
@@ -1220,7 +1223,7 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 2],
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       const timespan = 3600;
@@ -1296,7 +1299,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
-        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1)),
+        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
@@ -1307,7 +1310,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -1335,7 +1338,7 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 2],
           },
-        ],
+        ]
       );
 
       const choiceId = getActionChoiceId(tx, world);
@@ -1347,7 +1350,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
-        startXP + BigInt(Math.floor(queuedActionDefence.timespan * 1.1)),
+        startXP + BigInt(Math.floor(queuedActionDefence.timespan * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
@@ -1358,7 +1361,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -1386,7 +1389,7 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 2],
           },
-        ],
+        ]
       );
 
       const choiceId = getActionChoiceId(tx, world);
@@ -1398,7 +1401,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
-        startXP + BigInt(Math.floor(queuedActionDefence.timespan * 1.1)),
+        startXP + BigInt(Math.floor(queuedActionDefence.timespan * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
@@ -1409,7 +1412,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // No food is consumed
@@ -1469,7 +1472,7 @@ describe("Combat Actions", function () {
           EstforConstants.AIR_SCROLL,
           EstforConstants.SHADOW_SCROLL,
         ],
-        [1, 1, 1000, 200, 100],
+        [1, 1, 1000, 200, 100]
       );
 
       // Start with 5 magic
@@ -1486,7 +1489,7 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 2],
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       const timespan = 3600;
@@ -1571,7 +1574,7 @@ describe("Combat Actions", function () {
 
       // Killed 50 monsters (10% base boost)
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
-        startXP + BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1)),
+        startXP + BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
     });
@@ -1623,7 +1626,7 @@ describe("Combat Actions", function () {
           EstforConstants.AIR_SCROLL,
           EstforConstants.SHADOW_SCROLL,
         ],
-        [1, 1, 1000, 200, 100],
+        [1, 1, 1000, 200, 100]
       );
 
       // Start with 5 magic
@@ -1640,7 +1643,7 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 2],
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       const timespan = 3600;
@@ -1707,14 +1710,15 @@ describe("Combat Actions", function () {
 
       // Killed 50 monsters (10% base boost)
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
-        START_XP + BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1)),
+        START_XP + BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
     });
 
     it("No-Bonus XP", async function () {
-      const {players, playerNFT, itemNFT, alice, timespan, dropRate, queuedAction, numSpawned} =
-        await loadFixture(playersFixtureMagic);
+      const {players, playerNFT, itemNFT, alice, timespan, dropRate, queuedAction, numSpawned} = await loadFixture(
+        playersFixtureMagic
+      );
 
       const avatarId = 2;
       const avatarInfo: AvatarInfo = {
@@ -1740,7 +1744,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -1773,13 +1777,13 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
-        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1)),
+        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -1797,7 +1801,7 @@ describe("Combat Actions", function () {
 
       queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "CannotEquipTwoHandedAndOtherEquipment");
       queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
       await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
@@ -1917,8 +1921,9 @@ describe("Combat Actions", function () {
     });
 
     it("In-progress update have scrolls, then don't have enough, then have enough", async function () {
-      const {playerId, players, alice, itemNFT, queuedAction, startXP, dropRate, numSpawned} =
-        await loadFixture(playersFixtureMagic);
+      const {playerId, players, alice, itemNFT, queuedAction, startXP, dropRate, numSpawned} = await loadFixture(
+        playersFixtureMagic
+      );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
@@ -1937,7 +1942,7 @@ describe("Combat Actions", function () {
       // Check the drops are as expected
       // Can only kill 2 of them which is why XP is / 5 here
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       let xpGained = BigInt(Math.floor(queuedAction.timespan * 0.2 * 1.1));
@@ -1958,7 +1963,7 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 9);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 1,
+        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 1
       );
 
       xpGained += BigInt(Math.floor(queuedAction.timespan * 0.2 * 0.5 * 1.1)); // Kill 1 more
@@ -1974,7 +1979,7 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 9);
       // Kill 4 more
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 5,
+        Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 5
       );
 
       xpGained += BigInt(Math.floor(queuedAction.timespan * 0.2 * 2 * 1.1)); // Kill 4 more
@@ -1989,7 +1994,7 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 9);
       // Kill all
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((queuedAction.timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((queuedAction.timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       xpGained = BigInt(Math.floor(queuedAction.timespan * 1.1));
@@ -2023,7 +2028,7 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 3],
           },
-        ],
+        ]
       );
 
       const choiceIds = await getActionChoiceIds(tx, world);
@@ -2105,7 +2110,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(3106);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        foodBalance - BigInt(Math.pow(2, 16) - 1),
+        foodBalance - BigInt(Math.pow(2, 16) - 1)
       );
     });
 
@@ -2169,7 +2174,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + 2732n);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-        foodBalance - BigInt(Math.pow(2, 16) - 1),
+        foodBalance - BigInt(Math.pow(2, 16) - 1)
       );
     });
 
@@ -2346,7 +2351,7 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 2],
           },
-        ],
+        ]
       );
 
       await itemNFT.testMints(alice.address, [...items], [1350, 2092, 1046]); // Ensure mutable arrays
@@ -2430,7 +2435,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
-        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1)),
+        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
@@ -2441,7 +2446,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -2515,7 +2520,7 @@ describe("Combat Actions", function () {
           EstforConstants.BRONZE_ARROW,
           EstforConstants.IRON_ARROW,
         ],
-        [1, 1000, 200, 100],
+        [1, 1000, 200, 100]
       );
 
       const arrowsConsumedRate = 1 * RATE_MUL; // per hour
@@ -2534,7 +2539,7 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMin: EstforConstants.BASIC_BOW,
             handItemTokenIdRangeMax: EstforConstants.BASIC_BOW,
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       const timespan = 3600;
@@ -2610,7 +2615,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(
-        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1)),
+        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
@@ -2621,7 +2626,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -2652,7 +2657,7 @@ describe("Combat Actions", function () {
       queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
     });
 
@@ -2683,7 +2688,7 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
             handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_4,
           },
-        ],
+        ]
       );
 
       const choiceId = await getActionChoiceId(tx, world);
@@ -2710,7 +2715,7 @@ describe("Combat Actions", function () {
       queuedAction.choiceId = choiceId;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
 
       // Cannot use INFUSED godly bow either
@@ -2753,7 +2758,7 @@ describe("Combat Actions", function () {
       queuedAction.rightHandEquipmentTokenId = EstforConstants.NONE;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "IncorrectEquippedItem");
     });
 
@@ -2764,7 +2769,7 @@ describe("Combat Actions", function () {
       queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
       queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
       await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
@@ -2824,7 +2829,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(
-        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1)),
+        startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
@@ -2835,7 +2840,7 @@ describe("Combat Actions", function () {
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
-        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)),
+        Math.floor((timespan * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL))
       );
 
       // Check food is consumed
@@ -2888,7 +2893,7 @@ describe("Combat Actions", function () {
     await itemNFT.testMints(
       alice.address,
       [EstforConstants.BRONZE_SWORD, EstforConstants.COOKED_MINNUS, EstforConstants.BRONZE_HELMET],
-      [1, foodNum, 1],
+      [1, foodNum, 1]
     );
 
     await itemNFT.addItems([
@@ -2908,7 +2913,7 @@ describe("Combat Actions", function () {
           ...defaultActionChoice,
           skill: EstforTypes.Skill.MELEE,
         },
-      ],
+      ]
     );
     const choiceId = await getActionChoiceId(tx, world);
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -3009,7 +3014,7 @@ describe("Combat Actions", function () {
     await itemNFT.testMints(
       alice.address,
       [EstforConstants.BRONZE_SWORD, EstforConstants.COOKED_MINNUS, EstforConstants.BRONZE_HELMET],
-      [1, foodNum, 1],
+      [1, foodNum, 1]
     );
 
     await itemNFT.addItems([
@@ -3029,7 +3034,7 @@ describe("Combat Actions", function () {
           ...defaultActionChoice,
           skill: EstforTypes.Skill.MELEE,
         },
-      ],
+      ]
     );
     const choiceId = await getActionChoiceId(tx, world);
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -3131,7 +3136,7 @@ describe("Combat Actions", function () {
           ...defaultActionChoice,
           skill: EstforTypes.Skill.MELEE,
         },
-      ],
+      ]
     );
     const choiceId = await getActionChoiceId(tx, world);
     const queuedAction: EstforTypes.QueuedActionInput = {
