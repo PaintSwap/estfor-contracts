@@ -7,6 +7,7 @@ import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelegate} from "../interfaces/IPlayersDelegates.sol";
+import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -21,6 +22,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   using UnsafeMath for uint56;
   using UnsafeMath for uint128;
   using UnsafeMath for uint256;
+  using CombatStyleLibrary for uint8;
 
   constructor() {
     _checkStartSlot();
@@ -117,13 +119,14 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
       ActionChoice memory actionChoice;
       QueuedAction storage queuedAction = players_[_playerId].actionQueue[i];
-      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
+      CombatStyle combatStyle = queuedAction.combatStyle.asCombatStyle();
+      bool isCombat = _isCombatStyle(combatStyle);
       if (queuedAction.choiceId != 0) {
         // Includes combat
         actionChoice = world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
       }
 
-      Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
+      Skill skill = _getSkillFromChoiceOrStyle(actionChoice, combatStyle, queuedAction.actionId);
 
       bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
       if (actionMetadata.xpElapsedTime != 0 && hasRandomRewards) {

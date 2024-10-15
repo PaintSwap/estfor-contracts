@@ -11,6 +11,8 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 
 import {PlayersLibrary} from "./PlayersLibrary.sol";
+import {SkillLibrary} from "../SkillLibrary.sol";
+import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -22,6 +24,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   using UnsafeMath for uint56;
   using UnsafeMath for uint64;
   using UnsafeMath for uint256;
+  using SkillLibrary for uint8;
+  using CombatStyleLibrary for uint8;
 
   constructor() {
     _checkStartSlot();
@@ -232,12 +236,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     if (
       actionInfo.minXP > 0 &&
-      _getRealXP(actionInfo.skill, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) < actionInfo.minXP
+      _getRealXP(actionInfo.skill.asSkill(), xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+      actionInfo.minXP
     ) {
       revert ActionMinimumXPNotReached();
     }
 
-    bool isCombat = actionInfo.skill == Skill.COMBAT;
+    bool isCombat = actionInfo.skill.asSkill() == Skill.COMBAT;
     bool isPlayerUpgraded = _isPlayerFullMode(_playerId);
 
     // Check the actionChoice is valid
@@ -249,34 +254,44 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
 
       if (
-        _getRealXP(actionChoice.skill, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        _getRealXP(actionChoice.skill.asSkill(), xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
         actionChoice.minXP
       ) {
         revert ActionChoiceMinimumXPNotReached();
       }
 
       if (
-        actionChoice.minSkill2 != Skill.NONE &&
-        _getRealXP(actionChoice.minSkill2, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        actionChoice.minSkill2.asSkill() != Skill.NONE &&
+        _getRealXP(
+          actionChoice.minSkill2.asSkill(),
+          xp_[_playerId],
+          _pendingQueuedActionProcessed,
+          _pendingQuestState
+        ) <
         actionChoice.minXP2
       ) {
         revert ActionChoiceMinimumXPNotReached();
       }
 
       if (
-        actionChoice.minSkill3 != Skill.NONE &&
-        _getRealXP(actionChoice.minSkill3, xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        actionChoice.minSkill3.asSkill() != Skill.NONE &&
+        _getRealXP(
+          actionChoice.minSkill3.asSkill(),
+          xp_[_playerId],
+          _pendingQueuedActionProcessed,
+          _pendingQuestState
+        ) <
         actionChoice.minXP3
       ) {
         revert ActionChoiceMinimumXPNotReached();
       }
 
-      if (actionChoice.skill == Skill.NONE) {
+      if (actionChoice.skill.asSkill() == Skill.NONE) {
         revert InvalidSkill();
       }
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
-      if (actionInfo.skill == Skill.TRAVELING) {
+      if (actionInfo.skill.asSkill() == Skill.TRAVELING) {
         if (_queuedActionInput.timespan != (RATE_MUL * 3600) / actionChoice.rate) {
           revert InvalidTravellingTimespan();
         }
@@ -300,7 +315,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     {
       // Check combatStyle is only selected if queuedAction is combat
-      bool combatStyleSelected = _queuedActionInput.combatStyle != CombatStyle.NONE;
+      bool combatStyleSelected = _queuedActionInput.combatStyle.isNotCombatStyle(CombatStyle.NONE);
       if (isCombat != combatStyleSelected) {
         revert InvalidCombatStyle();
       }
@@ -610,11 +625,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   }
 
   function _clearActionQueue(address _from, uint _playerId) private {
-    QueuedAction[] memory queuedActions;
-    QueuedActionExtra[] memory queuedActionsExtra;
+    QueuedAction[] memory _queuedActions;
+    QueuedActionExtra[] memory _queuedActionsExtra;
     Attire[] memory attire;
     uint startTime = 0;
-    _setActionQueue(_from, _playerId, queuedActions, queuedActionsExtra, attire, startTime);
+    _setActionQueue(_from, _playerId, _queuedActions, _queuedActionsExtra, attire, startTime);
   }
 
   function _clearCurrentActionProcessed(uint _playerId) private {

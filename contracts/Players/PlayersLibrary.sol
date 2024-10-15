@@ -7,6 +7,9 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {IItemNFT} from "../interfaces/IItemNFT.sol";
 import {World} from "../World.sol";
 
+import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
+import {SkillLibrary} from "../SkillLibrary.sol";
+
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
@@ -14,6 +17,8 @@ import "../globals/all.sol";
 library PlayersLibrary {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
+  using CombatStyleLibrary for uint8;
+  using SkillLibrary for uint8;
 
   error InvalidXPSkill();
   error InvalidAction();
@@ -284,7 +289,7 @@ library PlayersLibrary {
     uint8 _betaCombat,
     uint _elapsedTime
   ) private pure returns (uint32 dmgDealt) {
-    Skill skill = _actionChoice.skill;
+    Skill skill = Skill(_actionChoice.skill);
     if (skill == Skill.MELEE) {
       dmgDealt = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
     } else if (skill == Skill.RANGED) {
@@ -378,7 +383,7 @@ library PlayersLibrary {
     );
 
     uint combatTimePerKill = _getTimeToKill(
-      _actionChoice.skill,
+      _actionChoice.skill.asSkill(),
       _combatStats,
       _enemyCombatStats,
       _alphaCombat,
@@ -912,31 +917,32 @@ library PlayersLibrary {
   // none of the combat stats is allowed to be negative at this point
   function updateCombatStatsFromPet(
     CombatStats memory _combatStats,
-    Skill _skillEnhancement1,
+    uint8 _skillEnhancement1,
     uint8 _skillFixedEnhancement1,
     uint8 _skillPercentageEnhancement1,
-    Skill _skillEnhancement2,
+    uint8 _skillEnhancement2,
     uint8 _skillFixedEnhancement2,
     uint8 _skillPercentageEnhancement2
   ) external pure returns (CombatStats memory combatStats) {
     combatStats = _combatStats;
-    if (_skillEnhancement1 == Skill.HEALTH) {
+    Skill skill1 = _skillEnhancement1.asSkill();
+    if (skill1 == Skill.HEALTH) {
       _combatStats.health += int16(
         _skillFixedEnhancement1 + (uint16(_combatStats.health) * _skillPercentageEnhancement1) / 100
       );
-    } else if (_skillEnhancement1 == Skill.MELEE) {
+    } else if (skill1 == Skill.MELEE) {
       _combatStats.melee += int16(
         _skillFixedEnhancement1 + (uint16(_combatStats.melee) * _skillPercentageEnhancement1) / 100
       );
-    } else if (_skillEnhancement1 == Skill.RANGED) {
+    } else if (skill1 == Skill.RANGED) {
       _combatStats.ranged += int16(
         _skillFixedEnhancement1 + (uint16(_combatStats.ranged) * _skillPercentageEnhancement1) / 100
       );
-    } else if (_skillEnhancement1 == Skill.MAGIC) {
+    } else if (skill1 == Skill.MAGIC) {
       _combatStats.magic += int16(
         _skillFixedEnhancement1 + (uint16(_combatStats.magic) * _skillPercentageEnhancement1) / 100
       );
-    } else if (_skillEnhancement1 == Skill.DEFENCE) {
+    } else if (skill1 == Skill.DEFENCE) {
       _combatStats.meleeDefence += int16(
         _skillFixedEnhancement1 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement1) / 100
       );
@@ -950,8 +956,9 @@ library PlayersLibrary {
       revert SkillForPetNotHandledYet();
     }
 
-    if (_skillEnhancement2 != Skill.NONE) {
-      if (_skillEnhancement2 == Skill.DEFENCE) {
+    Skill skill2 = _skillEnhancement2.asSkill();
+    if (skill2 != Skill.NONE) {
+      if (skill2 == Skill.DEFENCE) {
         _combatStats.meleeDefence += int16(
           _skillFixedEnhancement2 + (uint16(_combatStats.meleeDefence) * _skillPercentageEnhancement2) / 100
         );
@@ -1173,7 +1180,7 @@ library PlayersLibrary {
     uint16[5] calldata _expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
-    bool _isCombatSkill = _queuedAction.combatStyle != CombatStyle.NONE;
+    bool _isCombatSkill = _queuedAction.combatStyle.isNotCombatStyle(CombatStyle.NONE);
     uint24 xpPerHour = World(_worldAddress).getXPPerHour(
       _queuedAction.actionId,
       _isCombatSkill ? NONE : _queuedAction.choiceId

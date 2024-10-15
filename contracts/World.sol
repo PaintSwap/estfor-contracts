@@ -8,6 +8,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {SamWitchVRFConsumerUpgradeable} from "./SamWitchVRFConsumerUpgradeable.sol";
 
 import {WorldLibrary} from "./WorldLibrary.sol";
+import {SkillLibrary} from "./SkillLibrary.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 
@@ -17,6 +18,7 @@ import "./globals/all.sol";
 contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;
   using UnsafeMath for uint;
+  using SkillLibrary for uint8;
 
   event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
   event RequestFulfilledV2(uint requestId, uint randomWord);
@@ -236,7 +238,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   }
 
   function getSkill(uint _actionId) external view returns (Skill) {
-    return actions[_actionId].skill;
+    return actions[_actionId].skill.asSkill();
   }
 
   function getActionRewards(uint _actionId) external view returns (ActionRewards memory) {
@@ -305,7 +307,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   ) external view returns (ActionRewards memory, Skill skill, uint numSpanwed, uint8 worldLocation) {
     return (
       actionRewards[_actionId],
-      actions[_actionId].skill,
+      actions[_actionId].skill.asSkill(),
       actions[_actionId].numSpawned,
       actions[_actionId].worldLocation
     );
@@ -344,7 +346,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     if (_action.info.isDynamic) {
       revert DynamicActionsCannotBeAdded();
     }
-    if (actions[_action.actionId].skill != Skill.NONE) {
+    if (actions[_action.actionId].skill.asSkill() != Skill.NONE) {
       revert ActionAlreadyExists(_action.actionId);
     }
     _setAction(_action);
@@ -382,7 +384,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     WorldLibrary.setActionGuaranteedRewards(_action.guaranteedRewards, actionReward);
     WorldLibrary.setActionRandomRewards(_action.randomRewards, actionReward);
 
-    if (_action.info.skill == Skill.COMBAT) {
+    if (_action.info.skill.asSkill() == Skill.COMBAT) {
       actionCombatStats[_action.actionId] = _action.combatStats;
     } else {
       bool actionHasGuaranteedRewards = _action.guaranteedRewards.length != 0;
@@ -401,7 +403,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     if (_actionChoiceId == 0) {
       revert ActionChoiceIdZeroNotAllowed();
     }
-    if (actionChoices[_actionId][_actionChoiceId].skill != Skill.NONE) {
+    if (Skill(actionChoices[_actionId][_actionChoiceId].skill) != Skill.NONE) {
       revert ActionChoiceAlreadyExists();
     }
     WorldLibrary.checkActionChoice(_actionChoiceInput);
@@ -412,7 +414,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     uint16 _actionChoiceId,
     ActionChoiceInput calldata _actionChoiceInput
   ) private view {
-    if (actionChoices[_actionId][_actionChoiceId].skill == Skill.NONE) {
+    if (Skill(actionChoices[_actionId][_actionChoiceId].skill) == Skill.NONE) {
       revert ActionChoiceDoesNotExist();
     }
 
@@ -471,9 +473,9 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       packedData: packedData,
       reserved: bytes1(uint8(0)),
       // Second storage slot
-      minSkill2: _actionChoiceInput.minSkills.length > 1 ? _actionChoiceInput.minSkills[1] : Skill.NONE,
+      minSkill2: _actionChoiceInput.minSkills.length > 1 ? _actionChoiceInput.minSkills[1] : uint8(Skill.NONE),
       minXP2: _actionChoiceInput.minXPs.length > 1 ? _actionChoiceInput.minXPs[1] : 0,
-      minSkill3: _actionChoiceInput.minSkills.length > 2 ? _actionChoiceInput.minSkills[2] : Skill.NONE,
+      minSkill3: _actionChoiceInput.minSkills.length > 2 ? _actionChoiceInput.minSkills[2] : uint8(Skill.NONE),
       minXP3: _actionChoiceInput.minXPs.length > 2 ? _actionChoiceInput.minXPs[2] : 0,
       newInputAmount1: _actionChoiceInput.inputAmounts.length > 0 && anyInputExceedsStandardAmount
         ? _actionChoiceInput.inputAmounts[0]
@@ -532,7 +534,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
 
   function editActions(Action[] calldata _actions) external onlyOwner {
     for (uint i = 0; i < _actions.length; ++i) {
-      if (actions[_actions[i].actionId].skill == Skill.NONE) {
+      if (actions[_actions[i].actionId].skill.asSkill() == Skill.NONE) {
         revert ActionDoesNotExist();
       }
       _setAction(_actions[i]);

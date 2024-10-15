@@ -206,7 +206,7 @@
             "type": "uint16"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -359,7 +359,7 @@
             "type": "uint16"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -488,7 +488,7 @@
     "name": "actions",
     "outputs": [
       {
-        "internalType": "enum Skill",
+        "internalType": "uint8",
         "name": "minSkill1",
         "type": "uint8"
       },
@@ -498,7 +498,7 @@
         "type": "uint32"
       },
       {
-        "internalType": "enum Skill",
+        "internalType": "uint8",
         "name": "minSkill2",
         "type": "uint8"
       },
@@ -508,7 +508,7 @@
         "type": "uint32"
       },
       {
-        "internalType": "enum Skill",
+        "internalType": "uint8",
         "name": "minSkill3",
         "type": "uint8"
       },
@@ -576,7 +576,7 @@
             "type": "uint16"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -664,7 +664,7 @@
             "type": "uint16"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },

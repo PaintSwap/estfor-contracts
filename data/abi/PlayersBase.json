@@ -1191,7 +1191,7 @@
             "type": "uint24"
           },
           {
-            "internalType": "enum CombatStyle",
+            "internalType": "uint8",
             "name": "combatStyle",
             "type": "uint8"
           },
@@ -1327,7 +1327,7 @@
             "type": "uint24"
           },
           {
-            "internalType": "enum CombatStyle",
+            "internalType": "uint8",
             "name": "combatStyle",
             "type": "uint8"
           },

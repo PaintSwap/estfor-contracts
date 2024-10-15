@@ -8,6 +8,8 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
+import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
+
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
@@ -17,6 +19,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   using UnsafeMath for uint40;
   using UnsafeMath for uint24;
   using UnsafeMath for uint16;
+  using CombatStyleLibrary for uint8;
 
   constructor() {
     _checkStartSlot();
@@ -138,7 +141,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint prevProcessedTime = queuedAction.prevProcessedTime;
       uint veryStartTime = startTime.sub(prevProcessedTime);
 
-      bool isCombat = _isCombatStyle(queuedAction.combatStyle);
+      bool isCombat = _isCombatStyle(queuedAction.combatStyle.asCombatStyle());
       ActionChoice memory actionChoice;
       if (queuedAction.choiceId != 0) {
         actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
@@ -162,10 +165,10 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
             combatStats = PlayersLibrary.updateCombatStatsFromPet(
               combatStats,
-              pet.skillEnhancement1,
+              uint8(pet.skillEnhancement1),
               pet.skillFixedEnhancement1,
               pet.skillPercentageEnhancement1,
-              pet.skillEnhancement2,
+              uint8(pet.skillEnhancement2),
               pet.skillFixedEnhancement2,
               pet.skillPercentageEnhancement2
             );
@@ -365,7 +368,8 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint pointsAccruedExclBaseBoost;
       uint prevPointsAccrued;
       uint prevPointsAccruedExclBaseBoost;
-      Skill skill = _getSkillFromChoiceOrStyle(actionChoice, queuedAction.combatStyle, queuedAction.actionId);
+      CombatStyle combatStyle = queuedAction.combatStyle.asCombatStyle();
+      Skill skill = _getSkillFromChoiceOrStyle(actionChoice, combatStyle, queuedAction.actionId);
       (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
         from,
         _playerId,
@@ -394,7 +398,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
       uint32 xpGained = pointsAccrued;
       uint32 healthPointsGained;
-      if (pointsAccruedExclBaseBoost != 0 && _isCombatStyle(queuedAction.combatStyle)) {
+      if (pointsAccruedExclBaseBoost != 0 && _isCombatStyle(combatStyle)) {
         healthPointsGained = _getHealthPointsFromCombat(
           _playerId,
           pointsAccruedExclBaseBoost + prevPointsAccruedExclBaseBoost
@@ -406,7 +410,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         xpGained += healthPointsGained;
       }
 
-      bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && _isCombatStyle(queuedAction.combatStyle);
+      bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && _isCombatStyle(combatStyle);
 
       if (pointsAccrued != 0) {
         pendingQueuedActionProcessed.skills[pendingQueuedActionProcessedLength] = skill;

@@ -220,9 +220,9 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -310,9 +310,9 @@
             "type": "bytes1"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill2",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -320,9 +320,9 @@
             "type": "uint32"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill3",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -387,9 +387,9 @@
             "type": "uint24"
           },
           {
-            "internalType": "enum CombatStyle",
+            "internalType": "uint8",
             "name": "combatStyle",
-            "type": "CombatStyle"
+            "type": "uint8"
           },
           {
             "internalType": "uint24",
@@ -618,9 +618,9 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -708,9 +708,9 @@
             "type": "bytes1"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill2",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -718,9 +718,9 @@
             "type": "uint32"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill3",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -987,9 +987,9 @@
         "type": "tuple"
       },
       {
-        "internalType": "enum Skill",
+        "internalType": "uint8",
         "name": "_skillEnhancement1",
-        "type": "Skill"
+        "type": "uint8"
       },
       {
         "internalType": "uint8",
@@ -1002,9 +1002,9 @@
         "type": "uint8"
       },
       {
-        "internalType": "enum Skill",
+        "internalType": "uint8",
         "name": "_skillEnhancement2",
-        "type": "Skill"
+        "type": "uint8"
       },
       {
         "internalType": "uint8",
@@ -1262,9 +1262,9 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -1352,9 +1352,9 @@
             "type": "bytes1"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill2",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",
@@ -1362,9 +1362,9 @@
             "type": "uint32"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill3",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "uint32",

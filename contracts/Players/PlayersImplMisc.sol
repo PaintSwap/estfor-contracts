@@ -12,6 +12,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
+import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
 import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
@@ -26,6 +27,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   using UnsafeMath for uint40;
   using UnsafeMath for uint128;
   using UnsafeMath for uint256;
+  using CombatStyleLibrary for uint8;
 
   constructor() {
     _checkStartSlot();
@@ -363,7 +365,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   {
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    bool isCombat = _isCombatStyle(_queuedAction.combatStyle);
+    bool isCombat = _isCombatStyle(_queuedAction.combatStyle.asCombatStyle());
     if (isCombat) {
       // Fetch the requirements for it
       CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);

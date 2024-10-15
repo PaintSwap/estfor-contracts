@@ -3,6 +3,8 @@ pragma solidity ^0.8.20;
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
+import {SkillLibrary} from "./SkillLibrary.sol";
+
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
@@ -10,6 +12,7 @@ import "./globals/all.sol";
 library WorldLibrary {
   using UnsafeMath for U256;
   using UnsafeMath for uint;
+  using SkillLibrary for uint8;
 
   error InputSpecifiedWithoutAmount();
   error InputAmountsMustBeInOrder();
@@ -70,7 +73,7 @@ library WorldLibrary {
     }
 
     // Check minimum xp
-    Skill[] calldata minSkills = _actionChoiceInput.minSkills;
+    uint8[] calldata minSkills = _actionChoiceInput.minSkills;
     uint32[] calldata minXPs = _actionChoiceInput.minXPs;
 
     // First minSkill must be the same as the action choice skill
@@ -86,7 +89,7 @@ library WorldLibrary {
     }
 
     for (uint i; i < minSkills.length; ++i) {
-      if (minSkills[i] == Skill.NONE) {
+      if (minSkills[i].isSkill(Skill.NONE)) {
         revert InvalidSkill();
       }
       // Can only be 0 if it's the first one and there is more than one

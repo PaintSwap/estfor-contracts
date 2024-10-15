@@ -18,7 +18,7 @@ struct QueuedActionInputV2 {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  CombatStyle combatStyle; // specific style of combat
+  uint8 combatStyle; // CombatStyle specific style of combat
   uint40 petId; // id of the pet (can be empty)
 }
 
@@ -30,7 +30,7 @@ struct QueuedActionInput {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  CombatStyle combatStyle; // specific style of combat
+  uint8 combatStyle; // CombatStyle specific style of combat
 }
 
 struct QueuedActionExtra {
@@ -45,7 +45,7 @@ struct QueuedAction {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  CombatStyle combatStyle; // specific style of combat
+  uint8 combatStyle; // CombatStyle specific style of combat
   uint24 prevProcessedTime; // How long the action has been processed for previously
   uint24 prevProcessedXPTime; // How much XP has been gained for this action so far
   uint64 queueId; // id of this queued action
@@ -60,7 +60,7 @@ struct QueuedActionV1 {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  CombatStyle combatStyle; // specific style of combat
+  uint8 combatStyle; // CombatStyle specific style of combat
   uint24 prevProcessedTime; // How long the action has been processed for previously
   uint24 prevProcessedXPTime; // How much XP has been gained for this action so far
   uint64 queueId; // id of this queued action
@@ -85,7 +85,7 @@ struct ActionV1 {
 }
 
 struct ActionInfo {
-  Skill skill;
+  uint8 skill;
   bool isAvailable;
   bool isDynamic;
   bool actionChoiceRequired; // If true, then the user must choose an action choice
@@ -100,7 +100,7 @@ struct ActionInfo {
 }
 
 struct ActionInfoV1 {
-  Skill skill;
+  uint8 skill;
   bool isAvailable;
   bool isDynamic;
   bool actionChoiceRequired; // If true, then the user must choose an action choice

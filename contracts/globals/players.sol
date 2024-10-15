@@ -142,7 +142,7 @@ struct PlayerBoostInfo {
 // This is effectively a ratio to produce 1 of outputTokenId.
 // Available choices that can be undertaken for an action
 struct ActionChoiceInput {
-  Skill skill; // Skill that this action choice is related to
+  uint8 skill; // Skill that this action choice is related to
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
@@ -154,12 +154,12 @@ struct ActionChoiceInput {
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
   bool isFullModeOnly;
-  Skill[] minSkills; // Skills required to do this action choice
+  uint8[] minSkills; // Skills required to do this action choice
   uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
 }
 
 struct ActionChoiceInputV3 {
-  Skill skill; // Skill that this action choice is related to
+  uint8 skill; // Skill that this action choice is related to
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
@@ -171,12 +171,12 @@ struct ActionChoiceInputV3 {
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
   bool isFullModeOnly;
-  Skill[] minSkills; // Skills required to do this action choice
+  uint8[] minSkills; // Skills required to do this action choice
   uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
 }
 
 struct ActionChoiceInputV2 {
-  Skill skill; // Skill that this action choice is related to
+  uint8 skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
@@ -196,7 +196,7 @@ struct ActionChoiceInputV2 {
 }
 
 struct ActionChoice {
-  Skill skill; // Skill that this action choice is related to
+  uint8 skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
@@ -218,9 +218,9 @@ struct ActionChoice {
   bytes1 packedData;
   bytes1 reserved;
   // Second storage slot
-  Skill minSkill2;
+  uint8 minSkill2;
   uint32 minXP2;
-  Skill minSkill3;
+  uint8 minSkill3;
   uint32 minXP3;
   uint24 newInputAmount1; // alternative inputAmount1 which is larger
   uint24 newInputAmount2; // alternative inputAmount2 which is larger
@@ -228,7 +228,7 @@ struct ActionChoice {
 }
 
 struct ActionChoiceV2 {
-  Skill skill; // Skill that this action choice is related to
+  uint8 skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
   int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
@@ -248,7 +248,7 @@ struct ActionChoiceV2 {
 }
 
 struct ActionChoiceV1 {
-  Skill skill;
+  uint8 skill;
   uint32 minXP;
   int16 skillDiff;
   uint24 rate;

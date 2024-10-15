@@ -110,9 +110,9 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
-            "type": "Skill"
+            "type": "uint8"
           },
           {
             "internalType": "int16",
@@ -170,9 +170,9 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
-            "type": "Skill[]"
+            "type": "uint8[]"
           },
           {
             "internalType": "uint32[]",

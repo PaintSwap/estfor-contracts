@@ -219,7 +219,7 @@
           {
             "components": [
               {
-                "internalType": "enum Skill",
+                "internalType": "uint8",
                 "name": "skill",
                 "type": "uint8"
               },
@@ -382,7 +382,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -479,7 +479,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -576,7 +576,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -688,7 +688,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -748,7 +748,7 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -785,7 +785,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -845,7 +845,7 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -877,7 +877,7 @@
           {
             "components": [
               {
-                "internalType": "enum Skill",
+                "internalType": "uint8",
                 "name": "skill",
                 "type": "uint8"
               },
@@ -1035,7 +1035,7 @@
           {
             "components": [
               {
-                "internalType": "enum Skill",
+                "internalType": "uint8",
                 "name": "skill",
                 "type": "uint8"
               },
@@ -1240,7 +1240,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -1337,7 +1337,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -1449,7 +1449,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -1509,7 +1509,7 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -1546,7 +1546,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -1606,7 +1606,7 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -1643,7 +1643,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -1735,7 +1735,7 @@
           {
             "components": [
               {
-                "internalType": "enum Skill",
+                "internalType": "uint8",
                 "name": "skill",
                 "type": "uint8"
               },
@@ -1893,7 +1893,7 @@
           {
             "components": [
               {
-                "internalType": "enum Skill",
+                "internalType": "uint8",
                 "name": "skill",
                 "type": "uint8"
               },
@@ -2212,7 +2212,7 @@
     "name": "actions",
     "outputs": [
       {
-        "internalType": "enum Skill",
+        "internalType": "uint8",
         "name": "skill",
         "type": "uint8"
       },
@@ -2290,7 +2290,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -2350,7 +2350,7 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -2382,7 +2382,7 @@
           {
             "components": [
               {
-                "internalType": "enum Skill",
+                "internalType": "uint8",
                 "name": "skill",
                 "type": "uint8"
               },
@@ -2553,7 +2553,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -2613,7 +2613,7 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -2677,7 +2677,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -2737,7 +2737,7 @@
             "type": "bool"
           },
           {
-            "internalType": "enum Skill[]",
+            "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
           },
@@ -2769,7 +2769,7 @@
           {
             "components": [
               {
-                "internalType": "enum Skill",
+                "internalType": "uint8",
                 "name": "skill",
                 "type": "uint8"
               },
@@ -2961,7 +2961,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },
@@ -3051,7 +3051,7 @@
             "type": "bytes1"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill2",
             "type": "uint8"
           },
@@ -3061,7 +3061,7 @@
             "type": "uint32"
           },
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "minSkill3",
             "type": "uint8"
           },
@@ -3107,7 +3107,7 @@
       {
         "components": [
           {
-            "internalType": "enum Skill",
+            "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
           },

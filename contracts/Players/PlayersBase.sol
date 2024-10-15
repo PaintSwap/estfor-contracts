@@ -11,6 +11,7 @@ import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {WishingWell} from "../WishingWell.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
+import {SkillLibrary} from "../SkillLibrary.sol";
 import "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
@@ -19,6 +20,7 @@ import "../globals/all.sol";
 abstract contract PlayersBase {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
+  using SkillLibrary for uint8;
 
   event ClearAll(address from, uint playerId);
   event SetActionQueueV2(
@@ -234,7 +236,7 @@ abstract contract PlayersBase {
       return Skill.DEFENCE;
     }
 
-    Skill choiceSkill = _choice.skill;
+    Skill choiceSkill = _choice.skill.asSkill();
     if (choiceSkill != Skill.NONE) {
       // If the skill is defence or health, then it's magic
       if (_combatStyle == CombatStyle.ATTACK && (choiceSkill == Skill.DEFENCE || choiceSkill == Skill.HEALTH)) {

@@ -6,11 +6,14 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {ItemNFT} from "./ItemNFT.sol";
+import {SkillLibrary} from "./SkillLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
 contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
+  using SkillLibrary for uint8;
+
   event AddInstantActions(InstantActionInput[] instantActionInputs);
   event EditInstantActions(InstantActionInput[] instantActionInputs);
   event RemoveInstantActions(InstantActionType[] actionTypes, uint16[] actionIds);
@@ -56,7 +59,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
 
   struct InstantActionInput {
     uint16 actionId;
-    Skill[] minSkills;
+    uint8[] minSkills;
     uint32[] minXPs;
     uint16[] inputTokenIds;
     uint16[] inputAmounts;
@@ -67,11 +70,11 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   struct InstantAction {
-    Skill minSkill1;
+    uint8 minSkill1;
     uint32 minXP1;
-    Skill minSkill2;
+    uint8 minSkill2;
     uint32 minXP2;
-    Skill minSkill3;
+    uint8 minSkill3;
     uint32 minXP3;
     uint16 inputTokenId1;
     uint16 inputAmount1;
@@ -242,22 +245,19 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _checkMinXPRequirements(uint _playerId, InstantAction storage _instantAction) private view {
-    if (
-      _instantAction.minSkill1 != Skill.NONE && players.xp(_playerId, _instantAction.minSkill1) < _instantAction.minXP1
-    ) {
-      revert MinimumXPNotReached(_instantAction.minSkill1, _instantAction.minXP1);
+    Skill minSkill1 = _instantAction.minSkill1.asSkill();
+    if (minSkill1 != Skill.NONE && players.xp(_playerId, minSkill1) < _instantAction.minXP1) {
+      revert MinimumXPNotReached(minSkill1, _instantAction.minXP1);
     }
 
-    if (
-      _instantAction.minSkill2 != Skill.NONE && players.xp(_playerId, _instantAction.minSkill2) < _instantAction.minXP2
-    ) {
-      revert MinimumXPNotReached(_instantAction.minSkill2, _instantAction.minXP2);
+    Skill minSkill2 = _instantAction.minSkill2.asSkill();
+    if (minSkill2 != Skill.NONE && players.xp(_playerId, minSkill2) < _instantAction.minXP2) {
+      revert MinimumXPNotReached(minSkill2, _instantAction.minXP2);
     }
 
-    if (
-      _instantAction.minSkill3 != Skill.NONE && players.xp(_playerId, _instantAction.minSkill3) < _instantAction.minXP3
-    ) {
-      revert MinimumXPNotReached(_instantAction.minSkill3, _instantAction.minXP3);
+    Skill minSkill3 = _instantAction.minSkill3.asSkill();
+    if (minSkill3 != Skill.NONE && players.xp(_playerId, minSkill3) < _instantAction.minXP3) {
+      revert MinimumXPNotReached(minSkill3, _instantAction.minXP3);
     }
   }
 
@@ -281,11 +281,11 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   ) private pure returns (InstantAction memory instantAction) {
     bytes1 packedData = bytes1(uint8(_actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     instantAction = InstantAction({
-      minSkill1: _actionInput.minSkills.length > 0 ? _actionInput.minSkills[0] : Skill.NONE,
+      minSkill1: _actionInput.minSkills.length > 0 ? _actionInput.minSkills[0] : uint8(Skill.NONE),
       minXP1: _actionInput.minXPs.length > 0 ? _actionInput.minXPs[0] : 0,
-      minSkill2: _actionInput.minSkills.length > 1 ? _actionInput.minSkills[1] : Skill.NONE,
+      minSkill2: _actionInput.minSkills.length > 1 ? _actionInput.minSkills[1] : uint8(Skill.NONE),
       minXP2: _actionInput.minXPs.length > 1 ? _actionInput.minXPs[1] : 0,
-      minSkill3: _actionInput.minSkills.length > 2 ? _actionInput.minSkills[2] : Skill.NONE,
+      minSkill3: _actionInput.minSkills.length > 2 ? _actionInput.minSkills[2] : uint8(Skill.NONE),
       minXP3: _actionInput.minXPs.length > 2 ? _actionInput.minXPs[2] : 0,
       inputTokenId1: _actionInput.inputTokenIds.length > 0 ? _actionInput.inputTokenIds[0] : NONE,
       inputAmount1: _actionInput.inputAmounts.length > 0 ? _actionInput.inputAmounts[0] : 0,
@@ -356,7 +356,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     // Check minimum xp
-    Skill[] calldata minSkills = _actionInput.minSkills;
+    uint8[] calldata minSkills = _actionInput.minSkills;
     uint32[] calldata minXPs = _actionInput.minXPs;
 
     if (minSkills.length > 3) {
@@ -366,7 +366,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       revert LengthMismatch();
     }
     for (uint i; i < minSkills.length; ++i) {
-      if (minSkills[i] == Skill.NONE) {
+      if (minSkills[i].isSkill(Skill.NONE)) {
         revert InvalidSkill();
       }
       if (minXPs[i] == 0) {
