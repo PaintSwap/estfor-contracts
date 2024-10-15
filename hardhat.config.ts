@@ -2,9 +2,7 @@ import "dotenv/config";
 
 import {HardhatUserConfig} from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "@nomicfoundation/hardhat-chai-matchers";
 
-import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-solhint";
 
 import "@openzeppelin/hardhat-upgrades";
@@ -14,7 +12,7 @@ import "hardhat-gas-reporter";
 import "hardhat-storage-layout";
 import "hardhat-abi-exporter";
 import "solidity-coverage";
-import {ethers, parseUnits} from "ethers";
+import {parseUnits} from "ethers";
 import {SolcUserConfig} from "hardhat/types";
 
 const defaultConfig: SolcUserConfig = {
@@ -89,7 +87,7 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    enabled: true,
+    enabled: false,
     showMethodSig: true,
   },
   networks: {
@@ -99,12 +97,12 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
     },
     fantom: {
-      url: process.env.FTM_RPC,
+      url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
     fantom_testnet: {
-      url: process.env.FTM_RPC_TESTNET,
+      url: process.env.FANTOM_TESTNET_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
@@ -138,6 +136,9 @@ const config: HardhatUserConfig = {
       "PlayersImpl*",
       "@openzeppelin",
     ],
+  },
+  typechain: {
+    target: "ethers-v6",
   },
 };
 
