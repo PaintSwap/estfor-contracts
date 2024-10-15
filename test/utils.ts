@@ -81,13 +81,11 @@ export const getEventLog = async (
 };
 export const timeTravelToNextCheckpoint = async () => {
   const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-  await ethers.provider.send("evm_increaseTime", [Math.floor((timestamp / 86400) * 86400 + 86400) - timestamp + 1]);
-  await ethers.provider.send("evm_mine", []);
+  return timeTravel(Math.floor((timestamp / 86400) * 86400 + 86400) - timestamp + 1);
 };
 
 export const timeTravel24Hours = async () => {
-  await ethers.provider.send("evm_increaseTime", [86400]);
-  await ethers.provider.send("evm_mine", []);
+  return timeTravel(86400);
 };
 
 export const timeTravel = async (seconds: number) => {
