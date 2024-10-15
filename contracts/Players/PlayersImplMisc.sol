@@ -300,7 +300,11 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       if (_actionChoice.successPercent != 100) {
         uint minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
         uint skillLevel = PlayersLibrary.getLevel(
-          PlayersLibrary.getAbsoluteActionStartXP(_actionChoice.skill, _pendingQueuedActionProcessed, xp_[_playerId])
+          PlayersLibrary.getAbsoluteActionStartXP(
+            uint8(_actionChoice.skill),
+            _pendingQueuedActionProcessed,
+            xp_[_playerId]
+          )
         );
         uint extraBoost = skillLevel - minLevel;
 
@@ -368,8 +372,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       (xpElapsedTime, combatElapsedTime, baseInputItemsConsumedNum, foodConsumed, died) = PlayersLibrary
         .getCombatAdjustedElapsedTimes(
           _from,
-          itemNFT,
-          world,
+          address(itemNFT),
+          address(world),
           _elapsedTime,
           _actionChoice,
           _queuedAction.regenerateId,
@@ -384,7 +388,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     } else {
       (xpElapsedTime, baseInputItemsConsumedNum) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
-        itemNFT,
+        address(itemNFT),
         _elapsedTime,
         _actionChoice,
         _pendingQueuedActionEquipmentStates

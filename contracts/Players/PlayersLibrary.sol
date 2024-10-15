@@ -97,19 +97,23 @@ library PlayersLibrary {
   function getRealBalance(
     address _from,
     uint _itemId,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint balance) {
-    balance = _getRealBalance(_itemNFT.balanceOf(_from, _itemId), _itemId, _pendingQueuedActionEquipmentStates);
+    balance = _getRealBalance(
+      IItemNFT(_itemNFTAddress).balanceOf(_from, _itemId),
+      _itemId,
+      _pendingQueuedActionEquipmentStates
+    );
   }
 
   function getRealBalances(
     address _from,
     uint16[] memory _itemIds,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint[] memory balances) {
-    balances = _itemNFT.balanceOfs(_from, _itemIds);
+    balances = IItemNFT(_itemNFTAddress).balanceOfs(_from, _itemIds);
 
     U256 bounds = balances.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
@@ -175,7 +179,7 @@ library PlayersLibrary {
     IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint maxRequiredRatio) {
-    uint balance = getRealBalance(_from, _inputTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
+    uint balance = getRealBalance(_from, _inputTokenId, address(_itemNFT), _pendingQueuedActionEquipmentStates);
     uint tempMaxRequiredRatio = balance / _inputAmount;
     if (tempMaxRequiredRatio < _prevConsumeMaxRatio) {
       maxRequiredRatio = tempMaxRequiredRatio;
@@ -280,13 +284,12 @@ library PlayersLibrary {
     uint8 _betaCombat,
     uint _elapsedTime
   ) private pure returns (uint32 dmgDealt) {
-    if (_actionChoice.skill == Skill.MELEE) {
+    Skill skill = _actionChoice.skill;
+    if (skill == Skill.MELEE) {
       dmgDealt = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
-    } else if (_actionChoice.skill == Skill.RANGED) {
+    } else if (skill == Skill.RANGED) {
       dmgDealt = dmg(_combatStats.ranged, _enemyCombatStats.rangedDefence, _alphaCombat, _betaCombat, _elapsedTime);
-    } else if (
-      _actionChoice.skill == Skill.MAGIC || _actionChoice.skill == Skill.DEFENCE || _actionChoice.skill == Skill.HEALTH
-    ) {
+    } else if (skill == Skill.MAGIC || skill == Skill.DEFENCE || skill == Skill.HEALTH) {
       // Assumes this is a magic action
       dmgDealt = dmg(_combatStats.magic, _enemyCombatStats.magicDefence, _alphaCombat, _betaCombat, _elapsedTime);
     } else {
@@ -296,8 +299,8 @@ library PlayersLibrary {
 
   function getCombatAdjustedElapsedTimes(
     address _from,
-    IItemNFT _itemNFT,
-    World _world,
+    address _itemNFTAddress,
+    address _worldAddress,
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
     uint16 _regenerateId,
@@ -319,6 +322,50 @@ library PlayersLibrary {
       bool died
     )
   {
+    return
+      _getCombatAdjustedElapsedTimes(
+        _from,
+        _itemNFTAddress,
+        _worldAddress,
+        _elapsedTime,
+        _actionChoice,
+        _regenerateId,
+        _queuedAction,
+        _combatStats,
+        _enemyCombatStats,
+        _alphaCombat,
+        _betaCombat,
+        _alphaCombatHealing,
+        _pendingQueuedActionEquipmentStates
+      );
+  }
+
+  function _getCombatAdjustedElapsedTimes(
+    address _from,
+    address _itemNFTAddress,
+    address _worldAddress,
+    uint _elapsedTime,
+    ActionChoice calldata _actionChoice,
+    uint16 _regenerateId,
+    QueuedAction calldata _queuedAction,
+    CombatStats memory _combatStats,
+    CombatStats calldata _enemyCombatStats,
+    uint8 _alphaCombat,
+    uint8 _betaCombat,
+    uint8 _alphaCombatHealing,
+    PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
+  )
+    private
+    view
+    returns (
+      uint xpElapsedTime,
+      uint combatElapsedTime,
+      uint16 baseInputItemsConsumedNum,
+      uint16 foodConsumed,
+      bool died
+    )
+  {
+    World _world = World(_worldAddress);
     uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
     uint respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
     uint32 dmgDealt = _getDmgDealtByPlayer(
@@ -379,7 +426,7 @@ library PlayersLibrary {
         _from,
         _actionChoice,
         baseInputItemsConsumedNum,
-        _itemNFT,
+        IItemNFT(_itemNFTAddress),
         _pendingQueuedActionEquipmentStates
       );
 
@@ -440,7 +487,7 @@ library PlayersLibrary {
       totalHealthLostOnlyKilled,
       playerHealth,
       _alphaCombatHealing,
-      _itemNFT,
+      _itemNFTAddress,
       _pendingQueuedActionEquipmentStates
     );
 
@@ -448,7 +495,7 @@ library PlayersLibrary {
     if (died) {
       uint healthRestored;
       if (_regenerateId != NONE) {
-        Item memory item = _itemNFT.getItem(_regenerateId);
+        Item memory item = IItemNFT(_itemNFTAddress).getItem(_regenerateId);
         healthRestored = item.healthRestored;
       }
 
@@ -497,7 +544,7 @@ library PlayersLibrary {
             _from,
             _actionChoice,
             baseInputItemsConsumedNum,
-            _itemNFT,
+            IItemNFT(_itemNFTAddress),
             _pendingQueuedActionEquipmentStates
           );
 
@@ -537,12 +584,12 @@ library PlayersLibrary {
     uint32 _totalHealthLostKilling,
     uint32 _totalHealthPlayer,
     uint256 _alphaCombatHealing,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) private view returns (uint16 foodConsumed, uint totalFoodRequiredKilling, bool died) {
     uint healthRestoredFromItem;
     if (_regenerateId != NONE) {
-      Item memory item = _itemNFT.getItem(_regenerateId);
+      Item memory item = IItemNFT(_itemNFTAddress).getItem(_regenerateId);
       healthRestoredFromItem = item.healthRestored;
     }
 
@@ -563,7 +610,7 @@ library PlayersLibrary {
         healingDoneFromHealth
       );
 
-      uint balance = getRealBalance(_from, _regenerateId, _itemNFT, _pendingQueuedActionEquipmentStates);
+      uint balance = getRealBalance(_from, _regenerateId, _itemNFTAddress, _pendingQueuedActionEquipmentStates);
 
       // Can only consume a maximum of 65535 food
       if (totalFoodRequired > type(uint16).max) {
@@ -582,7 +629,7 @@ library PlayersLibrary {
 
   function getNonCombatAdjustedElapsedTime(
     address _from,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     uint _elapsedTime,
     ActionChoice calldata _actionChoice,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
@@ -596,7 +643,7 @@ library PlayersLibrary {
         _from,
         _actionChoice,
         baseInputItemsConsumedNum,
-        _itemNFT,
+        IItemNFT(_itemNFTAddress),
         _pendingQueuedActionEquipmentStates
       );
       bool hadEnoughConsumables = baseInputItemsConsumedNum <= maxRequiredRatio;
@@ -787,18 +834,18 @@ library PlayersLibrary {
     PackedXP storage _packedXP
   ) external view returns (CombatStats memory combatStats) {
     combatStats.melee = int16(
-      _getLevel(getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(_getAbsoluteActionStartXP(Skill.MELEE, _pendingQueuedActionProcessed, _packedXP))
     );
     combatStats.ranged = int16(
-      _getLevel(getAbsoluteActionStartXP(Skill.RANGED, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(_getAbsoluteActionStartXP(Skill.RANGED, _pendingQueuedActionProcessed, _packedXP))
     );
     combatStats.magic = int16(
-      _getLevel(getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(_getAbsoluteActionStartXP(Skill.MAGIC, _pendingQueuedActionProcessed, _packedXP))
     );
     combatStats.health = int16(
-      _getLevel(getAbsoluteActionStartXP(Skill.HEALTH, _pendingQueuedActionProcessed, _packedXP))
+      _getLevel(_getAbsoluteActionStartXP(Skill.HEALTH, _pendingQueuedActionProcessed, _packedXP))
     );
-    uint16 defenceLevel = _getLevel(getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionProcessed, _packedXP));
+    uint16 defenceLevel = _getLevel(_getAbsoluteActionStartXP(Skill.DEFENCE, _pendingQueuedActionProcessed, _packedXP));
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.rangedDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
@@ -806,9 +853,17 @@ library PlayersLibrary {
 
   function updateCombatStatsFromSkill(
     CombatStats memory _combatStats,
-    Skill _skill,
+    uint8 _skillId,
     int16 _skillDiff
   ) external pure returns (CombatStats memory combatStats) {
+    return _updateCombatStatsFromSkill(_combatStats, Skill(_skillId), _skillDiff);
+  }
+
+  function _updateCombatStatsFromSkill(
+    CombatStats memory _combatStats,
+    Skill _skill,
+    int16 _skillDiff
+  ) internal pure returns (CombatStats memory combatStats) {
     combatStats = _combatStats;
     if (_skill == Skill.MELEE) {} else if (_skill == Skill.RANGED) {
       combatStats.ranged += _skillDiff; // Extra/Reduced ranged damage
@@ -828,7 +883,7 @@ library PlayersLibrary {
   function updateCombatStatsFromAttire(
     CombatStats memory _combatStats,
     address _from,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     Attire storage _attire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (CombatStats memory combatStats) {
@@ -837,12 +892,12 @@ library PlayersLibrary {
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
-      _itemNFT,
+      _itemNFTAddress,
       skipNonFullAttire,
       _pendingQueuedActionEquipmentStates
     );
     if (itemTokenIds.length != 0) {
-      Item[] memory items = _itemNFT.getItems(itemTokenIds);
+      Item[] memory items = IItemNFT(_itemNFTAddress).getItems(itemTokenIds);
       U256 iter = items.length.asU256();
       while (iter.neq(0)) {
         iter = iter.dec();
@@ -917,7 +972,7 @@ library PlayersLibrary {
   function getAttireWithBalance(
     address _from,
     Attire calldata _attire,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
@@ -950,14 +1005,14 @@ library PlayersLibrary {
     }
 
     if (attireLength != 0) {
-      balances = getRealBalances(_from, itemTokenIds, _itemNFT, _pendingQueuedActionEquipmentStates);
+      balances = getRealBalances(_from, itemTokenIds, _itemNFTAddress, _pendingQueuedActionEquipmentStates);
     }
   }
 
   function getAttireWithBalance(
     address _from,
     Attire storage _attire,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
@@ -990,16 +1045,25 @@ library PlayersLibrary {
     }
 
     if (attireLength != 0) {
-      balances = getRealBalances(_from, itemTokenIds, _itemNFT, _pendingQueuedActionEquipmentStates);
+      balances = getRealBalances(_from, itemTokenIds, _itemNFTAddress, _pendingQueuedActionEquipmentStates);
     }
   }
 
   // Subtract any existing xp gained from the first in-progress actions and add the new xp gained
   function getAbsoluteActionStartXP(
-    Skill _skill,
+    uint8 _skillId,
     PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     PackedXP storage packedXP
   ) public view returns (uint) {
+    return _getAbsoluteActionStartXP(Skill(_skillId), _pendingQueuedActionProcessed, packedXP);
+  }
+
+  // Subtract any existing xp gained from the first in-progress actions and add the new xp gained
+  function _getAbsoluteActionStartXP(
+    Skill _skill,
+    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
+    PackedXP storage packedXP
+  ) internal view returns (uint) {
     uint xp = readXP(_skill, packedXP);
     if (_pendingQueuedActionProcessed.currentAction.skill1 == _skill) {
       xp -= _pendingQueuedActionProcessed.currentAction.xpGained1;
@@ -1022,7 +1086,7 @@ library PlayersLibrary {
 
   function updateStatsFromHandEquipment(
     address _from,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     uint16[2] calldata _handEquipmentTokenIds,
     CombatStats calldata _combatStats,
     bool isCombat,
@@ -1036,7 +1100,12 @@ library PlayersLibrary {
       uint16 i = iter.asUint16();
       uint16 handEquipmentTokenId = _handEquipmentTokenIds[i];
       if (handEquipmentTokenId != NONE) {
-        uint256 balance = getRealBalance(_from, handEquipmentTokenId, _itemNFT, _pendingQueuedActionEquipmentStates);
+        uint256 balance = getRealBalance(
+          _from,
+          handEquipmentTokenId,
+          _itemNFTAddress,
+          _pendingQueuedActionEquipmentStates
+        );
         if (balance == 0) {
           // Assume that if the player doesn't have the non-combat item that this action cannot be done or if the action choice required it (e.g range bows)
           if (!isCombat || _actionChoice.handItemTokenIdRangeMin != NONE) {
@@ -1044,7 +1113,7 @@ library PlayersLibrary {
           }
         } else if (isCombat) {
           // Update the combat stats
-          Item memory item = _itemNFT.getItem(handEquipmentTokenId);
+          Item memory item = IItemNFT(_itemNFTAddress).getItem(handEquipmentTokenId);
           _updateCombatStatsFromItem(combatStats, item);
         }
       }
@@ -1061,7 +1130,11 @@ library PlayersLibrary {
     _combatStats.health += _item.health;
   }
 
-  function getBonusAvatarXPPercent(Player storage _player, Skill _skill) public view returns (uint8 bonusPercent) {
+  function getBonusAvatarXPPercent(Player storage _player, uint8 _skillId) public view returns (uint8 bonusPercent) {
+    return _getBonusAvatarXPPercent(_player, Skill(_skillId));
+  }
+
+  function _getBonusAvatarXPPercent(Player storage _player, Skill _skill) internal view returns (uint8 bonusPercent) {
     bool hasBonusSkill = _player.skillBoosted1 == _skill || _player.skillBoosted2 == _skill;
     if (!hasBonusSkill) {
       return 0;
@@ -1079,7 +1152,7 @@ library PlayersLibrary {
     uint _elapsedTime,
     uint24 _xpPerHour
   ) internal view returns (uint32 extraPointsAccrued) {
-    uint8 bonusPercent = getBonusAvatarXPPercent(_player, _skill);
+    uint8 bonusPercent = _getBonusAvatarXPPercent(_player, _skill);
     extraPointsAccrued = uint32((_elapsedTime * _xpPerHour * bonusPercent) / (3600 * 100));
   }
 
@@ -1088,20 +1161,23 @@ library PlayersLibrary {
     Player storage _player,
     QueuedAction storage _queuedAction,
     uint _startTime,
-    Skill _skill,
+    uint8 _skillId,
     uint _xpElapsedTime,
     Attire storage _attire,
     PlayerBoostInfo storage _activeBoost,
     PlayerBoostInfo storage _globalBoost,
     PlayerBoostInfo storage _clanBoost,
-    IItemNFT _itemNFT,
-    World _world,
+    address _itemNFTAddress,
+    address _worldAddress,
     uint8 _bonusAttirePercent,
     uint16[5] calldata _expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     bool _isCombatSkill = _queuedAction.combatStyle != CombatStyle.NONE;
-    uint24 xpPerHour = _world.getXPPerHour(_queuedAction.actionId, _isCombatSkill ? NONE : _queuedAction.choiceId);
+    uint24 xpPerHour = World(_worldAddress).getXPPerHour(
+      _queuedAction.actionId,
+      _isCombatSkill ? NONE : _queuedAction.choiceId
+    );
     pointsAccrued = uint32((_xpElapsedTime * xpPerHour) / 3600);
     // Normal Player specific boosts
     pointsAccrued += _getXPFromBoost(_isCombatSkill, _startTime, _xpElapsedTime, xpPerHour, _activeBoost);
@@ -1117,13 +1193,13 @@ library PlayersLibrary {
       _attire,
       _xpElapsedTime,
       xpPerHour,
-      _itemNFT,
+      _itemNFTAddress,
       _bonusAttirePercent,
       _expectedItemTokenIds,
       _pendingQueuedActionEquipmentStates
     );
     pointsAccruedExclBaseBoost = pointsAccrued;
-    pointsAccrued += _extraFromAvatar(_player, _skill, _xpElapsedTime, xpPerHour);
+    pointsAccrued += _extraFromAvatar(_player, Skill(_skillId), _xpElapsedTime, xpPerHour);
   }
 
   function _extraXPFromFullAttire(
@@ -1131,7 +1207,7 @@ library PlayersLibrary {
     Attire storage _attire,
     uint _elapsedTime,
     uint24 _xpPerHour,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     uint8 _bonusPercent,
     uint16[5] calldata _expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
@@ -1144,7 +1220,7 @@ library PlayersLibrary {
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
-      _itemNFT,
+      _itemNFTAddress,
       skipNonFullAttire,
       _pendingQueuedActionEquipmentStates
     );
@@ -1156,22 +1232,24 @@ library PlayersLibrary {
 
   function getSuccessPercent(
     uint16 _actionId,
-    Skill _actionSkill,
+    uint8 _actionSkillId,
     bool isCombat,
     PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
-    World _world,
+    address _worldAddress,
     uint _maxSuccessPercentChange,
     PackedXP storage _packedXP
   ) external view returns (uint8 successPercent) {
     successPercent = 100;
-    (uint8 actionSuccessPercent, uint32 minXP) = _world.getActionSuccessPercentAndMinXP(_actionId);
+    (uint8 actionSuccessPercent, uint32 minXP) = World(_worldAddress).getActionSuccessPercentAndMinXP(_actionId);
     if (actionSuccessPercent != 100) {
       if (isCombat) {
         revert InvalidAction();
       }
 
       uint minLevel = _getLevel(minXP);
-      uint skillLevel = _getLevel(getAbsoluteActionStartXP(_actionSkill, _pendingQueuedActionProcessed, _packedXP));
+      uint skillLevel = _getLevel(
+        _getAbsoluteActionStartXP(Skill(_actionSkillId), _pendingQueuedActionProcessed, _packedXP)
+      );
       uint extraBoost = skillLevel - minLevel;
 
       successPercent = uint8(Math.min(_maxSuccessPercentChange, actionSuccessPercent + extraBoost));
@@ -1181,7 +1259,7 @@ library PlayersLibrary {
   function getFullAttireBonusRewardsPercent(
     address _from,
     Attire storage _attire,
-    IItemNFT _itemNFT,
+    address _itemNFTAddress,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates,
     uint8 _bonusRewardsPercent,
     uint16[5] calldata fullAttireBonusItemTokenIds
@@ -1195,7 +1273,7 @@ library PlayersLibrary {
     (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
-      _itemNFT,
+      _itemNFTAddress,
       skipNonFullAttire,
       _pendingQueuedActionEquipmentStates
     );

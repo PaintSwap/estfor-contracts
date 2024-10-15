@@ -108,9 +108,9 @@
         "type": "tuple"
       },
       {
-        "internalType": "contract IItemNFT",
-        "name": "_itemNFT",
-        "type": "IItemNFT"
+        "internalType": "address",
+        "name": "_itemNFTAddress",
+        "type": "address"
       },
       {
         "internalType": "bool",
@@ -203,14 +203,14 @@
         "type": "address"
       },
       {
-        "internalType": "contract IItemNFT",
-        "name": "_itemNFT",
-        "type": "IItemNFT"
+        "internalType": "address",
+        "name": "_itemNFTAddress",
+        "type": "address"
       },
       {
-        "internalType": "contract World",
-        "name": "_world",
-        "type": "World"
+        "internalType": "address",
+        "name": "_worldAddress",
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -606,9 +606,9 @@
         "type": "address"
       },
       {
-        "internalType": "contract IItemNFT",
-        "name": "_itemNFT",
-        "type": "IItemNFT"
+        "internalType": "address",
+        "name": "_itemNFTAddress",
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -804,9 +804,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "contract IItemNFT",
-        "name": "_itemNFT",
-        "type": "IItemNFT"
+        "internalType": "address",
+        "name": "_itemNFTAddress",
+        "type": "address"
       },
       {
         "components": [
@@ -860,9 +860,9 @@
         "type": "uint16[]"
       },
       {
-        "internalType": "contract IItemNFT",
-        "name": "_itemNFT",
-        "type": "IItemNFT"
+        "internalType": "address",
+        "name": "_itemNFTAddress",
+        "type": "address"
       },
       {
         "components": [
@@ -1110,9 +1110,9 @@
         "type": "tuple"
       },
       {
-        "internalType": "enum Skill",
-        "name": "_skill",
-        "type": "Skill"
+        "internalType": "uint8",
+        "name": "_skillId",
+        "type": "uint8"
       },
       {
         "internalType": "int16",
@@ -1176,9 +1176,9 @@
         "type": "address"
       },
       {
-        "internalType": "contract IItemNFT",
-        "name": "_itemNFT",
-        "type": "IItemNFT"
+        "internalType": "address",
+        "name": "_itemNFTAddress",
+        "type": "address"
       },
       {
         "internalType": "uint16[2]",

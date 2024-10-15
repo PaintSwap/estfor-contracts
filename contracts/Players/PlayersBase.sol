@@ -234,12 +234,13 @@ abstract contract PlayersBase {
       return Skill.DEFENCE;
     }
 
-    if (_choice.skill != Skill.NONE) {
+    Skill choiceSkill = _choice.skill;
+    if (choiceSkill != Skill.NONE) {
       // If the skill is defence or health, then it's magic
-      if (_combatStyle == CombatStyle.ATTACK && (_choice.skill == Skill.DEFENCE || _choice.skill == Skill.HEALTH)) {
+      if (_combatStyle == CombatStyle.ATTACK && (choiceSkill == Skill.DEFENCE || choiceSkill == Skill.HEALTH)) {
         skill = Skill.MAGIC;
       } else {
-        skill = _choice.skill;
+        skill = choiceSkill;
       }
     } else {
       skill = world.getSkill(_actionId);

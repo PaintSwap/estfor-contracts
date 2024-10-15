@@ -509,7 +509,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     (uint16[] memory itemTokenIds, uint[] memory balances) = PlayersLibrary.getAttireWithBalance(
       _from,
       _attire,
-      itemNFT,
+      address(itemNFT),
       skipNonFullAttire,
       pendingQueuedActionEquipmentStates
     );

@@ -464,7 +464,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
       _from,
       _attire,
-      itemNFT,
+      address(itemNFT),
       _pendingQueuedActionEquipmentStates,
       bonusRewardsPercent,
       fullAttireBonus[_skill].itemTokenIds

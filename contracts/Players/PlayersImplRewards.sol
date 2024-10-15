@@ -150,7 +150,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         if (queuedAction.choiceId != 0) {
           combatStats = PlayersLibrary.updateCombatStatsFromSkill(
             combatStats,
-            actionChoice.skill,
+            uint8(actionChoice.skill),
             actionChoice.skillDiff
           );
         }
@@ -175,7 +175,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         combatStats = PlayersLibrary.updateCombatStatsFromAttire(
           combatStats,
           from,
-          itemNFT,
+          address(itemNFT),
           attire_[_playerId][queuedAction.queueId],
           pendingQueuedActionState.equipmentStates
         );
@@ -184,7 +184,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       bool missingRequiredHandEquipment;
       (missingRequiredHandEquipment, combatStats) = PlayersLibrary.updateStatsFromHandEquipment(
         from,
-        itemNFT,
+        address(itemNFT),
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
@@ -423,7 +423,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
           from,
           attire_[_playerId][queuedAction.queueId],
-          itemNFT,
+          address(itemNFT),
           pendingQueuedActionState.equipmentStates,
           bonusRewardsPercent,
           fullAttireBonus[skill].itemTokenIds
@@ -558,7 +558,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       burnedAmountOwned = PlayersLibrary.getRealBalance(
         from,
         activeQuestBurnedItemTokenId,
-        itemNFT,
+        address(itemNFT),
         pendingQueuedActionState.equipmentStates
       );
     }
@@ -802,10 +802,10 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     return
       PlayersLibrary.getSuccessPercent(
         _actionId,
-        _actionSkill,
+        uint8(_actionSkill),
         _isCombat,
         _pendingQueuedActionProcessed,
-        world,
+        address(world),
         MAX_SUCCESS_PERCENT_CHANCE_,
         xp_[_playerId]
       );
@@ -922,14 +922,14 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       players_[_playerId],
       _queuedAction,
       _startTime,
-      _skill,
+      uint8(_skill),
       _xpElapsedTime,
       attire_[_playerId][_queuedAction.queueId],
       activeBoosts_[_playerId],
       globalBoost_,
       clanBoosts_[clans.getClanId(_playerId)],
-      itemNFT,
-      world,
+      address(itemNFT),
+      address(world),
       fullAttireBonus[_skill].bonusXPPercent,
       fullAttireBonus[_skill].itemTokenIds,
       _pendingQueuedActionEquipmentStates
@@ -1096,7 +1096,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     // Get 1/3 of the combat points as health
     healthPointsAccured = uint32(_combatPoints / 3);
     // Get bonus health points from avatar starting skills
-    uint bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(players_[_playerId], Skill.HEALTH);
+    uint bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(players_[_playerId], uint8(Skill.HEALTH));
     healthPointsAccured += uint32((_combatPoints * bonusPercent) / (3600 * 100));
   }
 
