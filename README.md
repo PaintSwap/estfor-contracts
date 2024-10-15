@@ -4,7 +4,7 @@
 
 [![Continuous integration](https://github.com/PaintSwap/estfor-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/PaintSwap/estfor-contracts/actions/workflows/ci.yml)
 
-All the smart contract code for the Estfor Kingdom RPG game on the Fantom Blockchain.
+All the smart contract code for the Estfor Kingdom RPG game on the Sonic Blockchain.
 
 Make sure `yarn` is installed (or replace with equivalent npm instructions)
 
@@ -46,7 +46,7 @@ To check storage slot packing of the test file:
 yarn umlStorage
 ```
 
-### Fantom mainnet deployed contract addresses:
+### Sonic mainnet deployed contract addresses:
 
 WorldLibrary [0xcba2273a46649cc0ce76e69eb0bb05d9b699ca38](https://ftmscan.com/address/0xcba2273a46649cc0ce76e69eb0bb05d9b699ca38)  
 World [0x28866bf156152966b5872bee39bc05b5b5eedb02](https://ftmscan.com/address/0x28866bf156152966b5872bee39bc05b5b5eedb02)  
@@ -95,7 +95,7 @@ Oracle [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/
 VRF [0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2](https://ftmscan.com/address/0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2)  
 Bazaar [0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE](https://ftmscan.com/address/0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE)
 
-### Fantom mainnet beta deployed contract addresses:
+### Sonic mainnet beta deployed contract addresses:
 
 WorldLibrary [0x31edace030c71d33bd8b6e53c1df123c0404e5ca](https://ftmscan.com/address/0x31edace030c71d33bd8b6e53c1df123c0404e5ca)  
 World [0xe2f0b5cb118da85be68de1801d40726ce48009aa](https://ftmscan.com/address/0xe2f0b5cb118da85be68de1801d40726ce48009aa)  
