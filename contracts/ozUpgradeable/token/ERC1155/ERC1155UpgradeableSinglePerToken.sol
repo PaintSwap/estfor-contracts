@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.8.0) (token/ERC1155/ERC1155.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/interfaces/IERC1155.sol";
 import "@openzeppelin/contracts/interfaces/IERC1155Receiver.sol";
@@ -539,9 +539,7 @@ contract ERC1155UpgradeableSinglePerToken is
     bytes memory data
   ) private {
     if (to.isContract()) {
-      try IERC1155Receiver(to).onERC1155Received(operator, from, id, amount, data) returns (
-        bytes4 response
-      ) {
+      try IERC1155Receiver(to).onERC1155Received(operator, from, id, amount, data) returns (bytes4 response) {
         if (response != IERC1155Receiver.onERC1155Received.selector) {
           revert ERC1155ReceiverRejectedTokens();
         }
@@ -562,9 +560,7 @@ contract ERC1155UpgradeableSinglePerToken is
     bytes memory data
   ) private {
     if (to.isContract()) {
-      try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (
-        bytes4 response
-      ) {
+      try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (bytes4 response) {
         if (response != IERC1155Receiver.onERC1155BatchReceived.selector) {
           revert ERC1155ReceiverRejectedTokens();
         }

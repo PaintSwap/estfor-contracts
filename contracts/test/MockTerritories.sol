@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 import {ITerritories} from "../interfaces/ITerritories.sol";
 import {IBrushToken} from "../interfaces/IBrushToken.sol";

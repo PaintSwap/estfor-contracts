@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -55,8 +55,7 @@ library ClanBattleLibrary {
       _clanMembersA,
       _clanMembersB,
       skills,
-      _randomWordA,
-      _randomWordB,
+      [_randomWordA, _randomWordB],
       _extraRollsA,
       _extraRollsB
     );
@@ -75,8 +74,7 @@ library ClanBattleLibrary {
     uint48[] memory _clanMembersA, // [In/Out] gets shuffled
     uint48[] memory _clanMembersB, // [In/Out] gets shuffled
     Skill[] memory _skills,
-    uint _randomWordA,
-    uint _randomWordB,
+    uint[2] memory _randomWords,
     uint _extraRollsA,
     uint _extraRollsB
   )
@@ -84,8 +82,8 @@ library ClanBattleLibrary {
     view
     returns (BattleResultEnum[] memory battleResults, uint[] memory rollsA, uint[] memory rollsB, bool didAWin)
   {
-    shuffleArray(_clanMembersA, _randomWordA);
-    shuffleArray(_clanMembersB, _randomWordB);
+    shuffleArray(_clanMembersA, _randomWords[0]);
+    shuffleArray(_clanMembersB, _randomWords[1]);
 
     uint baseClanMembersCount = _clanMembersA.length > _clanMembersB.length
       ? _clanMembersB.length
@@ -97,43 +95,46 @@ library ClanBattleLibrary {
 
     uint numWinnersA;
     uint numWinnersB;
-    for (uint i; i < baseClanMembersCount; ++i) {
-      Skill skill = _skills[i];
+    {
+      for (uint i; i < baseClanMembersCount; ++i) {
+        // It's possible that there are empty entries if they left the clan
+        if (_clanMembersA[i] == 0 || _clanMembersB[i] == 0) {
+          rollsA[i] = _clanMembersA[i] == 0 ? 0 : 1;
+          rollsB[i] = _clanMembersB[i] == 0 ? 0 : 1;
+        } else {
+          {
+            uint levelA = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersA[i], _skills[i]));
+            uint levelB = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersB[i], _skills[i]));
+            if (levelA > 20 * 6 || levelB > 20 * 6) {
+              assert(false); // Unsupported
+            }
 
-      // It's possible that there are empty entries if they left the clan
-      if (_clanMembersA[i] == 0 || _clanMembersB[i] == 0) {
-        rollsA[i] = _clanMembersA[i] == 0 ? 0 : 1;
-        rollsB[i] = _clanMembersB[i] == 0 ? 0 : 1;
-      } else {
-        uint levelA = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersA[i], skill));
-        uint levelB = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersB[i], skill));
-
-        if (levelA > 20 * 6 || levelB > 20 * 6) {
-          assert(false); // Unsupported
+            uint numRollsA = (levelA / 20) +
+              (IPlayers(_players).isPlayerUpgraded(_clanMembersA[i]) ? 2 : 1) +
+              _extraRollsA;
+            uint numRollsB = (levelB / 20) +
+              (IPlayers(_players).isPlayerUpgraded(_clanMembersB[i]) ? 2 : 1) +
+              _extraRollsB;
+            bytes1 byteA = bytes32(_randomWords[0])[31 - i];
+            // Check how many bits are set based on the number of rolls
+            for (uint j; j < numRollsA; ++j) {
+              rollsA[i] += uint8(byteA >> j) & 1;
+            }
+            bytes1 byteB = bytes32(_randomWords[1])[31 - i];
+            for (uint j; j < numRollsB; ++j) {
+              rollsB[i] += uint8(byteB >> j) & 1;
+            }
+          }
         }
-
-        uint numRollsA = (levelA / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersA[i]) ? 2 : 1) + _extraRollsA;
-        uint numRollsB = (levelB / 20) + (IPlayers(_players).isPlayerUpgraded(_clanMembersB[i]) ? 2 : 1) + _extraRollsB;
-
-        bytes1 byteA = bytes32(_randomWordA)[31 - i];
-        // Check how many bits are set based on the number of rolls
-        for (uint j; j < numRollsA; ++j) {
-          rollsA[i] += uint8(byteA >> j) & 1;
+        if (rollsA[i] > rollsB[i]) {
+          ++numWinnersA;
+          battleResults[i] = BattleResultEnum.WIN;
+        } else if (rollsB[i] > rollsA[i]) {
+          ++numWinnersB;
+          battleResults[i] = BattleResultEnum.LOSE;
+        } else {
+          battleResults[i] = BattleResultEnum.DRAW;
         }
-        bytes1 byteB = bytes32(_randomWordB)[31 - i];
-        for (uint j; j < numRollsB; ++j) {
-          rollsB[i] += uint8(byteB >> j) & 1;
-        }
-      }
-
-      if (rollsA[i] > rollsB[i]) {
-        ++numWinnersA;
-        battleResults[i] = BattleResultEnum.WIN;
-      } else if (rollsB[i] > rollsA[i]) {
-        ++numWinnersB;
-        battleResults[i] = BattleResultEnum.LOSE;
-      } else {
-        battleResults[i] = BattleResultEnum.DRAW;
       }
     }
 

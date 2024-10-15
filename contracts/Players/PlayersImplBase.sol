@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 // Use this first to get the same storage layout for implementation files as the main contract
 contract PlayersImplBase {

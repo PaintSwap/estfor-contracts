@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -250,10 +250,10 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint guaranteedRewardLength = _actionRewards.guaranteedRewardTokenId3 != NONE
       ? 3
       : _actionRewards.guaranteedRewardTokenId2 != NONE
-      ? 2
-      : _actionRewards.guaranteedRewardTokenId1 != NONE
-      ? 1
-      : 0;
+        ? 2
+        : _actionRewards.guaranteedRewardTokenId1 != NONE
+          ? 1
+          : 0;
 
     _pendingPassiveActionState.producedItemTokenIds = new uint[](guaranteedRewardLength);
     _pendingPassiveActionState.producedAmounts = new uint[](guaranteedRewardLength);

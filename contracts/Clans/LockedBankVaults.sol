@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
@@ -436,8 +436,7 @@ contract LockedBankVaults is
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        _randomWords[0],
-        _randomWords[1],
+        [_randomWords[0], _randomWords[1]],
         pendingAttack.extraRollsAttacker,
         pendingAttack.extraRollsDefender
       );

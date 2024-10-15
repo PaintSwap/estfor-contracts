@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 // solhint-disable-next-line no-global-import
 import "./globals/players.sol";

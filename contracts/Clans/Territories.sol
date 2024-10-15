@@ -406,8 +406,7 @@ contract Territories is
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        _randomWords[0],
-        _randomWords[1],
+        [_randomWords[0], _randomWords[1]],
         0,
         0
       );

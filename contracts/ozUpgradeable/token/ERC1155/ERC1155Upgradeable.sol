@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.8.0) (token/ERC1155/ERC1155.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/interfaces/IERC1155.sol";
 import "@openzeppelin/contracts/interfaces/IERC1155Receiver.sol";
@@ -18,13 +18,7 @@ import "../../utils/introspection/ERC165Upgradeable.sol";
  *
  * _Available since v3.1._
  */
-contract ERC1155Upgradeable is
-  Initializable,
-  ContextUpgradeable,
-  ERC165Upgradeable,
-  IERC1155,
-  IERC1155MetadataURI
-{
+contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradeable, IERC1155, IERC1155MetadataURI {
   using AddressUpgradeable for address;
 
   error ERC1155TransferToNonERC1155Receiver();
@@ -497,9 +491,7 @@ contract ERC1155Upgradeable is
     bytes memory data
   ) private {
     if (to.isContract()) {
-      try IERC1155Receiver(to).onERC1155Received(operator, from, id, amount, data) returns (
-        bytes4 response
-      ) {
+      try IERC1155Receiver(to).onERC1155Received(operator, from, id, amount, data) returns (bytes4 response) {
         if (response != IERC1155Receiver.onERC1155Received.selector) {
           revert ERC1155ReceiverRejectedTokens();
         }
@@ -520,9 +512,7 @@ contract ERC1155Upgradeable is
     bytes memory data
   ) private {
     if (to.isContract()) {
-      try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (
-        bytes4 response
-      ) {
+      try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (bytes4 response) {
         if (response != IERC1155Receiver.onERC1155BatchReceived.selector) {
           revert ERC1155ReceiverRejectedTokens();
         }
