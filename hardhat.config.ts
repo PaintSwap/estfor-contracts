@@ -79,7 +79,7 @@ const config: HardhatUserConfig = {
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplQueueActions.sol": mediumRunsConfig,
-      "contracts/Players/PlayersImplRewards.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplRewards.sol": lowRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
