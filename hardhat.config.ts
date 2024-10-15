@@ -104,12 +104,12 @@ const config: HardhatUserConfig = {
     sonic_testnet: {
       url: process.env.SONIC_TESTNET_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
+      gasPrice: Number(parseUnits("150", "gwei")),
     },
     fantom: {
       url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
+      gasPrice: Number(parseUnits("150", "gwei")),
     },
   },
   mocha: {
