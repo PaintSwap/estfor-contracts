@@ -12,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # These are just dummy values to prevent hardhat complaining about config issues
-      FTM_RPC: NA
-      FTM_RPC_TESTNET: NA
+      SONIC_RPC: NA
+      SONIC_TESTNET_RPC: NA
+      FANTOM_RPC: NA
       PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
       PRIVATE_KEY1: "0xa0610ad18a7a793b0d2c12d28d74ccc8d90a422514db2e4cea3a9eaec7215ad3"
       IS_BETA: true

@@ -96,13 +96,18 @@ const config: HardhatUserConfig = {
       initialBaseFeePerGas: 0,
       allowUnlimitedContractSize: true,
     },
-    fantom: {
-      url: process.env.FTM_RPC,
+    sonic: {
+      url: process.env.SONIC_RPC,
+      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
+      gasPrice: Number(parseUnits("150", "gwei")),
+    },
+    sonic_testnet: {
+      url: process.env.SONIC_TESTNET_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
-    fantom_testnet: {
-      url: process.env.FTM_TESTNET_RPC,
+    fantom: {
+      url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
       gasPrice: parseInt(parseUnits("150", "gwei").toString(), 10),
     },
