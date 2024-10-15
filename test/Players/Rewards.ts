@@ -36,7 +36,7 @@ describe("Rewards", function () {
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
       await expect(players.addXPThresholdRewards([{xpThreshold: 499, rewards}])).to.be.revertedWithCustomError(
         players,
-        "XPThresholdNotFound",
+        "XPThresholdNotFound"
       );
       await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
 
@@ -137,7 +137,7 @@ describe("Rewards", function () {
       await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
       await expect(players.addXPThresholdRewards([{xpThreshold: 500, rewards}])).to.be.revertedWithCustomError(
         players,
-        "XPThresholdAlreadyExists",
+        "XPThresholdAlreadyExists"
       );
     });
 
@@ -146,7 +146,7 @@ describe("Rewards", function () {
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
       await expect(players.editXPThresholdRewards([{xpThreshold: 500, rewards}])).to.be.revertedWithCustomError(
         players,
-        "XPThresholdDoesNotExist",
+        "XPThresholdDoesNotExist"
       );
     });
 
@@ -217,7 +217,7 @@ describe("Rewards", function () {
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
       await expect(players.addXPThresholdRewards([{xpThreshold: 499, rewards}])).to.be.revertedWithCustomError(
         players,
-        "XPThresholdNotFound",
+        "XPThresholdNotFound"
       );
       await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
 
@@ -273,7 +273,7 @@ describe("Rewards", function () {
       for (let i = 0; i < equipments.length; ++i) {
         equipmentCache.set(
           equipments[i].itemTokenId,
-          (equipmentCache.get(equipments[i].itemTokenId) || 0n) + equipments[i].amount,
+          (equipmentCache.get(equipments[i].itemTokenId) || 0n) + equipments[i].amount
         );
       }
       let weeklyEquipment = dailyRewards[7];
@@ -281,7 +281,7 @@ describe("Rewards", function () {
 
       let beforeBalances = await itemNFT.balanceOfs(
         alice.address,
-        equipments.map((equipment) => equipment.itemTokenId),
+        equipments.map((equipment) => equipment.itemTokenId)
       );
 
       // Change reward else it conflicts with tiered daily rewards
@@ -290,7 +290,7 @@ describe("Rewards", function () {
         world,
         100 * GUAR_MUL,
         20n,
-        EstforConstants.MAGICAL_LOG,
+        EstforConstants.MAGICAL_LOG
       );
 
       for (let i = 0; i < 4; ++i) {
@@ -303,7 +303,7 @@ describe("Rewards", function () {
 
       let afterBalances = await itemNFT.balanceOfs(
         alice.address,
-        equipments.map((equipment) => equipment.itemTokenId),
+        equipments.map((equipment) => equipment.itemTokenId)
       );
 
       for (let i = 0; i < 5; ++i) {
@@ -327,7 +327,7 @@ describe("Rewards", function () {
 
       equipmentCache.set(
         sundayReward.itemTokenId,
-        (equipmentCache.get(sundayReward.itemTokenId) || 0n) + sundayReward.amount,
+        (equipmentCache.get(sundayReward.itemTokenId) || 0n) + sundayReward.amount
       );
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -350,7 +350,7 @@ describe("Rewards", function () {
       for (let i = 0; i < equipments.length; ++i) {
         equipmentCache.set(
           equipments[i].itemTokenId,
-          (equipmentCache.get(equipments[i].itemTokenId) || 0n) + equipments[i].amount,
+          (equipmentCache.get(equipments[i].itemTokenId) || 0n) + equipments[i].amount
         );
       }
 
@@ -358,7 +358,7 @@ describe("Rewards", function () {
 
       beforeBalances = await itemNFT.balanceOfs(
         alice.address,
-        equipments.map((equipment) => equipment.itemTokenId),
+        equipments.map((equipment) => equipment.itemTokenId)
       );
 
       for (let i = 0; i < 7; ++i) {
@@ -374,7 +374,7 @@ describe("Rewards", function () {
 
       afterBalances = await itemNFT.balanceOfs(
         alice.address,
-        equipments.map((equipment) => equipment.itemTokenId),
+        equipments.map((equipment) => equipment.itemTokenId)
       );
 
       for (let i = 0; i < 7; ++i) {
@@ -383,7 +383,7 @@ describe("Rewards", function () {
 
       // Also check extra week streak reward
       expect(balanceAfterWeeklyReward + weeklyEquipment.amount).to.eq(
-        await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId),
+        await itemNFT.balanceOf(alice.address, weeklyEquipment.itemTokenId)
       );
     });
 
@@ -425,8 +425,9 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim per wallet per day", async function () {
-      const {playerId, players, itemNFT, playerNFT, avatarId, world, alice, mockVRF} =
-        await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, playerNFT, avatarId, world, alice, mockVRF} = await loadFixture(
+        playersFixture
+      );
 
       await players.setDailyRewardsEnabled(true);
 
@@ -550,7 +551,7 @@ describe("Rewards", function () {
       equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
       mondayEquipment = equipments[0];
       expect(balanceBeforeMondayReward + mondayEquipment.amount).eq(
-        await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId),
+        await itemNFT.balanceOf(alice.address, mondayEquipment.itemTokenId)
       );
     });
 
@@ -606,7 +607,7 @@ describe("Rewards", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
       expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.eq(
-        (baseEquipment.amount * 11n) / 10n,
+        (baseEquipment.amount * 11n) / 10n
       );
 
       // Next day
@@ -659,7 +660,7 @@ describe("Rewards", function () {
         3,
         playerId,
         0,
-        await world.thisWeeksRandomWordSegment(),
+        await world.thisWeeksRandomWordSegment()
       );
 
       // Double check it is different to the other tiers
@@ -667,13 +668,13 @@ describe("Rewards", function () {
         1,
         playerId,
         0,
-        await world.thisWeeksRandomWordSegment(),
+        await world.thisWeeksRandomWordSegment()
       );
       let dailyRewardsTier2 = await world.getSpecificDailyReward(
         2,
         playerId,
         0,
-        await world.thisWeeksRandomWordSegment(),
+        await world.thisWeeksRandomWordSegment()
       );
       // TODO: Fix this - what should it be checking?
       // expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1.itemTokenId);
@@ -961,7 +962,7 @@ describe("Rewards", function () {
           const produced = pendingQueuedActionState.producedPastRandomRewards[0].amount;
           numProduced += produced;
           expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.be.eq(
-            EstforConstants.BRONZE_ARROW,
+            EstforConstants.BRONZE_ARROW
           );
         }
       }
@@ -1280,7 +1281,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1307,7 +1308,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON]),
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
       ).to.deep.eq([firstThievingNumHours + secondThievingNumHours, numSpawned / SPAWN_MUL]);
     });
 
@@ -1386,7 +1387,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1418,7 +1419,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON]),
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
       ).to.deep.eq([firstThievingNumHours + secondThievingNumHours, numSpawned / SPAWN_MUL]);
     });
 
@@ -1497,7 +1498,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1525,7 +1526,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON]),
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
       ).to.deep.eq([firstThievingNumHours + secondThievingNumHours, numSpawned / SPAWN_MUL]);
     });
 
@@ -1604,7 +1605,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 23 + 1]); // Have not passed 00:00 yet
       await ethers.provider.send("evm_mine", []);
@@ -1618,7 +1619,7 @@ describe("Rewards", function () {
 
       await expect(world.requestRandomWords()).to.be.revertedWithCustomError(
         world,
-        "CanOnlyRequestAfterTheNextCheckpoint",
+        "CanOnlyRequestAfterTheNextCheckpoint"
       );
 
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
@@ -1643,7 +1644,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON]),
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
       ).to.deep.eq([firstThievingNumHours + secondThievingNumHours, numSpawned / SPAWN_MUL]);
     });
 
@@ -1722,7 +1723,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionCombat, queuedActionCombat2, queuedActionThieving],
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1741,11 +1742,11 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.POISON);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(
-        (firstCombatNumHours * numSpawned) / SPAWN_MUL,
+        (firstCombatNumHours * numSpawned) / SPAWN_MUL
       );
       expect(pendingQueuedActionState.producedPastRandomRewards[1].itemTokenId).to.eq(EstforConstants.POISON);
       expect(pendingQueuedActionState.producedPastRandomRewards[1].amount).to.eq(
-        (secondCombatNumHours * numSpawned) / SPAWN_MUL,
+        (secondCombatNumHours * numSpawned) / SPAWN_MUL
       );
       expect(pendingQueuedActionState.producedPastRandomRewards[2].itemTokenId).to.eq(EstforConstants.BRONZE_ARROW);
       expect(pendingQueuedActionState.producedPastRandomRewards[2].amount).to.eq(thievingNumHours);
@@ -1753,7 +1754,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON]),
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
       ).to.deep.eq([thievingNumHours, ((firstCombatNumHours + secondCombatNumHours) * numSpawned) / SPAWN_MUL]);
     });
 
@@ -1853,7 +1854,7 @@ describe("Rewards", function () {
       pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(
-        (combatNumHours * numSpawned) / SPAWN_MUL,
+        (combatNumHours * numSpawned) / SPAWN_MUL
       );
       expect(pendingQueuedActionState.producedPastRandomRewards[1].amount).to.eq(thievingNumHours);
       expect(pendingQueuedActionState.producedPastRandomRewards[2].amount).to.eq(secondThievingNumHours);
@@ -1861,7 +1862,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON]),
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
       ).to.deep.eq([thievingNumHours + secondThievingNumHours, (combatNumHours * numSpawned) / SPAWN_MUL]);
     });
 
@@ -1948,7 +1949,7 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.POISON);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(
-        (combatNumHours * numSpawned) / SPAWN_MUL,
+        (combatNumHours * numSpawned) / SPAWN_MUL
       );
       expect(pendingQueuedActionState.producedPastRandomRewards[1].itemTokenId).to.eq(EstforConstants.BRONZE_ARROW);
       expect(pendingQueuedActionState.producedPastRandomRewards[1].amount).to.eq(thievingNumHours);
@@ -1956,7 +1957,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(
-        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON]),
+        await itemNFT.balanceOfs(alice.address, [EstforConstants.BRONZE_ARROW, EstforConstants.POISON])
       ).to.deep.eq([thievingNumHours, (combatNumHours * numSpawned) / SPAWN_MUL]);
     });
 
@@ -2012,7 +2013,10 @@ describe("Rewards", function () {
       const numHours = 23;
 
       // Make sure it passes the next checkpoint so there are no issues running
-      await timeTravel(24 * 3600 * 2);
+      const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
+      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
+      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
 
       await requestAndFulfillRandomWords(world, mockVRF);
       await requestAndFulfillRandomWords(world, mockVRF);
@@ -2107,7 +2111,7 @@ describe("Rewards", function () {
     it("Check random bytes", async function () {
       const {playerId, world, mockVRF} = await loadFixture(playersFixture);
       const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-      let numTickets = 16; // 240
+      let numTickets = 16;
       await expect(world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId)).to.be.reverted;
       await requestAndFulfillRandomWords(world, mockVRF);
       let randomBytes = await world.getRandomBytes(numTickets, timestamp, timestamp - 86400, playerId);
@@ -2231,7 +2235,7 @@ describe("Rewards", function () {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MELEE,
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, 1);
@@ -2367,9 +2371,9 @@ describe("Rewards", function () {
       const numSpawned = 150 * SPAWN_MUL;
 
       const numHours = 23;
-      // 64 unique tickets 150 * 23 = 3450 / 64 = 53.9. Should give 53.9 * 999 = 53846.1 / 65355 chance of each roll hitting
+      // 64 unique tickets 150 * 23 = 3450 / 64 = 53.9. Should give 53.9 * 999 = 53846.1 / 65535 chance of each roll hitting
       const fractionChancePerRoll =
-        ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65355;
+        ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65535;
 
       let tx = await world.addActions([
         {
@@ -2403,13 +2407,13 @@ describe("Rewards", function () {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MELEE,
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       await itemNFT.testMints(
         alice.address,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
-        [1, 1, 255],
+        [1, 1, 255]
       );
 
       // Make sure it passes the next checkpoint so there are no issues running
@@ -2494,32 +2498,32 @@ describe("Rewards", function () {
       expect(fractionChancePerRoll).to.be.gt(0.82);
       expect(fractionChancePerRoll).to.be.lt(0.9);
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.gte(
-        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 0.82),
+        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 0.82)
       ); // 18% below
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.lte(
-        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 1.18),
+        Math.floor(MAX_UNIQUE_TICKETS * fractionChancePerRoll * 1.18)
       ); // 18% above
     });
 
     // Might fail as relies on random chance
-    it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit once", async function () {
+    it("Ticket excess with rare items uses higher chance reward system, hit once", async function () {
       const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
+        melee: 0,
         magic: 0,
         ranged: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 1,
+        health: 0,
       };
 
-      const randomChance = 5; // Very low chance
-      const numSpawned = 3600 * SPAWN_MUL;
+      const randomChance = 35; // Very low chance
+      const numSpawned = 100 * SPAWN_MUL; // per hour
 
       const numHours = 23;
-      // 240 unique tickets 3600 * 23 = 82800 / 240 = 345. Should give 2.5% ((345 * 5) / 65355) chance of each roll hitting and there are 240 rolls.
+      // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 35) / 65535) a 1.9% chance and each roll hitting, and there are 64 dice.
 
       let tx = await world.addActions([
         {
@@ -2553,13 +2557,13 @@ describe("Rewards", function () {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MELEE,
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       await itemNFT.testMints(
         alice.address,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
-        [1, 1, 255],
+        [1, 1, 255]
       );
 
       // Make sure it passes the next checkpoint so there are no issues running
@@ -2636,8 +2640,8 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
 
-      // Check output
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.eq(1);
+      // Check output (add some tolerance in case it's hit more than once)
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.oneOf([1n, 2n, 3n]);
     });
 
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit none", async function () {
@@ -2653,13 +2657,13 @@ describe("Rewards", function () {
         health: 1,
       };
 
-      const randomChance = 1; // Very low chance
+      const randomChance = 2; // Very low chance
       const numSpawned = 60 * SPAWN_MUL;
 
       const numHours = 23;
-      // 240 unique tickets 600 * 23 = 13800 / 240 = 57.5. Should give 57.5 * 1 = 57.5 / 65355 chance of each roll hitting
+      // 64 unique tickets 60 * 23 = . 1380 / 64 = 21.5. Should give 21.5 * 1 = 21.5 / 65535 chance of each roll hitting
       const fractionChancePerRoll =
-        ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65355;
+        ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65535;
 
       let tx = await world.addActions([
         {
@@ -2693,13 +2697,13 @@ describe("Rewards", function () {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MELEE,
           },
-        ],
+        ]
       );
       const choiceId = await getActionChoiceId(tx, world);
       await itemNFT.testMints(
         alice.address,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
-        [1, 1, 255],
+        [1, 1, 255]
       );
 
       // Make sure it passes the next checkpoint so there are no issues running
