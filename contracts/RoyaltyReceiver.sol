@@ -11,17 +11,17 @@ import {ITerritories} from "./interfaces/ITerritories.sol";
 
 interface Router {
   function swapExactETHForTokens(
-    uint amountOutMin,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
-  ) external payable returns (uint[] memory amounts);
+    uint256 deadline
+  ) external payable returns (uint256[] memory amounts);
 }
 
 contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for uint256;
 
-  uint public constant MIN_BRUSH_TO_DISTRIBUTE = 100 ether;
+  uint256 public constant MIN_BRUSH_TO_DISTRIBUTE = 100 ether;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -38,7 +38,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   address private wNative;
   address private dev;
   ITerritories private territories;
-  uint public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
+  uint256 public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
   function initialize(
     Router _router,
@@ -70,7 +70,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function distributeBrush() external {
-    uint balance = brush.balanceOf(address(this));
+    uint256 balance = brush.balanceOf(address(this));
     if (balance < MIN_BRUSH_TO_DISTRIBUTE) {
       revert BrushTooLowToDistribute();
     }
@@ -93,16 +93,16 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   receive() external payable {
-    uint deadline = block.timestamp.add(DEADLINE_DURATION);
+    uint256 deadline = block.timestamp.add(DEADLINE_DURATION);
 
-    uint third = msg.value / 3;
+    uint256 third = msg.value / 3;
     (bool success, ) = dev.call{value: third}("");
     if (!success) {
       revert FailedSendToDev();
     }
 
     // Buy brush and send it to the pool
-    uint[] memory amounts = router.swapExactETHForTokens{value: msg.value - third}(
+    uint256[] memory amounts = router.swapExactETHForTokens{value: msg.value - third}(
       0,
       _buyPath(),
       address(this),

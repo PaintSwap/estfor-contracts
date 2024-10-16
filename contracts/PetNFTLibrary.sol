@@ -19,13 +19,13 @@ library PetNFTLibrary {
   function uri(
     BasePetMetadata storage _basePetMetadata,
     Pet storage _pet,
-    uint _tokenId,
+    uint256 _tokenId,
     string storage _imageBaseUri,
     string memory _name,
     bool _isBeta
   ) external view returns (string memory) {
     string memory skin = _skinToString(_basePetMetadata.skin);
-    uint tier = _basePetMetadata.tier;
+    uint256 tier = _basePetMetadata.tier;
     string memory petEnhancementType = _petEnhancementTypeToString(_basePetMetadata.enhancementType);
 
     bool hasFixedStar = (_pet.skillFixedEnhancement1 + _pet.skillFixedEnhancement2) >=
@@ -89,14 +89,14 @@ library PetNFTLibrary {
     return string(abi.encodePacked("data:application/json;base64,", json));
   }
 
-  function _getPetName(uint _tokenId, string memory _name) internal pure returns (string memory) {
+  function _getPetName(uint256 _tokenId, string memory _name) internal pure returns (string memory) {
     if (bytes(_name).length == 0) {
       _name = PetNFTLibrary._defaultPetName(_tokenId);
     }
     return _name;
   }
 
-  function _defaultPetName(uint _petId) internal pure returns (string memory) {
+  function _defaultPetName(uint256 _petId) internal pure returns (string memory) {
     return string(abi.encodePacked(PET_NAME_PREFIX, _petId.toString()));
   }
 
@@ -104,7 +104,7 @@ library PetNFTLibrary {
     return abi.encodePacked(_getTraitTypeJSON(_traitType), '"', _value, '"}');
   }
 
-  function _getTraitNumberJSON(string memory _traitType, uint _value) private pure returns (bytes memory) {
+  function _getTraitNumberJSON(string memory _traitType, uint256 _value) private pure returns (bytes memory) {
     return abi.encodePacked(_getTraitTypeJSON(_traitType), _value.toString(), "}");
   }
 

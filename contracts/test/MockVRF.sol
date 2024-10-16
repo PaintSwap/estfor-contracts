@@ -2,30 +2,30 @@
 pragma solidity ^0.8.28;
 
 interface IFulfillRandomWords {
-  function fulfillRandomWords(bytes32 requestId, uint[] calldata randomWords) external;
+  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external;
 }
 
 contract MockVRF {
-  uint counter = 1;
-  uint randomWord = 1;
-  uint numWords;
-  uint constant SEED = 777_666_555;
+  uint256 counter = 1;
+  uint256 randomWord = 1;
+  uint256 numWords;
+  uint256 constant SEED = 777_666_555;
 
-  function requestRandomWords(uint _numWords, uint) external returns (uint256 requestId) {
+  function requestRandomWords(uint256 _numWords, uint256) external returns (uint256 requestId) {
     requestId = counter;
     ++counter;
     numWords = _numWords;
   }
 
-  function fulfill(uint _requestId, address _consumer) external {
+  function fulfill(uint256 _requestId, address _consumer) external {
     return fulfillSeeded(_requestId, _consumer, SEED);
   }
 
-  function fulfillSeeded(uint _requestId, address _consumer, uint _seed) public {
+  function fulfillSeeded(uint256 _requestId, address _consumer, uint256 _seed) public {
     IFulfillRandomWords consumer = IFulfillRandomWords(_consumer);
     uint256[] memory randomWords = new uint256[](numWords);
-    for (uint i = 0; i < numWords; ++i) {
-      randomWords[i] = uint(keccak256(abi.encodePacked(_seed + randomWord++)));
+    for (uint256 i = 0; i < numWords; ++i) {
+      randomWords[i] = uint256(keccak256(abi.encodePacked(_seed + randomWord++)));
     }
     consumer.fulfillRandomWords(bytes32(_requestId), randomWords);
   }

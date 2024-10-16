@@ -51,35 +51,35 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
   }
 
   function getRandomRewards(
-    uint _actionId,
-    uint _actionAmount,
-    uint[] calldata _randomWords,
-    uint _randomWordStartIndex
+    uint256 _actionId,
+    uint256 _actionAmount,
+    uint256[] calldata _randomWords,
+    uint256 _randomWordStartIndex
   )
     external
     view
     override
     returns (
-      uint[] memory producedItemTokenIds,
-      uint[] memory producedItemsAmounts,
-      uint[] memory producedPetBaseIds,
-      uint[] memory producedPetRandomWords
+      uint256[] memory producedItemTokenIds,
+      uint256[] memory producedItemsAmounts,
+      uint256[] memory producedPetBaseIds,
+      uint256[] memory producedPetRandomWords
     )
   {
-    producedPetBaseIds = new uint[](_actionAmount);
-    producedPetRandomWords = new uint[](_actionAmount);
+    producedPetBaseIds = new uint256[](_actionAmount);
+    producedPetRandomWords = new uint256[](_actionAmount);
 
-    uint numWords = _actionAmount / 16 + ((_actionAmount % 16) == 0 ? 0 : 1);
+    uint256 numWords = _actionAmount / 16 + ((_actionAmount % 16) == 0 ? 0 : 1);
     bytes memory randomBytes = abi.encodePacked(_randomWords[_randomWordStartIndex:_randomWordStartIndex + numWords]);
 
     bytes memory randomBytes1;
-    for (uint i = 0; i < numWords; ++i) {
+    for (uint256 i = 0; i < numWords; ++i) {
       randomBytes1 = abi.encodePacked(
         randomBytes1,
         keccak256(abi.encodePacked(_randomWords[_randomWordStartIndex + i]))
       );
     }
-    for (uint i; i < _actionAmount; ++i) {
+    for (uint256 i; i < _actionAmount; ++i) {
       uint16 slice = _getSlice(randomBytes, i);
 
       uint32 packedBasePetIdExtremes = actions[_actionId - 1];
@@ -92,7 +92,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     }
   }
 
-  function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
+  function _getSlice(bytes memory _b, uint256 _index) private pure returns (uint16) {
     uint256 index = _index * 2;
     return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
   }

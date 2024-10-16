@@ -27,7 +27,7 @@ library PlayersLibrary {
   // This is to prevent some precision loss in the healing calculations
   uint256 constant HEALING_SCALE = 1_000_000;
 
-  function _getLevel(uint _xp) internal pure returns (uint16) {
+  function _getLevel(uint256 _xp) internal pure returns (uint16) {
     U256 low;
     U256 high = XP_BYTES.length.asU256().div(4);
 
@@ -49,7 +49,7 @@ library PlayersLibrary {
     }
   }
 
-  function getLevel(uint _xp) external pure returns (uint16) {
+  function getLevel(uint256 _xp) external pure returns (uint16) {
     return _getLevel(_xp);
   }
 
@@ -65,27 +65,27 @@ library PlayersLibrary {
   }
 
   function _getRealBalance(
-    uint _originalBalance,
-    uint _itemId,
+    uint256 _originalBalance,
+    uint256 _itemId,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) private pure returns (uint balance) {
+  ) private pure returns (uint256 balance) {
     balance = _originalBalance;
     U256 bounds = _pendingQueuedActionEquipmentStates.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = _pendingQueuedActionEquipmentStates[
         i
       ];
       U256 jBounds = pendingQueuedActionEquipmentState.producedItemTokenIds.length.asU256();
       for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
-        uint j = jIter.asUint256();
+        uint256 j = jIter.asUint256();
         if (pendingQueuedActionEquipmentState.producedItemTokenIds[j] == _itemId) {
           balance += pendingQueuedActionEquipmentState.producedAmounts[j];
         }
       }
       jBounds = pendingQueuedActionEquipmentState.consumedItemTokenIds.length.asU256();
       for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
-        uint j = jIter.asUint256();
+        uint256 j = jIter.asUint256();
         if (pendingQueuedActionEquipmentState.consumedItemTokenIds[j] == _itemId) {
           if (balance >= pendingQueuedActionEquipmentState.consumedAmounts[j]) {
             balance -= pendingQueuedActionEquipmentState.consumedAmounts[j];
@@ -101,10 +101,10 @@ library PlayersLibrary {
   // as those cannot affect the blockchain state with balanceOf
   function getRealBalance(
     address _from,
-    uint _itemId,
+    uint256 _itemId,
     address _itemNFTAddress,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) public view returns (uint balance) {
+  ) public view returns (uint256 balance) {
     balance = _getRealBalance(
       IItemNFT(_itemNFTAddress).balanceOf(_from, _itemId),
       _itemId,
@@ -117,12 +117,12 @@ library PlayersLibrary {
     uint16[] memory _itemIds,
     address _itemNFTAddress,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) public view returns (uint[] memory balances) {
+  ) public view returns (uint256[] memory balances) {
     balances = IItemNFT(_itemNFTAddress).balanceOfs(_from, _itemIds);
 
     U256 bounds = balances.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       balances[i] = _getRealBalance(balances[i], _itemIds[i], _pendingQueuedActionEquipmentStates);
     }
   }
@@ -133,7 +133,7 @@ library PlayersLibrary {
     uint16 _baseInputItemsConsumedNum,
     IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) private view returns (uint maxRequiredRatio) {
+  ) private view returns (uint256 maxRequiredRatio) {
     maxRequiredRatio = _baseInputItemsConsumedNum;
 
     bool useSecondInputTokens = uint8(
@@ -179,13 +179,13 @@ library PlayersLibrary {
   function _getMaxRequiredRatioPartial(
     address _from,
     uint16 _inputTokenId,
-    uint _inputAmount,
-    uint _prevConsumeMaxRatio,
+    uint256 _inputAmount,
+    uint256 _prevConsumeMaxRatio,
     IItemNFT _itemNFT,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) private view returns (uint maxRequiredRatio) {
-    uint balance = getRealBalance(_from, _inputTokenId, address(_itemNFT), _pendingQueuedActionEquipmentStates);
-    uint tempMaxRequiredRatio = balance / _inputAmount;
+  ) private view returns (uint256 maxRequiredRatio) {
+    uint256 balance = getRealBalance(_from, _inputTokenId, address(_itemNFT), _pendingQueuedActionEquipmentStates);
+    uint256 tempMaxRequiredRatio = balance / _inputAmount;
     if (tempMaxRequiredRatio < _prevConsumeMaxRatio) {
       maxRequiredRatio = tempMaxRequiredRatio;
     } else {
@@ -197,14 +197,19 @@ library PlayersLibrary {
     return a > b ? a : b;
   }
 
-  function _dmgPerMinute(int _attack, int _defence, uint8 _alphaCombat, uint8 _betaCombat) private pure returns (uint) {
+  function _dmgPerMinute(
+    int _attack,
+    int _defence,
+    uint8 _alphaCombat,
+    uint8 _betaCombat
+  ) private pure returns (uint256) {
     if (_attack == 0) {
       return 0;
     }
     // Negative defence is capped at the negative of the attack value.
     // So an attack of 10 and defence of -15 is the same as attack -10.
     _defence = _max(-_attack, _defence);
-    return uint(_max(1, int128(_attack) * int8(_alphaCombat) + (_attack * 2 - _defence) * int8(_betaCombat)));
+    return uint256(_max(1, int128(_attack) * int8(_alphaCombat) + (_attack * 2 - _defence) * int8(_betaCombat)));
   }
 
   function dmg(
@@ -212,7 +217,7 @@ library PlayersLibrary {
     int _defence,
     uint8 _alphaCombat,
     uint8 _betaCombat,
-    uint _elapsedTime
+    uint256 _elapsedTime
   ) public pure returns (uint32) {
     return uint32((_dmgPerMinute(_attack, _defence, _alphaCombat, _betaCombat) * _elapsedTime) / 60);
   }
@@ -222,7 +227,7 @@ library PlayersLibrary {
     CombatStats memory _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
-    uint _elapsedTime
+    uint256 _elapsedTime
   ) private pure returns (uint32 fullDmg) {
     fullDmg = dmg(_combatStats.melee, _enemyCombatStats.meleeDefence, _alphaCombat, _betaCombat, _elapsedTime);
     fullDmg += dmg(_combatStats.ranged, _enemyCombatStats.rangedDefence, _alphaCombat, _betaCombat, _elapsedTime);
@@ -235,11 +240,11 @@ library PlayersLibrary {
     uint8 _alphaCombat,
     uint8 _betaCombat,
     int16 _enemyHealth
-  ) private pure returns (uint) {
+  ) private pure returns (uint256) {
     // Formula is max(1, a(atk) + b(2 * atk - def))
     // Always do at least 1 damage per minute
-    uint dmgPerMinute = _dmgPerMinute(_attack, _defence, _alphaCombat, _betaCombat);
-    return Math.ceilDiv(uint(uint16(_enemyHealth)) * 60, dmgPerMinute);
+    uint256 dmgPerMinute = _dmgPerMinute(_attack, _defence, _alphaCombat, _betaCombat);
+    return Math.ceilDiv(uint256(uint16(_enemyHealth)) * 60, dmgPerMinute);
   }
 
   function _timeToKillPlayer(
@@ -248,11 +253,11 @@ library PlayersLibrary {
     uint8 _alphaCombat,
     uint8 _betaCombat,
     int _health
-  ) private pure returns (uint) {
-    uint dmgPerMinute = _dmgPerMinute(_enemyCombatStats.melee, _combatStats.meleeDefence, _alphaCombat, _betaCombat);
+  ) private pure returns (uint256) {
+    uint256 dmgPerMinute = _dmgPerMinute(_enemyCombatStats.melee, _combatStats.meleeDefence, _alphaCombat, _betaCombat);
     dmgPerMinute += _dmgPerMinute(_enemyCombatStats.ranged, _combatStats.rangedDefence, _alphaCombat, _betaCombat);
     dmgPerMinute += _dmgPerMinute(_enemyCombatStats.magic, _combatStats.magicDefence, _alphaCombat, _betaCombat);
-    return Math.ceilDiv(uint(_health) * 60, dmgPerMinute);
+    return Math.ceilDiv(uint256(_health) * 60, dmgPerMinute);
   }
 
   function _getTimeToKill(
@@ -262,7 +267,7 @@ library PlayersLibrary {
     uint8 _alphaCombat,
     uint8 _betaCombat,
     int16 _enemyHealth
-  ) private pure returns (uint timeToKill) {
+  ) private pure returns (uint256 timeToKill) {
     int16 attack;
     int16 defence;
     if (_skill == Skill.MELEE) {
@@ -287,7 +292,7 @@ library PlayersLibrary {
     CombatStats calldata _enemyCombatStats,
     uint8 _alphaCombat,
     uint8 _betaCombat,
-    uint _elapsedTime
+    uint256 _elapsedTime
   ) private pure returns (uint32 dmgDealt) {
     Skill skill = Skill(_actionChoice.skill);
     if (skill == Skill.MELEE) {
@@ -306,7 +311,7 @@ library PlayersLibrary {
     address _from,
     address _itemNFTAddress,
     address _worldAddress,
-    uint _elapsedTime,
+    uint256 _elapsedTime,
     ActionChoice calldata _actionChoice,
     uint16 _regenerateId,
     QueuedAction calldata _queuedAction,
@@ -320,8 +325,8 @@ library PlayersLibrary {
     external
     view
     returns (
-      uint xpElapsedTime,
-      uint combatElapsedTime,
+      uint256 xpElapsedTime,
+      uint256 combatElapsedTime,
       uint16 baseInputItemsConsumedNum,
       uint16 foodConsumed,
       bool died
@@ -349,7 +354,7 @@ library PlayersLibrary {
     address _from,
     address _itemNFTAddress,
     address _worldAddress,
-    uint _elapsedTime,
+    uint256 _elapsedTime,
     ActionChoice calldata _actionChoice,
     uint16 _regenerateId,
     QueuedAction calldata _queuedAction,
@@ -363,16 +368,16 @@ library PlayersLibrary {
     private
     view
     returns (
-      uint xpElapsedTime,
-      uint combatElapsedTime,
+      uint256 xpElapsedTime,
+      uint256 combatElapsedTime,
       uint16 baseInputItemsConsumedNum,
       uint16 foodConsumed,
       bool died
     )
   {
     World _world = World(_worldAddress);
-    uint numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
-    uint respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
+    uint256 numSpawnedPerHour = _world.getNumSpawn(_queuedAction.actionId);
+    uint256 respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
     uint32 dmgDealt = _getDmgDealtByPlayer(
       _actionChoice,
       _combatStats,
@@ -382,7 +387,7 @@ library PlayersLibrary {
       respawnTime
     );
 
-    uint combatTimePerKill = _getTimeToKill(
+    uint256 combatTimePerKill = _getTimeToKill(
       _actionChoice.skill.asSkill(),
       _combatStats,
       _enemyCombatStats,
@@ -398,14 +403,14 @@ library PlayersLibrary {
     // 3.5 - If not enough food (i.e died) then backtrack the scrolls.
 
     // Time spent in comabt with the enemies that were killed, needed in case foodConsumed gets maxed out
-    uint combatElapsedTimeKilling;
+    uint256 combatElapsedTimeKilling;
     // Step 1 - Best case scenario how many we can kill
-    uint numKilled;
+    uint256 numKilled;
     bool canKillAll = dmgDealt > uint16(_enemyCombatStats.health);
     if (canKillAll) {
       // But how many can we kill in the time that has elapsed?
       numKilled = (_elapsedTime * numSpawnedPerHour) / (3600 * SPAWN_MUL);
-      uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
+      uint256 combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
       combatElapsedTime = combatTimePerEnemy * numKilled;
       combatElapsedTimeKilling = combatElapsedTime;
       // Add remainder combat time to current monster you are fighting
@@ -424,7 +429,7 @@ library PlayersLibrary {
     if (_actionChoice.rate != 0) {
       baseInputItemsConsumedNum = uint16(Math.max(numKilled, baseInputItemsConsumedNum));
     }
-    uint maxRequiredBaseInputItemsConsumedRatio = baseInputItemsConsumedNum;
+    uint256 maxRequiredBaseInputItemsConsumedRatio = baseInputItemsConsumedNum;
     if (baseInputItemsConsumedNum != 0) {
       // This checks the balances
       maxRequiredBaseInputItemsConsumedRatio = _getMaxRequiredRatio(
@@ -441,7 +446,7 @@ library PlayersLibrary {
         xpElapsedTime = respawnTime * numKilled;
 
         if (canKillAll) {
-          uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
+          uint256 combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
           combatElapsedTime = combatTimePerEnemy * numKilled;
           combatElapsedTimeKilling = combatElapsedTime;
           combatElapsedTime += _elapsedTime - (respawnTime * numKilled); // Plus fighting the one you haven't killed
@@ -484,7 +489,7 @@ library PlayersLibrary {
       totalHealthLostOnlyKilled = 0;
     }
 
-    uint totalFoodRequiredKilling;
+    uint256 totalFoodRequiredKilling;
     (foodConsumed, totalFoodRequiredKilling, died) = _getFoodConsumed(
       _from,
       _regenerateId,
@@ -498,15 +503,15 @@ library PlayersLibrary {
 
     // Didn't have enough food to survive the best case combat scenario
     if (died) {
-      uint healthRestored;
+      uint256 healthRestored;
       if (_regenerateId != NONE) {
         Item memory item = IItemNFT(_itemNFTAddress).getItem(_regenerateId);
         healthRestored = item.healthRestored;
       }
 
-      uint totalHealth = uint16(_combatStats.health) + foodConsumed * healthRestored;
+      uint256 totalHealth = uint16(_combatStats.health) + foodConsumed * healthRestored;
       // How much combat time is required to kill the player
-      uint killPlayerTime = _timeToKillPlayer(
+      uint256 killPlayerTime = _timeToKillPlayer(
         _combatStats,
         _enemyCombatStats,
         _alphaCombat,
@@ -519,7 +524,7 @@ library PlayersLibrary {
         // No food attached or didn't lose any health
 
         if (canKillAll) {
-          uint combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
+          uint256 combatTimePerEnemy = Math.ceilDiv(uint16(_enemyCombatStats.health) * respawnTime, dmgDealt);
           numKilled = combatElapsedTime / combatTimePerEnemy;
         } else {
           // In combat the entire time
@@ -545,7 +550,7 @@ library PlayersLibrary {
 
         // Make sure we don't go above the maximum amount of consumables (scrolls/arrows) that we actually have
         if (baseInputItemsConsumedNum > maxRequiredBaseInputItemsConsumedRatio) {
-          uint newMaxRequiredBaseInputItemsConsumedRatio = _getMaxRequiredRatio(
+          uint256 newMaxRequiredBaseInputItemsConsumedRatio = _getMaxRequiredRatio(
             _from,
             _actionChoice,
             baseInputItemsConsumedNum,
@@ -591,8 +596,8 @@ library PlayersLibrary {
     uint256 _alphaCombatHealing,
     address _itemNFTAddress,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) private view returns (uint16 foodConsumed, uint totalFoodRequiredKilling, bool died) {
-    uint healthRestoredFromItem;
+  ) private view returns (uint16 foodConsumed, uint256 totalFoodRequiredKilling, bool died) {
+    uint256 healthRestoredFromItem;
     if (_regenerateId != NONE) {
       Item memory item = IItemNFT(_itemNFTAddress).getItem(_regenerateId);
       healthRestoredFromItem = item.healthRestored;
@@ -615,7 +620,7 @@ library PlayersLibrary {
         healingDoneFromHealth
       );
 
-      uint balance = getRealBalance(_from, _regenerateId, _itemNFTAddress, _pendingQueuedActionEquipmentStates);
+      uint256 balance = getRealBalance(_from, _regenerateId, _itemNFTAddress, _pendingQueuedActionEquipmentStates);
 
       // Can only consume a maximum of 65535 food
       if (totalFoodRequired > type(uint16).max) {
@@ -635,16 +640,16 @@ library PlayersLibrary {
   function getNonCombatAdjustedElapsedTime(
     address _from,
     address _itemNFTAddress,
-    uint _elapsedTime,
+    uint256 _elapsedTime,
     ActionChoice calldata _actionChoice,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) external view returns (uint xpElapsedTime, uint16 baseInputItemsConsumedNum) {
+  ) external view returns (uint256 xpElapsedTime, uint16 baseInputItemsConsumedNum) {
     // Check the max that can be used
     baseInputItemsConsumedNum = uint16((_elapsedTime * _actionChoice.rate) / (3600 * RATE_MUL));
 
     if (baseInputItemsConsumedNum != 0) {
       // This checks the balances
-      uint maxRequiredRatio = _getMaxRequiredRatio(
+      uint256 maxRequiredRatio = _getMaxRequiredRatio(
         _from,
         _actionChoice,
         baseInputItemsConsumedNum,
@@ -657,7 +662,7 @@ library PlayersLibrary {
       }
     }
     // Work out what the actual elapsedTime should be had all those been made
-    xpElapsedTime = (uint(baseInputItemsConsumedNum) * 3600 * RATE_MUL) / _actionChoice.rate;
+    xpElapsedTime = (uint256(baseInputItemsConsumedNum) * 3600 * RATE_MUL) / _actionChoice.rate;
   }
 
   function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
@@ -665,13 +670,13 @@ library PlayersLibrary {
   }
 
   function getBoostedTime(
-    uint _actionStartTime,
-    uint _elapsedTime,
+    uint256 _actionStartTime,
+    uint256 _elapsedTime,
     uint40 _boostStartTime,
     uint24 _boostDuration
   ) public pure returns (uint24 boostedTime) {
-    uint actionEndTime = _actionStartTime + _elapsedTime;
-    uint boostEndTime = _boostStartTime + _boostDuration;
+    uint256 actionEndTime = _actionStartTime + _elapsedTime;
+    uint256 boostEndTime = _boostStartTime + _boostDuration;
     bool boostFinishedBeforeOrOnActionStarted = _actionStartTime >= boostEndTime;
     bool boostStartedAfterOrOnActionFinished = actionEndTime <= _boostStartTime;
     uint24 actionDuration = uint24(actionEndTime - _actionStartTime);
@@ -695,8 +700,8 @@ library PlayersLibrary {
 
   function _getXPFromBoostImpl(
     bool _isCombatSkill,
-    uint _actionStartTime,
-    uint _xpElapsedTime,
+    uint256 _actionStartTime,
+    uint256 _xpElapsedTime,
     uint24 _xpPerHour,
     BoostType boostType,
     uint40 _boostStartTime,
@@ -708,15 +713,15 @@ library PlayersLibrary {
       (_isCombatSkill && boostType == BoostType.COMBAT_XP) ||
       (!_isCombatSkill && boostType == BoostType.NON_COMBAT_XP)
     ) {
-      uint boostedTime = getBoostedTime(_actionStartTime, _xpElapsedTime, _boostStartTime, _boostDuration);
+      uint256 boostedTime = getBoostedTime(_actionStartTime, _xpElapsedTime, _boostStartTime, _boostDuration);
       boostPointsAccrued = uint32((boostedTime * _xpPerHour * _boostValue) / (3600 * 100));
     }
   }
 
   function _getXPFromBoost(
     bool _isCombatSkill,
-    uint _actionStartTime,
-    uint _xpElapsedTime,
+    uint256 _actionStartTime,
+    uint256 _xpElapsedTime,
     uint24 _xpPerHour,
     PlayerBoostInfo storage _boostInfo
   ) private view returns (uint32 boostPointsAccrued) {
@@ -738,8 +743,8 @@ library PlayersLibrary {
 
   function _getXPFromExtraOrLastBoost(
     bool _isCombatSkill,
-    uint _actionStartTime,
-    uint _xpElapsedTime,
+    uint256 _actionStartTime,
+    uint256 _xpElapsedTime,
     uint24 _xpPerHour,
     PlayerBoostInfo storage _boostInfo
   ) private view returns (uint32 boostPointsAccrued) {
@@ -765,13 +770,13 @@ library PlayersLibrary {
 
   function _extraBoostFromFullAttire(
     uint16[] memory itemTokenIds,
-    uint[] memory balances,
+    uint256[] memory balances,
     uint16[5] calldata expectedItemTokenIds
   ) private pure returns (bool matches) {
     // Check if they have the full equipment required
     if (itemTokenIds.length == 5) {
       for (U256 iter; iter.lt(5); iter = iter.inc()) {
-        uint i = iter.asUint256();
+        uint256 i = iter.asUint256();
         if (itemTokenIds[i] != expectedItemTokenIds[i] || balances[i] == 0) {
           return false;
         }
@@ -781,21 +786,21 @@ library PlayersLibrary {
   }
 
   function subtractMatchingRewards(
-    uint[] calldata newIds,
-    uint[] calldata newAmounts,
-    uint[] calldata prevNewIds,
-    uint[] calldata prevNewAmounts
-  ) external pure returns (uint[] memory ids, uint[] memory amounts) {
+    uint256[] calldata newIds,
+    uint256[] calldata newAmounts,
+    uint256[] calldata prevNewIds,
+    uint256[] calldata prevNewAmounts
+  ) external pure returns (uint256[] memory ids, uint256[] memory amounts) {
     // Subtract previous rewards. If amount is zero after, replace with end and reduce the array size
     ids = newIds;
     amounts = newAmounts;
     U256 prevNewIdsLength = prevNewIds.length.asU256();
     for (U256 jter; jter < prevNewIdsLength; jter = jter.inc()) {
-      uint j = jter.asUint256();
+      uint256 j = jter.asUint256();
       uint16 prevNewId = uint16(prevNewIds[j]);
       uint24 prevNewAmount = uint24(prevNewAmounts[j]);
-      uint length = ids.length;
-      for (uint k = 0; k < length; ++k) {
+      uint256 length = ids.length;
+      for (uint256 k = 0; k < length; ++k) {
         if (ids[k] == prevNewId) {
           amounts[k] -= prevNewAmount;
           if (amounts[k] == 0) {
@@ -814,19 +819,19 @@ library PlayersLibrary {
     }
   }
 
-  function readXP(Skill _skill, PackedXP storage _packedXP) internal view returns (uint) {
+  function readXP(Skill _skill, PackedXP storage _packedXP) internal view returns (uint256) {
     if (_skill == Skill.COMBAT || _skill == Skill.TRAVELING) {
       revert InvalidXPSkill();
     }
     if (_skill == Skill.NONE) {
       return 0;
     }
-    uint offset = 2; // Accounts for NONE & COMBAT skills
-    uint val = uint8(_skill) - offset;
-    uint slotNum = val / 6;
-    uint relativePos = val % 6;
+    uint256 offset = 2; // Accounts for NONE & COMBAT skills
+    uint256 val = uint8(_skill) - offset;
+    uint256 slotNum = val / 6;
+    uint256 relativePos = val % 6;
 
-    uint slotVal;
+    uint256 slotVal;
     assembly ("memory-safe") {
       slotVal := sload(add(_packedXP.slot, slotNum))
     }
@@ -894,7 +899,7 @@ library PlayersLibrary {
   ) external view returns (CombatStats memory combatStats) {
     combatStats = _combatStats;
     bool skipNonFullAttire;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
+    (uint16[] memory itemTokenIds, uint256[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
       _itemNFTAddress,
@@ -906,7 +911,7 @@ library PlayersLibrary {
       U256 iter = items.length.asU256();
       while (iter.neq(0)) {
         iter = iter.dec();
-        uint i = iter.asUint256();
+        uint256 i = iter.asUint256();
         if (balances[i] != 0) {
           _updateCombatStatsFromItem(_combatStats, items[i]);
         }
@@ -982,8 +987,8 @@ library PlayersLibrary {
     address _itemNFTAddress,
     bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
-    uint attireLength;
+  ) public view returns (uint16[] memory itemTokenIds, uint256[] memory balances) {
+    uint256 attireLength;
     itemTokenIds = new uint16[](7);
     if (_attire.head != NONE) {
       itemTokenIds[attireLength++] = _attire.head;
@@ -1022,8 +1027,8 @@ library PlayersLibrary {
     address _itemNFTAddress,
     bool _skipNonFullAttire,
     PendingQueuedActionEquipmentState[] calldata _pendingQueuedActionEquipmentStates
-  ) public view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
-    uint attireLength;
+  ) public view returns (uint16[] memory itemTokenIds, uint256[] memory balances) {
+    uint256 attireLength;
     itemTokenIds = new uint16[](7);
     if (_attire.head != NONE) {
       itemTokenIds[attireLength++] = _attire.head;
@@ -1061,7 +1066,7 @@ library PlayersLibrary {
     uint8 _skillId,
     PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     PackedXP storage packedXP
-  ) public view returns (uint) {
+  ) public view returns (uint256) {
     return _getAbsoluteActionStartXP(Skill(_skillId), _pendingQueuedActionProcessed, packedXP);
   }
 
@@ -1070,8 +1075,8 @@ library PlayersLibrary {
     Skill _skill,
     PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     PackedXP storage packedXP
-  ) internal view returns (uint) {
-    uint xp = readXP(_skill, packedXP);
+  ) internal view returns (uint256) {
+    uint256 xp = readXP(_skill, packedXP);
     if (_pendingQueuedActionProcessed.currentAction.skill1 == _skill) {
       xp -= _pendingQueuedActionProcessed.currentAction.xpGained1;
     } else if (_pendingQueuedActionProcessed.currentAction.skill2 == _skill) {
@@ -1082,7 +1087,7 @@ library PlayersLibrary {
 
     // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
     // battling monsters may increase your level so you are stronger for a later queued action.
-    for (uint i; i < _pendingQueuedActionProcessed.skills.length; ++i) {
+    for (uint256 i; i < _pendingQueuedActionProcessed.skills.length; ++i) {
       if (_pendingQueuedActionProcessed.skills[i] == _skill) {
         xp += _pendingQueuedActionProcessed.xpGainedSkills[i];
       }
@@ -1156,7 +1161,7 @@ library PlayersLibrary {
   function _extraFromAvatar(
     Player storage _player,
     Skill _skill,
-    uint _elapsedTime,
+    uint256 _elapsedTime,
     uint24 _xpPerHour
   ) internal view returns (uint32 extraPointsAccrued) {
     uint8 bonusPercent = _getBonusAvatarXPPercent(_player, _skill);
@@ -1167,9 +1172,9 @@ library PlayersLibrary {
     address _from,
     Player storage _player,
     QueuedAction storage _queuedAction,
-    uint _startTime,
+    uint256 _startTime,
     uint8 _skillId,
-    uint _xpElapsedTime,
+    uint256 _xpElapsedTime,
     Attire storage _attire,
     PlayerBoostInfo storage _activeBoost,
     PlayerBoostInfo storage _globalBoost,
@@ -1212,7 +1217,7 @@ library PlayersLibrary {
   function _extraXPFromFullAttire(
     address _from,
     Attire storage _attire,
-    uint _elapsedTime,
+    uint256 _elapsedTime,
     uint24 _xpPerHour,
     address _itemNFTAddress,
     uint8 _bonusPercent,
@@ -1224,7 +1229,7 @@ library PlayersLibrary {
     }
     // Check if they have the full equipment set, if so they can get some bonus
     bool skipNonFullAttire = true;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
+    (uint16[] memory itemTokenIds, uint256[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
       _itemNFTAddress,
@@ -1243,7 +1248,7 @@ library PlayersLibrary {
     bool isCombat,
     PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
     address _worldAddress,
-    uint _maxSuccessPercentChange,
+    uint256 _maxSuccessPercentChange,
     PackedXP storage _packedXP
   ) external view returns (uint8 successPercent) {
     successPercent = 100;
@@ -1253,11 +1258,11 @@ library PlayersLibrary {
         revert InvalidAction();
       }
 
-      uint minLevel = _getLevel(minXP);
-      uint skillLevel = _getLevel(
+      uint256 minLevel = _getLevel(minXP);
+      uint256 skillLevel = _getLevel(
         _getAbsoluteActionStartXP(Skill(_actionSkillId), _pendingQueuedActionProcessed, _packedXP)
       );
-      uint extraBoost = skillLevel - minLevel;
+      uint256 extraBoost = skillLevel - minLevel;
 
       successPercent = uint8(Math.min(_maxSuccessPercentChange, actionSuccessPercent + extraBoost));
     }
@@ -1277,7 +1282,7 @@ library PlayersLibrary {
 
     // Check if they have the full equipment set, if so they can get some bonus
     bool skipNonFullAttire = true;
-    (uint16[] memory itemTokenIds, uint[] memory balances) = getAttireWithBalance(
+    (uint16[] memory itemTokenIds, uint256[] memory balances) = getAttireWithBalance(
       _from,
       _attire,
       _itemNFTAddress,

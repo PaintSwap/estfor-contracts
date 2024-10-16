@@ -4,17 +4,17 @@ pragma solidity ^0.8.28;
 import {ClanRank} from "../globals/clans.sol";
 
 interface IClans {
-  function canWithdraw(uint _clanId, uint _playerId) external view returns (bool);
+  function canWithdraw(uint256 _clanId, uint256 _playerId) external view returns (bool);
 
-  function isClanMember(uint clanId, uint playerId) external view returns (bool);
+  function isClanMember(uint256 clanId, uint256 playerId) external view returns (bool);
 
-  function maxBankCapacity(uint clanId) external view returns (uint16);
+  function maxBankCapacity(uint256 clanId) external view returns (uint16);
 
-  function maxMemberCapacity(uint clanId) external view returns (uint16);
+  function maxMemberCapacity(uint256 clanId) external view returns (uint16);
 
-  function getRank(uint clanId, uint playerId) external view returns (ClanRank);
+  function getRank(uint256 clanId, uint256 playerId) external view returns (ClanRank);
 
-  function setMMR(uint clanId, uint16 mmr) external;
+  function setMMR(uint256 clanId, uint16 mmr) external;
 
-  function getMMR(uint clanId) external view returns (uint16);
+  function getMMR(uint256 clanId) external view returns (uint16);
 }

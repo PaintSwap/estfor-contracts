@@ -2,12 +2,12 @@
 pragma solidity ^0.8.28;
 
 interface ICombatants {
-  function isCombatant(uint clanId, uint playerId) external view returns (bool);
+  function isCombatant(uint256 clanId, uint256 playerId) external view returns (bool);
 
   function assignCombatants(
-    uint clanId,
+    uint256 clanId,
     uint48[] calldata playerIds,
-    uint combatantCooldownTimestamp,
-    uint leaderPlayerId
+    uint256 combatantCooldownTimestamp,
+    uint256 leaderPlayerId
   ) external;
 }

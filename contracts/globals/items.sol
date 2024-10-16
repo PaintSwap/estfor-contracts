@@ -73,7 +73,7 @@ uint16 constant SECRET_EGG_2_TIER1 = EGG_BASE + 1;
 uint16 constant EGG_MAX = 12799;
 
 struct BulkTransferInfo {
-  uint[] tokenIds;
-  uint[] amounts;
+  uint256[] tokenIds;
+  uint256[] amounts;
   address to;
 }

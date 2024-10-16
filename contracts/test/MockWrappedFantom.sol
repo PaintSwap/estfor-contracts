@@ -5,10 +5,10 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MockWrappedFantom {
-  event Approval(address indexed src, address indexed guy, uint wad);
-  event Transfer(address indexed src, address indexed dst, uint wad);
-  event Deposit(address indexed dst, uint wad);
-  event Withdrawal(address indexed src, uint wad);
+  event Approval(address indexed src, address indexed guy, uint256 wad);
+  event Transfer(address indexed src, address indexed dst, uint256 wad);
+  event Deposit(address indexed dst, uint256 wad);
+  event Withdrawal(address indexed src, uint256 wad);
 
   error InsufficientBalance();
   error InsufficientAllowance();
@@ -17,8 +17,8 @@ contract MockWrappedFantom {
   string public symbol = "WFTM";
   uint8 public decimals = 18;
 
-  mapping(address owner => uint balance) public balanceOf;
-  mapping(address owner => mapping(address spender => uint)) public allowance;
+  mapping(address owner => uint256 balance) public balanceOf;
+  mapping(address owner => mapping(address spender => uint256)) public allowance;
 
   receive() external payable {
     deposit();
@@ -29,7 +29,7 @@ contract MockWrappedFantom {
     emit Deposit(msg.sender, msg.value);
   }
 
-  function withdraw(uint wad) public {
+  function withdraw(uint256 wad) public {
     if (balanceOf[msg.sender] < wad) {
       revert InsufficientBalance();
     }
@@ -38,26 +38,26 @@ contract MockWrappedFantom {
     emit Withdrawal(msg.sender, wad);
   }
 
-  function totalSupply() public view returns (uint) {
+  function totalSupply() public view returns (uint256) {
     return address(this).balance;
   }
 
-  function approve(address guy, uint wad) public returns (bool) {
+  function approve(address guy, uint256 wad) public returns (bool) {
     allowance[msg.sender][guy] = wad;
     emit Approval(msg.sender, guy, wad);
     return true;
   }
 
-  function transfer(address dst, uint wad) public returns (bool) {
+  function transfer(address dst, uint256 wad) public returns (bool) {
     return transferFrom(msg.sender, dst, wad);
   }
 
-  function transferFrom(address src, address dst, uint wad) public returns (bool) {
+  function transferFrom(address src, address dst, uint256 wad) public returns (bool) {
     if (balanceOf[src] < wad) {
       revert InsufficientBalance();
     }
 
-    if (src != msg.sender && allowance[src][msg.sender] != type(uint).max) {
+    if (src != msg.sender && allowance[src][msg.sender] != type(uint256).max) {
       if (allowance[src][msg.sender] < wad) {
         revert InsufficientAllowance();
       }

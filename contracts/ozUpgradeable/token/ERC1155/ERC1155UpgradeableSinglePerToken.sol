@@ -63,16 +63,16 @@ contract ERC1155UpgradeableSinglePerToken is
     _setURI(uri_);
   }
 
-  function totalSupply(uint _tokenId) public view returns (uint) {
+  function totalSupply(uint256 _tokenId) public view returns (uint256) {
     return _exists(_tokenId) ? 1 : 0;
   }
 
-  function totalSupply() external view returns (uint) {
+  function totalSupply() external view returns (uint256) {
     return _totalSupplyAll;
   }
 
   // Override this function if updateOwner is overriden
-  function _exists(uint _tokenId) internal view virtual returns (bool) {
+  function _exists(uint256 _tokenId) internal view virtual returns (bool) {
     return _owner[_tokenId] != address(0);
   }
 

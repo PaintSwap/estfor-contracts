@@ -273,19 +273,19 @@ interface IBEP20 {
 }
 
 interface IPancakePair {
-  event Mint(address indexed sender, uint amount0, uint amount1);
-  event Burn(address indexed sender, uint amount0, uint amount1, address indexed to);
+  event Mint(address indexed sender, uint256 amount0, uint256 amount1);
+  event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to);
   event Swap(
     address indexed sender,
-    uint amount0In,
-    uint amount1In,
-    uint amount0Out,
-    uint amount1Out,
+    uint256 amount0In,
+    uint256 amount1In,
+    uint256 amount0Out,
+    uint256 amount1Out,
     address indexed to
   );
   event Sync(uint112 reserve0, uint112 reserve1);
 
-  function MINIMUM_LIQUIDITY() external pure returns (uint);
+  function MINIMUM_LIQUIDITY() external pure returns (uint256);
 
   function factory() external view returns (address);
 
@@ -295,17 +295,17 @@ interface IPancakePair {
 
   function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
 
-  function price0CumulativeLast() external view returns (uint);
+  function price0CumulativeLast() external view returns (uint256);
 
-  function price1CumulativeLast() external view returns (uint);
+  function price1CumulativeLast() external view returns (uint256);
 
-  function kLast() external view returns (uint);
+  function kLast() external view returns (uint256);
 
-  function mint(address to) external returns (uint liquidity);
+  function mint(address to) external returns (uint256 liquidity);
 
-  function burn(address to) external returns (uint amount0, uint amount1);
+  function burn(address to) external returns (uint256 amount0, uint256 amount1);
 
-  function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;
+  function swap(uint256 amount0Out, uint256 amount1Out, address to, bytes calldata data) external;
 
   function skim(address to) external;
 
@@ -326,170 +326,178 @@ interface IPancakeRouter01 {
   function addLiquidity(
     address tokenA,
     address tokenB,
-    uint amountADesired,
-    uint amountBDesired,
-    uint amountAMin,
-    uint amountBMin,
+    uint256 amountADesired,
+    uint256 amountBDesired,
+    uint256 amountAMin,
+    uint256 amountBMin,
     address to,
-    uint deadline
-  ) external returns (uint amountA, uint amountB, uint liquidity);
+    uint256 deadline
+  ) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
 
   function addLiquidityETH(
     address token,
-    uint amountTokenDesired,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 amountTokenDesired,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline
-  ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
+    uint256 deadline
+  ) external payable returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
 
   function removeLiquidity(
     address tokenA,
     address tokenB,
-    uint liquidity,
-    uint amountAMin,
-    uint amountBMin,
+    uint256 liquidity,
+    uint256 amountAMin,
+    uint256 amountBMin,
     address to,
-    uint deadline
-  ) external returns (uint amountA, uint amountB);
+    uint256 deadline
+  ) external returns (uint256 amountA, uint256 amountB);
 
   function removeLiquidityETH(
     address token,
-    uint liquidity,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 liquidity,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline
-  ) external returns (uint amountToken, uint amountETH);
+    uint256 deadline
+  ) external returns (uint256 amountToken, uint256 amountETH);
 
   function removeLiquidityWithPermit(
     address tokenA,
     address tokenB,
-    uint liquidity,
-    uint amountAMin,
-    uint amountBMin,
+    uint256 liquidity,
+    uint256 amountAMin,
+    uint256 amountBMin,
     address to,
-    uint deadline,
+    uint256 deadline,
     bool approveMax,
     uint8 v,
     bytes32 r,
     bytes32 s
-  ) external returns (uint amountA, uint amountB);
+  ) external returns (uint256 amountA, uint256 amountB);
 
   function removeLiquidityETHWithPermit(
     address token,
-    uint liquidity,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 liquidity,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline,
+    uint256 deadline,
     bool approveMax,
     uint8 v,
     bytes32 r,
     bytes32 s
-  ) external returns (uint amountToken, uint amountETH);
+  ) external returns (uint256 amountToken, uint256 amountETH);
 
   function swapExactTokensForTokens(
-    uint amountIn,
-    uint amountOutMin,
+    uint256 amountIn,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
-  ) external returns (uint[] memory amounts);
+    uint256 deadline
+  ) external returns (uint256[] memory amounts);
 
   function swapTokensForExactTokens(
-    uint amountOut,
-    uint amountInMax,
+    uint256 amountOut,
+    uint256 amountInMax,
     address[] calldata path,
     address to,
-    uint deadline
-  ) external returns (uint[] memory amounts);
+    uint256 deadline
+  ) external returns (uint256[] memory amounts);
 
   function swapExactETHForTokens(
-    uint amountOutMin,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
-  ) external payable returns (uint[] memory amounts);
+    uint256 deadline
+  ) external payable returns (uint256[] memory amounts);
 
   function swapTokensForExactETH(
-    uint amountOut,
-    uint amountInMax,
+    uint256 amountOut,
+    uint256 amountInMax,
     address[] calldata path,
     address to,
-    uint deadline
-  ) external returns (uint[] memory amounts);
+    uint256 deadline
+  ) external returns (uint256[] memory amounts);
 
   function swapExactTokensForETH(
-    uint amountIn,
-    uint amountOutMin,
+    uint256 amountIn,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
-  ) external returns (uint[] memory amounts);
+    uint256 deadline
+  ) external returns (uint256[] memory amounts);
 
   function swapETHForExactTokens(
-    uint amountOut,
+    uint256 amountOut,
     address[] calldata path,
     address to,
-    uint deadline
-  ) external payable returns (uint[] memory amounts);
+    uint256 deadline
+  ) external payable returns (uint256[] memory amounts);
 
-  function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
+  function quote(uint256 amountA, uint256 reserveA, uint256 reserveB) external pure returns (uint256 amountB);
 
-  function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);
+  function getAmountOut(
+    uint256 amountIn,
+    uint256 reserveIn,
+    uint256 reserveOut
+  ) external pure returns (uint256 amountOut);
 
-  function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);
+  function getAmountIn(
+    uint256 amountOut,
+    uint256 reserveIn,
+    uint256 reserveOut
+  ) external pure returns (uint256 amountIn);
 
-  function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
+  function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts);
 
-  function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
+  function getAmountsIn(uint256 amountOut, address[] calldata path) external view returns (uint256[] memory amounts);
 }
 
 interface IPancakeRouter02 is IPancakeRouter01 {
   function removeLiquidityETHSupportingFeeOnTransferTokens(
     address token,
-    uint liquidity,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 liquidity,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline
-  ) external returns (uint amountETH);
+    uint256 deadline
+  ) external returns (uint256 amountETH);
 
   function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
     address token,
-    uint liquidity,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 liquidity,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline,
+    uint256 deadline,
     bool approveMax,
     uint8 v,
     bytes32 r,
     bytes32 s
-  ) external returns (uint amountETH);
+  ) external returns (uint256 amountETH);
 
   function swapExactTokensForTokensSupportingFeeOnTransferTokens(
-    uint amountIn,
-    uint amountOutMin,
+    uint256 amountIn,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   ) external;
 
   function swapExactETHForTokensSupportingFeeOnTransferTokens(
-    uint amountOutMin,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   ) external payable;
 
   function swapExactTokensForETHSupportingFeeOnTransferTokens(
-    uint amountIn,
-    uint amountOutMin,
+    uint256 amountIn,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   ) external;
 }
 
@@ -1153,13 +1161,13 @@ contract BrushToken is BEP20("PaintSwap Token", "BRUSH") {
   bytes32 public constant DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
 
   /// @notice A record of states for signing / validating signatures
-  mapping(address => uint) public nonces;
+  mapping(address => uint256) public nonces;
 
   /// @notice An event thats emitted when an account changes its delegate
   event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
 
   /// @notice An event thats emitted when a delegate account's vote balance changes
-  event DelegateVotesChanged(address indexed delegate, uint previousBalance, uint newBalance);
+  event DelegateVotesChanged(address indexed delegate, uint256 previousBalance, uint256 newBalance);
 
   /**
    * @notice Delegate votes from `msg.sender` to `delegatee`
@@ -1186,7 +1194,7 @@ contract BrushToken is BEP20("PaintSwap Token", "BRUSH") {
    * @param r Half of the ECDSA signature pair
    * @param s Half of the ECDSA signature pair
    */
-  function delegateBySig(address delegatee, uint nonce, uint expiry, uint8 v, bytes32 r, bytes32 s) external {
+  function delegateBySig(address delegatee, uint256 nonce, uint256 expiry, uint8 v, bytes32 r, bytes32 s) external {
     bytes32 domainSeparator = keccak256(
       abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name())), block.chainid, address(this))
     );
@@ -1219,7 +1227,7 @@ contract BrushToken is BEP20("PaintSwap Token", "BRUSH") {
    * @param blockNumber The block number to get the vote balance at
    * @return The number of votes the account had as of the given block
    */
-  function getPriorVotes(address account, uint blockNumber) external view returns (uint256) {
+  function getPriorVotes(address account, uint256 blockNumber) external view returns (uint256) {
     require(blockNumber < block.number, "BRUSH::getPriorVotes: not yet determined");
 
     uint32 nCheckpoints = numCheckpoints[account];
@@ -1296,7 +1304,7 @@ contract BrushToken is BEP20("PaintSwap Token", "BRUSH") {
     emit DelegateVotesChanged(delegatee, oldVotes, newVotes);
   }
 
-  function safe32(uint n, string memory errorMessage) internal pure returns (uint32) {
+  function safe32(uint256 n, string memory errorMessage) internal pure returns (uint32) {
     require(n < 2 ** 32, errorMessage);
     return uint32(n);
   }
@@ -1356,9 +1364,9 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
   // Info of each pool.
   PoolInfo[] private poolInfo_;
 
-  // Example 200 is 0.5%, type(uint).max is 0%
-  uint inverseWithdrawFeeSingle;
-  uint inverseWithdrawFeeLP;
+  // Example 200 is 0.5%, type(uint256).max is 0%
+  uint256 inverseWithdrawFeeSingle;
+  uint256 inverseWithdrawFeeLP;
 
   bool depositsDisabled;
 
@@ -1369,7 +1377,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
   // The timestamp when BRUSH mining starts.
   uint256 public startTime;
   // How much of each LP token is eligible for burning
-  mapping(IBEP20 => uint) public maxBurnAndBuyBackAmounts;
+  mapping(IBEP20 => uint256) public maxBurnAndBuyBackAmounts;
 
   struct Set {
     address[] values;
@@ -1400,7 +1408,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     inverseWithdrawFeeLP = 100;
     depositsDisabled = false;
 
-    universalApprove(_brush, address(router), type(uint).max);
+    universalApprove(_brush, address(router), type(uint256).max);
     lps.values.push(address(_brush));
     lps.is_in[address(_brush)] = true;
   }
@@ -1427,7 +1435,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
 
     lps.values.push(address(_lpToken));
     lps.is_in[address(_lpToken)] = true;
-    universalApprove(_lpToken, address(router), type(uint).max);
+    universalApprove(_lpToken, address(router), type(uint256).max);
   }
 
   // Update the given pool's BRUSH allocation point. Can only be called by the owner.
@@ -1549,7 +1557,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     emit Withdraw(msg.sender, _pid, _amount.sub(withdrawFee));
   }
 
-  function _withdraw(uint _amount, IBEP20 _lpToken) internal returns (uint withdrawFee) {
+  function _withdraw(uint256 _amount, IBEP20 _lpToken) internal returns (uint256 withdrawFee) {
     if (_amount > 0) {
       // Withdrawing from other pools incurs a withdrawal fee. Any brush is burnt and the rest is used to buy-back brush and burn it.
       withdrawFee = _amount / inverseWithdrawFeeLP;
@@ -1566,7 +1574,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     uint256 amount = user.amount;
     user.amount = 0;
     user.rewardDebt = 0;
-    uint withdrawFee = _withdraw(amount, pool.lpToken);
+    uint256 withdrawFee = _withdraw(amount, pool.lpToken);
     emit EmergencyWithdraw(msg.sender, _pid, amount - withdrawFee);
   }
 
@@ -1591,7 +1599,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     require(_startTime > block.timestamp);
     require(startTime > block.timestamp);
     startTime = _startTime;
-    for (uint i = 0; i < poolInfo_.length; ++i) {
+    for (uint256 i = 0; i < poolInfo_.length; ++i) {
       poolInfo_[i].lastRewardTime = startTime;
     }
   }
@@ -1600,18 +1608,18 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     depositsDisabled = _depositsDisabled;
   }
 
-  function setInverseWithdrawFeeLP(uint _inverseWithdrawFee) public onlyOwner {
+  function setInverseWithdrawFeeLP(uint256 _inverseWithdrawFee) public onlyOwner {
     require(_inverseWithdrawFee > 0);
     inverseWithdrawFeeLP = _inverseWithdrawFee;
   }
 
-  function setInverseWithdrawFeeSingle(uint _inverseWithdrawFee) public onlyOwner {
+  function setInverseWithdrawFeeSingle(uint256 _inverseWithdrawFee) public onlyOwner {
     require(_inverseWithdrawFee > 0);
     inverseWithdrawFeeSingle = _inverseWithdrawFee;
   }
 
   function poolInfo(
-    uint _pid
+    uint256 _pid
   )
     external
     view

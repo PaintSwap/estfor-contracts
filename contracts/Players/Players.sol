@@ -27,29 +27,29 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   using UnsafeMath for U256;
 
   event GamePaused(bool gamePaused);
-  event LockPlayer(uint playerId, uint cooldownTimestamp);
-  event UnlockPlayer(uint playerId);
+  event LockPlayer(uint256 playerId, uint256 cooldownTimestamp);
+  event UnlockPlayer(uint256 playerId);
 
   error InvalidSelector();
   error GameIsPaused();
   error NotBeta();
   error PlayerLocked();
 
-  modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
+  modifier isOwnerOfPlayerAndActiveMod(uint256 _playerId) {
     if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
   }
 
-  modifier isOwnerOfPlayerMod(uint playerId) {
+  modifier isOwnerOfPlayerMod(uint256 playerId) {
     if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
       revert NotOwnerOfPlayer();
     }
     _;
   }
 
-  modifier isOwnerOfPlayerOrEmpty(uint playerId) {
+  modifier isOwnerOfPlayerOrEmpty(uint256 playerId) {
     if (playerId != 0 && playerNFT.balanceOf(msg.sender, playerId) != 1) {
       revert NotOwnerOfPlayer();
     }
@@ -124,7 +124,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
   function startActionsV2(
-    uint _playerId,
+    uint256 _playerId,
     QueuedActionInputV2[] calldata _queuedActions,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
@@ -139,12 +139,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
   function startActionsExtraV2(
-    uint _playerId,
+    uint256 _playerId,
     QueuedActionInputV2[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime, // Not used yet (always current time)
-    uint _questId,
-    uint _donationAmount,
+    uint256 _questId,
+    uint256 _donationAmount,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _startActions(
@@ -164,7 +164,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
   function startActions(
-    uint _playerId,
+    uint256 _playerId,
     QueuedActionInput[] calldata _queuedActions,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
@@ -187,12 +187,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
   function startActionsExtra(
-    uint _playerId,
+    uint256 _playerId,
     QueuedActionInput[] calldata _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime, // Not used yet (always current time)
-    uint _questId,
-    uint _donationAmount,
+    uint256 _questId,
+    uint256 _donationAmount,
     ActionQueueStatus _queueStatus
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _startActions(
@@ -207,18 +207,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+  function processActions(
+    uint256 _playerId
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _processActionsAndSetState(_playerId);
   }
 
   // Callback after minting a player
   function mintedPlayer(
     address _from,
-    uint _playerId,
+    uint256 _playerId,
     Skill[2] calldata _startSkills,
     bool _makeActive,
-    uint[] calldata _startingItemTokenIds,
-    uint[] calldata _startingAmounts
+    uint256[] calldata _startingItemTokenIds,
+    uint256[] calldata _startingAmounts
   ) external override onlyPlayerNFT {
     if (_makeActive) {
       _setActivePlayer(_from, _playerId);
@@ -238,7 +240,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   // Callback after upgrading a player
-  function upgradePlayer(uint _playerId) external override onlyPlayerNFT {
+  function upgradePlayer(uint256 _playerId) external override onlyPlayerNFT {
     if (_isPlayerFullMode(_playerId)) {
       revert AlreadyUpgraded();
     }
@@ -249,8 +251,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   // This is a special type of quest.
   function buyBrushQuest(
     address _to,
-    uint _playerId,
-    uint _questId,
+    uint256 _playerId,
+    uint256 _questId,
     bool _useExactETH
   ) external payable isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     _delegatecall(
@@ -260,8 +262,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function activateQuest(
-    uint _playerId,
-    uint _questId
+    uint256 _playerId,
+    uint256 _questId
   ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length != 0) {
       _processActionsAndSetState(_playerId);
@@ -269,7 +271,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     quests.activateQuest(msg.sender, _playerId, _questId);
   }
 
-  function deactivateQuest(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+  function deactivateQuest(
+    uint256 _playerId
+  ) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
     if (players_[_playerId].actionQueue.length != 0) {
       _processActionsAndSetState(_playerId);
     }
@@ -282,10 +286,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @notice Called by the PlayerNFT contract before a player is transferred from an account
   /// @param _from The owner of the player being transferred
   /// @param _playerId The id of the player being transferred
-  function clearEverythingBeforeTokenTransfer(address _from, uint _playerId) external override onlyPlayerNFT {
+  function clearEverythingBeforeTokenTransfer(address _from, uint256 _playerId) external override onlyPlayerNFT {
     _clearEverything(_from, _playerId, true);
     // If it was the active player, then clear it
-    uint existingActivePlayerId = activePlayer_[_from];
+    uint256 existingActivePlayerId = activePlayer_[_from];
     if (existingActivePlayerId == _playerId) {
       delete activePlayer_[_from];
       emit SetActivePlayer(_from, existingActivePlayerId, 0);
@@ -295,16 +299,16 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @notice Called by the PlayerNFT contract before a player is transferred to an account
   /// @param _to The new owner of the player
   /// @param _playerId The id of the player being transferred
-  function beforeTokenTransferTo(address _to, uint _playerId) external override onlyPlayerNFT {
+  function beforeTokenTransferTo(address _to, uint256 _playerId) external override onlyPlayerNFT {
     // Does this account have any boosts? If so, then set a lock on the player when trying to set it as active
     uint16[] memory boostItemTokenIds = new uint16[](4);
     boostItemTokenIds[0] = COMBAT_BOOST;
     boostItemTokenIds[1] = XP_BOOST;
     boostItemTokenIds[2] = GATHERING_BOOST;
     boostItemTokenIds[3] = SKILL_BOOST;
-    uint[] memory balances = itemNFT.balanceOfs(_to, boostItemTokenIds);
+    uint256[] memory balances = itemNFT.balanceOfs(_to, boostItemTokenIds);
     bool hasBoost;
-    for (uint i; i < balances.length; ++i) {
+    for (uint256 i; i < balances.length; ++i) {
       hasBoost = hasBoost || balances[i] != 0;
     }
 
@@ -320,13 +324,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
   }
 
-  function clearEverything(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) isBetaMod {
+  function clearEverything(uint256 _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) isBetaMod {
     address from = msg.sender;
     bool isEmergency = true;
     _clearEverything(from, _playerId, !isEmergency);
   }
 
-  function _clearEverything(address _from, uint _playerId, bool _processTheActions) private {
+  function _clearEverything(address _from, uint256 _playerId, bool _processTheActions) private {
     _delegatecall(
       implQueueActions,
       abi.encodeWithSelector(IPlayersDelegate.clearEverything.selector, _from, _playerId, _processTheActions)
@@ -334,12 +338,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _startActions(
-    uint _playerId,
+    uint256 _playerId,
     QueuedActionInputV2[] memory _queuedActions,
     uint16 _boostItemTokenId,
     uint40 _boostStartTime,
-    uint _questId,
-    uint _donationAmount,
+    uint256 _questId,
+    uint256 _donationAmount,
     ActionQueueStatus _queueStatus
   ) private {
     _delegatecall(
@@ -357,19 +361,19 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function _processActionsAndSetState(uint _playerId) private {
+  function _processActionsAndSetState(uint256 _playerId) private {
     _delegatecall(
       implProcessActions,
       abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActionsAndSetState.selector, _playerId)
     );
   }
 
-  function _setActivePlayer(address _from, uint _playerId) private {
+  function _setActivePlayer(address _from, uint256 _playerId) private {
     if (block.timestamp < activeBoosts_[_playerId].cooldown) {
       revert PlayerLocked();
     }
 
-    uint existingActivePlayerId = activePlayer_[_from];
+    uint256 existingActivePlayerId = activePlayer_[_from];
     activePlayer_[_from] = _playerId;
     if (existingActivePlayerId == _playerId) {
       revert PlayerAlreadyActive();
@@ -385,7 +389,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     QueuedActionInput[] calldata _queuedActions
   ) private pure returns (QueuedActionInputV2[] memory) {
     QueuedActionInputV2[] memory queuedActions = new QueuedActionInputV2[](_queuedActions.length);
-    for (uint i; i < _queuedActions.length; ++i) {
+    for (uint256 i; i < _queuedActions.length; ++i) {
       queuedActions[i] = QueuedActionInputV2(
         _queuedActions[i].attire,
         _queuedActions[i].actionId,
@@ -401,15 +405,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return queuedActions;
   }
 
-  function setActivePlayer(uint _playerId) external isOwnerOfPlayerMod(_playerId) {
+  function setActivePlayer(uint256 _playerId) external isOwnerOfPlayerMod(_playerId) {
     _setActivePlayer(msg.sender, _playerId);
   }
 
-  function donate(uint _playerId, uint _amount) external isOwnerOfPlayerOrEmpty(_playerId) {
+  function donate(uint256 _playerId, uint256 _amount) external isOwnerOfPlayerOrEmpty(_playerId) {
     _donate(msg.sender, _playerId, _amount);
   }
 
-  function dailyClaimedRewards(uint _playerId) external view returns (bool[7] memory claimed) {
+  function dailyClaimedRewards(uint256 _playerId) external view returns (bool[7] memory claimed) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector, _playerId)
@@ -419,7 +423,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function validateActionsV2(
     address _owner,
-    uint _playerId,
+    uint256 _playerId,
     QueuedActionInputV2[] calldata _queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
     bytes memory data = _staticcall(
@@ -439,7 +443,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param _queuedActions Actions to queue
   function validateActions(
     address _owner,
-    uint _playerId,
+    uint256 _playerId,
     QueuedActionInput[] calldata _queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
     bytes memory data = _staticcall(
@@ -454,20 +458,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bool[], bytes[]));
   }
 
-  function isOwnerOfPlayerAndActive(address _from, uint _playerId) public view override returns (bool) {
+  function isOwnerOfPlayerAndActive(address _from, uint256 _playerId) public view override returns (bool) {
     return playerNFT.balanceOf(_from, _playerId) == 1 && activePlayer_[_from] == _playerId;
   }
 
-  function getPendingRandomRewards(uint _playerId) external view returns (PendingRandomReward[] memory) {
+  function getPendingRandomRewards(uint256 _playerId) external view returns (PendingRandomReward[] memory) {
     return pendingRandomRewards[_playerId];
   }
 
-  function getActionQueue(uint _playerId) external view returns (QueuedAction[] memory) {
+  function getActionQueue(uint256 _playerId) external view returns (QueuedAction[] memory) {
     return players_[_playerId].actionQueue;
   }
 
   function getURI(
-    uint _playerId,
+    uint256 _playerId,
     string calldata _name,
     string calldata _avatarName,
     string calldata _avatarDescription,
@@ -490,7 +494,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function pendingQueuedActionState(
     address _owner,
-    uint _playerId
+    uint256 _playerId
   ) public view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
@@ -499,36 +503,36 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function activePlayer(address _owner) external view override returns (uint playerId) {
+  function activePlayer(address _owner) external view override returns (uint256 playerId) {
     return activePlayer_[_owner];
   }
 
-  function xp(uint _playerId, Skill _skill) external view override returns (uint) {
+  function xp(uint256 _playerId, Skill _skill) external view override returns (uint256) {
     return PlayersLibrary.readXP(_skill, xp_[_playerId]);
   }
 
-  function level(uint _playerId, Skill _skill) external view override returns (uint) {
+  function level(uint256 _playerId, Skill _skill) external view override returns (uint256) {
     return PlayersLibrary._getLevel(PlayersLibrary.readXP(_skill, xp_[_playerId]));
   }
 
-  function totalXP(uint _playerId) external view override returns (uint) {
+  function totalXP(uint256 _playerId) external view override returns (uint256) {
     return players_[_playerId].totalXP;
   }
 
-  function packedXP(uint _playerId) external view returns (PackedXP memory) {
+  function packedXP(uint256 _playerId) external view returns (PackedXP memory) {
     return xp_[_playerId];
   }
 
-  function players(uint _playerId) external view returns (Player memory) {
+  function players(uint256 _playerId) external view returns (Player memory) {
     return players_[_playerId];
   }
 
   // Only used by a test, could remove and replace with getStorageAt like another test uses
-  function activeBoost(uint _playerId) external view override returns (PlayerBoostInfo memory) {
+  function activeBoost(uint256 _playerId) external view override returns (PlayerBoostInfo memory) {
     return activeBoosts_[_playerId];
   }
 
-  function clanBoost(uint _clanId) external view returns (PlayerBoostInfo memory) {
+  function clanBoost(uint256 _clanId) external view returns (PlayerBoostInfo memory) {
     return clanBoosts_[_clanId];
   }
 
@@ -536,11 +540,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return globalBoost_;
   }
 
-  function RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF() external pure returns (uint) {
+  function RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF() external pure returns (uint256) {
     return RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_;
   }
 
-  function isPlayerUpgraded(uint _playerId) external view override returns (bool) {
+  function isPlayerUpgraded(uint256 _playerId) external view override returns (bool) {
     return _isPlayerFullMode(_playerId);
   }
 
@@ -595,7 +599,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp, bool _force) external isAdminAndBeta {
+  function testModifyXP(
+    address _from,
+    uint256 _playerId,
+    Skill _skill,
+    uint56 _xp,
+    bool _force
+  ) external isAdminAndBeta {
     _delegatecall(
       implProcessActions,
       abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp, _force)

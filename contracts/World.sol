@@ -17,11 +17,11 @@ import "./globals/all.sol";
 
 contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;
-  using UnsafeMath for uint;
+  using UnsafeMath for uint256;
   using SkillLibrary for uint8;
 
-  event RequestSent(uint requestId, uint32 numWords, uint lastRandomWordsUpdatedTime);
-  event RequestFulfilledV2(uint requestId, uint randomWord);
+  event RequestSent(uint256 requestId, uint32 numWords, uint256 lastRandomWordsUpdatedTime);
+  event RequestFulfilledV2(uint256 requestId, uint256 randomWord);
   event AddActionsV2(Action[] actions);
   event EditActionsV2(Action[] actions);
   event AddActionChoicesV4(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
@@ -42,10 +42,10 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
   event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
   event EditActionChoices_(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
-  event RequestFulfilled(uint requestId, uint[3] randomWords);
+  event RequestFulfilled(uint256 requestId, uint256[3] randomWords);
 
   error RandomWordsCannotBeUpdatedYet();
-  error CanOnlyRequestAfterTheNextCheckpoint(uint currentTime, uint checkpoint);
+  error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
   error RequestAlreadyFulfilled();
   error NoValidRandomWord();
   error CanOnlyRequestAfter1DayHasPassed();
@@ -73,8 +73,8 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   uint64 private subscriptionId; // Not used anymore
 
   // Past request ids
-  uint[] public requestIds; // Each one is a set of random words for 1 day
-  mapping(uint requestId => uint randomWord) public randomWords;
+  uint256[] public requestIds; // Each one is a set of random words for 1 day
+  mapping(uint256 requestId => uint256 randomWord) public randomWords;
   uint40 public lastRandomWordsUpdatedTime;
   uint40 private startTime;
   uint40 private weeklyRewardCheckpoint;
@@ -88,22 +88,22 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
 
   uint32 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
 
-  mapping(uint actionId => ActionInfo actionInfo) public actions;
+  mapping(uint256 actionId => ActionInfo actionInfo) public actions;
   uint16[] private lastAddedDynamicActions;
-  uint private lastDynamicUpdatedTime;
+  uint256 private lastDynamicUpdatedTime;
 
   /// @custom:oz-renamed-from dailyRewards
   bytes32 dummy; // Not clean
 
-  mapping(uint actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private actionChoices;
-  mapping(uint actionId => CombatStats combatStats) private actionCombatStats;
+  mapping(uint256 actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private actionChoices;
+  mapping(uint256 actionId => CombatStats combatStats) private actionCombatStats;
 
-  mapping(uint actionId => ActionRewards actionRewards) private actionRewards;
+  mapping(uint256 actionId => ActionRewards actionRewards) private actionRewards;
 
   IOracleRewardCB private quests;
 
-  mapping(uint tier => Equipment[]) public dailyRewardPool;
-  mapping(uint tier => Equipment[]) public weeklyRewardPool;
+  mapping(uint256 tier => Equipment[]) public dailyRewardPool;
+  mapping(uint256 tier => Equipment[]) public weeklyRewardPool;
 
   IOracleRewardCB private wishingWell;
 
@@ -129,19 +129,19 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
 
     // Initialize a few days worth of random words so that we have enough data to fetch the first day
     for (U256 iter; iter.lt(NUM_DAYS_RANDOM_WORDS_INITIALIZED); iter = iter.inc()) {
-      uint i = iter.asUint256();
-      uint requestId = 200 + i;
+      uint256 i = iter.asUint256();
+      uint256 requestId = 200 + i;
       requestIds.push(requestId);
       emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);
-      uint[] memory _randomWords = new uint[](1);
-      _randomWords[0] = uint(keccak256(abi.encodePacked(address(this), i)));
+      uint256[] memory _randomWords = new uint256[](1);
+      _randomWords[0] = uint256(keccak256(abi.encodePacked(address(this), i)));
       _fulfillRandomWords(requestId, _randomWords);
     }
 
     thisWeeksRandomWordSegment = bytes8(uint64(randomWords[0]));
   }
 
-  function requestRandomWords() external returns (uint requestId) {
+  function requestRandomWords() external returns (uint256 requestId) {
     // Last one has not been fulfilled yet
     if (requestIds.length != 0 && randomWords[requestIds[requestIds.length - 1]] == 0) {
       revert RandomWordsCannotBeUpdatedYet();
@@ -158,39 +158,42 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     return requestId;
   }
 
-  function fulfillRandomWords(bytes32 _requestId, uint[] memory _randomWords) external onlySamWitchVRF {
-    _fulfillRandomWords(uint(_requestId), _randomWords);
+  function fulfillRandomWords(bytes32 _requestId, uint256[] memory _randomWords) external onlySamWitchVRF {
+    _fulfillRandomWords(uint256(_requestId), _randomWords);
   }
 
-  function getWeeklyReward(uint _tier, uint _playerId) public view returns (uint16 itemTokenId, uint24 amount) {
-    uint day = 7;
-    uint index = _getRewardIndex(_playerId, day, uint64(thisWeeksRandomWordSegment), weeklyRewardPool[_tier].length);
+  function getWeeklyReward(uint256 _tier, uint256 _playerId) public view returns (uint16 itemTokenId, uint24 amount) {
+    uint256 day = 7;
+    uint256 index = _getRewardIndex(_playerId, day, uint64(thisWeeksRandomWordSegment), weeklyRewardPool[_tier].length);
     Equipment storage equipment = weeklyRewardPool[_tier][index];
     return (equipment.itemTokenId, equipment.amount);
   }
 
   function getSpecificDailyReward(
-    uint _tier,
-    uint _playerId,
-    uint _day,
-    uint _randomWord
+    uint256 _tier,
+    uint256 _playerId,
+    uint256 _day,
+    uint256 _randomWord
   ) public view returns (uint16 itemTokenId, uint24 amount) {
-    uint index = _getRewardIndex(_playerId, _day, _randomWord, dailyRewardPool[_tier].length);
+    uint256 index = _getRewardIndex(_playerId, _day, _randomWord, dailyRewardPool[_tier].length);
     Equipment storage equipment = dailyRewardPool[_tier][index];
     return (equipment.itemTokenId, equipment.amount);
   }
 
-  function getDailyReward(uint _tier, uint _playerId) external view returns (uint itemTokenId, uint amount) {
-    uint checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
-    uint day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
+  function getDailyReward(
+    uint256 _tier,
+    uint256 _playerId
+  ) external view returns (uint256 itemTokenId, uint256 amount) {
+    uint256 checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
+    uint256 day = ((block.timestamp / 1 days) * 1 days - checkpoint) / 1 days;
     return getSpecificDailyReward(_tier, _playerId, day, uint64(thisWeeksRandomWordSegment));
   }
 
   function getActiveDailyAndWeeklyRewards(
-    uint _tier,
-    uint _playerId
+    uint256 _tier,
+    uint256 _playerId
   ) external view returns (Equipment[8] memory rewards) {
-    for (uint i; i < 7; ++i) {
+    for (uint256 i; i < 7; ++i) {
       (rewards[i].itemTokenId, rewards[i].amount) = getSpecificDailyReward(
         _tier,
         _playerId,
@@ -201,48 +204,48 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     (rewards[7].itemTokenId, rewards[7].amount) = getWeeklyReward(_tier, _playerId);
   }
 
-  function _getRandomWordOffset(uint _timestamp) private view returns (int) {
+  function _getRandomWordOffset(uint256 _timestamp) private view returns (int) {
     if (_timestamp < startTime) {
       return -1;
     }
     return int((_timestamp - startTime) / MIN_RANDOM_WORDS_UPDATE_TIME);
   }
 
-  function _getRandomWord(uint _timestamp) private view returns (uint) {
+  function _getRandomWord(uint256 _timestamp) private view returns (uint256) {
     int offset = _getRandomWordOffset(_timestamp);
-    if (offset < 0 || requestIds.length <= uint(offset)) {
+    if (offset < 0 || requestIds.length <= uint256(offset)) {
       return 0;
     }
-    return randomWords[requestIds[uint(offset)]];
+    return randomWords[requestIds[uint256(offset)]];
   }
 
-  function hasRandomWord(uint _timestamp) external view returns (bool) {
+  function hasRandomWord(uint256 _timestamp) external view returns (bool) {
     return _getRandomWord(_timestamp) != 0;
   }
 
-  function getRandomWord(uint _timestamp) public view returns (uint randomWord) {
+  function getRandomWord(uint256 _timestamp) public view returns (uint256 randomWord) {
     randomWord = _getRandomWord(_timestamp);
     if (randomWord == 0) {
       revert NoValidRandomWord();
     }
   }
 
-  function getMultipleWords(uint _timestamp) public view returns (uint[4] memory words) {
+  function getMultipleWords(uint256 _timestamp) public view returns (uint256[4] memory words) {
     for (U256 iter; iter.lt(4); iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       words[i] = getRandomWord(_timestamp - (i * 1 days));
     }
   }
 
-  function getSkill(uint _actionId) external view returns (Skill) {
+  function getSkill(uint256 _actionId) external view returns (Skill) {
     return actions[_actionId].skill.asSkill();
   }
 
-  function getActionRewards(uint _actionId) external view returns (ActionRewards memory) {
+  function getActionRewards(uint256 _actionId) external view returns (ActionRewards memory) {
     return actionRewards[_actionId];
   }
 
-  function getActionInfo(uint _actionId) external view returns (ActionInfo memory info) {
+  function getActionInfo(uint256 _actionId) external view returns (ActionInfo memory info) {
     return actions[_actionId];
   }
 
@@ -250,7 +253,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     return _actionChoiceId != 0 ? actionChoices[_actionId][_actionChoiceId].xpPerHour : actions[_actionId].xpPerHour;
   }
 
-  function getNumSpawn(uint16 _actionId) external view returns (uint numSpawned) {
+  function getNumSpawn(uint16 _actionId) external view returns (uint256 numSpawned) {
     return actions[_actionId].numSpawned;
   }
 
@@ -301,7 +304,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
 
   function getRewardsHelper(
     uint16 _actionId
-  ) external view returns (ActionRewards memory, Skill skill, uint numSpanwed, uint8 worldLocation) {
+  ) external view returns (ActionRewards memory, Skill skill, uint256 numSpanwed, uint8 worldLocation) {
     return (
       actionRewards[_actionId],
       actions[_actionId].skill.asSkill(),
@@ -311,10 +314,10 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   }
 
   function getRandomBytes(
-    uint _numTickets,
-    uint _startTimestamp,
-    uint _endTimestamp,
-    uint _playerId
+    uint256 _numTickets,
+    uint256 _startTimestamp,
+    uint256 _endTimestamp,
+    uint256 _playerId
   ) external view returns (bytes memory b) {
     if (_numTickets <= 16) {
       // 32 bytes
@@ -322,15 +325,15 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       b = abi.encodePacked(_getRandomComponent(word, _startTimestamp, _endTimestamp, _playerId));
     } else if (_numTickets <= MAX_UNIQUE_TICKETS_) {
       // 4 * 32 bytes
-      uint[4] memory multipleWords = getMultipleWords(_endTimestamp);
+      uint256[4] memory multipleWords = getMultipleWords(_endTimestamp);
       for (U256 iter; iter.lt(4); iter = iter.inc()) {
-        uint i = iter.asUint256();
-        multipleWords[i] = uint(
+        uint256 i = iter.asUint256();
+        multipleWords[i] = uint256(
           _getRandomComponent(bytes32(multipleWords[i]), _startTimestamp, _endTimestamp, _playerId)
         );
         // XOR all the words with the first fresh random number to give more randomness to the existing random words
         if (i != 0) {
-          multipleWords[i] = uint(keccak256(abi.encodePacked(multipleWords[i] ^ multipleWords[0])));
+          multipleWords[i] = uint256(keccak256(abi.encodePacked(multipleWords[i] ^ multipleWords[0])));
         }
       }
       b = abi.encodePacked(multipleWords);
@@ -349,8 +352,13 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     _setAction(_action);
   }
 
-  function _getRewardIndex(uint _playerId, uint _day, uint _randomWord, uint _length) private pure returns (uint) {
-    return uint(keccak256(abi.encodePacked(_randomWord, _playerId)) >> (_day * 8)) % _length;
+  function _getRewardIndex(
+    uint256 _playerId,
+    uint256 _day,
+    uint256 _randomWord,
+    uint256 _length
+  ) private pure returns (uint256) {
+    return uint256(keccak256(abi.encodePacked(_randomWord, _playerId)) >> (_day * 8)) % _length;
   }
 
   function _setAction(Action calldata _action) private {
@@ -420,9 +428,9 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
 
   function _getRandomComponent(
     bytes32 _word,
-    uint _startTimestamp,
-    uint _endTimestamp,
-    uint _playerId
+    uint256 _startTimestamp,
+    uint256 _endTimestamp,
+    uint256 _playerId
   ) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(_word, _startTimestamp, _endTimestamp, _playerId));
   }
@@ -486,7 +494,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     });
   }
 
-  function _fulfillRandomWords(uint _requestId, uint[] memory _randomWords) internal {
+  function _fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal {
     if (randomWords[_requestId] != 0) {
       revert RequestAlreadyFulfilled();
     }
@@ -495,10 +503,10 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       revert LengthMismatch();
     }
 
-    uint randomWord = _randomWords[0];
+    uint256 randomWord = _randomWords[0];
     if (randomWord == 0) {
       // Not sure if 0 can be selected, but in case use previous block hash as pseudo random number
-      randomWord = uint(blockhash(block.number - 1));
+      randomWord = uint256(blockhash(block.number - 1));
     }
 
     randomWords[_requestId] = randomWord;
@@ -530,7 +538,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   }
 
   function editActions(Action[] calldata _actions) external onlyOwner {
-    for (uint i = 0; i < _actions.length; ++i) {
+    for (uint256 i = 0; i < _actions.length; ++i) {
       if (actions[_actions[i].actionId].skill.asSkill() == Skill.NONE) {
         revert ActionDoesNotExist();
       }
@@ -627,13 +635,13 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     wishingWell = _wishingWell;
   }
 
-  function setDailyRewardPool(uint _tier, Equipment[] calldata _dailyRewards) external onlyOwner {
+  function setDailyRewardPool(uint256 _tier, Equipment[] calldata _dailyRewards) external onlyOwner {
     if (_dailyRewards.length > 255) {
       revert TooManyRewardsInPool();
     }
     delete dailyRewardPool[_tier];
 
-    for (uint i = 0; i < _dailyRewards.length; ++i) {
+    for (uint256 i = 0; i < _dailyRewards.length; ++i) {
       // Amount should be divisible by 10 to allow percentage increases to be applied (like clan bonuses)
       if (_dailyRewards[i].itemTokenId == 0 || _dailyRewards[i].amount == 0 || _dailyRewards[i].amount % 10 != 0) {
         revert InvalidReward();
@@ -642,14 +650,14 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     }
   }
 
-  function setWeeklyRewardPool(uint _tier, Equipment[] calldata _weeklyRewards) external onlyOwner {
+  function setWeeklyRewardPool(uint256 _tier, Equipment[] calldata _weeklyRewards) external onlyOwner {
     if (_weeklyRewards.length > 255) {
       revert TooManyRewardsInPool();
     }
 
     delete weeklyRewardPool[_tier];
 
-    for (uint i = 0; i < _weeklyRewards.length; ++i) {
+    for (uint256 i = 0; i < _weeklyRewards.length; ++i) {
       if (_weeklyRewards[i].itemTokenId == NONE || _weeklyRewards[i].amount == 0) {
         revert InvalidReward();
       }
@@ -657,7 +665,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     }
   }
 
-  function setCallbackGasLimit(uint _gasLimit) external onlyOwner {
+  function setCallbackGasLimit(uint256 _gasLimit) external onlyOwner {
     if (_gasLimit > 3_000_000) {
       revert CallbackGasLimitTooHigh();
     }

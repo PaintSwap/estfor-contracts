@@ -24,14 +24,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   event AddQuests(QuestInput[] quests, MinimumRequirement[3][] minimumRequirements);
   event EditQuests(QuestInput[] quests, MinimumRequirement[3][] minimumRequirements);
-  event RemoveQuest(uint questId);
-  event ActivateQuest(address from, uint playerId, uint questId);
-  event DeactivateQuest(uint playerId, uint questId);
-  event QuestCompleted(address from, uint playerId, uint questId);
-  event UpdateQuestProgress(uint playerId, PlayerQuest playerQuest);
+  event RemoveQuest(uint256 questId);
+  event ActivateQuest(address from, uint256 playerId, uint256 questId);
+  event DeactivateQuest(uint256 playerId, uint256 questId);
+  event QuestCompleted(address from, uint256 playerId, uint256 questId);
+  event UpdateQuestProgress(uint256 playerId, PlayerQuest playerQuest);
 
   // Legacy for abi and old beta
-  event ActivateNewQuest(uint playerId, uint questId);
+  event ActivateNewQuest(uint256 playerId, uint256 questId);
   event AddFixedQuest(QuestV1 quest, MinimumRequirement[3] minimumRequirements);
   event EditQuest(QuestV1 quest, MinimumRequirement[3] minimumRequirements);
 
@@ -73,14 +73,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   IPlayers private players;
   uint40 public randomQuestId;
   uint16 public numTotalQuests;
-  mapping(uint questId => Quest quest) public allFixedQuests;
-  mapping(uint playerId => BitMaps.BitMap) private questsCompleted;
-  mapping(uint playerId => PlayerQuest playerQuest) public activeQuests;
-  mapping(uint playerId => PlayerQuest playerQuest) public inProgressRandomQuests;
-  mapping(uint playerId => mapping(uint queueId => PlayerQuest quest)) public inProgressFixedQuests; // Only puts it here if changing active quest for something else
-  mapping(uint questId => MinimumRequirement[3]) minimumRequirements; // Not checked yet
+  mapping(uint256 questId => Quest quest) public allFixedQuests;
+  mapping(uint256 playerId => BitMaps.BitMap) private questsCompleted;
+  mapping(uint256 playerId => PlayerQuest playerQuest) public activeQuests;
+  mapping(uint256 playerId => PlayerQuest playerQuest) public inProgressRandomQuests;
+  mapping(uint256 playerId => mapping(uint256 queueId => PlayerQuest quest)) public inProgressFixedQuests; // Only puts it here if changing active quest for something else
+  mapping(uint256 questId => MinimumRequirement[3]) minimumRequirements; // Not checked yet
   BitMaps.BitMap private questIsRandom;
-  mapping(uint playerId => PlayerQuestInfo) public playerInfo;
+  mapping(uint256 playerId => PlayerQuestInfo) public playerInfo;
   Quest[] private randomQuests;
   Quest private previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
   Quest private randomQuest; // Same for everyone
@@ -102,7 +102,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     _;
   }
 
-  modifier isOwnerOfPlayerAndActive(uint _playerId) {
+  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
@@ -126,7 +126,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     IERC20(buyPath2).approve(address(_router), type(uint256).max);
   }
 
-  function activateQuest(address _from, uint _playerId, uint _questId) external onlyPlayers {
+  function activateQuest(address _from, uint256 _playerId, uint256 _questId) external onlyPlayers {
     if (_questId == 0) {
       revert InvalidQuestId();
     }
@@ -148,17 +148,17 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       revert CannotStartFullModeQuest();
     }
 
-    for (uint i = 0; i < minimumRequirements[_questId].length; ++i) {
+    for (uint256 i = 0; i < minimumRequirements[_questId].length; ++i) {
       MinimumRequirement storage minimumRequirement = minimumRequirements[_questId][i];
       if (minimumRequirement.skill != Skill.NONE) {
-        uint xp = players.xp(_playerId, minimumRequirement.skill);
+        uint256 xp = players.xp(_playerId, minimumRequirement.skill);
         if (xp < minimumRequirement.xp) {
           revert InvalidMinimumRequirement();
         }
       }
     }
 
-    uint existingActiveQuestId = activeQuests[_playerId].questId;
+    uint256 existingActiveQuestId = activeQuests[_playerId].questId;
     if (existingActiveQuestId == _questId) {
       revert ActivatingQuestAlreadyActivated();
     }
@@ -182,9 +182,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     emit ActivateQuest(_from, _playerId, _questId);
   }
 
-  function deactivateQuest(uint _playerId) external onlyPlayers {
+  function deactivateQuest(uint256 _playerId) external onlyPlayers {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
-    uint questId = playerQuest.questId;
+    uint256 questId = playerQuest.questId;
     if (questId == 0) {
       revert NoActiveQuest();
     }
@@ -196,21 +196,21 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     emit DeactivateQuest(_playerId, questId);
   }
 
-  function newOracleRandomWords(uint _randomWord) external override onlyWorld {
+  function newOracleRandomWords(uint256 _randomWord) external override onlyWorld {
     // For later
   }
 
   function processQuests(
     address _from,
-    uint _playerId,
+    uint256 _playerId,
     PlayerQuest[] calldata _activeQuestInfo,
-    uint[] memory _questsCompleted
+    uint256[] memory _questsCompleted
   ) external onlyPlayers {
     if (_questsCompleted.length != 0) {
       U256 bounds = _questsCompleted.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
-        uint questId = _questsCompleted[i];
+        uint256 i = iter.asUint256();
+        uint256 questId = _questsCompleted[i];
         _questCompleted(_from, _playerId, questId);
       }
     } else if (_activeQuestInfo.length != 0) {
@@ -231,15 +231,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   function buyBrushQuest(
     address _from,
     address _to,
-    uint _playerId,
-    uint _minimumBrushBack,
+    uint256 _playerId,
+    uint256 _minimumBrushBack,
     bool _useExactETH
   ) external payable onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = activeQuests[_playerId];
     if (playerQuest.questId != QUEST_PURSE_STRINGS) {
       revert InvalidActiveQuest();
     }
-    uint[] memory amounts = buyBrush(_to, _minimumBrushBack, _useExactETH);
+    uint256[] memory amounts = buyBrush(_to, _minimumBrushBack, _useExactETH);
     if (amounts[0] != 0) {
       // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
       (success, ) = _from.call{value: msg.value - amounts[0]}("");
@@ -253,24 +253,24 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   function buyBrush(
     address _to,
-    uint _minimumBrushExpected,
+    uint256 _minimumBrushExpected,
     bool _useExactETH
-  ) public payable returns (uint[] memory amounts) {
+  ) public payable returns (uint256[] memory amounts) {
     if (msg.value == 0) {
       revert InvalidFTMAmount();
     }
 
-    uint deadline = block.timestamp.add(10 minutes);
+    uint256 deadline = block.timestamp.add(10 minutes);
     // Buy brush and send it back to the user
     address[] memory buyPath = new address[](2);
     buyPath[0] = buyPath1;
     buyPath[1] = buyPath2;
 
     if (_useExactETH) {
-      uint amountOutMin = _minimumBrushExpected;
+      uint256 amountOutMin = _minimumBrushExpected;
       amounts = router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, _to, deadline);
     } else {
-      uint amountOut = _minimumBrushExpected;
+      uint256 amountOut = _minimumBrushExpected;
       amounts = router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, _to, deadline);
       if (amounts[0] != 0 && msg.sender != address(players)) {
         // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
@@ -283,12 +283,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   // This doesn't really belong here, just for consistency
-  function sellBrush(address _to, uint _brushAmount, uint _minFTM, bool _useExactETH) external {
+  function sellBrush(address _to, uint256 _brushAmount, uint256 _minFTM, bool _useExactETH) external {
     if (_brushAmount == 0) {
       revert InvalidBrushAmount();
     }
 
-    uint deadline = block.timestamp.add(10 minutes);
+    uint256 deadline = block.timestamp.add(10 minutes);
     // Sell brush and send ftm back to the user
     address[] memory sellPath = new address[](2);
     sellPath[0] = buyPath2;
@@ -297,34 +297,34 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     IERC20(buyPath2).transferFrom(msg.sender, address(this), _brushAmount);
 
     if (_useExactETH) {
-      uint amountOut = _minFTM;
-      uint amountInMax = _brushAmount;
+      uint256 amountOut = _minFTM;
+      uint256 amountInMax = _brushAmount;
       router.swapTokensForExactETH(amountOut, amountInMax, sellPath, _to, deadline);
     } else {
-      uint amountIn = _brushAmount;
-      uint amountOutMin = _minFTM;
+      uint256 amountIn = _brushAmount;
+      uint256 amountOutMin = _minFTM;
       router.swapExactTokensForETH(amountIn, amountOutMin, sellPath, _to, deadline);
     }
   }
 
   function processQuestsView(
-    uint _playerId,
-    uint[] calldata _actionIds,
-    uint[] calldata _actionAmounts,
-    uint[] calldata _choiceIds,
-    uint[] calldata _choiceAmounts,
-    uint _burnedAmountOwned
+    uint256 _playerId,
+    uint256[] calldata _actionIds,
+    uint256[] calldata _actionAmounts,
+    uint256[] calldata _choiceIds,
+    uint256[] calldata _choiceAmounts,
+    uint256 _burnedAmountOwned
   )
     external
     view
     returns (
-      uint[] memory itemTokenIds,
-      uint[] memory amounts,
-      uint[] memory itemTokenIdsBurned,
-      uint[] memory amountsBurned,
+      uint256[] memory itemTokenIds,
+      uint256[] memory amounts,
+      uint256[] memory itemTokenIdsBurned,
+      uint256[] memory amountsBurned,
       Skill[] memory skillsGained,
       uint32[] memory xpGained,
-      uint[] memory _questsCompleted,
+      uint256[] memory _questsCompleted,
       PlayerQuest[] memory activeQuestsCompletionInfo
     )
   {
@@ -332,24 +332,24 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     PlayerQuest memory questCompletionInfo = activeQuests[_playerId];
     if (questCompletionInfo.questId != 0) {
       activeQuestsCompletionInfo = new PlayerQuest[](2);
-      itemTokenIds = new uint[](2 * MAX_QUEST_REWARDS);
-      amounts = new uint[](2 * MAX_QUEST_REWARDS);
-      itemTokenIdsBurned = new uint[](2);
-      amountsBurned = new uint[](2);
+      itemTokenIds = new uint256[](2 * MAX_QUEST_REWARDS);
+      amounts = new uint256[](2 * MAX_QUEST_REWARDS);
+      itemTokenIdsBurned = new uint256[](2);
+      amountsBurned = new uint256[](2);
       skillsGained = new Skill[](2);
       xpGained = new uint32[](2);
-      _questsCompleted = new uint[](2);
-      uint itemTokenIdsLength;
-      uint itemTokenIdsBurnedLength;
-      uint skillsGainedLength;
-      uint questsCompletedLength;
-      uint activeQuestsLength;
+      _questsCompleted = new uint256[](2);
+      uint256 itemTokenIdsLength;
+      uint256 itemTokenIdsBurnedLength;
+      uint256 skillsGainedLength;
+      uint256 questsCompletedLength;
+      uint256 activeQuestsLength;
 
       (
-        uint[] memory _itemTokenIds,
-        uint[] memory _amounts,
-        uint itemTokenIdBurned,
-        uint amountBurned,
+        uint256[] memory _itemTokenIds,
+        uint256[] memory _amounts,
+        uint256 itemTokenIdBurned,
+        uint256 amountBurned,
         Skill skillGained,
         uint32 xp,
         bool questCompleted
@@ -364,7 +364,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       U256 bounds = _itemTokenIds.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
+        uint256 i = iter.asUint256();
         itemTokenIds[itemTokenIdsLength] = _itemTokenIds[i];
         amounts[itemTokenIdsLength] = _amounts[i];
         itemTokenIdsLength = itemTokenIdsLength.inc();
@@ -397,16 +397,16 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     }
   }
 
-  function isQuestCompleted(uint _playerId, uint _questId) external view returns (bool) {
+  function isQuestCompleted(uint256 _playerId, uint256 _questId) external view returns (bool) {
     return questsCompleted[_playerId].get(_questId);
   }
 
-  function getActiveQuestId(uint _player) external view returns (uint) {
+  function getActiveQuestId(uint256 _player) external view returns (uint256) {
     return activeQuests[_player].questId;
   }
 
-  function getActiveQuestBurnedItemTokenId(uint _playerId) external view returns (uint) {
-    uint questId = activeQuests[_playerId].questId;
+  function getActiveQuestBurnedItemTokenId(uint256 _playerId) external view returns (uint256) {
+    uint256 questId = activeQuests[_playerId].questId;
     if (questId == 0) {
       return NONE;
     }
@@ -414,7 +414,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     return allFixedQuests[questId].burnItemTokenId;
   }
 
-  function _questCompleted(address _from, uint _playerId, uint _questId) private {
+  function _questCompleted(address _from, uint256 _playerId, uint256 _questId) private {
     emit QuestCompleted(_from, _playerId, _questId);
     questsCompleted[_playerId].set(_questId);
     delete activeQuests[_playerId];
@@ -424,10 +424,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   function _addToBurn(
     Quest storage _quest,
     PlayerQuest memory _playerQuest,
-    uint _burnedAmountOwned
-  ) private view returns (uint amountBurned) {
+    uint256 _burnedAmountOwned
+  ) private view returns (uint256 amountBurned) {
     // Handle quest that burns and requires actions to be done at the same time
-    uint burnRemainingAmount = _quest.burnAmount > _playerQuest.burnCompletedAmount
+    uint256 burnRemainingAmount = _quest.burnAmount > _playerQuest.burnCompletedAmount
       ? _quest.burnAmount - _playerQuest.burnCompletedAmount
       : 0;
     amountBurned = Math.min(burnRemainingAmount, _burnedAmountOwned);
@@ -437,20 +437,20 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   function _processQuestView(
-    uint[] calldata _actionIds,
-    uint[] calldata _actionAmounts,
-    uint[] calldata _choiceIds,
-    uint[] calldata _choiceAmounts,
+    uint256[] calldata _actionIds,
+    uint256[] calldata _actionAmounts,
+    uint256[] calldata _choiceIds,
+    uint256[] calldata _choiceAmounts,
     PlayerQuest memory _playerQuest,
-    uint _burnedAmountOwned
+    uint256 _burnedAmountOwned
   )
     private
     view
     returns (
-      uint[] memory itemTokenIds,
-      uint[] memory amounts,
-      uint itemTokenIdBurned,
-      uint amountBurned,
+      uint256[] memory itemTokenIds,
+      uint256[] memory amounts,
+      uint256 itemTokenIdBurned,
+      uint256 amountBurned,
       Skill skillGained,
       uint32 xpGained,
       bool questCompleted
@@ -459,12 +459,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     Quest storage quest = allFixedQuests[_playerQuest.questId];
     U256 bounds = _actionIds.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       if (quest.actionId1 == _actionIds[i]) {
-        uint remainingAmount = quest.actionNum1 > _playerQuest.actionCompletedNum1
+        uint256 remainingAmount = quest.actionNum1 > _playerQuest.actionCompletedNum1
           ? quest.actionNum1 - _playerQuest.actionCompletedNum1
           : 0;
-        uint amount = Math.min(remainingAmount, _actionAmounts[i]);
+        uint256 amount = Math.min(remainingAmount, _actionAmounts[i]);
         if (quest.burnItemTokenId != NONE) {
           amount = Math.min(_burnedAmountOwned, amount);
           _burnedAmountOwned -= amount;
@@ -486,12 +486,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
     bounds = _choiceIds.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       if (quest.actionChoiceId == _choiceIds[i]) {
-        uint remainingAmount = quest.actionChoiceNum > _playerQuest.actionChoiceCompletedNum
+        uint256 remainingAmount = quest.actionChoiceNum > _playerQuest.actionChoiceCompletedNum
           ? quest.actionChoiceNum - _playerQuest.actionChoiceCompletedNum
           : 0;
-        uint amount = Math.min(remainingAmount, _choiceAmounts[i]);
+        uint256 amount = Math.min(remainingAmount, _choiceAmounts[i]);
         if (quest.burnItemTokenId != NONE) {
           amount = Math.min(_burnedAmountOwned, amount);
           _burnedAmountOwned -= amount;
@@ -529,15 +529,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   function getQuestCompletedRewards(
-    uint _questId
-  ) public view returns (uint[] memory itemTokenIds, uint[] memory amounts, Skill skillGained, uint32 xpGained) {
+    uint256 _questId
+  ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained) {
     Quest storage quest = allFixedQuests[_questId];
     // length can be 0, 1 or 2
-    uint mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
+    uint256 mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
     mintLength += (quest.rewardItemTokenId2 == NONE ? 0 : 1);
 
-    itemTokenIds = new uint[](mintLength);
-    amounts = new uint[](mintLength);
+    itemTokenIds = new uint256[](mintLength);
+    amounts = new uint256[](mintLength);
     if (quest.rewardItemTokenId1 != NONE) {
       itemTokenIds[0] = quest.rewardItemTokenId1;
       amounts[0] = quest.rewardAmount1;
@@ -583,7 +583,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     bool anyMinimumRequirement;
     U256 bounds = _minimumRequirements.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       if (_minimumRequirements[i].skill != Skill.NONE) {
         anyMinimumRequirement = true;
         break;
@@ -618,7 +618,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     allFixedQuests[_quest.questId] = _packQuest(_quest);
   }
 
-  function _questExists(uint _questId) private view returns (bool) {
+  function _questExists(uint256 _questId) private view returns (bool) {
     return
       allFixedQuests[_questId].actionId1 != NONE ||
       allFixedQuests[_questId].actionChoiceId != NONE ||
@@ -667,7 +667,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
     U256 bounds = _quests.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       _addQuest(_quests[i], _minimumRequirements[i]);
     }
     numTotalQuests += uint16(_quests.length);
@@ -678,13 +678,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     QuestInput[] calldata _quests,
     MinimumRequirement[3][] calldata _minimumRequirements
   ) external onlyOwner {
-    for (uint i = 0; i < _quests.length; ++i) {
+    for (uint256 i = 0; i < _quests.length; ++i) {
       _editQuest(_quests[i], _minimumRequirements[i]);
     }
     emit EditQuests(_quests, _minimumRequirements);
   }
 
-  function removeQuest(uint _questId) external onlyOwner {
+  function removeQuest(uint256 _questId) external onlyOwner {
     if (_questId == 0) {
       revert InvalidQuestId();
     }

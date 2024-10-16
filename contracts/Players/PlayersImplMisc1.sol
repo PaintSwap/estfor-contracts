@@ -85,10 +85,10 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     string calldata _avatarName,
     string calldata _avatarDescription,
     string calldata _imageURI,
-    uint _playerId
+    uint256 _playerId
   ) external view returns (string memory) {
     PackedXP storage packedXP = xp_[_playerId];
-    uint overallLevel = PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP)) +
+    uint256 overallLevel = PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.RANGED, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MAGIC, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.DEFENCE, packedXP)) +
@@ -200,7 +200,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
     U256 bounds = _fullAttireBonuses.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
 
       if (_fullAttireBonus.skill == Skill.NONE) {
@@ -215,7 +215,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       ];
       U256 jbounds = expectedEquipPositions.length.asU256();
       for (U256 jter; jter < jbounds; jter = jter.inc()) {
-        uint j = jter.asUint256();
+        uint256 j = jter.asUint256();
         if (_fullAttireBonus.itemTokenIds[j] == NONE) {
           revert InvalidItemTokenId();
         }

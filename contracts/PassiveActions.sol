@@ -23,14 +23,14 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   event AddPassiveActions(PassiveActionInput[] passiveActionInputs);
   event EditPassiveActions(PassiveActionInput[] passiveActionInputs);
-  event StartPassiveAction(uint playerId, address from, uint actionId, uint queueId, uint16 boostItemTokenId);
-  event EarlyEndPassiveAction(uint playerId, address from, uint queueId);
+  event StartPassiveAction(uint256 playerId, address from, uint256 actionId, uint256 queueId, uint16 boostItemTokenId);
+  event EarlyEndPassiveAction(uint256 playerId, address from, uint256 queueId);
   event ClaimPassiveAction(
-    uint playerId,
+    uint256 playerId,
     address from,
-    uint queueId,
-    uint[] itemTokenIds,
-    uint[] amounts,
+    uint256 queueId,
+    uint256[] itemTokenIds,
+    uint256[] amounts,
     bool startingAnother
   );
   event SetAvailableActions(uint256[] actionIds, bool isAvailable); // TODO: Combine this with PassiveActionInput later
@@ -45,7 +45,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   error DurationCannotBeZero();
   error DurationTooLong();
   error PlayerNotUpgraded();
-  error MinimumLevelNotReached(Skill minSkill, uint minLevel);
+  error MinimumLevelNotReached(Skill minSkill, uint256 minLevel);
   error InputSpecifiedWithoutAmount();
   error InputAmountsMustBeInOrder();
   error PreviousInputTokenIdMustBeSpecified();
@@ -100,11 +100,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   struct PendingPassiveActionState {
-    uint[] producedItemTokenIds;
-    uint[] producedAmounts;
-    uint[] producedRandomRewardItemTokenIds; // Oracle loot
-    uint[] producedRandomRewardAmounts;
-    uint numDaysSkipped;
+    uint256[] producedItemTokenIds;
+    uint256[] producedAmounts;
+    uint256[] producedRandomRewardItemTokenIds; // Oracle loot
+    uint256[] producedRandomRewardAmounts;
+    uint256 numDaysSkipped;
     bool skippedToday;
     bool isReady;
   }
@@ -120,11 +120,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   ItemNFT public itemNFT;
   World public world;
   uint80 lastQueueId;
-  mapping(uint actionId => PassiveAction action) public actions;
-  mapping(uint actionId => ActionRewards) private actionRewards;
-  mapping(uint playerId => ActivePassiveInfo activePassiveInfo) private activePassiveActions;
+  mapping(uint256 actionId => PassiveAction action) public actions;
+  mapping(uint256 actionId => ActionRewards) private actionRewards;
+  mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private activePassiveActions;
 
-  modifier isOwnerOfPlayerAndActive(uint _playerId) {
+  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
@@ -147,7 +147,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   function startAction(
-    uint _playerId,
+    uint256 _playerId,
     uint16 _actionId,
     uint16 _boostItemTokenId
   ) external isOwnerOfPlayerAndActive(_playerId) {
@@ -196,8 +196,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     emit StartPassiveAction(_playerId, msg.sender, _actionId, queueId, _boostItemTokenId);
   }
 
-  function claim(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    uint queueId = activePassiveActions[_playerId].queueId;
+  function claim(uint256 _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
+    uint256 queueId = activePassiveActions[_playerId].queueId;
     if (queueId == NONE) {
       revert NoActivePassiveAction();
     }
@@ -210,8 +210,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     delete activePassiveActions[_playerId];
   }
 
-  function endEarly(uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    uint queueId = activePassiveActions[_playerId].queueId;
+  function endEarly(uint256 _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    uint256 queueId = activePassiveActions[_playerId].queueId;
     if (queueId == NONE) {
       revert NoActivePassiveAction();
     }
@@ -227,10 +227,10 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   // Get current state of the passive action
   function pendingPassiveActionState(
-    uint _playerId
+    uint256 _playerId
   ) public view returns (PendingPassiveActionState memory _pendingPassiveActionState) {
     // If it's not finished then you get nothing
-    (bool finished, bool oracleCalled, bool hasRandomRewards, uint numWinners, bool skippedToday) = finishedInfo(
+    (bool finished, bool oracleCalled, bool hasRandomRewards, uint256 numWinners, bool skippedToday) = finishedInfo(
       _playerId
     );
     _pendingPassiveActionState.isReady = finished && (oracleCalled || !hasRandomRewards);
@@ -243,11 +243,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     ActivePassiveInfo storage passiveAction = activePassiveActions[_playerId];
     PassiveAction memory action = actions[passiveAction.actionId];
 
-    uint numIterations = action.durationDays;
+    uint256 numIterations = action.durationDays;
     ActionRewards storage _actionRewards = actionRewards[passiveAction.actionId];
 
     // Add guaranteed rewards
-    uint guaranteedRewardLength = _actionRewards.guaranteedRewardTokenId3 != NONE
+    uint256 guaranteedRewardLength = _actionRewards.guaranteedRewardTokenId3 != NONE
       ? 3
       : _actionRewards.guaranteedRewardTokenId2 != NONE
         ? 2
@@ -255,8 +255,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
           ? 1
           : 0;
 
-    _pendingPassiveActionState.producedItemTokenIds = new uint[](guaranteedRewardLength);
-    _pendingPassiveActionState.producedAmounts = new uint[](guaranteedRewardLength);
+    _pendingPassiveActionState.producedItemTokenIds = new uint256[](guaranteedRewardLength);
+    _pendingPassiveActionState.producedAmounts = new uint256[](guaranteedRewardLength);
     if (_actionRewards.guaranteedRewardTokenId1 != NONE) {
       _pendingPassiveActionState.producedItemTokenIds[0] = _actionRewards.guaranteedRewardTokenId1;
       _pendingPassiveActionState.producedAmounts[0] = _actionRewards.guaranteedRewardRate1;
@@ -273,17 +273,17 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     // Add random rewards
     if (oracleCalled) {
       RandomReward[] memory randomRewards = _setupRandomRewards(_actionRewards);
-      uint endTime = passiveAction.startTime + (action.durationDays - numWinners) * 1 days - 1 days;
+      uint256 endTime = passiveAction.startTime + (action.durationDays - numWinners) * 1 days - 1 days;
       bytes memory randomBytes = world.getRandomBytes(numIterations, passiveAction.startTime, endTime, _playerId);
 
-      _pendingPassiveActionState.producedRandomRewardItemTokenIds = new uint[](randomRewards.length);
-      _pendingPassiveActionState.producedRandomRewardAmounts = new uint[](randomRewards.length);
+      _pendingPassiveActionState.producedRandomRewardItemTokenIds = new uint256[](randomRewards.length);
+      _pendingPassiveActionState.producedRandomRewardAmounts = new uint256[](randomRewards.length);
 
-      uint length;
-      for (uint i; i < numIterations; ++i) {
-        uint operation = uint(_getSlice(randomBytes, i));
+      uint256 length;
+      for (uint256 i; i < numIterations; ++i) {
+        uint256 operation = uint256(_getSlice(randomBytes, i));
         uint16 rand = uint16(Math.min(type(uint16).max, operation));
-        for (uint j; j < randomRewards.length; ++j) {
+        for (uint256 j; j < randomRewards.length; ++j) {
           RandomReward memory randomReward = randomRewards[j];
           if (rand <= randomReward.chance) {
             // This random reward's chance was hit, so add it to the hits
@@ -297,8 +297,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         }
       }
 
-      uint[] memory ids = _pendingPassiveActionState.producedRandomRewardItemTokenIds;
-      uint[] memory amounts = _pendingPassiveActionState.producedRandomRewardAmounts;
+      uint256[] memory ids = _pendingPassiveActionState.producedRandomRewardItemTokenIds;
+      uint256[] memory amounts = _pendingPassiveActionState.producedRandomRewardAmounts;
       assembly ("memory-safe") {
         mstore(ids, length)
         mstore(amounts, length)
@@ -306,7 +306,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
   }
 
-  function _checkMinLevelRequirements(uint _playerId, uint _actionId) private view {
+  function _checkMinLevelRequirements(uint256 _playerId, uint256 _actionId) private view {
     PassiveAction storage action = actions[_actionId];
     if (action.minSkill1 != Skill.NONE && players.level(_playerId, action.minSkill1) < action.minLevel1) {
       revert MinimumLevelNotReached(action.minSkill1, action.minLevel1);
@@ -322,18 +322,18 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   // Action must be finished as a precondition
-  function _claim(uint _playerId, uint _queueId, bool _startingAnother) private {
+  function _claim(uint256 _playerId, uint256 _queueId, bool _startingAnother) private {
     PendingPassiveActionState memory _pendingPassiveActionState = pendingPassiveActionState(_playerId);
-    uint numItemsToMint = _pendingPassiveActionState.producedItemTokenIds.length +
+    uint256 numItemsToMint = _pendingPassiveActionState.producedItemTokenIds.length +
       _pendingPassiveActionState.producedRandomRewardItemTokenIds.length;
-    uint[] memory itemTokenIds = new uint[](numItemsToMint);
-    uint[] memory amounts = new uint[](numItemsToMint);
-    for (uint i; i < _pendingPassiveActionState.producedItemTokenIds.length; ++i) {
+    uint256[] memory itemTokenIds = new uint256[](numItemsToMint);
+    uint256[] memory amounts = new uint256[](numItemsToMint);
+    for (uint256 i; i < _pendingPassiveActionState.producedItemTokenIds.length; ++i) {
       itemTokenIds[i] = _pendingPassiveActionState.producedItemTokenIds[i];
       amounts[i] = _pendingPassiveActionState.producedAmounts[i];
     }
 
-    for (uint i; i < _pendingPassiveActionState.producedRandomRewardItemTokenIds.length; ++i) {
+    for (uint256 i; i < _pendingPassiveActionState.producedRandomRewardItemTokenIds.length; ++i) {
       itemTokenIds[i + _pendingPassiveActionState.producedItemTokenIds.length] = _pendingPassiveActionState
         .producedRandomRewardItemTokenIds[i];
       amounts[i + _pendingPassiveActionState.producedItemTokenIds.length] = _pendingPassiveActionState
@@ -345,21 +345,21 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     emit ClaimPassiveAction(_playerId, msg.sender, _queueId, itemTokenIds, amounts, _startingAnother);
   }
 
-  function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
+  function _getSlice(bytes memory _b, uint256 _index) private pure returns (uint16) {
     uint256 index = _index * 2;
     return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
   }
 
   function _isWinner(
-    uint _playerId,
-    uint _startTimestamp,
-    uint _endTimestamp,
+    uint256 _playerId,
+    uint256 _startTimestamp,
+    uint256 _endTimestamp,
     uint16 _boostIncrease,
     uint8 _skipSuccessPercent
   ) private view returns (bool winner) {
     bytes memory randomBytes = world.getRandomBytes(1, _startTimestamp, _endTimestamp, _playerId);
     uint16 word = _getSlice(randomBytes, 0);
-    return word < ((type(uint16).max * (uint(_skipSuccessPercent) + _boostIncrease)) / 100);
+    return word < ((type(uint16).max * (uint256(_skipSuccessPercent) + _boostIncrease)) / 100);
   }
 
   /// @param _playerId The player id
@@ -369,8 +369,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   /// @return numWinners The number of winners
   /// @return skippedToday If the player has skipped today
   function finishedInfo(
-    uint _playerId
-  ) public view returns (bool finished, bool oracleCalled, bool hasRandomRewards, uint numWinners, bool skippedToday) {
+    uint256 _playerId
+  )
+    public
+    view
+    returns (bool finished, bool oracleCalled, bool hasRandomRewards, uint256 numWinners, bool skippedToday)
+  {
     // Check random reward results which may lower the time remaining (e.g. oracle speed boost)
     ActivePassiveInfo storage passiveAction = activePassiveActions[_playerId];
     if (passiveAction.actionId == NONE) {
@@ -378,11 +382,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
 
     PassiveAction storage action = actions[passiveAction.actionId];
-    uint duration = action.durationDays * 1 days;
+    uint256 duration = action.durationDays * 1 days;
 
-    uint startTime = activePassiveActions[_playerId].startTime;
-    uint timespan = Math.min(duration, (block.timestamp - startTime));
-    uint numDays = timespan / 1 days;
+    uint256 startTime = activePassiveActions[_playerId].startTime;
+    uint256 timespan = Math.min(duration, (block.timestamp - startTime));
+    uint256 numDays = timespan / 1 days;
 
     hasRandomRewards = action.hasRandomRewards;
     // Special case
@@ -390,7 +394,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       finished = true;
     }
 
-    for (uint timestamp = startTime; timestamp <= startTime + numDays * 1 days; timestamp += 1 days) {
+    for (uint256 timestamp = startTime; timestamp <= startTime + numDays * 1 days; timestamp += 1 days) {
       // Work out how many days we can skip
       if (action.skipSuccessPercent != 0 && timestamp < startTime + numDays * 1 days) {
         uint16 boostIncrease;
@@ -428,13 +432,13 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       return;
     }
 
-    uint inputTokenLength = action.inputTokenId2 == NONE ? 1 : (action.inputTokenId3 == NONE ? 2 : 3);
-    uint arrLength = inputTokenLength;
+    uint256 inputTokenLength = action.inputTokenId2 == NONE ? 1 : (action.inputTokenId3 == NONE ? 2 : 3);
+    uint256 arrLength = inputTokenLength;
     if (_boostItemTokenId != NONE) {
       ++arrLength;
     }
-    uint[] memory itemTokenIds = new uint[](arrLength);
-    uint[] memory amounts = new uint[](arrLength);
+    uint256[] memory itemTokenIds = new uint256[](arrLength);
+    uint256[] memory amounts = new uint256[](arrLength);
 
     itemTokenIds[0] = action.inputTokenId1;
     amounts[0] = action.inputAmount1;
@@ -460,7 +464,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     ActionRewards memory _rewards
   ) private pure returns (RandomReward[] memory randomRewards) {
     randomRewards = new RandomReward[](4);
-    uint randomRewardLength;
+    uint256 randomRewardLength;
     if (_rewards.randomRewardTokenId1 != 0) {
       randomRewards[randomRewardLength++] = RandomReward(
         _rewards.randomRewardTokenId1,
@@ -571,7 +575,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       revert NoInputItemsSpecified();
     }
 
-    for (uint i; i < inputTokenIds.length; ++i) {
+    for (uint256 i; i < inputTokenIds.length; ++i) {
       if (inputTokenIds[i] == 0) {
         revert InvalidInputTokenId();
       }
@@ -583,7 +587,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         if (amounts[i] > amounts[i + 1]) {
           revert InputAmountsMustBeInOrder();
         }
-        for (uint j; j < inputTokenIds.length; ++j) {
+        for (uint256 j; j < inputTokenIds.length; ++j) {
           if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
             revert InputItemNoDuplicates();
           }
@@ -601,7 +605,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     if (minSkills.length != minLevels.length) {
       revert LengthMismatch();
     }
-    for (uint i; i < minSkills.length; ++i) {
+    for (uint256 i; i < minSkills.length; ++i) {
       if (minSkills[i] == Skill.NONE) {
         revert InvalidSkill();
       }
@@ -610,7 +614,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       }
 
       if (i != minSkills.length - 1) {
-        for (uint j; j < minSkills.length; ++j) {
+        for (uint256 j; j < minSkills.length; ++j) {
           if (j != i && minSkills[i] == minSkills[j]) {
             revert MinimumSkillsNoDuplicates();
           }
@@ -620,7 +624,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   function addActions(PassiveActionInput[] calldata _passiveActionInputs) external onlyOwner {
-    for (uint i; i < _passiveActionInputs.length; ++i) {
+    for (uint256 i; i < _passiveActionInputs.length; ++i) {
       if (actions[_passiveActionInputs[i].actionId].inputTokenId1 != 0) {
         revert ActionAlreadyExists(_passiveActionInputs[i].actionId);
       }
@@ -630,7 +634,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   function editActions(PassiveActionInput[] calldata _passiveActionInputs) external onlyOwner {
-    for (uint i = 0; i < _passiveActionInputs.length; ++i) {
+    for (uint256 i = 0; i < _passiveActionInputs.length; ++i) {
       if (actions[_passiveActionInputs[i].actionId].inputTokenId1 == NONE) {
         revert ActionDoesNotExist();
       }

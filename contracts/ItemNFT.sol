@@ -49,8 +49,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   string private baseURI;
 
   // How many of this item exist
-  mapping(uint itemId => uint amount) public override itemBalances;
-  mapping(uint itemId => uint timestamp) public override timestampFirstMint;
+  mapping(uint256 itemId => uint256 amount) public override itemBalances;
+  mapping(uint256 itemId => uint256 timestamp) public override timestampFirstMint;
 
   address public players;
   address private shop;
@@ -60,9 +60,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   address private royaltyReceiver;
   uint8 private royaltyFee; // base 1000, highest is 25.5
 
-  mapping(uint itemId => string tokenURI) private tokenURIs;
-  mapping(uint itemId => CombatStats combatStats) private combatStats;
-  mapping(uint itemId => Item item) private items;
+  mapping(uint256 itemId => string tokenURI) private tokenURIs;
+  mapping(uint256 itemId => CombatStats combatStats) private combatStats;
+  mapping(uint256 itemId => Item item) private items;
 
   AdminAccess private adminAccess;
   IBankFactory private bankFactory;
@@ -138,23 +138,23 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     isBeta = _isBeta;
   }
 
-  function mint(address _to, uint _tokenId, uint _amount) external override onlyMinters {
+  function mint(address _to, uint256 _tokenId, uint256 _amount) external override onlyMinters {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function mintBatch(address _to, uint[] calldata _ids, uint[] calldata _amounts) external override onlyMinters {
+  function mintBatch(address _to, uint256[] calldata _ids, uint256[] calldata _amounts) external override onlyMinters {
     _mintBatchItems(_to, _ids, _amounts);
   }
 
   function burnBatch(
     address _from,
-    uint[] calldata _tokenIds,
-    uint[] calldata _amounts
+    uint256[] calldata _tokenIds,
+    uint256[] calldata _amounts
   ) external override onlyBurners(_from) {
     _burnBatch(_from, _tokenIds, _amounts);
   }
 
-  function burn(address _from, uint _tokenId, uint _amount) external override onlyBurners(_from) {
+  function burn(address _from, uint256 _tokenId, uint256 _amount) external override onlyBurners(_from) {
     _burn(_from, _tokenId, _amount);
   }
 
@@ -162,15 +162,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     return (items[_tokenId].skill, items[_tokenId].minXP, _isItemFullMode(_tokenId));
   }
 
-  function _isItemFullMode(uint _tokenId) private view returns (bool) {
+  function _isItemFullMode(uint256 _tokenId) private view returns (bool) {
     return uint8(items[_tokenId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
-  function _premint(uint _tokenId, uint _amount) private returns (uint numNewUniqueItems) {
+  function _premint(uint256 _tokenId, uint256 _amount) private returns (uint256 numNewUniqueItems) {
     if (_tokenId >= type(uint16).max) {
       revert IdTooHigh();
     }
-    uint existingBalance = itemBalances[_tokenId];
+    uint256 existingBalance = itemBalances[_tokenId];
     if (existingBalance == 0) {
       // Brand new item
       timestampFirstMint[_tokenId] = block.timestamp;
@@ -179,19 +179,19 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     itemBalances[_tokenId] = existingBalance + _amount;
   }
 
-  function _mintItem(address _to, uint _tokenId, uint _amount) internal {
-    uint newlyMintedItems = _premint(_tokenId, _amount);
+  function _mintItem(address _to, uint256 _tokenId, uint256 _amount) internal {
+    uint256 newlyMintedItems = _premint(_tokenId, _amount);
     if (newlyMintedItems != 0) {
       totalSupplyAll_ = uint16(totalSupplyAll_.inc());
     }
-    _mint(_to, uint(_tokenId), _amount, "");
+    _mint(_to, uint256(_tokenId), _amount, "");
   }
 
-  function _mintBatchItems(address _to, uint[] memory _tokenIds, uint[] memory _amounts) internal {
+  function _mintBatchItems(address _to, uint256[] memory _tokenIds, uint256[] memory _amounts) internal {
     U256 numNewItems;
     U256 tokenIdsLength = _tokenIds.length.asU256();
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       numNewItems = numNewItems.add(_premint(_tokenIds[i], _amounts[i]));
     }
     if (numNewItems.neq(0)) {
@@ -204,7 +204,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     if (_nftsInfo.length == 0) {
       return;
     }
-    for (uint i = 0; i < _nftsInfo.length; ++i) {
+    for (uint256 i = 0; i < _nftsInfo.length; ++i) {
       BulkTransferInfo memory nftsInfo = _nftsInfo[i];
       address to = nftsInfo.to;
       if (nftsInfo.tokenIds.length == 1) {
@@ -223,12 +223,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   // If an item is burnt, remove it from the total
-  function _removeAnyBurntFromTotal(uint[] memory _ids, uint[] memory _amounts) private {
+  function _removeAnyBurntFromTotal(uint256[] memory _ids, uint256[] memory _amounts) private {
     U256 iter = _ids.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
-      uint i = iter.asUint256();
-      uint newBalance = itemBalances[_ids[i]] - _amounts[i];
+      uint256 i = iter.asUint256();
+      uint256 newBalance = itemBalances[_ids[i]] - _amounts[i];
       if (newBalance == 0) {
         totalSupplyAll_ = uint16(totalSupplyAll_.dec());
       }
@@ -236,12 +236,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
-  function _checkIsTransferable(address _from, uint[] memory _ids) private view {
+  function _checkIsTransferable(address _from, uint256[] memory _ids) private view {
     U256 iter = _ids.length.asU256();
     bool anyNonTransferable;
     while (iter.neq(0)) {
       iter = iter.dec();
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       if (exists(_ids[i]) && !items[_ids[i]].isTransferable) {
         anyNonTransferable = true;
       }
@@ -257,8 +257,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     address /*_operator*/,
     address _from,
     address _to,
-    uint[] memory _ids,
-    uint[] memory _amounts,
+    uint256[] memory _ids,
+    uint256[] memory _amounts,
     bytes memory /*_data*/
   ) internal virtual override {
     if (_from == address(0) || _amounts.length == 0 || _from == _to) {
@@ -324,22 +324,22 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     item = _setItem(_inputItem);
   }
 
-  function uri(uint _tokenId) public view virtual override returns (string memory) {
+  function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     if (!exists(_tokenId)) {
       revert ItemDoesNotExist(uint16(_tokenId));
     }
     return string(abi.encodePacked(baseURI, tokenURIs[_tokenId]));
   }
 
-  function exists(uint _tokenId) public view override returns (bool) {
+  function exists(uint256 _tokenId) public view override returns (bool) {
     return items[_tokenId].packedData != 0;
   }
 
-  function totalSupply(uint _tokenId) external view returns (uint) {
+  function totalSupply(uint256 _tokenId) external view returns (uint256) {
     return itemBalances[_tokenId];
   }
 
-  function totalSupply() external view override returns (uint) {
+  function totalSupply() external view override returns (uint256) {
     return totalSupplyAll_;
   }
 
@@ -351,7 +351,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     U256 tokenIdsLength = _tokenIds.length.asU256();
     _items = new Item[](tokenIdsLength.asUint256());
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       _items[i] = _getItem(_tokenIds[i]);
     }
   }
@@ -371,7 +371,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     isFullModeOnly = new bool[](_tokenIds.length);
     U256 tokenIdsLength = _tokenIds.length.asU256();
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       (skills[i], minXPs[i], isFullModeOnly[i]) = _getMinRequirement(_tokenIds[i]);
     }
   }
@@ -382,7 +382,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     U256 tokenIdsLength = _tokenIds.length.asU256();
     equipPositions = new EquipPosition[](tokenIdsLength.asUint256());
     for (U256 iter; iter < tokenIdsLength; iter = iter.inc()) {
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       equipPositions[i] = getEquipPosition(_tokenIds[i]);
     }
   }
@@ -400,12 +400,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function balanceOfs(
     address _account,
     uint16[] memory _ids
-  ) external view override returns (uint[] memory batchBalances) {
+  ) external view override returns (uint256[] memory batchBalances) {
     U256 iter = _ids.length.asU256();
-    batchBalances = new uint[](iter.asUint256());
+    batchBalances = new uint256[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       batchBalances[i] = balanceOf(_account, _ids[i]);
     }
   }
@@ -415,10 +415,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function royaltyInfo(
-    uint /*_tokenId*/,
-    uint _salePrice
-  ) external view override returns (address receiver, uint royaltyAmount) {
-    uint amount = (_salePrice * royaltyFee) / 1000;
+    uint256 /*_tokenId*/,
+    uint256 _salePrice
+  ) external view override returns (address receiver, uint256 royaltyAmount) {
+    uint256 amount = (_salePrice * royaltyFee) / 1000;
     return (royaltyReceiver, amount);
   }
 
@@ -455,7 +455,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     string[] memory names = new string[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
-      uint i = iter.asUint256();
+      uint256 i = iter.asUint256();
       if (exists(_inputItems[i].tokenId)) {
         revert ItemAlreadyExists();
       }
@@ -472,7 +472,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     uint16[] memory tokenIds = new uint16[](_inputItems.length);
     string[] memory names = new string[](_inputItems.length);
 
-    for (uint i = 0; i < _inputItems.length; ++i) {
+    for (uint256 i = 0; i < _inputItems.length; ++i) {
       _items[i] = _editItem(_inputItems[i]);
       tokenIds[i] = _inputItems[i].tokenId;
       names[i] = _inputItems[i].name;
@@ -484,7 +484,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // This should be only used when an item is not in active use
   // because it could mess up queued actions potentially
   function removeItems(uint16[] calldata _itemTokenIds) external onlyOwner {
-    for (uint i = 0; i < _itemTokenIds.length; ++i) {
+    for (uint256 i = 0; i < _itemTokenIds.length; ++i) {
       if (!exists(_itemTokenIds[i])) {
         revert ItemDoesNotExist(_itemTokenIds[i]);
       }
@@ -535,19 +535,19 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-  function testMint(address _to, uint _tokenId, uint _amount) external isAdminAndBeta {
+  function testMint(address _to, uint256 _tokenId, uint256 _amount) external isAdminAndBeta {
     _mintItem(_to, _tokenId, _amount);
   }
 
-  function testMints(address _to, uint[] calldata _tokenIds, uint[] calldata _amounts) external isAdminAndBeta {
+  function testMints(address _to, uint256[] calldata _tokenIds, uint256[] calldata _amounts) external isAdminAndBeta {
     _mintBatchItems(_to, _tokenIds, _amounts);
   }
 
-  function airdrop(address[] calldata _tos, uint _tokenId, uint[] calldata _amounts) external onlyOwner {
+  function airdrop(address[] calldata _tos, uint256 _tokenId, uint256[] calldata _amounts) external onlyOwner {
     if (_tos.length != _amounts.length) {
       revert LengthMismatch();
     }
-    for (uint i = 0; i < _tos.length; ++i) {
+    for (uint256 i = 0; i < _tos.length; ++i) {
       _mintItem(_tos[i], _tokenId, _amounts[i]);
     }
   }

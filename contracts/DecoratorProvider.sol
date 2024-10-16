@@ -12,10 +12,10 @@ import {IPaintSwapDecorator} from "./interfaces/IPaintSwapDecorator.sol";
 import {IPaintSwapArtGallery} from "./interfaces/IPaintSwapArtGallery.sol";
 
 contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
-  event Deposit(uint amount);
-  event Harvest(address from, uint playerId, uint amount, uint nextHarvestAllowedTimestamp);
-  event SetPID(uint pid);
-  event UnlockFromArtGallery(uint amount);
+  event Deposit(uint256 amount);
+  event Harvest(address from, uint256 playerId, uint256 amount, uint256 nextHarvestAllowedTimestamp);
+  event SetPID(uint256 pid);
+  event UnlockFromArtGallery(uint256 amount);
 
   error InvalidPool();
   error ZeroBalance();
@@ -35,10 +35,10 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   uint16 public numUnclaimedHarvests;
   IERC20 public lpToken;
 
-  uint public constant MAX_UNCLAIMED_HARVESTS = 600;
-  uint public constant MIN_HARVEST_INTERVAL = 3 hours + 45 minutes;
+  uint256 public constant MAX_UNCLAIMED_HARVESTS = 600;
+  uint256 public constant MIN_HARVEST_INTERVAL = 3 hours + 45 minutes;
 
-  modifier isOwnerOfPlayer(uint _playerId) {
+  modifier isOwnerOfPlayer(uint256 _playerId) {
     if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
@@ -57,7 +57,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     IBrushToken _brush,
     IERC1155 _playerNFT,
     address _dev,
-    uint _pid
+    uint256 _pid
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
@@ -72,7 +72,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function deposit() external {
-    uint balance = lpToken.balanceOf(msg.sender);
+    uint256 balance = lpToken.balanceOf(msg.sender);
     if (balance == 0) {
       revert ZeroBalance();
     }
@@ -83,9 +83,9 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     emit Deposit(balance);
   }
 
-  function harvest(uint _playerId) external isOwnerOfPlayer(_playerId) {
+  function harvest(uint256 _playerId) external isOwnerOfPlayer(_playerId) {
     // Max harvest once every few hours
-    uint _nextHarvestAllowedTimestamp = nextHarvestAllowedTimestamp;
+    uint256 _nextHarvestAllowedTimestamp = nextHarvestAllowedTimestamp;
     if (block.timestamp < _nextHarvestAllowedTimestamp) {
       revert HarvestingTooSoon();
     }
@@ -98,7 +98,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
     ++numUnclaimedHarvests;
     decorator.updatePool(pid);
-    uint fullBrushAmount = pendingBrushInclArtGallery();
+    uint256 fullBrushAmount = pendingBrushInclArtGallery();
     if (fullBrushAmount == 0) {
       revert ZeroBalance();
     }
@@ -107,7 +107,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     emit Harvest(msg.sender, _playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
   }
 
-  function inspectUnlockableAmount() external view returns (uint unlockableAmount) {
+  function inspectUnlockableAmount() external view returns (uint256 unlockableAmount) {
     (, , , unlockableAmount, , ) = artGallery.inspect(address(this));
   }
 
@@ -124,11 +124,11 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     emit UnlockFromArtGallery(unlockableAmount);
   }
 
-  function pendingBrushInclArtGallery() public view returns (uint) {
+  function pendingBrushInclArtGallery() public view returns (uint256) {
     return decorator.pendingBrush(pid, address(this)) * 2;
   }
 
-  function setPID(uint _pid) public onlyOwner {
+  function setPID(uint256 _pid) public onlyOwner {
     (address _lpToken, , , ) = decorator.poolInfo(_pid);
     if (_lpToken == address(0)) {
       revert InvalidPool();

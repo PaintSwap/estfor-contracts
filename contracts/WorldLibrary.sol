@@ -11,7 +11,7 @@ import "./globals/all.sol";
 // This file contains methods for interacting with the World, used to decrease implementation deployment bytecode code.
 library WorldLibrary {
   using UnsafeMath for U256;
-  using UnsafeMath for uint;
+  using UnsafeMath for uint256;
   using SkillLibrary for uint8;
 
   error InputSpecifiedWithoutAmount();
@@ -52,7 +52,7 @@ library WorldLibrary {
       revert OutputTokenIdCannotBeEmpty();
     }
 
-    for (uint i; i < inputTokenIds.length; ++i) {
+    for (uint256 i; i < inputTokenIds.length; ++i) {
       if (inputTokenIds[i] == 0) {
         revert InvalidInputTokenId();
       }
@@ -64,7 +64,7 @@ library WorldLibrary {
         if (amounts[i] > amounts[i + 1]) {
           revert InputAmountsMustBeInOrder();
         }
-        for (uint j; j < inputTokenIds.length; ++j) {
+        for (uint256 j; j < inputTokenIds.length; ++j) {
           if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
             revert InputItemNoDuplicates();
           }
@@ -88,7 +88,7 @@ library WorldLibrary {
       revert LengthMismatch();
     }
 
-    for (uint i; i < minSkills.length; ++i) {
+    for (uint256 i; i < minSkills.length; ++i) {
       if (minSkills[i].isSkill(Skill.NONE)) {
         revert InvalidSkill();
       }
@@ -98,7 +98,7 @@ library WorldLibrary {
       }
 
       if (i != minSkills.length - 1) {
-        for (uint j; j < minSkills.length; ++j) {
+        for (uint256 j; j < minSkills.length; ++j) {
           if (j != i && minSkills[i] == minSkills[j]) {
             revert MinimumSkillsNoDuplicates();
           }
@@ -118,7 +118,7 @@ library WorldLibrary {
     GuaranteedReward[] calldata _guaranteedRewards,
     ActionRewards storage _actionRewards
   ) external {
-    uint guaranteedRewardsLength = _guaranteedRewards.length;
+    uint256 guaranteedRewardsLength = _guaranteedRewards.length;
     if (guaranteedRewardsLength != 0) {
       _actionRewards.guaranteedRewardTokenId1 = _guaranteedRewards[0].itemTokenId;
       _actionRewards.guaranteedRewardRate1 = _guaranteedRewards[0].rate;
@@ -136,7 +136,7 @@ library WorldLibrary {
 
       U256 bounds = guaranteedRewardsLength.dec().asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
+        uint256 i = iter.asUint256();
         if (_guaranteedRewards[i].itemTokenId == _guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId) {
           revert GuaranteedRewardsNoDuplicates();
         }
@@ -149,7 +149,7 @@ library WorldLibrary {
 
   // Random rewards have most common one first
   function setActionRandomRewards(RandomReward[] calldata _randomRewards, ActionRewards storage actionReward) external {
-    uint randomRewardsLength = _randomRewards.length;
+    uint256 randomRewardsLength = _randomRewards.length;
     if (randomRewardsLength != 0) {
       actionReward.randomRewardTokenId1 = _randomRewards[0].itemTokenId;
       actionReward.randomRewardChance1 = _randomRewards[0].chance;
@@ -178,7 +178,7 @@ library WorldLibrary {
 
       U256 bounds = randomRewardsLength.dec().asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
+        uint256 i = iter.asUint256();
         if (_randomRewards[i].itemTokenId == _randomRewards[randomRewardsLength.dec()].itemTokenId) {
           revert RandomRewardNoDuplicates();
         }
@@ -193,7 +193,7 @@ library WorldLibrary {
       }
       U256 bounds = _randomRewards.length.dec().asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint i = iter.asUint256();
+        uint256 i = iter.asUint256();
         if (_randomRewards[i].itemTokenId == _randomRewards[_randomRewards.length - 1].itemTokenId) {
           revert RandomRewardNoDuplicates();
         }

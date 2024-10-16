@@ -28,7 +28,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _checkStartSlot();
   }
 
-  function processActionsAndSetState(uint _playerId) external {
+  function processActionsAndSetState(uint256 _playerId) external {
     (
       QueuedAction[] memory remainingQueuedActions,
       PendingQueuedActionData memory currentActionProcessed
@@ -43,12 +43,12 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _setPrevPlayerState(player, currentActionProcessed);
 
     Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
-    for (uint i = 0; i < remainingQueuedActions.length; ++i) {
+    for (uint256 i = 0; i < remainingQueuedActions.length; ++i) {
       remainingAttire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
     }
 
     QueuedActionExtra[] memory remainingQueuedActionsExtra = new QueuedActionExtra[](remainingQueuedActions.length);
-    for (uint i; i < remainingQueuedActions.length; ++i) {
+    for (uint256 i; i < remainingQueuedActions.length; ++i) {
       if (_hasPet(remainingQueuedActions[i].packed)) {
         remainingQueuedActionsExtra[i] = queuedActionsExtra[remainingQueuedActions[i].queueId];
       }
@@ -66,7 +66,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
   function processActions(
     address _from,
-    uint _playerId
+    uint256 _playerId
   )
     public
     returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
@@ -88,9 +88,9 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     remainingQueuedActions = pendingQueuedActionState.remainingQueuedActions;
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
     currentActionProcessed = pendingQueuedActionProcessed.currentAction;
-    uint skillIndex;
-    uint startTime = players_[_playerId].currentActionStartTime;
-    for (uint i = 0; i < pendingQueuedActionState.equipmentStates.length; ++i) {
+    uint256 skillIndex;
+    uint256 startTime = players_[_playerId].currentActionStartTime;
+    for (uint256 i = 0; i < pendingQueuedActionState.equipmentStates.length; ++i) {
       PendingQueuedActionEquipmentState memory equipmentState = pendingQueuedActionState.equipmentStates[i];
       PendingQueuedActionMetadata memory actionMetadata = pendingQueuedActionState.actionMetadatas[i];
 
@@ -165,14 +165,14 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       // XP gained
       if (actionMetadata.xpGained != 0) {
         {
-          uint previousTotalXP = player.totalXP;
-          uint newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
+          uint256 previousTotalXP = player.totalXP;
+          uint256 newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
           player.totalXP = uint56(newTotalXP);
         }
 
         // Keep reading until the xp expected is reached
-        uint xpGained;
-        for (uint j = skillIndex; j < pendingQueuedActionProcessed.skills.length; ++j) {
+        uint256 xpGained;
+        for (uint256 j = skillIndex; j < pendingQueuedActionProcessed.skills.length; ++j) {
           xpGained += pendingQueuedActionProcessed.xpGainedSkills[j];
           if (xpGained <= actionMetadata.xpGained) {
             // Map this to the current action
@@ -211,10 +211,10 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Oracle loot from past random rewards
     PastRandomRewardInfo[] memory producedPastRandomRewards = pendingQueuedActionState.producedPastRandomRewards;
 
-    uint[] memory itemTokenIds = new uint[](producedPastRandomRewards.length);
-    uint[] memory amounts = new uint[](producedPastRandomRewards.length);
-    uint[] memory queueIds = new uint[](producedPastRandomRewards.length);
-    for (uint j = 0; j < producedPastRandomRewards.length; ++j) {
+    uint256[] memory itemTokenIds = new uint256[](producedPastRandomRewards.length);
+    uint256[] memory amounts = new uint256[](producedPastRandomRewards.length);
+    uint256[] memory queueIds = new uint256[](producedPastRandomRewards.length);
+    for (uint256 j = 0; j < producedPastRandomRewards.length; ++j) {
       itemTokenIds[j] = producedPastRandomRewards[j].itemTokenId;
       amounts[j] = producedPastRandomRewards[j].amount;
       queueIds[j] = producedPastRandomRewards[j].queueId;
@@ -249,8 +249,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     // Any quest XP gains
-    uint questXpGained;
-    for (uint j; j < questState.skills.length; ++j) {
+    uint256 questXpGained;
+    for (uint256 j; j < questState.skills.length; ++j) {
       _updateXP(_from, _playerId, questState.skills[j], questState.xpGainedSkills[j]);
       questXpGained += questState.xpGainedSkills[j];
     }
@@ -281,7 +281,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         );
       }
 
-      if (uint(pendingQueuedActionState.dailyRewardMask) != 0) {
+      if (uint256(pendingQueuedActionState.dailyRewardMask) != 0) {
         dailyRewardMasks[_playerId] = pendingQueuedActionState.dailyRewardMask;
       }
     }
@@ -297,7 +297,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     player.packedData = packedData;
   }
 
-  function _clearPlayerBoostsIfExpired(uint _playerId) private {
+  function _clearPlayerBoostsIfExpired(uint256 _playerId) private {
     PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
       _clearPlayerMainBoost(_playerId);
@@ -317,8 +317,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function donate(address _from, uint _playerId, uint _amount) external {
-    (uint16 extraItemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) = wishingWell.donate(
+  function donate(address _from, uint256 _playerId, uint256 _amount) external {
+    (uint16 extraItemTokenId, uint16 globalItemTokenId, uint256 clanId, uint16 clanItemTokenId) = wishingWell.donate(
       _from,
       _playerId,
       _amount
@@ -349,10 +349,10 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   // There is no need to burn anything because it is implicitly minted/burned in the same transaction
   function _instantConsumeSpecialBoost(
     address _from,
-    uint _playerId,
+    uint256 _playerId,
     uint16 _itemTokenId,
     uint40 _startTime,
-    uint _clanId
+    uint256 _clanId
   ) private {
     Item memory item = itemNFT.getItem(_itemTokenId);
     if (
@@ -404,7 +404,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
   function _processActionsFinished(
     address _from,
-    uint _playerId,
+    uint256 _playerId,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     LotteryWinnerInfo memory _lotteryWinner
   ) private {
@@ -416,7 +416,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
   function _claimRandomRewards(
     address _from,
-    uint _playerId,
+    uint256 _playerId,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
   ) private {
     _delegatecall(
@@ -432,7 +432,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
   function _addPendingRandomReward(
     address _from,
-    uint _playerId,
+    uint256 _playerId,
     uint16 _actionId,
     uint64 _queueId,
     uint40 _skillStartTime,
@@ -441,7 +441,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint24 _xpElapsedTime,
     Attire storage _attire,
     Skill _skill,
-    uint _rolls,
+    uint256 _rolls,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private {
     PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
@@ -491,21 +491,26 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     emit AddPendingRandomRewardV2(_from, _playerId, _queueId, _skillStartTime, _xpElapsedTime, _rolls);
   }
 
-  function _claimTotalXPThresholdRewards(address _from, uint _playerId, uint _oldTotalXP, uint _newTotalXP) private {
-    (uint[] memory itemTokenIds, uint[] memory amounts) = _claimableXPThresholdRewards(_oldTotalXP, _newTotalXP);
+  function _claimTotalXPThresholdRewards(
+    address _from,
+    uint256 _playerId,
+    uint256 _oldTotalXP,
+    uint256 _newTotalXP
+  ) private {
+    (uint256[] memory itemTokenIds, uint256[] memory amounts) = _claimableXPThresholdRewards(_oldTotalXP, _newTotalXP);
     if (itemTokenIds.length != 0) {
       itemNFT.mintBatch(_from, itemTokenIds, amounts);
       emit ClaimedXPThresholdRewards(_from, _playerId, itemTokenIds, amounts);
     }
   }
 
-  function testModifyXP(address _from, uint _playerId, Skill _skill, uint56 _xp, bool _force) external {
+  function testModifyXP(address _from, uint256 _playerId, Skill _skill, uint56 _xp, bool _force) external {
     if (!_force && players_[_playerId].actionQueue.length != 0) {
       revert HasQueuedActions();
     }
 
     // Make sure it isn't less XP
-    uint oldXP = PlayersLibrary.readXP(_skill, xp_[_playerId]);
+    uint256 oldXP = PlayersLibrary.readXP(_skill, xp_[_playerId]);
     if (_xp < oldXP) {
       revert TestInvalidXP();
     }
@@ -519,11 +524,11 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     players_[_playerId].totalXP = newTotalXP;
   }
 
-  function _handleDailyRewards(address _from, uint _playerId) private {
+  function _handleDailyRewards(address _from, uint256 _playerId) private {
     _delegatecall(implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.handleDailyRewards.selector, _from, _playerId));
   }
 
-  function _handleLotteryWinnings(address _from, uint _playerId, LotteryWinnerInfo memory _lotteryWinner) private {
+  function _handleLotteryWinnings(address _from, uint256 _playerId, LotteryWinnerInfo memory _lotteryWinner) private {
     // Check for lottery winners, TODO: currently just uses instant extra boost consumptions
     if (_lotteryWinner.itemTokenId != 0) {
       wishingWell.claimedLotteryWinnings(_lotteryWinner.lotteryId);

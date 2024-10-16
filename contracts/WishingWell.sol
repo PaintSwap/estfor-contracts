@@ -16,15 +16,15 @@ import {Clans} from "./Clans/Clans.sol";
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
 
 contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
-  event Donate(address from, uint playerId, uint amount, uint lotteryId, uint raffleId);
-  event DonateToClan(address from, uint playerId, uint amount, uint clanId);
-  event WinnerAndNewLottery(uint lotteryId, uint raffleId, uint16 rewardItemTokenId, uint rewardAmount);
-  event SetRaffleEntryCost(uint brushAmount);
-  event GlobalDonationThreshold(uint thresholdIncrement);
-  event LastGlobalDonationThreshold(uint lastThreshold, uint16 rewardItemTokenId);
-  event ClaimedLotteryWinnings(uint lotteryId, uint raffleId, uint itemTokenId, uint amount);
-  event ClanDonationThreshold(uint thresholdIncrement, uint16 rewardItemTokenId);
-  event LastClanDonationThreshold(uint clanId, uint lastThreshold, uint16 rewardItemTokenId);
+  event Donate(address from, uint256 playerId, uint256 amount, uint256 lotteryId, uint256 raffleId);
+  event DonateToClan(address from, uint256 playerId, uint256 amount, uint256 clanId);
+  event WinnerAndNewLottery(uint256 lotteryId, uint256 raffleId, uint16 rewardItemTokenId, uint256 rewardAmount);
+  event SetRaffleEntryCost(uint256 brushAmount);
+  event GlobalDonationThreshold(uint256 thresholdIncrement);
+  event LastGlobalDonationThreshold(uint256 lastThreshold, uint16 rewardItemTokenId);
+  event ClaimedLotteryWinnings(uint256 lotteryId, uint256 raffleId, uint256 itemTokenId, uint256 amount);
+  event ClanDonationThreshold(uint256 thresholdIncrement, uint16 rewardItemTokenId);
+  event LastClanDonationThreshold(uint256 clanId, uint256 lastThreshold, uint16 rewardItemTokenId);
 
   error NotOwnerOfPlayer();
   error NotEnoughBrush();
@@ -46,13 +46,13 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   IBrushToken public brush;
   PlayerNFT public playerNFT;
   address public shop;
-  mapping(uint lotteryId => BitMaps.BitMap) private playersEntered;
-  mapping(uint lotteryId => mapping(uint raffleId => uint playerId)) public raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
-  mapping(uint lotteryId => LotteryWinnerInfo winner) public winners;
+  mapping(uint256 lotteryId => BitMaps.BitMap) private playersEntered;
+  mapping(uint256 lotteryId => mapping(uint256 raffleId => uint256 playerId)) public raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
+  mapping(uint256 lotteryId => LotteryWinnerInfo winner) public winners;
   BitMaps.BitMap private claimedRewards;
   IPlayers private players;
   address private world;
-  mapping(uint clanId => ClanInfo clanInfo) public clanDonationInfo;
+  mapping(uint256 clanId => ClanInfo clanInfo) public clanDonationInfo;
   uint16 public donationRewardItemTokenId;
   uint40 private totalDonated; // In BRUSH ether (no wei decimals)
   uint40 private lastGlobalThreshold; // In BRUSH ether (no wei decimals)
@@ -97,9 +97,9 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     address _shop,
     address _world,
     Clans _clans,
-    uint _raffleEntryCost,
-    uint _globalThresholdIncrement,
-    uint _clanThresholdIncrement,
+    uint256 _raffleEntryCost,
+    uint256 _globalThresholdIncrement,
+    uint256 _clanThresholdIncrement,
     bool _isBeta
   ) external initializer {
     __UUPSUpgradeable_init();
@@ -134,27 +134,31 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   // Cannot donate until the oracle has finished being called if using a player
   function donate(
     address _from,
-    uint _playerId,
-    uint _amount
-  ) external onlyPlayers returns (uint16 itemTokenId, uint16 globalItemTokenId, uint clanId, uint16 clanItemTokenId) {
+    uint256 _playerId,
+    uint256 _amount
+  )
+    external
+    onlyPlayers
+    returns (uint16 itemTokenId, uint16 globalItemTokenId, uint256 clanId, uint16 clanItemTokenId)
+  {
     if (!brush.transferFrom(_from, shop, _amount)) {
       revert NotEnoughBrush();
     }
 
     bool isRaffleDonation = false;
 
-    uint flooredAmountWei = (_amount / 1 ether) * 1 ether;
+    uint256 flooredAmountWei = (_amount / 1 ether) * 1 ether;
     if (flooredAmountWei == 0) {
       revert MinimumOneBrush();
     }
 
     if (_playerId != 0) {
       bool hasEnoughForRaffle = (_amount / 1 ether) >= raffleEntryCost;
-      uint _lastLotteryId = lastLotteryId;
+      uint256 _lastLotteryId = lastLotteryId;
       bool hasEnteredAlready = playersEntered[_lastLotteryId].get(_playerId);
 
       if (hasEnoughForRaffle && !hasEnteredAlready) {
-        uint flooredTime = lastOracleRandomWordTimestamp;
+        uint256 flooredTime = lastOracleRandomWordTimestamp;
         if (flooredTime != 0 && flooredTime < (block.timestamp / 1 days) * 1 days) {
           revert OracleNotCalledYet();
         }
@@ -180,12 +184,12 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
         totalDonatedToClan += uint40(_amount / 1 ether);
 
-        uint nextClanThreshold = clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement;
+        uint256 nextClanThreshold = clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement;
         if (totalDonatedToClan >= nextClanThreshold) {
           // Give the whole clan a reward
           clanItemTokenId = clanDonationInfo[clanId].nextReward;
-          uint remainder = (totalDonatedToClan - nextClanThreshold);
-          uint numThresholdIncrements = (remainder / clanThresholdIncrement) + 1;
+          uint256 remainder = (totalDonatedToClan - nextClanThreshold);
+          uint256 numThresholdIncrements = (remainder / clanThresholdIncrement) + 1;
           clanDonationInfo[clanId].lastThreshold += uint40(numThresholdIncrements * clanThresholdIncrement);
 
           // Cycle through them
@@ -197,7 +201,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
             // They just happen to be id'ed sequentially. If this changes then this logic will need to change
             nextReward = clanItemTokenId + 1;
           }
-          emit LastClanDonationThreshold(clanId, uint(clanDonationInfo[clanId].lastThreshold) * 1 ether, nextReward);
+          emit LastClanDonationThreshold(clanId, uint256(clanDonationInfo[clanId].lastThreshold) * 1 ether, nextReward);
           clanDonationInfo[clanId].nextReward = nextReward;
         }
 
@@ -215,11 +219,11 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     totalDonated += uint40(_amount / 1 ether);
 
     // Is a global donation threshold hit?
-    uint nextGlobalThreshold = lastGlobalThreshold + globalThresholdIncrement;
+    uint256 nextGlobalThreshold = lastGlobalThreshold + globalThresholdIncrement;
     if (totalDonated >= nextGlobalThreshold) {
       globalItemTokenId = nextGlobalRewardItemTokenId;
-      uint remainder = (totalDonated - nextGlobalThreshold);
-      uint numThresholdIncrements = (remainder / globalThresholdIncrement) + 1;
+      uint256 remainder = (totalDonated - nextGlobalThreshold);
+      uint256 numThresholdIncrements = (remainder / globalThresholdIncrement) + 1;
       lastGlobalThreshold += uint40(numThresholdIncrements * globalThresholdIncrement);
 
       // Cycle through them
@@ -234,11 +238,11 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       nextGlobalRewardItemTokenId = nextReward;
 
-      emit LastGlobalDonationThreshold(uint(lastGlobalThreshold) * 1 ether, nextReward);
+      emit LastGlobalDonationThreshold(uint256(lastGlobalThreshold) * 1 ether, nextReward);
     }
   }
 
-  function newOracleRandomWords(uint _randomWord) external onlyWorld {
+  function newOracleRandomWords(uint256 _randomWord) external onlyWorld {
     uint16 _lastLotteryId = lastLotteryId;
 
     bool hasDonations = lastRaffleId != 0;
@@ -266,7 +270,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       // Add to the last 3 unclaimed winners queue
       bool added;
-      for (uint i = 0; i < lastUnclaimedWinners.length; i += 2) {
+      for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
         if (lastUnclaimedWinners[i] == 0) {
           lastUnclaimedWinners[i] = winners[_lastLotteryId].playerId;
           lastUnclaimedWinners[i + 1] = _lastLotteryId;
@@ -277,7 +281,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       if (!added) {
         // Shift the remaining ones down and add it to the end
-        for (uint i = 2; i < lastUnclaimedWinners.length; i += 2) {
+        for (uint256 i = 2; i < lastUnclaimedWinners.length; i += 2) {
           lastUnclaimedWinners[i - 2] = lastUnclaimedWinners[i];
           lastUnclaimedWinners[i - 1] = lastUnclaimedWinners[i + 1];
         }
@@ -293,7 +297,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     lastOracleRandomWordTimestamp = uint40((block.timestamp / 1 days) * 1 days);
   }
 
-  function claimedLotteryWinnings(uint _lotteryId) external onlyPlayers {
+  function claimedLotteryWinnings(uint256 _lotteryId) external onlyPlayers {
     LotteryWinnerInfo storage lotteryWinner = winners[_lotteryId];
     emit ClaimedLotteryWinnings(
       lotteryWinner.lotteryId,
@@ -306,10 +310,10 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     claimedRewards.set(_lotteryId);
 
     // Shift the remaining ones down
-    for (uint i = 0; i < lastUnclaimedWinners.length; i += 2) {
+    for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
       if (lastUnclaimedWinners[i + 1] == _lotteryId) {
         // Shift the rest if there are any
-        for (uint j = i + 2; j < lastUnclaimedWinners.length; j += 2) {
+        for (uint256 j = i + 2; j < lastUnclaimedWinners.length; j += 2) {
           lastUnclaimedWinners[j - 2] = lastUnclaimedWinners[j];
           lastUnclaimedWinners[j - 1] = lastUnclaimedWinners[j + 1];
         }
@@ -321,8 +325,8 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     delete lastUnclaimedWinners[lastUnclaimedWinners.length - 1];
   }
 
-  function _awaitingClaim(uint _playerId) private view returns (uint lotteryId) {
-    for (uint i = 0; i < lastUnclaimedWinners.length; i += 2) {
+  function _awaitingClaim(uint256 _playerId) private view returns (uint256 lotteryId) {
+    for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
       if (lastUnclaimedWinners[i] == _playerId) {
         lotteryId = lastUnclaimedWinners[i + 1];
         break;
@@ -331,38 +335,38 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   // Scans the last 3 unclaimed winners to see if this playerId belongs there.
-  function getUnclaimedLotteryWinnings(uint _playerId) external view returns (LotteryWinnerInfo memory winner) {
-    uint _lotteryId = _awaitingClaim(_playerId);
+  function getUnclaimedLotteryWinnings(uint256 _playerId) external view returns (LotteryWinnerInfo memory winner) {
+    uint256 _lotteryId = _awaitingClaim(_playerId);
     if (_lotteryId != 0) {
       winner = winners[_lotteryId];
     }
   }
 
-  function getTotalDonated() external view returns (uint) {
-    return uint(totalDonated) * 1 ether;
+  function getTotalDonated() external view returns (uint256) {
+    return uint256(totalDonated) * 1 ether;
   }
 
-  function getClanTotalDonated(uint _clanId) external view returns (uint) {
-    return uint(clanDonationInfo[_clanId].totalDonated) * 1 ether;
+  function getClanTotalDonated(uint256 _clanId) external view returns (uint256) {
+    return uint256(clanDonationInfo[_clanId].totalDonated) * 1 ether;
   }
 
-  function getNextGlobalThreshold() external view returns (uint) {
-    return uint(lastGlobalThreshold + globalThresholdIncrement) * 1 ether;
+  function getNextGlobalThreshold() external view returns (uint256) {
+    return uint256(lastGlobalThreshold + globalThresholdIncrement) * 1 ether;
   }
 
-  function getNextClanThreshold(uint _clanId) external view returns (uint) {
-    return (uint(clanDonationInfo[_clanId].lastThreshold) + clanThresholdIncrement) * 1 ether;
+  function getNextClanThreshold(uint256 _clanId) external view returns (uint256) {
+    return (uint256(clanDonationInfo[_clanId].lastThreshold) + clanThresholdIncrement) * 1 ether;
   }
 
-  function getRaffleEntryCost() external view returns (uint) {
-    return uint(raffleEntryCost) * 1 ether;
+  function getRaffleEntryCost() external view returns (uint256) {
+    return uint256(raffleEntryCost) * 1 ether;
   }
 
-  function hasClaimedReward(uint _lotteryId) external view returns (bool) {
+  function hasClaimedReward(uint256 _lotteryId) external view returns (bool) {
     return claimedRewards.get(_lotteryId);
   }
 
-  function hasPlayerEntered(uint _lotteryId, uint _playerId) external view returns (bool) {
+  function hasPlayerEntered(uint256 _lotteryId, uint256 _playerId) external view returns (bool) {
     return playersEntered[_lotteryId].get(_playerId);
   }
 
@@ -370,17 +374,17 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     players = _players;
   }
 
-  function setRaffleEntryCost(uint _raffleEntryCost) external onlyOwner {
+  function setRaffleEntryCost(uint256 _raffleEntryCost) external onlyOwner {
     raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
     emit SetRaffleEntryCost(_raffleEntryCost);
   }
 
-  function setClanDonationThresholdIncrement(uint _clanThresholdIncrement) external onlyOwner {
+  function setClanDonationThresholdIncrement(uint256 _clanThresholdIncrement) external onlyOwner {
     clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
     emit ClanDonationThreshold(_clanThresholdIncrement, clanBoostRewardItemTokenIds[0]); // This passes in the first reward
   }
 
-  function setGlobalDonationThresholdIncrement(uint _globalThresholdIncrement) external onlyOwner {
+  function setGlobalDonationThresholdIncrement(uint256 _globalThresholdIncrement) external onlyOwner {
     globalThresholdIncrement = uint24(_globalThresholdIncrement / 1 ether);
     emit GlobalDonationThreshold(_globalThresholdIncrement);
   }

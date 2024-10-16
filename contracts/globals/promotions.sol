@@ -32,7 +32,7 @@ struct PromotionInfoInput {
   uint40 endTime; // Exclusive
   uint8 numDailyRandomItemsToPick; // Number of items to pick
   uint40 minTotalXP; // Minimum xp required to claim
-  uint brushCost; // Cost in brush to start the promotion, max 16mil
+  uint256 brushCost; // Cost in brush to start the promotion, max 16mil
   // Special promotion specific (like 1kin)
   uint8 redeemCodeLength; // Length of the redeem code
   bool adminOnly; // Only admins can mint the promotion, like for 1kin (Not used yet)
@@ -43,7 +43,7 @@ struct PromotionInfoInput {
   bool evolvedHeroOnly; // Only allow evolved heroes to claim
   // Multiday specific
   bool isMultiday; // The promotion is multi-day
-  uint brushCostMissedDay; // Cost in brush to mint the promotion if they miss a day (in ether), max 25.6 (base 100)
+  uint256 brushCostMissedDay; // Cost in brush to mint the promotion if they miss a day (in ether), max 25.6 (base 100)
   uint8 numDaysHitNeededForStreakBonus; // How many days to hit for the streak bonus
   uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
   uint8 numRandomStreakBonusItemsToPick1; // Number of items to pick for the streak bonus
@@ -96,4 +96,4 @@ struct PromotionInfo {
   uint32[] randomAmounts; // Corresponding amounts to the randomItemTokenIds
 }
 
-uint constant BRUSH_COST_MISSED_DAY_MUL = 10;
+uint256 constant BRUSH_COST_MISSED_DAY_MUL = 10;

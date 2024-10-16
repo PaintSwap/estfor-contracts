@@ -305,10 +305,10 @@ struct PastRandomRewardInfo {
 }
 
 struct PendingQueuedActionEquipmentState {
-  uint[] consumedItemTokenIds;
-  uint[] consumedAmounts;
-  uint[] producedItemTokenIds;
-  uint[] producedAmounts;
+  uint256[] consumedItemTokenIds;
+  uint256[] consumedAmounts;
+  uint256[] producedItemTokenIds;
+  uint256[] producedAmounts;
 }
 
 struct PendingQueuedActionMetadata {
@@ -344,12 +344,12 @@ struct PendingQueuedActionProcessed {
 }
 
 struct QuestState {
-  uint[] consumedItemTokenIds;
-  uint[] consumedAmounts;
-  uint[] rewardItemTokenIds;
-  uint[] rewardAmounts;
+  uint256[] consumedItemTokenIds;
+  uint256[] consumedAmounts;
+  uint256[] rewardItemTokenIds;
+  uint256[] rewardAmounts;
   PlayerQuest[] activeQuestInfo;
-  uint[] questsCompleted;
+  uint256[] questsCompleted;
   Skill[] skills; // Skills gained XP in
   uint32[] xpGainedSkills; // XP gained in these skills
 }
@@ -369,14 +369,14 @@ struct PendingQueuedActionState {
   PendingQueuedActionMetadata[] actionMetadatas;
   QueuedAction[] remainingQueuedActions;
   PastRandomRewardInfo[] producedPastRandomRewards;
-  uint[] xpRewardItemTokenIds;
-  uint[] xpRewardAmounts;
-  uint[] dailyRewardItemTokenIds;
-  uint[] dailyRewardAmounts;
+  uint256[] xpRewardItemTokenIds;
+  uint256[] xpRewardAmounts;
+  uint256[] dailyRewardItemTokenIds;
+  uint256[] dailyRewardAmounts;
   PendingQueuedActionProcessed processedData;
   bytes32 dailyRewardMask;
   QuestState quests;
-  uint numPastRandomRewardInstancesToRemove;
+  uint256 numPastRandomRewardInstancesToRemove;
   uint8 worldLocation;
   LotteryWinnerInfo lotteryWinner;
 }
@@ -409,11 +409,11 @@ struct ItemInput {
   string name;
 }
 
-uint constant MAX_UNIQUE_TICKETS_ = 64;
-uint constant IS_FULL_MODE_BIT = 7;
+uint256 constant MAX_UNIQUE_TICKETS_ = 64;
+uint256 constant IS_FULL_MODE_BIT = 7;
 
 // Passive/InstantVRF action
-uint constant IS_AVAILABLE_BIT = 1;
+uint256 constant IS_AVAILABLE_BIT = 1;
 
 // Queued action
-uint constant HAS_PET_BIT = 1;
+uint256 constant HAS_PET_BIT = 1;

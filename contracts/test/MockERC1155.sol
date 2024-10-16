@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 contract MockERC1155 is ERC1155 {
   constructor() ERC1155("") {}
 
-  uint currentId;
+  uint256 currentId;
 
   function mint(address _to) external {
     _mint(_to, ++currentId, 1, "0x");

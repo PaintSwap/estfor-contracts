@@ -11,12 +11,12 @@ import {IClans} from "../interfaces/IClans.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 
 contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
-  event BankContractCreated(address creator, uint clanId, address newContract);
+  event BankContractCreated(address creator, uint256 clanId, address newContract);
 
   error OnlyClans();
   error BankAlreadyCreated();
 
-  mapping(uint clanId => address bank) public bankAddress;
+  mapping(uint256 clanId => address bank) public bankAddress;
   // Keeps track of which vault addresses have been created here
   mapping(address => bool) public createdHere;
   /// @custom:oz-renamed-from bankUpgradeableProxy
@@ -42,7 +42,7 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     bankBeacon = _bankBeacon;
   }
 
-  function createBank(address _from, uint _clanId) external onlyClans returns (address) {
+  function createBank(address _from, uint256 _clanId) external onlyClans returns (address) {
     if (bankAddress[_clanId] != address(0)) {
       revert BankAlreadyCreated();
     }

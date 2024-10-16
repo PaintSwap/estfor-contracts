@@ -7,18 +7,18 @@ import {Skill} from "../globals/players.sol";
 
 interface IInstantVRFActionStrategy {
   function getRandomRewards(
-    uint actionId,
-    uint actionAmount,
-    uint[] calldata randomWords,
-    uint randomWordStartIndex
+    uint256 actionId,
+    uint256 actionAmount,
+    uint256[] calldata randomWords,
+    uint256 randomWordStartIndex
   )
     external
     view
     returns (
-      uint[] memory producedItemTokenIds,
-      uint[] memory producedItemsAmounts,
-      uint[] memory producedPetBaseIds,
-      uint[] memory producedPetRandomWords
+      uint256[] memory producedItemTokenIds,
+      uint256[] memory producedItemsAmounts,
+      uint256[] memory producedPetBaseIds,
+      uint256[] memory producedPetRandomWords
     );
 
   function setAction(InstantVRFActionInput calldata input) external;

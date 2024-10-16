@@ -18,21 +18,21 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   event EditInstantActions(InstantActionInput[] instantActionInputs);
   event RemoveInstantActions(InstantActionType[] actionTypes, uint16[] actionIds);
   event DoInstantActions(
-    uint playerId,
+    uint256 playerId,
     address from,
     uint16[] actionIds,
-    uint[] amounts,
-    uint[] consumedItemTokenIds,
-    uint[] consumedAmounts,
-    uint[] producedItemTokenIds,
-    uint[] producedAmounts,
+    uint256[] amounts,
+    uint256[] consumedItemTokenIds,
+    uint256[] consumedAmounts,
+    uint256[] producedItemTokenIds,
+    uint256[] producedAmounts,
     InstantActionType actionType
   );
 
   error ActionIdZeroNotAllowed();
   error InvalidOutputTokenId();
   error ActionDoesNotExist();
-  error MinimumXPNotReached(Skill minSkill, uint minXP);
+  error MinimumXPNotReached(Skill minSkill, uint256 minXP);
   error NotOwnerOfPlayerAndActive();
   error PlayerNotUpgraded();
   error ActionAlreadyExists();
@@ -88,17 +88,17 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   struct InstantActionState {
-    uint[] consumedTokenIds;
-    uint[] consumedAmounts;
-    uint[] producedTokenIds;
-    uint[] producedAmounts;
+    uint256[] consumedTokenIds;
+    uint256[] consumedAmounts;
+    uint256[] producedTokenIds;
+    uint256[] producedAmounts;
   }
 
   IPlayers public players;
   mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) public actions;
   ItemNFT public itemNFT;
 
-  modifier isOwnerOfPlayerAndActive(uint _playerId) {
+  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
@@ -118,9 +118,9 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function doInstantActions(
-    uint _playerId,
+    uint256 _playerId,
     uint16[] calldata _actionIds,
-    uint[] calldata _amounts,
+    uint256[] calldata _amounts,
     InstantActionType _actionType
   ) external isOwnerOfPlayerAndActive(_playerId) {
     InstantActionState memory instantActionState = getInstantActionState(_playerId, _actionIds, _amounts, _actionType);
@@ -141,7 +141,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     );
   }
 
-  function _checkDoActionRequirements(uint _playerId, InstantAction storage _instantAction) private view {
+  function _checkDoActionRequirements(uint256 _playerId, InstantAction storage _instantAction) private view {
     if (_instantAction.inputTokenId1 == NONE) {
       revert InvalidActionId();
     }
@@ -154,9 +154,9 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function getInstantActionState(
-    uint _playerId,
+    uint256 _playerId,
     uint16[] calldata _actionIds,
-    uint[] calldata _amounts,
+    uint256[] calldata _amounts,
     InstantActionType _actionType
   ) public view returns (InstantActionState memory instantActionState) {
     if (_actionType == InstantActionType.FORGING_COMBINE) {
@@ -169,18 +169,18 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _genericInstantActionState(
-    uint _playerId,
+    uint256 _playerId,
     uint16[] calldata _actionIds,
-    uint[] calldata _amounts
+    uint256[] calldata _amounts
   ) private view returns (InstantActionState memory instantActionState) {
     // Burn all those and mint the components back
-    uint MAX_INPUTS = 3;
-    instantActionState.consumedTokenIds = new uint[](_actionIds.length * MAX_INPUTS);
-    instantActionState.consumedAmounts = new uint[](_actionIds.length * MAX_INPUTS);
-    instantActionState.producedTokenIds = new uint[](_actionIds.length);
-    instantActionState.producedAmounts = new uint[](_actionIds.length);
-    uint length;
-    for (uint i; i < _actionIds.length; ++i) {
+    uint256 MAX_INPUTS = 3;
+    instantActionState.consumedTokenIds = new uint256[](_actionIds.length * MAX_INPUTS);
+    instantActionState.consumedAmounts = new uint256[](_actionIds.length * MAX_INPUTS);
+    instantActionState.producedTokenIds = new uint256[](_actionIds.length);
+    instantActionState.producedAmounts = new uint256[](_actionIds.length);
+    uint256 length;
+    for (uint256 i; i < _actionIds.length; ++i) {
       InstantAction storage instantAction = actions[InstantActionType.GENERIC][_actionIds[i]];
 
       _checkDoActionRequirements(_playerId, instantAction);
@@ -204,8 +204,8 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       instantActionState.producedAmounts[i] = instantAction.outputAmount * _amounts[i];
     }
 
-    uint[] memory consumedTokenIds = instantActionState.consumedTokenIds;
-    uint[] memory consumedAmounts = instantActionState.consumedAmounts;
+    uint256[] memory consumedTokenIds = instantActionState.consumedTokenIds;
+    uint256[] memory consumedAmounts = instantActionState.consumedAmounts;
 
     assembly ("memory-safe") {
       mstore(consumedTokenIds, length)
@@ -214,17 +214,17 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _forgingCombineActionState(
-    uint _playerId,
+    uint256 _playerId,
     uint16[] calldata _actionIds,
-    uint[] calldata _amounts
+    uint256[] calldata _amounts
   ) private view returns (InstantActionState memory instantActionState) {
     // Forging actions only have 1 input, burn all those and mint the components back
-    instantActionState.consumedTokenIds = new uint[](_actionIds.length);
-    instantActionState.consumedAmounts = new uint[](_actionIds.length);
+    instantActionState.consumedTokenIds = new uint256[](_actionIds.length);
+    instantActionState.consumedAmounts = new uint256[](_actionIds.length);
     // All outputTokenIds should be the same for forging
-    uint producedAmount;
-    uint producedTokenId = actions[InstantActionType.FORGING_COMBINE][_actionIds[0]].outputTokenId;
-    for (uint i; i < _actionIds.length; ++i) {
+    uint256 producedAmount;
+    uint256 producedTokenId = actions[InstantActionType.FORGING_COMBINE][_actionIds[0]].outputTokenId;
+    for (uint256 i; i < _actionIds.length; ++i) {
       InstantAction storage instantAction = actions[InstantActionType.FORGING_COMBINE][_actionIds[i]];
       if (producedTokenId != instantAction.outputTokenId) {
         // All outputs should be the same
@@ -238,13 +238,13 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       instantActionState.consumedAmounts[i] = instantAction.inputAmount1 * _amounts[i];
     }
 
-    instantActionState.producedTokenIds = new uint[](1);
+    instantActionState.producedTokenIds = new uint256[](1);
     instantActionState.producedTokenIds[0] = producedTokenId;
-    instantActionState.producedAmounts = new uint[](1);
+    instantActionState.producedAmounts = new uint256[](1);
     instantActionState.producedAmounts[0] = producedAmount;
   }
 
-  function _checkMinXPRequirements(uint _playerId, InstantAction storage _instantAction) private view {
+  function _checkMinXPRequirements(uint256 _playerId, InstantAction storage _instantAction) private view {
     Skill minSkill1 = _instantAction.minSkill1.asSkill();
     if (minSkill1 != Skill.NONE && players.xp(_playerId, minSkill1) < _instantAction.minXP1) {
       revert MinimumXPNotReached(minSkill1, _instantAction.minXP1);
@@ -335,7 +335,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       }
     }
 
-    for (uint i; i < inputTokenIds.length; ++i) {
+    for (uint256 i; i < inputTokenIds.length; ++i) {
       if (inputTokenIds[i] == 0) {
         revert InvalidInputTokenId();
       }
@@ -347,7 +347,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
         if (amounts[i] > amounts[i + 1]) {
           revert InputAmountsMustBeInOrder();
         }
-        for (uint j; j < inputTokenIds.length; ++j) {
+        for (uint256 j; j < inputTokenIds.length; ++j) {
           if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
             revert InputItemNoDuplicates();
           }
@@ -365,7 +365,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     if (minSkills.length != minXPs.length) {
       revert LengthMismatch();
     }
-    for (uint i; i < minSkills.length; ++i) {
+    for (uint256 i; i < minSkills.length; ++i) {
       if (minSkills[i].isSkill(Skill.NONE)) {
         revert InvalidSkill();
       }
@@ -374,7 +374,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       }
 
       if (i != minSkills.length - 1) {
-        for (uint j; j < minSkills.length; ++j) {
+        for (uint256 j; j < minSkills.length; ++j) {
           if (j != i && minSkills[i] == minSkills[j]) {
             revert MinimumSkillsNoDuplicates();
           }
@@ -384,7 +384,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function addActions(InstantActionInput[] calldata _instantActionInputs) external onlyOwner {
-    for (uint i; i < _instantActionInputs.length; ++i) {
+    for (uint256 i; i < _instantActionInputs.length; ++i) {
       InstantActionInput calldata instantActionInput = _instantActionInputs[i];
       if (_actionExists(instantActionInput)) {
         revert ActionAlreadyExists();
@@ -395,7 +395,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function editActions(InstantActionInput[] calldata _instantActionInputs) external onlyOwner {
-    for (uint i = 0; i < _instantActionInputs.length; ++i) {
+    for (uint256 i = 0; i < _instantActionInputs.length; ++i) {
       InstantActionInput calldata instantActionInput = _instantActionInputs[i];
       if (!_actionExists(instantActionInput)) {
         revert ActionDoesNotExist();
@@ -413,7 +413,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       revert LengthMismatch();
     }
 
-    for (uint i = 0; i < _instantActionIds.length; ++i) {
+    for (uint256 i = 0; i < _instantActionIds.length; ++i) {
       if (actions[_actionTypes[i]][_instantActionIds[i]].inputTokenId1 == NONE) {
         revert ActionDoesNotExist();
       }

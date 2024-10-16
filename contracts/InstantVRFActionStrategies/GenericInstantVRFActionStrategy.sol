@@ -23,7 +23,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     uint16[30] randomRewardInfo; // Can have up to 5 different random reward tokens. Order is tokenId, chance, amount etc
   }
 
-  mapping(uint actionId => InstantVRFAction action) private actions;
+  mapping(uint256 actionId => InstantVRFAction action) private actions;
   address private instantVRFActions;
 
   modifier onlyInstantVRFActions() {
@@ -52,33 +52,33 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   }
 
   function getRandomRewards(
-    uint _actionId,
-    uint _actionAmount,
-    uint[] calldata _randomWords,
-    uint _randomWordStartIndex
+    uint256 _actionId,
+    uint256 _actionAmount,
+    uint256[] calldata _randomWords,
+    uint256 _randomWordStartIndex
   )
     external
     view
     override
     returns (
-      uint[] memory producedItemTokenIds,
-      uint[] memory producedItemsAmounts,
-      uint[] memory producedPetBaseIds,
-      uint[] memory producedPetRandomWords
+      uint256[] memory producedItemTokenIds,
+      uint256[] memory producedItemsAmounts,
+      uint256[] memory producedPetBaseIds,
+      uint256[] memory producedPetRandomWords
     )
   {
-    producedItemTokenIds = new uint[](_actionAmount);
-    producedItemsAmounts = new uint[](_actionAmount);
+    producedItemTokenIds = new uint256[](_actionAmount);
+    producedItemsAmounts = new uint256[](_actionAmount);
     InstantVRFRandomReward[] memory randomRewards = _setupRandomRewards(_actionId);
 
     if (randomRewards.length != 0) {
-      uint numWords = _actionAmount / 16 + ((_actionAmount % 16) == 0 ? 0 : 1);
+      uint256 numWords = _actionAmount / 16 + ((_actionAmount % 16) == 0 ? 0 : 1);
       bytes memory randomBytes = abi.encodePacked(_randomWords[_randomWordStartIndex:_randomWordStartIndex + numWords]);
-      for (uint i; i < _actionAmount; ++i) {
+      for (uint256 i; i < _actionAmount; ++i) {
         uint16 rand = _getSlice(randomBytes, i);
 
         InstantVRFRandomReward memory randomReward;
-        for (uint j; j < randomRewards.length; ++j) {
+        for (uint256 j; j < randomRewards.length; ++j) {
           if (rand > randomRewards[j].chance) {
             break;
           }
@@ -91,18 +91,18 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     }
   }
 
-  function _getSlice(bytes memory _b, uint _index) private pure returns (uint16) {
+  function _getSlice(bytes memory _b, uint256 _index) private pure returns (uint16) {
     uint256 index = _index * 2;
     return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
   }
 
-  function _setupRandomRewards(uint _actionId) private view returns (InstantVRFRandomReward[] memory randomRewards) {
+  function _setupRandomRewards(uint256 _actionId) private view returns (InstantVRFRandomReward[] memory randomRewards) {
     // Read the strategy from the actionId
     InstantVRFAction storage action = actions[_actionId];
 
     randomRewards = new InstantVRFRandomReward[](action.randomRewardInfo.length / 3);
-    uint randomRewardLength;
-    for (uint i; i < action.randomRewardInfo.length / 3; ++i) {
+    uint256 randomRewardLength;
+    for (uint256 i; i < action.randomRewardInfo.length / 3; ++i) {
       if (action.randomRewardInfo[i * 3] == 0) {
         break;
       }
@@ -125,7 +125,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
       revert TooManyRandomRewards();
     }
 
-    for (uint i; i < _randomRewards.length; ++i) {
+    for (uint256 i; i < _randomRewards.length; ++i) {
       if (_randomRewards[i].itemTokenId == 0) {
         revert RandomRewardSpecifiedWithoutTokenId();
       }
@@ -184,7 +184,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   }
 
   // TODO, Delete later if there are other changes made in this file. Just to change up the bytecode for a rogue deployment
-  function version() external view returns (uint) {
+  function version() external view returns (uint256) {
     return 1;
   }
 

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 interface IUniswapV2Pair {
-  function balanceOf(address owner) external view returns (uint);
+  function balanceOf(address owner) external view returns (uint256);
 
-  function mint(address to) external returns (uint liquidity);
+  function mint(address to) external returns (uint256 liquidity);
 }

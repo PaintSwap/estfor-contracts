@@ -29,18 +29,18 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   using UnsafeMath for uint256;
   using UnsafeMath for uint40;
 
-  event NewPet(uint petId, Pet pet, string name, address from);
-  event NewPets(uint startPetId, Pet[] pets, string[] names, address from);
+  event NewPet(uint256 petId, Pet pet, string name, address from);
+  event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
-    uint brushBurntPercentage,
-    uint brushPoolPercentage,
-    uint brushDevPercentage,
-    uint brushTerritoriesPercentage
+    uint256 brushBurntPercentage,
+    uint256 brushPoolPercentage,
+    uint256 brushDevPercentage,
+    uint256 brushTerritoriesPercentage
   );
-  event EditPlayerPet(uint playerId, uint petId, address from, string newName);
+  event EditPlayerPet(uint256 playerId, uint256 petId, address from, string newName);
   event AddBasePets(BasePetInput[] basePetInputs);
   event EditBasePets(BasePetInput[] basePetInputs);
-  event EditNameCost(uint newCost);
+  event EditNameCost(uint256 newCost);
 
   error PetAlreadyExists();
   error PetDoesNotExist();
@@ -68,7 +68,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   error SkillEnhancementIncorrectlyFilled();
   error MustHaveAtLeastPercentageOrFixedSet();
   error LengthMismatch();
-  error LevelNotHighEnough(Skill skill, uint level);
+  error LevelNotHighEnough(Skill skill, uint256 level);
   error SkillFixedIncrementCannotBeZero();
   error SkillFixedMustBeAFactorOfIncrement();
   error NotPlayersOrAdminAndBeta();
@@ -99,11 +99,11 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   address private instantVRFActions;
 
   // What about the different skins?
-  mapping(uint basePetId => BasePetMetadata metadata) private basePetMetadatas;
-  mapping(uint petId => Pet pet) private pets;
-  mapping(uint petId => string name) private names;
+  mapping(uint256 basePetId => BasePetMetadata metadata) private basePetMetadatas;
+  mapping(uint256 petId => Pet pet) private pets;
+  mapping(uint256 petId => string name) private names;
   mapping(string name => bool exists) private lowercaseNames;
-  mapping(uint petId => uint40 lastAssignmentTimestamp) private lastAssignmentTimestamps;
+  mapping(uint256 petId => uint40 lastAssignmentTimestamp) private lastAssignmentTimestamps;
   string private imageBaseUri;
 
   // Royalties
@@ -146,14 +146,14 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _;
   }
 
-  modifier isOwnerOfPet(uint _petId) {
+  modifier isOwnerOfPet(uint256 _petId) {
     if (getOwner(_petId) != _msgSender()) {
       revert NotOwnerOfPet();
     }
     _;
   }
 
-  modifier isOwnerOfPlayer(uint _playerId) {
+  modifier isOwnerOfPlayer(uint256 _playerId) {
     if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayer();
     }
@@ -198,8 +198,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function editPet(
-    uint _playerId,
-    uint _petId,
+    uint256 _playerId,
+    uint256 _petId,
     string calldata _name
   ) external isOwnerOfPlayer(_playerId) isOwnerOfPet(_petId) {
     (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) = _setName(_petId, _name);
@@ -225,7 +225,12 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     emit EditPlayerPet(_playerId, _petId, msg.sender, trimmedName);
   }
 
-  function assignPet(address _from, uint _playerId, uint _petId, uint _timestamp) external onlyPlayersOrAdminAndBeta {
+  function assignPet(
+    address _from,
+    uint256 _playerId,
+    uint256 _petId,
+    uint256 _timestamp
+  ) external onlyPlayersOrAdminAndBeta {
     // If pet is already assigned then don't change timestamp
     Pet storage pet = pets[_petId];
     if (getOwner(_petId) != _from) {
@@ -234,14 +239,14 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
     // Check skill minimum levels are met
     Skill skillEnhancement1 = basePetMetadatas[pet.baseId].skillEnhancement1;
-    uint skillMinLevel1 = basePetMetadatas[pet.baseId].skillMinLevel1;
+    uint256 skillMinLevel1 = basePetMetadatas[pet.baseId].skillMinLevel1;
     if (IPlayers(players).level(_playerId, skillEnhancement1) < skillMinLevel1) {
       revert LevelNotHighEnough(skillEnhancement1, skillMinLevel1);
     }
 
     Skill skillEnhancement2 = basePetMetadatas[pet.baseId].skillEnhancement2;
     if (skillEnhancement2 != Skill.NONE) {
-      uint skillMinLevel2 = basePetMetadatas[pet.baseId].skillMinLevel2;
+      uint256 skillMinLevel2 = basePetMetadatas[pet.baseId].skillMinLevel2;
       if (IPlayers(players).level(_playerId, skillEnhancement2) < skillMinLevel2) {
         revert LevelNotHighEnough(skillEnhancement2, skillMinLevel2);
       }
@@ -256,21 +261,21 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function mintBatch(
     address _to,
-    uint[] calldata _basePetIds,
-    uint[] calldata _randomWords
-  ) external onlyMinters returns (uint[] memory tokenIds) {
+    uint256[] calldata _basePetIds,
+    uint256[] calldata _randomWords
+  ) external onlyMinters returns (uint256[] memory tokenIds) {
     if (_basePetIds.length != _randomWords.length) {
       revert LengthMismatch();
     }
 
-    tokenIds = new uint[](_basePetIds.length);
-    uint[] memory amounts = new uint[](_basePetIds.length);
+    tokenIds = new uint256[](_basePetIds.length);
+    uint256[] memory amounts = new uint256[](_basePetIds.length);
     string[] memory _names = new string[](_basePetIds.length);
     Pet[] memory _pets = new Pet[](_basePetIds.length);
 
-    uint startPetId = nextPetId;
-    for (uint i = 0; i < _pets.length; ++i) {
-      uint petId = startPetId + i;
+    uint256 startPetId = nextPetId;
+    for (uint256 i = 0; i < _pets.length; ++i) {
+      uint256 petId = startPetId + i;
       Pet memory pet = _createPet(petId, _basePetIds[i], uint16(_randomWords[i]));
       _pets[i] = pet;
       pets[petId] = pet;
@@ -284,31 +289,31 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     emit NewPets(startPetId, _pets, _names, _to);
   }
 
-  function mint(address _to, uint _basePetId, uint _randomWord) external onlyMinters {
-    uint petId = nextPetId++;
+  function mint(address _to, uint256 _basePetId, uint256 _randomWord) external onlyMinters {
+    uint256 petId = nextPetId++;
     Pet memory pet = _createPet(petId, _basePetId, uint16(_randomWord));
     _mint(_to, petId, 1, "");
     emit NewPet(petId, pet, PetNFTLibrary._defaultPetName(petId), _msgSender());
   }
 
-  function burnBatch(address _from, uint[] memory _tokenIds) external onlyBurners(_from) {
-    uint[] memory amounts = new uint[](_tokenIds.length);
+  function burnBatch(address _from, uint256[] memory _tokenIds) external onlyBurners(_from) {
+    uint256[] memory amounts = new uint256[](_tokenIds.length);
     _burnBatch(_from, _tokenIds, amounts);
   }
 
-  function burn(address _from, uint _tokenId) external onlyBurners(_from) {
+  function burn(address _from, uint256 _tokenId) external onlyBurners(_from) {
     _burn(_from, _tokenId, 1);
   }
 
-  function _createPet(uint _petId, uint _basePetId, uint16 _randomWord) private returns (Pet memory pet) {
+  function _createPet(uint256 _petId, uint256 _basePetId, uint16 _randomWord) private returns (Pet memory pet) {
     if (basePetMetadatas[_basePetId].skillEnhancement1 == Skill.NONE) {
       revert PetDoesNotExist();
     }
 
     // Fixed enhancement for skill 1
-    uint skillFixedMin1 = basePetMetadatas[_basePetId].skillFixedMin1;
-    uint skillFixedMax1 = basePetMetadatas[_basePetId].skillFixedMax1;
-    uint skillFixedEnhancement1 = skillFixedMin1;
+    uint256 skillFixedMin1 = basePetMetadatas[_basePetId].skillFixedMin1;
+    uint256 skillFixedMax1 = basePetMetadatas[_basePetId].skillFixedMax1;
+    uint256 skillFixedEnhancement1 = skillFixedMin1;
     if (skillFixedMax1 != skillFixedMin1) {
       skillFixedEnhancement1 =
         ((_randomWord >> 8) %
@@ -317,9 +322,9 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     }
 
     // Percentage enhancement for skill 1
-    uint skillPercentageMin1 = basePetMetadatas[_basePetId].skillPercentageMin1;
-    uint skillPercentageMax1 = basePetMetadatas[_basePetId].skillPercentageMax1;
-    uint skillPercentageEnhancement1 = skillPercentageMin1;
+    uint256 skillPercentageMin1 = basePetMetadatas[_basePetId].skillPercentageMin1;
+    uint256 skillPercentageMax1 = basePetMetadatas[_basePetId].skillPercentageMax1;
+    uint256 skillPercentageEnhancement1 = skillPercentageMin1;
     if (skillPercentageMax1 != skillPercentageMin1) {
       skillPercentageEnhancement1 =
         (_randomWord %
@@ -331,13 +336,13 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
     // Skill 2
     Skill skillEnhancement2 = basePetMetadatas[_basePetId].skillEnhancement2;
-    uint skillFixedEnhancement2;
-    uint skillPercentageEnhancement2;
+    uint256 skillFixedEnhancement2;
+    uint256 skillPercentageEnhancement2;
     if (skillEnhancement2 != Skill.NONE) {
-      uint otherRandomWord = uint(keccak256(abi.encodePacked(_randomWord)));
+      uint256 otherRandomWord = uint256(keccak256(abi.encodePacked(_randomWord)));
       // Fixed enhancement
-      uint skillFixedMin2 = basePetMetadatas[_basePetId].skillFixedMin2;
-      uint skillFixedMax2 = basePetMetadatas[_basePetId].skillFixedMax2;
+      uint256 skillFixedMin2 = basePetMetadatas[_basePetId].skillFixedMin2;
+      uint256 skillFixedMax2 = basePetMetadatas[_basePetId].skillFixedMax2;
       if (skillFixedMax2 != skillFixedMin2) {
         skillFixedEnhancement2 =
           (otherRandomWord %
@@ -348,8 +353,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       }
 
       // Percentage enhancement
-      uint skillPercentageMin2 = basePetMetadatas[_basePetId].skillPercentageMin2;
-      uint skillPercentageMax2 = basePetMetadatas[_basePetId].skillPercentageMax2;
+      uint256 skillPercentageMin2 = basePetMetadatas[_basePetId].skillPercentageMin2;
+      uint256 skillPercentageMax2 = basePetMetadatas[_basePetId].skillPercentageMax2;
       if (skillPercentageMax2 != skillPercentageMin2) {
         skillPercentageEnhancement2 =
           ((otherRandomWord >> 8) %
@@ -378,7 +383,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function _setName(
-    uint _petId,
+    uint256 _petId,
     string memory _name
   ) private returns (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) {
     // Trimmed name cannot be empty
@@ -409,7 +414,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     }
   }
 
-  function _pay(uint _brushCost) private {
+  function _pay(uint256 _brushCost) private {
     if (_brushCost == 0) {
       return;
     }
@@ -426,7 +431,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     }
 
     if (brushBurntPercentage != 0) {
-      uint amountBurnt = (_brushCost * brushBurntPercentage) / 100;
+      uint256 amountBurnt = (_brushCost * brushBurntPercentage) / 100;
       brush.transferFrom(msg.sender, address(this), amountBurnt);
       brush.burn(amountBurnt);
     }
@@ -489,7 +494,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     );
   }
 
-  function _checkBasePet(BasePetInput calldata _basePetInput, uint index) private pure {
+  function _checkBasePet(BasePetInput calldata _basePetInput, uint256 index) private pure {
     bool isSkillSet = _basePetInput.skillEnhancements[index] != Skill.NONE;
     if (!isSkillSet) {
       return;
@@ -504,7 +509,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       revert SkillEnhancementMinGreaterThanMax();
     }
 
-    uint percentageIncrement = _basePetInput.skillPercentageIncrements[index];
+    uint256 percentageIncrement = _basePetInput.skillPercentageIncrements[index];
     if (
       percentageIncrement != 0 &&
       ((_basePetInput.skillPercentageMins[index] % percentageIncrement) != 0 ||
@@ -522,7 +527,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       revert SkillEnhancementMinGreaterThanMax();
     }
 
-    uint fixedIncrement = _basePetInput.skillFixedIncrements[index];
+    uint256 fixedIncrement = _basePetInput.skillFixedIncrements[index];
     if (_basePetInput.skillFixedMaxs[index] != 0 && fixedIncrement == 0) {
       revert SkillFixedIncrementCannotBeZero();
     }
@@ -565,19 +570,19 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   /**
    * @dev Returns whether `_tokenId` exists.
    */
-  function _exists(uint _tokenId) internal view override returns (bool) {
+  function _exists(uint256 _tokenId) internal view override returns (bool) {
     return pets[_tokenId].owner != address(0);
   }
 
-  function getPet(uint _tokenId) external view returns (Pet memory) {
+  function getPet(uint256 _tokenId) external view returns (Pet memory) {
     return pets[_tokenId];
   }
 
-  function getOwner(uint _tokenId) public view override returns (address) {
+  function getOwner(uint256 _tokenId) public view override returns (address) {
     return pets[_tokenId].owner;
   }
 
-  function uri(uint _tokenId) public view virtual override returns (string memory) {
+  function uri(uint256 _tokenId) public view virtual override returns (string memory) {
     if (!_exists(_tokenId)) {
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
@@ -589,10 +594,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function royaltyInfo(
-    uint /*_tokenId*/,
-    uint _salePrice
-  ) external view override returns (address receiver, uint royaltyAmount) {
-    uint amount = (_salePrice * royaltyFee) / 1000;
+    uint256 /*_tokenId*/,
+    uint256 _salePrice
+  ) external view override returns (address receiver, uint256 royaltyAmount) {
+    uint256 amount = (_salePrice * royaltyFee) / 1000;
     return (royaltyReceiver, amount);
   }
 
@@ -631,7 +636,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function addBasePets(BasePetInput[] calldata _basePetInputs) external onlyOwner {
-    for (uint i; i < _basePetInputs.length; ++i) {
+    for (uint256 i; i < _basePetInputs.length; ++i) {
       BasePetInput calldata basePetInput = _basePetInputs[i];
       if (_basePetExists(basePetInput)) {
         revert PetAlreadyExists();
@@ -642,7 +647,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function editBasePets(BasePetInput[] calldata _basePetInputs) external onlyOwner {
-    for (uint i = 0; i < _basePetInputs.length; ++i) {
+    for (uint256 i = 0; i < _basePetInputs.length; ++i) {
       BasePetInput calldata basePetInput = _basePetInputs[i];
       if (!_basePetExists(basePetInput)) {
         revert PetDoesNotExist();

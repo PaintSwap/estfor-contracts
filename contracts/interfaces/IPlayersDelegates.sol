@@ -16,12 +16,12 @@ import "../globals/all.sol";
 // Functions to help with delegatecall selectors
 interface IPlayersDelegate {
   function startActions(
-    uint playerId,
+    uint256 playerId,
     QueuedActionInputV2[] calldata queuedActions,
     uint16 boostItemTokenId,
     uint40 boostStartTime,
-    uint questId,
-    uint donationAmount,
+    uint256 questId,
+    uint256 donationAmount,
     ActionQueueStatus queueStatus
   ) external;
 
@@ -33,17 +33,17 @@ interface IPlayersDelegate {
 
   function mintedPlayer(
     address from,
-    uint playerId,
+    uint256 playerId,
     Skill[2] calldata startSkills,
-    uint[] calldata startingItemTokenIds,
-    uint[] calldata startingAmounts
+    uint256[] calldata startingItemTokenIds,
+    uint256[] calldata startingAmounts
   ) external;
 
-  function clearEverything(address from, uint playerId, bool processTheTransactions) external;
+  function clearEverything(address from, uint256 playerId, bool processTheTransactions) external;
 
-  function testModifyXP(address from, uint playerId, Skill skill, uint56 xp, bool force) external;
+  function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external;
 
-  function buyBrushQuest(address to, uint playerId, uint questId, bool useExactETH) external;
+  function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external;
 
   function initialize(
     ItemNFT itemNFT,
@@ -64,21 +64,21 @@ interface IPlayersDelegate {
 }
 
 interface IPlayersMiscDelegate {
-  function handleDailyRewards(address from, uint playerId) external;
+  function handleDailyRewards(address from, uint256 playerId) external;
 }
 
 interface IPlayersProcessActionsDelegate {
-  function processActions(address from, uint playerId) external;
+  function processActions(address from, uint256 playerId) external;
 
-  function processActionsAndSetState(uint playerId) external;
+  function processActionsAndSetState(uint256 playerId) external;
 
-  function donate(address from, uint playerId, uint amount) external;
+  function donate(address from, uint256 playerId, uint256 amount) external;
 }
 
 interface IPlayersRewardsDelegate {
   function claimRandomRewards(
     address from,
-    uint playerId,
+    uint256 playerId,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed
   ) external;
 }
@@ -86,25 +86,25 @@ interface IPlayersRewardsDelegate {
 // External view functions that are in other implementation files
 interface IPlayersMiscDelegateView {
   function claimableXPThresholdRewardsImpl(
-    uint oldTotalXP,
-    uint newTotalXP
-  ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts);
+    uint256 oldTotalXP,
+    uint256 newTotalXP
+  ) external view returns (uint256[] memory itemTokenIds, uint256[] memory amounts);
 
-  function dailyClaimedRewardsImpl(uint playerId) external view returns (bool[7] memory claimed);
+  function dailyClaimedRewardsImpl(uint256 playerId) external view returns (bool[7] memory claimed);
 
   function dailyRewardsViewImpl(
     address from,
-    uint playerId
-  ) external view returns (uint[] memory itemTokenIds, uint[] memory amounts, bytes32 dailyRewardMask);
+    uint256 playerId
+  ) external view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, bytes32 dailyRewardMask);
 
   function processConsumablesView(
     address from,
-    uint playerId,
+    uint256 playerId,
     QueuedAction calldata queuedAction,
     ActionChoice calldata actionChoice,
     CombatStats memory combatStats,
-    uint elapsedTime,
-    uint startTime,
+    uint256 elapsedTime,
+    uint256 startTime,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed
   )
@@ -113,40 +113,40 @@ interface IPlayersMiscDelegateView {
     returns (
       Equipment[] memory consumedEquipments,
       Equipment memory producedEquipment,
-      uint xpElapsedTime,
+      uint256 xpElapsedTime,
       bool died,
       uint16 foodConsumed,
       uint16 baseInputItemsConsumedNum
     );
 
   function getRandomRewards(
-    uint playerId,
+    uint256 playerId,
     uint40 startTimestamp,
     uint40 skillSentinelTime,
-    uint numTickets,
+    uint256 numTickets,
     ActionRewards memory actionRewards,
     uint8 successPercent,
     uint8 fullAttireBonusRewardsPercent
-  ) external view returns (uint[] memory ids, uint[] memory amounts, bool hasRandomWord);
+  ) external view returns (uint256[] memory ids, uint256[] memory amounts, bool hasRandomWord);
 }
 
 interface IPlayersRewardsDelegateView {
   function pendingQueuedActionStateImpl(
     address owner,
-    uint playerId
+    uint256 playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
 }
 
 interface IPlayersQueuedActionsDelegateView {
   function validateActionsImpl(
     address owner,
-    uint playerId,
+    uint256 playerId,
     QueuedActionInputV2[] memory queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons);
 
   function checkAddToQueue(
     address from,
-    uint playerId,
+    uint256 playerId,
     QueuedActionInputV2 memory queuedAction,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory pendingQuestState
@@ -159,6 +159,6 @@ interface IPlayersMisc1DelegateView {
     string calldata avatarName,
     string calldata avatarDescription,
     string calldata imageURI,
-    uint playerId
+    uint256 playerId
   ) external view returns (string memory uri);
 }

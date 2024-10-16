@@ -113,9 +113,9 @@ struct ActionInfoV1 {
 }
 
 // Allows for 2, 4 or 8 hour respawn time
-uint constant SPAWN_MUL = 1000;
-uint constant RATE_MUL = 1000;
-uint constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour respawn time)
+uint256 constant SPAWN_MUL = 1000;
+uint256 constant RATE_MUL = 1000;
+uint256 constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour respawn time)
 
-uint constant ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT = 6;
-uint constant ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT = 5;
+uint256 constant ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT = 6;
+uint256 constant ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT = 5;

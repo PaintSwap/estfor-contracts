@@ -73,4 +73,4 @@ struct PlayerQuest {
   bool isFixed;
 }
 
-uint constant QUEST_PURSE_STRINGS = 5; // MAKE SURE THIS MATCHES definitions
+uint256 constant QUEST_PURSE_STRINGS = 5; // MAKE SURE THIS MATCHES definitions

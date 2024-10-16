@@ -34,7 +34,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     uint40 combatantCooldownTimestamp;
   }
 
-  mapping(uint playerId => PlayerInfo playerInfos) private playerInfos;
+  mapping(uint256 playerId => PlayerInfo playerInfos) private playerInfos;
   AdminAccess private adminAccess;
   bool private isBeta;
   IClans public clans;
@@ -43,14 +43,14 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   uint24 private combatantChangeCooldown;
   ICombatants public lockedVaults;
 
-  modifier isOwnerOfPlayerAndActive(uint _playerId) {
+  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint _clanId, uint _playerId) {
+  modifier isAtLeastLeaderOfClan(uint256 _clanId, uint256 _playerId) {
     if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
       revert NotLeader();
     }
@@ -92,12 +92,12 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function assignCombatants(
-    uint _clanId,
+    uint256 _clanId,
     bool _setTerritoryCombatants,
     uint48[] calldata _territoryPlayerIds,
     bool _setLockedVaultCombatants,
     uint48[] calldata _lockedVaultPlayerIds,
-    uint _leaderPlayerId
+    uint256 _leaderPlayerId
   ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
     if (!_setTerritoryCombatants && !_setLockedVaultCombatants) {
       revert NotSettingCombatants();
@@ -132,17 +132,17 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     ICombatants _otherCombatants,
     bool _setOtherCombatants,
     uint48[] calldata _otherPlayerIds,
-    uint _clanId,
-    uint _leaderPlayerId
+    uint256 _clanId,
+    uint256 _leaderPlayerId
   ) private {
     if (_setCombatants) {
-      uint newCombatantCooldownTimestamp = block.timestamp + combatantChangeCooldown;
+      uint256 newCombatantCooldownTimestamp = block.timestamp + combatantChangeCooldown;
       // Check they are not being placed as a locked vault combatant
-      for (uint i; i < _playerIds.length; ++i) {
+      for (uint256 i; i < _playerIds.length; ++i) {
         if (_setOtherCombatants) {
           if (_otherPlayerIds.length != 0) {
-            uint searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
-            if (searchIndex != type(uint).max) {
+            uint256 searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
+            if (searchIndex != type(uint256).max) {
               revert PlayerOnTerritoryAndLockedVault();
             }
           }
@@ -177,7 +177,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function clearCooldowns(uint48[] calldata _playerIds) public isAdminAndBeta {
-    for (uint i; i < _playerIds.length; ++i) {
+    for (uint256 i; i < _playerIds.length; ++i) {
       playerInfos[_playerIds[i]].combatantCooldownTimestamp = 0;
     }
   }

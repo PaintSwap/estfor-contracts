@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 interface ISamWitchVRF {
-  function requestRandomWords(uint numWords, uint callbackGasLimit) external returns (bytes32 requestId);
+  function requestRandomWords(uint256 numWords, uint256 callbackGasLimit) external returns (bytes32 requestId);
 
   function fulfillRandomWords(
     bytes32 requestId,

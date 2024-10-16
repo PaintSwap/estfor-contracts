@@ -14,9 +14,9 @@ contract ERC1155HolderRogue is ERC1155Holder {
   function doInstantVRFActions(
     address players,
     address instantVRFActions,
-    uint playerId,
+    uint256 playerId,
     uint16[] calldata actionIds,
-    uint[] calldata actionAmounts
+    uint256[] calldata actionAmounts
   ) external payable {
     (bool success1, ) = players.call(abi.encodeWithSignature("setActivePlayer(uint256)", playerId));
 
@@ -35,8 +35,8 @@ contract ERC1155HolderRogue is ERC1155Holder {
   function onERC1155Received(
     address _operator,
     address _from,
-    uint _id,
-    uint _value,
+    uint256 _id,
+    uint256 _value,
     bytes memory _data
   ) public override returns (bytes4) {
     if (revertOnReceive) {
