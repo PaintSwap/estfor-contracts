@@ -134,10 +134,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       requestIds.push(requestId);
       emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);
       uint[] memory _randomWords = new uint[](1);
-      _randomWords[0] = uint(
-        blockhash(block.number - NUM_DAYS_RANDOM_WORDS_INITIALIZED + i) ^
-          0x3632d8eba811d69784e6904a58de6e0ab55f32638189623b309895beaa6920c4
-      );
+      _randomWords[0] = uint(keccak256(abi.encodePacked(address(this), i)));
       _fulfillRandomWords(requestId, _randomWords);
     }
 

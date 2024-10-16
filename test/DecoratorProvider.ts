@@ -45,7 +45,6 @@ describe("DecoratorProvider", function () {
   });
 
   it("Harvest rewards", async function () {
-    this.retries(3);
     const {mockTerritories, decoratorProvider, artGallery, brush, brushPerSecond, owner, lp, alice, playerId} =
       await loadFixture(deployContracts);
 
@@ -57,7 +56,7 @@ describe("DecoratorProvider", function () {
     // Will fail until we need it double the rewards
     await expect(decoratorProvider.connect(alice).harvest(playerId)).to.be.revertedWithCustomError(
       brush,
-      "ERC20InsufficientBalance",
+      "ERC20InsufficientBalance"
     );
     await brush.mint(await decoratorProvider.getAddress(), (brushPerSecond * 3n) / 2n);
     await decoratorProvider.connect(alice).harvest(playerId);
@@ -67,7 +66,6 @@ describe("DecoratorProvider", function () {
   });
 
   it("Retrieve art gallery rewards", async function () {
-    this.retries(3);
     const {decoratorProvider, brush, owner, lp, dev, brushPerSecond, artGalleryLockPeriod, alice, playerId} =
       await loadFixture(deployContracts);
 
@@ -129,7 +127,7 @@ describe("DecoratorProvider", function () {
     await ethers.provider.send("evm_mine", []);
     await expect(decoratorProvider.connect(alice).harvest(playerId)).to.be.revertedWithCustomError(
       decoratorProvider,
-      "HarvestingTooSoon",
+      "HarvestingTooSoon"
     );
 
     await ethers.provider.send("evm_increaseTime", [Number(minInterval)]);

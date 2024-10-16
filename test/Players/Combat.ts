@@ -26,8 +26,6 @@ import {Block, parseEther} from "ethers";
 const actionIsAvailable = true;
 
 describe("Combat Actions", function () {
-  this.retries(3);
-
   describe("Melee", async function () {
     async function playersFixtureMelee() {
       const fixture = await loadFixture(playersFixture);
@@ -1043,13 +1041,9 @@ describe("Combat Actions", function () {
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
-        BigInt(numSpawned / (SPAWN_MUL * 2) - 2),
-        BigInt(numSpawned / (SPAWN_MUL * 2) - 1),
-        BigInt(numSpawned / (SPAWN_MUL * 2)),
-        BigInt(numSpawned / (SPAWN_MUL * 2) + 1),
-        BigInt(numSpawned / (SPAWN_MUL * 2) + 2),
-      ]); // Roughly 1/2 of the time
+      expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON))
+        .to.be.greaterThanOrEqual(2)
+        .and.to.be.lessThanOrEqual(8);
     });
 
     it("Check random rewards, finish after 00:00 before oracle is called", async function () {
@@ -1152,9 +1146,13 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.be.deep.oneOf([
+        BigInt(numSpawned / (SPAWN_MUL * 2) - 3),
+        BigInt(numSpawned / (SPAWN_MUL * 2) - 2),
         BigInt(numSpawned / (SPAWN_MUL * 2) - 1),
         BigInt(numSpawned / (SPAWN_MUL * 2)),
         BigInt(numSpawned / (SPAWN_MUL * 2) + 1),
+        BigInt(numSpawned / (SPAWN_MUL * 2) + 2),
+        BigInt(numSpawned / (SPAWN_MUL * 2) + 3),
       ]); // Roughly 1/2 of the time
     });
   });

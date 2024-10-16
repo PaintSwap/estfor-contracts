@@ -980,10 +980,10 @@ describe("Instant VRF actions", function () {
       this.timeout(100000); // 100 seconds, this test might take a while on CI
 
       const randomRewards = [
-        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535n, amount: 2n}, // 30% chance of 2 runite arrows
+        {itemTokenId: EstforConstants.IRON_ARROW, chance: 65535n, amount: 2n}, // 30% chance of 2 runite arrows
         {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 45874n, amount: 2n}, // 20% chance of 2 runite arrows
         {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 32767n, amount: 2n}, // 40% chance of 2 runite arrows
-        {itemTokenId: EstforConstants.ORICHALCUM_ARROW, chance: 6553n, amount: 2n}, // 10% chance of orichalcum arrows]]
+        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 6553n, amount: 2n}, // 10% chance of orichalcum arrows
       ];
 
       const instantVRFActionInput: InstantVRFActionInput = {
@@ -1008,8 +1008,8 @@ describe("Instant VRF actions", function () {
       const actionAmount = actionAmount1 + actionAmount2;
       // Repeat the test a bunch of times to check the random rewards are as expected
       const numRepeats = 50n;
-      for (let i = 0; i < numRepeats; ++i) {
-        // Use some multiple of 16 and not
+
+      for (let i = 0n; i < numRepeats; ++i) {
         await instantVRFActions
           .connect(alice)
           .doInstantVRFActions(
@@ -1021,14 +1021,14 @@ describe("Instant VRF actions", function () {
             }
           );
 
-        await fulfillRandomWords(i + 1, instantVRFActions, mockVRF);
+        await fulfillRandomWords(i + 1n, instantVRFActions, mockVRF);
       }
 
-      const balances = await itemNFT.balanceOfs(await alice.getAddress(), [
-        EstforConstants.RUNITE_ARROW,
+      const balances = await itemNFT.balanceOfs(alice, [
+        EstforConstants.IRON_ARROW,
         EstforConstants.MITHRIL_ARROW,
         EstforConstants.ADAMANTINE_ARROW,
-        EstforConstants.ORICHALCUM_ARROW,
+        EstforConstants.RUNITE_ARROW,
       ]);
 
       for (let i = 0; i < randomRewards.length - 1; ++i) {

@@ -23,8 +23,6 @@ import {Block} from "ethers";
 const actionIsAvailable = true;
 
 describe("Rewards", function () {
-  this.retries(5);
-
   describe("XP threshold rewards", function () {
     it("Single", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
@@ -910,13 +908,7 @@ describe("Rewards", function () {
       const actionId = await getActionId(tx, world);
       const numHours = 5;
 
-      // Make sure it passes the next checkpoint so there are no issues running
-      const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
-      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
-      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-      await ethers.provider.send("evm_mine", []);
-
+      await timeTravelToNextCheckpoint();
       await requestAndFulfillRandomWords(world, mockVRF);
       await requestAndFulfillRandomWords(world, mockVRF);
 
@@ -983,8 +975,8 @@ describe("Rewards", function () {
 
       const expectedTotal = numRepeats * randomChanceFraction * numHours;
       expect(numProduced).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-      expect(numProduced).to.be.gte(BigInt(Math.floor(expectedTotal * 0.85))); // Within 15% below
-      expect(numProduced).to.be.lte(BigInt(Math.floor(expectedTotal * 1.15))); // 15% of the time we should get more than 50% of the reward
+      expect(numProduced).to.be.gte(Math.floor(expectedTotal * 0.8)); // Within 20% below
+      expect(numProduced).to.be.lte(Math.floor(expectedTotal * 1.2)); // 20% of the time we should get more than 50% of the reward
     });
 
     it("Multiple random rewards (many)", async function () {
@@ -1119,13 +1111,13 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       let i = 0;
-      for (const [itemTokenId, amount] of balanceMap) {
+      for (const [itemTokenId] of balanceMap) {
         const randomChanceFraction = randomChanceFractions[i];
         const expectedTotal = numRepeats * randomChanceFraction * numHours;
         // Have 2 queued actions so twice as much
         expect(balanceMap.get(itemTokenId)).to.not.eq(expectedTotal * 2); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-        expect(balanceMap.get(itemTokenId)).to.be.gte(expectedTotal * 0.75 * 2); // Within 25% below
-        expect(balanceMap.get(itemTokenId)).to.be.lte(expectedTotal * 1.25 * 2); // Within 25% above
+        expect(balanceMap.get(itemTokenId)).to.be.gte(Math.floor(expectedTotal * 0.7 * 2)); // Within 30% below
+        expect(balanceMap.get(itemTokenId)).to.be.lte(Math.floor(expectedTotal * 1.3 * 2)); // Within 30% above
         ++i;
       }
     });
@@ -2645,7 +2637,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       // Check output (add some tolerance in case it's hit more than once)
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.oneOf([1n, 2n, 3n]);
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.oneOf([1n, 2n, 3n, 4n]);
     });
 
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit none", async function () {

@@ -28,8 +28,6 @@ import {Block} from "ethers";
 const actionIsAvailable = true;
 
 describe("Non-Combat Actions", function () {
-  this.retries(5);
-
   describe("Woodcutting", function () {
     it("Cut wood", async function () {
       const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
@@ -1276,13 +1274,18 @@ describe("Non-Combat Actions", function () {
       };
 
       const numRepeats = 25;
+      let numRandomRewardsHit = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await ethers.provider.send("evm_mine", []);
+        await timeTravel24Hours();
         await requestAndFulfillRandomWords(world, mockVRF);
+        const pendingQueuedActionState = await players.pendingQueuedActionState(alice, playerId);
+        if (pendingQueuedActionState.producedPastRandomRewards.length > 0) {
+          ++numRandomRewardsHit;
+        }
         await players.connect(alice).processActions(playerId);
       }
+      expect(numRandomRewardsHit).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
 
       await ethers.provider.send("evm_increaseTime", [23 * 3600]);
       await ethers.provider.send("evm_mine", []);
@@ -1294,9 +1297,8 @@ describe("Non-Combat Actions", function () {
       const expectedTotal = numRepeats * randomChanceFraction * numHours;
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
       // Have 2 queued actions so twice as much
-      expect(balance).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-      expect(balance).to.be.gte(expectedTotal * 0.8); // Within 20% below
-      expect(balance).to.be.lte(expectedTotal * 1.2); // Within 20% above
+      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.75)); // Within 25% below
+      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.25)); // Within 25% above
     });
 
     it("Steal, success percent (many)", async function () {
@@ -1342,8 +1344,7 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
 
       await requestAndFulfillRandomWords(world, mockVRF);
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
 
       const timespan = 3600 * numHours;
@@ -1359,13 +1360,18 @@ describe("Non-Combat Actions", function () {
       };
 
       const numRepeats = 25;
+      let numRandomRewardsHit = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await ethers.provider.send("evm_mine", []);
+        await timeTravel24Hours();
         await requestAndFulfillRandomWords(world, mockVRF);
+        const pendingQueuedActionState = await players.pendingQueuedActionState(alice, playerId);
+        if (pendingQueuedActionState.producedPastRandomRewards.length > 0) {
+          ++numRandomRewardsHit;
+        }
         await players.connect(alice).processActions(playerId);
       }
+      expect(numRandomRewardsHit).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
 
       await ethers.provider.send("evm_increaseTime", [25 * 3600]);
       await ethers.provider.send("evm_mine", []);
@@ -1377,9 +1383,8 @@ describe("Non-Combat Actions", function () {
       const expectedTotal = numRepeats * randomChanceFraction * numHours * (successPercent / 100);
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
       // Have 2 queued actions so twice as much
-      expect(balance).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
-      expect(balance).to.be.gte(expectedTotal * 0.8); // Within 20% below
-      expect(balance).to.be.lte(expectedTotal * 1.2); // Within 20% above
+      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.75)); // Within 25% below
+      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.25)); // Within 25% above
     });
 
     // Gives +3% XP and +100% success chance

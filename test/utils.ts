@@ -28,16 +28,16 @@ export const requestAndFulfillRandomWords = async (world: World, mockVRF: MockVR
   let requestId = await getRequestId(tx, world);
   expect(requestId).to.not.eq(null);
   expect(requestId).to.not.eq(0);
-  await fulfillRandomWords(requestId as number, world, mockVRF);
+  return fulfillRandomWords(requestId as number, world, mockVRF);
 };
 
 export const fulfillRandomWords = async (
-  requestId: number,
+  requestId: number | bigint,
   contract: BaseContract,
   mockVRF: MockVRF,
   gasPrice = 0n
 ): Promise<ContractTransactionResponse> => {
-  return mockVRF.fulfill(requestId, await contract.getAddress(), {gasPrice});
+  return mockVRF.fulfill(requestId, contract, {gasPrice});
 };
 
 export const bronzeHelmetStats: EstforTypes.CombatStats = {

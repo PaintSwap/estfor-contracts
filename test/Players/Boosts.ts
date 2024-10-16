@@ -12,8 +12,6 @@ import {Block, keccak256, parseEther, zeroPadBytes, zeroPadValue} from "ethers";
 const abiCoder = new ethers.AbiCoder();
 
 describe("Boosts", function () {
-  this.retries(3);
-
   it("Add Boost, Full consume", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
@@ -46,7 +44,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
@@ -54,11 +52,11 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-      queuedAction.timespan + (boostDuration * boostValue) / 100,
+      queuedAction.timespan + (boostDuration * boostValue) / 100
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL)),
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -93,7 +91,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.XP_BOOST)).to.eq(0);
 
@@ -101,11 +99,11 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-      queuedAction.timespan + (queuedAction.timespan * boostValue) / 100,
+      queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL)),
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -141,7 +139,7 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [86400]);
       await ethers.provider.send("evm_mine", []);
@@ -154,7 +152,7 @@ describe("Boosts", function () {
 
       await players.connect(alice).processActions(playerId);
       expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-        queuedAction.timespan + (queuedAction.timespan * boostValue) / 100 + queuedAction.timespan,
+        queuedAction.timespan + (queuedAction.timespan * boostValue) / 100 + queuedAction.timespan
       );
     });
 
@@ -190,7 +188,7 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await players
         .connect(alice)
@@ -200,13 +198,12 @@ describe("Boosts", function () {
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
         BigInt(
-          queuedActionFinishAfterBoost.timespan +
-            Math.floor((queuedActionFinishAfterBoost.timespan * boostValue) / 100),
+          queuedActionFinishAfterBoost.timespan + Math.floor((queuedActionFinishAfterBoost.timespan * boostValue) / 100)
         ),
         BigInt(
           queuedActionFinishAfterBoost.timespan +
             Math.floor((queuedActionFinishAfterBoost.timespan * boostValue) / 100) +
-            1,
+            1
         ),
       ]);
     });
@@ -241,7 +238,7 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
@@ -288,7 +285,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -341,7 +338,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
@@ -393,21 +390,21 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(
-      queuedAction.timespan + (boostDuration * boostValue) / 100,
+      queuedAction.timespan + (boostDuration * boostValue) / 100
     );
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
-      queuedAction.timespan + (boostDuration * boostValue) / 100,
+      queuedAction.timespan + (boostDuration * boostValue) / 100
     );
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL)),
+      Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL))
     );
   });
 
@@ -441,7 +438,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     // Currently only minted through donation thresholds
@@ -453,7 +450,7 @@ describe("Boosts", function () {
 
     expect(await players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
       wishingWell,
-      "LastGlobalDonationThreshold",
+      "LastGlobalDonationThreshold"
     );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -505,7 +502,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     // Currently only minted through donation thresholds
@@ -597,7 +594,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     // Currently only minted through donation thresholds
@@ -616,7 +613,7 @@ describe("Boosts", function () {
 
     await expect(players.connect(alice).donate(playerId, raffleCost)).to.not.emit(
       wishingWell,
-      "LastClanDonationThreshold",
+      "LastClanDonationThreshold"
     );
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
@@ -732,7 +729,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     // Currently only minted through donation thresholds
@@ -864,8 +861,8 @@ describe("Boosts", function () {
           NOW,
           0,
           raffleCost,
-          EstforTypes.ActionQueueStatus.NONE,
-        ),
+          EstforTypes.ActionQueueStatus.NONE
+        )
     )
       .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleCost, EstforConstants.CLAN_BOOSTER_2)
@@ -1019,8 +1016,8 @@ describe("Boosts", function () {
           NOW,
           0,
           nextGlobalThreshold,
-          EstforTypes.ActionQueueStatus.NONE,
-        ),
+          EstforTypes.ActionQueueStatus.NONE
+        )
     )
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
       .withArgs(nextGlobalThreshold, EstforConstants.PRAY_TO_THE_BEARDIE_2)
@@ -1089,7 +1086,7 @@ describe("Boosts", function () {
           boostDuration +
           boostDuration +
           ((boostDuration / 2 + extraBoostedTime) * boostValue) / 100 +
-          (boostDuration * nextBoostValue) / 100,
+          (boostDuration * nextBoostValue) / 100
       ) - 1;
     healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -1150,7 +1147,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
@@ -1165,7 +1162,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.APPEND,
+        EstforTypes.ActionQueueStatus.APPEND
       );
     await ethers.provider.send("evm_increaseTime", [3600 * 6]);
     await ethers.provider.send("evm_mine", []);
@@ -1179,7 +1176,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.APPEND,
+        EstforTypes.ActionQueueStatus.APPEND
       );
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
@@ -1194,7 +1191,7 @@ describe("Boosts", function () {
     // 2 hours gathering boost, check drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor((8 * 3600 * rate) / (3600 * GUAR_MUL)) +
-        Math.floor((2 * 3600 * rate * boostValue) / (3600 * GUAR_MUL * 100)),
+        Math.floor((2 * 3600 * rate * boostValue) / (3600 * GUAR_MUL * 100))
     );
   });
 
@@ -1237,7 +1234,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
@@ -1249,8 +1246,8 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor(
         (queuedAction.timespan * rate) / (3600 * GUAR_MUL) +
-          (boostDuration * boostValue * rate) / (100 * GUAR_MUL * 3600),
-      ),
+          (boostDuration * boostValue * rate) / (100 * GUAR_MUL * 3600)
+      )
     );
   });
 
@@ -1286,7 +1283,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -1387,7 +1384,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
@@ -1400,7 +1397,7 @@ describe("Boosts", function () {
     await players.connect(alice).processActions(playerId);
 
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600)),
+      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))
     );
   });
 
@@ -1484,7 +1481,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(1);
 
@@ -1532,7 +1529,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
   });
@@ -1619,7 +1616,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
@@ -1635,7 +1632,7 @@ describe("Boosts", function () {
     await requestAndFulfillRandomWords(world, mockVRF);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600)),
+      Math.floor(numHours * amount + (boostDuration * boostValue * amount) / (100 * 3600))
     );
   });
 
@@ -1670,7 +1667,7 @@ describe("Boosts", function () {
         EstforConstants.PAPER,
         EstforConstants.GATHERING_BOOST,
       ],
-      [startingAmount, startingAmount, startingAmount, 1],
+      [startingAmount, startingAmount, startingAmount, 1]
     );
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -1683,7 +1680,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -1695,8 +1692,8 @@ describe("Boosts", function () {
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL)).to.eq(
       Math.floor(
         (queuedAction.timespan * rate * outputAmount) / (3600 * RATE_MUL) +
-          (boostDuration * boostValue * rate * outputAmount) / (100 * RATE_MUL * 3600),
-      ),
+          (boostDuration * boostValue * rate * outputAmount) / (100 * RATE_MUL * 3600)
+      )
     );
     expect(outputBalance).to.be.greaterThan(65535);
   });
