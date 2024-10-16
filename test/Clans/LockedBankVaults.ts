@@ -2,12 +2,12 @@ import {getStorageAt, loadFixture} from "@nomicfoundation/hardhat-network-helper
 import {expect} from "chai";
 import {clanFixture} from "./utils";
 import {createPlayer} from "../../scripts/utils";
-import {ClanRank, ItemInput, LockedBankVault} from "@paintswap/estfor-definitions/types";
+import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {LockedBankVaults, MockBrushToken, Territories} from "../../typechain-types";
 
 import {fulfillRandomWords} from "../utils";
-import {BaseContract, Block, Contract, ContractTransactionReceipt} from "ethers";
+import {BaseContract, Block, ContractTransactionReceipt} from "ethers";
 import {allBattleSkills} from "../../scripts/data/territories";
 import {getXPFromLevel} from "../Players/utils";
 import {allItems} from "../../scripts/data/items";
@@ -22,7 +22,7 @@ const lockFundsForClan = async (
   playerId: bigint,
   amount: number,
   territories: Territories,
-  combatantsHelper: BaseContract,
+  combatantsHelper: BaseContract
 ) => {
   await brush.mint(alice.address, amount);
   await brush.connect(alice).approve(await lockedBankVaults.getAddress(), amount);
@@ -50,7 +50,7 @@ describe("LockedBankVaults", function () {
     await brush.mint(alice.address, 100);
     await brush.connect(alice).approve(await lockedBankVaults.getAddress(), 100);
     await expect(
-      lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, 100),
+      lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, 100)
     ).to.be.revertedWithCustomError(lockedBankVaults, "OnlyTerritories");
   });
 
@@ -64,7 +64,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, clanId, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, clanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "CannotAttackSelf");
   });
 
@@ -107,13 +107,13 @@ describe("LockedBankVaults", function () {
     await combatantsHelper.clearCooldowns([playerId]);
 
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId),
+      combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId)
     ).to.be.revertedWithCustomError(lockedBankVaultsLibrary, "ClanCombatantsChangeCooldown");
 
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown - 5]);
     await ethers.provider.send("evm_mine", []);
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId),
+      combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId)
     ).to.be.revertedWithCustomError(lockedBankVaultsLibrary, "ClanCombatantsChangeCooldown");
     await ethers.provider.send("evm_increaseTime", [5]);
     await ethers.provider.send("evm_mine", []);
@@ -177,13 +177,13 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(1);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(900);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(
-      NOW + lockedFundsPeriod - 1,
+      NOW + lockedFundsPeriod - 1
     );
 
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults.length).to.eq(1);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].amount).to.eq(100);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].timestamp).to.eq(
-      NOW1 + lockedFundsPeriod,
+      NOW1 + lockedFundsPeriod
     );
   });
 
@@ -228,7 +228,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "NoCombatants");
   });
 
@@ -336,7 +336,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingCooldown");
 
     await ethers.provider.send("evm_increaseTime", [attackingCooldown]);
@@ -344,7 +344,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingSameClanCooldown");
 
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
@@ -368,7 +368,7 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(1);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(855);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(
-      NOW + lockedFundsPeriod - 1,
+      NOW + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(10);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(NOW2 + lockedFundsPeriod);
@@ -376,7 +376,7 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults.length).to.eq(1);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].amount).to.eq(90);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].timestamp).to.eq(
-      NOW1 + lockedFundsPeriod,
+      NOW1 + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].amount1).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].timestamp1).to.eq(0);
@@ -409,13 +409,13 @@ describe("LockedBankVaults", function () {
     // Nothing to claim
     await expect(lockedBankVaults.connect(alice).claimFunds(clanId, playerId)).to.be.revertedWithCustomError(
       LockedBankVaultsLibrary,
-      "NothingToClaim",
+      "NothingToClaim"
     );
     await ethers.provider.send("evm_increaseTime", [lockPeriodSlice * 7]);
     await ethers.provider.send("evm_mine", []);
     await expect(lockedBankVaults.connect(alice).claimFunds(clanId, playerId)).to.be.revertedWithCustomError(
       LockedBankVaultsLibrary,
-      "NothingToClaim",
+      "NothingToClaim"
     );
     await ethers.provider.send("evm_increaseTime", [lockPeriodSlice]);
     await ethers.provider.send("evm_mine", []);
@@ -426,7 +426,7 @@ describe("LockedBankVaults", function () {
     // Cannot claim twice
     await expect(lockedBankVaults.connect(alice).claimFunds(clanId, playerId)).to.be.revertedWithCustomError(
       LockedBankVaultsLibrary,
-      "NothingToClaim",
+      "NothingToClaim"
     );
     await ethers.provider.send("evm_increaseTime", [lockPeriodSlice]);
     await ethers.provider.send("evm_mine", []);
@@ -439,7 +439,7 @@ describe("LockedBankVaults", function () {
     // Cannot claim again
     await expect(lockedBankVaults.connect(alice).claimFunds(clanId, playerId)).to.be.revertedWithCustomError(
       LockedBankVaultsLibrary,
-      "NothingToClaim",
+      "NothingToClaim"
     );
   });
 
@@ -523,7 +523,7 @@ describe("LockedBankVaults", function () {
     oracleCostStorage = await getStorageAt(await lockedBankVaults.getAddress(), slot);
     movingAverageGasPrice = BigInt(parseInt(oracleCostStorage.slice(48, 64), 16));
     expect(movingAverageGasPrice).to.eq(
-      (gasPrice + 900n + (gasPrice + 800n) + (gasPrice + 500n) + (gasPrice + 200n)) / 4n,
+      (gasPrice + 900n + (gasPrice + 800n) + (gasPrice + 500n) + (gasPrice + 200n)) / 4n
     );
     attackCost = await lockedBankVaults.attackCost();
     expect(attackCost).to.eq(baseAttackCost + movingAverageGasPrice * expectedGasLimit);
@@ -548,25 +548,25 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(100);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(
-      NOWS[0] + lockedFundsPeriod - 1,
+      NOWS[0] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(101);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(
-      NOWS[1] + lockedFundsPeriod - 1,
+      NOWS[1] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount).to.eq(102);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp).to.eq(
-      NOWS[2] + lockedFundsPeriod - 1,
+      NOWS[2] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount1).to.eq(103);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp1).to.eq(
-      NOWS[3] + lockedFundsPeriod - 1,
+      NOWS[3] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1,
+      NOWS[4] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(0);
@@ -581,7 +581,7 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(101);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(
-      NOWS[1] + lockedFundsPeriod - 1,
+      NOWS[1] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(0);
 
@@ -595,21 +595,21 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(101);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(
-      NOWS[1] + lockedFundsPeriod - 1,
+      NOWS[1] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount).to.eq(102);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp).to.eq(
-      NOWS[2] + lockedFundsPeriod - 1,
+      NOWS[2] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount1).to.eq(103);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp1).to.eq(
-      NOWS[3] + lockedFundsPeriod - 1,
+      NOWS[3] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1,
+      NOWS[4] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(0);
@@ -623,7 +623,7 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].claimed).to.be.true;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104); // Leave it unchanged
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1,
+      NOWS[4] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(2);
 
@@ -631,7 +631,7 @@ describe("LockedBankVaults", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(100);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(
-      NOW + lockedFundsPeriod - 1,
+      NOW + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(2);
 
@@ -641,11 +641,11 @@ describe("LockedBankVaults", function () {
 
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104); // Leave unchanged
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1,
+      NOWS[4] + lockedFundsPeriod - 1
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(100);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(
-      NOW + lockedFundsPeriod - 1,
+      NOW + lockedFundsPeriod - 1
     );
 
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(3);
@@ -701,7 +701,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "MaxLockedVaultsReached");
   });
 
@@ -765,7 +765,7 @@ describe("LockedBankVaults", function () {
           playerId,
           playerId,
         ],
-        playerId,
+        playerId
       );
 
     // Create a new clan to attack/defend
@@ -807,7 +807,7 @@ describe("LockedBankVaults", function () {
           bobPlayerId,
           bobPlayerId,
         ],
-        bobPlayerId,
+        bobPlayerId
       );
 
     await lockedBankVaults
@@ -864,25 +864,25 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingSameClanCooldown");
 
     const items = allItems.filter(
       (inputItem) =>
-        inputItem.tokenId == EstforConstants.DEVILISH_FINGERS || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD,
+        inputItem.tokenId == EstforConstants.DEVILISH_FINGERS || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD
     );
     await itemNFT.addItems(items);
     await itemNFT.testMints(
       alice.address,
       [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD],
-      [1, 1],
+      [1, 1]
     );
 
     // Wrong item
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.PROTECTION_SHIELD, playerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "NotALockedVaultAttackItem");
 
     // The re-attacking cooldown should be the same afterwards when using an item
@@ -903,7 +903,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingSameClanCooldown");
 
     // TODO: Check other clan
@@ -1015,7 +1015,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.SHARPENED_CLAW, playerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     )
       .to.emit(lockedBankVaults, "SuperAttackCooldown")
       .withArgs(clanId, NOW + 86400 + 1);
@@ -1038,7 +1038,7 @@ describe("LockedBankVaults", function () {
       charliePlayerId,
       1000,
       territories,
-      combatantsHelper,
+      combatantsHelper
     );
 
     // Forward by attack cooldown and attack another clan
@@ -1049,7 +1049,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, charlieClanId, EstforConstants.SHARPENED_CLAW, playerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanSuperAttackingCooldown");
 
     await ethers.provider.send("evm_increaseTime", [item.boostDuration]);
@@ -1059,7 +1059,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, charlieClanId, EstforConstants.SHARPENED_CLAW, playerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     )
       .to.emit(lockedBankVaults, "SuperAttackCooldown")
       .withArgs(clanId, NOW1 + 86400 + 1);
@@ -1101,14 +1101,14 @@ describe("LockedBankVaults", function () {
 
     const items = allItems.filter(
       (inputItem) =>
-        inputItem.tokenId == EstforConstants.PROTECTION_SHIELD || inputItem.tokenId == EstforConstants.MIRROR_SHIELD,
+        inputItem.tokenId == EstforConstants.PROTECTION_SHIELD || inputItem.tokenId == EstforConstants.MIRROR_SHIELD
     );
     await itemNFT.addItems(items);
     await itemNFT.testMints(alice.address, [EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD], [2, 1]);
 
     // Wrong item
     await expect(
-      lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.MIRROR_SHIELD, playerId),
+      lockedBankVaults.connect(alice).blockAttacks(clanId, EstforConstants.MIRROR_SHIELD, playerId)
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "NotALockedVaultDefenceItem");
 
     const itemTokenId = EstforConstants.PROTECTION_SHIELD;
@@ -1118,7 +1118,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanIsBlockingAttacks");
 
     const protectionShield = items.find((item) => item.tokenId == itemTokenId) as ItemInput;
@@ -1128,18 +1128,18 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanIsBlockingAttacks");
 
     // Cannot apply again until the cooldown is done
     await expect(
-      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId),
+      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId)
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "BlockAttacksCooldown");
     // Go just before the cooldown is done to confirm
     await ethers.provider.send("evm_increaseTime", [protectionShield.boostValue * 3600]);
     await ethers.provider.send("evm_mine", []);
     await expect(
-      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId),
+      lockedBankVaults.connect(alice).blockAttacks(clanId, itemTokenId, playerId)
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "BlockAttacksCooldown");
     // Now extend past the cooldown time
     await ethers.provider.send("evm_increaseTime", [10]);
@@ -1152,7 +1152,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanIsBlockingAttacks");
 
     await ethers.provider.send("evm_increaseTime", [10]);
@@ -1160,7 +1160,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
         value: await lockedBankVaults.attackCost(),
-      }),
+      })
     ).to.not.be.reverted;
 
     expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(0);
@@ -1328,7 +1328,7 @@ describe("LockedBankVaults", function () {
 
     await expect(fulfillRandomWords(3, lockedBankVaults, mockVRF)).to.revertedWithCustomError(
       lockedBankVaults,
-      "RequestIdNotKnown",
+      "RequestIdNotKnown"
     );
   });
 
@@ -1384,13 +1384,13 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.be.revertedWithCustomError(lockedBankVaults, "AttacksPrevented");
     await lockedBankVaults.setPreventAttacks(false);
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()})
     ).to.not.be.reverted;
   });
 
@@ -1611,7 +1611,7 @@ describe("LockedBankVaults", function () {
         playerId,
         1000,
         territories,
-        combatantsHelper,
+        combatantsHelper
       );
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 500, 501, 501]);
@@ -2197,7 +2197,7 @@ describe("LockedBankVaults", function () {
         playerId,
         1000,
         territories,
-        combatantsHelper,
+        combatantsHelper
       );
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 500, 501, 501]);
@@ -2211,7 +2211,7 @@ describe("LockedBankVaults", function () {
       await expect(
         lockedBankVaults
           .connect(alice)
-          .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.attackCost()}),
+          .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
       ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "OutsideMMRRange");
 
       await lockedBankVaults.clearCooldowns(erinClanId, [clanId]);
@@ -2220,7 +2220,7 @@ describe("LockedBankVaults", function () {
       await expect(
         lockedBankVaults
           .connect(erin)
-          .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()}),
+          .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()})
       ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "OutsideMMRRange");
 
       // Erin can attack frank.
@@ -2324,8 +2324,9 @@ describe("LockedBankVaults", function () {
     });
 
     it("Force updating MMR should correctly cleanse any initialized clans which do not have any locked vaults", async () => {
-      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} =
-        await loadFixture(clanFixture);
+      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} = await loadFixture(
+        clanFixture
+      );
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
 
@@ -2394,8 +2395,9 @@ describe("LockedBankVaults", function () {
     });
 
     it("Try not clearing with initializeMMR", async () => {
-      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} =
-        await loadFixture(clanFixture);
+      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} = await loadFixture(
+        clanFixture
+      );
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
 

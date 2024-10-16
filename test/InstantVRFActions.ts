@@ -18,7 +18,7 @@ import NONE, {
 } from "@paintswap/estfor-definitions/constants";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {fulfillRandomWords} from "./utils";
-import {AbiCoder, ContractTransactionReceipt, EventLog, Log, ZeroAddress} from "ethers"; // ethers v6
+import {AbiCoder, ZeroAddress} from "ethers"; // ethers v6
 import {ethers} from "hardhat";
 import {ERC1155HolderRogue} from "../typechain-types";
 
@@ -33,7 +33,7 @@ describe("Instant VRF actions", function () {
       [
         await fixture.genericInstantVRFActionStrategy.getAddress(),
         await fixture.genericInstantVRFActionStrategy.getAddress(),
-      ],
+      ]
     );
     return fixture;
   };
@@ -46,7 +46,7 @@ describe("Instant VRF actions", function () {
       inputAmounts: [1, 2, 3],
       data: abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]],
+        [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]]
       ), // 100% chance of 2 runite arrows
       isFullModeOnly: false,
       actionType: EstforTypes.InstantVRFActionType.FORGING,
@@ -62,21 +62,21 @@ describe("Instant VRF actions", function () {
       instantVRFActionInput.inputAmounts[0] = 4;
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "InputAmountsMustBeInOrder",
+        "InputAmountsMustBeInOrder"
       );
 
       instantVRFActionInput.inputAmounts[0] = 1;
       instantVRFActionInput.inputAmounts[1] = 4;
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "InputAmountsMustBeInOrder",
+        "InputAmountsMustBeInOrder"
       );
 
       instantVRFActionInput.inputAmounts[1] = 2;
       instantVRFActionInput.inputAmounts[2] = 1;
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "InputAmountsMustBeInOrder",
+        "InputAmountsMustBeInOrder"
       );
 
       instantVRFActionInput.inputAmounts[2] = 3;
@@ -94,19 +94,19 @@ describe("Instant VRF actions", function () {
 
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "TooManyInputItems",
+        "TooManyInputItems"
       );
 
       instantVRFActionInput.inputTokenIds = [BRONZE_ARROW, IRON_ARROW];
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "LengthMismatch",
+        "LengthMismatch"
       );
 
       instantVRFActionInput.inputTokenIds = [BRONZE_ARROW, IRON_ARROW, BRONZE_ARROW];
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "InputItemNoDuplicates",
+        "InputItemNoDuplicates"
       );
     });
 
@@ -130,7 +130,7 @@ describe("Instant VRF actions", function () {
         });
 
       expect(
-        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW]),
+        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW])
       ).to.deep.eq([2, 1, 0]);
     });
 
@@ -154,7 +154,7 @@ describe("Instant VRF actions", function () {
       await itemNFT.testMints(
         await alice.getAddress(),
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        [1000, 1000, 1000],
+        [1000, 1000, 1000]
       );
 
       const MAX_ACTION_AMOUNT = await instantVRFActions.MAX_ACTION_AMOUNT();
@@ -165,7 +165,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: await instantVRFActions.requestCost(actionAmount),
-          }),
+          })
       ).to.be.revertedWithCustomError(instantVRFActions, "TooManyActionAmounts");
 
       await expect(
@@ -173,7 +173,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput1.actionId], [MAX_ACTION_AMOUNT], {
             value: await instantVRFActions.requestCost(MAX_ACTION_AMOUNT),
-          }),
+          })
       ).to.not.be.reverted;
     });
 
@@ -197,7 +197,7 @@ describe("Instant VRF actions", function () {
       await itemNFT.testMints(
         await alice.getAddress(),
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        [1000, 1000, 1000],
+        [1000, 1000, 1000]
       );
 
       const MAX_ACTION_AMOUNT = await instantVRFActions.MAX_ACTION_AMOUNT();
@@ -211,8 +211,8 @@ describe("Instant VRF actions", function () {
             playerId,
             [instantVRFActionInput.actionId, instantVRFActionInput1.actionId],
             [actionAmount, actionAmount1],
-            {value: await instantVRFActions.requestCost(actionAmount)},
-          ),
+            {value: await instantVRFActions.requestCost(actionAmount)}
+          )
       ).to.be.revertedWithCustomError(instantVRFActions, "TooManyActionAmounts");
 
       actionAmount1 = 1;
@@ -223,8 +223,8 @@ describe("Instant VRF actions", function () {
             playerId,
             [instantVRFActionInput.actionId, instantVRFActionInput1.actionId],
             [actionAmount, actionAmount1],
-            {value: await instantVRFActions.requestCost(actionAmount)},
-          ),
+            {value: await instantVRFActions.requestCost(actionAmount)}
+          )
       ).to.not.be.reverted;
     });
 
@@ -249,7 +249,7 @@ describe("Instant VRF actions", function () {
       await itemNFT.testMints(
         await alice.getAddress(),
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
-        [6, 6, 6, 6, 6, 6],
+        [6, 6, 6, 6, 6, 6]
       );
 
       const actionAmount = 3;
@@ -260,7 +260,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId, instantVRFActionInput1.actionId], [2, 1], {
             value: await instantVRFActions.requestCost(actionAmount),
-          }),
+          })
       )
         .to.emit(instantVRFActions, "DoInstantVRFActions")
         .withArgs(
@@ -270,11 +270,11 @@ describe("Instant VRF actions", function () {
           [instantVRFActionInput.actionId, instantVRFActionInput1.actionId],
           [2, 1],
           [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
-          [2, 4, 6, 4, 5, 6],
+          [2, 4, 6, 4, 5, 6]
         );
 
       expect(
-        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW]),
+        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW])
       ).to.deep.eq([4, 2, 0]);
 
       await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
@@ -302,7 +302,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: (await instantVRFActions.requestCost(actionAmount)) - 1n,
-          }),
+          })
       ).to.be.revertedWithCustomError(instantVRFActions, "NotEnoughFTM");
     });
 
@@ -335,7 +335,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: (await instantVRFActions.requestCost(actionAmount)) - 1n,
-          }),
+          })
       ).to.be.revertedWithCustomError(instantVRFActions, "PlayerNotUpgraded");
 
       const brushAmount = (editNameBrushPrice + upgradePlayerBrushPrice) * 2n;
@@ -350,7 +350,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: await instantVRFActions.requestCost(actionAmount),
-          }),
+          })
       ).to.not.be.reverted;
     });
 
@@ -364,7 +364,7 @@ describe("Instant VRF actions", function () {
       await instantVRFActions.addActions([instantVRFActionInput]);
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "ActionAlreadyExists",
+        "ActionAlreadyExists"
       );
     });
 
@@ -376,7 +376,7 @@ describe("Instant VRF actions", function () {
       };
       await expect(instantVRFActions.connect(alice).addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
       await instantVRFActions.addActions([instantVRFActionInput]);
     });
@@ -390,7 +390,7 @@ describe("Instant VRF actions", function () {
         };
         await instantVRFActions.addActions([instantVRFActionInput]);
         await expect(
-          instantVRFActions.connect(alice).editActions([instantVRFActionInput]),
+          instantVRFActions.connect(alice).editActions([instantVRFActionInput])
         ).to.be.revertedWithCustomError(instantVRFActions, "CallerIsNotOwner");
         await instantVRFActions.editActions([instantVRFActionInput]);
       });
@@ -405,7 +405,7 @@ describe("Instant VRF actions", function () {
         };
         await expect(instantVRFActions.editActions([instantVRFActionInput])).to.be.revertedWithCustomError(
           instantVRFActions,
-          "ActionDoesNotExist",
+          "ActionDoesNotExist"
         );
         await instantVRFActions.addActions([instantVRFActionInput]);
         const newinstantVRFActionInput = {
@@ -414,7 +414,7 @@ describe("Instant VRF actions", function () {
         };
         await expect(instantVRFActions.editActions([newinstantVRFActionInput])).to.emit(
           instantVRFActions,
-          "EditInstantVRFActions",
+          "EditInstantVRFActions"
         );
         expect((await instantVRFActions.actions(1)).inputTokenId1).to.eq(IRON_ARROW);
       });
@@ -432,7 +432,7 @@ describe("Instant VRF actions", function () {
         await instantVRFActions.addActions([instantVRFActionInput]);
         await expect(instantVRFActions.connect(alice).removeActions([1])).to.be.revertedWithCustomError(
           instantVRFActions,
-          "CallerIsNotOwner",
+          "CallerIsNotOwner"
         );
       });
 
@@ -440,7 +440,7 @@ describe("Instant VRF actions", function () {
         const {instantVRFActions} = await loadFixture(forgingFixture);
         await expect(instantVRFActions.removeActions([1])).to.be.revertedWithCustomError(
           instantVRFActions,
-          "ActionDoesNotExist",
+          "ActionDoesNotExist"
         );
         const instantVRFActionInput: InstantVRFActionInput = {
           ...defaultInstantVRFActionInput,
@@ -468,14 +468,14 @@ describe("Instant VRF actions", function () {
       await expect(
         instantVRFActions.doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
           value: await instantVRFActions.requestCost(actionAmount),
-        }),
+        })
       ).to.be.revertedWithCustomError(instantVRFActions, "NotOwnerOfPlayerAndActive");
     });
 
     it("Cannot do an action which does not exist", async function () {
       const {playerId, instantVRFActions, alice} = await loadFixture(forgingFixture);
       await expect(
-        instantVRFActions.connect(alice).doInstantVRFActions(playerId, [0], [1]),
+        instantVRFActions.connect(alice).doInstantVRFActions(playerId, [0], [1])
       ).to.be.revertedWithCustomError(instantVRFActions, "ActionDoesNotExist");
     });
 
@@ -500,7 +500,7 @@ describe("Instant VRF actions", function () {
       await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
 
       expect(
-        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW]),
+        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])
       ).to.deep.eq([4, 2, 0, 4]);
     });
 
@@ -550,7 +550,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: await instantVRFActions.requestCost(actionAmount),
-          }),
+          })
       ).to.be.revertedWithCustomError(instantVRFActions, "AlreadyProcessing");
 
       // Fulfill the request and it should work
@@ -561,7 +561,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: await instantVRFActions.requestCost(actionAmount),
-          }),
+          })
       ).to.not.be.reverted;
     });
 
@@ -592,8 +592,9 @@ describe("Instant VRF actions", function () {
     });
 
     it("Reverting in the contract receiving the NFTs should not revert the oracle callback", async function () {
-      const {playerId, instantVRFActions, mockVRF, itemNFT, playerNFT, players, alice} =
-        await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, playerNFT, players, alice} = await loadFixture(
+        forgingFixture
+      );
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -610,7 +611,7 @@ describe("Instant VRF actions", function () {
       await itemNFT.testMints(
         await erc1155HolderRogue.getAddress(),
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        [6, 6, 6],
+        [6, 6, 6]
       );
 
       const actionAmount = 2;
@@ -622,7 +623,7 @@ describe("Instant VRF actions", function () {
         [actionAmount],
         {
           value: await instantVRFActions.requestCost(actionAmount),
-        },
+        }
       );
 
       await erc1155HolderRogue.setRevertOnReceive(true);
@@ -687,7 +688,7 @@ describe("Instant VRF actions", function () {
       await expect(
         instantVRFActions.connect(alice).doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [2], {
           value: await instantVRFActions.requestCost(actionAmount),
-        }),
+        })
       ).to.be.revertedWithCustomError(instantVRFActions, "PlayerNotUpgraded");
       // Upgrade player
       await brush.mint(await alice.getAddress(), upgradePlayerBrushPrice);
@@ -698,7 +699,7 @@ describe("Instant VRF actions", function () {
       await expect(
         instantVRFActions.connect(alice).doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [2], {
           value: await instantVRFActions.requestCost(actionAmount),
-        }),
+        })
       ).to.not.be.reverted;
     });
 
@@ -709,20 +710,20 @@ describe("Instant VRF actions", function () {
         await expect(
           instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
-            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()],
-          ),
+            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()]
+          )
         )
           .to.emit(instantVRFActions, "AddStrategies")
           .withArgs(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
-            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()],
+            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()]
           );
 
         expect(await instantVRFActions.strategies(InstantVRFActionType.FORGING)).to.eq(
-          await genericInstantVRFActionStrategy.getAddress(),
+          await genericInstantVRFActionStrategy.getAddress()
         );
         expect(await instantVRFActions.strategies(InstantVRFActionType.GENERIC)).to.eq(
-          await genericInstantVRFActionStrategy.getAddress(),
+          await genericInstantVRFActionStrategy.getAddress()
         );
         expect(await instantVRFActions.strategies(InstantVRFActionType.EGG)).to.eq(ZeroAddress);
       });
@@ -731,13 +732,13 @@ describe("Instant VRF actions", function () {
         const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
         await instantVRFActions.addStrategies(
           [InstantVRFActionType.FORGING],
-          [await genericInstantVRFActionStrategy.getAddress()],
+          [await genericInstantVRFActionStrategy.getAddress()]
         );
         await expect(
           instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING],
-            [await genericInstantVRFActionStrategy.getAddress()],
-          ),
+            [await genericInstantVRFActionStrategy.getAddress()]
+          )
         ).to.be.revertedWithCustomError(instantVRFActions, "StrategyAlreadyExists");
       });
 
@@ -745,7 +746,7 @@ describe("Instant VRF actions", function () {
         const {instantVRFActions, genericInstantVRFActionStrategy} = await loadFixture(playersFixture);
         await expect(instantVRFActions.addStrategies([InstantVRFActionType.EGG], [])).to.be.revertedWithCustomError(
           instantVRFActions,
-          "LengthMismatch",
+          "LengthMismatch"
         );
       });
 
@@ -755,22 +756,22 @@ describe("Instant VRF actions", function () {
         await expect(
           instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
-            [await genericInstantVRFActionStrategy.getAddress(), ZeroAddress],
-          ),
+            [await genericInstantVRFActionStrategy.getAddress(), ZeroAddress]
+          )
         ).to.be.revertedWithCustomError(instantVRFActions, "InvalidStrategy");
 
         await expect(
           instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.NONE],
-            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()],
-          ),
+            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()]
+          )
         ).to.be.revertedWithCustomError(instantVRFActions, "InvalidStrategy");
 
         await expect(
           instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
-            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()],
-          ),
+            [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()]
+          )
         ).to.not.be.reverted;
       });
 
@@ -780,14 +781,14 @@ describe("Instant VRF actions", function () {
         await expect(
           instantVRFActions
             .connect(alice)
-            .addStrategies([InstantVRFActionType.FORGING], [await genericInstantVRFActionStrategy.getAddress()]),
+            .addStrategies([InstantVRFActionType.FORGING], [await genericInstantVRFActionStrategy.getAddress()])
         ).to.be.revertedWithCustomError(instantVRFActions, "CallerIsNotOwner");
 
         await expect(
           instantVRFActions.addStrategies(
             [InstantVRFActionType.FORGING],
-            [await genericInstantVRFActionStrategy.getAddress()],
-          ),
+            [await genericInstantVRFActionStrategy.getAddress()]
+          )
         ).to.not.be.reverted;
       });
 
@@ -800,21 +801,21 @@ describe("Instant VRF actions", function () {
           inputAmounts: [1],
           data: abiCoder.encode(
             ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-            [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 1}]],
+            [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 1}]]
           ),
           actionType: EstforTypes.InstantVRFActionType.EGG,
         };
 
         await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
           instantVRFActions,
-          "InvalidStrategy",
+          "InvalidStrategy"
         );
 
         await expect(
           instantVRFActions.addStrategies(
             [InstantVRFActionType.EGG],
-            [await genericInstantVRFActionStrategy.getAddress()],
-          ),
+            [await genericInstantVRFActionStrategy.getAddress()]
+          )
         )
           .to.emit(instantVRFActions, "AddStrategies")
           .withArgs([InstantVRFActionType.EGG], [await genericInstantVRFActionStrategy.getAddress()]);
@@ -839,7 +840,7 @@ describe("Instant VRF actions", function () {
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: await instantVRFActions.requestCost(actionAmount),
-          }),
+          })
       ).to.be.revertedWithCustomError(instantVRFActions, "ActionNotAvailable");
 
       await instantVRFActions.setAvailable([instantVRFActionInput.actionId], true);
@@ -877,14 +878,14 @@ describe("Instant VRF actions", function () {
         inputAmounts: [1, 2, 3],
         data: abiCoder.encode(
           ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-          [0, randomRewards],
+          [0, randomRewards]
         ), // 100% chance of 2 runite arrows
       };
 
       // Must have an amount out that is greater than 0
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
-        "RandomRewardSpecifiedWithoutAmount",
+        "RandomRewardSpecifiedWithoutAmount"
       );
 
       randomRewards[0].amount = 1;
@@ -892,12 +893,12 @@ describe("Instant VRF actions", function () {
 
       instantVRFActionInput.data = abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, randomRewards],
+        [0, randomRewards]
       );
 
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
-        "RandomRewardSpecifiedWithoutTokenId",
+        "RandomRewardSpecifiedWithoutTokenId"
       );
 
       randomRewards[0].itemTokenId = EstforConstants.RUNITE_ARROW;
@@ -905,12 +906,12 @@ describe("Instant VRF actions", function () {
 
       instantVRFActionInput.data = abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, randomRewards],
+        [0, randomRewards]
       );
 
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
-        "RandomRewardSpecifiedWithoutChance",
+        "RandomRewardSpecifiedWithoutChance"
       );
 
       randomRewards = [
@@ -920,11 +921,11 @@ describe("Instant VRF actions", function () {
 
       instantVRFActionInput.data = abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, randomRewards],
+        [0, randomRewards]
       );
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
-        "RandomRewardChanceMustBeInOrder",
+        "RandomRewardChanceMustBeInOrder"
       );
       // Equal chance not allowed either
       randomRewards = [
@@ -933,12 +934,12 @@ describe("Instant VRF actions", function () {
       ];
       instantVRFActionInput.data = abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, randomRewards],
+        [0, randomRewards]
       );
 
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
-        "RandomRewardChanceMustBeInOrder",
+        "RandomRewardChanceMustBeInOrder"
       );
 
       randomRewards = [
@@ -957,18 +958,18 @@ describe("Instant VRF actions", function () {
 
       instantVRFActionInput.data = abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, randomRewards],
+        [0, randomRewards]
       );
 
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         genericInstantVRFActionStrategy,
-        "TooManyRandomRewards",
+        "TooManyRandomRewards"
       );
 
       randomRewards.pop();
       instantVRFActionInput.data = abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, randomRewards],
+        [0, randomRewards]
       );
 
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.not.be.reverted;
@@ -991,7 +992,7 @@ describe("Instant VRF actions", function () {
         inputAmounts: [1],
         data: abiCoder.encode(
           ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-          [0, randomRewards],
+          [0, randomRewards]
         ),
       };
 
@@ -1017,7 +1018,7 @@ describe("Instant VRF actions", function () {
             [actionAmount1, actionAmount2],
             {
               value: await instantVRFActions.requestCost(actionAmount),
-            },
+            }
           );
 
         await fulfillRandomWords(i + 1, instantVRFActions, mockVRF);
@@ -1062,7 +1063,7 @@ describe("Instant VRF actions", function () {
 
       await fixture.instantVRFActions.addStrategies(
         [InstantVRFActionType.EGG],
-        [await fixture.genericInstantVRFActionStrategy.getAddress()], // TODO: Update
+        [await fixture.genericInstantVRFActionStrategy.getAddress()] // TODO: Update
       );
       return fixture;
     };
@@ -1074,7 +1075,7 @@ describe("Instant VRF actions", function () {
       inputAmounts: [1, 2, 3],
       data: abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]],
+        [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]]
       ),
       isFullModeOnly: false,
       actionType: EstforTypes.InstantVRFActionType.EGG,
