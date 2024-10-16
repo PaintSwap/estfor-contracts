@@ -18,6 +18,7 @@
         "useTabs": false,
         "singleQuote": false,
         "bracketSpacing": false,
+        "trailingComma": "all",
         "explicitTypes": "preserve"
       }
     },
