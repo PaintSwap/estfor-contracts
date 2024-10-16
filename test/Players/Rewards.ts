@@ -584,7 +584,13 @@ describe("Rewards", function () {
 
       await players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20n);
+      const {queuedAction} = await setupBasicWoodcutting(
+        itemNFT,
+        world,
+        100 * GUAR_MUL,
+        3600n,
+        EstforConstants.HALLOWEEN_BONUS_1
+      );
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
       const {timestamp: currentTimestamp} = (await ethers.provider.getBlock("latest")) as Block;
@@ -612,25 +618,25 @@ describe("Rewards", function () {
         (baseEquipment.amount * 11n) / 10n
       );
 
-      // Next day
-      baseEquipment = equipments[1];
-
       const clanId = 1;
       tierId = 2;
       await clans.connect(alice).upgradeClan(clanId, playerId, tierId);
 
       await timeTravel24Hours();
-
       await players.connect(alice).processActions(playerId);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, true, false, false, false, false, false]);
 
       // If you manage to get the same tokenId then add that as well
-      let expectedAmount = BigInt(Math.floor(Number(baseEquipment.amount) * 1.2)); // get 20% boost
+      const expectedAmount0 = BigInt(Math.floor(Number(equipments[0].amount) * 1.1)); // get 10% boost
+      const expectedAmount1 = BigInt(Math.floor(Number(equipments[1].amount) * 1.2)); // get 20% boost
       if (equipments[0].itemTokenId == equipments[1].itemTokenId) {
-        expectedAmount += BigInt(Math.floor(Number(equipments[0].amount) * 1.1));
+        expect(await itemNFT.balanceOf(alice.address, equipments[0].itemTokenId)).to.be.eq(
+          expectedAmount0 + expectedAmount1
+        );
+      } else {
+        expect(await itemNFT.balanceOf(alice.address, equipments[0].itemTokenId)).to.be.eq(expectedAmount0);
+        expect(await itemNFT.balanceOf(alice.address, equipments[1].itemTokenId)).to.be.eq(expectedAmount1);
       }
-
-      expect(await itemNFT.balanceOf(alice.address, baseEquipment.itemTokenId)).to.be.eq(expectedAmount);
     });
 
     it("Test rewards in new week", async function () {

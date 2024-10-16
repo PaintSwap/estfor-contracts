@@ -1589,9 +1589,9 @@ describe("Non-Combat Actions", function () {
 
       await players.connect(alice).processActions(playerId);
 
-      // Should get at least 4 minted
-      const expectedTotal = Math.floor((randomChanceFraction * numHours * successPercent) / 100);
-      expect(expectedTotal).to.be.greaterThan(0);
+      // Should get at least 3 minted
+      const expectedTotal = Math.floor((randomChanceFraction * numHours * successPercent) / 100) - 1;
+      expect(expectedTotal).to.eq(3);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.be.greaterThanOrEqual(
         expectedTotal
       );
