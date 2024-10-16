@@ -21,18 +21,18 @@ describe("World", function () {
       await owner.sendTransaction({
         to: owner.address,
         value: 1,
-        maxFeePerGas: 1,
+        maxFeePerGas: 1
       });
     }
     // Create the world
     const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
     const worldLibrary = await WorldLibrary.deploy();
     const World = await ethers.getContractFactory("World", {
-      libraries: {WorldLibrary: await worldLibrary.getAddress()},
+      libraries: {WorldLibrary: await worldLibrary.getAddress()}
     });
     const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
+      unsafeAllow: ["delegatecall", "external-library-linking"]
     })) as unknown as World;
 
     await setDailyAndWeeklyRewards(world);
@@ -48,14 +48,15 @@ describe("World", function () {
       minRandomWordsUpdateTime,
       numDaysRandomWordsInitialized,
       owner,
-      alice,
+      alice
     };
   };
 
   describe("Seed", function () {
     it("Requesting random words", async function () {
-      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} =
-        await loadFixture(deployContracts);
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
+        deployContracts
+      );
       await world.requestRandomWords();
 
       const startOffset = numDaysRandomWordsInitialized;
@@ -97,8 +98,9 @@ describe("World", function () {
     });
 
     it("getRandomWord", async function () {
-      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} =
-        await loadFixture(deployContracts);
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
+        deployContracts
+      );
       const {timestamp: currentTimestamp} = (await ethers.provider.getBlock("latest")) as Block;
       expect(await world.hasRandomWord(currentTimestamp)).to.be.false;
       await ethers.provider.send("evm_increaseTime", [Number(minRandomWordsUpdateTime)]);
@@ -116,17 +118,18 @@ describe("World", function () {
       // Gives unhandled project rejection for some reason
       // Before 5 day offset
       await expect(
-        world.getRandomWord(BigInt(currentTimestamp) - minRandomWordsUpdateTime * 6n),
+        world.getRandomWord(BigInt(currentTimestamp) - minRandomWordsUpdateTime * 6n)
       ).to.be.revertedWithCustomError(world, "NoValidRandomWord");
       // After offset
       await expect(
-        world.getRandomWord(BigInt(currentTimestamp) + minRandomWordsUpdateTime),
+        world.getRandomWord(BigInt(currentTimestamp) + minRandomWordsUpdateTime)
       ).to.be.revertedWithCustomError(world, "NoValidRandomWord");
     });
 
     it("Get multiple words", async function () {
-      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} =
-        await loadFixture(deployContracts);
+      const {world, mockVRF, minRandomWordsUpdateTime, numDaysRandomWordsInitialized} = await loadFixture(
+        deployContracts
+      );
       const {timestamp: currentTimestamp} = (await ethers.provider.getBlock("latest")) as Block;
       await expect(world.getMultipleWords(currentTimestamp)).to.be.revertedWithCustomError(world, "NoValidRandomWord");
       await ethers.provider.send("evm_increaseTime", [Number(minRandomWordsUpdateTime)]);
@@ -232,7 +235,7 @@ describe("World", function () {
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionAvailable,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       };
 
       let tx = await world.addActions([
@@ -241,8 +244,8 @@ describe("World", function () {
           info: actionInfo,
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
+          combatStats: EstforTypes.emptyCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
       const {skill} = await world.actions(actionId);
@@ -255,8 +258,8 @@ describe("World", function () {
           info: actionInfo,
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
+          combatStats: EstforTypes.emptyCombatStats
+        }
       ]);
       expect((await world.actions(actionId)).xpPerHour).to.eq(20);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
@@ -267,8 +270,8 @@ describe("World", function () {
           info: actionInfo,
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
+          combatStats: EstforTypes.emptyCombatStats
+        }
       ]);
       expect((await world.actions(actionId)).isAvailable).to.be.true;
       actionInfo.isAvailable = false;
@@ -278,8 +281,8 @@ describe("World", function () {
           info: actionInfo,
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
+          combatStats: EstforTypes.emptyCombatStats
+        }
       ]);
       expect((await world.actions(actionId)).isAvailable).to.be.false;
     });
@@ -300,7 +303,7 @@ describe("World", function () {
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: actionAvailable,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       };
 
       let tx = await world.addActions([
@@ -309,8 +312,8 @@ describe("World", function () {
           info: actionInfo,
           guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 60 * 10}],
           randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: 1328, amount: 1}],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
+          combatStats: EstforTypes.emptyCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
       expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
@@ -321,8 +324,8 @@ describe("World", function () {
           info: actionInfo,
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
+          combatStats: EstforTypes.emptyCombatStats
+        }
       ]);
       expect((await world.getActionRewards(actionId)).guaranteedRewardTokenId1).to.eq(0);
       expect((await world.getActionRewards(actionId)).randomRewardAmount1).to.eq(0);
@@ -333,8 +336,8 @@ describe("World", function () {
           info: actionInfo,
           guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 60 * 10}],
           randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: 1328, amount: 1}],
-          combatStats: EstforTypes.emptyCombatStats,
-        },
+          combatStats: EstforTypes.emptyCombatStats
+        }
       ]);
 
       expect((await world.getActionRewards(actionId)).guaranteedRewardTokenId1).to.eq(EstforConstants.OAK_LOG);
@@ -361,10 +364,10 @@ describe("World", function () {
               skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
-              inputAmounts: [1],
-            },
-          ],
-        ),
+              inputAmounts: [1]
+            }
+          ]
+        )
       ).to.be.revertedWithCustomError(world, "ActionChoiceIdZeroNotAllowed");
     });
 
@@ -381,8 +384,8 @@ describe("World", function () {
               skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
-              inputAmounts: [1],
-            },
+              inputAmounts: [1]
+            }
           ],
           [
             {
@@ -391,7 +394,7 @@ describe("World", function () {
               skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
-              inputAmounts: [1],
+              inputAmounts: [1]
             },
             {
               ...defaultActionChoice,
@@ -399,19 +402,19 @@ describe("World", function () {
               skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
-              inputAmounts: [1],
-            },
-          ],
-        ],
+              inputAmounts: [1]
+            }
+          ]
+        ]
       );
 
       // Check that they exist
       expect((await world.getActionChoice(EstforConstants.NONE, 1)).skill).to.eq(EstforTypes.Skill.MAGIC);
       expect((await world.getActionChoice(EstforConstants.ACTION_ALCHEMY_ITEM, 2)).skill).to.eq(
-        EstforTypes.Skill.ALCHEMY,
+        EstforTypes.Skill.ALCHEMY
       );
       expect((await world.getActionChoice(EstforConstants.ACTION_ALCHEMY_ITEM, 3)).skill).to.eq(
-        EstforTypes.Skill.ALCHEMY,
+        EstforTypes.Skill.ALCHEMY
       );
     });
 
@@ -426,24 +429,24 @@ describe("World", function () {
         xpPerHour: 0,
         rate: 1 * RATE_MUL,
         inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       actionChoiceInput.inputAmounts[0] = 4;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
 
       actionChoiceInput.inputAmounts[0] = 1;
       actionChoiceInput.inputAmounts[1] = 4;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
 
       actionChoiceInput.inputAmounts[1] = 2;
       actionChoiceInput.inputAmounts[2] = 1;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "InputAmountsMustBeInOrder");
 
       actionChoiceInput.inputAmounts[2] = 3;
@@ -464,27 +467,27 @@ describe("World", function () {
           EstforConstants.BRONZE_ARROW,
           EstforConstants.IRON_ARROW,
           EstforConstants.ADAMANTINE_ARROW,
-          EstforConstants.ORICHALCUM_ARROW,
+          EstforConstants.ORICHALCUM_ARROW
         ],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "TooManyInputItems");
 
       actionChoiceInput.inputTokenIds = [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "LengthMismatch");
 
       actionChoiceInput.inputTokenIds = [
         EstforConstants.BRONZE_ARROW,
         EstforConstants.IRON_ARROW,
-        EstforConstants.BRONZE_ARROW,
+        EstforConstants.BRONZE_ARROW
       ];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "InputItemNoDuplicates");
     });
 
@@ -501,21 +504,21 @@ describe("World", function () {
         inputTokenIds: [EstforConstants.BRONZE_ARROW],
         inputAmounts: [1],
         minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING, Skill.ALCHEMY],
-        minXPs: [1, 1, 1],
+        minXPs: [1, 1, 1]
       };
 
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "TooManyMinSkills");
 
       actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "LengthMismatch");
 
       actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.WOODCUTTING];
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "MinimumSkillsNoDuplicates");
     });
 
@@ -532,17 +535,17 @@ describe("World", function () {
         inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.ADAMANTINE_ARROW],
         inputAmounts: [1, 2, 3],
         outputTokenId: EstforConstants.RUNITE_ARROW,
-        outputAmount: 0,
+        outputAmount: 0
       };
 
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "OutputAmountCannotBeZero");
 
       actionChoiceInput.outputAmount = 1;
       actionChoiceInput.outputTokenId = EstforConstants.NONE;
       await expect(
-        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput]),
+        world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "OutputTokenIdCannotBeEmpty");
     });
 
@@ -561,9 +564,9 @@ describe("World", function () {
             xpPerHour: 0,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.AIR_SCROLL],
-            inputAmounts: [1],
-          },
-        ],
+            inputAmounts: [1]
+          }
+        ]
       );
 
       await world.editActionChoices(
@@ -576,9 +579,9 @@ describe("World", function () {
             skillDiff: 2,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.AIR_SCROLL],
-            inputAmounts: [2],
-          },
-        ],
+            inputAmounts: [2]
+          }
+        ]
       );
 
       let actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
@@ -595,9 +598,9 @@ describe("World", function () {
             skillDiff: 2,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.AIR_SCROLL],
-            inputAmounts: [10],
-          },
-        ],
+            inputAmounts: [10]
+          }
+        ]
       );
       actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
       expect(actionChoice.inputAmount1).to.eq(10);
@@ -620,10 +623,10 @@ describe("World", function () {
               inputTokenIds: [EstforConstants.BRONZE_ARROW],
               inputAmounts: [1],
               minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-              minXPs: [1, 2, 3],
-            },
-          ],
-        ),
+              minXPs: [1, 2, 3]
+            }
+          ]
+        )
       ).to.be.revertedWithCustomError(worldLibrary, "FirstMinSkillMustBeActionChoiceSkill");
 
       await expect(
@@ -640,10 +643,10 @@ describe("World", function () {
               inputTokenIds: [EstforConstants.BRONZE_ARROW],
               inputAmounts: [1],
               minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-              minXPs: [1, 2, 3],
-            },
-          ],
-        ),
+              minXPs: [1, 2, 3]
+            }
+          ]
+        )
       ).to.not.be.reverted;
     });
 
@@ -663,9 +666,9 @@ describe("World", function () {
             inputTokenIds: [EstforConstants.BRONZE_ARROW],
             inputAmounts: [1],
             minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-            minXPs: [1, 2, 3],
-          },
-        ],
+            minXPs: [1, 2, 3]
+          }
+        ]
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
@@ -692,9 +695,9 @@ describe("World", function () {
             xpPerHour: 0,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.MITHRIL_ARROW],
-            inputAmounts: [1, 256, 6553],
-          },
-        ],
+            inputAmounts: [1, 256, 6553]
+          }
+        ]
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
@@ -726,19 +729,19 @@ describe("World", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [
           {itemTokenId: EstforConstants.AIR_SCROLL, rate: 100},
-          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200},
+          {itemTokenId: EstforConstants.AIR_SCROLL, rate: 200}
         ],
         randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
+        combatStats: EstforTypes.emptyCombatStats
       };
 
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "GuaranteedRewardsNoDuplicates",
+        "GuaranteedRewardsNoDuplicates"
       );
       action.guaranteedRewards[0].itemTokenId = SHADOW_SCROLL;
       await expect(world.addActions([action])).to.not.be.reverted;
@@ -761,31 +764,31 @@ describe("World", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [],
         randomRewards: [
           {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 30, amount: 1},
           {itemTokenId: EstforConstants.AIR_SCROLL, chance: 50, amount: 1},
           {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 100, amount: 1},
-          {itemTokenId: EstforConstants.HELL_SCROLL, chance: 200, amount: 1},
+          {itemTokenId: EstforConstants.HELL_SCROLL, chance: 200, amount: 1}
         ],
-        combatStats: EstforTypes.emptyCombatStats,
+        combatStats: EstforTypes.emptyCombatStats
       };
 
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "RandomRewardsMustBeInOrder",
+        "RandomRewardsMustBeInOrder"
       );
       action.randomRewards[0].chance = 300;
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "RandomRewardsMustBeInOrder",
+        "RandomRewardsMustBeInOrder"
       );
       action.randomRewards[1].chance = 250;
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         worldLibrary,
-        "RandomRewardsMustBeInOrder",
+        "RandomRewardsMustBeInOrder"
       );
       action.randomRewards[2].chance = 225;
       await expect(world.addActions([action])).to.not.be.reverted;
@@ -808,14 +811,14 @@ describe("World", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [],
         randomRewards: [
           {itemTokenId: EstforConstants.AIR_SCROLL, chance: 200, amount: 1},
-          {itemTokenId: EstforConstants.AIR_SCROLL, chance: 100, amount: 1},
+          {itemTokenId: EstforConstants.AIR_SCROLL, chance: 100, amount: 1}
         ],
-        combatStats: EstforTypes.emptyCombatStats,
+        combatStats: EstforTypes.emptyCombatStats
       };
 
       await expect(world.addActions([action])).to.be.revertedWithCustomError(worldLibrary, "RandomRewardNoDuplicates");
@@ -840,11 +843,11 @@ describe("World", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionAvailable,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.AIR_SCROLL, rate: 100}],
         randomRewards: [{itemTokenId: EstforConstants.AIR_SCROLL, chance: 100, amount: 1}],
-        combatStats: EstforTypes.emptyCombatStats,
+        combatStats: EstforTypes.emptyCombatStats
       };
 
       await expect(world.addActions([action])).to.not.be.reverted;
@@ -853,7 +856,7 @@ describe("World", function () {
 
       await expect(world.addActions([action])).to.be.revertedWithCustomError(
         world,
-        "NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards",
+        "NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards"
       );
       action.info.actionChoiceRequired = false;
       await expect(world.addActions([action])).to.not.be.reverted;

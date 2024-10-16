@@ -7,7 +7,7 @@ import {bronzeHelmetStats, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, S
 import {
   ACTION_FIREMAKING_ITEM,
   ACTION_FISHING_MINNUS,
-  ACTION_WOODCUTTING_LOG,
+  ACTION_WOODCUTTING_LOG
 } from "@paintswap/estfor-definitions/constants";
 
 export const setupBasicWoodcutting = async function (
@@ -31,11 +31,11 @@ export const setupBasicWoodcutting = async function (
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       isAvailable: true,
       actionChoiceRequired: false,
-      successPercent: 100,
+      successPercent: 100
     },
     guaranteedRewards: [{itemTokenId: rewards, rate}],
     randomRewards: [],
-    combatStats: EstforTypes.emptyCombatStats,
+    combatStats: EstforTypes.emptyCombatStats
   };
 
   const tx = await world.addActions([action]);
@@ -50,15 +50,15 @@ export const setupBasicWoodcutting = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.BRONZE_AXE,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    },
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+    }
   ]);
 
   return {queuedAction, rate, actionId, action};
@@ -81,12 +81,12 @@ export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World)
         handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
         isAvailable: true,
         actionChoiceRequired: false,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MINNUS, rate}],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
 
@@ -99,15 +99,15 @@ export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World)
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NET_STICK,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.NET_STICK,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-    },
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+    }
   ]);
 
   return {queuedAction, rate};
@@ -132,12 +132,12 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
         handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
 
@@ -154,8 +154,8 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
         inputTokenIds: [EstforConstants.LOG],
         inputAmounts: [1],
         minSkills: minXP > 0 ? [EstforTypes.Skill.FIREMAKING] : [],
-        minXPs: minXP > 0 ? [minXP] : [],
-      },
+        minXPs: minXP > 0 ? [minXP] : []
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -169,20 +169,20 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.LOG,
-      equipPosition: EstforTypes.EquipPosition.AUX,
-    },
+      equipPosition: EstforTypes.EquipPosition.AUX
+    }
   ]);
 
   await itemNFT.testMint(alice.address, EstforConstants.LOG, 5000);
@@ -200,7 +200,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     meleeDefence: 0,
     magicDefence: 0,
     rangedDefence: 0,
-    health: 20,
+    health: 20
   };
 
   const rate = 1 * GUAR_MUL; // per kill
@@ -219,11 +219,11 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       isAvailable: true,
       actionChoiceRequired: true,
-      successPercent: 100,
+      successPercent: 100
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
     randomRewards: [{itemTokenId: EstforConstants.POISON, chance: 32767, amount: 1}], // ~50% chance
-    combatStats: monsterCombatStats,
+    combatStats: monsterCombatStats
   };
   let tx = await world.addActions([combatAction]);
   const actionId = await getActionId(tx, world);
@@ -234,8 +234,8 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     [
       {
         ...defaultActionChoice,
-        skill: EstforTypes.Skill.MELEE,
-      },
+        skill: EstforTypes.Skill.MELEE
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -252,7 +252,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     regenerateId: EstforConstants.COOKED_MINNUS,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -260,28 +260,28 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
       ...EstforTypes.defaultItemInput,
       combatStats: {
         ...EstforTypes.emptyCombatStats,
-        melee: 5,
+        melee: 5
       },
       tokenId: EstforConstants.BRONZE_SWORD,
-      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
     },
     {
       ...EstforTypes.defaultItemInput,
       combatStats: bronzeHelmetStats,
       tokenId: EstforConstants.BRONZE_HELMET,
-      equipPosition: EstforTypes.EquipPosition.HEAD,
+      equipPosition: EstforTypes.EquipPosition.HEAD
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.BRONZE_ARROW,
-      equipPosition: EstforTypes.EquipPosition.QUIVER,
+      equipPosition: EstforTypes.EquipPosition.QUIVER
     },
     {
       ...EstforTypes.defaultItemInput,
       healthRestored: 12,
       tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-    },
+      equipPosition: EstforTypes.EquipPosition.FOOD
+    }
   ]);
 
   return {queuedAction, rate, numSpawned, choiceId, combatAction};
@@ -297,7 +297,7 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
     meleeDefence: 0,
     magicDefence: 0,
     rangedDefence: 0,
-    health: 36,
+    health: 36
   };
 
   const dropRate = 1 * GUAR_MUL; // per monster
@@ -316,12 +316,12 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
         handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
       randomRewards: [],
-      combatStats: monsterCombatStats,
-    },
+      combatStats: monsterCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
   tx = await world.addActionChoices(
@@ -330,8 +330,8 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
     [
       {
         ...defaultActionChoice,
-        skill: EstforTypes.Skill.MELEE,
-      },
+        skill: EstforTypes.Skill.MELEE
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -346,7 +346,7 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
     leftHandEquipmentTokenId: EstforConstants.NONE,
-    petId,
+    petId
   };
 
   await itemNFT.addItems([
@@ -354,8 +354,8 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
       ...EstforTypes.defaultItemInput,
       healthRestored: 12,
       tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-    },
+      equipPosition: EstforTypes.EquipPosition.FOOD
+    }
   ]);
   await itemNFT.testMint(alice.address, EstforConstants.COOKED_MINNUS, 20000);
 
@@ -387,12 +387,12 @@ export const setupBasicCooking = async function (
         handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
 
@@ -412,8 +412,8 @@ export const setupBasicCooking = async function (
         outputAmount: 1,
         successPercent,
         minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
-        minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
-      },
+        minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : []
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -427,21 +427,21 @@ export const setupBasicCooking = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.RAW_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.AUX,
+      equipPosition: EstforTypes.EquipPosition.AUX
     },
     {
       ...EstforTypes.defaultItemInput,
       healthRestored: 1,
       tokenId: EstforConstants.COOKED_MINNUS,
-      equipPosition: EstforTypes.EquipPosition.FOOD,
-    },
+      equipPosition: EstforTypes.EquipPosition.FOOD
+    }
   ]);
 
   await itemNFT.testMint(alice.address, EstforConstants.RAW_MINNUS, 1000);
@@ -470,12 +470,12 @@ export const setupBasicCrafting = async function (
         handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
 
@@ -492,8 +492,8 @@ export const setupBasicCrafting = async function (
         inputTokenIds: [EstforConstants.ROPE, EstforConstants.SAPPHIRE],
         inputAmounts: [1, 20],
         outputTokenId: EstforConstants.SAPPHIRE_AMULET,
-        outputAmount,
-      },
+        outputAmount
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -507,20 +507,20 @@ export const setupBasicCrafting = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.SAPPHIRE,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.ROPE,
-      equipPosition: EstforTypes.EquipPosition.NONE,
-    },
+      equipPosition: EstforTypes.EquipPosition.NONE
+    }
   ]);
 
   return {queuedAction, rate, choiceId};
@@ -547,12 +547,12 @@ export const setupBasicAlchemy = async function (
         handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
 
@@ -569,8 +569,8 @@ export const setupBasicAlchemy = async function (
         inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.NATURE_SCROLL, EstforConstants.PAPER],
         inputAmounts: [1, 1, 2],
         outputTokenId: EstforConstants.ANCIENT_SCROLL,
-        outputAmount,
-      },
+        outputAmount
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -584,30 +584,30 @@ export const setupBasicAlchemy = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.SHADOW_SCROLL,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.NATURE_SCROLL,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.PAPER,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.ANCIENT_SCROLL,
-      equipPosition: EstforTypes.EquipPosition.NONE,
-    },
+      equipPosition: EstforTypes.EquipPosition.NONE
+    }
   ]);
 
   return {queuedAction, rate, choiceId};
@@ -634,12 +634,12 @@ export const setupBasicFletching = async function (
         handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
 
@@ -656,8 +656,8 @@ export const setupBasicFletching = async function (
         inputTokenIds: [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
         inputAmounts: [1, 1, 2],
         outputTokenId: EstforConstants.BRONZE_ARROW,
-        outputAmount,
-      },
+        outputAmount
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -671,30 +671,30 @@ export const setupBasicFletching = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.BRONZE_ARROW_HEAD,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.ARROW_SHAFT,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.FEATHER,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.BRONZE_ARROW,
-      equipPosition: EstforTypes.EquipPosition.NONE,
-    },
+      equipPosition: EstforTypes.EquipPosition.NONE
+    }
   ]);
 
   return {queuedAction, rate, choiceId};
@@ -721,12 +721,12 @@ export const setupBasicForging = async function (
         handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
 
@@ -744,8 +744,8 @@ export const setupBasicForging = async function (
         inputTokenIds: [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
         inputAmounts: [1, 1, 2],
         outputTokenId: EstforConstants.BRONZE_ARROW,
-        outputAmount,
-      },
+        outputAmount
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -759,30 +759,30 @@ export const setupBasicForging = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.BRONZE_ARROW_HEAD,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.ARROW_SHAFT,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.FEATHER,
-      equipPosition: EstforTypes.EquipPosition.NONE,
+      equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.BRONZE_ARROW,
-      equipPosition: EstforTypes.EquipPosition.NONE,
-    },
+      equipPosition: EstforTypes.EquipPosition.NONE
+    }
   ]);
 
   return {queuedAction, rate, choiceId};
@@ -805,12 +805,12 @@ export const setupTravelling = async function (world: World, rate = RATE_MUL / 8
         handItemTokenIdRangeMax: EstforConstants.NONE,
         isAvailable: true,
         actionChoiceRequired: true,
-        successPercent: 100,
+        successPercent: 100
       },
       guaranteedRewards: [],
       randomRewards: [],
-      combatStats: EstforTypes.emptyCombatStats,
-    },
+      combatStats: EstforTypes.emptyCombatStats
+    }
   ]);
   const actionId = await getActionId(tx, world);
   const ACTIONCHOICE_WALK_TO_1 = 1;
@@ -827,8 +827,8 @@ export const setupTravelling = async function (world: World, rate = RATE_MUL / 8
         inputAmounts: [from], // World location start
         outputTokenId: EstforConstants.NONE,
         outputAmount: to, // World location end
-        rate,
-      },
+        rate
+      }
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
@@ -842,7 +842,7 @@ export const setupTravelling = async function (world: World, rate = RATE_MUL / 8
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE
   };
 
   return {queuedAction};

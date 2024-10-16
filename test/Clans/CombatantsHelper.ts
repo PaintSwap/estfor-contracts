@@ -69,7 +69,7 @@ describe("CombatantsHelper", function () {
       owner,
       origName,
       playerId,
-      alice,
+      alice
     } = await loadFixture(clanFixture);
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);

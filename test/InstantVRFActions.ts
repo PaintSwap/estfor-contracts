@@ -3,7 +3,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 import {
   InstantVRFActionInput,
   InstantVRFActionType,
-  defaultInstantVRFActionInput as _defaultInstantVRFActionInput,
+  defaultInstantVRFActionInput as _defaultInstantVRFActionInput
 } from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import NONE, {
@@ -14,7 +14,7 @@ import NONE, {
   IRON_ARROW,
   IRON_BAR,
   ORICHALCUM_ARROW,
-  RUNITE_ARROW,
+  RUNITE_ARROW
 } from "@paintswap/estfor-definitions/constants";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {fulfillRandomWords} from "./utils";
@@ -32,7 +32,7 @@ describe("Instant VRF actions", function () {
       [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
       [
         await fixture.genericInstantVRFActionStrategy.getAddress(),
-        await fixture.genericInstantVRFActionStrategy.getAddress(),
+        await fixture.genericInstantVRFActionStrategy.getAddress()
       ]
     );
     return fixture;
@@ -49,14 +49,14 @@ describe("Instant VRF actions", function () {
         [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]]
       ), // 100% chance of 2 runite arrows
       isFullModeOnly: false,
-      actionType: EstforTypes.InstantVRFActionType.FORGING,
+      actionType: EstforTypes.InstantVRFActionType.FORGING
     };
 
     it("Check input item order", async function () {
       const {instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
 
       instantVRFActionInput.inputAmounts[0] = 4;
@@ -89,7 +89,7 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, ORICHALCUM_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
@@ -116,7 +116,7 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -126,7 +126,7 @@ describe("Instant VRF actions", function () {
       await instantVRFActions
         .connect(alice)
         .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         });
 
       expect(
@@ -140,14 +140,14 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       const instantVRFActionInput1: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
         inputAmounts: [1, 2, 3],
-        actionId: 2,
+        actionId: 2
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
@@ -164,7 +164,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-            value: await instantVRFActions.requestCost(actionAmount),
+            value: await instantVRFActions.requestCost(actionAmount)
           })
       ).to.be.revertedWithCustomError(instantVRFActions, "TooManyActionAmounts");
 
@@ -172,7 +172,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput1.actionId], [MAX_ACTION_AMOUNT], {
-            value: await instantVRFActions.requestCost(MAX_ACTION_AMOUNT),
+            value: await instantVRFActions.requestCost(MAX_ACTION_AMOUNT)
           })
       ).to.not.be.reverted;
     });
@@ -183,14 +183,14 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       const instantVRFActionInput1: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
         inputAmounts: [1, 2, 3],
-        actionId: 2,
+        actionId: 2
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
@@ -234,14 +234,14 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       const instantVRFActionInput1: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         actionId: 2,
         inputTokenIds: [BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
-        inputAmounts: [4, 5, 6],
+        inputAmounts: [4, 5, 6]
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
@@ -259,7 +259,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId, instantVRFActionInput1.actionId], [2, 1], {
-            value: await instantVRFActions.requestCost(actionAmount),
+            value: await instantVRFActions.requestCost(actionAmount)
           })
       )
         .to.emit(instantVRFActions, "DoInstantVRFActions")
@@ -280,7 +280,7 @@ describe("Instant VRF actions", function () {
       await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
 
       expect(await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR])).to.deep.eq([
-        2, 1, 0,
+        2, 1, 0
       ]);
     });
 
@@ -290,7 +290,7 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -301,7 +301,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-            value: (await instantVRFActions.requestCost(actionAmount)) - 1n,
+            value: (await instantVRFActions.requestCost(actionAmount)) - 1n
           })
       ).to.be.revertedWithCustomError(instantVRFActions, "NotEnoughFTM");
     });
@@ -316,14 +316,14 @@ describe("Instant VRF actions", function () {
         playerNFT,
         origName,
         brush,
-        alice,
+        alice
       } = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
         inputAmounts: [1, 2, 3],
-        isFullModeOnly: true,
+        isFullModeOnly: true
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -334,7 +334,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-            value: (await instantVRFActions.requestCost(actionAmount)) - 1n,
+            value: (await instantVRFActions.requestCost(actionAmount)) - 1n
           })
       ).to.be.revertedWithCustomError(instantVRFActions, "PlayerNotUpgraded");
 
@@ -349,7 +349,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-            value: await instantVRFActions.requestCost(actionAmount),
+            value: await instantVRFActions.requestCost(actionAmount)
           })
       ).to.not.be.reverted;
     });
@@ -358,7 +358,7 @@ describe("Instant VRF actions", function () {
       const {instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -372,7 +372,7 @@ describe("Instant VRF actions", function () {
       const {instantVRFActions, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
       await expect(instantVRFActions.connect(alice).addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
@@ -386,7 +386,7 @@ describe("Instant VRF actions", function () {
         const {instantVRFActions, alice} = await loadFixture(forgingFixture);
 
         const instantVRFActionInput: InstantVRFActionInput = {
-          ...defaultInstantVRFActionInput,
+          ...defaultInstantVRFActionInput
         };
         await instantVRFActions.addActions([instantVRFActionInput]);
         await expect(
@@ -401,7 +401,7 @@ describe("Instant VRF actions", function () {
         const instantVRFActionInput: InstantVRFActionInput = {
           ...defaultInstantVRFActionInput,
           inputTokenIds: [BRONZE_ARROW],
-          inputAmounts: [1],
+          inputAmounts: [1]
         };
         await expect(instantVRFActions.editActions([instantVRFActionInput])).to.be.revertedWithCustomError(
           instantVRFActions,
@@ -410,7 +410,7 @@ describe("Instant VRF actions", function () {
         await instantVRFActions.addActions([instantVRFActionInput]);
         const newinstantVRFActionInput = {
           ...instantVRFActionInput,
-          inputTokenIds: [IRON_ARROW],
+          inputTokenIds: [IRON_ARROW]
         };
         await expect(instantVRFActions.editActions([newinstantVRFActionInput])).to.emit(
           instantVRFActions,
@@ -427,7 +427,7 @@ describe("Instant VRF actions", function () {
         const instantVRFActionInput: InstantVRFActionInput = {
           ...defaultInstantVRFActionInput,
           inputTokenIds: [BRONZE_ARROW],
-          inputAmounts: [1],
+          inputAmounts: [1]
         };
         await instantVRFActions.addActions([instantVRFActionInput]);
         await expect(instantVRFActions.connect(alice).removeActions([1])).to.be.revertedWithCustomError(
@@ -445,7 +445,7 @@ describe("Instant VRF actions", function () {
         const instantVRFActionInput: InstantVRFActionInput = {
           ...defaultInstantVRFActionInput,
           inputTokenIds: [BRONZE_ARROW],
-          inputAmounts: [1],
+          inputAmounts: [1]
         };
         await instantVRFActions.addActions([instantVRFActionInput]);
         await expect(instantVRFActions.removeActions([1]))
@@ -460,14 +460,14 @@ describe("Instant VRF actions", function () {
       const {playerId, instantVRFActions} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
       await instantVRFActions.addActions([instantVRFActionInput]);
 
       const actionAmount = 1;
       await expect(
         instantVRFActions.doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         })
       ).to.be.revertedWithCustomError(instantVRFActions, "NotOwnerOfPlayerAndActive");
     });
@@ -483,7 +483,7 @@ describe("Instant VRF actions", function () {
       const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -493,7 +493,7 @@ describe("Instant VRF actions", function () {
       await instantVRFActions
         .connect(alice)
         .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         });
 
       const requestId = 1;
@@ -508,7 +508,7 @@ describe("Instant VRF actions", function () {
       const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -518,7 +518,7 @@ describe("Instant VRF actions", function () {
       await instantVRFActions
         .connect(alice)
         .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         });
 
       // TODO: check the double RUNITE_ARROW
@@ -532,7 +532,7 @@ describe("Instant VRF actions", function () {
       const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -542,14 +542,14 @@ describe("Instant VRF actions", function () {
       await instantVRFActions
         .connect(alice)
         .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         });
 
       await expect(
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-            value: await instantVRFActions.requestCost(actionAmount),
+            value: await instantVRFActions.requestCost(actionAmount)
           })
       ).to.be.revertedWithCustomError(instantVRFActions, "AlreadyProcessing");
 
@@ -560,7 +560,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-            value: await instantVRFActions.requestCost(actionAmount),
+            value: await instantVRFActions.requestCost(actionAmount)
           })
       ).to.not.be.reverted;
     });
@@ -571,7 +571,7 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -581,7 +581,7 @@ describe("Instant VRF actions", function () {
       await instantVRFActions
         .connect(alice)
         .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         });
 
       await instantVRFActions.removeActions([instantVRFActionInput.actionId]);
@@ -599,7 +599,7 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
+        inputAmounts: [1, 2, 3]
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -622,7 +622,7 @@ describe("Instant VRF actions", function () {
         [instantVRFActionInput.actionId],
         [actionAmount],
         {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         }
       );
 
@@ -640,14 +640,14 @@ describe("Instant VRF actions", function () {
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2],
+        inputAmounts: [1, 2]
       };
 
       const instantVRFActionInput1: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
         actionId: 2,
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [3, 5, 7],
+        inputAmounts: [3, 5, 7]
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
@@ -665,7 +665,7 @@ describe("Instant VRF actions", function () {
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
-        isFullModeOnly: true,
+        isFullModeOnly: true
       };
       await instantVRFActions.addActions([instantVRFActionInput]);
       expect((await instantVRFActions.actions(instantVRFActionInput.actionId)).packedData == "0x80");
@@ -679,7 +679,7 @@ describe("Instant VRF actions", function () {
         ...defaultInstantVRFActionInput,
         inputTokenIds: [BRONZE_ARROW],
         inputAmounts: [1],
-        isFullModeOnly: true,
+        isFullModeOnly: true
       };
       await instantVRFActions.addActions([instantVRFActionInput]);
 
@@ -687,7 +687,7 @@ describe("Instant VRF actions", function () {
       const actionAmount = 2;
       await expect(
         instantVRFActions.connect(alice).doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [2], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         })
       ).to.be.revertedWithCustomError(instantVRFActions, "PlayerNotUpgraded");
       // Upgrade player
@@ -698,7 +698,7 @@ describe("Instant VRF actions", function () {
 
       await expect(
         instantVRFActions.connect(alice).doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [2], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         })
       ).to.not.be.reverted;
     });
@@ -803,7 +803,7 @@ describe("Instant VRF actions", function () {
             ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
             [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 1}]]
           ),
-          actionType: EstforTypes.InstantVRFActionType.EGG,
+          actionType: EstforTypes.InstantVRFActionType.EGG
         };
 
         await expect(instantVRFActions.addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
@@ -827,7 +827,7 @@ describe("Instant VRF actions", function () {
       const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
-        ...defaultInstantVRFActionInput,
+        ...defaultInstantVRFActionInput
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
@@ -839,7 +839,7 @@ describe("Instant VRF actions", function () {
         instantVRFActions
           .connect(alice)
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-            value: await instantVRFActions.requestCost(actionAmount),
+            value: await instantVRFActions.requestCost(actionAmount)
           })
       ).to.be.revertedWithCustomError(instantVRFActions, "ActionNotAvailable");
 
@@ -847,7 +847,7 @@ describe("Instant VRF actions", function () {
       await instantVRFActions
         .connect(alice)
         .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
-          value: await instantVRFActions.requestCost(actionAmount),
+          value: await instantVRFActions.requestCost(actionAmount)
         });
       await instantVRFActions.setAvailable([instantVRFActionInput.actionId], false);
 
@@ -865,7 +865,7 @@ describe("Instant VRF actions", function () {
       ..._defaultInstantVRFActionInput,
       actionId: 1,
       isFullModeOnly: false,
-      actionType: EstforTypes.InstantVRFActionType.FORGING,
+      actionType: EstforTypes.InstantVRFActionType.FORGING
     };
 
     it("Random reward validation", async function () {
@@ -879,7 +879,7 @@ describe("Instant VRF actions", function () {
         data: abiCoder.encode(
           ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
           [0, randomRewards]
-        ), // 100% chance of 2 runite arrows
+        ) // 100% chance of 2 runite arrows
       };
 
       // Must have an amount out that is greater than 0
@@ -916,7 +916,7 @@ describe("Instant VRF actions", function () {
 
       randomRewards = [
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 1},
-        {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 2, amount: 1},
+        {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 2, amount: 1}
       ];
 
       instantVRFActionInput.data = abiCoder.encode(
@@ -930,7 +930,7 @@ describe("Instant VRF actions", function () {
       // Equal chance not allowed either
       randomRewards = [
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 1},
-        {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 1, amount: 1},
+        {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 1, amount: 1}
       ];
       instantVRFActionInput.data = abiCoder.encode(
         ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
@@ -953,7 +953,7 @@ describe("Instant VRF actions", function () {
         {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 3, amount: 1},
         {itemTokenId: EstforConstants.RUNITE_BAR, chance: 2, amount: 1},
         {itemTokenId: EstforConstants.ORICHALCUM_BAR, chance: 1, amount: 1},
-        {itemTokenId: EstforConstants.ADAMANTINE_ORE, chance: 1, amount: 1},
+        {itemTokenId: EstforConstants.ADAMANTINE_ORE, chance: 1, amount: 1}
       ];
 
       instantVRFActionInput.data = abiCoder.encode(
@@ -983,7 +983,7 @@ describe("Instant VRF actions", function () {
         {itemTokenId: EstforConstants.IRON_ARROW, chance: 65535n, amount: 2n}, // 30% chance of 2 runite arrows
         {itemTokenId: EstforConstants.MITHRIL_ARROW, chance: 45874n, amount: 2n}, // 20% chance of 2 runite arrows
         {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: 32767n, amount: 2n}, // 40% chance of 2 runite arrows
-        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 6553n, amount: 2n}, // 10% chance of orichalcum arrows
+        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 6553n, amount: 2n} // 10% chance of orichalcum arrows
       ];
 
       const instantVRFActionInput: InstantVRFActionInput = {
@@ -993,7 +993,7 @@ describe("Instant VRF actions", function () {
         data: abiCoder.encode(
           ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
           [0, randomRewards]
-        ),
+        )
       };
 
       // Add it twice, just to get this tested
@@ -1017,7 +1017,7 @@ describe("Instant VRF actions", function () {
             [instantVRFActionInput.actionId, instantVRFActionInput.actionId + 1],
             [actionAmount1, actionAmount2],
             {
-              value: await instantVRFActions.requestCost(actionAmount),
+              value: await instantVRFActions.requestCost(actionAmount)
             }
           );
 
@@ -1028,7 +1028,7 @@ describe("Instant VRF actions", function () {
         EstforConstants.IRON_ARROW,
         EstforConstants.MITHRIL_ARROW,
         EstforConstants.ADAMANTINE_ARROW,
-        EstforConstants.RUNITE_ARROW,
+        EstforConstants.RUNITE_ARROW
       ]);
 
       for (let i = 0; i < randomRewards.length - 1; ++i) {
@@ -1078,7 +1078,7 @@ describe("Instant VRF actions", function () {
         [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]]
       ),
       isFullModeOnly: false,
-      actionType: EstforTypes.InstantVRFActionType.EGG,
+      actionType: EstforTypes.InstantVRFActionType.EGG
     };
   });
 });

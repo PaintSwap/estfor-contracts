@@ -27,7 +27,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
 
@@ -42,7 +42,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
 
@@ -57,7 +57,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
   });
@@ -86,7 +86,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
 
@@ -102,7 +102,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
   });
@@ -130,7 +130,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
 
@@ -144,7 +144,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
   });
@@ -168,7 +168,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
 
     expect(res.didAWin).to.be.true;
@@ -184,7 +184,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
     expect(res.battleResults[0]).to.eq(BattleResult.LOSE);
@@ -209,7 +209,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
 
     expect(res.didAWin).to.be.true;
@@ -224,7 +224,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
   });
@@ -249,7 +249,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
 
@@ -267,7 +267,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
 
@@ -284,7 +284,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
   });
@@ -312,7 +312,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.false;
 
@@ -326,7 +326,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
     expect(res.didAWin).to.be.true;
   });
@@ -356,7 +356,7 @@ describe("ClanBattleLibrary", function () {
         randomWordA,
         randomWordB,
         extraRollsA,
-        extraRollsB,
+        extraRollsB
       );
 
       if (res.didAWin) {
@@ -405,7 +405,7 @@ describe("ClanBattleLibrary", function () {
       randomWordA,
       randomWordB,
       extraRollsA,
-      extraRollsB,
+      extraRollsB
     );
 
     let success = false;
@@ -420,7 +420,7 @@ describe("ClanBattleLibrary", function () {
         randomWordA,
         randomWordB,
         extraRollsA,
-        extraRollsB,
+        extraRollsB
       );
 
       if (initialWinner != winner) {

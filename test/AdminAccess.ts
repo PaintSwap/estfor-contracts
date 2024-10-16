@@ -34,7 +34,7 @@ describe("AdminAccess", function () {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await expect(adminAccess.connect(alice).addPromotionalAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
     });
   });
@@ -51,7 +51,7 @@ describe("AdminAccess", function () {
       await adminAccess.addPromotionalAdmins([owner.address, alice.address]);
       await expect(adminAccess.connect(alice).addPromotionalAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
     });
   });
@@ -69,7 +69,7 @@ describe("AdminAccess", function () {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await expect(adminAccess.connect(alice).addAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
     });
   });
@@ -86,7 +86,7 @@ describe("AdminAccess", function () {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await expect(adminAccess.connect(alice).addAdmin(owner.address)).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
     });
   });
@@ -105,7 +105,7 @@ describe("AdminAccess", function () {
       await adminAccess.addAdmins([owner.address, alice.address]);
       await expect(adminAccess.connect(alice).removeAdmin(owner.address)).to.be.revertedWithCustomError(
         adminAccess,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
     });
   });

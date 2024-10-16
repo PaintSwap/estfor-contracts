@@ -36,7 +36,7 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: 10,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -46,7 +46,7 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: 5,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -56,7 +56,7 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: 10,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -66,7 +66,7 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.COMBAT_XP,
         boostValue: 10,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -76,7 +76,7 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.NON_COMBAT_XP,
         boostValue: 10,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -86,7 +86,7 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: 10,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -96,7 +96,7 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.COMBAT_XP,
         boostValue: 10,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -106,8 +106,8 @@ describe("WishingWell", function () {
         boostType: EstforTypes.BoostType.NON_COMBAT_XP,
         boostValue: 10,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const raffleEntryCost = await wishingWell.getRaffleEntryCost();
@@ -119,7 +119,7 @@ describe("WishingWell", function () {
     const {wishingWell, alice} = await loadFixture(deployContracts);
     await expect(wishingWell.connect(alice).donate(alice.address, 0, 100)).to.be.revertedWithCustomError(
       wishingWell,
-      "NotPlayers",
+      "NotPlayers"
     );
   });
 
@@ -139,7 +139,7 @@ describe("WishingWell", function () {
 
     await expect(players.connect(alice).donate(playerId + 1n, amount)).to.be.revertedWithCustomError(
       players,
-      "NotOwnerOfPlayer",
+      "NotOwnerOfPlayer"
     );
   });
 
@@ -188,7 +188,7 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(1);
     await expect(players.connect(alice).donate(playerId, parseEther("0.1"))).to.revertedWithCustomError(
       wishingWell,
-      "MinimumOneBrush",
+      "MinimumOneBrush"
     );
   });
 
@@ -205,8 +205,8 @@ describe("WishingWell", function () {
         maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
-        minimumAge: 0,
-      },
+        minimumAge: 0
+      }
     ]);
 
     let tierId = 1;
@@ -272,7 +272,7 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(2);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.be.revertedWithCustomError(
       wishingWell,
-      "OracleNotCalledYet",
+      "OracleNotCalledYet"
     );
     await requestAndFulfillRandomWords(world, mockVRF);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.not.be.reverted;
@@ -301,7 +301,7 @@ describe("WishingWell", function () {
     await players.connect(alice).donate(0, nextThreshold - parseEther("2"));
     await expect(players.connect(alice).donate(playerId, parseEther("1"))).to.not.emit(
       wishingWell,
-      "LastGlobalDonationThreshold",
+      "LastGlobalDonationThreshold"
     );
 
     await expect(players.connect(alice).donate(0, parseEther("1").toString()))
@@ -322,7 +322,7 @@ describe("WishingWell", function () {
     // Should go back to the start
     await expect(players.connect(alice).donate(0, parseEther("499"))).to.not.emit(
       wishingWell,
-      "LastGlobalDonationThreshold",
+      "LastGlobalDonationThreshold"
     );
     await expect(players.connect(alice).donate(0, parseEther("1")))
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
@@ -340,8 +340,9 @@ describe("WishingWell", function () {
   });
 
   it("Check clan boost rotation", async function () {
-    const {wishingWell, players, alice, playerId, raffleEntryCost, brush, clans, bob, totalBrush} =
-      await loadFixture(deployContracts);
+    const {wishingWell, players, alice, playerId, raffleEntryCost, brush, clans, bob, totalBrush} = await loadFixture(
+      deployContracts
+    );
 
     // Be a member of a clan
     const clanId = 1;
@@ -352,8 +353,8 @@ describe("WishingWell", function () {
         maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
-        minimumAge: 0,
-      },
+        minimumAge: 0
+      }
     ]);
 
     let tierId = 1;
@@ -399,7 +400,7 @@ describe("WishingWell", function () {
     expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
     expect(parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost * 10n + parseEther("1"),
+      raffleEntryCost * 10n + parseEther("1")
     );
 
     expect(await wishingWell.getNextClanThreshold(clanId)).to.eq(raffleEntryCost * 11n);
@@ -418,7 +419,7 @@ describe("WishingWell", function () {
       mockVRF,
       world,
       owner,
-      raffleEntryCost,
+      raffleEntryCost
     } = await loadFixture(deployContracts);
 
     await players.connect(alice).donate(playerId, raffleEntryCost);
@@ -559,7 +560,7 @@ describe("WishingWell", function () {
       0,
       0,
       raffleEntryCost, // donation
-      EstforTypes.ActionQueueStatus.NONE,
+      EstforTypes.ActionQueueStatus.NONE
     );
 
     // Should have the implicit boost
@@ -569,8 +570,9 @@ describe("WishingWell", function () {
   });
 
   it("Get extra XP boost as part of queueing a wishingWell, do not override lottery winnings", async function () {
-    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockVRF, wishingWell} =
-      await loadFixture(deployContracts);
+    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockVRF, wishingWell} = await loadFixture(
+      deployContracts
+    );
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
@@ -595,8 +597,8 @@ describe("WishingWell", function () {
         0,
         0,
         raffleEntryCost, // donation
-        EstforTypes.ActionQueueStatus.NONE,
-      ),
+        EstforTypes.ActionQueueStatus.NONE
+      )
     )
       .to.emit(wishingWell, "ClaimedLotteryWinnings")
       .withArgs(lotteryId, 1, EstforConstants.LUCKY_POTION, 1);
@@ -621,8 +623,8 @@ describe("WishingWell", function () {
         maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
-        minimumAge: 0,
-      },
+        minimumAge: 0
+      }
     ]);
 
     let tierId = 1;
@@ -630,7 +632,7 @@ describe("WishingWell", function () {
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
     await players.connect(alice).donate(playerId, raffleEntryCost * 2n);
     expect(parseEther((await wishingWell.clanDonationInfo(clanId)).totalDonated.toString())).to.eq(
-      raffleEntryCost * 2n,
+      raffleEntryCost * 2n
     );
   });
 

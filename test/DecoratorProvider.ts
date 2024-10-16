@@ -25,7 +25,7 @@ describe("DecoratorProvider", function () {
       await brush.getAddress(),
       await playerNFT.getAddress(),
       dev.address,
-      pid,
+      pid
     ])) as unknown as DecoratorProvider;
 
     return {...fixture, decoratorProvider, pid, lp, mockTerritories};

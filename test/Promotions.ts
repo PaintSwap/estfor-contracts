@@ -11,7 +11,7 @@ import {
   TIER_4_DAILY_REWARD_START_XP,
   TIER_5_DAILY_REWARD_START_XP,
   TIER_6_DAILY_REWARD_START_XP,
-  createPlayer,
+  createPlayer
 } from "../scripts/utils";
 import {Block, parseEther} from "ethers";
 
@@ -61,14 +61,14 @@ describe("Promotions", function () {
 
       const redeemCode = "1111111111111111";
       await expect(
-        promotions.connect(bob).mintStarterPromotionalPack(alice.address, playerId, redeemCode),
+        promotions.connect(bob).mintStarterPromotionalPack(alice.address, playerId, redeemCode)
       ).to.be.revertedWithCustomError(promotions, "NotPromotionalAdmin");
     });
 
     it("Starter promotional invalid mint redeem code", async function () {
       const {promotions, alice, playerId} = await loadFixture(playersFixture);
       await expect(
-        promotions.mintStarterPromotionalPack(alice.address, playerId, "11231"),
+        promotions.mintStarterPromotionalPack(alice.address, playerId, "11231")
       ).to.be.revertedWithCustomError(promotions, "InvalidRedeemCode");
     });
 
@@ -78,7 +78,7 @@ describe("Promotions", function () {
       const redeemCode = "1111111111111111";
 
       await expect(
-        promotions.mintStarterPromotionalPack(owner.address, playerId, redeemCode),
+        promotions.mintStarterPromotionalPack(owner.address, playerId, redeemCode)
       ).to.be.revertedWithCustomError(promotions, "NotOwnerOfPlayer");
     });
 
@@ -89,7 +89,7 @@ describe("Promotions", function () {
 
       await promotions.mintStarterPromotionalPack(alice.address, playerId, redeemCode);
       await expect(
-        promotions.mintStarterPromotionalPack(alice.address, playerId, redeemCode),
+        promotions.mintStarterPromotionalPack(alice.address, playerId, redeemCode)
       ).to.be.revertedWithCustomError(promotions, "PromotionAlreadyClaimed");
 
       const balances = await itemNFT.balanceOfs(alice.address, [
@@ -97,7 +97,7 @@ describe("Promotions", function () {
         EstforConstants.SKILL_BOOST,
         EstforConstants.COOKED_FEOLA,
         EstforConstants.SHADOW_SCROLL,
-        EstforConstants.SECRET_EGG_2_TIER1,
+        EstforConstants.SECRET_EGG_2_TIER1
       ]);
 
       expect(balances).to.deep.eq([5, 3, 200, 300, 1]);
@@ -136,9 +136,9 @@ describe("Promotions", function () {
       randomItemTokenIds: [
         EstforConstants.HALLOWEEN_BONUS_1,
         EstforConstants.HALLOWEEN_BONUS_2,
-        EstforConstants.HALLOWEEN_BONUS_3,
+        EstforConstants.HALLOWEEN_BONUS_3
       ],
-      randomAmounts: [1, 1, 1],
+      randomAmounts: [1, 1, 1]
     };
   }
 
@@ -153,13 +153,13 @@ describe("Promotions", function () {
       const newStartTime = NOW - 24 * 3600;
       const editedPromotion = {
         ...promotion,
-        startTime: newStartTime,
+        startTime: newStartTime
       };
 
       // Only owner can edit
       await expect(promotions.connect(alice).editPromotion(editedPromotion)).to.be.revertedWithCustomError(
         promotions,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
 
       await expect(promotions.editPromotion(editedPromotion)).to.emit(promotions, "EditPromotion");
@@ -176,7 +176,7 @@ describe("Promotions", function () {
       // Only owner can remove
       await expect(promotions.connect(alice).removePromotion(promotion.promotion)).to.be.revertedWithCustomError(
         promotions,
-        "CallerIsNotOwner",
+        "CallerIsNotOwner"
       );
 
       await expect(promotions.removePromotion(promotion.promotion)).to.emit(promotions, "RemovePromotion");
@@ -186,13 +186,14 @@ describe("Promotions", function () {
     });
 
     it("Evolved hero only promotion", async function () {
-      const {promotions, playerId, playerNFT, brush, upgradePlayerBrushPrice, origName, alice} =
-        await loadFixture(promotionFixture);
+      const {promotions, playerId, playerNFT, brush, upgradePlayerBrushPrice, origName, alice} = await loadFixture(
+        promotionFixture
+      );
       let promotion = await getBasicSingleMintPromotion();
       promotion = {...promotion, evolvedHeroOnly: true};
       await promotions.addPromotion(promotion);
       await expect(
-        promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+        promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
       ).to.be.revertedWithCustomError(promotions, "PlayerNotEvolved");
 
       // Evolve player
@@ -235,7 +236,7 @@ describe("Promotions", function () {
     it("Cannot mint a non-existent promotion", async function () {
       const {promotions, playerId, alice} = await loadFixture(promotionFixture);
       await expect(
-        promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+        promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
       ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
     });
 
@@ -245,7 +246,7 @@ describe("Promotions", function () {
       await promotions.addPromotion(promotion);
       await expect(promotions.mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.be.revertedWithCustomError(
         promotions,
-        "NotOwnerOfPlayerAndActive",
+        "NotOwnerOfPlayerAndActive"
       );
     });
 
@@ -261,7 +262,7 @@ describe("Promotions", function () {
         const balances = await itemNFT.balanceOfs(alice.address, [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
+          EstforConstants.HALLOWEEN_BONUS_3
         ]);
 
         expect(balances).to.deep.include(1n);
@@ -293,7 +294,7 @@ describe("Promotions", function () {
         promotion = {...promotion, startTime: NOW + 50, endTime: NOW + 50 + 24 * 3600};
         await promotions.addPromotion(promotion);
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
       });
 
@@ -305,7 +306,7 @@ describe("Promotions", function () {
         promotion = {...promotion, startTime: NOW - 24 * 3600, endTime: NOW};
         await promotions.addPromotion(promotion);
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
       });
 
@@ -316,7 +317,7 @@ describe("Promotions", function () {
         promotion = {...promotion, minTotalXP: 10000};
         await promotions.addPromotion(promotion);
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "PlayerDoesNotQualify");
 
         await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, 100000, false);
@@ -331,7 +332,7 @@ describe("Promotions", function () {
         await timeTravel24Hours();
         await promotions.addPromotion(promotion);
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
       });
 
@@ -342,7 +343,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "PromotionAlreadyClaimed");
       });
 
@@ -354,7 +355,7 @@ describe("Promotions", function () {
         await requestAndFulfillRandomWords(world, mockVRF);
         await brush.connect(alice).approve(await promotions.getAddress(), parseEther("1"));
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(brush, "ERC20InsufficientBalance");
 
         await brush.mint(alice.address, parseEther("1"));
@@ -399,7 +400,7 @@ describe("Promotions", function () {
         guaranteedItemTokenIds: [],
         guaranteedAmounts: [],
         randomItemTokenIds: [],
-        randomAmounts: [],
+        randomAmounts: []
       };
     }
 
@@ -409,7 +410,7 @@ describe("Promotions", function () {
       promotion = {...promotion, endTime: promotion.startTime + 1000};
       await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
         promotionsLibrary,
-        "InvalidMultidayPromotionTimeInterval",
+        "InvalidMultidayPromotionTimeInterval"
       );
     });
 
@@ -422,7 +423,7 @@ describe("Promotions", function () {
         promotion = {
           ...promotion,
           endTime: NOW + 3 * 24 * 3600,
-          brushCostMissedDay: parseEther("10").toString(),
+          brushCostMissedDay: parseEther("10").toString()
         };
 
         await promotions.addPromotion(promotion);
@@ -451,7 +452,7 @@ describe("Promotions", function () {
         promotion = {
           ...promotion,
           endTime: NOW + 4 * 24 * 3600,
-          brushCostMissedDay: parseEther("10").toString(),
+          brushCostMissedDay: parseEther("10").toString()
         };
         await promotions.addPromotion(promotion);
 
@@ -483,7 +484,7 @@ describe("Promotions", function () {
         promotion = {
           ...promotion,
           endTime: NOW + 10 * 24 * 3600,
-          brushCostMissedDay: parseEther("10").toString(),
+          brushCostMissedDay: parseEther("10").toString()
         };
         await promotions.addPromotion(promotion);
 
@@ -492,7 +493,7 @@ describe("Promotions", function () {
 
         await world.setDailyRewardPool(2, [
           {itemTokenId: EstforConstants.IRON_ARROW, amount: 10},
-          {itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10},
+          {itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10}
         ]);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24 * 9]);
@@ -530,7 +531,7 @@ describe("Promotions", function () {
         promotion = {
           ...promotion,
           endTime: NOW + 3 * 24 * 3600,
-          brushCostMissedDay: parseEther("10").toString(),
+          brushCostMissedDay: parseEther("10").toString()
         };
         await promotions.addPromotion(promotion);
 
@@ -541,7 +542,7 @@ describe("Promotions", function () {
         expect(mintView.daysToSet[0]).to.eq(0);
 
         await expect(
-          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0]),
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0])
         ).to.be.revertedWithCustomError(promotions, "CannotPayForToday");
       });
 
@@ -552,7 +553,7 @@ describe("Promotions", function () {
         promotion = {
           ...promotion,
           endTime: NOW + 3 * 24 * 3600,
-          brushCostMissedDay: parseEther("10").toString(),
+          brushCostMissedDay: parseEther("10").toString()
         };
         await promotions.addPromotion(promotion);
 
@@ -568,10 +569,10 @@ describe("Promotions", function () {
         await requestAndFulfillRandomWords(world, mockVRF);
 
         await expect(
-          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 0]),
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 0])
         ).to.be.revertedWithCustomError(promotions, "DaysArrayNotSortedOrDuplicates");
         await expect(
-          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [1, 0]),
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [1, 0])
         ).to.be.revertedWithCustomError(promotions, "DaysArrayNotSortedOrDuplicates");
         await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 1]);
       });
@@ -581,7 +582,7 @@ describe("Promotions", function () {
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
           ...promotion,
-          brushCostMissedDay: parseEther("10").toString(),
+          brushCostMissedDay: parseEther("10").toString()
         };
         await promotions.addPromotion(promotion);
 
@@ -593,7 +594,7 @@ describe("Promotions", function () {
         await requestAndFulfillRandomWords(world, mockVRF);
         await requestAndFulfillRandomWords(world, mockVRF);
         await expect(
-          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0]),
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0])
         ).to.be.revertedWithCustomError(promotions, "PromotionFinished");
       });
 
@@ -605,7 +606,7 @@ describe("Promotions", function () {
         promotion = {
           ...promotion,
           endTime: NOW + 3 * 24 * 3600,
-          brushCostMissedDay: parseEther("10").toString(),
+          brushCostMissedDay: parseEther("10").toString()
         };
         await promotions.addPromotion(promotion);
 
@@ -616,7 +617,7 @@ describe("Promotions", function () {
         expect(mintView.daysToSet[0]).to.eq(0);
 
         await expect(
-          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [1]),
+          promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [1])
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
       });
     });
@@ -648,7 +649,7 @@ describe("Promotions", function () {
         playerId,
         EstforTypes.Skill.FIREMAKING,
         TIER_2_DAILY_REWARD_START_XP,
-        false,
+        false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -661,7 +662,7 @@ describe("Promotions", function () {
         playerId,
         EstforTypes.Skill.FIREMAKING,
         TIER_3_DAILY_REWARD_START_XP,
-        false,
+        false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -674,7 +675,7 @@ describe("Promotions", function () {
         playerId,
         EstforTypes.Skill.FIREMAKING,
         TIER_4_DAILY_REWARD_START_XP,
-        false,
+        false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -687,7 +688,7 @@ describe("Promotions", function () {
         playerId,
         EstforTypes.Skill.FIREMAKING,
         TIER_5_DAILY_REWARD_START_XP,
-        false,
+        false
       );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -700,7 +701,7 @@ describe("Promotions", function () {
         playerId,
         EstforTypes.Skill.FIREMAKING,
         TIER_6_DAILY_REWARD_START_XP,
-        false,
+        false
       );
       // Just get more of runite for now
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
@@ -720,7 +721,7 @@ describe("Promotions", function () {
       await promotions.addPromotion(promotion);
 
       await expect(
-        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
     });
 
@@ -732,7 +733,7 @@ describe("Promotions", function () {
       await ethers.provider.send("evm_increaseTime", [2 * 3600 * 24 + 1]);
       await ethers.provider.send("evm_mine", []);
       await expect(
-        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "MintingOutsideAvailableDate");
     });
 
@@ -743,7 +744,7 @@ describe("Promotions", function () {
       promotion = {...promotion, minTotalXP: 10000};
       await promotions.addPromotion(promotion);
       await expect(
-        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "PlayerDoesNotQualify");
 
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, 100000, false);
@@ -759,7 +760,7 @@ describe("Promotions", function () {
       const promotion = await getBasicMultidayMintPromotion();
       await promotions.addPromotion(promotion);
       await expect(
-        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
     });
 
@@ -769,7 +770,7 @@ describe("Promotions", function () {
       await promotions.addPromotion(promotion);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       await expect(
-        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+        promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "PromotionAlreadyClaimed");
     });
 
@@ -798,7 +799,7 @@ describe("Promotions", function () {
           randomStreakBonusItemTokenIds1: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
+            EstforConstants.HALLOWEEN_BONUS_3
           ],
           randomStreakBonusAmounts1: [1, 1, 1],
           randomStreakBonusItemTokenIds2: [],
@@ -808,7 +809,7 @@ describe("Promotions", function () {
           guaranteedItemTokenIds: [],
           guaranteedAmounts: [],
           randomItemTokenIds: [],
-          randomAmounts: [],
+          randomAmounts: []
         };
       }
 
@@ -819,19 +820,19 @@ describe("Promotions", function () {
         promotion.numDaysClaimablePeriodStreakBonus = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "InvalidStreakBonus",
+          "InvalidStreakBonus"
         );
 
         promotion.numDaysHitNeededForStreakBonus = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "InvalidStreakBonus",
+          "InvalidStreakBonus"
         );
 
         promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "InvalidStreakBonus",
+          "InvalidStreakBonus"
         );
 
         // Works
@@ -846,13 +847,13 @@ describe("Promotions", function () {
         promotion.randomStreakBonusItemTokenIds1 = [EstforConstants.HALLOWEEN_BONUS_1];
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "LengthMismatch",
+          "LengthMismatch"
         );
         // reset those
         promotion.randomStreakBonusItemTokenIds1 = [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
+          EstforConstants.HALLOWEEN_BONUS_3
         ];
       });
 
@@ -867,19 +868,20 @@ describe("Promotions", function () {
         promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "MultidaySpecified",
+          "MultidaySpecified"
         );
         promotion.randomStreakBonusItemTokenIds1 = [];
         promotion.randomStreakBonusAmounts1 = [];
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "NoItemsToPickFrom",
+          "NoItemsToPickFrom"
         );
       });
 
       it("Check streak rewards are randomized", async function () {
-        const {promotions, playerNFT, players, itemNFT, alice, playerId, world, mockVRF} =
-          await loadFixture(promotionFixture);
+        const {promotions, playerNFT, players, itemNFT, alice, playerId, world, mockVRF} = await loadFixture(
+          promotionFixture
+        );
 
         const promotion = {...(await getOriginalPromotion())};
         promotion.isMultiday = true;
@@ -888,7 +890,7 @@ describe("Promotions", function () {
         promotion.numRandomStreakBonusItemsToPick1 = 1;
         promotion.randomStreakBonusItemTokenIds1 = [
           EstforConstants.SECRET_EGG_3_TIER1,
-          EstforConstants.SECRET_EGG_4_TIER1,
+          EstforConstants.SECRET_EGG_4_TIER1
         ];
         promotion.randomStreakBonusAmounts1 = [1, 1];
         promotion.promotionTiedToPlayer = false;
@@ -923,14 +925,14 @@ describe("Promotions", function () {
         promotion.numDaysHitNeededForStreakBonus = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "InvalidStreakBonus",
+          "InvalidStreakBonus"
         );
 
         promotion.numDaysHitNeededForStreakBonus = 1;
         promotion.numRandomStreakBonusItemsToPick1 = 0;
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "InvalidStreakBonus",
+          "InvalidStreakBonus"
         );
 
         promotion.numRandomStreakBonusItemsToPick1 = 1;
@@ -939,7 +941,7 @@ describe("Promotions", function () {
 
         await expect(promotions.addPromotion(promotion)).to.be.revertedWithCustomError(
           promotionsLibrary,
-          "InvalidStreakBonus",
+          "InvalidStreakBonus"
         );
 
         promotion.randomStreakBonusItemTokenIds1 = (await getOriginalPromotion()).randomStreakBonusItemTokenIds1;
@@ -973,7 +975,7 @@ describe("Promotions", function () {
           randomStreakBonusItemTokenIds1: [
             EstforConstants.HALLOWEEN_BONUS_1,
             EstforConstants.HALLOWEEN_BONUS_2,
-            EstforConstants.HALLOWEEN_BONUS_3,
+            EstforConstants.HALLOWEEN_BONUS_3
           ],
           randomStreakBonusAmounts1: [1, 1, 1],
           randomStreakBonusItemTokenIds2: [],
@@ -983,7 +985,7 @@ describe("Promotions", function () {
           guaranteedItemTokenIds: [],
           guaranteedAmounts: [],
           randomItemTokenIds: [],
-          randomAmounts: [],
+          randomAmounts: []
         };
       }
 
@@ -998,7 +1000,7 @@ describe("Promotions", function () {
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await ethers.provider.send("evm_mine", []);
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
         await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
@@ -1015,7 +1017,7 @@ describe("Promotions", function () {
 
         // Now in the final day, should be able to claim the streak bonus when the oracle is claimed at least
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
         await requestAndFulfillRandomWords(world, mockVRF);
 
@@ -1026,7 +1028,7 @@ describe("Promotions", function () {
         const balances = await itemNFT.balanceOfs(alice.address, [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
+          EstforConstants.HALLOWEEN_BONUS_3
         ]);
 
         expect(balances).to.not.deep.eq([0, 0, 0]);
@@ -1051,7 +1053,7 @@ describe("Promotions", function () {
 
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(promotions, "PromotionAlreadyClaimed");
       });
 
@@ -1073,7 +1075,7 @@ describe("Promotions", function () {
 
         await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)).to.revertedWithCustomError(
           promotions,
-          "MintingOutsideAvailableDate",
+          "MintingOutsideAvailableDate"
         );
       });
 
@@ -1094,7 +1096,7 @@ describe("Promotions", function () {
 
         await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)).to.revertedWithCustomError(
           promotions,
-          "PlayerNotHitEnoughClaims",
+          "PlayerNotHitEnoughClaims"
         );
       });
 
@@ -1127,7 +1129,7 @@ describe("Promotions", function () {
         expect(parseInt(itemTokenId.toString(), 10)).to.be.oneOf([
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
-          EstforConstants.HALLOWEEN_BONUS_3,
+          EstforConstants.HALLOWEEN_BONUS_3
         ]);
 
         expect(await promotions.hasCompletedPromotion(playerId, Promotion.XMAS_2023)).to.eq(false);
@@ -1137,7 +1139,7 @@ describe("Promotions", function () {
           await ethers.provider.send("evm_mine", []);
           await requestAndFulfillRandomWords(world, mockVRF);
           expect(itemTokenId).to.eq(
-            (await promotions.mintPromotionViewNow(playerId, Promotion.XMAS_2023)).itemTokenIds[0],
+            (await promotions.mintPromotionViewNow(playerId, Promotion.XMAS_2023)).itemTokenIds[0]
           );
         }
 
@@ -1157,7 +1159,7 @@ describe("Promotions", function () {
         await brush.connect(alice).approve(await promotions.getAddress(), parseEther("1"));
 
         await expect(
-          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023),
+          promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(brush, "ERC20InsufficientBalance");
 
         await brush.mint(alice.address, parseEther("1"));

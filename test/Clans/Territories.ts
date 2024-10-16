@@ -66,7 +66,7 @@ describe("Territories", function () {
     await ethers.provider.send("evm_increaseTime", [86400]);
     await ethers.provider.send("evm_mine", []);
     await expect(
-      territories.connect(alice).attackTerritory(clanId, territoryId, playerId),
+      territories.connect(alice).attackTerritory(clanId, territoryId, playerId)
     ).to.be.revertedWithCustomError(territories, "CannotAttackSelf");
   });
 
@@ -113,7 +113,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF,
+      mockVRF
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -172,7 +172,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF,
+      mockVRF
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -234,7 +234,7 @@ describe("Territories", function () {
       imageId,
       origName,
       mockVRF,
-      combatantChangeCooldown,
+      combatantChangeCooldown
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -286,13 +286,13 @@ describe("Territories", function () {
 
     // Free to attack another territory as you are no longer a defender (but only after player cooldown timestamp)
     await expect(
-      combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId),
+      combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
     await ethers.provider.send("evm_mine", []);
     await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
-      value: await territories.attackCost(),
+      value: await territories.attackCost()
     });
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
@@ -330,7 +330,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF,
+      mockVRF
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -388,7 +388,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF,
+      mockVRF
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -440,7 +440,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF,
+      mockVRF
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -470,19 +470,20 @@ describe("Territories", function () {
   it("Multiple clans should be able to attack an occupied territory", async () => {});
 
   it("Attacking players array should be sorted and without duplicates", async () => {
-    const {playerNFT, avatarId, clans, clanId, playerId, combatantsHelper, owner, alice, origName} =
-      await loadFixture(clanFixture);
+    const {playerNFT, avatarId, clans, clanId, playerId, combatantsHelper, owner, alice, origName} = await loadFixture(
+      clanFixture
+    );
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
 
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId, playerId], false, [], playerId),
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId, playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerIdsNotSortedOrDuplicates");
 
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId, playerId], false, [], playerId),
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId, playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerIdsNotSortedOrDuplicates");
   });
 
@@ -502,7 +503,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(owner)
-        .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.attackCost()}),
+        .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.attackCost()})
     ).to.be.revertedWithCustomError(territories, "NotLeader");
     await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.LEADER, playerId);
     await territories
@@ -515,7 +516,7 @@ describe("Territories", function () {
 
     const territoryId = 1;
     await expect(
-      territories.connect(owner).attackTerritory(clanId, territoryId, playerId),
+      territories.connect(owner).attackTerritory(clanId, territoryId, playerId)
     ).to.be.revertedWithCustomError(territories, "NotOwnerOfPlayerAndActive");
   });
 
@@ -571,7 +572,7 @@ describe("Territories", function () {
     await territories.connect(alice).addUnclaimedEmissions(parseEther("500"));
     await expect(territories.connect(alice).harvest(territoryId, playerId)).to.be.revertedWithCustomError(
       territories,
-      "HarvestingTooSoon",
+      "HarvestingTooSoon"
     );
 
     // increase time by territories.HARVESTING_COOLDOWN()
@@ -599,7 +600,7 @@ describe("Territories", function () {
       twitter,
       telegram,
       imageId,
-      tierId,
+      tierId
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -621,27 +622,28 @@ describe("Territories", function () {
 
     await expect(territories.connect(bob).harvest(territoryId, bobPlayerId)).to.revertedWithCustomError(
       territories,
-      "NotMemberOfClan",
+      "NotMemberOfClan"
     );
   });
 
   it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
-    const {territories, combatantsHelper, combatantChangeCooldown, clanId, playerId, alice} =
-      await loadFixture(clanFixture);
+    const {territories, combatantsHelper, combatantChangeCooldown, clanId, playerId, alice} = await loadFixture(
+      clanFixture
+    );
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     // Clear player id part so we can hit the custom error we want
     await combatantsHelper.clearCooldowns([playerId]);
 
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId),
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
 
     // Update time by combatantChangeCooldown
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown - 5]);
     await ethers.provider.send("evm_mine", []);
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId),
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
     await ethers.provider.send("evm_increaseTime", [5]);
     await ethers.provider.send("evm_mine", []);
@@ -655,19 +657,19 @@ describe("Territories", function () {
     let addTerritory = {...allTerritories[0], territoryId: 27, percentageEmissions: 10};
     await expect(territories.addTerritories([addTerritory])).to.be.revertedWithCustomError(
       territories,
-      "InvalidTerritoryId",
+      "InvalidTerritoryId"
     );
 
     addTerritory.territoryId = 26;
     await expect(territories.addTerritories([addTerritory])).to.be.revertedWithCustomError(
       territories,
-      "InvalidEmissionPercentage",
+      "InvalidEmissionPercentage"
     );
 
     addTerritory.percentageEmissions = 0;
     await expect(territories.addTerritories([addTerritory])).to.be.revertedWithCustomError(
       territories,
-      "InvalidTerritory",
+      "InvalidTerritory"
     );
 
     addTerritory.percentageEmissions = 10;
@@ -694,7 +696,7 @@ describe("Territories", function () {
     for (const territory of allTerritories) {
       if (territory.territoryId != 1) {
         expect(territory.percentageEmissions).to.eq(
-          (await territories.territories(territory.territoryId)).percentageEmissions,
+          (await territories.territories(territory.territoryId)).percentageEmissions
         );
       }
     }
@@ -729,7 +731,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF,
+      mockVRF
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -785,7 +787,7 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 200n);
 
     expect(await territories.movingAverageGasPrice()).to.eq(
-      (gasPrice + 900n + gasPrice + 800n + gasPrice + 500n + gasPrice + 200n) / 4n,
+      (gasPrice + 900n + gasPrice + 800n + gasPrice + 500n + gasPrice + 200n) / 4n
     );
     attackCost = await territories.attackCost();
     expect(attackCost).to.eq(baseAttackCost + (await territories.movingAverageGasPrice()) * expectedGasLimit);
@@ -831,7 +833,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF,
+      mockVRF
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -853,14 +855,14 @@ describe("Territories", function () {
 
     const items = allItems.filter(
       (inputItem) =>
-        inputItem.tokenId == EstforConstants.MIRROR_SHIELD || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD,
+        inputItem.tokenId == EstforConstants.MIRROR_SHIELD || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD
     );
     await itemNFT.addItems(items);
     await itemNFT.testMints(alice.address, [EstforConstants.MIRROR_SHIELD, EstforConstants.PROTECTION_SHIELD], [2, 1]);
 
     // Wrong item
     await expect(
-      territories.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId),
+      territories.connect(alice).blockAttacks(clanId, EstforConstants.PROTECTION_SHIELD, playerId)
     ).to.be.revertedWithCustomError(territories, "NotATerritoryDefenceItem");
 
     // Correct item
@@ -877,7 +879,7 @@ describe("Territories", function () {
         alice.address,
         playerId,
         blockAttacksTimestamp,
-        blockAttacksTimestamp + mirrorShield.boostValue * 3600,
+        blockAttacksTimestamp + mirrorShield.boostValue * 3600
       );
 
     expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(1);
@@ -885,7 +887,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()}),
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
     ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
 
     await ethers.provider.send("evm_increaseTime", [mirrorShield.boostDuration - 10]);
@@ -894,20 +896,20 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()}),
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
     ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
 
     // Cannot apply it until the cooldown is done
     await expect(territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId)).to.be.revertedWithCustomError(
       territories,
-      "BlockAttacksCooldown",
+      "BlockAttacksCooldown"
     );
     // Go to just before the end
     await ethers.provider.send("evm_increaseTime", [mirrorShield.boostValue * 3600]);
     await ethers.provider.send("evm_mine", []);
     await expect(territories.connect(alice).blockAttacks(clanId, itemTokenId, playerId)).to.be.revertedWithCustomError(
       territories,
-      "BlockAttacksCooldown",
+      "BlockAttacksCooldown"
     );
     // Now go past
     await ethers.provider.send("evm_increaseTime", [10]);
@@ -920,7 +922,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()}),
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
     ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
 
     // Can now attack
@@ -929,7 +931,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()}),
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
     ).to.not.be.reverted;
     expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(0);
   });
@@ -946,7 +948,7 @@ describe("Territories", function () {
       owner,
       alice,
       origName,
-      initialMMR,
+      initialMMR
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -962,16 +964,12 @@ describe("Territories", function () {
     await territories.setMinimumMMRs([territoryId], [initialMMR + 1]);
 
     await expect(
-      territories
-        .connect(alice)
-        .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()}),
+      territories.connect(alice).attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()})
     ).to.be.revertedWithCustomError(territories, "NotEnoughMMR");
 
     await territories.setMinimumMMRs([territoryId], [initialMMR]);
     await expect(
-      territories
-        .connect(alice)
-        .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()}),
+      territories.connect(alice).attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()})
     ).to.not.be.reverted;
   });
 

@@ -33,7 +33,7 @@ describe("PetNFT", function () {
     skillPercentageIncrements: [1, 1],
     skillMinLevels: [1, 0],
     fixedStarThreshold: 1,
-    percentageStarThreshold: 1,
+    percentageStarThreshold: 1
   };
 
   it("Must be a minter to mint", async function () {
@@ -117,7 +117,7 @@ describe("PetNFT", function () {
     const randomWord = 1;
     await expect(petNFT.connect(alice).mint(alice.address, baseId, randomWord)).to.be.revertedWithCustomError(
       petNFT,
-      "PetDoesNotExist",
+      "PetDoesNotExist"
     );
   });
 
@@ -137,19 +137,19 @@ describe("PetNFT", function () {
         await dev.getAddress(),
         editNameCost,
         await adminAccess.getAddress(),
-        isBeta,
+        isBeta
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"],
-      },
+        unsafeAllow: ["external-library-linking"]
+      }
     )) as unknown as PetNFT;
 
     const randomWord = 1;
     await petNFTNotBeta.addBasePets([pet]);
     await expect(petNFTNotBeta.mint(alice.address, baseId, randomWord)).to.be.revertedWithCustomError(
       petNFTNotBeta,
-      "NotMinter",
+      "NotMinter"
     );
     await petNFTNotBeta.setInstantVRFActions(alice.address);
     await petNFTNotBeta.connect(alice).mint(alice.address, baseId, randomWord);
@@ -198,12 +198,12 @@ describe("PetNFT", function () {
         dev.address,
         editNameCost,
         await adminAccess.getAddress(),
-        isBeta,
+        isBeta
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"],
-      },
+        unsafeAllow: ["external-library-linking"]
+      }
     )) as unknown as PetNFT;
 
     expect(await petNFTNotBeta.name()).to.be.eq("Estfor Pets");
@@ -215,7 +215,7 @@ describe("PetNFT", function () {
 
     await expect(petNFT.connect(alice).assignPet(alice.address, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
-      "PlayerDoesNotOwnPet",
+      "PlayerDoesNotOwnPet"
     );
   });
 
@@ -230,7 +230,7 @@ describe("PetNFT", function () {
 
     await expect(petNFT.connect(alice).assignPet(alice.address, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
-      "LevelNotHighEnough",
+      "LevelNotHighEnough"
     );
 
     await players.connect(alice).testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(2), true);
@@ -247,18 +247,18 @@ describe("PetNFT", function () {
 
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
-      "NotPlayersOrAdminAndBeta",
+      "NotPlayersOrAdminAndBeta"
     );
 
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
-      "NotPlayersOrAdminAndBeta",
+      "NotPlayersOrAdminAndBeta"
     );
 
     await petNFT.setPlayers(bob.address);
     await expect(petNFT.connect(bob).assignPet(alice.address, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
-      "NotPlayersOrAdminAndBeta",
+      "NotPlayersOrAdminAndBeta"
     );
   });
 
@@ -271,7 +271,7 @@ describe("PetNFT", function () {
     modifiedPet.skillPercentageMaxs[0] = 0;
     await expect(petNFT.addBasePets([modifiedPet])).to.be.revertedWithCustomError(
       petNFT,
-      "MustHaveAtLeastPercentageOrFixedSet",
+      "MustHaveAtLeastPercentageOrFixedSet"
     );
 
     modifiedPet.skillPercentageMins[0] = 1;
@@ -304,7 +304,7 @@ describe("PetNFT", function () {
     modifiedPet.skillFixedMaxs[1] = 1;
     await expect(petNFT.editBasePets([modifiedPet])).to.be.revertedWithCustomError(
       petNFT,
-      "SkillFixedIncrementCannotBeZero",
+      "SkillFixedIncrementCannotBeZero"
     );
     modifiedPet.skillFixedIncrements[1] = 1;
     await expect(petNFT.editBasePets([modifiedPet])).to.not.be.reverted;
@@ -313,7 +313,7 @@ describe("PetNFT", function () {
     modifiedPet.skillPercentageIncrements[1] = 0;
     await expect(petNFT.editBasePets([modifiedPet])).to.be.revertedWithCustomError(
       petNFT,
-      "SkillPercentageIncrementCannotBeZero",
+      "SkillPercentageIncrementCannotBeZero"
     );
 
     modifiedPet.skillPercentageIncrements[1] = 1;
@@ -334,19 +334,19 @@ describe("PetNFT", function () {
 
       await expect(petNFT.connect(alice).editPet(playerId, petId, name)).to.be.revertedWithCustomError(
         brush,
-        "ERC20InsufficientBalance",
+        "ERC20InsufficientBalance"
       );
       await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       await expect(petNFT.connect(alice).editPet(playerId + 1n, petId, name)).to.be.revertedWithCustomError(
         petNFT,
-        "NotOwnerOfPlayer",
+        "NotOwnerOfPlayer"
       );
 
       await petNFT.connect(alice).safeTransferFrom(alice.address, owner.address, petId, 1, "0x");
       await expect(petNFT.connect(alice).editPet(playerId, petId, name)).to.be.revertedWithCustomError(
         petNFT,
-        "NotOwnerOfPet",
+        "NotOwnerOfPet"
       );
       await petNFT.safeTransferFrom(owner.address, alice.address, petId, 1, "0x");
       await expect(petNFT.connect(alice).editPet(playerId, petId, name))
@@ -356,7 +356,7 @@ describe("PetNFT", function () {
       await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
       await expect(petNFT.connect(alice).editPet(playerId, petId + 1, name)).to.be.revertedWithCustomError(
         petNFT,
-        "NameAlreadyExists",
+        "NameAlreadyExists"
       );
     });
 
@@ -388,7 +388,7 @@ describe("PetNFT", function () {
       await petNFT.connect(alice).editPet(playerId, petId, newName);
       await expect(petNFT.connect(alice).editPet(playerId, petId, newName)).to.be.revertedWithCustomError(
         petNFT,
-        "SameName",
+        "SameName"
       );
     });
 
@@ -404,7 +404,7 @@ describe("PetNFT", function () {
       let newName = "1234567890123456";
       await expect(petNFT.connect(alice).editPet(playerId, petId, newName)).to.be.revertedWithCustomError(
         petNFT,
-        "NameTooLong",
+        "NameTooLong"
       );
       newName = newName.slice(0, newName.length - 1);
       await expect(petNFT.connect(alice).editPet(playerId, petId, newName)).to.not.be.reverted;
@@ -423,13 +423,13 @@ describe("PetNFT", function () {
       let illegalName = "Pet sdfs";
       await expect(petNFT.connect(alice).editPet(playerId, petId, illegalName)).to.be.revertedWithCustomError(
         petNFT,
-        "IllegalNameStart",
+        "IllegalNameStart"
       );
 
       illegalName = "PET sdfs";
       await expect(petNFT.connect(alice).editPet(playerId, petId, illegalName)).to.be.revertedWithCustomError(
         petNFT,
-        "IllegalNameStart",
+        "IllegalNameStart"
       );
     });
 
@@ -454,13 +454,13 @@ describe("PetNFT", function () {
         brushBurntPercentage,
         brushPoolPercentage,
         brushDevPercentage,
-        brushTerritoriesPercentage,
+        brushTerritoriesPercentage
       );
 
       expect(await brush.balanceOf(alice.address)).to.eq(editNameBrushPrice * 2n);
       expect(await brush.balanceOf(dev.address)).to.eq((editNameBrushPrice * brushDevPercentage) / 100n);
       expect(await brush.balanceOf(await territories.getAddress())).to.eq(
-        (editNameBrushPrice * brushTerritoriesPercentage) / 100n,
+        (editNameBrushPrice * brushTerritoriesPercentage) / 100n
       );
       expect(await brush.amountBurnt()).to.eq((editNameBrushPrice * brushBurntPercentage) / 100n);
     });

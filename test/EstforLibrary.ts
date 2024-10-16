@@ -56,8 +56,9 @@ describe("EstforLibrary", function () {
   });
 
   it("Validate telegram handle", async () => {
-    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits, telegramSymbols} =
-      await loadFixture(deployContracts);
+    const {estforLibrary, upperCaseLetters, lowerCaseLetters, digits, telegramSymbols} = await loadFixture(
+      deployContracts
+    );
     const allowedCharacters = upperCaseLetters + lowerCaseLetters + digits + telegramSymbols;
     expect(await estforLibrary.containsValidTelegramCharacters(allowedCharacters)).to.be.true;
 

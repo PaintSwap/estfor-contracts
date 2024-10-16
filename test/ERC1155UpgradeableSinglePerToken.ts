@@ -16,7 +16,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
     const [owner, alice] = await ethers.getSigners();
     const ERC1155UpgradeableSinglePerToken = await ethers.getContractFactory("TestERC1155UpgradeableSinglePerToken");
     const erc1155UpgradeableSinglePerToken = (await upgrades.deployProxy(ERC1155UpgradeableSinglePerToken, [], {
-      kind: "uups",
+      kind: "uups"
     })) as unknown as TestERC1155UpgradeableSinglePerToken;
     return {owner, alice, erc1155UpgradeableSinglePerToken};
   }
@@ -26,7 +26,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       const {erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await expect(erc1155UpgradeableSinglePerToken.balanceOf(ZeroAddress, firstTokenId)).to.be.revertedWithCustomError(
         erc1155UpgradeableSinglePerToken,
-        "ERC1155ZeroAddressNotValidOwner",
+        "ERC1155ZeroAddressNotValidOwner"
       );
     });
 
@@ -53,7 +53,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       const result = await erc1155UpgradeableSinglePerToken.balanceOfBatch(
         [owner.address, alice.address, owner.address],
-        [firstTokenId, secondTokenId, unknownTokenId],
+        [firstTokenId, secondTokenId, unknownTokenId]
       );
       expect(result).to.be.an("array");
       expect(result).to.deep.eq([0, 0, 0]);
@@ -66,7 +66,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
 
       const result = await erc1155UpgradeableSinglePerToken.balanceOfBatch(
         [alice.address, owner.address, owner.address],
-        [secondTokenId, firstTokenId, unknownTokenId],
+        [secondTokenId, firstTokenId, unknownTokenId]
       );
       expect(result).to.be.an("array");
       expect(result).to.deep.eq([secondAmount, firstAmount, 0]);
@@ -79,7 +79,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
 
       const result = await erc1155UpgradeableSinglePerToken.balanceOfBatch(
         [alice.address, alice.address, owner.address],
-        [secondTokenId, secondTokenId, firstTokenId],
+        [secondTokenId, secondTokenId, firstTokenId]
       );
 
       expect(result).to.be.an("array");
@@ -98,8 +98,8 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
           alice.address,
           firstTokenId,
           firstAmount + 1,
-          "0x",
-        ),
+          "0x"
+        )
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
@@ -112,7 +112,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
         alice.address,
         firstTokenId,
         firstAmount,
-        "0x",
+        "0x"
       );
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(1);
@@ -138,7 +138,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
         owner.address,
         [firstTokenId, secondTokenId],
         [firstAmount, secondAmount],
-        "0x",
+        "0x"
       );
       await expect(
         erc1155UpgradeableSinglePerToken.safeBatchTransferFrom(
@@ -146,8 +146,8 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
           alice.address,
           [firstTokenId],
           [firstAmount + 1],
-          "0x",
-        ),
+          "0x"
+        )
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
@@ -157,7 +157,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
         owner.address,
         [firstTokenId, secondTokenId],
         [firstAmount, secondAmount],
-        "0x",
+        "0x"
       );
       expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
       await erc1155UpgradeableSinglePerToken.safeBatchTransferFrom(
@@ -165,7 +165,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
         alice.address,
         [firstTokenId, secondTokenId],
         [firstAmount, secondAmount],
-        "0x",
+        "0x"
       );
       expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(2);
@@ -184,7 +184,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
           owner.address,
           [firstTokenId, secondTokenId],
           [firstAmount, secondAmount],
-          "0x",
+          "0x"
         );
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(2);
@@ -201,7 +201,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
     it("reverts when minting more than 1 at once", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await expect(
-        erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount + 1, "0x"),
+        erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount + 1, "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 
@@ -209,7 +209,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
       await expect(
-        erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x"),
+        erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 
@@ -238,8 +238,8 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
           owner.address,
           [firstTokenId, secondTokenId],
           [firstAmount, secondAmount + 1],
-          "0x",
-        ),
+          "0x"
+        )
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 
@@ -247,7 +247,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x");
       await expect(
-        erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x"),
+        erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 
@@ -274,7 +274,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
 
       await expect(
-        erc1155UpgradeableSinglePerToken.burn(owner.address, firstTokenId, firstAmount + 1),
+        erc1155UpgradeableSinglePerToken.burn(owner.address, firstTokenId, firstAmount + 1)
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC115BurnAmountExceedsBalance");
     });
 
@@ -299,7 +299,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
         "0x000000000000000000000000000000000000dEaD",
         firstTokenId,
         firstAmount,
-        "0x",
+        "0x"
       );
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(firstAmount);
@@ -329,7 +329,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
       await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
 
       await expect(
-        erc1155UpgradeableSinglePerToken.burnBatch(owner.address, [firstTokenId], [firstAmount + 1]),
+        erc1155UpgradeableSinglePerToken.burnBatch(owner.address, [firstTokenId], [firstAmount + 1])
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC115BurnAmountExceedsBalance");
     });
 

@@ -9,7 +9,7 @@ import {
   QUEST_SUPPLY_RUN,
   QUEST_TOWN_COOKOUT,
   QUEST_TWO_BIRDS,
-  SKILL_BOOST,
+  SKILL_BOOST
 } from "@paintswap/estfor-definitions/constants";
 import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
@@ -22,7 +22,7 @@ import {
   setupBasicFishing,
   setupBasicFletching,
   setupBasicMeleeCombat,
-  setupBasicWoodcutting,
+  setupBasicWoodcutting
 } from "./Players/utils";
 import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
 
@@ -50,7 +50,7 @@ export async function questsFixture() {
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   };
 
   const firemakingQuestLog: QuestInput = {
@@ -71,7 +71,7 @@ export async function questsFixture() {
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   };
 
   return {
@@ -80,7 +80,7 @@ export async function questsFixture() {
     firemakingQuestLog,
     queuedAction,
     choiceId,
-    rate,
+    rate
   };
 }
 
@@ -100,14 +100,14 @@ describe("Quests", function () {
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
       await expect(quests.addQuests([firemakingQuest], [defaultMinRequirements])).to.be.revertedWithCustomError(
         quests,
-        "QuestWithIdAlreadyExists",
+        "QuestWithIdAlreadyExists"
       );
     });
 
     it("Should fail to add a quest for non-owner", async function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await expect(
-        quests.connect(alice).addQuests([firemakingQuest], [defaultMinRequirements]),
+        quests.connect(alice).addQuests([firemakingQuest], [defaultMinRequirements])
       ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
   });
@@ -128,14 +128,14 @@ describe("Quests", function () {
       const {quests, firemakingQuest} = await loadFixture(questsFixture);
       const questsToAdd = [firemakingQuest, firemakingQuest];
       await expect(
-        quests.addQuests(questsToAdd, [defaultMinRequirements, defaultMinRequirements]),
+        quests.addQuests(questsToAdd, [defaultMinRequirements, defaultMinRequirements])
       ).to.be.revertedWithCustomError(quests, "QuestWithIdAlreadyExists");
     });
 
     it("Should fail to add multiple quests for non-owner", async function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await expect(
-        quests.connect(alice).addQuests([firemakingQuest], [defaultMinRequirements]),
+        quests.connect(alice).addQuests([firemakingQuest], [defaultMinRequirements])
       ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
   });
@@ -174,7 +174,7 @@ describe("Quests", function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
       await expect(
-        quests.connect(alice).editQuests([firemakingQuest], [defaultMinRequirements]),
+        quests.connect(alice).editQuests([firemakingQuest], [defaultMinRequirements])
       ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
     });
 
@@ -184,7 +184,7 @@ describe("Quests", function () {
       const editedQuest = {...firemakingQuest, questId: 100, actionChoiceNum: 23};
       await expect(quests.editQuests([editedQuest], [defaultMinRequirements])).to.be.revertedWithCustomError(
         quests,
-        "QuestDoesntExist",
+        "QuestDoesntExist"
       );
     });
 
@@ -210,7 +210,7 @@ describe("Quests", function () {
         burnItemTokenId: NONE,
         burnAmount: 0,
         isFullModeOnly: false,
-        worldLocation: 0,
+        worldLocation: 0
       };
 
       await quests.addQuests([quest], [defaultMinRequirements]);
@@ -250,7 +250,7 @@ describe("Quests", function () {
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
       await quests.addQuests([quest], [defaultMinRequirements]);
       await expect(
-        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 10}),
+        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 10})
       ).to.be.revertedWithCustomError(quests, "InvalidActiveQuest");
     });
 
@@ -261,7 +261,7 @@ describe("Quests", function () {
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
       await expect(
-        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 0}),
+        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 0})
       ).to.be.revertedWithCustomError(quests, "InvalidFTMAmount");
     });
 
@@ -314,20 +314,20 @@ describe("Quests", function () {
           [
             {skill: Skill.HEALTH, xp: 3000},
             {skill: Skill.NONE, xp: 0},
-            {skill: Skill.NONE, xp: 0},
-          ],
-        ],
+            {skill: Skill.NONE, xp: 0}
+          ]
+        ]
       );
       const questId = quest.questId;
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
-        "InvalidMinimumRequirement",
+        "InvalidMinimumRequirement"
       );
 
       await players.connect(alice).testModifyXP(alice.address, playerId, Skill.HEALTH, 2999, true);
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
-        "InvalidMinimumRequirement",
+        "InvalidMinimumRequirement"
       );
       await players.connect(alice).testModifyXP(alice.address, playerId, Skill.HEALTH, 3000, true);
       await players.connect(alice).activateQuest(playerId, questId);
@@ -350,7 +350,7 @@ describe("Quests", function () {
       actionChoiceId: choiceId,
       actionChoiceNum: 5,
       burnItemTokenId: COOKED_MINNUS,
-      burnAmount: 5,
+      burnAmount: 5
     };
     await quests.addQuests([quest], [defaultMinRequirements]);
     const questId = quest.questId;
@@ -362,10 +362,10 @@ describe("Quests", function () {
     // Check it's completed
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum),
+      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum)
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-      1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL)),
+      1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
     );
   });
 
@@ -384,7 +384,7 @@ describe("Quests", function () {
       actionChoiceId: choiceId,
       actionChoiceNum: 5,
       burnItemTokenId: COOKED_MINNUS,
-      burnAmount: 5,
+      burnAmount: 5
     };
     await quests.addQuests([quest], [defaultMinRequirements]);
     const questId = quest.questId;
@@ -417,7 +417,7 @@ describe("Quests", function () {
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(
-      pendingQueuedActionState.quests.rewardAmounts.length,
+      pendingQueuedActionState.quests.rewardAmounts.length
     );
     expect(pendingQueuedActionState.quests.rewardItemTokenIds[0]).to.eq(SKILL_BOOST);
     expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(3);
@@ -428,10 +428,10 @@ describe("Quests", function () {
     await players.connect(alice).processActions(playerId);
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
-      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum) + initialMintNum,
+      Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum) + initialMintNum
     );
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
-      1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL)),
+      1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
     );
   });
 
@@ -444,7 +444,7 @@ describe("Quests", function () {
       itemNFT,
       world,
       successPercent,
-      minLevel,
+      minLevel
     );
     let queuedAction = {...queuedActionCooking, timespan: 100};
 
@@ -455,7 +455,7 @@ describe("Quests", function () {
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 1000,
+      health: 1000
     };
 
     const numSpawned = 100 * SPAWN_MUL;
@@ -474,12 +474,12 @@ describe("Quests", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: true,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: monsterCombatStats,
-      },
+        combatStats: monsterCombatStats
+      }
     ]);
     const actionId = await getActionId(tx, world);
 
@@ -489,9 +489,9 @@ describe("Quests", function () {
       [
         {
           ...defaultActionChoice,
-          skill: EstforTypes.Skill.MELEE,
-        },
-      ],
+          skill: EstforTypes.Skill.MELEE
+        }
+      ]
     );
     const timespan = 3600;
     const queuedActionMelee: EstforTypes.QueuedActionInput = {
@@ -502,7 +502,7 @@ describe("Quests", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     await players
@@ -516,7 +516,7 @@ describe("Quests", function () {
       actionChoiceId: choiceId,
       actionChoiceNum: 5,
       burnItemTokenId: COOKED_MINNUS,
-      burnAmount: 5,
+      burnAmount: 5
     };
     await quests.addQuests([quest], [defaultMinRequirements]);
     const questId = quest.questId;
@@ -565,12 +565,12 @@ describe("Quests", function () {
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: true,
           actionChoiceRequired: false,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats,
-      },
+        combatStats: EstforTypes.emptyCombatStats
+      }
     ]);
 
     const actionId = await getActionId(tx, world);
@@ -584,14 +584,14 @@ describe("Quests", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_HIDDEN_BOUNTY) as QuestInput;
     const quest = {
       ...quest1,
-      actionId1: actionId,
+      actionId1: actionId
     };
     await quests.addQuests([quest], [defaultMinRequirements]);
     const questId = quest.questId;
@@ -610,7 +610,7 @@ describe("Quests", function () {
     pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(2);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(
-      pendingQueuedActionState.quests.rewardAmounts.length,
+      pendingQueuedActionState.quests.rewardAmounts.length
     );
     expect(pendingQueuedActionState.quests.rewardItemTokenIds[0]).to.eq(EstforConstants.RUBY);
     expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(1);
@@ -637,7 +637,7 @@ describe("Quests", function () {
       actionId1: queuedAction.actionId,
       actionNum1: 5,
       burnItemTokenId: EstforConstants.BRONZE_ARROW,
-      burnAmount: 5,
+      burnAmount: 5
     };
     await quests.addQuests([quest], [defaultMinRequirements]);
     const questId = quest.questId;
@@ -680,7 +680,7 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(quest1.skillXPGained);
     await players.connect(alice).processActions(playerId);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
-      (rate * numSpawned) / (10 * SPAWN_MUL) - 5,
+      (rate * numSpawned) / (10 * SPAWN_MUL) - 5
     );
   });
 
@@ -698,7 +698,7 @@ describe("Quests", function () {
       actionId1: queuedActionFishing.actionId,
       actionNum1: (rate * 2) / GUAR_MUL,
       burnItemTokenId: EstforConstants.RAW_MINNUS,
-      burnAmount: (rate * 2) / GUAR_MUL,
+      burnAmount: (rate * 2) / GUAR_MUL
     };
 
     await quests.addQuests([quest], [defaultMinRequirements]);
@@ -710,7 +710,7 @@ describe("Quests", function () {
       .burn(
         alice.address,
         EstforConstants.RAW_MINNUS,
-        await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS),
+        await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)
       );
 
     await players
@@ -718,7 +718,7 @@ describe("Quests", function () {
       .startActions(
         playerId,
         [queuedActionFishing, queuedActionCooking, queuedActionFishing],
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
@@ -748,7 +748,7 @@ describe("Quests", function () {
       actionId1: queuedAction.actionId,
       actionNum1: 5,
       burnItemTokenId: EstforConstants.BRONZE_ARROW,
-      burnAmount: 5,
+      burnAmount: 5
     };
 
     const anotherQuest = {...quest, questId: QUEST_TWO_BIRDS, dependentQuestId: QUEST_SUPPLY_RUN};
@@ -772,8 +772,9 @@ describe("Quests", function () {
   });
 
   it("ActionChoice quest", async function () {
-    const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} =
-      await loadFixture(questsFixture);
+    const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
+      questsFixture
+    );
 
     await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
     const questId = 1;
@@ -806,7 +807,7 @@ describe("Quests", function () {
     await players.connect(alice).processActions(playerId);
 
     expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-      firemakingQuest.rewardAmount1,
+      firemakingQuest.rewardAmount1
     );
     expect(firemakingQuest.rewardAmount1).to.be.gt(0); // sanity check
   });
@@ -829,7 +830,7 @@ describe("Quests", function () {
       burnItemTokenId: COOKED_MINNUS,
       burnAmount: 5,
       skillReward: Skill.WOODCUTTING,
-      skillXPGained: 10000,
+      skillXPGained: 10000
     };
     await quests.addQuests([quest], [defaultMinRequirements]);
     const questId = quest.questId;
@@ -864,7 +865,7 @@ describe("Quests", function () {
       const questId = 2;
       await expect(players.activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         players,
-        "NotOwnerOfPlayerAndActive",
+        "NotOwnerOfPlayerAndActive"
       );
     });
 
@@ -874,13 +875,14 @@ describe("Quests", function () {
       const questId = 3;
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
-        "QuestDoesntExist",
+        "QuestDoesntExist"
       );
     });
 
     it("Should fail to re-activate a completed quest", async function () {
-      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} =
-        await loadFixture(questsFixture);
+      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
+        questsFixture
+      );
 
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
       const questId = firemakingQuest.questId;
@@ -894,7 +896,7 @@ describe("Quests", function () {
       await players.connect(alice).processActions(playerId);
 
       expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-        firemakingQuest.rewardAmount1,
+        firemakingQuest.rewardAmount1
       );
 
       // Check it's completed
@@ -903,13 +905,14 @@ describe("Quests", function () {
       // Check it can't be activated again
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
-        "QuestCompletedAlready",
+        "QuestCompletedAlready"
       );
     });
 
     it("Re-activated quest which was deactivated should continue at the same place", async function () {
-      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} =
-        await loadFixture(questsFixture);
+      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
+        questsFixture
+      );
 
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
       const questId = firemakingQuest.questId;
@@ -925,7 +928,7 @@ describe("Quests", function () {
       await players.connect(alice).deactivateQuest(playerId);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL)) + 1,
+        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL)) + 1
       );
 
       expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(0);
@@ -940,12 +943,12 @@ describe("Quests", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-        5000 - Math.floor((rate * 3600) / (timeNeeded * RATE_MUL)),
+        5000 - Math.floor((rate * 3600) / (timeNeeded * RATE_MUL))
       );
 
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
       expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-        firemakingQuest.rewardAmount1,
+        firemakingQuest.rewardAmount1
       );
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
     });
@@ -960,7 +963,7 @@ describe("Quests", function () {
         firemakingQuestLog,
         queuedAction: queuedActionFiremaking,
         rate,
-        itemNFT,
+        itemNFT
       } = await loadFixture(questsFixture);
 
       const queuedAction = {...queuedActionFiremaking, timespan: 3636};
@@ -979,7 +982,7 @@ describe("Quests", function () {
       const anotherQuestId = firemakingQuestLog.questId;
       await players.connect(alice).activateQuest(playerId, anotherQuestId);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL)) + 1,
+        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL)) + 1
       );
 
       expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(0);
@@ -993,26 +996,27 @@ describe("Quests", function () {
       // Activate the other quest and finish it
       await players.connect(alice).activateQuest(playerId, questId);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL)),
+        5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL))
       );
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
       await ethers.provider.send("evm_increaseTime", [36]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
-        5000 - Math.floor((rate * 3600) / (timeNeeded * RATE_MUL)) - 1,
+        5000 - Math.floor((rate * 3600) / (timeNeeded * RATE_MUL)) - 1
       );
 
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
       expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-        firemakingQuest.rewardAmount1,
+        firemakingQuest.rewardAmount1
       );
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
     });
 
     it("Activate quest through startActionsExtra", async function () {
-      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} =
-        await loadFixture(questsFixture);
+      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
+        questsFixture
+      );
 
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
       const questId = firemakingQuest.questId;
@@ -1026,7 +1030,7 @@ describe("Quests", function () {
           0,
           questId,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE,
+          EstforTypes.ActionQueueStatus.NONE
         );
       expect((await quests.activeQuests(playerId)).questId).to.eq(questId);
     });
@@ -1041,7 +1045,7 @@ describe("Quests", function () {
       await itemNFT.testMints(
         alice.address,
         [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
-        [1000, 1000, 1000],
+        [1000, 1000, 1000]
       );
 
       // Activate a quest
@@ -1050,14 +1054,14 @@ describe("Quests", function () {
         ...quest1,
         actionChoiceId: choiceId,
         actionChoiceNum: 1,
-        skillReward: Skill.ALCHEMY,
+        skillReward: Skill.ALCHEMY
       };
       await quests.addQuests([quest], [defaultMinRequirements]);
       const questId = quest.questId;
 
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
-        "CannotStartFullModeQuest",
+        "CannotStartFullModeQuest"
       );
 
       const discord = "";

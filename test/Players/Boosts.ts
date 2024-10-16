@@ -26,8 +26,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.NON_COMBAT_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
@@ -73,8 +73,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.NON_COMBAT_XP,
         boostValue,
         boostDuration: 7200,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
@@ -122,8 +122,8 @@ describe("Boosts", function () {
           boostType: EstforTypes.BoostType.NON_COMBAT_XP,
           boostValue,
           boostDuration: 86400,
-          isTransferable: false,
-        },
+          isTransferable: false
+        }
       ]);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -169,8 +169,8 @@ describe("Boosts", function () {
           boostType: EstforTypes.BoostType.NON_COMBAT_XP,
           boostValue,
           boostDuration: 86400,
-          isTransferable: false,
-        },
+          isTransferable: false
+        }
       ]);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -204,7 +204,7 @@ describe("Boosts", function () {
           queuedActionFinishAfterBoost.timespan +
             Math.floor((queuedActionFinishAfterBoost.timespan * boostValue) / 100) +
             1
-        ),
+        )
       ]);
     });
 
@@ -221,8 +221,8 @@ describe("Boosts", function () {
           boostType: EstforTypes.BoostType.NON_COMBAT_XP,
           boostValue,
           boostDuration: 100,
-          isTransferable: false,
-        },
+          isTransferable: false
+        }
       ]);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
@@ -268,8 +268,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.COMBAT_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
@@ -297,13 +297,13 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -321,8 +321,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
@@ -349,13 +349,13 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -373,8 +373,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
@@ -422,8 +422,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
@@ -462,13 +462,13 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -486,8 +486,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
@@ -527,13 +527,13 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -552,7 +552,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -562,8 +562,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: 0,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     // Be a member of a clan
@@ -574,8 +574,8 @@ describe("Boosts", function () {
         maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
-        minimumAge: 0,
-      },
+        minimumAge: 0
+      }
     ]);
 
     let tierId = 1;
@@ -637,13 +637,13 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -667,7 +667,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: boostValue1,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -677,7 +677,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: boostValue2,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -687,7 +687,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: boostValue3,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -697,8 +697,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: boostValue4,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     // Be a member of a clan
@@ -709,8 +709,8 @@ describe("Boosts", function () {
         maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
-        minimumAge: 0,
-      },
+        minimumAge: 0
+      }
     ]);
 
     let tierId = 1;
@@ -763,13 +763,13 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -791,7 +791,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -801,7 +801,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.COMBAT_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -811,7 +811,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.NON_COMBAT_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -821,8 +821,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: 0,
         boostDuration: 0,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     // Be a member of a clan
@@ -833,8 +833,8 @@ describe("Boosts", function () {
         maxBankCapacity: 3,
         maxImageId: 16,
         price: 0,
-        minimumAge: 0,
-      },
+        minimumAge: 0
+      }
     ]);
 
     let tierId = 1;
@@ -878,7 +878,7 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
 
     // Change to the next booster. This is combat XP, so it should give the same overall boost
@@ -921,7 +921,7 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
 
     // The new boost should be valid from the current time and not include anymore of the old one. So 1.5 boostDuration's worth
@@ -935,14 +935,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP - 1);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -962,7 +962,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -972,7 +972,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.NON_COMBAT_XP,
         boostValue: nonCombatBoostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -982,7 +982,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.COMBAT_XP,
         boostValue: nextBoostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -992,8 +992,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue: 0,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
@@ -1032,7 +1032,7 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
 
     await expect(players.connect(alice).donate(0, nextGlobalThreshold))
@@ -1067,7 +1067,7 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
 
     // The next global boost should have an effect
@@ -1093,14 +1093,14 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
       BigInt(meleeXP + healthXP),
-      BigInt(meleeXP + healthXP - 1),
+      BigInt(meleeXP + healthXP - 1)
     ]);
 
     await players.connect(alice).processActions(playerId);
     expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
     expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
-      BigInt(healthXP - 1),
+      BigInt(healthXP - 1)
     ]);
   });
 
@@ -1119,7 +1119,7 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.ANY_XP,
         boostValue,
         boostDuration,
-        isTransferable: false,
+        isTransferable: false
       },
       {
         ...EstforTypes.defaultItemInput,
@@ -1129,8 +1129,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, world);
@@ -1185,7 +1185,7 @@ describe("Boosts", function () {
     // 2 hours boosted XP, 6 hours not boosted in total
     expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.deep.oneOf([
       BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100),
-      BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1),
+      BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1)
     ]);
 
     // 2 hours gathering boost, check drops are as expected
@@ -1217,8 +1217,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
@@ -1265,8 +1265,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const successPercent = 50;
@@ -1316,8 +1316,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const randomChance = 65535;
@@ -1337,12 +1337,12 @@ describe("Boosts", function () {
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: true,
           actionChoiceRequired: false,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [],
         randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
-        combatStats: EstforTypes.emptyCombatStats,
-      },
+        combatStats: EstforTypes.emptyCombatStats
+      }
     ]);
 
     const actionId = await getActionId(tx, world);
@@ -1369,7 +1369,7 @@ describe("Boosts", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
@@ -1415,8 +1415,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const randomChance = 65535;
@@ -1436,12 +1436,12 @@ describe("Boosts", function () {
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: true,
           actionChoiceRequired: false,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [],
         randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
-        combatStats: EstforTypes.emptyCombatStats,
-      },
+        combatStats: EstforTypes.emptyCombatStats
+      }
     ]);
 
     const actionId = await getActionId(tx, world);
@@ -1466,7 +1466,7 @@ describe("Boosts", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 2);
@@ -1548,8 +1548,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const randomChance = 65535;
@@ -1569,12 +1569,12 @@ describe("Boosts", function () {
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: true,
           actionChoiceRequired: false,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [],
         randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount}],
-        combatStats: EstforTypes.emptyCombatStats,
-      },
+        combatStats: EstforTypes.emptyCombatStats
+      }
     ]);
 
     const actionId = await getActionId(tx, world);
@@ -1601,7 +1601,7 @@ describe("Boosts", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
@@ -1650,8 +1650,8 @@ describe("Boosts", function () {
         boostType: EstforTypes.BoostType.GATHERING,
         boostValue,
         boostDuration,
-        isTransferable: false,
-      },
+        isTransferable: false
+      }
     ]);
 
     const outputAmount = 255;
@@ -1665,7 +1665,7 @@ describe("Boosts", function () {
         EstforConstants.SHADOW_SCROLL,
         EstforConstants.NATURE_SCROLL,
         EstforConstants.PAPER,
-        EstforConstants.GATHERING_BOOST,
+        EstforConstants.GATHERING_BOOST
       ],
       [startingAmount, startingAmount, startingAmount, 1]
     );

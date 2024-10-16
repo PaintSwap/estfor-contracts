@@ -15,8 +15,8 @@ export async function clanFixture() {
       maxBankCapacity: 3,
       maxImageId: 16,
       price: 0,
-      minimumAge: 0,
-    },
+      minimumAge: 0
+    }
   ]);
 
   const clanName = "Clan 1";
@@ -65,12 +65,12 @@ export async function clanFixture() {
     MAX_LOCKED_VAULTS,
     attackingCooldown,
     reattackingCooldown,
-    combatantChangeCooldown,
+    combatantChangeCooldown
   };
 }
 
 export enum BattleResult {
   DRAW,
   WIN,
-  LOSE,
+  LOSE
 }

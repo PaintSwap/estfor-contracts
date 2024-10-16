@@ -23,16 +23,16 @@ const defaultConfig: SolcUserConfig = {
       enabled: true,
       runs: 9999999,
       details: {
-        yul: true,
-      },
+        yul: true
+      }
     },
     viaIR: true, // Change to false when running coverage
     outputSelection: {
       "*": {
-        "*": ["storageLayout"],
-      },
-    },
-  },
+        "*": ["storageLayout"]
+      }
+    }
+  }
 };
 
 const mediumRunsConfig: SolcUserConfig = {
@@ -41,9 +41,9 @@ const mediumRunsConfig: SolcUserConfig = {
     ...defaultConfig.settings,
     optimizer: {
       ...defaultConfig.settings.optimizer,
-      runs: 5000,
-    },
-  },
+      runs: 5000
+    }
+  }
 };
 
 const lowRunsConfig: SolcUserConfig = {
@@ -52,9 +52,9 @@ const lowRunsConfig: SolcUserConfig = {
     ...defaultConfig.settings,
     optimizer: {
       ...defaultConfig.settings.optimizer,
-      runs: 1000,
-    },
-  },
+      runs: 1000
+    }
+  }
 };
 
 const lowestRunsConfig: SolcUserConfig = {
@@ -63,9 +63,9 @@ const lowestRunsConfig: SolcUserConfig = {
     ...defaultConfig.settings,
     optimizer: {
       ...defaultConfig.settings.optimizer,
-      runs: 320,
-    },
-  },
+      runs: 320
+    }
+  }
 };
 
 const config: HardhatUserConfig = {
@@ -83,46 +83,46 @@ const config: HardhatUserConfig = {
       "contracts/Promotions.sol": mediumRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
-      "contracts/PetNFT.sol": lowRunsConfig,
-    },
+      "contracts/PetNFT.sol": lowRunsConfig
+    }
   },
   gasReporter: {
     enabled: false,
-    showMethodSig: true,
+    showMethodSig: true
   },
   networks: {
     hardhat: {
       gasPrice: 0,
       initialBaseFeePerGas: 0,
-      allowUnlimitedContractSize: true,
+      allowUnlimitedContractSize: true
     },
     sonic: {
       url: process.env.SONIC_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("150", "gwei")),
+      gasPrice: Number(parseUnits("150", "gwei"))
     },
     sonic_testnet: {
       url: process.env.SONIC_TESTNET_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("150", "gwei")),
+      gasPrice: Number(parseUnits("150", "gwei"))
     },
     fantom: {
       url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("150", "gwei")),
-    },
+      gasPrice: Number(parseUnits("150", "gwei"))
+    }
   },
   mocha: {
     timeout: 120 * 1000,
-    slow: 1,
+    slow: 1
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: process.env.ETHERSCAN_API_KEY
   },
   contractSizer: {
     alphaSort: true,
     runOnCompile: true,
-    disambiguatePaths: false,
+    disambiguatePaths: false
   },
   abiExporter: {
     path: "./data/abi",
@@ -140,12 +140,12 @@ const config: HardhatUserConfig = {
       "/legacy",
       "SamWitchVRFConsumerUpgradeable",
       "PlayersImpl*",
-      "@openzeppelin",
-    ],
+      "@openzeppelin"
+    ]
   },
   typechain: {
-    target: "ethers-v6",
-  },
+    target: "ethers-v6"
+  }
 };
 
 export default config;

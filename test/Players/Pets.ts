@@ -19,7 +19,7 @@ describe("Pets", function () {
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await expect(
-      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PetNotOwned");
   });
 
@@ -39,7 +39,7 @@ describe("Pets", function () {
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
     await expect(
-      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE),
+      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     // Upgrade player, can now equip pet
@@ -101,7 +101,7 @@ describe("Pets", function () {
       upgradePlayerBrushPrice,
       origName,
       owner,
-      alice,
+      alice
     } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
@@ -147,7 +147,7 @@ describe("Pets", function () {
       upgradePlayerBrushPrice,
       origName,
       owner,
-      alice,
+      alice
     } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
@@ -175,7 +175,7 @@ describe("Pets", function () {
       .burn(
         alice.address,
         EstforConstants.COOKED_MINNUS,
-        await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS),
+        await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)
       );
     // Died so no XP gained
     expect((await players.getActionQueue(playerId)).length).to.eq(2);
@@ -219,7 +219,7 @@ describe("Pets", function () {
         0,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStatus.NONE,
+        EstforTypes.ActionQueueStatus.NONE
       );
 
     await ethers.provider.send("evm_increaseTime", [72]);

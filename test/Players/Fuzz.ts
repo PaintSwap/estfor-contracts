@@ -12,7 +12,7 @@ import {
   allActionChoiceIdsMagic,
   allActionChoiceIdsMelee,
   allActionChoiceIdsRanged,
-  allActionChoiceIdsSmithing,
+  allActionChoiceIdsSmithing
 } from "../../scripts/data/actionChoiceIds";
 import {
   allActionChoicesCooking,
@@ -21,7 +21,7 @@ import {
   allActionChoicesMagic,
   allActionChoicesMelee,
   allActionChoicesRanged,
-  allActionChoicesSmithing,
+  allActionChoicesSmithing
 } from "../../scripts/data/actionChoices";
 import {avatarIds, avatarInfos} from "../../scripts/data/avatars";
 import {allXPThresholdRewards} from "../../scripts/data/xpThresholdRewards";
@@ -69,7 +69,7 @@ describe("Fuzz testing", async function () {
         craftingActionId,
         genericCombatActionId,
         genericCombatActionId,
-        genericCombatActionId,
+        genericCombatActionId
       ],
       [
         allActionChoiceIdsFiremaking,
@@ -78,7 +78,7 @@ describe("Fuzz testing", async function () {
         allActionChoiceIdsCrafting,
         allActionChoiceIdsMelee,
         allActionChoiceIdsMagic,
-        allActionChoiceIdsRanged,
+        allActionChoiceIdsRanged
       ],
       [
         allActionChoicesFiremaking,
@@ -87,8 +87,8 @@ describe("Fuzz testing", async function () {
         allActionChoicesCrafting,
         allActionChoicesMelee,
         allActionChoicesMagic,
-        allActionChoicesRanged,
-      ],
+        allActionChoicesRanged
+      ]
     );
 
     const boosts = [
@@ -96,7 +96,7 @@ describe("Fuzz testing", async function () {
       EstforConstants.COMBAT_BOOST,
       EstforConstants.XP_BOOST,
       EstforConstants.GATHERING_BOOST,
-      EstforConstants.SKILL_BOOST,
+      EstforConstants.SKILL_BOOST
     ];
 
     // Pick a random action
@@ -107,7 +107,7 @@ describe("Fuzz testing", async function () {
       const combatStyles = [
         EstforTypes.CombatStyle.NONE,
         EstforTypes.CombatStyle.ATTACK,
-        EstforTypes.CombatStyle.DEFENCE,
+        EstforTypes.CombatStyle.DEFENCE
       ];
       let choiceId = EstforConstants.NONE;
       const combatStyle = combatStyles[Math.floor(Math.random() * combatStyles.length)];
@@ -121,7 +121,7 @@ describe("Fuzz testing", async function () {
             EstforConstants.NONE,
             ...allActionChoiceIdsMelee,
             ...allActionChoiceIdsRanged,
-            ...allActionChoiceIdsMagic,
+            ...allActionChoiceIdsMagic
           ];
           choiceId = choiceIds[Math.floor(Math.random() * choiceIds.length)];
           actionChoice = await world.getActionChoice(NONE, choiceId);
@@ -226,7 +226,7 @@ describe("Fuzz testing", async function () {
         regenerateId,
         timespan,
         rightHandEquipmentTokenId,
-        leftHandEquipmentTokenId,
+        leftHandEquipmentTokenId
       };
 
       const shouldRevert =
@@ -244,7 +244,7 @@ describe("Fuzz testing", async function () {
         const firstAction = (await players.getActionQueue(playerId))[0];
         if ((await players.players(playerId)).currentActionStartTime + firstAction.timespan >= NOW) {
           await ethers.provider.send("evm_increaseTime", [
-            (await players.players(playerId)).currentActionStartTime + firstAction.timespan - BigInt(NOW),
+            (await players.players(playerId)).currentActionStartTime + firstAction.timespan - BigInt(NOW)
           ]);
           await ethers.provider.send("evm_mine", []);
         }
@@ -256,7 +256,7 @@ describe("Fuzz testing", async function () {
           hasActionMinimumRequirements,
           hasActionChoiceMinimumRequirements,
           correctCombatStyle,
-          correctChoiceId,
+          correctChoiceId
         );
         if (!hasActionMinimumRequirements) {
           console.log(action);
@@ -266,7 +266,7 @@ describe("Fuzz testing", async function () {
         await expect(
           players
             .connect(alice)
-            .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS),
+            .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS)
         ).to.be.reverted;
       } else {
         console.log("Right hand", rightHandEquipmentTokenId);

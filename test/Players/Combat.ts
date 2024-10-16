@@ -14,7 +14,7 @@ import {
   RATE_MUL,
   requestAndFulfillRandomWords,
   SPAWN_MUL,
-  START_XP,
+  START_XP
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat} from "./utils";
@@ -40,7 +40,7 @@ describe("Combat Actions", function () {
         rate,
         numSpawned,
         world,
-        choiceId,
+        choiceId
       };
     }
 
@@ -58,7 +58,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.be.deep.oneOf([BigInt(time), BigInt(time + 1)]);
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(time / 3) - 1),
-        BigInt(Math.floor(time / 3)),
+        BigInt(Math.floor(time / 3))
       ]); // Health should get 33% of the stats
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -105,11 +105,11 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(queuedAction.timespan);
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(queuedAction.timespan / 3) - 1),
-        BigInt(Math.floor(queuedAction.timespan / 3)),
+        BigInt(Math.floor(queuedAction.timespan / 3))
       ]); // Health should get 33% of the stats
       expect(healthXP).to.not.be.deep.oneOf([
         BigInt(Math.floor(queuedAction.timespan / 3) - 1),
-        BigInt(Math.floor(queuedAction.timespan / 3)),
+        BigInt(Math.floor(queuedAction.timespan / 3))
       ]);
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -127,7 +127,7 @@ describe("Combat Actions", function () {
         alice,
         queuedAction: meleeQueuedAction,
         rate,
-        numSpawned,
+        numSpawned
       } = await loadFixture(playersFixtureMelee);
 
       const queuedAction = {...meleeQueuedAction};
@@ -142,7 +142,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.be.deep.oneOf([BigInt(time), BigInt(time + 1)]);
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(time / 3) - 1),
-        BigInt(Math.floor(time / 3)),
+        BigInt(Math.floor(time / 3))
       ]); // Health should get 33% of the stats
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -180,7 +180,7 @@ describe("Combat Actions", function () {
         alice,
         queuedAction: meleeQueuedAction,
         rate,
-        numSpawned,
+        numSpawned
       } = await loadFixture(playersFixtureMelee);
 
       const queuedAction = {...meleeQueuedAction};
@@ -212,7 +212,7 @@ describe("Combat Actions", function () {
         alice,
         queuedAction: meleeQueuedAction,
         rate,
-        numSpawned,
+        numSpawned
       } = await loadFixture(playersFixtureMelee);
 
       const queuedAction = {...meleeQueuedAction};
@@ -228,8 +228,8 @@ describe("Combat Actions", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_SHIELD,
-          equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
-        },
+          equipPosition: EstforTypes.EquipPosition.LEFT_HAND
+        }
       ]);
 
       await expect(
@@ -269,7 +269,7 @@ describe("Combat Actions", function () {
         itemNFT,
         alice,
         queuedAction: meleeQueuedAction,
-        world,
+        world
       } = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -279,7 +279,7 @@ describe("Combat Actions", function () {
         meleeDefence: 80,
         magicDefence: 80,
         rangedDefence: 80,
-        health: 1200,
+        health: 1200
       };
 
       const numSpawned = 10 * SPAWN_MUL;
@@ -297,12 +297,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
 
@@ -337,7 +337,7 @@ describe("Combat Actions", function () {
         meleeDefence: 10,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 70,
+        health: 70
       };
 
       const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
@@ -355,12 +355,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
 
@@ -395,7 +395,7 @@ describe("Combat Actions", function () {
         meleeDefence: 80,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 32000,
+        health: 32000
       };
 
       const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
@@ -413,12 +413,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
 
@@ -452,7 +452,7 @@ describe("Combat Actions", function () {
         alice,
         queuedAction: meleeQueuedAction,
         world,
-        itemNFT,
+        itemNFT
       } = await loadFixture(playersFixtureMelee);
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 15000,
@@ -461,7 +461,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
@@ -479,12 +479,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
 
       const queuedAction = {...meleeQueuedAction};
@@ -515,7 +515,7 @@ describe("Combat Actions", function () {
         alice,
         queuedAction: meleeQueuedAction,
         world,
-        itemNFT,
+        itemNFT
       } = await loadFixture(playersFixtureMelee);
 
       await players.setAlphaCombatHealing(8);
@@ -527,7 +527,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
@@ -545,12 +545,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
 
       const queuedAction = {...meleeQueuedAction};
@@ -580,7 +580,7 @@ describe("Combat Actions", function () {
         alice,
         queuedAction: meleeQueuedAction,
         world,
-        itemNFT,
+        itemNFT
       } = await loadFixture(playersFixtureMelee);
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 15000,
@@ -589,7 +589,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
@@ -607,12 +607,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
 
       const queuedAction = {...meleeQueuedAction};
@@ -655,8 +655,8 @@ describe("Combat Actions", function () {
           ...EstforTypes.defaultItemInput,
           healthRestored: 2,
           tokenId: EstforConstants.COOKED_BLEKK,
-          equipPosition: EstforTypes.EquipPosition.FOOD,
-        },
+          equipPosition: EstforTypes.EquipPosition.FOOD
+        }
       ]);
 
       const natuowAction = allActions.find(
@@ -679,7 +679,7 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 86400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -701,8 +701,8 @@ describe("Combat Actions", function () {
           boostType: EstforTypes.BoostType.ANY_XP,
           boostValue,
           boostDuration,
-          isTransferable: false,
-        },
+          isTransferable: false
+        }
       ]);
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
       await ethers.provider.send("evm_increaseTime", [120]);
@@ -729,7 +729,7 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 32400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       // Activate a quest
@@ -739,7 +739,7 @@ describe("Combat Actions", function () {
         actionId1: queuedAction.actionId,
         actionNum1: 5,
         burnItemTokenId: EstforConstants.NATUOW_HIDE,
-        burnAmount: 5,
+        burnAmount: 5
       };
       await quests.addQuests([quest], [defaultMinRequirements]);
       const questId = quest.questId;
@@ -777,8 +777,8 @@ describe("Combat Actions", function () {
           ...EstforTypes.defaultItemInput,
           healthRestored: 2,
           tokenId: EstforConstants.COOKED_BLEKK,
-          equipPosition: EstforTypes.EquipPosition.FOOD,
-        },
+          equipPosition: EstforTypes.EquipPosition.FOOD
+        }
       ]);
 
       const natuowAction = allActions.find(
@@ -801,7 +801,7 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 86400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -823,8 +823,8 @@ describe("Combat Actions", function () {
           boostType: EstforTypes.BoostType.ANY_XP,
           boostValue,
           boostDuration,
-          isTransferable: false,
-        },
+          isTransferable: false
+        }
       ]);
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
       await ethers.provider.send("evm_increaseTime", [120]);
@@ -851,7 +851,7 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 32400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       // Activate a quest
@@ -861,27 +861,27 @@ describe("Combat Actions", function () {
         actionId1: queuedAction.actionId,
         actionNum1: 5,
         burnItemTokenId: EstforConstants.NATUOW_HIDE,
-        burnAmount: 5,
+        burnAmount: 5
       };
       const questMelee = {
         ...quest,
         skillReward: Skill.MELEE,
-        questId: QUEST_SUPPLY_RUN + 1,
+        questId: QUEST_SUPPLY_RUN + 1
       };
       const questHealth = {
         ...quest,
         skillReward: Skill.HEALTH,
-        questId: QUEST_SUPPLY_RUN + 2,
+        questId: QUEST_SUPPLY_RUN + 2
       };
       const questMagic = {
         ...quest,
         skillReward: Skill.MAGIC,
-        questId: QUEST_SUPPLY_RUN + 3,
+        questId: QUEST_SUPPLY_RUN + 3
       };
       const questWoodcutting = {
         ...quest,
         skillReward: Skill.WOODCUTTING,
-        questId: QUEST_SUPPLY_RUN + 4,
+        questId: QUEST_SUPPLY_RUN + 4
       };
       await quests.addQuests(
         [quest, questMelee, questMagic, questWoodcutting, questHealth],
@@ -890,7 +890,7 @@ describe("Combat Actions", function () {
           defaultMinRequirements,
           defaultMinRequirements,
           defaultMinRequirements,
-          defaultMinRequirements,
+          defaultMinRequirements
         ]
       );
       const questId = quest.questId;
@@ -947,7 +947,7 @@ describe("Combat Actions", function () {
           ...EstforTypes.defaultItemInput,
           healthRestored: 2,
           tokenId: EstforConstants.COOKED_BLEKK,
-          equipPosition: EstforTypes.EquipPosition.FOOD,
+          equipPosition: EstforTypes.EquipPosition.FOOD
         },
         {
           ...EstforTypes.defaultItemInput,
@@ -957,7 +957,7 @@ describe("Combat Actions", function () {
           boostType: EstforTypes.BoostType.NON_COMBAT_XP,
           boostValue,
           boostDuration: 86400,
-          isTransferable: false,
+          isTransferable: false
         },
         {
           ...EstforTypes.defaultItemInput,
@@ -967,8 +967,8 @@ describe("Combat Actions", function () {
           boostType: EstforTypes.BoostType.ANY_XP,
           boostValue: 5,
           boostDuration: 86400,
-          isTransferable: false,
-        },
+          isTransferable: false
+        }
       ]);
 
       const natuowAction = allActions.find(
@@ -986,7 +986,7 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 86400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
@@ -1152,7 +1152,7 @@ describe("Combat Actions", function () {
         BigInt(numSpawned / (SPAWN_MUL * 2)),
         BigInt(numSpawned / (SPAWN_MUL * 2) + 1),
         BigInt(numSpawned / (SPAWN_MUL * 2) + 2),
-        BigInt(numSpawned / (SPAWN_MUL * 2) + 3),
+        BigInt(numSpawned / (SPAWN_MUL * 2) + 3)
       ]); // Roughly 1/2 of the time
     });
   });
@@ -1168,7 +1168,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per monster
@@ -1187,12 +1187,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
 
@@ -1203,7 +1203,7 @@ describe("Combat Actions", function () {
           EstforConstants.BRONZE_SHIELD,
           EstforConstants.COOKED_MINNUS,
           EstforConstants.AIR_SCROLL,
-          EstforConstants.SHADOW_SCROLL,
+          EstforConstants.SHADOW_SCROLL
         ],
         [1, 1, 1000, 200, 100]
       );
@@ -1219,8 +1219,8 @@ describe("Combat Actions", function () {
             skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2],
-          },
+            inputAmounts: [1, 2]
+          }
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
@@ -1233,41 +1233,41 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
-        leftHandEquipmentTokenId: EstforConstants.NONE, // 2 handed, must specify this for both?
+        leftHandEquipmentTokenId: EstforConstants.NONE // 2 handed, must specify this for both?
       };
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.AIR_SCROLL,
-          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.SHADOW_SCROLL,
-          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.TOTEM_STAFF,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_SHIELD,
-          equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
+          equipPosition: EstforTypes.EquipPosition.LEFT_HAND
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
-          equipPosition: EstforTypes.EquipPosition.QUIVER,
+          equipPosition: EstforTypes.EquipPosition.QUIVER
         },
         {
           ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
-          equipPosition: EstforTypes.EquipPosition.FOOD,
-        },
+          equipPosition: EstforTypes.EquipPosition.FOOD
+        }
       ]);
 
       const startXP = START_XP;
@@ -1283,7 +1283,7 @@ describe("Combat Actions", function () {
         dropRate,
         queuedAction,
         startXP,
-        numSpawned,
+        numSpawned
       };
     }
 
@@ -1302,7 +1302,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
-        BigInt(Math.floor(queuedAction.timespan / 3) - 1),
+        BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -1334,8 +1334,8 @@ describe("Combat Actions", function () {
             skillDiff: 100,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2],
-          },
+            inputAmounts: [1, 2]
+          }
         ]
       );
 
@@ -1353,7 +1353,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedActionDefence.timespan / 3)),
-        BigInt(Math.floor(queuedActionDefence.timespan / 3) - 1),
+        BigInt(Math.floor(queuedActionDefence.timespan / 3) - 1)
       ]);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -1385,8 +1385,8 @@ describe("Combat Actions", function () {
             skillDiff: 100,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2],
-          },
+            inputAmounts: [1, 2]
+          }
         ]
       );
 
@@ -1404,7 +1404,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedActionDefence.timespan / 3)),
-        BigInt(Math.floor(queuedActionDefence.timespan / 3) - 1),
+        BigInt(Math.floor(queuedActionDefence.timespan / 3) - 1)
       ]);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -1433,7 +1433,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 36,
+        health: 36
       };
 
       const dropRate = 1 * GUAR_MUL; // per monster
@@ -1452,12 +1452,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
 
@@ -1468,7 +1468,7 @@ describe("Combat Actions", function () {
           EstforConstants.BRONZE_SHIELD,
           EstforConstants.COOKED_MINNUS,
           EstforConstants.AIR_SCROLL,
-          EstforConstants.SHADOW_SCROLL,
+          EstforConstants.SHADOW_SCROLL
         ],
         [1, 1, 1000, 200, 100]
       );
@@ -1485,8 +1485,8 @@ describe("Combat Actions", function () {
             skillDiff: 5,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2],
-          },
+            inputAmounts: [1, 2]
+          }
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
@@ -1499,36 +1499,36 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.AIR_SCROLL,
-          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.SHADOW_SCROLL,
-          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.TOTEM_STAFF,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
-          equipPosition: EstforTypes.EquipPosition.QUIVER,
+          equipPosition: EstforTypes.EquipPosition.QUIVER
         },
         {
           ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
-          equipPosition: EstforTypes.EquipPosition.FOOD,
-        },
+          equipPosition: EstforTypes.EquipPosition.FOOD
+        }
       ]);
 
       // Should be killing 1 every 72 seconds.
@@ -1587,7 +1587,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 36,
+        health: 36
       };
 
       const dropRate = 1 * GUAR_MUL; // per monster
@@ -1606,12 +1606,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
 
@@ -1622,7 +1622,7 @@ describe("Combat Actions", function () {
           EstforConstants.BRONZE_SHIELD,
           EstforConstants.COOKED_MINNUS,
           EstforConstants.AIR_SCROLL,
-          EstforConstants.SHADOW_SCROLL,
+          EstforConstants.SHADOW_SCROLL
         ],
         [1, 1, 1000, 200, 100]
       );
@@ -1639,8 +1639,8 @@ describe("Combat Actions", function () {
             skillDiff: 5,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2],
-          },
+            inputAmounts: [1, 2]
+          }
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
@@ -1653,36 +1653,36 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.AIR_SCROLL,
-          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.SHADOW_SCROLL,
-          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG,
+          equipPosition: EstforTypes.EquipPosition.MAGIC_BAG
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.TOTEM_STAFF,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
-          equipPosition: EstforTypes.EquipPosition.QUIVER,
+          equipPosition: EstforTypes.EquipPosition.QUIVER
         },
         {
           ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
-          equipPosition: EstforTypes.EquipPosition.FOOD,
-        },
+          equipPosition: EstforTypes.EquipPosition.FOOD
+        }
       ]);
 
       // Should be killing 1 every 72 seconds.
@@ -1723,7 +1723,7 @@ describe("Combat Actions", function () {
         name: "Name goes here",
         description: "Hi I'm a description",
         imageURI: "1234.png",
-        startSkills: [Skill.WOODCUTTING, Skill.NONE],
+        startSkills: [Skill.WOODCUTTING, Skill.NONE]
       };
       await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
@@ -1736,7 +1736,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(noSkillPlayerId, EstforTypes.Skill.MAGIC)).to.eq(queuedAction.timespan);
       expect(await players.xp(noSkillPlayerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(queuedAction.timespan / 3)),
-        BigInt(Math.floor(queuedAction.timespan / 3) - 1),
+        BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
       expect(await players.xp(noSkillPlayerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -1763,7 +1763,7 @@ describe("Combat Actions", function () {
         dropRate,
         queuedAction: magicQueuedAction,
         startXP,
-        numSpawned,
+        numSpawned
       } = await loadFixture(playersFixtureMagic);
 
       const queuedAction = {...magicQueuedAction};
@@ -1812,7 +1812,7 @@ describe("Combat Actions", function () {
         players,
         alice,
         itemNFT,
-        queuedAction: magicQueuedAction,
+        queuedAction: magicQueuedAction
       } = await loadFixture(playersFixtureMagic);
 
       await itemNFT.addItems([
@@ -1820,14 +1820,14 @@ describe("Combat Actions", function () {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.IRON_GAUNTLETS,
           equipPosition: EstforTypes.EquipPosition.ARMS,
-          combatStats: {...EstforTypes.emptyCombatStats, magicDefence: -10000},
-        },
+          combatStats: {...EstforTypes.emptyCombatStats, magicDefence: -10000}
+        }
       ]);
 
       const queuedAction = {
         ...magicQueuedAction,
         attire: {...magicQueuedAction.attire, arms: EstforConstants.IRON_GAUNTLETS},
-        timespan: 24 * 3600,
+        timespan: 24 * 3600
       };
 
       await itemNFT.testMint(alice.address, EstforConstants.IRON_GAUNTLETS, 1);
@@ -2016,7 +2016,7 @@ describe("Combat Actions", function () {
             skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.AIR_SCROLL, EstforConstants.SHADOW_SCROLL],
-            inputAmounts: [1, 1],
+            inputAmounts: [1, 1]
           },
           {
             ...defaultActionChoice,
@@ -2024,8 +2024,8 @@ describe("Combat Actions", function () {
             skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 3],
-          },
+            inputAmounts: [1, 3]
+          }
         ]
       );
 
@@ -2047,7 +2047,7 @@ describe("Combat Actions", function () {
         alice,
         world,
         queuedAction: magicQueuedAction,
-        itemNFT,
+        itemNFT
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2057,7 +2057,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
@@ -2075,12 +2075,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
 
       const queuedAction = {...magicQueuedAction};
@@ -2120,7 +2120,7 @@ describe("Combat Actions", function () {
         world,
         queuedAction: magicQueuedAction,
         itemNFT,
-        startXP,
+        startXP
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2130,7 +2130,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
@@ -2148,12 +2148,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
 
       const queuedAction = {...magicQueuedAction};
@@ -2184,7 +2184,7 @@ describe("Combat Actions", function () {
         world,
         queuedAction: magicQueuedAction,
         itemNFT,
-        startXP,
+        startXP
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2194,7 +2194,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
@@ -2212,12 +2212,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
 
       const queuedAction = {...magicQueuedAction};
@@ -2246,22 +2246,22 @@ describe("Combat Actions", function () {
         players,
         alice,
         itemNFT,
-        queuedAction: magicQueuedAction,
+        queuedAction: magicQueuedAction
       } = await loadFixture(playersFixtureMagic);
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.IRON_GAUNTLETS,
-          equipPosition: EstforTypes.EquipPosition.ARMS,
-        },
+          equipPosition: EstforTypes.EquipPosition.ARMS
+        }
       ]);
 
       const queuedAction = {
         ...magicQueuedAction,
         attire: {...magicQueuedAction.attire, arms: EstforConstants.IRON_GAUNTLETS},
         timespan: 3600,
-        regenerateId: EstforConstants.NONE,
+        regenerateId: EstforConstants.NONE
       };
 
       await itemNFT.testMint(alice.address, EstforConstants.IRON_GAUNTLETS, 1);
@@ -2290,7 +2290,7 @@ describe("Combat Actions", function () {
         alice,
         world,
         queuedAction: magicQueuedAction,
-        itemNFT,
+        itemNFT
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2300,7 +2300,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 5,
         rangedDefence: 0,
-        health: 60,
+        health: 60
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
@@ -2318,12 +2318,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
 
       // Set player combat stats
@@ -2347,8 +2347,8 @@ describe("Combat Actions", function () {
             skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2],
-          },
+            inputAmounts: [1, 2]
+          }
         ]
       );
 
@@ -2389,7 +2389,7 @@ describe("Combat Actions", function () {
         timespan,
         queuedAction: queuedActionMonster,
         startXP,
-        world,
+        world
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2399,7 +2399,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per monster
@@ -2418,12 +2418,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
       const queuedAction = {...queuedActionMonster, actionId};
@@ -2438,7 +2438,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
-        BigInt(Math.floor(queuedAction.timespan / 3) - 1),
+        BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -2466,7 +2466,7 @@ describe("Combat Actions", function () {
         name: "Name goes here",
         description: "Hi I'm a description",
         imageURI: "1234.png",
-        startSkills: [Skill.RANGED, Skill.NONE],
+        startSkills: [Skill.RANGED, Skill.NONE]
       };
       await playerNFT.setAvatars([avatarId], [avatarInfo]);
 
@@ -2482,7 +2482,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per monster
@@ -2501,12 +2501,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.NATURE_SCROLL, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
 
@@ -2516,7 +2516,7 @@ describe("Combat Actions", function () {
           EstforConstants.BRONZE_SHIELD,
           EstforConstants.COOKED_MINNUS,
           EstforConstants.BRONZE_ARROW,
-          EstforConstants.IRON_ARROW,
+          EstforConstants.IRON_ARROW
         ],
         [1, 1000, 200, 100]
       );
@@ -2535,8 +2535,8 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.BRONZE_ARROW],
             inputAmounts: [1],
             handItemTokenIdRangeMin: EstforConstants.BASIC_BOW,
-            handItemTokenIdRangeMax: EstforConstants.BASIC_BOW,
-          },
+            handItemTokenIdRangeMax: EstforConstants.BASIC_BOW
+          }
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
@@ -2549,41 +2549,41 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BASIC_BOW,
-        leftHandEquipmentTokenId: EstforConstants.NONE,
+        leftHandEquipmentTokenId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
-          equipPosition: EstforTypes.EquipPosition.QUIVER,
+          equipPosition: EstforTypes.EquipPosition.QUIVER
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.IRON_ARROW,
-          equipPosition: EstforTypes.EquipPosition.QUIVER,
+          equipPosition: EstforTypes.EquipPosition.QUIVER
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BASIC_BOW,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_SHIELD,
-          equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
+          equipPosition: EstforTypes.EquipPosition.LEFT_HAND
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_SCROLL,
-          equipPosition: EstforTypes.EquipPosition.QUIVER,
+          equipPosition: EstforTypes.EquipPosition.QUIVER
         },
         {
           ...EstforTypes.defaultItemInput,
           healthRestored: 12,
           tokenId: EstforConstants.COOKED_MINNUS,
-          equipPosition: EstforTypes.EquipPosition.FOOD,
-        },
+          equipPosition: EstforTypes.EquipPosition.FOOD
+        }
       ]);
 
       const startXP = START_XP;
@@ -2599,7 +2599,7 @@ describe("Combat Actions", function () {
         dropRate,
         queuedAction,
         startXP,
-        numSpawned,
+        numSpawned
       };
     }
 
@@ -2618,7 +2618,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
-        BigInt(Math.floor(queuedAction.timespan / 3) - 1),
+        BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -2641,14 +2641,14 @@ describe("Combat Actions", function () {
         players,
         itemNFT,
         alice,
-        queuedAction: rangedQueuedAction,
+        queuedAction: rangedQueuedAction
       } = await loadFixture(playersFixtureRanged);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.GODLY_BOW,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
-        },
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
+        }
       ]);
       await itemNFT.testMint(alice.address, EstforConstants.GODLY_BOW, 1);
       const queuedAction = {...rangedQueuedAction};
@@ -2667,7 +2667,7 @@ describe("Combat Actions", function () {
         itemNFT,
         alice,
         queuedAction: rangedQueuedAction,
-        world,
+        world
       } = await loadFixture(playersFixtureRanged);
 
       const arrowsConsumedRate = 1 * RATE_MUL; // per hour
@@ -2684,8 +2684,8 @@ describe("Combat Actions", function () {
             inputTokenIds: [EstforConstants.BRONZE_ARROW],
             inputAmounts: [1],
             handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
-            handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_4,
-          },
+            handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_4
+          }
         ]
       );
 
@@ -2694,18 +2694,18 @@ describe("Combat Actions", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.INFUSED_GODLY_BOW,
-          equipPosition: EstforTypes.EquipPosition.NONE,
+          equipPosition: EstforTypes.EquipPosition.NONE
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.GODLY_BOW_4,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.GODLY_BOW_5,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
-        },
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
+        }
       ]);
       await itemNFT.testMint(alice.address, EstforConstants.GODLY_BOW_5, 1);
       const queuedAction = {...rangedQueuedAction};
@@ -2783,7 +2783,7 @@ describe("Combat Actions", function () {
         timespan,
         queuedAction: queuedActionMonster,
         startXP,
-        world,
+        world
       } = await loadFixture(playersFixtureRanged);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2793,7 +2793,7 @@ describe("Combat Actions", function () {
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
-        health: 5,
+        health: 5
       };
 
       const dropRate = 1 * GUAR_MUL; // per monster
@@ -2812,12 +2812,12 @@ describe("Combat Actions", function () {
             handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
             isAvailable: actionIsAvailable,
             actionChoiceRequired: true,
-            successPercent: 100,
+            successPercent: 100
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.NATURE_SCROLL, rate: dropRate}],
           randomRewards: [],
-          combatStats: monsterCombatStats,
-        },
+          combatStats: monsterCombatStats
+        }
       ]);
       const actionId = await getActionId(tx, world);
       const queuedAction = {...queuedActionMonster, actionId};
@@ -2832,7 +2832,7 @@ describe("Combat Actions", function () {
       expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
-        BigInt(Math.floor(queuedAction.timespan / 3) - 1),
+        BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
       expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
@@ -2860,7 +2860,7 @@ describe("Combat Actions", function () {
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 1,
+      health: 1
     };
 
     const rate = 6000 * GUAR_MUL; // per kill
@@ -2878,12 +2878,12 @@ describe("Combat Actions", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
         randomRewards: [],
-        combatStats: monsterCombatStats,
-      },
+        combatStats: monsterCombatStats
+      }
     ]);
     const actionId = await getActionId(tx, world);
 
@@ -2898,8 +2898,8 @@ describe("Combat Actions", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_HELMET,
-        equipPosition: EstforTypes.EquipPosition.HEAD,
-      },
+        equipPosition: EstforTypes.EquipPosition.HEAD
+      }
     ]);
 
     const timespan = 3600 * 3; // 3 hours
@@ -2909,8 +2909,8 @@ describe("Combat Actions", function () {
       [
         {
           ...defaultActionChoice,
-          skill: EstforTypes.Skill.MELEE,
-        },
+          skill: EstforTypes.Skill.MELEE
+        }
       ]
     );
     const choiceId = await getActionChoiceId(tx, world);
@@ -2922,21 +2922,21 @@ describe("Combat Actions", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_SWORD,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
       },
       {
         ...EstforTypes.defaultItemInput,
         healthRestored: 1,
         tokenId: EstforConstants.COOKED_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.FOOD,
-      },
+        equipPosition: EstforTypes.EquipPosition.FOOD
+      }
     ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2981,7 +2981,7 @@ describe("Combat Actions", function () {
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 100,
+      health: 100
     };
 
     const rate = 6000 * GUAR_MUL; // per kill
@@ -2999,12 +2999,12 @@ describe("Combat Actions", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
         randomRewards: [],
-        combatStats: monsterCombatStats,
-      },
+        combatStats: monsterCombatStats
+      }
     ]);
     const actionId = await getActionId(tx, world);
 
@@ -3019,8 +3019,8 @@ describe("Combat Actions", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_HELMET,
-        equipPosition: EstforTypes.EquipPosition.HEAD,
-      },
+        equipPosition: EstforTypes.EquipPosition.HEAD
+      }
     ]);
 
     const timespan = 3600 * 24; // 3 hours
@@ -3030,8 +3030,8 @@ describe("Combat Actions", function () {
       [
         {
           ...defaultActionChoice,
-          skill: EstforTypes.Skill.MELEE,
-        },
+          skill: EstforTypes.Skill.MELEE
+        }
       ]
     );
     const choiceId = await getActionChoiceId(tx, world);
@@ -3043,21 +3043,21 @@ describe("Combat Actions", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_SWORD,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
       },
       {
         ...EstforTypes.defaultItemInput,
         healthRestored: 1,
         tokenId: EstforConstants.COOKED_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.FOOD,
-      },
+        equipPosition: EstforTypes.EquipPosition.FOOD
+      }
     ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -3095,7 +3095,7 @@ describe("Combat Actions", function () {
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 100,
+      health: 100
     };
 
     const rate = 1 * GUAR_MUL; // per hour
@@ -3113,12 +3113,12 @@ describe("Combat Actions", function () {
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: actionIsAvailable,
           actionChoiceRequired: true,
-          successPercent: 100,
+          successPercent: 100
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, rate}],
         randomRewards: [],
-        combatStats: monsterCombatStats,
-      },
+        combatStats: monsterCombatStats
+      }
     ]);
     const actionId = await getActionId(tx, world);
 
@@ -3132,8 +3132,8 @@ describe("Combat Actions", function () {
       [
         {
           ...defaultActionChoice,
-          skill: EstforTypes.Skill.MELEE,
-        },
+          skill: EstforTypes.Skill.MELEE
+        }
       ]
     );
     const choiceId = await getActionChoiceId(tx, world);
@@ -3145,7 +3145,7 @@ describe("Combat Actions", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-      leftHandEquipmentTokenId: EstforConstants.NONE,
+      leftHandEquipmentTokenId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -3153,15 +3153,15 @@ describe("Combat Actions", function () {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_SWORD,
         equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        metadataURI: "someIPFSURI.json",
+        metadataURI: "someIPFSURI.json"
       },
       {
         ...EstforTypes.defaultItemInput,
         healthRestored: 1,
         tokenId: EstforConstants.COOKED_MINNUS,
         equipPosition: EstforTypes.EquipPosition.FOOD,
-        metadataURI: "someIPFSURI.json",
-      },
+        metadataURI: "someIPFSURI.json"
+      }
     ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);

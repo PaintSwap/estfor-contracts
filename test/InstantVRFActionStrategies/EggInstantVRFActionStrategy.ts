@@ -3,7 +3,7 @@ import {playersFixture} from "../Players/PlayersFixture";
 import {
   InstantVRFActionInput,
   InstantVRFActionType,
-  defaultInstantVRFActionInput as _defaultInstantVRFActionInput,
+  defaultInstantVRFActionInput as _defaultInstantVRFActionInput
 } from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {EstforConstants} from "@paintswap/estfor-definitions";
@@ -22,9 +22,9 @@ describe("EggInstantVRFActionStrategy", function () {
     actionId: 1,
     data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-      [0, {rewardBasePetIdMin, rewardBasePetIdMax}],
+      [0, {rewardBasePetIdMin, rewardBasePetIdMax}]
     ),
-    isFullModeOnly: false,
+    isFullModeOnly: false
   };
 
   it("Only instantVRFActions can call setInstantVRFActions", async function () {
@@ -32,7 +32,7 @@ describe("EggInstantVRFActionStrategy", function () {
     const instantVRFActionInput = {...defaultInstantVRFActionInput};
     await expect(eggInstantVRFActionStrategy.setAction(instantVRFActionInput)).to.be.revertedWithCustomError(
       eggInstantVRFActionStrategy,
-      "OnlyInstantVRFActions",
+      "OnlyInstantVRFActions"
     );
   });
 
@@ -77,11 +77,11 @@ describe("EggInstantVRFActionStrategy", function () {
       ...defaultInstantVRFActionInput,
       data: abiCoder.encode(
         ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
-        [0, {rewardBasePetIdMin: 2, rewardBasePetIdMax: 1}],
-      ),
+        [0, {rewardBasePetIdMin: 2, rewardBasePetIdMax: 1}]
+      )
     };
     await expect(
-      eggInstantVRFActionStrategy.connect(alice).setAction(instantVRFActionInput),
+      eggInstantVRFActionStrategy.connect(alice).setAction(instantVRFActionInput)
     ).to.be.revertedWithCustomError(eggInstantVRFActionStrategy, "BasePetIdMinGreaterThanMax");
   });
 
@@ -106,7 +106,7 @@ describe("EggInstantVRFActionStrategy", function () {
       actionId,
       actionAmount,
       [firstWord, secondWord],
-      startIndex,
+      startIndex
     );
 
     let bytes = keccak256(secondWord);

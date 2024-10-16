@@ -17,25 +17,25 @@ describe("ItemNFT", function () {
       await owner.sendTransaction({
         to: owner.getAddress(),
         value: 1,
-        maxFeePerGas: 1,
+        maxFeePerGas: 1
       });
     }
 
     // Create the world
     const worldLibrary = await ethers.deployContract("WorldLibrary");
     const World = await ethers.getContractFactory("World", {
-      libraries: {WorldLibrary: await worldLibrary.getAddress()},
+      libraries: {WorldLibrary: await worldLibrary.getAddress()}
     });
     const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
+      unsafeAllow: ["delegatecall", "external-library-linking"]
     })) as unknown as World;
 
     await setDailyAndWeeklyRewards(world);
 
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(Shop, [await brush.getAddress(), await dev.getAddress()], {
-      kind: "uups",
+      kind: "uups"
     });
 
     const router = await ethers.deployContract("MockRouter");
@@ -47,24 +47,24 @@ describe("ItemNFT", function () {
         await shop.getAddress(),
         await dev.getAddress(),
         await brush.getAddress(),
-        await alice.getAddress(),
+        await alice.getAddress()
       ],
       {
-        kind: "uups",
-      },
+        kind: "uups"
+      }
     )) as unknown as RoyaltyReceiver;
 
     const admins = [await owner.getAddress(), await alice.getAddress()];
     const promotionalAdmins = [await alice.getAddress()];
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
     const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, promotionalAdmins], {
-      kind: "uups",
+      kind: "uups"
     })) as unknown as AdminAccess;
 
     const isBeta = true;
     const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
     });
     const itemsUri = "ipfs://";
     const itemNFT = (await upgrades.deployProxy(
@@ -75,12 +75,12 @@ describe("ItemNFT", function () {
         await royaltyReceiver.getAddress(),
         await adminAccess.getAddress(),
         itemsUri,
-        isBeta,
+        isBeta
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"],
-      },
+        unsafeAllow: ["external-library-linking"]
+      }
     )) as unknown as ItemNFT;
 
     return {
@@ -94,7 +94,7 @@ describe("ItemNFT", function () {
       shop,
       royaltyReceiver,
       adminAccess,
-      itemNFTLibrary,
+      itemNFTLibrary
     };
   }
 
@@ -136,8 +136,8 @@ describe("ItemNFT", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      },
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+      }
     ]);
 
     // Change equipPosition should fail
@@ -146,9 +146,9 @@ describe("ItemNFT", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
-          equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
-        },
-      ]),
+          equipPosition: EstforTypes.EquipPosition.LEFT_HAND
+        }
+      ])
     ).to.be.revertedWithCustomError(itemNFT, "EquipmentPositionShouldNotChange");
 
     // Unless going from right hand to both hands or both hands to right hand
@@ -157,18 +157,18 @@ describe("ItemNFT", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
-          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS,
-        },
-      ]),
+          equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
+        }
+      ])
     ).to.not.be.reverted;
     await expect(
       itemNFT.editItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
-          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-        },
-      ]),
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+        }
+      ])
     ).to.not.be.reverted;
 
     await expect(
@@ -176,9 +176,9 @@ describe("ItemNFT", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARMOR,
-          equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
-        },
-      ]),
+          equipPosition: EstforTypes.EquipPosition.LEFT_HAND
+        }
+      ])
     ).to.be.revertedWithCustomError(itemNFT, "ItemDoesNotExist");
 
     await itemNFT.editItems([
@@ -186,8 +186,8 @@ describe("ItemNFT", function () {
         ...EstforTypes.defaultItemInput,
         minXP: 100,
         tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      },
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+      }
     ]);
 
     let item = await itemNFT.getItem(EstforConstants.BRONZE_AXE);
@@ -198,8 +198,8 @@ describe("ItemNFT", function () {
         ...EstforTypes.defaultItemInput,
         minXP: 200,
         tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      },
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+      }
     ]);
 
     item = await itemNFT.getItem(EstforConstants.BRONZE_AXE);
@@ -213,8 +213,8 @@ describe("ItemNFT", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      },
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+      }
     ]);
 
     await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
@@ -233,15 +233,15 @@ describe("ItemNFT", function () {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_AXE,
         isTransferable: false, // Cannot be transferred
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
-      },
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+      }
     ]);
 
     await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
     await expect(
       itemNFT
         .connect(alice)
-        .safeTransferFrom(alice.getAddress(), owner.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x"),
+        .safeTransferFrom(alice.getAddress(), owner.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.be.revertedWithCustomError(itemNFT, "ItemNotTransferable");
 
     // Allow it to be burnt
@@ -287,7 +287,7 @@ describe("ItemNFT", function () {
     expect(await itemNFT.balanceOf(alice.getAddress(), EstforConstants.BRONZE_AXE)).to.eq(5);
 
     await expect(
-      itemNFT.connect(alice).airdrop([alice.getAddress()], EstforConstants.BRONZE_AXE, [3]),
+      itemNFT.connect(alice).airdrop([alice.getAddress()], EstforConstants.BRONZE_AXE, [3])
     ).to.be.revertedWithCustomError(itemNFT, "CallerIsNotOwner");
   });
 
@@ -298,14 +298,14 @@ describe("ItemNFT", function () {
     await expect(
       itemNFT
         .connect(alice)
-        .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x"),
+        .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferFromNotApproved");
 
     await itemNFT.setBazaar(alice.getAddress());
     await expect(
       itemNFT
         .connect(alice)
-        .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x"),
+        .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.not.be.reverted;
   });
 
@@ -316,7 +316,7 @@ describe("ItemNFT", function () {
 
     const isBeta = false;
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
     });
     const itemsUri = "ipfs://";
     const itemNFTNotBeta = await upgrades.deployProxy(
@@ -327,12 +327,12 @@ describe("ItemNFT", function () {
         await royaltyReceiver.getAddress(),
         await adminAccess.getAddress(),
         itemsUri,
-        isBeta,
+        isBeta
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"],
-      },
+        unsafeAllow: ["external-library-linking"]
+      }
     );
     expect(await itemNFTNotBeta.name()).to.be.eq("Estfor Items");
     expect(await itemNFTNotBeta.symbol()).to.be.eq("EK_I");
@@ -355,7 +355,7 @@ describe("ItemNFT", function () {
       EstforConstants.IRON_AXE,
       EstforConstants.ADAMANTINE_AXE,
       EstforConstants.RUNITE_AXE,
-      EstforConstants.ORICHALCUM_AXE,
+      EstforConstants.ORICHALCUM_AXE
     ];
     const [devAddress, aliceAddress] = await Promise.all([dev.getAddress(), alice.getAddress()]);
     const tos = [aliceAddress, devAddress, devAddress, aliceAddress, aliceAddress];
@@ -392,12 +392,12 @@ describe("ItemNFT", function () {
       await itemNFT.balanceOfs(alice.getAddress(), [
         EstforConstants.TITANIUM_AXE,
         EstforConstants.RUNITE_AXE,
-        EstforConstants.ORICHALCUM_AXE,
-      ]),
+        EstforConstants.ORICHALCUM_AXE
+      ])
     ).to.deep.eq([2, 1, 2]);
 
     expect(
-      await itemNFT.balanceOfs(dev.getAddress(), [EstforConstants.IRON_AXE, EstforConstants.ADAMANTINE_AXE]),
+      await itemNFT.balanceOfs(dev.getAddress(), [EstforConstants.IRON_AXE, EstforConstants.ADAMANTINE_AXE])
     ).to.deep.eq([3, 4]);
 
     expect(await itemNFT.balanceOf(owner.getAddress(), EstforConstants.MITHRIL_AXE)).to.eq(1);

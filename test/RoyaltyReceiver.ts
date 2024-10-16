@@ -18,12 +18,12 @@ describe("RoyaltyReceiver", function () {
       RoyaltyReceiver,
       [await router.getAddress(), pool.address, dev.address, await brush.getAddress(), wftm],
       {
-        kind: "uups",
-      },
+        kind: "uups"
+      }
     )) as unknown as RoyaltyReceiver;
 
     const mockTerritories = (await ethers.deployContract("MockTerritories", [
-      await brush.getAddress(),
+      await brush.getAddress()
     ])) as MockTerritories;
     await royaltyReceiver.setTerritories(await mockTerritories.getAddress());
 
@@ -37,7 +37,7 @@ describe("RoyaltyReceiver", function () {
       brush,
       wftm,
       router,
-      mockTerritories,
+      mockTerritories
     };
   }
 
@@ -47,7 +47,7 @@ describe("RoyaltyReceiver", function () {
     const beforeBalance = await ethers.provider.getBalance(dev.address);
     await alice.sendTransaction({
       to: await royaltyReceiver.getAddress(),
-      value: 100,
+      value: 100
     });
 
     // 1/3 to dao
@@ -66,7 +66,7 @@ describe("RoyaltyReceiver", function () {
     expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(0);
     await expect(royaltyReceiver.distributeBrush()).to.be.revertedWithCustomError(
       royaltyReceiver,
-      "BrushTooLowToDistribute",
+      "BrushTooLowToDistribute"
     );
     await brush.mint(await royaltyReceiver.getAddress(), 1);
     expect(await royaltyReceiver.canDistribute()).to.be.true;

@@ -47,7 +47,7 @@ export const bronzeHelmetStats: EstforTypes.CombatStats = {
   meleeDefence: 4,
   magicDefence: 0,
   rangedDefence: 1,
-  health: 1,
+  health: 1
 };
 
 // Should match the PlayersBase contract constants
