@@ -7,6 +7,8 @@ import {AdminAccess, ItemNFT, RoyaltyReceiver, Shop, World} from "../typechain-t
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
 
 describe("Shop", function () {
+  const SHOP_VOID_ADDRESS = "0x8bc76F10a3cD0bCd57101950cfA8fD88c06DFfdB"; // TODO Remove when in-game shop selling is removed.
+
   const deployContracts = async function () {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice, bob, charlie, dev] = await ethers.getSigners();
@@ -306,10 +308,10 @@ describe("Shop", function () {
       .to.emit(shop, "Sell")
       .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, 1, priceShield)
       .and.to.emit(itemNFT, "TransferSingle")
-      .withArgs(shop.address, alice.address, ethers.constants.AddressZero, EstforConstants.BRONZE_SHIELD, 1);
+      .withArgs(shop.address, alice.address, SHOP_VOID_ADDRESS, EstforConstants.BRONZE_SHIELD, 1);
 
-    // Item should get burnt, and they should get the amount of brush expected.
-    expect(await itemNFT.itemBalances(EstforConstants.BRONZE_SHIELD)).to.eq(minItemQuantityBeforeSellsAllowed * 2 - 1);
+    // Item should get transferred to the dead address, and they should get the amount of brush expected. Balance remains the same
+    expect(await itemNFT.itemBalances(EstforConstants.BRONZE_SHIELD)).to.eq(minItemQuantityBeforeSellsAllowed * 2);
     expect(await brush.balanceOf(alice.address)).to.eq(priceShield);
   });
 
@@ -350,13 +352,14 @@ describe("Shop", function () {
       .withArgs(
         shop.address,
         alice.address,
-        ethers.constants.AddressZero,
+        SHOP_VOID_ADDRESS,
         [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
         [1, 2]
       );
 
-    expect(await itemNFT.itemBalances(EstforConstants.BRONZE_SHIELD)).to.eq(minItemQuantityBeforeSellsAllowed * 2 - 1);
-    expect(await itemNFT.itemBalances(EstforConstants.SAPPHIRE_AMULET)).to.eq(minItemQuantityBeforeSellsAllowed - 2);
+    // Item balances should not change
+    expect(await itemNFT.itemBalances(EstforConstants.BRONZE_SHIELD)).to.eq(minItemQuantityBeforeSellsAllowed * 2);
+    expect(await itemNFT.itemBalances(EstforConstants.SAPPHIRE_AMULET)).to.eq(minItemQuantityBeforeSellsAllowed);
     expect(await brush.balanceOf(alice.address)).to.eq(expectedTotal);
   });
 
@@ -474,17 +477,16 @@ describe("Shop", function () {
     let allocationRemaining = tokenPrice.mul(2);
     expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining);
 
-    // Not enough to have a price
-    expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.be.eq(0);
+    expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.be.eq(tokenPrice);
     await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
     tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD);
-    expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining); // Remains unchanged
+    expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining.sub(tokenPrice));
 
     // Mint some, should fail to sell any as allocation is used up
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed);
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 3, 0))
       .to.be.revertedWithCustomError(shop, "NotEnoughAllocationRemaining")
-      .withArgs(EstforConstants.BRONZE_SHIELD, tokenPrice.mul(3), allocationRemaining);
+      .withArgs(EstforConstants.BRONZE_SHIELD, tokenPrice.mul(3), allocationRemaining.sub(tokenPrice));
   });
 
   it("Allocation resets after 00:00 UTC", async function () {
@@ -512,7 +514,7 @@ describe("Shop", function () {
     const {timestamp: NOW1} = await ethers.provider.getBlock("latest");
     tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
     expect(tokenAllocation.checkpointTimestamp).to.eq(Math.floor(NOW1 / 86400) * 86400);
-    expect(tokenAllocation.allocationRemaining).to.eq("499249749749749750");
+    expect(tokenAllocation.allocationRemaining).to.eq("499250250000000000");
   });
 
   it("Price should be constant through the day", async function () {
@@ -537,11 +539,10 @@ describe("Shop", function () {
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
     liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
-    const newPrice = "291777851901267";
-    expect(liquidatePrice).to.be.eq(newPrice);
     await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 300, 0);
+    const prevLiquidatePrice = liquidatePrice;
     liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
-    expect(liquidatePrice).to.be.eq(newPrice);
+    expect(liquidatePrice).to.be.eq(prevLiquidatePrice);
   });
 
   it("Remove shop item", async function () {
