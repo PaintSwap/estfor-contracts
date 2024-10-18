@@ -387,8 +387,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     bytes1 packedData = bytes1(uint8(_actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
     instantVRFAction = InstantVRFAction({
-      inputTokenId1: _actionInput.inputTokenIds.length > 0 ? _actionInput.inputTokenIds[0] : NONE,
-      inputAmount1: _actionInput.inputAmounts.length > 0 ? uint8(_actionInput.inputAmounts[0]) : 0,
+      inputTokenId1: _actionInput.inputTokenIds.length != 0 ? _actionInput.inputTokenIds[0] : NONE,
+      inputAmount1: _actionInput.inputAmounts.length != 0 ? uint8(_actionInput.inputAmounts[0]) : 0,
       inputTokenId2: _actionInput.inputTokenIds.length > 1 ? _actionInput.inputTokenIds[1] : NONE,
       inputAmount2: _actionInput.inputAmounts.length > 1 ? uint8(_actionInput.inputAmounts[1]) : 0,
       inputTokenId3: _actionInput.inputTokenIds.length > 2 ? _actionInput.inputTokenIds[2] : NONE,

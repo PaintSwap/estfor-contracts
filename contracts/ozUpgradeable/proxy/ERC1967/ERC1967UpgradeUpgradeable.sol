@@ -80,7 +80,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
    */
   function _upgradeToAndCall(address newImplementation, bytes memory data, bool forceCall) internal {
     _upgradeTo(newImplementation);
-    if (data.length > 0 || forceCall) {
+    if (data.length != 0 || forceCall) {
       _functionDelegateCall(newImplementation, data);
     }
   }
@@ -187,7 +187,7 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable {
   function _upgradeBeaconToAndCall(address newBeacon, bytes memory data, bool forceCall) internal {
     _setBeacon(newBeacon);
     emit BeaconUpgraded(newBeacon);
-    if (data.length > 0 || forceCall) {
+    if (data.length != 0 || forceCall) {
       _functionDelegateCall(IBeacon(newBeacon).implementation(), data);
     }
   }

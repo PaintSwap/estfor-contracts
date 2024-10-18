@@ -164,7 +164,7 @@ describe("Promotions", function () {
 
       await expect(promotions.editPromotion(editedPromotion)).to.emit(promotions, "EditPromotion");
 
-      const activePromotion = await promotions.activePromotions(promotion.promotion);
+      const activePromotion = await promotions.getActivePromotion(promotion.promotion);
       expect(activePromotion.startTime).to.eq(newStartTime);
     });
 
@@ -181,7 +181,7 @@ describe("Promotions", function () {
 
       await expect(promotions.removePromotion(promotion.promotion)).to.emit(promotions, "RemovePromotion");
 
-      const activePromotion = await promotions.activePromotions(promotion.promotion);
+      const activePromotion = await promotions.getActivePromotion(promotion.promotion);
       expect(activePromotion.startTime).to.eq(0);
     });
 
@@ -471,9 +471,9 @@ describe("Promotions", function () {
         await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 2]);
         expect(await brush.balanceOf(alice.address)).to.eq(0);
 
-        expect(await promotions.multidayPlayerPromotionsCompleted(playerId, promotion.promotion, 0)).to.eq(0xff);
-        expect(await promotions.multidayPlayerPromotionsCompleted(playerId, promotion.promotion, 1)).to.eq(0);
-        expect(await promotions.multidayPlayerPromotionsCompleted(playerId, promotion.promotion, 2)).to.eq(0xff);
+        expect(await promotions.getMultidayPlayerPromotionsCompleted(playerId, promotion.promotion, 0)).to.eq(0xff);
+        expect(await promotions.getMultidayPlayerPromotionsCompleted(playerId, promotion.promotion, 1)).to.eq(0);
+        expect(await promotions.getMultidayPlayerPromotionsCompleted(playerId, promotion.promotion, 2)).to.eq(0xff);
       });
 
       it("Paying for a previous day should use a different random word (give different rewards)", async function () {

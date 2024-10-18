@@ -210,7 +210,7 @@ library EstforLibrary {
         low = mid + 1;
       } else {
         // Check to prevent underflow
-        if (mid > 0) {
+        if (mid != 0) {
           high = mid - 1;
         } else {
           // If mid is 0 and _arr[mid] is not the target, the element is not in the array
@@ -236,7 +236,7 @@ library EstforLibrary {
         low = mid + 1;
       } else {
         // Check to prevent underflow
-        if (mid > 0) {
+        if (mid != 0) {
           high = mid - 1;
         } else {
           // If mid is 0 and _arr[mid] is not the target, the element is not in the array

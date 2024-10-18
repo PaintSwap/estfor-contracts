@@ -720,11 +720,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function _checkGateKeeping(uint256 _clanId, uint256 _gateKeepTokenId) private view {
     NFTInfo[] memory nftInfo = clans[_clanId].gateKeptNFTs;
     bool foundNFT;
-    if (nftInfo.length > 0) {
+    if (nftInfo.length != 0) {
       // Check the player owns one of these NFTs
       for (uint256 i = 0; i < nftInfo.length; ++i) {
         if (nftInfo[i].nftType == 1155) {
-          foundNFT = foundNFT || IERC1155(nftInfo[i].nft).balanceOf(_msgSender(), _gateKeepTokenId) > 0;
+          foundNFT = foundNFT || IERC1155(nftInfo[i].nft).balanceOf(_msgSender(), _gateKeepTokenId) != 0;
         } else if (nftInfo[i].nftType == 721) {
           foundNFT = foundNFT || IERC721(nftInfo[i].nft).ownerOf(_gateKeepTokenId) == _msgSender();
         }

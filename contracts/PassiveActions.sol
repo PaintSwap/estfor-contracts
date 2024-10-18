@@ -339,7 +339,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       amounts[i + _pendingPassiveActionState.producedItemTokenIds.length] = _pendingPassiveActionState
         .producedRandomRewardAmounts[i];
     }
-    if (numItemsToMint > 0) {
+    if (numItemsToMint != 0) {
       itemNFT.mintBatch(msg.sender, itemTokenIds, amounts);
     }
     emit ClaimPassiveAction(_playerId, msg.sender, _queueId, itemTokenIds, amounts, _startingAnother);
@@ -515,14 +515,14 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
     passiveAction = PassiveAction({
       durationDays: _actionInfo.durationDays,
-      minSkill1: _actionInfo.minSkills.length > 0 ? _actionInfo.minSkills[0] : Skill.NONE,
-      minLevel1: _actionInfo.minLevels.length > 0 ? _actionInfo.minLevels[0] : 0,
+      minSkill1: _actionInfo.minSkills.length != 0 ? _actionInfo.minSkills[0] : Skill.NONE,
+      minLevel1: _actionInfo.minLevels.length != 0 ? _actionInfo.minLevels[0] : 0,
       minSkill2: _actionInfo.minSkills.length > 1 ? _actionInfo.minSkills[1] : Skill.NONE,
       minLevel2: _actionInfo.minLevels.length > 1 ? _actionInfo.minLevels[1] : 0,
       minSkill3: _actionInfo.minSkills.length > 2 ? _actionInfo.minSkills[2] : Skill.NONE,
       minLevel3: _actionInfo.minLevels.length > 2 ? _actionInfo.minLevels[2] : 0,
-      inputTokenId1: _actionInfo.inputTokenIds.length > 0 ? _actionInfo.inputTokenIds[0] : NONE,
-      inputAmount1: _actionInfo.inputAmounts.length > 0 ? _actionInfo.inputAmounts[0] : 0,
+      inputTokenId1: _actionInfo.inputTokenIds.length != 0 ? _actionInfo.inputTokenIds[0] : NONE,
+      inputAmount1: _actionInfo.inputAmounts.length != 0 ? _actionInfo.inputAmounts[0] : 0,
       inputTokenId2: _actionInfo.inputTokenIds.length > 1 ? _actionInfo.inputTokenIds[1] : NONE,
       inputAmount2: _actionInfo.inputAmounts.length > 1 ? _actionInfo.inputAmounts[1] : 0,
       inputTokenId3: _actionInfo.inputTokenIds.length > 2 ? _actionInfo.inputTokenIds[2] : NONE,

@@ -121,7 +121,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
         uint256 remainder;
         // Allow to queue the excess for any running action up to 1 hour
-        if (remainingQueuedActions.length > 0) {
+        if (remainingQueuedActions.length != 0) {
           remainder = remainingQueuedActions[0].timespan % 1 hours;
         } else {
           remainder = _queuedActionInputs[0].timespan % 1 hours;
@@ -235,7 +235,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     if (
-      actionInfo.minXP > 0 &&
+      actionInfo.minXP != 0 &&
       _getRealXP(actionInfo.skill.asSkill(), xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
       actionInfo.minXP
     ) {

@@ -532,7 +532,7 @@ library PlayersLibrary {
         }
       } else {
         // How many can we kill with the food we did consume
-        if (totalFoodRequiredKilling > 0) {
+        if (totalFoodRequiredKilling != 0) {
           if (foodConsumed < totalFoodRequiredKilling) {
             numKilled = (numKilled * foodConsumed) / totalFoodRequiredKilling;
           }
@@ -605,7 +605,7 @@ library PlayersLibrary {
 
     if (healthRestoredFromItem == 0 || _totalHealthLost <= 0) {
       // No food attached or didn't lose any health
-      died = _totalHealthLost > 0;
+      died = _totalHealthLost != 0;
     } else {
       // Equation used is totalFoodRequired = totalHealthLost / (healthRestoredFromItem * healingDoneFromHealth)
       uint256 healingDoneFromHealth = _calculateHealingDoneFromHealth(_totalHealthPlayer, _alphaCombatHealing);

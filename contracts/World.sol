@@ -461,7 +461,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       _packedData |= bytes1(uint8(1)) << ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT;
     }
 
-    bool _anyInputExceedsStandardAmount = (actionChoiceInput.inputAmounts.length > 0 &&
+    bool _anyInputExceedsStandardAmount = (actionChoiceInput.inputAmounts.length != 0 &&
       actionChoiceInput.inputAmounts[0] > 255) ||
       (actionChoiceInput.inputAmounts.length > 1 && actionChoiceInput.inputAmounts[1] > 255) ||
       (actionChoiceInput.inputAmounts.length > 2 && actionChoiceInput.inputAmounts[2] > 255);
@@ -476,8 +476,8 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       skillDiff: actionChoiceInput.skillDiff,
       rate: actionChoiceInput.rate,
       xpPerHour: actionChoiceInput.xpPerHour,
-      inputTokenId1: actionChoiceInput.inputTokenIds.length > 0 ? actionChoiceInput.inputTokenIds[0] : NONE,
-      inputAmount1: actionChoiceInput.inputAmounts.length > 0 && !_anyInputExceedsStandardAmount
+      inputTokenId1: actionChoiceInput.inputTokenIds.length != 0 ? actionChoiceInput.inputTokenIds[0] : NONE,
+      inputAmount1: actionChoiceInput.inputAmounts.length != 0 && !_anyInputExceedsStandardAmount
         ? uint8(actionChoiceInput.inputAmounts[0])
         : 0,
       inputTokenId2: actionChoiceInput.inputTokenIds.length > 1 ? actionChoiceInput.inputTokenIds[1] : NONE,
@@ -500,7 +500,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       minXP2: actionChoiceInput.minXPs.length > 1 ? actionChoiceInput.minXPs[1] : 0,
       minSkill3: actionChoiceInput.minSkills.length > 2 ? actionChoiceInput.minSkills[2] : uint8(Skill.NONE),
       minXP3: actionChoiceInput.minXPs.length > 2 ? actionChoiceInput.minXPs[2] : 0,
-      newInputAmount1: actionChoiceInput.inputAmounts.length > 0 && _anyInputExceedsStandardAmount
+      newInputAmount1: actionChoiceInput.inputAmounts.length != 0 && _anyInputExceedsStandardAmount
         ? actionChoiceInput.inputAmounts[0]
         : 0,
       newInputAmount2: actionChoiceInput.inputAmounts.length > 1 && _anyInputExceedsStandardAmount

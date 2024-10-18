@@ -77,7 +77,7 @@ library WorldLibrary {
     uint32[] calldata minXPs = actionChoiceInput.minXPs;
 
     // First minSkill must be the same as the action choice skill
-    if (minSkills.length > 0 && minSkills[0] != actionChoiceInput.skill) {
+    if (minSkills.length != 0 && minSkills[0] != actionChoiceInput.skill) {
       revert FirstMinSkillMustBeActionChoiceSkill();
     }
 

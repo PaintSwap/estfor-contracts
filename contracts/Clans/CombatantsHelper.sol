@@ -171,7 +171,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
         playerInfos[_playerIds[i]].combatantCooldownTimestamp = uint40(newCombatantCooldownTimestamp);
       }
       _combatants.assignCombatants(_clanId, _playerIds, newCombatantCooldownTimestamp, _leaderPlayerId);
-    } else if (_playerIds.length > 0) {
+    } else if (_playerIds.length != 0) {
       revert SetCombatantsIncorrectly();
     }
   }

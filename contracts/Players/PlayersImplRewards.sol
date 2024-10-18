@@ -492,7 +492,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
         if (i == 0) {
           // Append it (or set it absolutely if unset)
-          if (pointsAccrued > 0) {
+          if (pointsAccrued != 0) {
             currentActionProcessed.skill1 = skill;
             currentActionProcessed.xpGained1 += uint24(pointsAccrued);
             if (hasCombatXP) {
@@ -505,7 +505,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           currentActionProcessed.baseInputItemsConsumedNum += baseInputItemsConsumedNum;
         } else {
           // Set it absolutely, this is a fresh "first action"
-          if (pointsAccrued > 0) {
+          if (pointsAccrued != 0) {
             currentActionProcessed.skill1 = skill;
             currentActionProcessed.xpGained1 = uint24(pointsAccrued);
             if (hasCombatXP) {

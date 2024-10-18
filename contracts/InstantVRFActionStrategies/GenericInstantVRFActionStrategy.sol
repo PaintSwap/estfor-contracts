@@ -149,9 +149,9 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   ) private pure returns (InstantVRFAction memory instantVRFAction) {
     instantVRFAction = InstantVRFAction({
       randomRewardInfo: [
-        _randomRewards.length > 0 ? _randomRewards[0].itemTokenId : NONE,
-        _randomRewards.length > 0 ? _randomRewards[0].chance : 0,
-        _randomRewards.length > 0 ? _randomRewards[0].amount : 0,
+        _randomRewards.length != 0 ? _randomRewards[0].itemTokenId : NONE,
+        _randomRewards.length != 0 ? _randomRewards[0].chance : 0,
+        _randomRewards.length != 0 ? _randomRewards[0].amount : 0,
         _randomRewards.length > 1 ? _randomRewards[1].itemTokenId : NONE,
         _randomRewards.length > 1 ? _randomRewards[1].chance : 0,
         _randomRewards.length > 1 ? _randomRewards[1].amount : 0,

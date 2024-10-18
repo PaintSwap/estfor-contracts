@@ -281,14 +281,14 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   ) private pure returns (InstantAction memory instantAction) {
     bytes1 packedData = bytes1(uint8(_actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     instantAction = InstantAction({
-      minSkill1: _actionInput.minSkills.length > 0 ? _actionInput.minSkills[0] : uint8(Skill.NONE),
-      minXP1: _actionInput.minXPs.length > 0 ? _actionInput.minXPs[0] : 0,
+      minSkill1: _actionInput.minSkills.length != 0 ? _actionInput.minSkills[0] : uint8(Skill.NONE),
+      minXP1: _actionInput.minXPs.length != 0 ? _actionInput.minXPs[0] : 0,
       minSkill2: _actionInput.minSkills.length > 1 ? _actionInput.minSkills[1] : uint8(Skill.NONE),
       minXP2: _actionInput.minXPs.length > 1 ? _actionInput.minXPs[1] : 0,
       minSkill3: _actionInput.minSkills.length > 2 ? _actionInput.minSkills[2] : uint8(Skill.NONE),
       minXP3: _actionInput.minXPs.length > 2 ? _actionInput.minXPs[2] : 0,
-      inputTokenId1: _actionInput.inputTokenIds.length > 0 ? _actionInput.inputTokenIds[0] : NONE,
-      inputAmount1: _actionInput.inputAmounts.length > 0 ? _actionInput.inputAmounts[0] : 0,
+      inputTokenId1: _actionInput.inputTokenIds.length != 0 ? _actionInput.inputTokenIds[0] : NONE,
+      inputAmount1: _actionInput.inputAmounts.length != 0 ? _actionInput.inputAmounts[0] : 0,
       inputTokenId2: _actionInput.inputTokenIds.length > 1 ? _actionInput.inputTokenIds[1] : NONE,
       inputAmount2: _actionInput.inputAmounts.length > 1 ? _actionInput.inputAmounts[1] : 0,
       inputTokenId3: _actionInput.inputTokenIds.length > 2 ? _actionInput.inputTokenIds[2] : NONE,

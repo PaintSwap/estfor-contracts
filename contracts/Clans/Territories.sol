@@ -677,7 +677,7 @@ contract Territories is
 
   function isCombatant(uint256 _clanId, uint256 _playerId) external view override returns (bool combatant) {
     // Check if this player is in the defenders list and remove them if so
-    if (clanInfos[_clanId].playerIds.length > 0) {
+    if (clanInfos[_clanId].playerIds.length != 0) {
       uint256 searchIndex = EstforLibrary._binarySearch(clanInfos[_clanId].playerIds, _playerId);
       combatant = searchIndex != type(uint256).max;
     }

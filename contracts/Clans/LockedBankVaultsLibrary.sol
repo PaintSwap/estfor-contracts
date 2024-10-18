@@ -86,7 +86,7 @@ library LockedBankVaultsLibrary {
     for (uint256 i = 0; i < length; ++i) {
       if (toDelete[i]) {
         ++shiftCount;
-      } else if (shiftCount > 0) {
+      } else if (shiftCount != 0) {
         _sortedClansByMMR[i - shiftCount] = _sortedClansByMMR[i];
       }
     }
@@ -310,7 +310,7 @@ library LockedBankVaultsLibrary {
     uint256 attackerUpperBound = _clanIdIndex;
 
     while (
-      attackerLowerBound > 0 &&
+      attackerLowerBound != 0 &&
       _getMMR(_sortedClansByMMR[attackerLowerBound - 1]) == _getMMR(_sortedClansByMMR[_clanIdIndex])
     ) {
       --attackerLowerBound;
@@ -445,7 +445,7 @@ library LockedBankVaultsLibrary {
       mstore(clanIds, length)
       mstore(upwardFlags, length)
     }
-    if (length > 0) {
+    if (length != 0) {
       _updateMMRArrays(_sortedClansByMMR, indices, newMMRs, clanIds, upwardFlags);
     }
   }
@@ -691,7 +691,7 @@ library LockedBankVaultsLibrary {
     bool shouldMove = false;
     if (_upward && i < _sortedClansByMMR.length - 1) {
       shouldMove = _getMMR(_sortedClansByMMR[i + 1]) < _newMMR;
-    } else if (!_upward && i > 0) {
+    } else if (!_upward && i != 0) {
       shouldMove = _getMMR(_sortedClansByMMR[i - 1]) >= _newMMR;
     }
 
@@ -709,7 +709,7 @@ library LockedBankVaultsLibrary {
       }
     } else {
       // Shift elements right if newMMR is lower
-      while (i > 0 && _getMMR(_sortedClansByMMR[i - 1]) >= _newMMR) {
+      while (i != 0 && _getMMR(_sortedClansByMMR[i - 1]) >= _newMMR) {
         _sortedClansByMMR[i] = _sortedClansByMMR[i - 1];
         --i;
       }
