@@ -179,7 +179,7 @@ abstract contract PlayersBase {
   uint8 internal alphaCombat;
   uint8 internal betaCombat;
   uint56 internal nextQueueId; // Global queued action id
-  uint8 internal alphaCombatHealing; // Healing formula constants
+  uint8 internal _alphaCombatHealing; // Healing formula constants
   bool internal dailyRewardsEnabled;
   bool internal isBeta;
 
@@ -266,8 +266,8 @@ abstract contract PlayersBase {
     return _combatStyle != CombatStyle.NONE;
   }
 
-  function _isPlayerFullMode(uint256 _playerId) internal view returns (bool) {
-    return uint8(players_[_playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+  function _isPlayerFullMode(uint256 playerId) internal view returns (bool) {
+    return uint8(players_[playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _getElapsedTime(uint256 _startTime, uint256 _endTime) internal view returns (uint256 elapsedTime) {
@@ -283,39 +283,39 @@ abstract contract PlayersBase {
 
   function _setActionQueue(
     address _from,
-    uint256 _playerId,
-    QueuedAction[] memory _queuedActions,
+    uint256 playerId,
+    QueuedAction[] memory queuedActions,
     QueuedActionExtra[] memory _queuedActionsExtra,
     Attire[] memory _attire,
     uint256 _startTime
   ) internal {
-    Player storage player = players_[_playerId];
+    Player storage player = players_[playerId];
 
     // If ids are the same as existing, then just change the first one. Optimization when just claiming loot
     bool sameQueueIds = true;
-    if (player.actionQueue.length == _queuedActions.length) {
-      for (uint256 i = 0; i < _queuedActions.length; ++i) {
-        if (player.actionQueue[i].queueId != _queuedActions[i].queueId) {
+    if (player.actionQueue.length == queuedActions.length) {
+      for (uint256 i = 0; i < queuedActions.length; ++i) {
+        if (player.actionQueue[i].queueId != queuedActions[i].queueId) {
           sameQueueIds = false;
           break;
         }
       }
     }
 
-    if (sameQueueIds && player.actionQueue.length == _queuedActions.length && _queuedActions.length != 0) {
-      player.actionQueue[0] = _queuedActions[0];
+    if (sameQueueIds && player.actionQueue.length == queuedActions.length && queuedActions.length != 0) {
+      player.actionQueue[0] = queuedActions[0];
     } else {
-      player.actionQueue = _queuedActions;
+      player.actionQueue = queuedActions;
       for (uint256 i; i < _attire.length; ++i) {
-        attire_[_playerId][player.actionQueue[i].queueId] = _attire[i];
+        attire_[playerId][player.actionQueue[i].queueId] = _attire[i];
       }
     }
-    emit SetActionQueueV2(_from, _playerId, _queuedActions, _attire, _startTime, _queuedActionsExtra);
+    emit SetActionQueueV2(_from, playerId, queuedActions, _attire, _startTime, _queuedActionsExtra);
   }
 
   // This does not update player.totalXP!!
-  function _updateXP(address _from, uint256 _playerId, Skill _skill, uint128 _pointsAccrued) internal {
-    PackedXP storage packedXP = xp_[_playerId];
+  function _updateXP(address _from, uint256 playerId, Skill _skill, uint128 _pointsAccrued) internal {
+    PackedXP storage packedXP = xp_[playerId];
     uint256 oldPoints = PlayersLibrary.readXP(_skill, packedXP);
     uint256 newPoints = oldPoints.add(_pointsAccrued);
 
@@ -366,25 +366,25 @@ abstract contract PlayersBase {
       sstore(add(packedXP.slot, slotNum), val)
     }
 
-    emit AddXP(_from, _playerId, _skill, _pointsAccrued);
+    emit AddXP(_from, playerId, _skill, _pointsAccrued);
 
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
     // Update the player's level
     if (newLevel > oldLevel) {
-      emit LevelUp(_from, _playerId, _skill, oldLevel, newLevel);
+      emit LevelUp(_from, playerId, _skill, oldLevel, newLevel);
     }
   }
 
   function _processActions(
     address _from,
-    uint256 _playerId
+    uint256 playerId
   )
     internal
     returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
   {
     bytes memory data = _delegatecall(
       implProcessActions,
-      abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActions.selector, _from, _playerId)
+      abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActions.selector, _from, playerId)
     );
     return abi.decode(data, (QueuedAction[], PendingQueuedActionData));
   }
@@ -392,19 +392,19 @@ abstract contract PlayersBase {
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function _pendingQueuedActionState(
     address _owner,
-    uint256 _playerId
+    uint256 playerId
   ) internal view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, _playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function _donate(address _from, uint256 _playerId, uint256 _amount) internal {
+  function _donate(address _from, uint256 playerId, uint256 _amount) internal {
     _delegatecall(
       implProcessActions,
-      abi.encodeWithSelector(IPlayersProcessActionsDelegate.donate.selector, _from, _playerId, _amount)
+      abi.encodeWithSelector(IPlayersProcessActionsDelegate.donate.selector, _from, playerId, _amount)
     );
   }
 
@@ -451,26 +451,24 @@ abstract contract PlayersBase {
 
   function _processClaimableRewards(
     address _from,
-    uint256 _playerId,
+    uint256 playerId,
     uint256[] memory itemTokenIds,
     uint256[] memory amounts,
     uint256[] memory queueIds,
     uint256 numPastRandomRewardInstancesToRemove
   ) internal {
     if (numPastRandomRewardInstancesToRemove != 0) {
-      if (numPastRandomRewardInstancesToRemove == pendingRandomRewards[_playerId].length) {
-        delete pendingRandomRewards[_playerId];
+      if (numPastRandomRewardInstancesToRemove == pendingRandomRewards[playerId].length) {
+        delete pendingRandomRewards[playerId];
       } else {
         // Shift the remaining rewards to the front of the array
-        U256 bounds = pendingRandomRewards[_playerId].length.asU256().sub(numPastRandomRewardInstancesToRemove);
+        U256 bounds = pendingRandomRewards[playerId].length.asU256().sub(numPastRandomRewardInstancesToRemove);
         for (U256 iter; iter < bounds; iter = iter.inc()) {
           uint256 i = iter.asUint256();
-          pendingRandomRewards[_playerId][i] = pendingRandomRewards[_playerId][
-            i + numPastRandomRewardInstancesToRemove
-          ];
+          pendingRandomRewards[playerId][i] = pendingRandomRewards[playerId][i + numPastRandomRewardInstancesToRemove];
         }
         for (U256 iter = numPastRandomRewardInstancesToRemove.asU256(); iter.neq(0); iter = iter.dec()) {
-          pendingRandomRewards[_playerId].pop();
+          pendingRandomRewards[playerId].pop();
         }
       }
     }
@@ -483,7 +481,7 @@ abstract contract PlayersBase {
       // finished before 00:00 UTC and is called after the oracle is called
       emit PendingRandomRewardsClaimed(
         _from,
-        _playerId,
+        playerId,
         numPastRandomRewardInstancesToRemove,
         itemTokenIds,
         amounts,
@@ -492,15 +490,15 @@ abstract contract PlayersBase {
     }
   }
 
-  function _clearPlayerMainBoost(uint256 _playerId) internal {
-    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
+  function _clearPlayerMainBoost(uint256 playerId) internal {
+    PlayerBoostInfo storage playerBoost = activeBoosts_[playerId];
     delete playerBoost.value;
     delete playerBoost.startTime;
     delete playerBoost.duration;
     delete playerBoost.value;
     delete playerBoost.itemTokenId;
     delete playerBoost.boostType;
-    emit BoostFinished(_playerId);
+    emit BoostFinished(playerId);
   }
 
   function _hasPet(bytes1 _packed) internal pure returns (bool) {

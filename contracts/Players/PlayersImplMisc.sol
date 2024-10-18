@@ -385,7 +385,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           enemyCombatStats,
           alphaCombat,
           betaCombat,
-          alphaCombatHealing,
+          _alphaCombatHealing,
           _pendingQueuedActionEquipmentStates
         );
     } else {

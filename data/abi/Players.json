@@ -1742,12 +1742,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       }
     ],
@@ -1760,7 +1760,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1932,7 +1932,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1950,12 +1950,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       },
       {
@@ -2049,7 +2049,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2067,7 +2067,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2080,7 +2080,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2099,7 +2099,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2112,7 +2112,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -2167,7 +2167,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2248,7 +2248,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2314,7 +2314,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -2506,7 +2506,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2525,7 +2525,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2544,7 +2544,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -2573,7 +2573,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -2619,7 +2619,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2763,7 +2763,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3157,7 +3157,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3315,7 +3315,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3348,7 +3348,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3361,7 +3361,7 @@
     "inputs": [
       {
         "internalType": "uint8",
-        "name": "_alphaCombatHealing",
+        "name": "alphaCombatHealing",
         "type": "uint8"
       }
     ],
@@ -3420,7 +3420,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -3509,12 +3509,12 @@
           }
         ],
         "internalType": "struct QueuedActionInput[]",
-        "name": "_queuedActions",
+        "name": "queuedActions",
         "type": "tuple[]"
       },
       {
         "internalType": "enum ActionQueueStatus",
-        "name": "_queueStatus",
+        "name": "queueStatus",
         "type": "uint8"
       }
     ],
@@ -3527,7 +3527,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -3616,32 +3616,32 @@
           }
         ],
         "internalType": "struct QueuedActionInput[]",
-        "name": "_queuedActions",
+        "name": "queuedActions",
         "type": "tuple[]"
       },
       {
         "internalType": "uint16",
-        "name": "_boostItemTokenId",
+        "name": "boostItemTokenId",
         "type": "uint16"
       },
       {
         "internalType": "uint40",
-        "name": "_boostStartTime",
+        "name": "boostStartTime",
         "type": "uint40"
       },
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_donationAmount",
+        "name": "donationAmount",
         "type": "uint256"
       },
       {
         "internalType": "enum ActionQueueStatus",
-        "name": "_queueStatus",
+        "name": "queueStatus",
         "type": "uint8"
       }
     ],
@@ -3654,7 +3654,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -3748,32 +3748,32 @@
           }
         ],
         "internalType": "struct QueuedActionInputV2[]",
-        "name": "_queuedActions",
+        "name": "queuedActions",
         "type": "tuple[]"
       },
       {
         "internalType": "uint16",
-        "name": "_boostItemTokenId",
+        "name": "boostItemTokenId",
         "type": "uint16"
       },
       {
         "internalType": "uint40",
-        "name": "_boostStartTime",
+        "name": "boostStartTime",
         "type": "uint40"
       },
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_donationAmount",
+        "name": "donationAmount",
         "type": "uint256"
       },
       {
         "internalType": "enum ActionQueueStatus",
-        "name": "_queueStatus",
+        "name": "queueStatus",
         "type": "uint8"
       }
     ],
@@ -3786,7 +3786,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -3880,12 +3880,12 @@
           }
         ],
         "internalType": "struct QueuedActionInputV2[]",
-        "name": "_queuedActions",
+        "name": "queuedActions",
         "type": "tuple[]"
       },
       {
         "internalType": "enum ActionQueueStatus",
-        "name": "_queueStatus",
+        "name": "queueStatus",
         "type": "uint8"
       }
     ],
@@ -3903,7 +3903,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -3931,7 +3931,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3963,7 +3963,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -4012,7 +4012,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -4101,7 +4101,7 @@
           }
         ],
         "internalType": "struct QueuedActionInput[]",
-        "name": "_queuedActions",
+        "name": "queuedActions",
         "type": "tuple[]"
       }
     ],
@@ -4130,7 +4130,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -4224,7 +4224,7 @@
           }
         ],
         "internalType": "struct QueuedActionInputV2[]",
-        "name": "_queuedActions",
+        "name": "queuedActions",
         "type": "tuple[]"
       }
     ],
@@ -4248,7 +4248,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
