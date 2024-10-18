@@ -164,7 +164,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         // Update combat stats from the pet if it is still valid.
         // The pet enhancements only take into account base hero stats, not any bonuses from equipment.
         if (_hasPet(queuedAction.packed)) {
-          Pet memory pet = petNFT.getPet(queuedActionsExtra[queuedAction.queueId].petId);
+          Pet memory pet = petNFT.getPet(_queuedActionsExtra[queuedAction.queueId].petId);
           if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
             combatStats = PlayersLibrary.updateCombatStatsFromPet(
               combatStats,
@@ -182,7 +182,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           combatStats,
           from,
           address(itemNFT),
-          attire_[playerId][queuedAction.queueId],
+          _attire[playerId][queuedAction.queueId],
           pendingQueuedActionState.equipmentStates
         );
       }
@@ -429,7 +429,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         uint8 bonusRewardsPercent = fullAttireBonus[skill].bonusRewardsPercent;
         uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
           from,
-          attire_[playerId][queuedAction.queueId],
+          _attire[playerId][queuedAction.queueId],
           address(itemNFT),
           pendingQueuedActionState.equipmentStates,
           bonusRewardsPercent,
@@ -925,7 +925,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       startTime,
       uint8(skill),
       xpElapsedTime,
-      attire_[playerId][queuedAction.queueId],
+      _attire[playerId][queuedAction.queueId],
       _activeBoosts[playerId],
       globalBoost_,
       clanBoosts_[clans.getClanId(playerId)],

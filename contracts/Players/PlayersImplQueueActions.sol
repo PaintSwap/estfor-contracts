@@ -103,11 +103,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint256 totalLength = remainingQueuedActions.length + _queuedActionInputs.length;
     QueuedAction[] memory queuedActions = new QueuedAction[](totalLength);
 
-    QueuedActionExtra[] memory _queuedActionsExtra = new QueuedActionExtra[](totalLength);
+    QueuedActionExtra[] memory queuedActionsExtra = new QueuedActionExtra[](totalLength);
 
     for (uint256 i; i != remainingQueuedActions.length; ++i) {
       queuedActions[i] = remainingQueuedActions[i];
-      _queuedActionsExtra[i] = queuedActionsExtra[i];
+      queuedActionsExtra[i] = _queuedActionsExtra[i];
     }
 
     uint256 startTimeNewActions = block.timestamp - totalTimespan;
@@ -149,13 +149,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint256 length = remainingQueuedActions.length + _queuedActionInputs.length;
     Attire[] memory attire = new Attire[](length);
     for (uint256 i = 0; i < remainingQueuedActions.length; ++i) {
-      attire[i] = attire_[playerId][remainingQueuedActions[i].queueId];
+      attire[i] = _attire[playerId][remainingQueuedActions[i].queueId];
     }
     for (uint256 i = 0; i < _queuedActionInputs.length; ++i) {
       attire[i + remainingQueuedActions.length] = _queuedActionInputs[i].attire;
     }
 
-    emit SetActionQueueV2(from, playerId, queuedActions, attire, player.currentActionStartTime, _queuedActionsExtra);
+    emit SetActionQueueV2(from, playerId, queuedActions, attire, player.currentActionStartTime, queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
     nextQueueId = queueId.asUint56();
@@ -398,7 +398,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       pendingQuestState
     );
     if (setAttire) {
-      attire_[playerId][_queueId] = _queuedActionInput.attire;
+      _attire[playerId][_queueId] = _queuedActionInput.attire;
     }
 
     queuedAction.timespan = _queuedActionInput.timespan;
@@ -415,7 +415,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     if (_queuedActionInput.petId != 0) {
       packed |= bytes1(uint8(1 << HAS_PET_BIT));
       queuedActionExtra.petId = _queuedActionInput.petId;
-      queuedActionsExtra[_queueId] = queuedActionExtra;
+      _queuedActionsExtra[_queueId] = queuedActionExtra;
       petNFT.assignPet(_from, playerId, _queuedActionInput.petId, _startTime);
     }
     queuedAction.packed = packed;
@@ -456,42 +456,42 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function _checkEquipPosition(Attire memory _attire) private view {
+  function _checkEquipPosition(Attire memory attire) private view {
     uint256 attireLength;
     uint16[] memory itemTokenIds = new uint16[](7);
     EquipPosition[] memory expectedEquipPositions = new EquipPosition[](7);
-    if (_attire.head != NONE) {
-      itemTokenIds[attireLength] = _attire.head;
+    if (attire.head != NONE) {
+      itemTokenIds[attireLength] = attire.head;
       expectedEquipPositions[attireLength] = EquipPosition.HEAD;
       attireLength = attireLength.inc();
     }
-    if (_attire.neck != NONE) {
-      itemTokenIds[attireLength] = _attire.neck;
+    if (attire.neck != NONE) {
+      itemTokenIds[attireLength] = attire.neck;
       expectedEquipPositions[attireLength] = EquipPosition.NECK;
       attireLength = attireLength.inc();
     }
-    if (_attire.body != NONE) {
-      itemTokenIds[attireLength] = _attire.body;
+    if (attire.body != NONE) {
+      itemTokenIds[attireLength] = attire.body;
       expectedEquipPositions[attireLength] = EquipPosition.BODY;
       attireLength = attireLength.inc();
     }
-    if (_attire.arms != NONE) {
-      itemTokenIds[attireLength] = _attire.arms;
+    if (attire.arms != NONE) {
+      itemTokenIds[attireLength] = attire.arms;
       expectedEquipPositions[attireLength] = EquipPosition.ARMS;
       attireLength = attireLength.inc();
     }
-    if (_attire.legs != NONE) {
-      itemTokenIds[attireLength] = _attire.legs;
+    if (attire.legs != NONE) {
+      itemTokenIds[attireLength] = attire.legs;
       expectedEquipPositions[attireLength] = EquipPosition.LEGS;
       attireLength = attireLength.inc();
     }
-    if (_attire.feet != NONE) {
-      itemTokenIds[attireLength] = _attire.feet;
+    if (attire.feet != NONE) {
+      itemTokenIds[attireLength] = attire.feet;
       expectedEquipPositions[attireLength] = EquipPosition.FEET;
       attireLength = attireLength.inc();
     }
-    if (_attire.ring != NONE) {
-      itemTokenIds[attireLength] = _attire.ring;
+    if (attire.ring != NONE) {
+      itemTokenIds[attireLength] = attire.ring;
       expectedEquipPositions[attireLength] = EquipPosition.RING;
       attireLength = attireLength.inc();
     }
@@ -514,21 +514,21 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   // Checks they have sufficient balance to equip the items, and minimum skill points
   function _checkAttire(
-    address _from,
+    address from,
     uint256 playerId,
-    bool _isPlayerUpgraded,
-    Attire memory _attire,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
-    QuestState memory _questState
+    bool isPlayerUpgraded,
+    Attire memory attire,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
+    QuestState memory questState
   ) private view {
     // Check the user has these items
-    _checkEquipPosition(_attire);
+    _checkEquipPosition(attire);
 
     bool skipNonFullAttire;
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
     (uint16[] memory itemTokenIds, uint256[] memory balances) = PlayersLibrary.getAttireWithBalance(
-      _from,
-      _attire,
+      from,
+      attire,
       address(itemNFT),
       skipNonFullAttire,
       pendingQueuedActionEquipmentStates
@@ -542,13 +542,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       while (iter.neq(0)) {
         iter = iter.dec();
         uint256 i = iter.asUint256();
-        if (_getRealXP(skills[i], _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXPs[i]) {
+        if (_getRealXP(skills[i], _playerXP[playerId], pendingQueuedActionProcessed, questState) < minXPs[i]) {
           revert AttireMinimumXPNotReached();
         }
         if (balances[i] == 0) {
           revert NoItemBalance(itemTokenIds[i]);
         }
-        if (!_isPlayerUpgraded && isItemFullModeOnly[i]) {
+        if (!isPlayerUpgraded && isItemFullModeOnly[i]) {
           revert PlayerNotUpgraded();
         }
       }
@@ -631,10 +631,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _clearActionQueue(address _from, uint256 playerId) private {
     QueuedAction[] memory queuedActions;
-    QueuedActionExtra[] memory _queuedActionsExtra;
+    QueuedActionExtra[] memory queuedActionsExtra;
     Attire[] memory attire;
     uint256 startTime = 0;
-    _setActionQueue(_from, playerId, queuedActions, _queuedActionsExtra, attire, startTime);
+    _setActionQueue(_from, playerId, queuedActions, queuedActionsExtra, attire, startTime);
   }
 
   function _clearCurrentActionProcessed(uint256 playerId) private {

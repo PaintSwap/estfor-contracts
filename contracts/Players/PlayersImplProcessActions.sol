@@ -45,13 +45,13 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
     Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
     for (uint256 i = 0; i < remainingQueuedActions.length; ++i) {
-      remainingAttire[i] = attire_[playerId][remainingQueuedActions[i].queueId];
+      remainingAttire[i] = _attire[playerId][remainingQueuedActions[i].queueId];
     }
 
     QueuedActionExtra[] memory remainingQueuedActionsExtra = new QueuedActionExtra[](remainingQueuedActions.length);
     for (uint256 i; i < remainingQueuedActions.length; ++i) {
       if (_hasPet(remainingQueuedActions[i].packed)) {
-        remainingQueuedActionsExtra[i] = queuedActionsExtra[remainingQueuedActions[i].queueId];
+        remainingQueuedActionsExtra[i] = _queuedActionsExtra[remainingQueuedActions[i].queueId];
       }
     }
 
@@ -152,7 +152,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
             actionMetadata.elapsedTime,
             sentinelElapsedTime,
             actionMetadata.xpElapsedTime,
-            attire_[playerId][actionMetadata.queueId],
+            _attire[playerId][actionMetadata.queueId],
             skill,
             actionMetadata.rolls,
             pendingQueuedActionState.equipmentStates
@@ -416,33 +416,33 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function _claimRandomRewards(
-    address _from,
+    address from,
     uint256 playerId,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed
   ) private {
     _delegatecall(
       implRewards,
       abi.encodeWithSelector(
         IPlayersRewardsDelegate.claimRandomRewards.selector,
-        _from,
+        from,
         playerId,
-        _pendingQueuedActionProcessed
+        pendingQueuedActionProcessed
       )
     );
   }
 
   function _addPendingRandomReward(
-    address _from,
+    address from,
     uint256 playerId,
-    uint16 _actionId,
-    uint64 _queueId,
-    uint40 _skillStartTime,
-    uint24 _elapsedTime,
-    uint24 _sentinelElapsedTime,
-    uint24 _xpElapsedTime,
-    Attire storage _attire,
-    Skill _skill,
-    uint256 _rolls,
+    uint16 actionId,
+    uint64 queueId,
+    uint40 skillStartTime,
+    uint24 elapsedTime,
+    uint24 sentinelElapsedTime,
+    uint24 xpElapsedTime,
+    Attire storage attire,
+    Skill skill,
+    uint256 rolls,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private {
     PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
@@ -451,8 +451,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint16 boostItemTokenId;
     if (activeBoost.boostType == BoostType.GATHERING) {
       uint24 boostedTime = PlayersLibrary.getBoostedTime(
-        _skillStartTime,
-        _xpElapsedTime,
+        skillStartTime,
+        xpElapsedTime,
         activeBoost.startTime,
         activeBoost.duration
       );
@@ -464,32 +464,32 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     // Special case where thieving gives you a bonus if wearing full equipment
-    uint8 bonusRewardsPercent = fullAttireBonus[_skill].bonusRewardsPercent;
+    uint8 bonusRewardsPercent = fullAttireBonus[skill].bonusRewardsPercent;
     uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
-      _from,
-      _attire,
+      from,
+      attire,
       address(itemNFT),
       _pendingQueuedActionEquipmentStates,
       bonusRewardsPercent,
-      fullAttireBonus[_skill].itemTokenIds
+      fullAttireBonus[skill].itemTokenIds
     );
 
     // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
     pendingRandomRewards[playerId].push(
       PendingRandomReward({
-        actionId: _actionId,
-        queueId: _queueId,
-        startTime: _skillStartTime,
-        xpElapsedTime: uint24(_xpElapsedTime),
-        elapsedTime: _elapsedTime,
-        sentinelElapsedTime: _sentinelElapsedTime,
+        actionId: actionId,
+        queueId: queueId,
+        startTime: skillStartTime,
+        xpElapsedTime: uint24(xpElapsedTime),
+        elapsedTime: elapsedTime,
+        sentinelElapsedTime: sentinelElapsedTime,
         boostItemTokenId: boostItemTokenId,
         boostStartTime: boostStartTime,
         fullAttireBonusRewardsPercent: fullAttireBonusRewardsPercent
       })
     );
 
-    emit AddPendingRandomRewardV2(_from, playerId, _queueId, _skillStartTime, _xpElapsedTime, _rolls);
+    emit AddPendingRandomRewardV2(from, playerId, queueId, skillStartTime, xpElapsedTime, rolls);
   }
 
   function _claimTotalXPThresholdRewards(

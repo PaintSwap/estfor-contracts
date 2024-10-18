@@ -186,7 +186,7 @@ abstract contract PlayersBase {
   mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
 
   mapping(uint256 playerId => Player player) internal _players;
-  mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal attire_;
+  mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal _attire;
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
   bool internal gamePaused;
@@ -215,7 +215,7 @@ abstract contract PlayersBase {
   mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal clanBoosts_; // Clan specific boosts
 
   mapping(address user => WalletDailyInfo walletDailyInfo) internal walletDailyInfo;
-  mapping(uint256 queueId => QueuedActionExtra queuedActionExtra) internal queuedActionsExtra;
+  mapping(uint256 queueId => QueuedActionExtra queuedActionExtra) internal _queuedActionsExtra;
 
   PetNFT internal petNFT;
 
@@ -278,12 +278,12 @@ abstract contract PlayersBase {
   }
 
   function _setActionQueue(
-    address _from,
+    address from,
     uint256 playerId,
     QueuedAction[] memory queuedActions,
-    QueuedActionExtra[] memory _queuedActionsExtra,
-    Attire[] memory _attire,
-    uint256 _startTime
+    QueuedActionExtra[] memory queuedActionsExtra,
+    Attire[] memory attire,
+    uint256 startTime
   ) internal {
     Player storage player = _players[playerId];
 
@@ -302,11 +302,11 @@ abstract contract PlayersBase {
       player.actionQueue[0] = queuedActions[0];
     } else {
       player.actionQueue = queuedActions;
-      for (uint256 i; i < _attire.length; ++i) {
-        attire_[playerId][player.actionQueue[i].queueId] = _attire[i];
+      for (uint256 i; i < attire.length; ++i) {
+        _attire[playerId][player.actionQueue[i].queueId] = attire[i];
       }
     }
-    emit SetActionQueueV2(_from, playerId, queuedActions, _attire, _startTime, _queuedActionsExtra);
+    emit SetActionQueueV2(from, playerId, queuedActions, attire, startTime, queuedActionsExtra);
   }
 
   // This does not update player.totalXP!!
