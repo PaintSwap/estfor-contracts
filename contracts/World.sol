@@ -19,6 +19,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
   using SkillLibrary for uint8;
+  using SkillLibrary for Skill;
 
   event RequestSent(uint256 requestId, uint32 numWords, uint256 lastRandomWordsUpdatedTime);
   event RequestFulfilledV2(uint256 requestId, uint256 randomWord);
@@ -176,10 +177,10 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     _fulfillRandomWords(uint256(requestId), words);
   }
 
-  function getWeeklyReward(uint256 _tier, uint256 _playerId) public view returns (uint16 itemTokenId, uint24 amount) {
+  function getWeeklyReward(uint256 _tier, uint256 playerId) public view returns (uint16 itemTokenId, uint24 amount) {
     uint256 day = 7;
     uint256 index = _getRewardIndex(
-      _playerId,
+      playerId,
       day,
       uint64(_thisWeeksRandomWordSegment),
       _weeklyRewardPool[_tier].length
@@ -407,7 +408,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     WorldLibrary.setActionGuaranteedRewards(action.guaranteedRewards, _actionReward);
     WorldLibrary.setActionRandomRewards(action.randomRewards, _actionReward);
 
-    if (action.info.skill.asSkill() == Skill.COMBAT) {
+    if (action.info.skill.asSkill().isCombat()) {
       _actionCombatStats[action.actionId] = action.combatStats;
     } else {
       bool actionHasGuaranteedRewards = action.guaranteedRewards.length != 0;

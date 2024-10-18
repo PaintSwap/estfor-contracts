@@ -485,7 +485,7 @@
         "type": "uint16"
       }
     ],
-    "name": "actions",
+    "name": "_actions",
     "outputs": [
       {
         "internalType": "uint8",
@@ -567,6 +567,32 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "_itemNFT",
+    "outputs": [
+      {
+        "internalType": "contract ItemNFT",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "_players",
+    "outputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "components": [
@@ -617,7 +643,7 @@
           }
         ],
         "internalType": "struct InstantActions.InstantActionInput[]",
-        "name": "_instantActionInputs",
+        "name": "instantActionInputs",
         "type": "tuple[]"
       }
     ],
@@ -630,22 +656,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint16[]",
-        "name": "_actionIds",
+        "name": "actionIds",
         "type": "uint16[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_amounts",
+        "name": "amounts",
         "type": "uint256[]"
       },
       {
         "internalType": "enum InstantActions.InstantActionType",
-        "name": "_actionType",
+        "name": "actionType",
         "type": "uint8"
       }
     ],
@@ -705,7 +731,7 @@
           }
         ],
         "internalType": "struct InstantActions.InstantActionInput[]",
-        "name": "_instantActionInputs",
+        "name": "instantActionInputs",
         "type": "tuple[]"
       }
     ],
@@ -717,23 +743,124 @@
   {
     "inputs": [
       {
+        "internalType": "enum InstantActions.InstantActionType",
+        "name": "actionType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getAction",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "minSkill1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP1",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "minSkill2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP2",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "minSkill3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputAmount3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          }
+        ],
+        "internalType": "struct InstantActions.InstantAction",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint16[]",
-        "name": "_actionIds",
+        "name": "actionIds",
         "type": "uint16[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_amounts",
+        "name": "amounts",
         "type": "uint256[]"
       },
       {
         "internalType": "enum InstantActions.InstantActionType",
-        "name": "_actionType",
+        "name": "actionType",
         "type": "uint8"
       }
     ],
@@ -774,12 +901,12 @@
     "inputs": [
       {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       },
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       }
     ],
@@ -790,36 +917,10 @@
   },
   {
     "inputs": [],
-    "name": "itemNFT",
-    "outputs": [
-      {
-        "internalType": "contract ItemNFT",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "players",
-    "outputs": [
-      {
-        "internalType": "contract IPlayers",
         "name": "",
         "type": "address"
       }
@@ -844,12 +945,12 @@
     "inputs": [
       {
         "internalType": "enum InstantActions.InstantActionType[]",
-        "name": "_actionTypes",
+        "name": "actionTypes",
         "type": "uint8[]"
       },
       {
         "internalType": "uint16[]",
-        "name": "_instantActionIds",
+        "name": "instantActionIds",
         "type": "uint16[]"
       }
     ],

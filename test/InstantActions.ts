@@ -308,7 +308,7 @@ describe("Instant actions", function () {
           inputTokenIds: [IRON_ARROW]
         };
         await expect(instantActions.editActions([newinstantActionInput])).to.emit(instantActions, "EditInstantActions");
-        expect((await instantActions.actions(actionType, 1)).inputTokenId1).to.eq(IRON_ARROW);
+        expect((await instantActions.getAction(actionType, 1)).inputTokenId1).to.eq(IRON_ARROW);
       });
     });
 
@@ -344,7 +344,7 @@ describe("Instant actions", function () {
           .to.emit(instantActions, "RemoveInstantActions")
           .withArgs([actionType], [1]);
         // Confirm it no longer exists
-        expect((await instantActions.actions(actionType, 1)).inputTokenId1).to.eq(NONE);
+        expect((await instantActions.getAction(actionType, 1)).inputTokenId1).to.eq(NONE);
       });
     });
 
@@ -444,12 +444,12 @@ describe("Instant actions", function () {
       await instantActions.addActions([instantActionInput, instantActionInput1]);
 
       // Get action
-      const action1 = await instantActions.actions(actionType, 1);
+      const action1 = await instantActions.getAction(actionType, 1);
       expect(action1.inputTokenId1).to.eq(IRON_ARROW);
       expect(action1.inputTokenId3).to.eq(NONE);
       expect(action1.outputTokenId).to.eq(RUNITE_ARROW);
       expect(action1.outputAmount).to.eq(2);
-      const action2 = await instantActions.actions(actionType, 2);
+      const action2 = await instantActions.getAction(actionType, 2);
       expect(action2.inputTokenId3).to.eq(ADAMANTINE_ARROW);
       expect(action2.outputTokenId).to.eq(ORICHALCUM_ARROW);
       expect(action2.outputAmount).to.eq(3);
@@ -465,7 +465,7 @@ describe("Instant actions", function () {
         isFullModeOnly: true
       };
       await instantActions.addActions([instantActionInput]);
-      expect((await instantActions.actions(actionType, instantActionInput.actionId)).packedData == "0x80");
+      expect((await instantActions.getAction(actionType, instantActionInput.actionId)).packedData == "0x80");
     });
 
     it("Check full mode requirements", async function () {

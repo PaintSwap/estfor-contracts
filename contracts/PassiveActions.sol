@@ -124,8 +124,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   mapping(uint256 actionId => ActionRewards) private _actionRewards;
   mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private _activePassiveActions;
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    require(_players.isOwnerOfPlayerAndActive(_msgSender(), _playerId), NotOwnerOfPlayerAndActive());
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
@@ -193,15 +193,15 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     delete _activePassiveActions[playerId];
   }
 
-  function endEarly(uint256 _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    uint256 queueId = _activePassiveActions[_playerId].queueId;
+  function endEarly(uint256 playerId) external isOwnerOfPlayerAndActive(playerId) {
+    uint256 queueId = _activePassiveActions[playerId].queueId;
     require(queueId != NONE, NoActivePassiveAction());
 
-    (bool finished, , , , ) = finishedInfo(_playerId);
+    (bool finished, , , , ) = finishedInfo(playerId);
     require(!finished, ActionAlreadyFinished());
 
-    delete _activePassiveActions[_playerId];
-    emit EarlyEndPassiveAction(_playerId, _msgSender(), queueId);
+    delete _activePassiveActions[playerId];
+    emit EarlyEndPassiveAction(playerId, _msgSender(), queueId);
   }
 
   // Get current state of the passive action

@@ -127,7 +127,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     emit WinnerAndNewLottery(0, 0, _nextLotteryWinnerRewardItemTokenId, 1);
   }
 
-  // _playerId can be 0 to ignore it, otherwise sender must own it
+  // playerId can be 0 to ignore it, otherwise sender must own it
   // Cannot donate until the oracle has finished being called if using a player
   function donate(
     address from,

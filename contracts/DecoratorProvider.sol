@@ -24,22 +24,22 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   error HarvestingTooMuch();
   error NotOwnerOfPlayer();
 
-  IPaintSwapDecorator public decorator;
-  IPaintSwapArtGallery public artGallery;
-  ITerritories public territories;
-  IBrushToken public brush;
-  address public dev;
-  IERC1155 public playerNFT;
-  uint16 public pid;
-  uint40 public nextHarvestAllowedTimestamp;
-  uint16 public numUnclaimedHarvests;
-  IERC20 public lpToken;
+  IPaintSwapDecorator private _decorator;
+  IPaintSwapArtGallery private _artGallery;
+  ITerritories private _territories;
+  IBrushToken private _brush;
+  address private _dev;
+  IERC1155 private _playerNFT;
+  uint16 private _pid;
+  uint40 private _nextHarvestAllowedTimestamp;
+  uint16 private _numUnclaimedHarvests;
+  IERC20 private _lpToken;
 
   uint256 public constant MAX_UNCLAIMED_HARVESTS = 600;
   uint256 public constant MIN_HARVEST_INTERVAL = 3 hours + 45 minutes;
 
-  modifier isOwnerOfPlayer(uint256 _playerId) {
-    if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
+  modifier isOwnerOfPlayer(uint256 playerId) {
+    if (_playerNFT.balanceOf(_msgSender(), playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
     _;
@@ -51,102 +51,101 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(
-    IPaintSwapDecorator _decorator,
-    IPaintSwapArtGallery _artGallery,
-    ITerritories _territories,
-    IBrushToken _brush,
-    IERC1155 _playerNFT,
-    address _dev,
-    uint256 _pid
+    IPaintSwapDecorator decorator,
+    IPaintSwapArtGallery artGallery,
+    ITerritories territories,
+    IBrushToken brush,
+    IERC1155 playerNFT,
+    address dev,
+    uint256 pid
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    territories = _territories;
-    playerNFT = _playerNFT;
-    brush = _brush;
-    artGallery = _artGallery;
-    decorator = _decorator;
-    dev = _dev;
-    _brush.approve(address(_territories), type(uint256).max);
-    setPID(_pid);
+    _territories = territories;
+    _playerNFT = playerNFT;
+    _brush = brush;
+    _artGallery = artGallery;
+    _decorator = decorator;
+    _dev = dev;
+    _brush.approve(address(territories), type(uint256).max);
+    setPID(pid);
   }
 
   function deposit() external {
-    uint256 balance = lpToken.balanceOf(msg.sender);
+    uint256 balance = _lpToken.balanceOf(_msgSender());
     if (balance == 0) {
       revert ZeroBalance();
     }
-    if (!lpToken.transferFrom(msg.sender, address(this), balance)) {
+    if (!_lpToken.transferFrom(_msgSender(), address(this), balance)) {
       revert TransferFailed();
     }
-    decorator.deposit(pid, balance);
+    _decorator.deposit(_pid, balance);
     emit Deposit(balance);
   }
 
-  function harvest(uint256 _playerId) external isOwnerOfPlayer(_playerId) {
+  function harvest(uint256 playerId) external isOwnerOfPlayer(playerId) {
     // Max harvest once every few hours
-    uint256 _nextHarvestAllowedTimestamp = nextHarvestAllowedTimestamp;
     if (block.timestamp < _nextHarvestAllowedTimestamp) {
       revert HarvestingTooSoon();
     }
 
     // Can not go above 600 unclaimed harvests
-    if (numUnclaimedHarvests > MAX_UNCLAIMED_HARVESTS) {
+    if (_numUnclaimedHarvests > MAX_UNCLAIMED_HARVESTS) {
       revert HarvestingTooMuch();
     }
 
-    nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
-    ++numUnclaimedHarvests;
-    decorator.updatePool(pid);
+    _nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
+    ++_numUnclaimedHarvests;
+    _decorator.updatePool(_pid);
     uint256 fullBrushAmount = pendingBrushInclArtGallery();
     if (fullBrushAmount == 0) {
       revert ZeroBalance();
     }
-    decorator.deposit(pid, 0); // get rewards
-    territories.addUnclaimedEmissions(fullBrushAmount);
-    emit Harvest(msg.sender, _playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
+    _decorator.deposit(_pid, 0); // get rewards
+    _territories.addUnclaimedEmissions(fullBrushAmount);
+    emit Harvest(_msgSender(), playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
   }
 
   function inspectUnlockableAmount() external view returns (uint256 unlockableAmount) {
-    (, , , unlockableAmount, , ) = artGallery.inspect(address(this));
+    (, , , unlockableAmount, , ) = _artGallery.inspect(address(this));
   }
 
   function unlockFromArtGallery() external {
-    (, , uint256 unlockableCount, uint256 unlockableAmount, , ) = artGallery.inspect(address(this));
+    (, , uint256 unlockableCount, uint256 unlockableAmount, , ) = _artGallery.inspect(address(this));
     if (unlockableAmount == 0) {
       revert ZeroBalance();
     }
 
-    artGallery.unlock();
-    numUnclaimedHarvests -= uint16(unlockableCount);
+    _artGallery.unlock();
+    _numUnclaimedHarvests -= uint16(unlockableCount);
     // Dev address gets the funds because it is using it to offset art gallery rewards currently
-    brush.transfer(dev, unlockableAmount);
+    _brush.transfer(_dev, unlockableAmount);
     emit UnlockFromArtGallery(unlockableAmount);
   }
 
   function pendingBrushInclArtGallery() public view returns (uint256) {
-    return decorator.pendingBrush(pid, address(this)) * 2;
+    return _decorator.pendingBrush(_pid, address(this)) * 2;
   }
 
-  function setPID(uint256 _pid) public onlyOwner {
-    (address _lpToken, , , ) = decorator.poolInfo(_pid);
-    if (_lpToken == address(0)) {
+  function setPID(uint256 pid) public onlyOwner {
+    (address lpToken, , , ) = _decorator.poolInfo(pid);
+    if (lpToken == address(0)) {
       revert InvalidPool();
     }
 
-    lpToken = IERC20(_lpToken);
-    pid = uint16(_pid);
-    lpToken.approve(address(decorator), type(uint256).max);
-    emit SetPID(_pid);
+    _lpToken = IERC20(lpToken);
+    _pid = uint16(pid);
+    _lpToken.approve(address(_decorator), type(uint256).max);
+    emit SetPID(pid);
   }
 
-  function setTerritories(ITerritories _territories) external onlyOwner {
-    territories = _territories;
-    brush.approve(address(_territories), type(uint256).max);
+  function setTerritories(ITerritories territories) external onlyOwner {
+    _territories = territories;
+    _brush.approve(address(territories), type(uint256).max);
   }
 
   function clearHarvestCooldownTimestamp() external onlyOwner {
-    nextHarvestAllowedTimestamp = 0;
+    _nextHarvestAllowedTimestamp = 0;
   }
 
   // solhint-disable-next-line no-empty-blocks

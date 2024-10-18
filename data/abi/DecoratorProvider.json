@@ -284,48 +284,9 @@
   },
   {
     "inputs": [],
-    "name": "artGallery",
-    "outputs": [
-      {
-        "internalType": "contract IPaintSwapArtGallery",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "brush",
-    "outputs": [
-      {
-        "internalType": "contract IBrushToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "clearHarvestCooldownTimestamp",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "decorator",
-    "outputs": [
-      {
-        "internalType": "contract IPaintSwapDecorator",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -336,23 +297,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "dev",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -365,37 +313,37 @@
     "inputs": [
       {
         "internalType": "contract IPaintSwapDecorator",
-        "name": "_decorator",
+        "name": "decorator",
         "type": "address"
       },
       {
         "internalType": "contract IPaintSwapArtGallery",
-        "name": "_artGallery",
+        "name": "artGallery",
         "type": "address"
       },
       {
         "internalType": "contract ITerritories",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       },
       {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
         "internalType": "contract IERC1155",
-        "name": "_playerNFT",
+        "name": "playerNFT",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_dev",
+        "name": "dev",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_pid",
+        "name": "pid",
         "type": "uint256"
       }
     ],
@@ -412,45 +360,6 @@
         "internalType": "uint256",
         "name": "unlockableAmount",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lpToken",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nextHarvestAllowedTimestamp",
-    "outputs": [
-      {
-        "internalType": "uint40",
-        "name": "",
-        "type": "uint40"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "numUnclaimedHarvests",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
       }
     ],
     "stateMutability": "view",
@@ -484,32 +393,6 @@
   },
   {
     "inputs": [],
-    "name": "pid",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "playerNFT",
-    "outputs": [
-      {
-        "internalType": "contract IERC1155",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "proxiableUUID",
     "outputs": [
       {
@@ -532,7 +415,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_pid",
+        "name": "pid",
         "type": "uint256"
       }
     ],
@@ -545,26 +428,13 @@
     "inputs": [
       {
         "internalType": "contract ITerritories",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       }
     ],
     "name": "setTerritories",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "territories",
-    "outputs": [
-      {
-        "internalType": "contract ITerritories",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

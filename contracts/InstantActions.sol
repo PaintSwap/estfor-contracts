@@ -94,14 +94,12 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint256[] producedAmounts;
   }
 
-  IPlayers public players;
-  mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) public actions;
-  ItemNFT public itemNFT;
+  IPlayers public _players;
+  mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) public _actions;
+  ItemNFT public _itemNFT;
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
@@ -110,98 +108,96 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(IPlayers _players, ItemNFT _itemNFT) external initializer {
+  function initialize(IPlayers players, ItemNFT itemNFT) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    players = _players;
-    itemNFT = _itemNFT;
+    _players = players;
+    _itemNFT = itemNFT;
+  }
+
+  function getAction(InstantActionType actionType, uint16 actionId) external view returns (InstantAction memory) {
+    return _actions[actionType][actionId];
   }
 
   function doInstantActions(
-    uint256 _playerId,
-    uint16[] calldata _actionIds,
-    uint256[] calldata _amounts,
-    InstantActionType _actionType
-  ) external isOwnerOfPlayerAndActive(_playerId) {
-    InstantActionState memory instantActionState = getInstantActionState(_playerId, _actionIds, _amounts, _actionType);
+    uint256 playerId,
+    uint16[] calldata actionIds,
+    uint256[] calldata amounts,
+    InstantActionType actionType
+  ) external isOwnerOfPlayerAndActive(playerId) {
+    InstantActionState memory instantActionState = getInstantActionState(playerId, actionIds, amounts, actionType);
 
-    itemNFT.burnBatch(msg.sender, instantActionState.consumedTokenIds, instantActionState.consumedAmounts);
-    itemNFT.mintBatch(msg.sender, instantActionState.producedTokenIds, instantActionState.producedAmounts);
+    _itemNFT.burnBatch(_msgSender(), instantActionState.consumedTokenIds, instantActionState.consumedAmounts);
+    _itemNFT.mintBatch(_msgSender(), instantActionState.producedTokenIds, instantActionState.producedAmounts);
 
     emit DoInstantActions(
-      _playerId,
-      msg.sender,
-      _actionIds,
-      _amounts,
+      playerId,
+      _msgSender(),
+      actionIds,
+      amounts,
       instantActionState.consumedTokenIds,
       instantActionState.consumedAmounts,
       instantActionState.producedTokenIds,
       instantActionState.producedAmounts,
-      _actionType
+      actionType
     );
   }
 
-  function _checkDoActionRequirements(uint256 _playerId, InstantAction storage _instantAction) private view {
-    if (_instantAction.inputTokenId1 == NONE) {
-      revert InvalidActionId();
-    }
-
-    _checkMinXPRequirements(_playerId, _instantAction);
-
-    if (_isActionFullMode(_instantAction) && !players.isPlayerUpgraded(_playerId)) {
-      revert PlayerNotUpgraded();
-    }
+  function _checkDoActionRequirements(uint256 playerId, InstantAction storage instantAction) private view {
+    require(instantAction.inputTokenId1 != NONE, InvalidActionId());
+    _checkMinXPRequirements(playerId, instantAction);
+    require(!_isActionFullMode(instantAction) || _players.isPlayerUpgraded(playerId), PlayerNotUpgraded());
   }
 
   function getInstantActionState(
-    uint256 _playerId,
-    uint16[] calldata _actionIds,
-    uint256[] calldata _amounts,
-    InstantActionType _actionType
+    uint256 playerId,
+    uint16[] calldata actionIds,
+    uint256[] calldata amounts,
+    InstantActionType actionType
   ) public view returns (InstantActionState memory instantActionState) {
-    if (_actionType == InstantActionType.FORGING_COMBINE) {
-      instantActionState = _forgingCombineActionState(_playerId, _actionIds, _amounts);
-    } else if (_actionType == InstantActionType.GENERIC) {
-      instantActionState = _genericInstantActionState(_playerId, _actionIds, _amounts);
+    if (actionType == InstantActionType.FORGING_COMBINE) {
+      instantActionState = _forgingCombineActionState(playerId, actionIds, amounts);
+    } else if (actionType == InstantActionType.GENERIC) {
+      instantActionState = _genericInstantActionState(playerId, actionIds, amounts);
     } else {
       revert UnsupportedActionType();
     }
   }
 
   function _genericInstantActionState(
-    uint256 _playerId,
-    uint16[] calldata _actionIds,
-    uint256[] calldata _amounts
+    uint256 playerId,
+    uint16[] calldata actionIds,
+    uint256[] calldata amounts
   ) private view returns (InstantActionState memory instantActionState) {
     // Burn all those and mint the components back
     uint256 MAX_INPUTS = 3;
-    instantActionState.consumedTokenIds = new uint256[](_actionIds.length * MAX_INPUTS);
-    instantActionState.consumedAmounts = new uint256[](_actionIds.length * MAX_INPUTS);
-    instantActionState.producedTokenIds = new uint256[](_actionIds.length);
-    instantActionState.producedAmounts = new uint256[](_actionIds.length);
+    instantActionState.consumedTokenIds = new uint256[](actionIds.length * MAX_INPUTS);
+    instantActionState.consumedAmounts = new uint256[](actionIds.length * MAX_INPUTS);
+    instantActionState.producedTokenIds = new uint256[](actionIds.length);
+    instantActionState.producedAmounts = new uint256[](actionIds.length);
     uint256 length;
-    for (uint256 i; i < _actionIds.length; ++i) {
-      InstantAction storage instantAction = actions[InstantActionType.GENERIC][_actionIds[i]];
+    for (uint256 i; i < actionIds.length; ++i) {
+      InstantAction storage instantAction = _actions[InstantActionType.GENERIC][actionIds[i]];
 
-      _checkDoActionRequirements(_playerId, instantAction);
+      _checkDoActionRequirements(playerId, instantAction);
 
       if (instantAction.inputTokenId1 != 0) {
         instantActionState.consumedTokenIds[length] = instantAction.inputTokenId1;
-        instantActionState.consumedAmounts[length++] = instantAction.inputAmount1 * _amounts[i];
+        instantActionState.consumedAmounts[length++] = instantAction.inputAmount1 * amounts[i];
       }
 
       if (instantAction.inputTokenId2 != 0) {
         instantActionState.consumedTokenIds[length] = instantAction.inputTokenId2;
-        instantActionState.consumedAmounts[length++] = instantAction.inputAmount2 * _amounts[i];
+        instantActionState.consumedAmounts[length++] = instantAction.inputAmount2 * amounts[i];
       }
 
       if (instantAction.inputTokenId3 != 0) {
         instantActionState.consumedTokenIds[length] = instantAction.inputTokenId3;
-        instantActionState.consumedAmounts[length++] = instantAction.inputAmount3 * _amounts[i];
+        instantActionState.consumedAmounts[length++] = instantAction.inputAmount3 * amounts[i];
       }
 
       instantActionState.producedTokenIds[i] = instantAction.outputTokenId;
-      instantActionState.producedAmounts[i] = instantAction.outputAmount * _amounts[i];
+      instantActionState.producedAmounts[i] = instantAction.outputAmount * amounts[i];
     }
 
     uint256[] memory consumedTokenIds = instantActionState.consumedTokenIds;
@@ -214,28 +210,26 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _forgingCombineActionState(
-    uint256 _playerId,
-    uint16[] calldata _actionIds,
-    uint256[] calldata _amounts
+    uint256 playerId,
+    uint16[] calldata actionIds,
+    uint256[] calldata amounts
   ) private view returns (InstantActionState memory instantActionState) {
     // Forging actions only have 1 input, burn all those and mint the components back
-    instantActionState.consumedTokenIds = new uint256[](_actionIds.length);
-    instantActionState.consumedAmounts = new uint256[](_actionIds.length);
+    instantActionState.consumedTokenIds = new uint256[](actionIds.length);
+    instantActionState.consumedAmounts = new uint256[](actionIds.length);
     // All outputTokenIds should be the same for forging
     uint256 producedAmount;
-    uint256 producedTokenId = actions[InstantActionType.FORGING_COMBINE][_actionIds[0]].outputTokenId;
-    for (uint256 i; i < _actionIds.length; ++i) {
-      InstantAction storage instantAction = actions[InstantActionType.FORGING_COMBINE][_actionIds[i]];
-      if (producedTokenId != instantAction.outputTokenId) {
-        // All outputs should be the same
-        revert InvalidOutputTokenId();
-      }
+    uint256 producedTokenId = _actions[InstantActionType.FORGING_COMBINE][actionIds[0]].outputTokenId;
+    for (uint256 i; i < actionIds.length; ++i) {
+      InstantAction storage instantAction = _actions[InstantActionType.FORGING_COMBINE][actionIds[i]];
+      // All outputs should be the same
+      require(producedTokenId == instantAction.outputTokenId, InvalidOutputTokenId());
 
-      _checkDoActionRequirements(_playerId, instantAction);
+      _checkDoActionRequirements(playerId, instantAction);
 
-      producedAmount += instantAction.outputAmount * _amounts[i];
+      producedAmount += instantAction.outputAmount * amounts[i];
       instantActionState.consumedTokenIds[i] = instantAction.inputTokenId1;
-      instantActionState.consumedAmounts[i] = instantAction.inputAmount1 * _amounts[i];
+      instantActionState.consumedAmounts[i] = instantAction.inputAmount1 * amounts[i];
     }
 
     instantActionState.producedTokenIds = new uint256[](1);
@@ -244,32 +238,31 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     instantActionState.producedAmounts[0] = producedAmount;
   }
 
-  function _checkMinXPRequirements(uint256 _playerId, InstantAction storage _instantAction) private view {
-    Skill minSkill1 = _instantAction.minSkill1.asSkill();
-    if (minSkill1 != Skill.NONE && players.xp(_playerId, minSkill1) < _instantAction.minXP1) {
-      revert MinimumXPNotReached(minSkill1, _instantAction.minXP1);
-    }
+  function _checkMinXPRequirements(uint256 playerId, InstantAction storage instantAction) private view {
+    Skill minSkill1 = instantAction.minSkill1.asSkill();
+    require(
+      minSkill1 == Skill.NONE || _players.xp(playerId, minSkill1) >= instantAction.minXP1,
+      MinimumXPNotReached(minSkill1, instantAction.minXP1)
+    );
 
-    Skill minSkill2 = _instantAction.minSkill2.asSkill();
-    if (minSkill2 != Skill.NONE && players.xp(_playerId, minSkill2) < _instantAction.minXP2) {
-      revert MinimumXPNotReached(minSkill2, _instantAction.minXP2);
-    }
+    Skill minSkill2 = instantAction.minSkill2.asSkill();
+    require(
+      minSkill2 == Skill.NONE || _players.xp(playerId, minSkill2) >= instantAction.minXP2,
+      MinimumXPNotReached(minSkill2, instantAction.minXP2)
+    );
 
-    Skill minSkill3 = _instantAction.minSkill3.asSkill();
-    if (minSkill3 != Skill.NONE && players.xp(_playerId, minSkill3) < _instantAction.minXP3) {
-      revert MinimumXPNotReached(minSkill3, _instantAction.minXP3);
-    }
+    Skill minSkill3 = instantAction.minSkill3.asSkill();
+    require(
+      minSkill3 == Skill.NONE || _players.xp(playerId, minSkill3) >= instantAction.minXP3,
+      MinimumXPNotReached(minSkill3, instantAction.minXP3)
+    );
   }
 
-  function _setAction(InstantActionInput calldata _instantActionInput) private {
-    if (_instantActionInput.actionId == 0) {
-      revert ActionIdZeroNotAllowed();
-    }
-    if (_instantActionInput.actionType == InstantActionType.NONE) {
-      revert UnsupportedActionType();
-    }
-    _checkInputs(_instantActionInput);
-    actions[_instantActionInput.actionType][_instantActionInput.actionId] = _packAction(_instantActionInput);
+  function _setAction(InstantActionInput calldata instantActionInput) private {
+    require(instantActionInput.actionId != 0, ActionIdZeroNotAllowed());
+    require(instantActionInput.actionType != InstantActionType.NONE, UnsupportedActionType());
+    _checkInputs(instantActionInput);
+    _actions[instantActionInput.actionType][instantActionInput.actionId] = _packAction(instantActionInput);
   }
 
   function _isActionFullMode(InstantAction memory _instantAction) private pure returns (bool) {
@@ -277,149 +270,116 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _packAction(
-    InstantActionInput calldata _actionInput
+    InstantActionInput calldata actionInput
   ) private pure returns (InstantAction memory instantAction) {
-    bytes1 packedData = bytes1(uint8(_actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     instantAction = InstantAction({
-      minSkill1: _actionInput.minSkills.length != 0 ? _actionInput.minSkills[0] : uint8(Skill.NONE),
-      minXP1: _actionInput.minXPs.length != 0 ? _actionInput.minXPs[0] : 0,
-      minSkill2: _actionInput.minSkills.length > 1 ? _actionInput.minSkills[1] : uint8(Skill.NONE),
-      minXP2: _actionInput.minXPs.length > 1 ? _actionInput.minXPs[1] : 0,
-      minSkill3: _actionInput.minSkills.length > 2 ? _actionInput.minSkills[2] : uint8(Skill.NONE),
-      minXP3: _actionInput.minXPs.length > 2 ? _actionInput.minXPs[2] : 0,
-      inputTokenId1: _actionInput.inputTokenIds.length != 0 ? _actionInput.inputTokenIds[0] : NONE,
-      inputAmount1: _actionInput.inputAmounts.length != 0 ? _actionInput.inputAmounts[0] : 0,
-      inputTokenId2: _actionInput.inputTokenIds.length > 1 ? _actionInput.inputTokenIds[1] : NONE,
-      inputAmount2: _actionInput.inputAmounts.length > 1 ? _actionInput.inputAmounts[1] : 0,
-      inputTokenId3: _actionInput.inputTokenIds.length > 2 ? _actionInput.inputTokenIds[2] : NONE,
-      inputAmount3: _actionInput.inputAmounts.length > 2 ? _actionInput.inputAmounts[2] : 0,
-      outputTokenId: _actionInput.outputTokenId,
-      outputAmount: _actionInput.outputAmount,
+      minSkill1: actionInput.minSkills.length != 0 ? actionInput.minSkills[0] : uint8(Skill.NONE),
+      minXP1: actionInput.minXPs.length != 0 ? actionInput.minXPs[0] : 0,
+      minSkill2: actionInput.minSkills.length > 1 ? actionInput.minSkills[1] : uint8(Skill.NONE),
+      minXP2: actionInput.minXPs.length > 1 ? actionInput.minXPs[1] : 0,
+      minSkill3: actionInput.minSkills.length > 2 ? actionInput.minSkills[2] : uint8(Skill.NONE),
+      minXP3: actionInput.minXPs.length > 2 ? actionInput.minXPs[2] : 0,
+      inputTokenId1: actionInput.inputTokenIds.length != 0 ? actionInput.inputTokenIds[0] : NONE,
+      inputAmount1: actionInput.inputAmounts.length != 0 ? actionInput.inputAmounts[0] : 0,
+      inputTokenId2: actionInput.inputTokenIds.length > 1 ? actionInput.inputTokenIds[1] : NONE,
+      inputAmount2: actionInput.inputAmounts.length > 1 ? actionInput.inputAmounts[1] : 0,
+      inputTokenId3: actionInput.inputTokenIds.length > 2 ? actionInput.inputTokenIds[2] : NONE,
+      inputAmount3: actionInput.inputAmounts.length > 2 ? actionInput.inputAmounts[2] : 0,
+      outputTokenId: actionInput.outputTokenId,
+      outputAmount: actionInput.outputAmount,
       packedData: packedData
     });
   }
 
   // Assumes that it has at least 1 input
-  function _actionExists(InstantActionInput calldata _instantActionInput) private view returns (bool) {
-    return actions[_instantActionInput.actionType][_instantActionInput.actionId].inputTokenId1 != NONE;
+  function _actionExists(InstantActionInput calldata instantActionInput) private view returns (bool) {
+    return _actions[instantActionInput.actionType][instantActionInput.actionId].inputTokenId1 != NONE;
   }
 
-  function _checkInputs(InstantActionInput calldata _actionInput) private pure {
-    uint16[] calldata inputTokenIds = _actionInput.inputTokenIds;
-    uint16[] calldata amounts = _actionInput.inputAmounts;
+  function _checkInputs(InstantActionInput calldata actionInput) private pure {
+    (uint16[] calldata inputTokenIds, uint16[] calldata amounts) = (
+      actionInput.inputTokenIds,
+      actionInput.inputAmounts
+    );
 
-    if (inputTokenIds.length > 3) {
-      revert TooManyInputItems();
-    }
-    if (inputTokenIds.length != amounts.length) {
-      revert LengthMismatch();
-    }
-
-    if (_actionInput.outputTokenId != NONE && _actionInput.outputAmount == 0) {
-      revert OutputAmountCannotBeZero();
-    }
-
-    if (_actionInput.outputTokenId == NONE && _actionInput.outputAmount != 0) {
-      revert OutputTokenIdCannotBeEmpty();
-    }
+    require(inputTokenIds.length <= 3, TooManyInputItems());
+    require(inputTokenIds.length == amounts.length, LengthMismatch());
+    require(
+      actionInput.outputTokenId == NONE || (actionInput.outputTokenId != NONE && actionInput.outputAmount != 0),
+      OutputAmountCannotBeZero()
+    );
+    require(
+      actionInput.outputAmount == 0 || (actionInput.outputTokenId != NONE && actionInput.outputAmount != 0),
+      OutputTokenIdCannotBeEmpty()
+    );
 
     // If forging then you need exactly 1 input
-    if (_actionInput.actionType == InstantActionType.FORGING_COMBINE) {
-      if (inputTokenIds.length != 1) {
-        revert IncorrectInputAmounts();
-      }
+    if (actionInput.actionType == InstantActionType.FORGING_COMBINE) {
+      require(inputTokenIds.length == 1, IncorrectInputAmounts());
     } else {
       // Otherwise you need at least 1 input
-      if (inputTokenIds.length == 0) {
-        revert IncorrectInputAmounts();
-      }
+      require(inputTokenIds.length != 0, IncorrectInputAmounts());
     }
 
     for (uint256 i; i < inputTokenIds.length; ++i) {
-      if (inputTokenIds[i] == 0) {
-        revert InvalidInputTokenId();
-      }
-      if (amounts[i] == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
+      require(inputTokenIds[i] != 0, InvalidInputTokenId());
+      require(amounts[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != inputTokenIds.length - 1) {
-        if (amounts[i] > amounts[i + 1]) {
-          revert InputAmountsMustBeInOrder();
-        }
+        require(amounts[i] <= amounts[i + 1], InputAmountsMustBeInOrder());
         for (uint256 j; j < inputTokenIds.length; ++j) {
-          if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
-            revert InputItemNoDuplicates();
-          }
+          require(j == i || inputTokenIds[i] != inputTokenIds[j], InputItemNoDuplicates());
         }
       }
     }
 
     // Check minimum xp
-    uint8[] calldata minSkills = _actionInput.minSkills;
-    uint32[] calldata minXPs = _actionInput.minXPs;
+    (uint8[] calldata minSkills, uint32[] calldata minXPs) = (actionInput.minSkills, actionInput.minXPs);
 
-    if (minSkills.length > 3) {
-      revert TooManyMinSkills();
-    }
-    if (minSkills.length != minXPs.length) {
-      revert LengthMismatch();
-    }
+    require(minSkills.length <= 3, TooManyMinSkills());
+    require(minSkills.length == minXPs.length, LengthMismatch());
     for (uint256 i; i < minSkills.length; ++i) {
-      if (minSkills[i].isSkill(Skill.NONE)) {
-        revert InvalidSkill();
-      }
-      if (minXPs[i] == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
+      require(minSkills[i].isNotSkill(Skill.NONE), InvalidSkill());
+      require(minXPs[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != minSkills.length - 1) {
         for (uint256 j; j < minSkills.length; ++j) {
-          if (j != i && minSkills[i] == minSkills[j]) {
-            revert MinimumSkillsNoDuplicates();
-          }
+          require(j == i || minSkills[i] != minSkills[j], MinimumSkillsNoDuplicates());
         }
       }
     }
   }
 
-  function addActions(InstantActionInput[] calldata _instantActionInputs) external onlyOwner {
-    for (uint256 i; i < _instantActionInputs.length; ++i) {
-      InstantActionInput calldata instantActionInput = _instantActionInputs[i];
-      if (_actionExists(instantActionInput)) {
-        revert ActionAlreadyExists();
-      }
+  function addActions(InstantActionInput[] calldata instantActionInputs) external onlyOwner {
+    for (uint256 i; i < instantActionInputs.length; ++i) {
+      InstantActionInput calldata instantActionInput = instantActionInputs[i];
+      require(!_actionExists(instantActionInput), ActionAlreadyExists());
       _setAction(instantActionInput);
     }
-    emit AddInstantActions(_instantActionInputs);
+    emit AddInstantActions(instantActionInputs);
   }
 
-  function editActions(InstantActionInput[] calldata _instantActionInputs) external onlyOwner {
-    for (uint256 i = 0; i < _instantActionInputs.length; ++i) {
-      InstantActionInput calldata instantActionInput = _instantActionInputs[i];
-      if (!_actionExists(instantActionInput)) {
-        revert ActionDoesNotExist();
-      }
+  function editActions(InstantActionInput[] calldata instantActionInputs) external onlyOwner {
+    for (uint256 i = 0; i < instantActionInputs.length; ++i) {
+      InstantActionInput calldata instantActionInput = instantActionInputs[i];
+      require(_actionExists(instantActionInput), ActionDoesNotExist());
       _setAction(instantActionInput);
     }
-    emit EditInstantActions(_instantActionInputs);
+    emit EditInstantActions(instantActionInputs);
   }
 
   function removeActions(
-    InstantActionType[] calldata _actionTypes,
-    uint16[] calldata _instantActionIds
+    InstantActionType[] calldata actionTypes,
+    uint16[] calldata instantActionIds
   ) external onlyOwner {
-    if (_instantActionIds.length != _actionTypes.length) {
-      revert LengthMismatch();
-    }
+    require(instantActionIds.length == actionTypes.length, LengthMismatch());
 
-    for (uint256 i = 0; i < _instantActionIds.length; ++i) {
-      if (actions[_actionTypes[i]][_instantActionIds[i]].inputTokenId1 == NONE) {
-        revert ActionDoesNotExist();
-      }
-      delete actions[_actionTypes[i]][_instantActionIds[i]];
+    for (uint256 i = 0; i < instantActionIds.length; ++i) {
+      require(_actions[actionTypes[i]][instantActionIds[i]].inputTokenId1 != NONE, ActionDoesNotExist());
+      delete _actions[actionTypes[i]][instantActionIds[i]];
     }
-    emit RemoveInstantActions(_actionTypes, _instantActionIds);
+    emit RemoveInstantActions(actionTypes, instantActionIds);
   }
 
   // solhint-disable-next-line no-empty-blocks

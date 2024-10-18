@@ -145,8 +145,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _;
   }
 
-  modifier isOwnerOfPlayer(uint256 _playerId) {
-    if (!IPlayers(_players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
+  modifier isOwnerOfPlayer(uint256 playerId) {
+    if (!IPlayers(_players).isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
       revert NotOwnerOfPlayer();
     }
     _;
