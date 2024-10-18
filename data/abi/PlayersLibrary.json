@@ -18,27 +18,27 @@
     "inputs": [
       {
         "internalType": "int256",
-        "name": "_attack",
+        "name": "attack",
         "type": "int256"
       },
       {
         "internalType": "int256",
-        "name": "_defence",
+        "name": "defence",
         "type": "int256"
       },
       {
         "internalType": "uint8",
-        "name": "_alphaCombat",
+        "name": "alphaCombat",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_betaCombat",
+        "name": "betaCombat",
         "type": "uint8"
       },
       {
         "internalType": "uint256",
-        "name": "_elapsedTime",
+        "name": "elapsedTime",
         "type": "uint256"
       }
     ],
@@ -57,7 +57,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
@@ -104,17 +104,17 @@
           }
         ],
         "internalType": "struct Attire",
-        "name": "_attire",
+        "name": "attire",
         "type": "tuple"
       },
       {
         "internalType": "address",
-        "name": "_itemNFTAddress",
+        "name": "itemNFTAddress",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "_skipNonFullAttire",
+        "name": "skipNonFullAttire",
         "type": "bool"
       },
       {
@@ -141,7 +141,7 @@
           }
         ],
         "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "_pendingQueuedActionEquipmentStates",
+        "name": "pendingQueuedActionEquipmentStates",
         "type": "tuple[]"
       }
     ],
@@ -170,12 +170,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "_elapsedTime",
+        "name": "elapsedTime",
         "type": "uint256"
       },
       {
         "internalType": "uint40",
-        "name": "_boostStartTime",
+        "name": "boostStartTime",
         "type": "uint40"
       },
       {
@@ -199,22 +199,22 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_itemNFTAddress",
+        "name": "itemNFTAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_worldAddress",
+        "name": "worldAddress",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_elapsedTime",
+        "name": "elapsedTime",
         "type": "uint256"
       },
       {
@@ -346,12 +346,12 @@
           }
         ],
         "internalType": "struct ActionChoice",
-        "name": "_actionChoice",
+        "name": "actionChoice",
         "type": "tuple"
       },
       {
         "internalType": "uint16",
-        "name": "_regenerateId",
+        "name": "regenerateId",
         "type": "uint16"
       },
       {
@@ -418,7 +418,7 @@
           }
         ],
         "internalType": "struct QueuedAction",
-        "name": "_queuedAction",
+        "name": "queuedAction",
         "type": "tuple"
       },
       {
@@ -460,7 +460,7 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "_combatStats",
+        "name": "combatStats",
         "type": "tuple"
       },
       {
@@ -502,22 +502,22 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "_enemyCombatStats",
+        "name": "enemyCombatStats",
         "type": "tuple"
       },
       {
         "internalType": "uint8",
-        "name": "_alphaCombat",
+        "name": "alphaCombat",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_betaCombat",
+        "name": "betaCombat",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_alphaCombatHealing",
+        "name": "alphaCombatHealing",
         "type": "uint8"
       },
       {
@@ -544,7 +544,7 @@
           }
         ],
         "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "_pendingQueuedActionEquipmentStates",
+        "name": "pendingQueuedActionEquipmentStates",
         "type": "tuple[]"
       }
     ],
@@ -583,7 +583,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_xp",
+        "name": "xp",
         "type": "uint256"
       }
     ],
@@ -602,17 +602,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_itemNFTAddress",
+        "name": "itemNFTAddress",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_elapsedTime",
+        "name": "elapsedTime",
         "type": "uint256"
       },
       {
@@ -744,7 +744,7 @@
           }
         ],
         "internalType": "struct ActionChoice",
-        "name": "_actionChoice",
+        "name": "actionChoice",
         "type": "tuple"
       },
       {
@@ -771,7 +771,7 @@
           }
         ],
         "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "_pendingQueuedActionEquipmentStates",
+        "name": "pendingQueuedActionEquipmentStates",
         "type": "tuple[]"
       }
     ],
@@ -795,17 +795,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_itemId",
+        "name": "itemId",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "_itemNFTAddress",
+        "name": "itemNFTAddress",
         "type": "address"
       },
       {
@@ -832,7 +832,7 @@
           }
         ],
         "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "_pendingQueuedActionEquipmentStates",
+        "name": "pendingQueuedActionEquipmentStates",
         "type": "tuple[]"
       }
     ],
@@ -851,17 +851,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint16[]",
-        "name": "_itemIds",
+        "name": "itemIds",
         "type": "uint16[]"
       },
       {
         "internalType": "address",
-        "name": "_itemNFTAddress",
+        "name": "itemNFTAddress",
         "type": "address"
       },
       {
@@ -888,7 +888,7 @@
           }
         ],
         "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "_pendingQueuedActionEquipmentStates",
+        "name": "pendingQueuedActionEquipmentStates",
         "type": "tuple[]"
       }
     ],
@@ -983,37 +983,37 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "_combatStats",
+        "name": "combatStats2",
         "type": "tuple"
       },
       {
         "internalType": "uint8",
-        "name": "_skillEnhancement1",
+        "name": "skillEnhancement1",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_skillFixedEnhancement1",
+        "name": "skillFixedEnhancement1",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_skillPercentageEnhancement1",
+        "name": "skillPercentageEnhancement1",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_skillEnhancement2",
+        "name": "skillEnhancement2",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_skillFixedEnhancement2",
+        "name": "skillFixedEnhancement2",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_skillPercentageEnhancement2",
+        "name": "skillPercentageEnhancement2",
         "type": "uint8"
       }
     ],
@@ -1058,7 +1058,7 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "combatStats",
+        "name": "statsOut",
         "type": "tuple"
       }
     ],
@@ -1106,17 +1106,17 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "_combatStats",
+        "name": "combatStats",
         "type": "tuple"
       },
       {
         "internalType": "uint8",
-        "name": "_skillId",
+        "name": "skillId",
         "type": "uint8"
       },
       {
         "internalType": "int16",
-        "name": "_skillDiff",
+        "name": "skillDiff",
         "type": "int16"
       }
     ],
@@ -1161,7 +1161,7 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "combatStats",
+        "name": "statsOut",
         "type": "tuple"
       }
     ],
@@ -1172,17 +1172,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_itemNFTAddress",
+        "name": "itemNFTAddress",
         "type": "address"
       },
       {
         "internalType": "uint16[2]",
-        "name": "_handEquipmentTokenIds",
+        "name": "handEquipmentTokenIds",
         "type": "uint16[2]"
       },
       {
@@ -1224,7 +1224,7 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "_combatStats",
+        "name": "combatStats",
         "type": "tuple"
       },
       {
@@ -1256,7 +1256,7 @@
           }
         ],
         "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "_pendingQueuedActionEquipmentStates",
+        "name": "pendingQueuedActionEquipmentStates",
         "type": "tuple[]"
       },
       {
@@ -1388,7 +1388,7 @@
           }
         ],
         "internalType": "struct ActionChoice",
-        "name": "_actionChoice",
+        "name": "actionChoice",
         "type": "tuple"
       }
     ],
@@ -1438,7 +1438,7 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "combatStats",
+        "name": "statsOut",
         "type": "tuple"
       }
     ],
