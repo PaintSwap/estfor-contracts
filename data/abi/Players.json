@@ -2447,72 +2447,72 @@
     "inputs": [
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       },
       {
         "internalType": "contract PlayerNFT",
-        "name": "_playerNFT",
+        "name": "playerNFT",
         "type": "address"
       },
       {
         "internalType": "contract PetNFT",
-        "name": "_petNFT",
+        "name": "petNFT",
         "type": "address"
       },
       {
         "internalType": "contract World",
-        "name": "_world",
+        "name": "world",
         "type": "address"
       },
       {
         "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
         "internalType": "contract Quests",
-        "name": "_quests",
+        "name": "quests",
         "type": "address"
       },
       {
         "internalType": "contract Clans",
-        "name": "_clans",
+        "name": "clans",
         "type": "address"
       },
       {
         "internalType": "contract WishingWell",
-        "name": "_wishingWell",
+        "name": "wishingWell",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implQueueActions",
+        "name": "implQueueActions",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implProcessActions",
+        "name": "implProcessActions",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implRewards",
+        "name": "implRewards",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implMisc",
+        "name": "implMisc",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implMisc1",
+        "name": "implMisc1",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
@@ -3411,27 +3411,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_implQueueActions",
+        "name": "implQueueActions",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implProcessActions",
+        "name": "implProcessActions",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implRewards",
+        "name": "implRewards",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implMisc",
+        "name": "implMisc",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_implMisc1",
+        "name": "implMisc1",
         "type": "address"
       }
     ],

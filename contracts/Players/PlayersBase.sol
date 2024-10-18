@@ -174,21 +174,21 @@ abstract contract PlayersBase {
 
   mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal _activeBoosts;
 
-  World internal world;
+  World internal _world;
   // Constants for the damage formula
-  uint8 internal alphaCombat;
-  uint8 internal betaCombat;
-  uint56 internal nextQueueId; // Global queued action id
+  uint8 internal _alphaCombat;
+  uint8 internal _betaCombat;
+  uint56 internal _nextQueueId; // Global queued action id
   uint8 internal _alphaCombatHealing; // Healing formula constants
   bool internal _dailyRewardsEnabled;
-  bool internal isBeta;
+  bool internal _isBeta;
 
   mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
 
   mapping(uint256 playerId => Player player) internal _players;
   mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal _attire;
-  ItemNFT internal itemNFT;
-  PlayerNFT internal playerNFT;
+  ItemNFT internal _itemNFT;
+  PlayerNFT internal _playerNFT;
   bool internal _gamePaused;
   mapping(uint256 playerId => PendingRandomReward[] pendingRandomRewards) internal _pendingRandomRewards; // queue, will be sorted by timestamp
 
@@ -197,18 +197,18 @@ abstract contract PlayersBase {
 
   mapping(uint256 xp => Equipment[] equipments) internal _xpRewardThresholds; // Thresholds and all items rewarded for it
 
-  address internal implQueueActions;
-  address internal implProcessActions;
-  address internal implRewards;
-  address internal implMisc;
-  address internal implMisc1;
+  address internal _implQueueActions;
+  address internal _implProcessActions;
+  address internal _implRewards;
+  address internal _implMisc;
+  address internal _implMisc1;
 
-  AdminAccess internal adminAccess;
+  AdminAccess internal _adminAccess;
 
   mapping(Skill skill => FullAttireBonus) internal _fullAttireBonus;
-  Quests internal quests;
-  Clans internal clans;
-  WishingWell internal wishingWell;
+  Quests internal _quests;
+  Clans internal _clans;
+  WishingWell internal _wishingWell;
   address internal reserved1;
 
   PlayerBoostInfo internal _globalBoost; // A boost shared by everyone
@@ -217,24 +217,24 @@ abstract contract PlayersBase {
   mapping(address user => WalletDailyInfo walletDailyInfo) internal _walletDailyInfo;
   mapping(uint256 queueId => QueuedActionExtra queuedActionExtra) internal _queuedActionsExtra;
 
-  PetNFT internal petNFT;
+  PetNFT internal _petNFT;
 
   modifier onlyPlayerNFT() {
-    if (msg.sender != address(playerNFT)) {
+    if (msg.sender != address(_playerNFT)) {
       revert NotPlayerNFT();
     }
     _;
   }
 
   modifier onlyItemNFT() {
-    if (msg.sender != address(itemNFT)) {
+    if (msg.sender != address(_itemNFT)) {
       revert NotItemNFT();
     }
     _;
   }
 
   modifier isAdminAndBeta() {
-    if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
+    if (!(_adminAccess.isAdmin(msg.sender) && _isBeta)) {
       revert NotAdminAndBeta();
     }
     _;
@@ -258,7 +258,7 @@ abstract contract PlayersBase {
         skill = choiceSkill;
       }
     } else {
-      skill = world.getSkill(_actionId);
+      skill = _world.getSkill(_actionId);
     }
   }
 
@@ -379,7 +379,7 @@ abstract contract PlayersBase {
     returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
   {
     bytes memory data = _delegatecall(
-      implProcessActions,
+      _implProcessActions,
       abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActions.selector, _from, playerId)
     );
     return abi.decode(data, (QueuedAction[], PendingQueuedActionData));
@@ -399,7 +399,7 @@ abstract contract PlayersBase {
 
   function _donate(address _from, uint256 playerId, uint256 _amount) internal {
     _delegatecall(
-      implProcessActions,
+      _implProcessActions,
       abi.encodeWithSelector(IPlayersProcessActionsDelegate.donate.selector, _from, playerId, _amount)
     );
   }
@@ -471,7 +471,7 @@ abstract contract PlayersBase {
       }
     }
     if (itemTokenIds.length != 0) {
-      itemNFT.mintBatch(_from, itemTokenIds, amounts);
+      _itemNFT.mintBatch(_from, itemTokenIds, amounts);
     }
 
     if (numPastRandomRewardInstancesToRemove != 0 || itemTokenIds.length != 0) {

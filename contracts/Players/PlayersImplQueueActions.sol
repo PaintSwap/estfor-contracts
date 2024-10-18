@@ -91,7 +91,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _clearCurrentActionProcessed(playerId);
     }
 
-    U256 queueId = nextQueueId.asU256();
+    U256 queueId = _nextQueueId.asU256();
     U256 queuedActionsLength = _queuedActionInputs.length.asU256();
 
     if (remainingQueuedActions.length != 0 || _queuedActionInputs.length != 0) {
@@ -158,10 +158,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     emit SetActionQueueV2(from, playerId, queuedActions, attire, player.currentActionStartTime, queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
-    nextQueueId = queueId.asUint56();
+    _nextQueueId = queueId.asUint56();
 
     if (questId != 0) {
-      quests.activateQuest(from, playerId, questId);
+      _quests.activateQuest(from, playerId, questId);
     }
 
     if (boostItemTokenId != NONE) {
@@ -174,7 +174,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   }
 
   function _consumeBoost(address _from, uint256 playerId, uint16 _itemTokenId, uint40 _startTime) private {
-    Item memory item = itemNFT.getItem(_itemTokenId);
+    Item memory item = _itemNFT.getItem(_itemTokenId);
     if (item.equipPosition != EquipPosition.BOOST_VIAL) {
       revert NotABoostVial();
     }
@@ -186,12 +186,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     // Burn it
-    itemNFT.burn(_from, _itemTokenId, 1);
+    _itemNFT.burn(_from, _itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
     PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
-      itemNFT.mint(_from, playerBoost.itemTokenId, 1);
+      _itemNFT.mint(_from, playerBoost.itemTokenId, 1);
     }
 
     playerBoost.startTime = _startTime;
@@ -224,13 +224,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       revert UnsupportedAttire();
     }
     if (_queuedActionInput.regenerateId != NONE) {
-      if (itemNFT.getItem(_queuedActionInput.regenerateId).equipPosition != EquipPosition.FOOD) {
+      if (_itemNFT.getItem(_queuedActionInput.regenerateId).equipPosition != EquipPosition.FOOD) {
         revert UnsupportedRegenerateItem();
       }
     }
 
     uint16 actionId = _queuedActionInput.actionId;
-    ActionInfo memory actionInfo = world.getActionInfo(actionId);
+    ActionInfo memory actionInfo = _world.getActionInfo(actionId);
     if (!actionInfo.isAvailable) {
       revert ActionNotAvailable();
     }
@@ -252,7 +252,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       if (_queuedActionInput.choiceId == NONE) {
         revert ActionChoiceIdRequired();
       }
-      actionChoice = world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
+      actionChoice = _world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
 
       if (
         _getRealXP(
@@ -416,7 +416,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       packed |= bytes1(uint8(1 << HAS_PET_BIT));
       queuedActionExtra.petId = _queuedActionInput.petId;
       _queuedActionsExtra[_queueId] = queuedActionExtra;
-      petNFT.assignPet(_from, playerId, _queuedActionInput.petId, _startTime);
+      _petNFT.assignPet(_from, playerId, _queuedActionInput.petId, _startTime);
     }
     queuedAction.packed = packed;
     _players[playerId].actionQueue.push(queuedAction);
@@ -430,7 +430,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QuestState memory _questState
   ) private view {
     if (_queuedActionInput.regenerateId != NONE) {
-      (Skill skill, uint32 minXP, , bool isFoodFullModeOnly) = itemNFT.getEquipPositionAndMinRequirement(
+      (Skill skill, uint32 minXP, , bool isFoodFullModeOnly) = _itemNFT.getEquipPositionAndMinRequirement(
         _queuedActionInput.regenerateId
       );
       if (_getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
@@ -450,7 +450,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         revert PlayerNotUpgraded();
       }
 
-      if (petNFT.balanceOf(_from, _petId) == 0) {
+      if (_petNFT.balanceOf(_from, _petId) == 0) {
         revert PetNotOwned();
       }
     }
@@ -501,7 +501,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     if (attireLength != 0) {
-      EquipPosition[] memory equipPositions = itemNFT.getEquipPositions(itemTokenIds);
+      EquipPosition[] memory equipPositions = _itemNFT.getEquipPositions(itemTokenIds);
       U256 bounds = attireLength.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
@@ -529,12 +529,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     (uint16[] memory itemTokenIds, uint256[] memory balances) = PlayersLibrary.getAttireWithBalance(
       from,
       attire,
-      address(itemNFT),
+      address(_itemNFT),
       skipNonFullAttire,
       pendingQueuedActionEquipmentStates
     );
     if (itemTokenIds.length != 0) {
-      (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isItemFullModeOnly) = itemNFT.getMinRequirements(
+      (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isItemFullModeOnly) = _itemNFT.getMinRequirements(
         itemTokenIds
       );
       U256 iter = balances.length.asU256();
@@ -590,11 +590,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
           revert InvalidHandEquipment(equippedItemTokenId);
         }
 
-        uint256 balance = itemNFT.balanceOf(_from, equippedItemTokenId);
+        uint256 balance = _itemNFT.balanceOf(_from, equippedItemTokenId);
         if (balance == 0) {
           revert NoItemBalance(equippedItemTokenId);
         }
-        (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isItemFullModeOnly) = itemNFT
+        (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isItemFullModeOnly) = _itemNFT
           .getEquipPositionAndMinRequirement(equippedItemTokenId);
         if (_getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
           revert ItemMinimumXPNotReached();
@@ -669,7 +669,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _clearPlayerMainBoost(playerId);
       if (activeBoost.startTime > block.timestamp) {
         // Mint it if it hasn't been consumed yet
-        itemNFT.mint(_from, activeBoost.itemTokenId, 1);
+        _itemNFT.mint(_from, activeBoost.itemTokenId, 1);
       }
     }
   }

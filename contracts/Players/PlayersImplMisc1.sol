@@ -39,44 +39,44 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   }
 
   function initialize(
-    ItemNFT _itemNFT,
-    PlayerNFT _playerNFT,
-    PetNFT _petNFT,
-    World _world,
-    AdminAccess _adminAccess,
-    Quests _quests,
-    Clans _clans,
-    WishingWell _wishingWell,
-    address _implQueueActions,
-    address _implProcessActions,
-    address _implRewards,
-    address _implMisc,
-    address _implMisc1,
-    bool _isBeta
+    ItemNFT itemNFT,
+    PlayerNFT playerNFT,
+    PetNFT petNFT,
+    World world,
+    AdminAccess adminAccess,
+    Quests quests,
+    Clans clans,
+    WishingWell wishingWell,
+    address implQueueActions,
+    address implProcessActions,
+    address implRewards,
+    address implMisc,
+    address implMisc1,
+    bool isBeta
   ) external {
     if (address(this) == _this) {
       revert CannotCallInitializerOnImplementation();
     }
 
-    itemNFT = _itemNFT;
-    playerNFT = _playerNFT;
-    petNFT = _petNFT;
-    world = _world;
-    adminAccess = _adminAccess;
-    quests = _quests;
-    clans = _clans;
-    wishingWell = _wishingWell;
-    implQueueActions = _implQueueActions;
-    implProcessActions = _implProcessActions;
-    implRewards = _implRewards;
-    implMisc = _implMisc;
-    implMisc1 = _implMisc1;
+    _itemNFT = itemNFT;
+    _playerNFT = playerNFT;
+    _petNFT = petNFT;
+    _world = world;
+    _adminAccess = adminAccess;
+    _quests = quests;
+    _clans = clans;
+    _wishingWell = wishingWell;
+    _implQueueActions = implQueueActions;
+    _implProcessActions = implProcessActions;
+    _implRewards = implRewards;
+    _implMisc = implMisc;
+    _implMisc1 = implMisc1;
+    _isBeta = isBeta;
 
-    nextQueueId = 1;
-    alphaCombat = 1;
-    betaCombat = 1;
+    _nextQueueId = 1;
+    _alphaCombat = 1;
+    _betaCombat = 1;
     _alphaCombatHealing = 8;
-    isBeta = _isBeta;
   }
 
   // Show all the player stats, return metadata json
@@ -109,7 +109,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       abi.encodePacked(
         _getTraitStringJSON("Avatar", _avatarName),
         ",",
-        _getTraitStringJSON("Clan", clans.getClanNameOfPlayer(playerId)),
+        _getTraitStringJSON("Clan", _clans.getClanNameOfPlayer(playerId)),
         ",",
         _getTraitStringJSON("Full version", _isPlayerFullMode(playerId) ? "true" : "false"),
         ",",
@@ -161,7 +161,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     bytes memory fullName = abi.encodePacked(_playerName, " (", overallLevel.toString(), ")");
     bytes memory externalURL = abi.encodePacked(
       "https://",
-      isBeta ? "beta." : "",
+      _isBeta ? "beta." : "",
       "estfor.com/journal/",
       playerId.toString()
     );
@@ -219,7 +219,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
         if (fullAttireBonus.itemTokenIds[j] == NONE) {
           revert InvalidItemTokenId();
         }
-        if (itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[j]) != expectedEquipPositions[j]) {
+        if (_itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[j]) != expectedEquipPositions[j]) {
           revert InvalidEquipPosition();
         }
       }

@@ -36,28 +36,28 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   error PlayerLocked();
 
   modifier isOwnerOfPlayerAndActiveMod(uint256 playerId) {
-    if (!isOwnerOfPlayerAndActive(msg.sender, playerId)) {
+    if (!isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
   }
 
   modifier isOwnerOfPlayerMod(uint256 playerId) {
-    if (playerNFT.balanceOf(msg.sender, playerId) != 1) {
+    if (_playerNFT.balanceOf(_msgSender(), playerId) != 1) {
       revert NotOwnerOfPlayer();
     }
     _;
   }
 
   modifier isOwnerOfPlayerOrEmpty(uint256 playerId) {
-    if (playerId != 0 && playerNFT.balanceOf(msg.sender, playerId) != 1) {
+    if (playerId != 0 && _playerNFT.balanceOf(_msgSender(), playerId) != 1) {
       revert NotOwnerOfPlayer();
     }
     _;
   }
 
   modifier isBetaMod() {
-    if (!isBeta) {
+    if (!_isBeta) {
       revert NotBeta();
     }
     _;
@@ -77,43 +77,43 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function initialize(
-    ItemNFT _itemNFT,
-    PlayerNFT _playerNFT,
-    PetNFT _petNFT,
-    World _world,
-    AdminAccess _adminAccess,
-    Quests _quests,
-    Clans _clans,
-    WishingWell _wishingWell,
-    address _implQueueActions,
-    address _implProcessActions,
-    address _implRewards,
-    address _implMisc,
-    address _implMisc1,
-    bool _isBeta
+    ItemNFT itemNFT,
+    PlayerNFT playerNFT,
+    PetNFT petNFT,
+    World world,
+    AdminAccess adminAccess,
+    Quests quests,
+    Clans clans,
+    WishingWell wishingWell,
+    address implQueueActions,
+    address implProcessActions,
+    address implRewards,
+    address implMisc,
+    address implMisc1,
+    bool isBeta
   ) external initializer {
     __Ownable_init();
     __UUPSUpgradeable_init();
     __ReentrancyGuard_init();
 
     _delegatecall(
-      _implMisc1,
+      implMisc1,
       abi.encodeWithSelector(
         IPlayersDelegate.initialize.selector,
-        _itemNFT,
-        _playerNFT,
-        _petNFT,
-        _world,
-        _adminAccess,
-        _quests,
-        _clans,
-        _wishingWell,
-        _implQueueActions,
-        _implProcessActions,
-        _implRewards,
-        _implMisc,
-        _implMisc1,
-        _isBeta
+        itemNFT,
+        playerNFT,
+        petNFT,
+        world,
+        adminAccess,
+        quests,
+        clans,
+        wishingWell,
+        implQueueActions,
+        implProcessActions,
+        implRewards,
+        implMisc,
+        implMisc1,
+        isBeta
       )
     );
   }
@@ -225,7 +225,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
 
     _delegatecall(
-      implMisc,
+      _implMisc,
       abi.encodeWithSelector(
         IPlayersDelegate.mintedPlayer.selector,
         _from,
@@ -254,7 +254,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     bool _useExactETH
   ) external payable isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _delegatecall(
-      implMisc,
+      _implMisc,
       abi.encodeWithSelector(IPlayersDelegate.buyBrushQuest.selector, _to, playerId, questId, _useExactETH)
     );
   }
@@ -266,7 +266,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (_players[playerId].actionQueue.length != 0) {
       _processActionsAndSetState(playerId);
     }
-    quests.activateQuest(msg.sender, playerId, questId);
+    _quests.activateQuest(_msgSender(), playerId, questId);
   }
 
   function deactivateQuest(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
@@ -274,8 +274,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       _processActionsAndSetState(playerId);
     }
     // Quest may hve been completed as a result of this so don't bother trying to deactivate it
-    if (quests.getActiveQuestId(playerId) != 0) {
-      quests.deactivateQuest(playerId);
+    if (_quests.getActiveQuestId(playerId) != 0) {
+      _quests.deactivateQuest(playerId);
     }
   }
 
@@ -302,7 +302,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     boostItemTokenIds[1] = XP_BOOST;
     boostItemTokenIds[2] = GATHERING_BOOST;
     boostItemTokenIds[3] = SKILL_BOOST;
-    uint256[] memory balances = itemNFT.balanceOfs(_to, boostItemTokenIds);
+    uint256[] memory balances = _itemNFT.balanceOfs(_to, boostItemTokenIds);
     bool hasBoost;
     for (uint256 i; i < balances.length; ++i) {
       hasBoost = hasBoost || balances[i] != 0;
@@ -321,14 +321,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function clearEverything(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) isBetaMod {
-    address from = msg.sender;
+    address from = _msgSender();
     bool isEmergency = true;
     _clearEverything(from, playerId, !isEmergency);
   }
 
   function _clearEverything(address _from, uint256 playerId, bool _processTheActions) private {
     _delegatecall(
-      implQueueActions,
+      _implQueueActions,
       abi.encodeWithSelector(IPlayersDelegate.clearEverything.selector, _from, playerId, _processTheActions)
     );
   }
@@ -343,7 +343,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     ActionQueueStatus queueStatus
   ) private {
     _delegatecall(
-      implQueueActions,
+      _implQueueActions,
       abi.encodeWithSelector(
         IPlayersDelegate.startActions.selector,
         playerId,
@@ -359,7 +359,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function _processActionsAndSetState(uint256 playerId) private {
     _delegatecall(
-      implProcessActions,
+      _implProcessActions,
       abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActionsAndSetState.selector, playerId)
     );
   }
@@ -402,11 +402,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function setActivePlayer(uint256 playerId) external isOwnerOfPlayerMod(playerId) {
-    _setActivePlayer(msg.sender, playerId);
+    _setActivePlayer(_msgSender(), playerId);
   }
 
   function donate(uint256 playerId, uint256 _amount) external isOwnerOfPlayerOrEmpty(playerId) {
-    _donate(msg.sender, playerId, _amount);
+    _donate(_msgSender(), playerId, _amount);
   }
 
   function dailyClaimedRewards(uint256 playerId) external view returns (bool[7] memory claimed) {
@@ -455,7 +455,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function isOwnerOfPlayerAndActive(address _from, uint256 playerId) public view override returns (bool) {
-    return playerNFT.balanceOf(_from, playerId) == 1 && _activePlayers[_from] == playerId;
+    return _playerNFT.balanceOf(_from, playerId) == 1 && _activePlayers[_from] == playerId;
   }
 
   function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory) {
@@ -547,17 +547,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(
-    address _implQueueActions,
-    address _implProcessActions,
-    address _implRewards,
-    address _implMisc,
-    address _implMisc1
+    address implQueueActions,
+    address implProcessActions,
+    address implRewards,
+    address implMisc,
+    address implMisc1
   ) external onlyOwner {
-    implQueueActions = _implQueueActions;
-    implProcessActions = _implProcessActions;
-    implRewards = _implRewards;
-    implMisc = _implMisc;
-    implMisc1 = _implMisc1;
+    _implQueueActions = implQueueActions;
+    _implProcessActions = implProcessActions;
+    _implRewards = implRewards;
+    _implMisc = implMisc;
+    _implMisc1 = implMisc1;
   }
 
   // TODO: Can remove after integrated on live contracts
@@ -567,14 +567,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
     _delegatecall(
-      implMisc,
+      _implMisc,
       abi.encodeWithSelector(IPlayersDelegate.addXPThresholdRewards.selector, _xpThresholdRewards)
     );
   }
 
   function editXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
     _delegatecall(
-      implMisc,
+      _implMisc,
       abi.encodeWithSelector(IPlayersDelegate.editXPThresholdRewards.selector, _xpThresholdRewards)
     );
   }
@@ -590,14 +590,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
     _delegatecall(
-      implMisc1,
+      _implMisc1,
       abi.encodeWithSelector(IPlayersDelegate.addFullAttireBonuses.selector, _fullAttireBonuses)
     );
   }
 
   function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external isAdminAndBeta {
     _delegatecall(
-      implProcessActions,
+      _implProcessActions,
       abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, from, playerId, skill, xp, force)
     );
   }
@@ -608,7 +608,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
     address implementation;
     if (selector == IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector) {
-      implementation = implRewards;
+      implementation = _implRewards;
     } else if (
       selector == IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector ||
       selector == IPlayersMiscDelegateView.dailyClaimedRewardsImpl.selector ||
@@ -616,14 +616,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       selector == IPlayersMiscDelegateView.processConsumablesView.selector ||
       selector == IPlayersMiscDelegateView.getRandomRewards.selector
     ) {
-      implementation = implMisc;
+      implementation = _implMisc;
     } else if (
       selector == IPlayersQueuedActionsDelegateView.validateActionsImpl.selector ||
       selector == IPlayersQueuedActionsDelegateView.checkAddToQueue.selector
     ) {
-      implementation = implQueueActions;
+      implementation = _implQueueActions;
     } else if (selector == IPlayersMisc1DelegateView.uri.selector) {
-      implementation = implMisc1;
+      implementation = _implMisc1;
     } else {
       revert InvalidSelector();
     }

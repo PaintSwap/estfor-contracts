@@ -157,7 +157,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256 playerId
   ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, bytes32 dailyRewardMask) {
     uint256 streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
-    bool hasRandomWordLastSunday = world.lastRandomWordsUpdatedTime() >= streakStart;
+    bool hasRandomWordLastSunday = _world.lastRandomWordsUpdatedTime() >= streakStart;
     if (hasRandomWordLastSunday) {
       uint256 streakStartIndex = streakStart.div(1 weeks);
       bytes32 mask = _dailyRewardMasks[playerId];
@@ -186,12 +186,12 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           playerTier = 1;
         }
 
-        (uint256 itemTokenId, uint256 amount) = world.getDailyReward(playerTier, playerId);
+        (uint256 itemTokenId, uint256 amount) = _world.getDailyReward(playerTier, playerId);
         // Can only get the daily reward on an account once per day regardless of how many heros claim
         uint256 lastWalletTimestamp = _walletDailyInfo[_from].lastDailyRewardClaimedTimestamp;
         if (itemTokenId != NONE && lastWalletTimestamp < (block.timestamp / 1 days) * 1 days) {
           // Add clan member boost to daily reward (if applicable)
-          uint256 clanTierMembership = clans.getClanTierMembership(playerId);
+          uint256 clanTierMembership = _clans.getClanTierMembership(playerId);
           amount += (amount * clanTierMembership) / 10; // +10% extra for each clan tier
 
           dailyRewardMask = mask | ((bytes32(hex"ff") >> (maskIndex * 8)));
@@ -204,7 +204,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
           // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
           if (canClaimWeeklyRewards) {
-            (itemTokenIds[1], amounts[1]) = world.getWeeklyReward(playerTier, playerId);
+            (itemTokenIds[1], amounts[1]) = _world.getWeeklyReward(playerTier, playerId);
           }
         }
       }
@@ -236,14 +236,14 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       _dailyRewardMasks[playerId] = dailyRewardMask;
     }
     if (rewardAmounts.length != 0) {
-      itemNFT.mint(_from, rewardItemTokenIds[0], rewardAmounts[0]);
+      _itemNFT.mint(_from, rewardItemTokenIds[0], rewardAmounts[0]);
       emit DailyReward(_from, playerId, rewardItemTokenIds[0], rewardAmounts[0]);
 
       _walletDailyInfo[_from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }
 
     if (rewardAmounts.length > 1) {
-      itemNFT.mint(_from, rewardItemTokenIds[1], rewardAmounts[1]);
+      _itemNFT.mint(_from, rewardItemTokenIds[1], rewardAmounts[1]);
       emit WeeklyReward(_from, playerId, rewardItemTokenIds[1], rewardAmounts[1]);
     }
   }
@@ -370,29 +370,29 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     bool isCombat = _queuedAction.combatStyle.asCombatStyle().isCombat();
     if (isCombat) {
       // Fetch the requirements for it
-      CombatStats memory enemyCombatStats = world.getCombatStats(_queuedAction.actionId);
+      CombatStats memory enemyCombatStats = _world.getCombatStats(_queuedAction.actionId);
 
       uint256 combatElapsedTime;
       (xpElapsedTime, combatElapsedTime, baseInputItemsConsumedNum, foodConsumed, died) = PlayersLibrary
         .getCombatAdjustedElapsedTimes(
           _from,
-          address(itemNFT),
-          address(world),
+          address(_itemNFT),
+          address(_world),
           _elapsedTime,
           _actionChoice,
           _queuedAction.regenerateId,
           _queuedAction,
           _combatStats,
           enemyCombatStats,
-          alphaCombat,
-          betaCombat,
+          _alphaCombat,
+          _betaCombat,
           _alphaCombatHealing,
           _pendingQueuedActionEquipmentStates
         );
     } else {
       (xpElapsedTime, baseInputItemsConsumedNum) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
         _from,
-        address(itemNFT),
+        address(_itemNFT),
         _elapsedTime,
         _actionChoice,
         _pendingQueuedActionEquipmentStates
@@ -603,17 +603,17 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     player.skillBoosted2 = _startSkills[1]; // Can be NONE
 
     // Mint starting equipment
-    itemNFT.mintBatch(_from, _startingItemTokenIds, _startingAmounts);
+    _itemNFT.mintBatch(_from, _startingItemTokenIds, _startingAmounts);
   }
 
   function buyBrushQuest(address _to, uint256 playerId, uint256 questId, bool _useExactETH) external payable {
     // This is a one off quest
-    (uint256[] memory itemTokenIds /*uint256[] memory amounts*/, , Skill skillGained, uint32 xpGained) = quests
+    (uint256[] memory itemTokenIds /*uint256[] memory amounts*/, , Skill skillGained, uint32 xpGained) = _quests
       .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
     // Must update before the call to buyBrushQuest so the indexer can remove the in-progress XP update
     _updateXP(msg.sender, playerId, skillGained, xpGained);
 
-    bool success = quests.buyBrushQuest{value: msg.value}(msg.sender, _to, playerId, questId, _useExactETH);
+    bool success = _quests.buyBrushQuest{value: msg.value}(msg.sender, _to, playerId, questId, _useExactETH);
     if (!success) {
       revert BuyBrushFailed();
     } else {
@@ -640,11 +640,11 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     RandomReward[] memory randomRewards = _setupRandomRewards(_actionRewards);
 
     if (randomRewards.length != 0) {
-      hasRandomWord = world.hasRandomWord(_skillSentinelTime);
+      hasRandomWord = _world.hasRandomWord(_skillSentinelTime);
       if (hasRandomWord) {
         uint256 numIterations = Math.min(MAX_UNIQUE_TICKETS, _numTickets);
 
-        bytes memory randomBytes = world.getRandomBytes(numIterations, _startTimestamp, _skillSentinelTime, playerId);
+        bytes memory randomBytes = _world.getRandomBytes(numIterations, _startTimestamp, _skillSentinelTime, playerId);
         uint256 multiplier = _numTickets / MAX_UNIQUE_TICKETS;
 
         // Cache some values for later

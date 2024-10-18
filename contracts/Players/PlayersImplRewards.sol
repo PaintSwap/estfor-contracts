@@ -93,7 +93,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256 choiceIdsLength;
 
     address from = owner;
-    if (playerNFT.balanceOf(owner, playerId) == 0) {
+    if (_playerNFT.balanceOf(owner, playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
     uint256 previousTotalXP = player.totalXP;
@@ -121,7 +121,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint32 pointsAccrued;
       uint256 endTime = startTime + queuedAction.timespan;
 
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, uint8 worldLocation) = world
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, uint8 worldLocation) = _world
         .getRewardsHelper(queuedAction.actionId);
 
       uint256 elapsedTime = _getElapsedTime(startTime, endTime);
@@ -147,7 +147,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       bool isCombat = queuedAction.combatStyle.asCombatStyle().isCombat();
       ActionChoice memory actionChoice;
       if (queuedAction.choiceId != 0) {
-        actionChoice = world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+        actionChoice = _world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
       }
 
       CombatStats memory combatStats;
@@ -164,7 +164,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         // Update combat stats from the pet if it is still valid.
         // The pet enhancements only take into account base hero stats, not any bonuses from equipment.
         if (_hasPet(queuedAction.packed)) {
-          Pet memory pet = petNFT.getPet(_queuedActionsExtra[queuedAction.queueId].petId);
+          Pet memory pet = _petNFT.getPet(_queuedActionsExtra[queuedAction.queueId].petId);
           if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
             combatStats = PlayersLibrary.updateCombatStatsFromPet(
               combatStats,
@@ -181,7 +181,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         combatStats = PlayersLibrary.updateCombatStatsFromAttire(
           combatStats,
           from,
-          address(itemNFT),
+          address(_itemNFT),
           _attire[playerId][queuedAction.queueId],
           pendingQueuedActionState.equipmentStates
         );
@@ -190,7 +190,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       bool missingRequiredHandEquipment;
       (missingRequiredHandEquipment, combatStats) = PlayersLibrary.updateStatsFromHandEquipment(
         from,
-        address(itemNFT),
+        address(_itemNFT),
         [queuedAction.rightHandEquipmentTokenId, queuedAction.leftHandEquipmentTokenId],
         combatStats,
         isCombat,
@@ -430,7 +430,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
           from,
           _attire[playerId][queuedAction.queueId],
-          address(itemNFT),
+          address(_itemNFT),
           pendingQueuedActionState.equipmentStates,
           bonusRewardsPercent,
           _fullAttireBonus[skill].itemTokenIds
@@ -538,7 +538,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           );
           pendingQueuedActionMetadata.rolls = uint32(monstersKilled);
         } else {
-          bool hasRandomWord = world.hasRandomWord(startTime + elapsedTime);
+          bool hasRandomWord = _world.hasRandomWord(startTime + elapsedTime);
           if (!hasRandomWord) {
             uint256 prevRolls = prevXPElapsedTime / 3600;
             pendingQueuedActionMetadata.rolls = uint32((xpElapsedTime + prevXPElapsedTime) / 3600 - prevRolls);
@@ -560,12 +560,12 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     QuestState memory questState = pendingQueuedActionState.quests;
     // Anything burnt happens after the actions are processed, so do not affect anything else.
     uint256 burnedAmountOwned;
-    uint256 activeQuestBurnedItemTokenId = quests.getActiveQuestBurnedItemTokenId(playerId);
+    uint256 activeQuestBurnedItemTokenId = _quests.getActiveQuestBurnedItemTokenId(playerId);
     if (activeQuestBurnedItemTokenId != NONE) {
       burnedAmountOwned = PlayersLibrary.getRealBalance(
         from,
         activeQuestBurnedItemTokenId,
-        address(itemNFT),
+        address(_itemNFT),
         pendingQueuedActionState.equipmentStates
       );
     }
@@ -579,7 +579,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       questState.xpGainedSkills,
       questState.questsCompleted,
       questState.activeQuestInfo
-    ) = quests.processQuestsView(playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
+    ) = _quests.processQuestsView(playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
 
     for (uint256 i = 0; i < questState.xpGainedSkills.length; ++i) {
       totalXPGained += questState.xpGainedSkills[i];
@@ -623,7 +623,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     ) = _dailyRewardsView(from, playerId);
 
     // Any Lottery winnings
-    pendingQueuedActionState.lotteryWinner = wishingWell.getUnclaimedLotteryWinnings(playerId);
+    pendingQueuedActionState.lotteryWinner = _wishingWell.getUnclaimedLotteryWinnings(playerId);
 
     // Compact to fit the arrays
     assembly ("memory-safe") {
@@ -666,7 +666,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     view
     returns (uint256[] memory ids, uint256[] memory amounts, uint256[] memory randomIds, uint256[] memory randomAmounts)
   {
-    (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = world.getRewardsHelper(
+    (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
       actionId
     );
     bool isCombat = actionSkill.isCombat();
@@ -804,7 +804,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         uint8(actionSkill),
         isCombat,
         pendingQueuedActionProcessed,
-        address(world),
+        address(_world),
         MAX_SUCCESS_PERCENT_CHANCE_,
         _playerXP[playerId]
       );
@@ -833,7 +833,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
       uint256 i = iter.asUint256();
       PendingRandomReward storage pendingRandomReward = pendingRandomRewards[i];
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = world.getRewardsHelper(
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
         pendingRandomReward.actionId
       );
       bool isCombat = actionSkill.isCombat();
@@ -874,7 +874,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       if (randomIds.length != 0) {
         if (!isLegacyWithBoostPendingRandomReward && pendingRandomReward.boostItemTokenId != NONE) {
           // Check for boosts
-          (BoostType boostType, uint16 boostValue, uint24 boostDuration) = itemNFT.getBoostInfo(
+          (BoostType boostType, uint16 boostValue, uint24 boostDuration) = _itemNFT.getBoostInfo(
             pendingRandomReward.boostItemTokenId
           );
           if (boostType == BoostType.GATHERING) {
@@ -928,9 +928,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       _attire[playerId][queuedAction.queueId],
       _activeBoosts[playerId],
       _globalBoost,
-      _clanBoosts[clans.getClanId(playerId)],
-      address(itemNFT),
-      address(world),
+      _clanBoosts[_clans.getClanId(playerId)],
+      address(_itemNFT),
+      address(_world),
       _fullAttireBonus[skill].bonusXPPercent,
       _fullAttireBonus[skill].itemTokenIds,
       pendingQueuedActionEquipmentStates
