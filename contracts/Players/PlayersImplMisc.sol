@@ -170,7 +170,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
       // Claim daily/weekly reward
       if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
-        uint256 totalXP = players_[playerId].totalXP;
+        uint256 totalXP = _players[playerId].totalXP;
         uint256 playerTier;
 
         // Work out the tier
@@ -440,8 +440,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
     // Total used
     if (prevProcessedTime != 0) {
-      uint16 currentActionProcessedFoodConsumed = players_[playerId].currentActionProcessedFoodConsumed;
-      uint16 currentActionProcessedBaseInputItemsConsumedNum = players_[playerId]
+      uint16 currentActionProcessedFoodConsumed = _players[playerId].currentActionProcessedFoodConsumed;
+      uint16 currentActionProcessedBaseInputItemsConsumedNum = _players[playerId]
         .currentActionProcessedBaseInputItemsConsumedNum;
 
       (Equipment[] memory prevConsumedEquipments, Equipment memory prevProducedEquipment) = _getConsumablesEquipment(
@@ -587,7 +587,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256[] calldata _startingItemTokenIds,
     uint256[] calldata _startingAmounts
   ) external {
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
     player.totalXP = uint56(START_XP_);
 
     U256 length = uint256(_startSkills[1] != Skill.NONE ? 2 : 1).asU256();

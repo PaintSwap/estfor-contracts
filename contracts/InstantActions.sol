@@ -95,9 +95,9 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint256[] producedAmounts;
   }
 
-  IPlayers public _players;
-  mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) public _actions;
-  ItemNFT public _itemNFT;
+  IPlayers private _players;
+  mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) private _actions;
+  ItemNFT private _itemNFT;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());

@@ -35,7 +35,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       PendingQueuedActionData memory currentActionProcessed
     ) = processActions(msg.sender, playerId);
 
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
     if (remainingQueuedActions.length != 0) {
       player.currentActionStartTime = uint40(block.timestamp);
     } else {
@@ -72,7 +72,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     public
     returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
   {
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
     PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(_from, playerId);
     if (player.actionQueue.length == 0) {
       // No actions remaining
@@ -90,7 +90,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
     currentActionProcessed = pendingQueuedActionProcessed.currentAction;
     uint256 skillIndex;
-    uint256 startTime = players_[playerId].currentActionStartTime;
+    uint256 startTime = _players[playerId].currentActionStartTime;
     for (uint256 i = 0; i < pendingQueuedActionState.equipmentStates.length; ++i) {
       PendingQueuedActionEquipmentState memory equipmentState = pendingQueuedActionState.equipmentStates[i];
       PendingQueuedActionMetadata memory actionMetadata = pendingQueuedActionState.actionMetadatas[i];
@@ -119,7 +119,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       ActionRewards memory actionRewards = world.getActionRewards(actionMetadata.actionId);
 
       ActionChoice memory actionChoice;
-      QueuedAction storage queuedAction = players_[playerId].actionQueue[i];
+      QueuedAction storage queuedAction = _players[playerId].actionQueue[i];
       CombatStyle combatStyle = queuedAction.combatStyle.asCombatStyle();
       bool isCombat = queuedAction.combatStyle.asCombatStyle().isCombat();
       if (queuedAction.choiceId != 0) {
@@ -506,7 +506,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external {
-    if (!force && players_[playerId].actionQueue.length != 0) {
+    if (!force && _players[playerId].actionQueue.length != 0) {
       revert HasQueuedActions();
     }
 
@@ -520,9 +520,9 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
     uint56 gainedXP = uint56(xp.sub(oldXP));
     _updateXP(from, playerId, skill, gainedXP);
-    uint56 newTotalXP = uint56(players_[playerId].totalXP.add(gainedXP));
-    _claimTotalXPThresholdRewards(from, playerId, players_[playerId].totalXP, newTotalXP);
-    players_[playerId].totalXP = newTotalXP;
+    uint56 newTotalXP = uint56(_players[playerId].totalXP.add(gainedXP));
+    _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
+    _players[playerId].totalXP = newTotalXP;
   }
 
   function _handleDailyRewards(address _from, uint256 playerId) private {

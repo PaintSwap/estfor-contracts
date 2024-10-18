@@ -243,7 +243,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       revert AlreadyUpgraded();
     }
 
-    players_[playerId].packedData = players_[playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
+    _players[playerId].packedData = _players[playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
   }
 
   // This is a special type of quest.
@@ -263,14 +263,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint256 playerId,
     uint256 questId
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    if (players_[playerId].actionQueue.length != 0) {
+    if (_players[playerId].actionQueue.length != 0) {
       _processActionsAndSetState(playerId);
     }
     quests.activateQuest(msg.sender, playerId, questId);
   }
 
   function deactivateQuest(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    if (players_[playerId].actionQueue.length != 0) {
+    if (_players[playerId].actionQueue.length != 0) {
       _processActionsAndSetState(playerId);
     }
     // Quest may hve been completed as a result of this so don't bother trying to deactivate it
@@ -463,7 +463,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function getActionQueue(uint256 playerId) external view returns (QueuedAction[] memory) {
-    return players_[playerId].actionQueue;
+    return _players[playerId].actionQueue;
   }
 
   function getURI(
@@ -512,7 +512,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function totalXP(uint256 playerId) external view override returns (uint256) {
-    return players_[playerId].totalXP;
+    return _players[playerId].totalXP;
   }
 
   function packedXP(uint256 playerId) external view returns (PackedXP memory) {
@@ -520,7 +520,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function players(uint256 playerId) external view returns (Player memory) {
-    return players_[playerId];
+    return _players[playerId];
   }
 
   // Only used by a test, could remove and replace with getStorageAt like another test uses

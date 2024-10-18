@@ -48,7 +48,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       PendingQueuedActionData memory currentActionProcessed
     ) = _processActions(from, playerId);
 
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
     if (queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
@@ -419,7 +419,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       petNFT.assignPet(_from, playerId, _queuedActionInput.petId, _startTime);
     }
     queuedAction.packed = packed;
-    players_[playerId].actionQueue.push(queuedAction);
+    _players[playerId].actionQueue.push(queuedAction);
   }
 
   function _checkFood(
@@ -638,7 +638,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   }
 
   function _clearCurrentActionProcessed(uint256 playerId) private {
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
     player.currentActionProcessedSkill1 = Skill.NONE;
     player.currentActionProcessedXPGained1 = 0;
     player.currentActionProcessedSkill2 = Skill.NONE;
@@ -658,7 +658,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
     // Ensure player info is cleared
     _clearCurrentActionProcessed(playerId);
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
     player.currentActionStartTime = 0;
 
     emit ClearAll(_from, playerId);

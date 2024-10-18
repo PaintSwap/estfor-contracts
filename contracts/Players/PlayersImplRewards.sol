@@ -34,7 +34,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     address owner,
     uint256 playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState) {
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     pendingQueuedActionState.worldLocation = uint8(player.packedData & bytes1(uint8(0x0F)));
     pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueue.length + 1); // reserve +1 for handling the previously processed in current action
@@ -100,7 +100,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256 totalXPGained;
     U256 bounds = actionQueue.length.asU256();
     uint256 pendingQueuedActionStateLength;
-    uint256 startTime = players_[playerId].currentActionStartTime;
+    uint256 startTime = _players[playerId].currentActionStartTime;
     Skill firstRemainingActionSkill; // Might also be the non-actual skills Skill.COMBAT or Skill.TRAVELING
     uint256 numActionsSkipped;
     for (U256 iter; iter < bounds; iter = iter.inc()) {
@@ -920,7 +920,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   ) private view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     (pointsAccrued, pointsAccruedExclBaseBoost) = PlayersLibrary.getPointsAccrued(
       from,
-      players_[playerId],
+      _players[playerId],
       queuedAction,
       startTime,
       uint8(skill),
@@ -1097,7 +1097,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     // Get 1/3 of the combat points as health
     healthPointsAccured = uint32(combatPoints / 3);
     // Get bonus health points from avatar starting skills
-    uint256 bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(players_[playerId], uint8(Skill.HEALTH));
+    uint256 bonusPercent = PlayersLibrary.getBonusAvatarXPPercent(_players[playerId], uint8(Skill.HEALTH));
     healthPointsAccured += uint32((combatPoints * bonusPercent) / (3600 * 100));
   }
 

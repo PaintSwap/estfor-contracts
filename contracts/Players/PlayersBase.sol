@@ -185,7 +185,7 @@ abstract contract PlayersBase {
 
   mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
 
-  mapping(uint256 playerId => Player player) internal players_;
+  mapping(uint256 playerId => Player player) internal _players;
   mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal attire_;
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
@@ -263,7 +263,7 @@ abstract contract PlayersBase {
   }
 
   function _isPlayerFullMode(uint256 playerId) internal view returns (bool) {
-    return uint8(players_[playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+    return uint8(_players[playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
   function _getElapsedTime(uint256 _startTime, uint256 _endTime) internal view returns (uint256 elapsedTime) {
@@ -285,7 +285,7 @@ abstract contract PlayersBase {
     Attire[] memory _attire,
     uint256 _startTime
   ) internal {
-    Player storage player = players_[playerId];
+    Player storage player = _players[playerId];
 
     // If ids are the same as existing, then just change the first one. Optimization when just claiming loot
     bool sameQueueIds = true;
