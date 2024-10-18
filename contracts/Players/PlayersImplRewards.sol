@@ -256,7 +256,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         }
 
         uint256 numActionsCompleted;
-        if (actionSkill == Skill.COMBAT) {
+        if (actionSkill.isCombat()) {
           // Want monsters killed
           uint256 prevActionsCompleted = uint16((numSpawnedPerHour * prevXPElapsedTime) / (3600 * SPAWN_MUL));
           numActionsCompleted =
@@ -591,7 +591,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           currentActionProcessed.xpGained1 += xpGainedSkill;
         } else if (currentActionProcessed.skill2 == questSkill) {
           currentActionProcessed.xpGained2 += xpGainedSkill;
-        } else if (firstRemainingActionSkill == Skill.COMBAT && questSkill == Skill.DEFENCE) {
+        } else if (firstRemainingActionSkill.isCombat() && questSkill == Skill.DEFENCE) {
           // Special case for combat where you are training attack
           currentActionProcessed.skill3 = questSkill;
           currentActionProcessed.xpGained3 += xpGainedSkill;
@@ -654,13 +654,13 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
   function _getRewards(
     uint256 playerId,
     uint40 startTime,
-    uint256 _prevXPElapsedTime,
+    uint256 prevXPElapsedTime,
     uint256 xpElapsedTime,
     uint256 elapsedTime,
-    uint256 _prevProcessedTime,
+    uint256 prevProcessedTime,
     uint16 actionId,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
-    uint8 _fullAttireBonusRewardsPercent
+    uint8 fullAttireBonusRewardsPercent
   )
     private
     view
@@ -669,18 +669,18 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = world.getRewardsHelper(
       actionId
     );
-    bool isCombat = actionSkill == Skill.COMBAT;
+    bool isCombat = actionSkill.isCombat();
 
-    uint16 monstersKilledFull = uint16((numSpawnedPerHour * (_prevXPElapsedTime + xpElapsedTime)) / (SPAWN_MUL * 3600));
+    uint16 monstersKilledFull = uint16((numSpawnedPerHour * (prevXPElapsedTime + xpElapsedTime)) / (SPAWN_MUL * 3600));
     uint8 successPercent = _getSuccessPercent(playerId, actionId, actionSkill, isCombat, pendingQueuedActionProcessed);
 
-    uint256 veryStartTime = startTime.sub(_prevProcessedTime);
+    uint256 veryStartTime = startTime.sub(prevProcessedTime);
     // Full
     uint256 length;
     (ids, amounts, length) = _getGuaranteedRewards(
       playerId,
       uint40(veryStartTime),
-      _prevXPElapsedTime + xpElapsedTime,
+      prevXPElapsedTime + xpElapsedTime,
       actionRewards,
       monstersKilledFull,
       isCombat,
@@ -689,14 +689,14 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     // Previously accumulated
     uint256[] memory prevNewIds;
     uint256[] memory prevNewAmounts;
-    if (_prevXPElapsedTime != 0) {
+    if (prevXPElapsedTime != 0) {
       uint256 prevLength;
-      uint16 monstersKilled = uint16((numSpawnedPerHour * _prevXPElapsedTime) / (SPAWN_MUL * 3600));
+      uint16 monstersKilled = uint16((numSpawnedPerHour * prevXPElapsedTime) / (SPAWN_MUL * 3600));
 
       (prevNewIds, prevNewAmounts, prevLength) = _getGuaranteedRewards(
         playerId,
         uint40(veryStartTime),
-        _prevXPElapsedTime,
+        prevXPElapsedTime,
         actionRewards,
         monstersKilled,
         isCombat,
@@ -710,7 +710,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     }
 
     // Any random rewards unlocked. Exclude any that have dynamic components (combat and crafting etc)
-    if (actionSkill != Skill.COMBAT && actionRewards.randomRewardTokenId1 != NONE) {
+    if (!actionSkill.isCombat() && actionRewards.randomRewardTokenId1 != NONE) {
       (randomIds, randomAmounts, ) = _getRandomRewards(
         playerId,
         startTime,
@@ -718,7 +718,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         xpElapsedTime / 3600,
         actionRewards,
         successPercent,
-        _fullAttireBonusRewardsPercent
+        fullAttireBonusRewardsPercent
       );
     }
 
@@ -836,7 +836,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = world.getRewardsHelper(
         pendingRandomReward.actionId
       );
-      bool isCombat = actionSkill == Skill.COMBAT;
+      bool isCombat = actionSkill.isCombat();
       uint16 monstersKilled = uint16(
         uint256(numSpawnedPerHour * pendingRandomReward.xpElapsedTime) / (SPAWN_MUL * 3600)
       );
@@ -923,7 +923,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       players_[playerId],
       queuedAction,
       startTime,
-      skill.asUint8(),
+      uint8(skill),
       xpElapsedTime,
       attire_[playerId][queuedAction.queueId],
       activeBoosts_[playerId],
