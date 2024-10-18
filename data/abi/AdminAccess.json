@@ -159,21 +159,8 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_admin",
-        "type": "address"
-      }
-    ],
-    "name": "addAdmin",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address[]",
-        "name": "_admins",
+        "name": "admins",
         "type": "address[]"
       }
     ],
@@ -186,7 +173,7 @@
     "inputs": [
       {
         "internalType": "address[]",
-        "name": "_admins",
+        "name": "admins",
         "type": "address[]"
       }
     ],
@@ -199,12 +186,12 @@
     "inputs": [
       {
         "internalType": "address[]",
-        "name": "_admins",
+        "name": "admins",
         "type": "address[]"
       },
       {
         "internalType": "address[]",
-        "name": "_promotionalAdmins",
+        "name": "promotionalAdmins",
         "type": "address[]"
       }
     ],
@@ -217,7 +204,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_admin",
+        "name": "admin",
         "type": "address"
       }
     ],
@@ -236,7 +223,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_admin",
+        "name": "admin",
         "type": "address"
       }
     ],
@@ -280,12 +267,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_admin",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "admins",
+        "type": "address[]"
       }
     ],
-    "name": "removeAdmin",
+    "name": "removeAdmins",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -294,7 +281,7 @@
     "inputs": [
       {
         "internalType": "address[]",
-        "name": "_admins",
+        "name": "admins",
         "type": "address[]"
       }
     ],

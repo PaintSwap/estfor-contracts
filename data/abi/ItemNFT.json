@@ -1171,7 +1171,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       },
       {
@@ -1266,7 +1266,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       },
       {
@@ -1284,17 +1284,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_amounts",
+        "name": "amounts",
         "type": "uint256[]"
       }
     ],
@@ -1424,7 +1424,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -1443,7 +1443,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint16"
       }
     ],
@@ -1472,7 +1472,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint16"
       }
     ],
@@ -1491,7 +1491,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_item",
+        "name": "item",
         "type": "uint16"
       }
     ],
@@ -1525,7 +1525,7 @@
     "inputs": [
       {
         "internalType": "uint16[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint16[]"
       }
     ],
@@ -1544,7 +1544,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint16"
       }
     ],
@@ -1644,8 +1644,27 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getItemBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint16[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint16[]"
       }
     ],
@@ -1735,7 +1754,7 @@
           }
         ],
         "internalType": "struct Item[]",
-        "name": "_items",
+        "name": "items",
         "type": "tuple[]"
       }
     ],
@@ -1746,7 +1765,7 @@
     "inputs": [
       {
         "internalType": "uint16[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint16[]"
       }
     ],
@@ -1772,35 +1791,80 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getPlayersAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTimestampFirstMint",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWorld",
+    "outputs": [
+      {
+        "internalType": "contract World",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "contract World",
-        "name": "_world",
+        "name": "world",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_shop",
+        "name": "shop",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_royaltyReceiver",
+        "name": "royaltyReceiver",
         "type": "address"
       },
       {
         "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
         "internalType": "string",
-        "name": "_baseURI",
+        "name": "baseURI",
         "type": "string"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
@@ -1813,12 +1877,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_account",
+        "name": "account",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_operator",
+        "name": "operator",
         "type": "address"
       }
     ],
@@ -1836,37 +1900,18 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "itemId",
-        "type": "uint256"
-      }
-    ],
-    "name": "itemBalances",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -1879,17 +1924,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "_ids",
+        "name": "ids",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_amounts",
+        "name": "amounts",
         "type": "uint256[]"
       }
     ],
@@ -1914,19 +1959,6 @@
   {
     "inputs": [],
     "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "players",
     "outputs": [
       {
         "internalType": "address",
@@ -2117,7 +2149,7 @@
     "inputs": [
       {
         "internalType": "contract IBankFactory",
-        "name": "_bankFactory",
+        "name": "bankFactory",
         "type": "address"
       }
     ],
@@ -2130,7 +2162,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_baseURI",
+        "name": "baseURI",
         "type": "string"
       }
     ],
@@ -2143,7 +2175,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_bazaar",
+        "name": "bazaar",
         "type": "address"
       }
     ],
@@ -2156,7 +2188,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_instantActions",
+        "name": "instantActions",
         "type": "address"
       }
     ],
@@ -2169,7 +2201,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_instantVRFActions",
+        "name": "instantVRFActions",
         "type": "address"
       }
     ],
@@ -2182,7 +2214,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_passiveActions",
+        "name": "passiveActions",
         "type": "address"
       }
     ],
@@ -2195,7 +2227,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       }
     ],
@@ -2208,7 +2240,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_promotions",
+        "name": "promotions",
         "type": "address"
       }
     ],
@@ -2221,12 +2253,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_lockedBankVaults",
+        "name": "lockedBankVaults",
         "type": "address"
       }
     ],
@@ -2276,7 +2308,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       },
       {
@@ -2299,7 +2331,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint256[]"
       },
       {
@@ -2311,25 +2343,6 @@
     "name": "testMints",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "itemId",
-        "type": "uint256"
-      }
-    ],
-    "name": "timestampFirstMint",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -2349,7 +2362,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -2412,7 +2425,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -2422,19 +2435,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "world",
-    "outputs": [
-      {
-        "internalType": "contract World",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

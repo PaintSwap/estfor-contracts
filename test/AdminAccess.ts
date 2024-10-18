@@ -74,17 +74,17 @@ describe("AdminAccess", function () {
     });
   });
 
-  describe("addAdmin", () => {
+  describe("addAdmins", () => {
     it("Add an admin", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
-      await adminAccess.addAdmin(owner.address);
+      await adminAccess.addAdmins([owner.address]);
       expect(await adminAccess.isAdmin(owner.address)).to.be.true;
       expect(await adminAccess.isAdmin(alice.address)).to.be.false;
     });
 
     it("Revert if not called by owner", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
-      await expect(adminAccess.connect(alice).addAdmin(owner.address)).to.be.revertedWithCustomError(
+      await expect(adminAccess.connect(alice).addAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
         "CallerIsNotOwner"
       );
@@ -95,7 +95,7 @@ describe("AdminAccess", function () {
     it("Remove an admin", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await adminAccess.addAdmins([owner.address, alice.address]);
-      await adminAccess.removeAdmin(owner.address);
+      await adminAccess.removeAdmins([owner.address]);
       expect(await adminAccess.isAdmin(alice.address)).to.be.true;
       expect(await adminAccess.isAdmin(owner.address)).to.be.false;
     });
@@ -103,7 +103,7 @@ describe("AdminAccess", function () {
     it("Revert if not called by owner", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
       await adminAccess.addAdmins([owner.address, alice.address]);
-      await expect(adminAccess.connect(alice).removeAdmin(owner.address)).to.be.revertedWithCustomError(
+      await expect(adminAccess.connect(alice).removeAdmins([owner.address])).to.be.revertedWithCustomError(
         adminAccess,
         "CallerIsNotOwner"
       );
@@ -113,13 +113,13 @@ describe("AdminAccess", function () {
   describe("isAdmin", () => {
     it("Return true for an admin", async () => {
       const {adminAccess, owner} = await loadFixture(deployContracts);
-      await adminAccess.addAdmin(owner.address);
+      await adminAccess.addAdmins([owner.address]);
       expect(await adminAccess.isAdmin(owner.address)).to.be.true;
     });
 
     it("Return false for a non-admin", async () => {
       const {adminAccess, owner, alice} = await loadFixture(deployContracts);
-      await adminAccess.addAdmin(owner.address);
+      await adminAccess.addAdmins([owner.address]);
       expect(await adminAccess.isAdmin(alice.address)).to.be.false;
     });
   });

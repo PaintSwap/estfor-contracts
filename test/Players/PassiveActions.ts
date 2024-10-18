@@ -275,10 +275,10 @@ describe("Passive actions", function () {
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
 
     // Get action
-    const action1 = await passiveActions.actions(1);
+    const action1 = await passiveActions.getAction(1);
     expect(action1.durationDays).to.eq(10);
     expect(action1.minSkill1).to.eq(Skill.WOODCUTTING);
-    const action2 = await passiveActions.actions(2);
+    const action2 = await passiveActions.getAction(2);
     expect(action2.durationDays).to.eq(1);
     expect(action2.minSkill1).to.eq(Skill.FIREMAKING);
   });
@@ -662,7 +662,7 @@ describe("Passive actions", function () {
       }
     };
     await passiveActions.addActions([passiveActionInput]);
-    expect((await passiveActions.actions(passiveActionInput.actionId)).packedData == "0x80");
+    expect((await passiveActions.getAction(passiveActionInput.actionId)).packedData == "0x80");
   });
 
   it("Check full mode requirements", async function () {
@@ -677,7 +677,7 @@ describe("Passive actions", function () {
       }
     };
     await passiveActions.addActions([passiveActionInput]);
-    expect((await passiveActions.actions(passiveActionInput.actionId)).packedData == "0x80");
+    expect((await passiveActions.getAction(passiveActionInput.actionId)).packedData == "0x80");
     await itemNFT.testMint(alice.address, EstforConstants.POISON, 1);
     await expect(
       passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0)

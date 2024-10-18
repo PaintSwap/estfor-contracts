@@ -23,8 +23,8 @@ library EstforLibrary {
       _char == 0x00; // empty byte
   }
 
-  function leftTrim(string memory _str) internal pure returns (string memory) {
-    bytes memory b = bytes(_str);
+  function leftTrim(string memory str) internal pure returns (string memory) {
+    bytes memory b = bytes(str);
     uint256 strLen = b.length;
     uint256 start = type(uint256).max;
     // Find the index of the first non-whitespace character
@@ -47,8 +47,8 @@ library EstforLibrary {
     return string(trimmedBytes);
   }
 
-  function rightTrim(string calldata _str) internal pure returns (string memory) {
-    bytes memory b = bytes(_str);
+  function rightTrim(string calldata str) internal pure returns (string memory) {
+    bytes memory b = bytes(str);
     uint256 strLen = b.length;
     if (strLen == 0) {
       return "";
@@ -74,13 +74,13 @@ library EstforLibrary {
     return string(trimmedBytes);
   }
 
-  function trim(string calldata _str) external pure returns (string memory) {
-    return leftTrim(rightTrim(_str));
+  function trim(string calldata str) external pure returns (string memory) {
+    return leftTrim(rightTrim(str));
   }
 
   // Assumes the string is already trimmed
-  function containsValidNameCharacters(string calldata _name) external pure returns (bool) {
-    bytes memory b = bytes(_name);
+  function containsValidNameCharacters(string calldata name) external pure returns (bool) {
+    bytes memory b = bytes(name);
     bool lastCharIsWhitespace;
     U256 iter = b.length.asU256();
     while (iter.neq(0)) {
@@ -102,13 +102,13 @@ library EstforLibrary {
     return true;
   }
 
-  function containsValidDiscordCharacters(string calldata _discord) external pure returns (bool) {
-    bytes memory discord = bytes(_discord);
-    U256 iter = discord.length.asU256();
+  function containsValidDiscordCharacters(string calldata discord) external pure returns (bool) {
+    bytes memory discordBytes = bytes(discord);
+    U256 iter = discordBytes.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
-      bytes1 char = discord[i];
+      bytes1 char = discordBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -121,13 +121,13 @@ library EstforLibrary {
     return true;
   }
 
-  function containsValidTelegramCharacters(string calldata _telegram) external pure returns (bool) {
-    bytes memory telegram = bytes(_telegram);
-    U256 iter = telegram.length.asU256();
+  function containsValidTelegramCharacters(string calldata telegram) external pure returns (bool) {
+    bytes memory telegramBytes = bytes(telegram);
+    U256 iter = telegramBytes.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
-      bytes1 char = telegram[i];
+      bytes1 char = telegramBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -141,13 +141,13 @@ library EstforLibrary {
     return true;
   }
 
-  function containsValidTwitterCharacters(string calldata _twitter) external pure returns (bool) {
-    bytes memory twitter = bytes(_twitter);
-    U256 iter = twitter.length.asU256();
+  function containsValidTwitterCharacters(string calldata twitter) external pure returns (bool) {
+    bytes memory twitterBytes = bytes(twitter);
+    U256 iter = twitterBytes.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
-      bytes1 char = twitter[i];
+      bytes1 char = twitterBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -160,13 +160,13 @@ library EstforLibrary {
     return true;
   }
 
-  function containsBaselineSocialNameCharacters(string calldata _socialMediaName) external pure returns (bool) {
-    bytes memory socialMediaName = bytes(_socialMediaName);
-    U256 iter = socialMediaName.length.asU256();
+  function containsBaselineSocialNameCharacters(string calldata socialMediaName) external pure returns (bool) {
+    bytes memory socialMediaNameBytes = bytes(socialMediaName);
+    U256 iter = socialMediaNameBytes.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
-      bytes1 char = socialMediaName[i];
+      bytes1 char = socialMediaNameBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -182,8 +182,8 @@ library EstforLibrary {
     return true;
   }
 
-  function toLower(string memory _str) internal pure returns (string memory) {
-    bytes memory lowerStr = abi.encodePacked(_str);
+  function toLower(string memory str) internal pure returns (string memory) {
+    bytes memory lowerStr = abi.encodePacked(str);
     U256 iter = lowerStr.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
@@ -197,16 +197,16 @@ library EstforLibrary {
   }
 
   // This should match the one below, useful when a calldata array is needed and for external testing
-  function binarySearchMemory(uint48[] calldata _arr, uint256 _target) external pure returns (uint256) {
+  function _binarySearchMemory(uint48[] calldata array, uint256 target) internal pure returns (uint256) {
     uint256 low = 0;
-    uint256 high = _arr.length - 1;
+    uint256 high = array.length - 1;
 
     while (low <= high) {
       uint256 mid = low + (high - low) / 2;
 
-      if (_arr[mid] == _target) {
+      if (array[mid] == target) {
         return mid; // Element found
-      } else if (_arr[mid] < _target) {
+      } else if (array[mid] < target) {
         low = mid + 1;
       } else {
         // Check to prevent underflow
@@ -220,19 +220,23 @@ library EstforLibrary {
     }
 
     return type(uint256).max; // Element not found
+  }
+
+  function binarySearchMemory(uint48[] calldata array, uint256 target) external pure returns (uint256) {
+    return _binarySearchMemory(array, target);
   }
 
   // This should match the one above
-  function _binarySearch(uint48[] storage _arr, uint256 _target) internal view returns (uint256) {
+  function _binarySearch(uint48[] storage array, uint256 target) internal view returns (uint256) {
     uint256 low = 0;
-    uint256 high = _arr.length - 1;
+    uint256 high = array.length - 1;
 
     while (low <= high) {
       uint256 mid = low + (high - low) / 2;
 
-      if (_arr[mid] == _target) {
+      if (array[mid] == target) {
         return mid; // Element found
-      } else if (_arr[mid] < _target) {
+      } else if (array[mid] < target) {
         low = mid + 1;
       } else {
         // Check to prevent underflow
@@ -248,7 +252,7 @@ library EstforLibrary {
     return type(uint256).max; // Element not found
   }
 
-  function binarySearch(uint48[] storage _arr, uint256 _target) external view returns (uint256) {
-    return _binarySearch(_arr, _target);
+  function binarySearch(uint48[] storage array, uint256 target) external view returns (uint256) {
+    return _binarySearch(array, target);
   }
 }

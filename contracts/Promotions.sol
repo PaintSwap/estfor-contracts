@@ -98,7 +98,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   uint256 public constant FINAL_PROMOTION_DAY_INDEX = 31;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
-    require(IPlayers(_itemNFT.players()).isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
+    require(
+      IPlayers(_itemNFT.getPlayersAddress()).isOwnerOfPlayerAndActive(_msgSender(), playerId),
+      NotOwnerOfPlayerAndActive()
+    );
     _;
   }
 
@@ -257,10 +260,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       missedDays.length;
     _pay(totalCost);
 
-    _itemNFT.mintBatch(msg.sender, itemTokenIds, amounts);
+    _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
 
     emit PromotionRedeemedV2(
-      msg.sender,
+      _msgSender(),
       playerId,
       promotion,
       "",
@@ -308,7 +311,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         _pay(promotionInfo.brushCost * 1 ether);
       } else {
         require(
-          !promotionInfo.evolvedHeroOnly || IPlayers(_itemNFT.players()).isPlayerUpgraded(playerId),
+          !promotionInfo.evolvedHeroOnly || IPlayers(_itemNFT.getPlayersAddress()).isPlayerUpgraded(playerId),
           PlayerNotEvolved()
         );
       }
@@ -322,10 +325,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     if (itemTokenIds.length != 0) {
-      _itemNFT.mintBatch(msg.sender, itemTokenIds, amounts);
+      _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
     }
 
-    emit PromotionRedeemedV2(msg.sender, playerId, promotion, "", itemTokenIds, amounts, daysToSet, 0, 0, 0);
+    emit PromotionRedeemedV2(_msgSender(), playerId, promotion, "", itemTokenIds, amounts, daysToSet, 0, 0, 0);
   }
 
   function mintPromotionViewNow(
@@ -402,7 +405,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       return PromotionMintStatus.PROMOTION_ALREADY_CLAIMED;
     }
 
-    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.players()).totalXP(playerId)) {
+    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.getPlayersAddress()).totalXP(playerId)) {
       return PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY;
     }
     return PromotionMintStatus.SUCCESS;
@@ -426,7 +429,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       return PromotionMintStatus.PROMOTION_ALREADY_CLAIMED;
     }
 
-    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.players()).totalXP(playerId)) {
+    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.getPlayersAddress()).totalXP(playerId)) {
       return PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY;
     }
     return PromotionMintStatus.SUCCESS;
@@ -440,7 +443,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   ) private view returns (uint256 itemTokenId, uint256 amount, PromotionMintStatus promotionMintStatus) {
     // No items specified to choose from so pick a random daily item from the tier above
     promotionMintStatus = oldStatus;
-    uint256 totalXP = IPlayers(_itemNFT.players()).totalXP(playerId);
+    uint256 totalXP = IPlayers(_itemNFT.getPlayersAddress()).totalXP(playerId);
     uint256 playerTier;
 
     // Work out the tier
@@ -483,13 +486,13 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
       // Pick a random item from the list, only supports 1 item atm
       uint256 numAvailableItems = promotionInfo.randomItemTokenIds.length;
-      World world = _itemNFT.world();
+      World world = _itemNFT.getWorld();
 
       uint256 oracleTime = (promotionInfo.startTime / 1 days) * 1 days - 1;
       if (!world.hasRandomWord(oracleTime)) {
         promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
       } else {
-        uint256 randomWord = _itemNFT.world().getRandomWord(oracleTime);
+        uint256 randomWord = world.getRandomWord(oracleTime);
         uint256 modifiedRandomWord = uint256(keccak256(abi.encodePacked(randomWord, playerId)));
         uint256 index = modifiedRandomWord % numAvailableItems;
         itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
@@ -519,7 +522,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     uint256 today = (timestamp - promotionInfo.startTime) / 1 days;
-    World world = _itemNFT.world();
+    World world = _itemNFT.getWorld();
     if (today < promotionInfo.numDays) {
       itemTokenIds = new uint256[](
         promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length
@@ -585,7 +588,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       }
 
       // The streak bonus random reward should be based on the last day of the promotion. Pick a random item from the list
-      uint256 randomWord = _itemNFT.world().getRandomWord(oracleTime);
+      uint256 randomWord = world.getRandomWord(oracleTime);
       uint256 modifiedRandomWord = uint256(keccak256(abi.encodePacked(randomWord, playerId)));
       uint256 index = modifiedRandomWord % numAvailableItems;
       itemTokenIds[0] = promotionInfo.randomStreakBonusItemTokenIds1[index];
@@ -597,12 +600,12 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
   function _pay(uint256 brushCost) private {
     // Pay
-    IBrushToken brush = _playerNFT.brush();
+    IBrushToken brush = _playerNFT.getBrush();
     // Send half to the pool
     uint256 poolAmount = brushCost / 2;
-    require(brush.transferFrom(_msgSender(), _playerNFT.pool(), brushCost / 2), NotEnoughBrush());
+    require(brush.transferFrom(_msgSender(), _playerNFT.getPoolAddress(), brushCost / 2), NotEnoughBrush());
     // Send half to the dev address
-    require(brush.transferFrom(_msgSender(), _playerNFT.dev(), brushCost - poolAmount), NotEnoughBrush());
+    require(brush.transferFrom(_msgSender(), _playerNFT.getDevAddress(), brushCost - poolAmount), NotEnoughBrush());
   }
 
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.

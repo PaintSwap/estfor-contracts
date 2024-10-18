@@ -66,8 +66,8 @@ describe("PlayerNFT", function () {
     await createPlayer(playerNFT, avatarId, alice, name, makeActive);
 
     // Check avatar ids are as expected
-    expect((await playerNFT.playerInfos(playerId)).avatarId).to.eq(1);
-    expect((await playerNFT.playerInfos(playerId)).originalAvatarId).to.eq(1);
+    expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(1);
+    expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
   });
 
   it("Minting with an upgrade should cost brush", async function () {
@@ -116,11 +116,11 @@ describe("PlayerNFT", function () {
       playerNFT,
       "NotOwnerOfPlayer"
     );
-    expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.true;
+    expect(await playerNFT.hasLowercaseName(origName.toLowerCase())).to.be.true;
 
     await playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram, false);
-    expect(await playerNFT.lowercaseNames(origName.toLowerCase())).to.be.false; // Should be deleted now
-    expect(await playerNFT.names(playerId)).to.eq(name);
+    expect(await playerNFT.hasLowercaseName(origName.toLowerCase())).to.be.false; // Should be deleted now
+    expect(await playerNFT.getName(playerId)).to.eq(name);
 
     const avatarId = 1;
     const makeActive = true;
@@ -185,8 +185,8 @@ describe("PlayerNFT", function () {
     ).to.be.revertedWithCustomError(players, "AlreadyUpgraded");
 
     // Check avatar ids are as expected
-    expect((await playerNFT.playerInfos(playerId)).avatarId).to.eq(10001);
-    expect((await playerNFT.playerInfos(playerId)).originalAvatarId).to.eq(1);
+    expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(10001);
+    expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
   });
 
   it("Upgrading from mint should cost brush", async function () {
@@ -227,8 +227,8 @@ describe("PlayerNFT", function () {
     expect(player.packedData == "0x80");
 
     // Check avatar ids are as expected
-    expect((await playerNFT.playerInfos(playerId)).avatarId).to.eq(10001);
-    expect((await playerNFT.playerInfos(playerId)).originalAvatarId).to.eq(1);
+    expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(10001);
+    expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
   });
 
   it("uri", async function () {

@@ -85,36 +85,32 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint64 playerId;
   }
 
-  ItemNFT private itemNFT;
-  Players private players;
-  mapping(uint256 playerId => PlayerActionInfo) private playerActionInfos;
-  mapping(uint256 actionId => InstantVRFAction action) public actions;
-  mapping(bytes32 requestId => Player player) private requestIdToPlayer;
-  mapping(InstantVRFActionType actionType => address strategy) public strategies;
+  ItemNFT private _itemNFT;
+  Players private _players;
+  mapping(uint256 playerId => PlayerActionInfo) private _playerActionInfos;
+  mapping(uint256 actionId => InstantVRFAction action) private _actions;
+  mapping(bytes32 requestId => Player player) private _requestIdToPlayer;
+  mapping(InstantVRFActionType actionType => address strategy) private _strategies;
 
-  VRFRequestInfo private vrfRequestInfo;
-  uint64 public gasCostPerUnit;
+  VRFRequestInfo private _vrfRequestInfo;
+  uint64 private _gasCostPerUnit;
 
-  address private oracle;
-  ISamWitchVRF private samWitchVRF;
-  PetNFT private petNFT;
+  address private _oracle;
+  ISamWitchVRF private _samWitchVRF;
+  PetNFT private _petNFT;
 
   uint256 public constant MAX_ACTION_AMOUNT = 64;
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 120_000;
   uint256 private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
   /// @dev Reverts if the caller is not the SamWitchVRF contract.
   modifier onlySamWitchVRF() {
-    if (msg.sender != address(samWitchVRF)) {
-      revert CallerNotSamWitchVRF();
-    }
+    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
     _;
   }
 
@@ -124,102 +120,78 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(
-    Players _players,
-    ItemNFT _itemNFT,
-    PetNFT _petNFT,
-    address _oracle,
-    ISamWitchVRF _samWitchVRF,
-    VRFRequestInfo _vrfRequestInfo
+    Players players,
+    ItemNFT itemNFT,
+    PetNFT petNFT,
+    address oracle,
+    ISamWitchVRF samWitchVRF,
+    VRFRequestInfo vrfRequestInfo
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    players = _players;
-    itemNFT = _itemNFT;
-    petNFT = _petNFT;
-    oracle = _oracle;
-    samWitchVRF = _samWitchVRF;
-    vrfRequestInfo = _vrfRequestInfo;
+    _players = players;
+    _itemNFT = itemNFT;
+    _petNFT = petNFT;
+    _oracle = oracle;
+    _samWitchVRF = samWitchVRF;
+    _vrfRequestInfo = vrfRequestInfo;
     setGasCostPerUnit(15_000);
   }
 
   function doInstantVRFActions(
-    uint256 _playerId,
-    uint16[] calldata _actionIds,
-    uint256[] calldata _actionAmounts
-  ) external payable isOwnerOfPlayerAndActive(_playerId) {
-    if (_actionIds.length != _actionAmounts.length) {
-      revert LengthMismatch();
-    }
+    uint256 playerId,
+    uint16[] calldata actionIds,
+    uint256[] calldata actionAmounts
+  ) external payable isOwnerOfPlayerAndActive(playerId) {
+    require(actionIds.length == actionAmounts.length, LengthMismatch());
+    require(actionIds.length <= 5, TooManyInputItems());
+    require(_playerActionInfos[playerId].actionIdAmountPairs[0] == 0, AlreadyProcessing());
+    require(actionIds.length != 0, NotDoingAnyActions());
 
-    if (_actionIds.length > 5) {
-      revert TooManyInputItems();
-    }
-
-    if (playerActionInfos[_playerId].actionIdAmountPairs[0] != 0) {
-      revert AlreadyProcessing();
-    }
-
-    if (_actionIds.length == 0) {
-      revert NotDoingAnyActions();
-    }
-
-    bool isPlayerUpgraded = players.isPlayerUpgraded(_playerId);
+    bool isPlayerUpgraded = _players.isPlayerUpgraded(playerId);
     uint256 totalAmount;
     uint256 numRandomWords;
-    for (uint256 i; i < _actionIds.length; ++i) {
-      uint16 actionId = _actionIds[i];
-      if (!_actionExists(actionId)) {
-        revert ActionDoesNotExist();
-      }
-      if (!_isActionAvailable(actionId)) {
-        revert ActionNotAvailable();
-      }
-      if (!isPlayerUpgraded && _isActionFullMode(actionId)) {
-        revert PlayerNotUpgraded();
-      }
-      playerActionInfos[_playerId].actionIdAmountPairs[i * 2] = actionId;
-      playerActionInfos[_playerId].actionIdAmountPairs[i * 2 + 1] = uint16(_actionAmounts[i]);
-      totalAmount += _actionAmounts[i];
-      numRandomWords += _actionAmounts[i] / 16 + ((_actionAmounts[i] % 16) == 0 ? 0 : 1);
+    for (uint256 i; i < actionIds.length; ++i) {
+      uint16 actionId = actionIds[i];
+      require(_actionExists(actionId), ActionDoesNotExist());
+      require(_isActionAvailable(actionId), ActionNotAvailable());
+      require(isPlayerUpgraded || !_isActionFullMode(actionId), PlayerNotUpgraded());
+      _playerActionInfos[playerId].actionIdAmountPairs[i * 2] = actionId;
+      _playerActionInfos[playerId].actionIdAmountPairs[i * 2 + 1] = uint16(actionAmounts[i]);
+      totalAmount += actionAmounts[i];
+      numRandomWords += actionAmounts[i] / 16 + ((actionAmounts[i] % 16) == 0 ? 0 : 1);
     }
 
     // Mainly to keep response gas costs down
-    if (totalAmount > MAX_ACTION_AMOUNT) {
-      revert TooManyActionAmounts();
-    }
+    require(totalAmount <= MAX_ACTION_AMOUNT, TooManyActionAmounts());
+    // // Check they are paying enough
+    require(msg.value >= requestCost(totalAmount), NotEnoughFTM());
 
-    // Check they are paying enough
-    if (msg.value < requestCost(totalAmount)) {
-      revert NotEnoughFTM();
-    }
-
-    (bool success, ) = oracle.call{value: msg.value}("");
-    if (!success) {
-      revert TransferFailed();
-    }
+    (bool success, ) = _oracle.call{value: msg.value}("");
+    require(success, TransferFailed());
 
     bytes32 requestId = _requestRandomWords(numRandomWords, totalAmount);
-    requestIdToPlayer[requestId] = Player({owner: msg.sender, playerId: uint64(_playerId)});
+    _requestIdToPlayer[requestId] = Player({owner: _msgSender(), playerId: uint64(playerId)});
 
     // Get the tokenIds to burn
-    uint256[] memory consumedItemTokenIds = new uint256[](_actionIds.length * MAX_INPUTS_PER_ACTION);
-    uint256[] memory consumedAmounts = new uint256[](_actionIds.length * MAX_INPUTS_PER_ACTION);
+    uint256[] memory consumedItemTokenIds = new uint256[](actionIds.length * MAX_INPUTS_PER_ACTION);
+    uint256[] memory consumedAmounts = new uint256[](actionIds.length * MAX_INPUTS_PER_ACTION);
     uint256 actualLength;
-    for (uint256 i = 0; i < _actionIds.length; ++i) {
-      InstantVRFAction storage instantVRFAction = actions[_actionIds[i]];
+    for (uint256 i = 0; i < actionIds.length; ++i) {
+      InstantVRFAction storage instantVRFAction = _actions[actionIds[i]];
       if (instantVRFAction.inputTokenId1 != NONE) {
         consumedItemTokenIds[actualLength] = instantVRFAction.inputTokenId1;
-        consumedAmounts[actualLength] = instantVRFAction.inputAmount1 * _actionAmounts[i];
+        consumedAmounts[actualLength] = instantVRFAction.inputAmount1 * actionAmounts[i];
         ++actualLength;
       }
       if (instantVRFAction.inputTokenId2 != NONE) {
         consumedItemTokenIds[actualLength] = instantVRFAction.inputTokenId2;
-        consumedAmounts[actualLength] = instantVRFAction.inputAmount2 * _actionAmounts[i];
+        consumedAmounts[actualLength] = instantVRFAction.inputAmount2 * actionAmounts[i];
         ++actualLength;
       }
       if (instantVRFAction.inputTokenId3 != NONE) {
         consumedItemTokenIds[actualLength] = instantVRFAction.inputTokenId3;
-        consumedAmounts[actualLength] = instantVRFAction.inputAmount3 * _actionAmounts[i];
+        consumedAmounts[actualLength] = instantVRFAction.inputAmount3 * actionAmounts[i];
         ++actualLength;
       }
     }
@@ -229,40 +201,38 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       mstore(consumedAmounts, actualLength)
     }
 
-    itemNFT.burnBatch(msg.sender, consumedItemTokenIds, consumedAmounts);
+    _itemNFT.burnBatch(_msgSender(), consumedItemTokenIds, consumedAmounts);
+
     emit DoInstantVRFActions(
-      msg.sender,
-      _playerId,
+      _msgSender(),
+      playerId,
       uint256(requestId),
-      _actionIds,
-      _actionAmounts,
+      actionIds,
+      actionAmounts,
       consumedItemTokenIds,
       consumedAmounts
     );
   }
 
-  function fulfillRandomWords(bytes32 _requestId, uint256[] calldata _randomWords) external onlySamWitchVRF {
-    uint256 playerId = requestIdToPlayer[_requestId].playerId;
-    address from = requestIdToPlayer[_requestId].owner; // Might not be actual owner due to async nature so don't rely on that
-
-    if (from == address(0)) {
-      revert RequestDoesNotExist();
-    }
+  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+    uint256 playerId = _requestIdToPlayer[requestId].playerId;
+    address from = _requestIdToPlayer[requestId].owner; // Might not be actual owner due to async nature so don't rely on that
+    require(from != address(0), RequestDoesNotExist());
 
     (
       uint256[] memory itemTokenIds,
       uint256[] memory itemAmounts,
       uint256[] memory petBaseIds,
-      uint256[] memory randomWords
-    ) = _getRewards(playerId, _randomWords);
+      uint256[] memory random
+    ) = _getRewards(playerId, randomWords);
 
-    vrfRequestInfo.updateAverageGasPrice();
+    _vrfRequestInfo.updateAverageGasPrice();
 
-    delete playerActionInfos[playerId]; // Allows another request to be made
-    delete requestIdToPlayer[_requestId]; // Not strictly necessary
+    delete _playerActionInfos[playerId]; // Allows another request to be made
+    delete _requestIdToPlayer[requestId]; // Not strictly necessary
 
     if (itemTokenIds.length != 0) {
-      try itemNFT.mintBatch(from, itemTokenIds, itemAmounts) {} catch {
+      try _itemNFT.mintBatch(from, itemTokenIds, itemAmounts) {} catch {
         // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
         assembly ("memory-safe") {
           mstore(itemTokenIds, 0)
@@ -273,19 +243,27 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
     uint256[] memory petTokenIds;
     if (petBaseIds.length != 0) {
-      try petNFT.mintBatch(from, petBaseIds, randomWords) returns (uint256[] memory newPetTokenIds) {
+      try _petNFT.mintBatch(from, petBaseIds, random) returns (uint256[] memory newPetTokenIds) {
         petTokenIds = newPetTokenIds;
       } catch {
         // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
       }
     }
 
-    emit CompletedInstantVRFActions(from, playerId, uint256(_requestId), itemTokenIds, itemAmounts, petTokenIds);
+    emit CompletedInstantVRFActions(from, playerId, uint256(requestId), itemTokenIds, itemAmounts, petTokenIds);
+  }
+
+  function getAction(uint16 actionId) external view returns (InstantVRFAction memory) {
+    return _actions[actionId];
+  }
+
+  function getStrategy(InstantVRFActionType actionType) external view returns (address) {
+    return _strategies[actionType];
   }
 
   function _getRewards(
-    uint256 _playerId,
-    uint256[] calldata _randomWords
+    uint256 playerId,
+    uint256[] calldata randomWords
   )
     private
     view
@@ -296,8 +274,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       uint256[] memory petRandomWords
     )
   {
-    uint16[10] storage _playerActionInfos = playerActionInfos[_playerId].actionIdAmountPairs;
-    uint256 playerActionInfoLength = _playerActionInfos.length;
+    uint16[10] storage playerActionInfos = _playerActionInfos[playerId].actionIdAmountPairs;
+    uint256 playerActionInfoLength = playerActionInfos.length;
     itemTokenIds = new uint256[](MAX_ACTION_AMOUNT);
     itemAmounts = new uint256[](MAX_ACTION_AMOUNT);
     petBaseIds = new uint256[](MAX_ACTION_AMOUNT);
@@ -308,8 +286,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint256 randomWordStartIndex;
     for (uint256 i; i < playerActionInfoLength / 2; ++i) {
       // Need to handle async nature if this action no longer exists by the time it is called
-      uint256 actionId = _playerActionInfos[i * 2];
-      uint256 actionAmount = _playerActionInfos[i * 2 + 1];
+      uint256 actionId = playerActionInfos[i * 2];
+      uint256 actionAmount = playerActionInfos[i * 2 + 1];
       if (actionId == 0 || !_actionExists(actionId)) {
         continue;
       }
@@ -318,10 +296,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
         uint256[] memory producedItemsAmounts,
         uint256[] memory producedPetBaseIds,
         uint256[] memory producedPetRandomWords
-      ) = IInstantVRFActionStrategy(actions[actionId].strategy).getRandomRewards(
+      ) = IInstantVRFActionStrategy(_actions[actionId].strategy).getRandomRewards(
           actionId,
           actionAmount,
-          _randomWords,
+          randomWords,
           randomWordStartIndex
         );
 
@@ -347,8 +325,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // Assumes that it has at least 1 input
-  function _actionExists(uint256 _actionId) private view returns (bool) {
-    return actions[_actionId].inputTokenId1 != NONE;
+  function _actionExists(uint256 actionId) private view returns (bool) {
+    return _actions[actionId].inputTokenId1 != NONE;
   }
 
   function _setAction(InstantVRFActionInput calldata _instantVRFActionInput) private {
@@ -356,9 +334,9 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       revert ActionIdZeroNotAllowed();
     }
     _checkInputs(_instantVRFActionInput);
-    actions[_instantVRFActionInput.actionId] = _packAction(_instantVRFActionInput);
+    _actions[_instantVRFActionInput.actionId] = _packAction(_instantVRFActionInput);
 
-    IInstantVRFActionStrategy(strategies[_instantVRFActionInput.actionType]).setAction(_instantVRFActionInput);
+    IInstantVRFActionStrategy(_strategies[_instantVRFActionInput.actionType]).setAction(_instantVRFActionInput);
   }
 
   function _requestRandomWords(uint256 numRandomWords, uint256 numActions) private returns (bytes32 requestId) {
@@ -370,15 +348,15 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       callbackGasLimit = 5_000_000;
     }
 
-    requestId = samWitchVRF.requestRandomWords(numRandomWords, callbackGasLimit);
+    requestId = _samWitchVRF.requestRandomWords(numRandomWords, callbackGasLimit);
   }
 
-  function _isActionFullMode(uint256 _actionId) private view returns (bool) {
-    return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+  function _isActionFullMode(uint256 actionId) private view returns (bool) {
+    return uint8(_actions[actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
-  function _isActionAvailable(uint16 _actionId) private view returns (bool) {
-    return uint8(actions[_actionId].packedData >> IS_AVAILABLE_BIT) & 1 == 1;
+  function _isActionAvailable(uint16 actionId) private view returns (bool) {
+    return uint8(_actions[actionId].packedData >> IS_AVAILABLE_BIT) & 1 == 1;
   }
 
   function _packAction(
@@ -394,13 +372,13 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       inputTokenId3: _actionInput.inputTokenIds.length > 2 ? _actionInput.inputTokenIds[2] : NONE,
       inputAmount3: _actionInput.inputAmounts.length > 2 ? _actionInput.inputAmounts[2] : 0,
       packedData: packedData,
-      strategy: strategies[_actionInput.actionType]
+      strategy: _strategies[_actionInput.actionType]
     });
   }
 
   // Assumes that it has at least 1 input
   function _actionExists(InstantVRFActionInput calldata _actionInput) private view returns (bool) {
-    return actions[_actionInput.actionId].inputTokenId1 != NONE;
+    return _actions[_actionInput.actionId].inputTokenId1 != NONE;
   }
 
   function _checkInputs(InstantVRFActionInput calldata _actionInput) private view {
@@ -439,91 +417,91 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       }
     }
 
-    if (strategies[_actionInput.actionType] == address(0)) {
+    if (_strategies[_actionInput.actionType] == address(0)) {
       revert InvalidStrategy();
     }
   }
 
-  function requestCost(uint256 _actionAmounts) public view returns (uint256) {
-    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = vrfRequestInfo.get();
-    return baseRequestCost + (movingAverageGasPrice * _actionAmounts * gasCostPerUnit);
+  function requestCost(uint256 actionAmounts) public view returns (uint256) {
+    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
+    return baseRequestCost + (movingAverageGasPrice * actionAmounts * _gasCostPerUnit);
   }
 
   function addStrategies(
     InstantVRFActionType[] calldata _instantVRFActionTypes,
-    address[] calldata _strategies
+    address[] calldata strategies
   ) public onlyOwner {
-    if (_instantVRFActionTypes.length != _strategies.length) {
+    if (_instantVRFActionTypes.length != strategies.length) {
       revert LengthMismatch();
     }
     for (uint256 i; i < _instantVRFActionTypes.length; ++i) {
-      if (_instantVRFActionTypes[i] == InstantVRFActionType.NONE || _strategies[i] == address(0)) {
+      if (_instantVRFActionTypes[i] == InstantVRFActionType.NONE || strategies[i] == address(0)) {
         revert InvalidStrategy();
       }
 
-      if (strategies[_instantVRFActionTypes[i]] != address(0)) {
+      if (_strategies[_instantVRFActionTypes[i]] != address(0)) {
         revert StrategyAlreadyExists();
       }
 
-      strategies[_instantVRFActionTypes[i]] = _strategies[i];
+      _strategies[_instantVRFActionTypes[i]] = strategies[i];
     }
-    emit AddStrategies(_instantVRFActionTypes, _strategies);
+    emit AddStrategies(_instantVRFActionTypes, strategies);
   }
 
-  function addActions(InstantVRFActionInput[] calldata _instantVRFActionInputs) external onlyOwner {
-    for (uint256 i; i < _instantVRFActionInputs.length; ++i) {
-      InstantVRFActionInput calldata instantVRFActionInput = _instantVRFActionInputs[i];
+  function addActions(InstantVRFActionInput[] calldata instantVRFActionInputs) external onlyOwner {
+    for (uint256 i; i < instantVRFActionInputs.length; ++i) {
+      InstantVRFActionInput calldata instantVRFActionInput = instantVRFActionInputs[i];
       if (_actionExists(instantVRFActionInput)) {
         revert ActionAlreadyExists();
       }
       _setAction(instantVRFActionInput);
     }
-    emit AddInstantVRFActions(_instantVRFActionInputs);
+    emit AddInstantVRFActions(instantVRFActionInputs);
   }
 
-  function editActions(InstantVRFActionInput[] calldata _instantVRFActionInputs) external onlyOwner {
-    for (uint256 i = 0; i < _instantVRFActionInputs.length; ++i) {
-      InstantVRFActionInput calldata instantVRFActionInput = _instantVRFActionInputs[i];
+  function editActions(InstantVRFActionInput[] calldata instantVRFActionInputs) external onlyOwner {
+    for (uint256 i = 0; i < instantVRFActionInputs.length; ++i) {
+      InstantVRFActionInput calldata instantVRFActionInput = instantVRFActionInputs[i];
       if (!_actionExists(instantVRFActionInput)) {
         revert ActionDoesNotExist();
       }
       _setAction(instantVRFActionInput);
     }
-    emit EditInstantVRFActions(_instantVRFActionInputs);
+    emit EditInstantVRFActions(instantVRFActionInputs);
   }
 
-  function removeActions(uint16[] calldata _instantVRFActionIds) external onlyOwner {
-    for (uint256 i = 0; i < _instantVRFActionIds.length; ++i) {
-      if (actions[_instantVRFActionIds[i]].inputTokenId1 == NONE) {
+  function removeActions(uint16[] calldata instantVRFActionIds) external onlyOwner {
+    for (uint256 i = 0; i < instantVRFActionIds.length; ++i) {
+      if (_actions[instantVRFActionIds[i]].inputTokenId1 == NONE) {
         revert ActionDoesNotExist();
       }
-      delete actions[_instantVRFActionIds[i]];
+      delete _actions[instantVRFActionIds[i]];
     }
-    emit RemoveInstantVRFActions(_instantVRFActionIds);
+    emit RemoveInstantVRFActions(instantVRFActionIds);
   }
 
-  function setGasCostPerUnit(uint256 _gasCostPerUnit) public onlyOwner {
-    gasCostPerUnit = uint64(_gasCostPerUnit);
-    emit SetGasCostPerUnit(_gasCostPerUnit);
+  function setGasCostPerUnit(uint256 gasCostPerUnit) public onlyOwner {
+    _gasCostPerUnit = uint64(gasCostPerUnit);
+    emit SetGasCostPerUnit(gasCostPerUnit);
   }
 
-  function setPetNFT(PetNFT _petNFT) external onlyOwner {
-    petNFT = _petNFT;
+  function setPetNFT(PetNFT petNFT) external onlyOwner {
+    _petNFT = petNFT;
   }
 
-  function setAvailable(uint256[] calldata _actionIds, bool _isAvailable) external onlyOwner {
-    for (uint16 i; i < _actionIds.length; ++i) {
-      bytes1 packedData = actions[_actionIds[i]].packedData;
+  function setAvailable(uint256[] calldata actionIds, bool isAvailable) external onlyOwner {
+    for (uint16 i; i < actionIds.length; ++i) {
+      bytes1 packedData = _actions[actionIds[i]].packedData;
       bytes1 mask = bytes1(uint8(1 << IS_AVAILABLE_BIT));
-      if (_isAvailable) {
+      if (isAvailable) {
         packedData |= mask;
       } else {
         packedData &= ~mask;
       }
 
-      actions[_actionIds[i]].packedData = packedData;
+      _actions[actionIds[i]].packedData = packedData;
     }
-    emit SetAvailableActions(_actionIds, _isAvailable);
+    emit SetAvailableActions(actionIds, isAvailable);
   }
 
   // solhint-disable-next-line no-empty-blocks

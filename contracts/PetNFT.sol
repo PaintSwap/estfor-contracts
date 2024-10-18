@@ -95,66 +95,58 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   // From base class uint40 _totalSupplyAll
-  uint40 public nextPetId;
-  address private instantVRFActions;
+  uint40 private _nextPetId;
+  address private _instantVRFActions;
 
   // What about the different skins?
-  mapping(uint256 basePetId => BasePetMetadata metadata) private basePetMetadatas;
-  mapping(uint256 petId => Pet pet) private pets;
-  mapping(uint256 petId => string name) private names;
-  mapping(string name => bool exists) private lowercaseNames;
-  mapping(uint256 petId => uint40 lastAssignmentTimestamp) private lastAssignmentTimestamps;
-  string private imageBaseUri;
+  mapping(uint256 basePetId => BasePetMetadata metadata) private _basePetMetadatas;
+  mapping(uint256 petId => Pet pet) private _pets;
+  mapping(uint256 petId => string name) private _names;
+  mapping(string name => bool exists) private _lowercaseNames;
+  mapping(uint256 petId => uint40 lastAssignmentTimestamp) private _lastAssignmentTimestamps;
+  string private _imageBaseUri;
 
   // Royalties
-  address private royaltyReceiver;
-  uint8 private royaltyFee; // base 1000, highest is 25.5
+  address private _royaltyReceiver;
+  uint8 private _royaltyFee; // base 1000, highest is 25.5
 
-  AdminAccess private adminAccess;
-  bool private isBeta;
+  AdminAccess private _adminAccess;
+  bool private _isBeta;
 
-  address private dev;
-  IBrushToken private brush;
-  uint72 private editNameCost; // Max is 4700 BRUSH
-  uint8 private brushBurntPercentage;
-  uint8 private brushPoolPercentage;
-  uint8 private brushDevPercentage;
-  uint8 private brushTerritoriesPercentage;
-  address private territories;
-  address private players;
+  address private _dev;
+  IBrushToken private _brush;
+  uint72 private _editNameCost; // Max is 4700 BRUSH
+  uint8 private _brushBurntPercentage;
+  uint8 private _brushPoolPercentage;
+  uint8 private _brushDevPercentage;
+  uint8 private _brushTerritoriesPercentage;
+  address private _territories;
+  address private _players;
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
   modifier onlyMinters() {
-    if (_msgSender() != instantVRFActions && !(adminAccess.isAdmin(_msgSender()) && isBeta)) {
-      revert NotMinter();
-    }
+    require(_msgSender() == _instantVRFActions || (_adminAccess.isAdmin(_msgSender()) && _isBeta), NotMinter());
     _;
   }
 
   modifier onlyBurners(address _from) {
-    if (_msgSender() != _from && !isApprovedForAll(_from, _msgSender())) {
-      revert NotBurner();
-    }
+    require(_msgSender() == _from || isApprovedForAll(_from, _msgSender()), NotBurner());
     _;
   }
 
   modifier onlyPlayersOrAdminAndBeta() {
-    if (_msgSender() != players && !(adminAccess.isAdmin(_msgSender()) && isBeta)) {
-      revert NotPlayersOrAdminAndBeta();
-    }
+    require(_msgSender() == _players || (_adminAccess.isAdmin(_msgSender()) && _isBeta), NotPlayersOrAdminAndBeta());
     _;
   }
 
   modifier isOwnerOfPet(uint256 _petId) {
-    if (getOwner(_petId) != _msgSender()) {
-      revert NotOwnerOfPet();
-    }
+    require(_pets[_petId].owner == _msgSender(), NotOwnerOfPet());
     _;
   }
 
   modifier isOwnerOfPlayer(uint256 _playerId) {
-    if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
+    if (!IPlayers(_players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayer();
     }
     _;
@@ -166,13 +158,13 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function initialize(
-    IBrushToken _brush,
-    address _royaltyReceiver,
-    string calldata _imageBaseUri,
-    address _dev,
-    uint72 _editNameCost,
-    AdminAccess _adminAccess,
-    bool _isBeta
+    IBrushToken brush,
+    address royaltyReceiver,
+    string calldata imageBaseUri,
+    address dev,
+    uint72 editNameCost,
+    AdminAccess adminAccess,
+    bool isBeta
   ) external initializer {
     __ERC1155_init("");
     __UUPSUpgradeable_init();
@@ -180,35 +172,35 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
     bool storageSlotCorrect;
     assembly ("memory-safe") {
-      storageSlotCorrect := eq(nextPetId.slot, _totalSupplyAll.slot)
+      storageSlotCorrect := eq(_nextPetId.slot, _totalSupplyAll.slot)
     }
     if (!storageSlotCorrect) {
       revert StorageSlotIncorrect();
     }
 
-    brush = _brush;
-    royaltyFee = 30; // 3%
-    royaltyReceiver = _royaltyReceiver;
-    adminAccess = _adminAccess;
-    imageBaseUri = _imageBaseUri;
-    dev = _dev;
-    isBeta = _isBeta;
-    nextPetId = 1;
-    _setEditNameCost(_editNameCost);
+    _brush = brush;
+    _royaltyFee = 30; // 3%
+    _royaltyReceiver = royaltyReceiver;
+    _adminAccess = adminAccess;
+    _imageBaseUri = imageBaseUri;
+    _dev = dev;
+    _isBeta = isBeta;
+    _nextPetId = 1;
+    setEditNameCost(editNameCost);
   }
 
   function editPet(
-    uint256 _playerId,
-    uint256 _petId,
-    string calldata _name
-  ) external isOwnerOfPlayer(_playerId) isOwnerOfPet(_petId) {
-    (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) = _setName(_petId, _name);
+    uint256 playerId,
+    uint256 petId,
+    string calldata petName
+  ) external isOwnerOfPlayer(playerId) isOwnerOfPet(petId) {
+    (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) = _setName(petId, petName);
 
     if (!nameChanged) {
       revert SameName();
     }
 
-    _pay(editNameCost);
+    _pay(_editNameCost);
 
     // Check trimmed name does not start with "Pet " as those are reserved
     if (bytes(trimmedAndLowercaseName).length > 3) {
@@ -222,144 +214,145 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       }
     }
 
-    emit EditPlayerPet(_playerId, _petId, msg.sender, trimmedName);
+    emit EditPlayerPet(playerId, petId, _msgSender(), trimmedName);
   }
 
   function assignPet(
-    address _from,
-    uint256 _playerId,
-    uint256 _petId,
-    uint256 _timestamp
+    address from,
+    uint256 playerId,
+    uint256 petId,
+    uint256 timestamp
   ) external onlyPlayersOrAdminAndBeta {
     // If pet is already assigned then don't change timestamp
-    Pet storage pet = pets[_petId];
-    if (getOwner(_petId) != _from) {
+    Pet storage pet = _pets[petId];
+    if (getOwner(petId) != from) {
       revert PlayerDoesNotOwnPet();
     }
 
     // Check skill minimum levels are met
-    Skill skillEnhancement1 = basePetMetadatas[pet.baseId].skillEnhancement1;
-    uint256 skillMinLevel1 = basePetMetadatas[pet.baseId].skillMinLevel1;
-    if (IPlayers(players).level(_playerId, skillEnhancement1) < skillMinLevel1) {
+    Skill skillEnhancement1 = _basePetMetadatas[pet.baseId].skillEnhancement1;
+    uint256 skillMinLevel1 = _basePetMetadatas[pet.baseId].skillMinLevel1;
+    if (IPlayers(_players).level(playerId, skillEnhancement1) < skillMinLevel1) {
       revert LevelNotHighEnough(skillEnhancement1, skillMinLevel1);
     }
 
-    Skill skillEnhancement2 = basePetMetadatas[pet.baseId].skillEnhancement2;
+    Skill skillEnhancement2 = _basePetMetadatas[pet.baseId].skillEnhancement2;
     if (skillEnhancement2 != Skill.NONE) {
-      uint256 skillMinLevel2 = basePetMetadatas[pet.baseId].skillMinLevel2;
-      if (IPlayers(players).level(_playerId, skillEnhancement2) < skillMinLevel2) {
+      uint256 skillMinLevel2 = _basePetMetadatas[pet.baseId].skillMinLevel2;
+      if (IPlayers(_players).level(playerId, skillEnhancement2) < skillMinLevel2) {
         revert LevelNotHighEnough(skillEnhancement2, skillMinLevel2);
       }
     }
 
-    if (pet.lastAssignmentTimestamp <= _timestamp) {
+    if (pet.lastAssignmentTimestamp <= timestamp) {
       return;
     }
 
-    pet.lastAssignmentTimestamp = uint40(_timestamp);
+    pet.lastAssignmentTimestamp = uint40(timestamp);
   }
 
   function mintBatch(
-    address _to,
-    uint256[] calldata _basePetIds,
-    uint256[] calldata _randomWords
+    address to,
+    uint256[] calldata basePetIds,
+    uint256[] calldata randomWords
   ) external onlyMinters returns (uint256[] memory tokenIds) {
-    if (_basePetIds.length != _randomWords.length) {
+    if (basePetIds.length != randomWords.length) {
       revert LengthMismatch();
     }
 
-    tokenIds = new uint256[](_basePetIds.length);
-    uint256[] memory amounts = new uint256[](_basePetIds.length);
-    string[] memory _names = new string[](_basePetIds.length);
-    Pet[] memory _pets = new Pet[](_basePetIds.length);
+    tokenIds = new uint256[](basePetIds.length);
+    uint256[] memory amounts = new uint256[](basePetIds.length);
+    string[] memory names = new string[](basePetIds.length);
+    Pet[] memory pets = new Pet[](basePetIds.length);
 
-    uint256 startPetId = nextPetId;
-    for (uint256 i = 0; i < _pets.length; ++i) {
+    uint256 startPetId = _nextPetId;
+    for (uint256 i = 0; i < pets.length; ++i) {
       uint256 petId = startPetId + i;
-      Pet memory pet = _createPet(petId, _basePetIds[i], uint16(_randomWords[i]));
-      _pets[i] = pet;
+      Pet memory pet = _createPet(petId, basePetIds[i], uint16(randomWords[i]));
+      pets[i] = pet;
       pets[petId] = pet;
       tokenIds[i] = petId;
       amounts[i] = 1;
       _names[i] = PetNFTLibrary._defaultPetName(petId);
     }
     // Mint first
-    _mintBatch(_to, tokenIds, amounts, "");
-    nextPetId = uint40(startPetId + _pets.length);
-    emit NewPets(startPetId, _pets, _names, _to);
+    _mintBatch(to, tokenIds, amounts, "");
+    _nextPetId = uint40(startPetId + pets.length);
+    emit NewPets(startPetId, pets, names, to);
   }
 
-  function mint(address _to, uint256 _basePetId, uint256 _randomWord) external onlyMinters {
-    uint256 petId = nextPetId++;
-    Pet memory pet = _createPet(petId, _basePetId, uint16(_randomWord));
-    _mint(_to, petId, 1, "");
+  function mint(address to, uint256 basePetId, uint256 randomWord) external onlyMinters {
+    uint256 petId = _nextPetId++;
+    Pet memory pet = _createPet(petId, basePetId, uint16(randomWord));
+    _mint(to, petId, 1, "");
     emit NewPet(petId, pet, PetNFTLibrary._defaultPetName(petId), _msgSender());
   }
 
-  function burnBatch(address _from, uint256[] memory _tokenIds) external onlyBurners(_from) {
-    uint256[] memory amounts = new uint256[](_tokenIds.length);
-    _burnBatch(_from, _tokenIds, amounts);
+  function burnBatch(address from, uint256[] memory tokenIds) external onlyBurners(from) {
+    uint256[] memory amounts = new uint256[](tokenIds.length);
+    _burnBatch(from, tokenIds, amounts);
   }
 
-  function burn(address _from, uint256 _tokenId) external onlyBurners(_from) {
-    _burn(_from, _tokenId, 1);
+  function burn(address from, uint256 tokenId) external onlyBurners(from) {
+    _burn(from, tokenId, 1);
   }
 
   function _createPet(uint256 _petId, uint256 _basePetId, uint16 _randomWord) private returns (Pet memory pet) {
-    if (basePetMetadatas[_basePetId].skillEnhancement1 == Skill.NONE) {
+    if (_basePetMetadatas[_basePetId].skillEnhancement1 == Skill.NONE) {
       revert PetDoesNotExist();
     }
 
     // Fixed enhancement for skill 1
-    uint256 skillFixedMin1 = basePetMetadatas[_basePetId].skillFixedMin1;
-    uint256 skillFixedMax1 = basePetMetadatas[_basePetId].skillFixedMax1;
+    uint256 skillFixedMin1 = _basePetMetadatas[_basePetId].skillFixedMin1;
+    uint256 skillFixedMax1 = _basePetMetadatas[_basePetId].skillFixedMax1;
     uint256 skillFixedEnhancement1 = skillFixedMin1;
     if (skillFixedMax1 != skillFixedMin1) {
       skillFixedEnhancement1 =
         ((_randomWord >> 8) %
-          (((skillFixedMax1 - skillFixedMin1 + 1) / basePetMetadatas[_basePetId].skillFixedIncrement1))) +
+          (((skillFixedMax1 - skillFixedMin1 + 1) / _basePetMetadatas[_basePetId].skillFixedIncrement1))) +
         skillFixedMin1;
     }
 
     // Percentage enhancement for skill 1
-    uint256 skillPercentageMin1 = basePetMetadatas[_basePetId].skillPercentageMin1;
-    uint256 skillPercentageMax1 = basePetMetadatas[_basePetId].skillPercentageMax1;
+    uint256 skillPercentageMin1 = _basePetMetadatas[_basePetId].skillPercentageMin1;
+    uint256 skillPercentageMax1 = _basePetMetadatas[_basePetId].skillPercentageMax1;
     uint256 skillPercentageEnhancement1 = skillPercentageMin1;
     if (skillPercentageMax1 != skillPercentageMin1) {
       skillPercentageEnhancement1 =
         (_randomWord %
           (
-            ((skillPercentageMax1 - skillPercentageMin1 + 1) / basePetMetadatas[_basePetId].skillPercentageIncrement1)
+            ((skillPercentageMax1 - skillPercentageMin1 + 1) / _basePetMetadatas[_basePetId].skillPercentageIncrement1)
           )) +
         skillPercentageMin1;
     }
 
     // Skill 2
-    Skill skillEnhancement2 = basePetMetadatas[_basePetId].skillEnhancement2;
+    Skill skillEnhancement2 = _basePetMetadatas[_basePetId].skillEnhancement2;
     uint256 skillFixedEnhancement2;
     uint256 skillPercentageEnhancement2;
     if (skillEnhancement2 != Skill.NONE) {
       uint256 otherRandomWord = uint256(keccak256(abi.encodePacked(_randomWord)));
       // Fixed enhancement
-      uint256 skillFixedMin2 = basePetMetadatas[_basePetId].skillFixedMin2;
-      uint256 skillFixedMax2 = basePetMetadatas[_basePetId].skillFixedMax2;
+      uint256 skillFixedMin2 = _basePetMetadatas[_basePetId].skillFixedMin2;
+      uint256 skillFixedMax2 = _basePetMetadatas[_basePetId].skillFixedMax2;
       if (skillFixedMax2 != skillFixedMin2) {
         skillFixedEnhancement2 =
           (otherRandomWord %
-            (((skillFixedMax2 - skillFixedMin2 + 1) / basePetMetadatas[_basePetId].skillFixedIncrement2))) +
+            (((skillFixedMax2 - skillFixedMin2 + 1) / _basePetMetadatas[_basePetId].skillFixedIncrement2))) +
           skillFixedMin2;
       } else {
         skillFixedEnhancement2 = skillFixedMin2;
       }
 
       // Percentage enhancement
-      uint256 skillPercentageMin2 = basePetMetadatas[_basePetId].skillPercentageMin2;
-      uint256 skillPercentageMax2 = basePetMetadatas[_basePetId].skillPercentageMax2;
+      uint256 skillPercentageMin2 = _basePetMetadatas[_basePetId].skillPercentageMin2;
+      uint256 skillPercentageMax2 = _basePetMetadatas[_basePetId].skillPercentageMax2;
       if (skillPercentageMax2 != skillPercentageMin2) {
         skillPercentageEnhancement2 =
           ((otherRandomWord >> 8) %
             (
-              ((skillPercentageMax2 - skillPercentageMin2 + 1) / basePetMetadatas[_basePetId].skillPercentageIncrement2)
+              ((skillPercentageMax2 - skillPercentageMin2 + 1) /
+                _basePetMetadatas[_basePetId].skillPercentageIncrement2)
             )) +
           skillPercentageMin2;
       } else {
@@ -368,7 +361,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     }
 
     pet = Pet(
-      basePetMetadatas[_basePetId].skillEnhancement1,
+      _basePetMetadatas[_basePetId].skillEnhancement1,
       uint8(skillFixedEnhancement1),
       uint8(skillPercentageEnhancement1),
       skillEnhancement2,
@@ -379,7 +372,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       uint24(_basePetId)
     );
 
-    pets[_petId] = pet;
+    _pets[_petId] = pet;
   }
 
   function _setName(
@@ -400,17 +393,17 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     }
 
     trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
-    string memory oldName = EstforLibrary.toLower(PetNFTLibrary._getPetName(_petId, names[_petId]));
+    string memory oldName = EstforLibrary.toLower(PetNFTLibrary._getPetName(_petId, _names[_petId]));
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      if (lowercaseNames[trimmedAndLowercaseName]) {
+      if (_lowercaseNames[trimmedAndLowercaseName]) {
         revert NameAlreadyExists();
       }
       if (bytes(oldName).length != 0) {
-        delete lowercaseNames[oldName];
+        delete _lowercaseNames[oldName];
       }
-      lowercaseNames[trimmedAndLowercaseName] = true;
-      names[_petId] = trimmedName;
+      _lowercaseNames[trimmedAndLowercaseName] = true;
+      _names[_petId] = trimmedName;
     }
   }
 
@@ -418,187 +411,182 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     if (_brushCost == 0) {
       return;
     }
-    if (brushPoolPercentage != 0) {
+    if (_brushPoolPercentage != 0) {
       revert NotSupportedYet();
     }
 
-    if (brushTerritoriesPercentage != 0) {
-      brush.transferFrom(msg.sender, territories, (_brushCost * brushTerritoriesPercentage) / 100);
+    if (_brushTerritoriesPercentage != 0) {
+      _brush.transferFrom(_msgSender(), _territories, (_brushCost * _brushTerritoriesPercentage) / 100);
     }
 
-    if (brushDevPercentage != 0) {
-      brush.transferFrom(msg.sender, dev, (_brushCost * brushDevPercentage) / 100);
+    if (_brushDevPercentage != 0) {
+      _brush.transferFrom(_msgSender(), _dev, (_brushCost * _brushDevPercentage) / 100);
     }
 
-    if (brushBurntPercentage != 0) {
-      uint256 amountBurnt = (_brushCost * brushBurntPercentage) / 100;
-      brush.transferFrom(msg.sender, address(this), amountBurnt);
-      brush.burn(amountBurnt);
+    if (_brushBurntPercentage != 0) {
+      uint256 amountBurnt = (_brushCost * _brushBurntPercentage) / 100;
+      _brush.transferFrom(_msgSender(), address(this), amountBurnt);
+      _brush.burn(amountBurnt);
     }
   }
 
   function _updateOwner(uint256 _id, address _from, address _to) internal override {
     if (_to == address(0)) {
       // Burnt
-      delete pets[_id];
+      delete _pets[_id];
     } else {
       // Cannot transfer anniversary pets
-      if (_from != address(0) && basePetMetadatas[pets[_id].baseId].skin == PetSkin.ANNIV1) {
+      if (_from != address(0) && _basePetMetadatas[_pets[_id].baseId].skin == PetSkin.ANNIV1) {
         revert CannotTransferThisPet(_id);
       }
-      pets[_id].owner = _to;
-      pets[_id].lastAssignmentTimestamp = uint40(block.timestamp);
+      _pets[_id].owner = _to;
+      _pets[_id].lastAssignmentTimestamp = uint40(block.timestamp);
     }
   }
 
-  function _setEditNameCost(uint72 _editNameCost) private {
-    editNameCost = _editNameCost;
-    emit EditNameCost(_editNameCost);
-  }
-
-  function _setBasePet(BasePetInput calldata _basePetInput) private {
-    if (_basePetInput.skillEnhancements[0] == Skill.NONE && _basePetInput.skillEnhancements[1] == Skill.NONE) {
+  function _setBasePet(BasePetInput calldata basePetInput) private {
+    if (basePetInput.skillEnhancements[0] == Skill.NONE && basePetInput.skillEnhancements[1] == Skill.NONE) {
       revert MustHaveOneSkillEnhancement();
     }
 
-    if (_basePetInput.skillEnhancements[0] == Skill.NONE && _basePetInput.skillEnhancements[1] != Skill.NONE) {
+    if (basePetInput.skillEnhancements[0] == Skill.NONE && basePetInput.skillEnhancements[1] != Skill.NONE) {
       revert SkillEnhancementIncorrectOrder();
     }
 
-    _checkBasePet(_basePetInput, 0);
-    _checkBasePet(_basePetInput, 1);
+    _checkBasePet(basePetInput, 0);
+    _checkBasePet(basePetInput, 1);
 
-    basePetMetadatas[_basePetInput.baseId] = BasePetMetadata(
-      _basePetInput.description,
-      _basePetInput.tier,
-      _basePetInput.skin,
-      _basePetInput.enhancementType,
-      _basePetInput.skillEnhancements[0],
-      _basePetInput.skillFixedMins[0],
-      _basePetInput.skillFixedMaxs[0],
-      _basePetInput.skillFixedIncrements[0],
-      _basePetInput.skillPercentageMins[0],
-      _basePetInput.skillPercentageMaxs[0],
-      _basePetInput.skillPercentageIncrements[0],
-      _basePetInput.skillMinLevels[0],
-      _basePetInput.skillEnhancements[1],
-      _basePetInput.skillFixedMins[1],
-      _basePetInput.skillFixedMaxs[1],
-      _basePetInput.skillFixedIncrements[1],
-      _basePetInput.skillPercentageMins[1],
-      _basePetInput.skillPercentageMaxs[1],
-      _basePetInput.skillPercentageIncrements[1],
-      _basePetInput.skillMinLevels[1],
-      _basePetInput.fixedStarThreshold,
-      _basePetInput.percentageStarThreshold
+    _basePetMetadatas[basePetInput.baseId] = BasePetMetadata(
+      basePetInput.description,
+      basePetInput.tier,
+      basePetInput.skin,
+      basePetInput.enhancementType,
+      basePetInput.skillEnhancements[0],
+      basePetInput.skillFixedMins[0],
+      basePetInput.skillFixedMaxs[0],
+      basePetInput.skillFixedIncrements[0],
+      basePetInput.skillPercentageMins[0],
+      basePetInput.skillPercentageMaxs[0],
+      basePetInput.skillPercentageIncrements[0],
+      basePetInput.skillMinLevels[0],
+      basePetInput.skillEnhancements[1],
+      basePetInput.skillFixedMins[1],
+      basePetInput.skillFixedMaxs[1],
+      basePetInput.skillFixedIncrements[1],
+      basePetInput.skillPercentageMins[1],
+      basePetInput.skillPercentageMaxs[1],
+      basePetInput.skillPercentageIncrements[1],
+      basePetInput.skillMinLevels[1],
+      basePetInput.fixedStarThreshold,
+      basePetInput.percentageStarThreshold
     );
   }
 
-  function _checkBasePet(BasePetInput calldata _basePetInput, uint256 index) private pure {
-    bool isSkillSet = _basePetInput.skillEnhancements[index] != Skill.NONE;
+  function _checkBasePet(BasePetInput calldata basePetInput, uint256 index) private pure {
+    bool isSkillSet = basePetInput.skillEnhancements[index] != Skill.NONE;
     if (!isSkillSet) {
       return;
     }
 
     // Check percentage values are correct
-    if (_basePetInput.skillPercentageMaxs[index] == 0 && _basePetInput.skillFixedMaxs[index] == 0) {
-      revert MustHaveAtLeastPercentageOrFixedSet();
-    }
+    require(
+      basePetInput.skillPercentageMaxs[index] != 0 || basePetInput.skillFixedMaxs[index] != 0,
+      MustHaveAtLeastPercentageOrFixedSet()
+    );
 
-    if (_basePetInput.skillPercentageMins[index] > _basePetInput.skillPercentageMaxs[index]) {
-      revert SkillEnhancementMinGreaterThanMax();
-    }
+    require(
+      basePetInput.skillPercentageMins[index] <= basePetInput.skillPercentageMaxs[index],
+      SkillEnhancementMinGreaterThanMax()
+    );
 
-    uint256 percentageIncrement = _basePetInput.skillPercentageIncrements[index];
-    if (
-      percentageIncrement != 0 &&
-      ((_basePetInput.skillPercentageMins[index] % percentageIncrement) != 0 ||
-        (_basePetInput.skillPercentageMaxs[index] % percentageIncrement) != 0)
-    ) {
-      revert SkillPercentageMustBeAFactorOfIncrement();
-    }
-
-    if (_basePetInput.skillPercentageMaxs[index] != 0 && _basePetInput.skillPercentageIncrements[index] == 0) {
-      revert SkillPercentageIncrementCannotBeZero();
-    }
+    uint256 percentageIncrement = basePetInput.skillPercentageIncrements[index];
+    require(
+      percentageIncrement == 0 ||
+        ((basePetInput.skillPercentageMins[index] % percentageIncrement) == 0 &&
+          (basePetInput.skillPercentageMaxs[index] % percentageIncrement) == 0),
+      SkillPercentageMustBeAFactorOfIncrement()
+    );
+    require(
+      basePetInput.skillPercentageMaxs[index] == 0 || basePetInput.skillPercentageIncrements[index] != 0,
+      SkillPercentageIncrementCannotBeZero()
+    );
 
     // Check skill fixed values are correct.
-    if (_basePetInput.skillFixedMins[index] > _basePetInput.skillFixedMaxs[index]) {
-      revert SkillEnhancementMinGreaterThanMax();
-    }
+    require(
+      basePetInput.skillFixedMins[index] <= basePetInput.skillFixedMaxs[index],
+      SkillEnhancementMinGreaterThanMax()
+    );
 
-    uint256 fixedIncrement = _basePetInput.skillFixedIncrements[index];
-    if (_basePetInput.skillFixedMaxs[index] != 0 && fixedIncrement == 0) {
-      revert SkillFixedIncrementCannotBeZero();
-    }
+    uint256 fixedIncrement = basePetInput.skillFixedIncrements[index];
+    require(basePetInput.skillFixedMaxs[index] == 0 || fixedIncrement != 0, SkillFixedIncrementCannotBeZero());
 
-    if (
-      fixedIncrement != 0 &&
-      ((_basePetInput.skillFixedMins[index] % fixedIncrement) != 0 ||
-        (_basePetInput.skillFixedMaxs[index] % fixedIncrement) != 0)
-    ) {
-      revert SkillFixedMustBeAFactorOfIncrement();
-    }
+    require(
+      fixedIncrement == 0 ||
+        ((basePetInput.skillFixedMins[index] % fixedIncrement) == 0 &&
+          (basePetInput.skillFixedMaxs[index] % fixedIncrement) == 0),
+      SkillFixedMustBeAFactorOfIncrement()
+    );
   }
 
-  function _basePetExists(BasePetInput calldata _basePetInput) private view returns (bool) {
-    return basePetMetadatas[_basePetInput.baseId].skillEnhancement1 != Skill.NONE;
+  function _basePetExists(BasePetInput calldata basePetInput) private view returns (bool) {
+    return _basePetMetadatas[basePetInput.baseId].skillEnhancement1 != Skill.NONE;
   }
 
   function _setBrushDistributionPercentages(
-    uint8 _brushBurntPercentage,
-    uint8 _brushPoolPercentage,
-    uint8 _brushDevPercentage,
-    uint8 _brushTerritoriesPercentage
+    uint8 brushBurntPercentage,
+    uint8 brushPoolPercentage,
+    uint8 brushDevPercentage,
+    uint8 brushTerritoriesPercentage
   ) private {
-    if (_brushBurntPercentage + _brushPoolPercentage + _brushDevPercentage + _brushTerritoriesPercentage != 100) {
-      revert PercentNotTotal100();
-    }
+    require(
+      brushBurntPercentage + brushPoolPercentage + brushDevPercentage + brushTerritoriesPercentage == 100,
+      PercentNotTotal100()
+    );
 
-    brushBurntPercentage = _brushBurntPercentage;
-    brushPoolPercentage = _brushPoolPercentage;
-    brushDevPercentage = _brushDevPercentage;
-    brushTerritoriesPercentage = _brushTerritoriesPercentage;
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushPoolPercentage = brushPoolPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    _brushTerritoriesPercentage = brushTerritoriesPercentage;
     emit SetBrushDistributionPercentages(
-      _brushBurntPercentage,
-      _brushPoolPercentage,
-      _brushDevPercentage,
-      _brushTerritoriesPercentage
+      brushBurntPercentage,
+      brushPoolPercentage,
+      brushDevPercentage,
+      brushTerritoriesPercentage
     );
   }
 
   /**
    * @dev Returns whether `_tokenId` exists.
    */
-  function _exists(uint256 _tokenId) internal view override returns (bool) {
-    return pets[_tokenId].owner != address(0);
+  function _exists(uint256 tokenId) internal view override returns (bool) {
+    return _pets[tokenId].owner != address(0);
   }
 
-  function getPet(uint256 _tokenId) external view returns (Pet memory) {
-    return pets[_tokenId];
+  function getPet(uint256 tokenId) external view returns (Pet memory) {
+    return _pets[tokenId];
   }
 
-  function getOwner(uint256 _tokenId) public view override returns (address) {
-    return pets[_tokenId].owner;
+  function getOwner(uint256 tokenId) public view override returns (address) {
+    return _pets[tokenId].owner;
   }
 
-  function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-    if (!_exists(_tokenId)) {
+  function uri(uint256 tokenId) public view virtual override returns (string memory) {
+    if (!_exists(tokenId)) {
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
 
-    Pet storage pet = pets[_tokenId];
-    BasePetMetadata storage basePetMetadata = basePetMetadatas[pet.baseId];
+    Pet storage pet = _pets[tokenId];
+    BasePetMetadata storage basePetMetadata = _basePetMetadatas[pet.baseId];
 
-    return PetNFTLibrary.uri(basePetMetadata, pet, _tokenId, imageBaseUri, names[_tokenId], isBeta);
+    return PetNFTLibrary.uri(basePetMetadata, pet, tokenId, _imageBaseUri, _names[tokenId], _isBeta);
   }
 
   function royaltyInfo(
     uint256 /*_tokenId*/,
-    uint256 _salePrice
+    uint256 salePrice
   ) external view override returns (address receiver, uint256 royaltyAmount) {
-    uint256 amount = (_salePrice * royaltyFee) / 1000;
-    return (royaltyReceiver, amount);
+    uint256 amount = (salePrice * _royaltyFee) / 1000;
+    return (_royaltyReceiver, amount);
   }
 
   function supportsInterface(
@@ -608,75 +596,80 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function name() external view returns (string memory) {
-    return string(abi.encodePacked("Estfor Pets", isBeta ? " (Beta)" : ""));
+    return string(abi.encodePacked("Estfor Pets", _isBeta ? " (Beta)" : ""));
   }
 
   function symbol() external view returns (string memory) {
-    return string(abi.encodePacked("EK_PETS", isBeta ? "_B" : ""));
+    return string(abi.encodePacked("EK_PETS", _isBeta ? "_B" : ""));
   }
 
-  function setImageBaseUri(string calldata _imageBaseUri) external onlyOwner {
-    imageBaseUri = _imageBaseUri;
+  function getNextPetId() external view returns (uint256) {
+    return _nextPetId;
   }
 
-  function setPlayers(address _players) external onlyOwner {
-    players = _players;
+  function setImageBaseUri(string calldata imageBaseUri) external onlyOwner {
+    _imageBaseUri = imageBaseUri;
   }
 
-  function setEditNameCost(uint72 _editNameCost) external onlyOwner {
-    _setEditNameCost(_editNameCost);
+  function setPlayers(address players) external onlyOwner {
+    _players = players;
   }
 
-  function setTerritories(address _territories) external onlyOwner {
-    territories = _territories;
+  function setEditNameCost(uint72 editNameCost) public onlyOwner {
+    _editNameCost = editNameCost;
+    emit EditNameCost(editNameCost);
   }
 
-  function setInstantVRFActions(address _instantVRFActions) external onlyOwner {
-    instantVRFActions = _instantVRFActions;
+  function setTerritories(address territories) external onlyOwner {
+    _territories = territories;
   }
 
-  function addBasePets(BasePetInput[] calldata _basePetInputs) external onlyOwner {
-    for (uint256 i; i < _basePetInputs.length; ++i) {
-      BasePetInput calldata basePetInput = _basePetInputs[i];
+  function setInstantVRFActions(address instantVRFActions) external onlyOwner {
+    _instantVRFActions = instantVRFActions;
+  }
+
+  function addBasePets(BasePetInput[] calldata basePetInputs) external onlyOwner {
+    for (uint256 i; i < basePetInputs.length; ++i) {
+      BasePetInput calldata basePetInput = basePetInputs[i];
       if (_basePetExists(basePetInput)) {
         revert PetAlreadyExists();
       }
       _setBasePet(basePetInput);
     }
-    emit AddBasePets(_basePetInputs);
+    emit AddBasePets(basePetInputs);
   }
 
-  function editBasePets(BasePetInput[] calldata _basePetInputs) external onlyOwner {
-    for (uint256 i = 0; i < _basePetInputs.length; ++i) {
-      BasePetInput calldata basePetInput = _basePetInputs[i];
+  function editBasePets(BasePetInput[] calldata basePetInputs) external onlyOwner {
+    for (uint256 i = 0; i < basePetInputs.length; ++i) {
+      BasePetInput calldata basePetInput = basePetInputs[i];
       if (!_basePetExists(basePetInput)) {
         revert PetDoesNotExist();
       }
 
       // DO NOT change skills of existing pets
-      if (basePetMetadatas[basePetInput.baseId].skillEnhancement1 != basePetInput.skillEnhancements[0]) {
+      if (_basePetMetadatas[basePetInput.baseId].skillEnhancement1 != basePetInput.skillEnhancements[0]) {
         revert SkillEnhancementIncorrectlyFilled();
       }
-      if (basePetMetadatas[basePetInput.baseId].skillEnhancement2 != basePetInput.skillEnhancements[1]) {
+      if (_basePetMetadatas[basePetInput.baseId].skillEnhancement2 != basePetInput.skillEnhancements[1]) {
         revert SkillEnhancementIncorrectlyFilled();
       }
 
       _setBasePet(basePetInput);
     }
-    emit EditBasePets(_basePetInputs);
+    emit EditBasePets(basePetInputs);
   }
 
   function setBrushDistributionPercentages(
-    uint8 _brushBurntPercentage,
-    uint8 _brushPoolPercentage,
-    uint8 _brushDevPercentage,
-    uint8 _brushTerritoriesPercentage
+    uint8 brushBurntPercentage,
+    uint8 brushPoolPercentage,
+    uint8 brushDevPercentage,
+    uint8 brushTerritoriesPercentage
   ) external onlyOwner {
     _setBrushDistributionPercentages(
-      _brushBurntPercentage,
-      _brushPoolPercentage,
-      _brushDevPercentage,
-      _brushTerritoriesPercentage
+      brushBurntPercentage,
+      brushPoolPercentage,
+      brushDevPercentage,
+      brushTerritoriesPercentage
     );
   }
 

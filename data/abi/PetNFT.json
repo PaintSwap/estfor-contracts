@@ -1008,7 +1008,7 @@
           }
         ],
         "internalType": "struct PetNFT.BasePetInput[]",
-        "name": "_basePetInputs",
+        "name": "basePetInputs",
         "type": "tuple[]"
       }
     ],
@@ -1021,22 +1021,22 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_petId",
+        "name": "petId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_timestamp",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
@@ -1097,12 +1097,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -1115,12 +1115,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint256[]"
       }
     ],
@@ -1210,7 +1210,7 @@
           }
         ],
         "internalType": "struct PetNFT.BasePetInput[]",
-        "name": "_basePetInputs",
+        "name": "basePetInputs",
         "type": "tuple[]"
       }
     ],
@@ -1223,17 +1223,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_petId",
+        "name": "petId",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "_name",
+        "name": "petName",
         "type": "string"
       }
     ],
@@ -1243,10 +1243,23 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getNextPetId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -1265,7 +1278,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -1331,37 +1344,37 @@
     "inputs": [
       {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_royaltyReceiver",
+        "name": "royaltyReceiver",
         "type": "address"
       },
       {
         "internalType": "string",
-        "name": "_imageBaseUri",
+        "name": "imageBaseUri",
         "type": "string"
       },
       {
         "internalType": "address",
-        "name": "_dev",
+        "name": "dev",
         "type": "address"
       },
       {
         "internalType": "uint72",
-        "name": "_editNameCost",
+        "name": "editNameCost",
         "type": "uint72"
       },
       {
         "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
@@ -1398,17 +1411,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_basePetId",
+        "name": "basePetId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_randomWord",
+        "name": "randomWord",
         "type": "uint256"
       }
     ],
@@ -1421,17 +1434,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "_basePetIds",
+        "name": "basePetIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_randomWords",
+        "name": "randomWords",
         "type": "uint256[]"
       }
     ],
@@ -1454,19 +1467,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nextPetId",
-    "outputs": [
-      {
-        "internalType": "uint40",
-        "name": "",
-        "type": "uint40"
       }
     ],
     "stateMutability": "view",
@@ -1514,7 +1514,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_salePrice",
+        "name": "salePrice",
         "type": "uint256"
       }
     ],
@@ -1622,22 +1622,22 @@
     "inputs": [
       {
         "internalType": "uint8",
-        "name": "_brushBurntPercentage",
+        "name": "brushBurntPercentage",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_brushPoolPercentage",
+        "name": "brushPoolPercentage",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_brushDevPercentage",
+        "name": "brushDevPercentage",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_brushTerritoriesPercentage",
+        "name": "brushTerritoriesPercentage",
         "type": "uint8"
       }
     ],
@@ -1650,7 +1650,7 @@
     "inputs": [
       {
         "internalType": "uint72",
-        "name": "_editNameCost",
+        "name": "editNameCost",
         "type": "uint72"
       }
     ],
@@ -1663,7 +1663,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_imageBaseUri",
+        "name": "imageBaseUri",
         "type": "string"
       }
     ],
@@ -1676,7 +1676,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_instantVRFActions",
+        "name": "instantVRFActions",
         "type": "address"
       }
     ],
@@ -1689,7 +1689,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       }
     ],
@@ -1702,7 +1702,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       }
     ],
@@ -1823,7 +1823,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],

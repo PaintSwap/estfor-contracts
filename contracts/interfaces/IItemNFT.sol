@@ -22,9 +22,9 @@ interface IItemNFT {
 
   function burnBatch(address account, uint256[] calldata ids, uint256[] calldata values) external;
 
-  function timestampFirstMint(uint256 id) external view returns (uint256);
+  function getTimestampFirstMint(uint256 id) external view returns (uint256);
 
-  function itemBalances(uint256 id) external view returns (uint256);
+  function getItemBalance(uint256 id) external view returns (uint256);
 
   function exists(uint256 id) external view returns (bool);
 }

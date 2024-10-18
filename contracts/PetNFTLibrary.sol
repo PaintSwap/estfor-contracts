@@ -17,25 +17,24 @@ library PetNFTLibrary {
   string private constant PET_NAME_PREFIX = "Pet ";
 
   function uri(
-    BasePetMetadata storage _basePetMetadata,
-    Pet storage _pet,
-    uint256 _tokenId,
-    string storage _imageBaseUri,
-    string memory _name,
-    bool _isBeta
+    BasePetMetadata storage basePetMetadata,
+    Pet storage pet,
+    uint256 tokenId,
+    string storage imageBaseUri,
+    string memory name,
+    bool isBeta
   ) external view returns (string memory) {
-    string memory skin = _skinToString(_basePetMetadata.skin);
-    uint256 tier = _basePetMetadata.tier;
-    string memory petEnhancementType = _petEnhancementTypeToString(_basePetMetadata.enhancementType);
+    string memory skin = _skinToString(basePetMetadata.skin);
+    uint256 tier = basePetMetadata.tier;
+    string memory petEnhancementType = _petEnhancementTypeToString(basePetMetadata.enhancementType);
 
-    bool hasFixedStar = (_pet.skillFixedEnhancement1 + _pet.skillFixedEnhancement2) >=
-      _basePetMetadata.fixedStarThreshold;
-    bool hasPercentageStar = (_pet.skillPercentageEnhancement1 + _pet.skillPercentageEnhancement2) >=
-      _basePetMetadata.percentageStarThreshold;
+    bool hasFixedStar = (pet.skillFixedEnhancement1 + pet.skillFixedEnhancement2) >= basePetMetadata.fixedStarThreshold;
+    bool hasPercentageStar = (pet.skillPercentageEnhancement1 + pet.skillPercentageEnhancement2) >=
+      basePetMetadata.percentageStarThreshold;
 
     // Create whole JSON
     string memory imageURI = string(
-      abi.encodePacked(_imageBaseUri, skin, "_", tier.toString(), "_", petEnhancementType, ".jpg")
+      abi.encodePacked(imageBaseUri, skin, "_", tier.toString(), "_", petEnhancementType, ".jpg")
     );
 
     string memory attributes = string(
@@ -46,17 +45,17 @@ library PetNFTLibrary {
         ",",
         _getTraitStringJSON("Enhancement type", petEnhancementType),
         ",",
-        _getTraitStringJSON("Skill bonus #1", _skillToString(_pet.skillEnhancement1)),
+        _getTraitStringJSON("Skill bonus #1", _skillToString(pet.skillEnhancement1)),
         ",",
-        _getTraitNumberJSON("Fixed increase #1", _pet.skillFixedEnhancement1),
+        _getTraitNumberJSON("Fixed increase #1", pet.skillFixedEnhancement1),
         ",",
-        _getTraitNumberJSON("Percent increase #1", _pet.skillPercentageEnhancement1),
+        _getTraitNumberJSON("Percent increase #1", pet.skillPercentageEnhancement1),
         ",",
-        _getTraitStringJSON("Skill bonus #2", _skillToString(_pet.skillEnhancement2)),
+        _getTraitStringJSON("Skill bonus #2", _skillToString(pet.skillEnhancement2)),
         ",",
-        _getTraitNumberJSON("Fixed increase #2", _pet.skillFixedEnhancement2),
+        _getTraitNumberJSON("Fixed increase #2", pet.skillFixedEnhancement2),
         ",",
-        _getTraitNumberJSON("Percent increase #2", _pet.skillPercentageEnhancement2),
+        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2),
         ",",
         _getTraitStringJSON("Fixed Star", hasFixedStar ? "true" : "false"),
         ",",
@@ -64,11 +63,11 @@ library PetNFTLibrary {
       )
     );
 
-    _name = _getPetName(_tokenId, _name);
+    name = _getPetName(tokenId, name);
 
-    bytes memory fullName = abi.encodePacked(_name, " (T", tier.toString(), ")");
-    bytes memory externalURL = abi.encodePacked("https://", _isBeta ? "beta." : "", "estfor.com");
-    string memory description = _basePetMetadata.description;
+    bytes memory fullName = abi.encodePacked(name, " (T", tier.toString(), ")");
+    bytes memory externalURL = abi.encodePacked("https://", isBeta ? "beta." : "", "estfor.com");
+    string memory description = basePetMetadata.description;
 
     string memory json = Base64.encode(
       abi.encodePacked(
@@ -89,112 +88,112 @@ library PetNFTLibrary {
     return string(abi.encodePacked("data:application/json;base64,", json));
   }
 
-  function _getPetName(uint256 _tokenId, string memory _name) internal pure returns (string memory) {
-    if (bytes(_name).length == 0) {
-      _name = PetNFTLibrary._defaultPetName(_tokenId);
+  function _getPetName(uint256 tokenId, string memory petName) internal pure returns (string memory) {
+    if (bytes(petName).length == 0) {
+      petName = PetNFTLibrary._defaultPetName(tokenId);
     }
-    return _name;
+    return petName;
   }
 
-  function _defaultPetName(uint256 _petId) internal pure returns (string memory) {
-    return string(abi.encodePacked(PET_NAME_PREFIX, _petId.toString()));
+  function _defaultPetName(uint256 petId) internal pure returns (string memory) {
+    return string(abi.encodePacked(PET_NAME_PREFIX, petId.toString()));
   }
 
-  function _getTraitStringJSON(string memory _traitType, string memory _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), '"', _value, '"}');
+  function _getTraitStringJSON(string memory traitType, string memory value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(traitType), '"', value, '"}');
   }
 
-  function _getTraitNumberJSON(string memory _traitType, uint256 _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), _value.toString(), "}");
+  function _getTraitNumberJSON(string memory traitType, uint256 value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(traitType), value.toString(), "}");
   }
 
-  function _getTraitTypeJSON(string memory _traitType) private pure returns (bytes memory) {
-    return abi.encodePacked('{"trait_type":"', _traitType, '","value":');
+  function _getTraitTypeJSON(string memory traitType) private pure returns (bytes memory) {
+    return abi.encodePacked('{"trait_type":"', traitType, '","value":');
   }
 
-  function _skinToString(PetSkin _skin) private pure returns (string memory) {
-    if (_skin == PetSkin.DEFAULT) {
+  function _skinToString(PetSkin skin) private pure returns (string memory) {
+    if (skin == PetSkin.DEFAULT) {
       return "Default";
     }
-    if (_skin == PetSkin.OG) {
+    if (skin == PetSkin.OG) {
       return "OG";
     }
-    if (_skin == PetSkin.ONEKIN) {
+    if (skin == PetSkin.ONEKIN) {
       return "OneKin";
     }
-    if (_skin == PetSkin.FROST) {
+    if (skin == PetSkin.FROST) {
       return "Frost";
     }
-    if (_skin == PetSkin.CRYSTAL) {
+    if (skin == PetSkin.CRYSTAL) {
       return "Crystal";
     }
-    if (_skin == PetSkin.ANNIV1) {
+    if (skin == PetSkin.ANNIV1) {
       return "Anniv1";
     }
-    revert InvalidSkin(_skin);
+    revert InvalidSkin(skin);
   }
 
-  function _petEnhancementTypeToString(PetEnhancementType _petEnhancementType) private pure returns (string memory) {
-    if (_petEnhancementType == PetEnhancementType.MELEE) {
+  function _petEnhancementTypeToString(PetEnhancementType petEnhancementType) private pure returns (string memory) {
+    if (petEnhancementType == PetEnhancementType.MELEE) {
       return "Melee";
     }
-    if (_petEnhancementType == PetEnhancementType.MAGIC) {
+    if (petEnhancementType == PetEnhancementType.MAGIC) {
       return "Magic";
     }
-    if (_petEnhancementType == PetEnhancementType.RANGED) {
+    if (petEnhancementType == PetEnhancementType.RANGED) {
       return "Ranged";
     }
-    if (_petEnhancementType == PetEnhancementType.HEALTH) {
+    if (petEnhancementType == PetEnhancementType.HEALTH) {
       return "Health";
     }
-    if (_petEnhancementType == PetEnhancementType.DEFENCE) {
+    if (petEnhancementType == PetEnhancementType.DEFENCE) {
       return "Defence";
     }
-    if (_petEnhancementType == PetEnhancementType.MELEE_AND_DEFENCE) {
+    if (petEnhancementType == PetEnhancementType.MELEE_AND_DEFENCE) {
       return "MeleeAndDefence";
     }
-    if (_petEnhancementType == PetEnhancementType.MAGIC_AND_DEFENCE) {
+    if (petEnhancementType == PetEnhancementType.MAGIC_AND_DEFENCE) {
       return "MagicAndDefence";
     }
-    if (_petEnhancementType == PetEnhancementType.RANGED_AND_DEFENCE) {
+    if (petEnhancementType == PetEnhancementType.RANGED_AND_DEFENCE) {
       return "RangedAndDefence";
     }
 
-    revert InvalidPetEnhancementType(_petEnhancementType);
+    revert InvalidPetEnhancementType(petEnhancementType);
   }
 
-  function _skillToString(Skill _skill) private pure returns (string memory) {
-    if (_skill == Skill.MELEE) {
+  function _skillToString(Skill skill) private pure returns (string memory) {
+    if (skill == Skill.MELEE) {
       return "Melee";
-    } else if (_skill == Skill.RANGED) {
+    } else if (skill == Skill.RANGED) {
       return "Ranged";
-    } else if (_skill == Skill.MAGIC) {
+    } else if (skill == Skill.MAGIC) {
       return "Magic";
-    } else if (_skill == Skill.DEFENCE) {
+    } else if (skill == Skill.DEFENCE) {
       return "Defence";
-    } else if (_skill == Skill.HEALTH) {
+    } else if (skill == Skill.HEALTH) {
       return "Health";
-    } else if (_skill == Skill.MINING) {
+    } else if (skill == Skill.MINING) {
       return "Mining";
-    } else if (_skill == Skill.WOODCUTTING) {
+    } else if (skill == Skill.WOODCUTTING) {
       return "Woodcutting";
-    } else if (_skill == Skill.FISHING) {
+    } else if (skill == Skill.FISHING) {
       return "Fishing";
-    } else if (_skill == Skill.SMITHING) {
+    } else if (skill == Skill.SMITHING) {
       return "Smithing";
-    } else if (_skill == Skill.THIEVING) {
+    } else if (skill == Skill.THIEVING) {
       return "Thieving";
-    } else if (_skill == Skill.CRAFTING) {
+    } else if (skill == Skill.CRAFTING) {
       return "Crafting";
-    } else if (_skill == Skill.COOKING) {
+    } else if (skill == Skill.COOKING) {
       return "Cooking";
-    } else if (_skill == Skill.FIREMAKING) {
+    } else if (skill == Skill.FIREMAKING) {
       return "Firemaking";
-    } else if (_skill == Skill.ALCHEMY) {
+    } else if (skill == Skill.ALCHEMY) {
       return "Alchemy";
-    } else if (_skill == Skill.FLETCHING) {
+    } else if (skill == Skill.FLETCHING) {
       return "Fletching";
-    } else if (_skill == Skill.FORGING) {
+    } else if (skill == Skill.FORGING) {
       return "Forging";
     } else {
       return "None";

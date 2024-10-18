@@ -205,7 +205,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     // 48 hour period of no selling for an item
-    if (_itemNFT.timestampFirstMint(_tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
+    if (_itemNFT.getTimestampFirstMint(_tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
       revert SellingTooQuicklyAfterItemIntroduction();
     }
 
@@ -235,7 +235,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function _liquidatePrice(uint16 _tokenId, uint256 _totalBrushPerItem) private view returns (uint80 price) {
     TokenInfo storage tokenInfo = _tokenInfos[_tokenId];
-    uint256 totalOfThisItem = _itemNFT.itemBalances(_tokenId);
+    uint256 totalOfThisItem = _itemNFT.getItemBalance(_tokenId);
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
       if (totalOfThisItem != 0) {
         price = uint80(_totalBrushPerItem / totalOfThisItem);

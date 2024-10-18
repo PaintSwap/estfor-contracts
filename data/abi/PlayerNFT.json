@@ -708,29 +708,13 @@
     "type": "event"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "avatarId",
-        "type": "uint256"
-      }
-    ],
-    "name": "avatars",
+    "inputs": [],
+    "name": "NUM_BASE_AVATARS",
     "outputs": [
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "description",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "imageURI",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -788,12 +772,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_account",
+        "name": "account",
         "type": "address"
       },
       {
         "internalType": "uint16[]",
-        "name": "_ids",
+        "name": "ids",
         "type": "uint16[]"
       }
     ],
@@ -809,28 +793,15 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "brush",
-    "outputs": [
-      {
-        "internalType": "contract IBrushToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -840,61 +811,35 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "dev",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "editNameCost",
-    "outputs": [
-      {
-        "internalType": "uint72",
-        "name": "",
-        "type": "uint72"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "_name",
+        "name": "playerName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_discord",
+        "name": "discord",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_twitter",
+        "name": "twitter",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_telegram",
+        "name": "telegram",
         "type": "string"
       },
       {
         "internalType": "bool",
-        "name": "_upgrade",
+        "name": "upgrade",
         "type": "bool"
       }
     ],
@@ -907,7 +852,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -924,7 +869,39 @@
   },
   {
     "inputs": [],
-    "name": "imageBaseUri",
+    "name": "getBrush",
+    "outputs": [
+      {
+        "internalType": "contract IBrushToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getDevAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getName",
     "outputs": [
       {
         "internalType": "string",
@@ -938,43 +915,106 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPlayerInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint24",
+            "name": "avatarId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "originalAvatarId",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct PlayerNFT.PlayerInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPoolAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "lowercaseName",
+        "type": "string"
+      }
+    ],
+    "name": "hasLowercaseName",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "lowercaseNameExists",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_pool",
+        "name": "pool",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_dev",
+        "name": "dev",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_royaltyReceiver",
+        "name": "royaltyReceiver",
         "type": "address"
       },
       {
         "internalType": "uint72",
-        "name": "_editNameCost",
+        "name": "editNameCost",
         "type": "uint72"
       },
       {
         "internalType": "uint80",
-        "name": "_upgradePlayerCost",
+        "name": "upgradePlayerCost",
         "type": "uint80"
       },
       {
         "internalType": "string",
-        "name": "_imageBaseUri",
+        "name": "imageBaseUri",
         "type": "string"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
@@ -1008,72 +1048,40 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "isBeta",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "name": "lowercaseNames",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "exists",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_avatarId",
+        "name": "avatarId",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "_name",
+        "name": "heroName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_discord",
+        "name": "discord",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_twitter",
+        "name": "twitter",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_telegram",
+        "name": "telegram",
         "type": "string"
       },
       {
         "internalType": "bool",
-        "name": "_upgrade",
+        "name": "upgrade",
         "type": "bool"
       },
       {
         "internalType": "bool",
-        "name": "_makeActive",
+        "name": "makeActive",
         "type": "bool"
       }
     ],
@@ -1096,64 +1104,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "names",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "playerInfos",
-    "outputs": [
-      {
-        "internalType": "uint24",
-        "name": "avatarId",
-        "type": "uint24"
-      },
-      {
-        "internalType": "uint24",
-        "name": "originalAvatarId",
-        "type": "uint24"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pool",
     "outputs": [
       {
         "internalType": "address",
@@ -1193,7 +1145,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_salePrice",
+        "name": "salePrice",
         "type": "uint256"
       }
     ],
@@ -1301,7 +1253,7 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_avatarIds",
+        "name": "avatarIds",
         "type": "uint256[]"
       },
       {
@@ -1328,7 +1280,7 @@
           }
         ],
         "internalType": "struct AvatarInfo[]",
-        "name": "_avatarInfos",
+        "name": "avatarInfos",
         "type": "tuple[]"
       }
     ],
@@ -1341,7 +1293,7 @@
     "inputs": [
       {
         "internalType": "uint72",
-        "name": "_editNameCost",
+        "name": "editNameCost",
         "type": "uint72"
       }
     ],
@@ -1354,7 +1306,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_imageBaseUri",
+        "name": "imageBaseUri",
         "type": "string"
       }
     ],
@@ -1367,7 +1319,7 @@
     "inputs": [
       {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       }
     ],
@@ -1380,7 +1332,7 @@
     "inputs": [
       {
         "internalType": "uint80",
-        "name": "_upgradePlayerCost",
+        "name": "upgradePlayerCost",
         "type": "uint80"
       }
     ],
@@ -1438,7 +1390,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
@@ -1501,7 +1453,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],

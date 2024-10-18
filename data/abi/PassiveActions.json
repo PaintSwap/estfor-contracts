@@ -647,100 +647,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "actionId",
-        "type": "uint256"
-      }
-    ],
-    "name": "actions",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "durationDays",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "inputTokenId1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint24",
-        "name": "inputAmount1",
-        "type": "uint24"
-      },
-      {
-        "internalType": "uint16",
-        "name": "inputTokenId2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint24",
-        "name": "inputAmount2",
-        "type": "uint24"
-      },
-      {
-        "internalType": "uint16",
-        "name": "inputTokenId3",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint24",
-        "name": "inputAmount3",
-        "type": "uint24"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "minSkill1",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "minLevel1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "minSkill2",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "minLevel2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "minSkill3",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "minLevel3",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint8",
-        "name": "skipSuccessPercent",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bool",
-        "name": "hasRandomRewards",
-        "type": "bool"
-      },
-      {
-        "internalType": "bytes1",
-        "name": "packedData",
-        "type": "bytes1"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "components": [
           {
             "internalType": "uint16",
@@ -835,7 +741,7 @@
           }
         ],
         "internalType": "struct PassiveActions.PassiveActionInput[]",
-        "name": "_passiveActionInputs",
+        "name": "passiveActionInputs",
         "type": "tuple[]"
       }
     ],
@@ -848,7 +754,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -980,7 +886,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1018,37 +924,125 @@
   {
     "inputs": [
       {
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getAction",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "durationDays",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount2",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount3",
+            "type": "uint24"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "minLevel1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "minLevel2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "minSkill3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "minLevel3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skipSuccessPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "hasRandomRewards",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          }
+        ],
+        "internalType": "struct PassiveActions.PassiveAction",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       },
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       },
       {
         "internalType": "contract World",
-        "name": "_world",
+        "name": "world",
         "type": "address"
       }
     ],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "itemNFT",
-    "outputs": [
-      {
-        "internalType": "contract ItemNFT",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1146,7 +1140,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1200,19 +1194,6 @@
   },
   {
     "inputs": [],
-    "name": "players",
-    "outputs": [
-      {
-        "internalType": "contract IPlayers",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "proxiableUUID",
     "outputs": [
       {
@@ -1235,12 +1216,12 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_actionIds",
+        "name": "actionIds",
         "type": "uint256[]"
       },
       {
         "internalType": "bool",
-        "name": "_isAvailable",
+        "name": "isAvailable",
         "type": "bool"
       }
     ],
@@ -1253,17 +1234,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       },
       {
         "internalType": "uint16",
-        "name": "_boostItemTokenId",
+        "name": "boostItemTokenId",
         "type": "uint16"
       }
     ],
@@ -1333,19 +1314,6 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "world",
-    "outputs": [
-      {
-        "internalType": "contract World",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ]

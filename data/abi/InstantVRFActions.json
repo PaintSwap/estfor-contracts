@@ -528,60 +528,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "actionId",
-        "type": "uint256"
-      }
-    ],
-    "name": "actions",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "inputTokenId1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint8",
-        "name": "inputAmount1",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "inputTokenId2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint8",
-        "name": "inputAmount2",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "inputTokenId3",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint24",
-        "name": "inputAmount3",
-        "type": "uint24"
-      },
-      {
-        "internalType": "bytes1",
-        "name": "packedData",
-        "type": "bytes1"
-      },
-      {
-        "internalType": "address",
-        "name": "strategy",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "components": [
           {
             "internalType": "uint16",
@@ -615,7 +561,7 @@
           }
         ],
         "internalType": "struct InstantVRFActionInput[]",
-        "name": "_instantVRFActionInputs",
+        "name": "instantVRFActionInputs",
         "type": "tuple[]"
       }
     ],
@@ -633,7 +579,7 @@
       },
       {
         "internalType": "address[]",
-        "name": "_strategies",
+        "name": "strategies",
         "type": "address[]"
       }
     ],
@@ -646,17 +592,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint16[]",
-        "name": "_actionIds",
+        "name": "actionIds",
         "type": "uint16[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_actionAmounts",
+        "name": "actionAmounts",
         "type": "uint256[]"
       }
     ],
@@ -701,7 +647,7 @@
           }
         ],
         "internalType": "struct InstantVRFActionInput[]",
-        "name": "_instantVRFActionInputs",
+        "name": "instantVRFActionInputs",
         "type": "tuple[]"
       }
     ],
@@ -714,12 +660,12 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "_requestId",
+        "name": "requestId",
         "type": "bytes32"
       },
       {
         "internalType": "uint256[]",
-        "name": "_randomWords",
+        "name": "randomWords",
         "type": "uint256[]"
       }
     ],
@@ -729,13 +675,80 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "gasCostPerUnit",
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      }
+    ],
+    "name": "getAction",
     "outputs": [
       {
-        "internalType": "uint64",
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "inputAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount3",
+            "type": "uint24"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "address",
+            "name": "strategy",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct InstantVRFActions.InstantVRFAction",
         "name": "",
-        "type": "uint64"
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum InstantVRFActionType",
+        "name": "actionType",
+        "type": "uint8"
+      }
+    ],
+    "name": "getStrategy",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -745,32 +758,32 @@
     "inputs": [
       {
         "internalType": "contract Players",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       },
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       },
       {
         "internalType": "contract PetNFT",
-        "name": "_petNFT",
+        "name": "petNFT",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_oracle",
+        "name": "oracle",
         "type": "address"
       },
       {
         "internalType": "contract ISamWitchVRF",
-        "name": "_samWitchVRF",
+        "name": "samWitchVRF",
         "type": "address"
       },
       {
         "internalType": "contract VRFRequestInfo",
-        "name": "_vrfRequestInfo",
+        "name": "vrfRequestInfo",
         "type": "address"
       }
     ],
@@ -809,7 +822,7 @@
     "inputs": [
       {
         "internalType": "uint16[]",
-        "name": "_instantVRFActionIds",
+        "name": "instantVRFActionIds",
         "type": "uint16[]"
       }
     ],
@@ -829,7 +842,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_actionAmounts",
+        "name": "actionAmounts",
         "type": "uint256"
       }
     ],
@@ -848,12 +861,12 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_actionIds",
+        "name": "actionIds",
         "type": "uint256[]"
       },
       {
         "internalType": "bool",
-        "name": "_isAvailable",
+        "name": "isAvailable",
         "type": "bool"
       }
     ],
@@ -866,7 +879,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_gasCostPerUnit",
+        "name": "gasCostPerUnit",
         "type": "uint256"
       }
     ],
@@ -879,32 +892,13 @@
     "inputs": [
       {
         "internalType": "contract PetNFT",
-        "name": "_petNFT",
+        "name": "petNFT",
         "type": "address"
       }
     ],
     "name": "setPetNFT",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "enum InstantVRFActionType",
-        "name": "actionType",
-        "type": "uint8"
-      }
-    ],
-    "name": "strategies",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "strategy",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

@@ -47,7 +47,7 @@ describe("PetNFT", function () {
     const randomWord = 1;
     await petNFT.addBasePets([pet]);
     await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
-    expect(await petNFT.nextPetId()).to.eq(2);
+    expect(await petNFT.getNextPetId()).to.eq(2);
     expect(await petNFT.balanceOf(alice.address, petId)).to.eq(1);
   });
 

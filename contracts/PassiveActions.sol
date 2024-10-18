@@ -116,18 +116,16 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16 boostItemTokenId;
   }
 
-  IPlayers public players;
-  ItemNFT public itemNFT;
-  World public world;
-  uint80 lastQueueId;
-  mapping(uint256 actionId => PassiveAction action) public actions;
-  mapping(uint256 actionId => ActionRewards) private actionRewards;
-  mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private activePassiveActions;
+  IPlayers private _players;
+  ItemNFT private _itemNFT;
+  World private _world;
+  uint80 _lastQueueId;
+  mapping(uint256 actionId => PassiveAction action) private _actions;
+  mapping(uint256 actionId => ActionRewards) private _actionRewards;
+  mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private _activePassiveActions;
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), _playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
@@ -136,102 +134,83 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     _disableInitializers();
   }
 
-  function initialize(IPlayers _players, ItemNFT _itemNFT, World _world) external initializer {
+  function initialize(IPlayers players, ItemNFT itemNFT, World world) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
     __ReentrancyGuard_init();
-    players = _players;
-    itemNFT = _itemNFT;
-    world = _world;
-    lastQueueId = 1;
+    _players = players;
+    _itemNFT = itemNFT;
+    _world = world;
+    _lastQueueId = 1;
   }
 
   function startAction(
-    uint256 _playerId,
-    uint16 _actionId,
-    uint16 _boostItemTokenId
-  ) external isOwnerOfPlayerAndActive(_playerId) {
+    uint256 playerId,
+    uint16 actionId,
+    uint16 boostItemTokenId
+  ) external isOwnerOfPlayerAndActive(playerId) {
     // Cannot start a passive action when one is active already for this player
-    if (activePassiveActions[_playerId].actionId != NONE) {
-      (bool finished, , , , ) = finishedInfo(_playerId);
-      if (finished) {
-        _claim(_playerId, activePassiveActions[_playerId].queueId, true);
-      } else {
-        revert PreviousActionNotFinished();
-      }
+    if (_activePassiveActions[playerId].actionId != NONE) {
+      (bool finished, , , , ) = finishedInfo(playerId);
+      require(finished, PreviousActionNotFinished());
+      _claim(playerId, _activePassiveActions[playerId].queueId, true);
     }
 
-    PassiveAction storage action = actions[_actionId];
-    if (action.inputTokenId1 == NONE) {
-      revert InvalidActionId();
+    PassiveAction storage action = _actions[actionId];
+    require(action.inputTokenId1 != NONE, InvalidActionId());
+
+    _checkMinLevelRequirements(playerId, actionId);
+
+    require(_isActionAvailable(actionId), ActionNotAvailable());
+
+    require(!_isActionFullMode(actionId) || _players.isPlayerUpgraded(playerId), PlayerNotUpgraded());
+
+    if (boostItemTokenId != NONE) {
+      Item memory item = _itemNFT.getItem(boostItemTokenId);
+      require(item.equipPosition == EquipPosition.PASSIVE_BOOST_VIAL, NotPassiveVial());
     }
 
-    _checkMinLevelRequirements(_playerId, _actionId);
-
-    if (!_isActionAvailable(_actionId)) {
-      revert ActionNotAvailable();
-    }
-
-    if (_isActionFullMode(_actionId) && !players.isPlayerUpgraded(_playerId)) {
-      revert PlayerNotUpgraded();
-    }
-
-    if (_boostItemTokenId != NONE) {
-      Item memory item = itemNFT.getItem(_boostItemTokenId);
-      if (item.equipPosition != EquipPosition.PASSIVE_BOOST_VIAL) {
-        revert NotPassiveVial();
-      }
-    }
-
-    uint96 queueId = lastQueueId++;
-    activePassiveActions[_playerId] = ActivePassiveInfo({
-      actionId: _actionId,
+    uint96 queueId = _lastQueueId++;
+    _activePassiveActions[playerId] = ActivePassiveInfo({
+      actionId: actionId,
       queueId: queueId,
       startTime: uint40(block.timestamp),
-      boostItemTokenId: _boostItemTokenId
+      boostItemTokenId: boostItemTokenId
     });
 
-    _burnInputs(action, _boostItemTokenId);
+    _burnInputs(action, boostItemTokenId);
 
-    emit StartPassiveAction(_playerId, msg.sender, _actionId, queueId, _boostItemTokenId);
+    emit StartPassiveAction(playerId, _msgSender(), actionId, queueId, boostItemTokenId);
   }
 
-  function claim(uint256 _playerId) external isOwnerOfPlayerAndActive(_playerId) nonReentrant {
-    uint256 queueId = activePassiveActions[_playerId].queueId;
-    if (queueId == NONE) {
-      revert NoActivePassiveAction();
-    }
-    (bool finished, bool oracleCalled, bool hasRandomRewards, , ) = finishedInfo(_playerId);
-    if (!finished || (hasRandomRewards && !oracleCalled)) {
-      revert PassiveActionNotReadyToBeClaimed();
-    }
+  function claim(uint256 playerId) external isOwnerOfPlayerAndActive(playerId) nonReentrant {
+    uint256 queueId = _activePassiveActions[playerId].queueId;
+    require(queueId != NONE, NoActivePassiveAction());
+    (bool finished, bool oracleCalled, bool hasRandomRewards, , ) = finishedInfo(playerId);
+    require(finished && !(hasRandomRewards && !oracleCalled), PassiveActionNotReadyToBeClaimed());
 
-    _claim(_playerId, queueId, false);
-    delete activePassiveActions[_playerId];
+    _claim(playerId, queueId, false);
+    delete _activePassiveActions[playerId];
   }
 
   function endEarly(uint256 _playerId) external isOwnerOfPlayerAndActive(_playerId) {
-    uint256 queueId = activePassiveActions[_playerId].queueId;
-    if (queueId == NONE) {
-      revert NoActivePassiveAction();
-    }
+    uint256 queueId = _activePassiveActions[_playerId].queueId;
+    require(queueId != NONE, NoActivePassiveAction());
 
     (bool finished, , , , ) = finishedInfo(_playerId);
-    if (finished) {
-      revert ActionAlreadyFinished();
-    }
+    require(!finished, ActionAlreadyFinished());
 
-    delete activePassiveActions[_playerId];
-    emit EarlyEndPassiveAction(_playerId, msg.sender, queueId);
+    delete _activePassiveActions[_playerId];
+    emit EarlyEndPassiveAction(_playerId, _msgSender(), queueId);
   }
 
   // Get current state of the passive action
   function pendingPassiveActionState(
-    uint256 _playerId
+    uint256 playerId
   ) public view returns (PendingPassiveActionState memory _pendingPassiveActionState) {
     // If it's not finished then you get nothing
     (bool finished, bool oracleCalled, bool hasRandomRewards, uint256 numWinners, bool skippedToday) = finishedInfo(
-      _playerId
+      playerId
     );
     _pendingPassiveActionState.isReady = finished && (oracleCalled || !hasRandomRewards);
     _pendingPassiveActionState.numDaysSkipped = numWinners;
@@ -240,41 +219,41 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       return _pendingPassiveActionState;
     }
 
-    ActivePassiveInfo storage passiveAction = activePassiveActions[_playerId];
-    PassiveAction memory action = actions[passiveAction.actionId];
+    ActivePassiveInfo storage passiveAction = _activePassiveActions[playerId];
+    PassiveAction memory action = _actions[passiveAction.actionId];
 
     uint256 numIterations = action.durationDays;
-    ActionRewards storage _actionRewards = actionRewards[passiveAction.actionId];
+    ActionRewards storage reward = _actionRewards[passiveAction.actionId];
 
     // Add guaranteed rewards
-    uint256 guaranteedRewardLength = _actionRewards.guaranteedRewardTokenId3 != NONE
+    uint256 guaranteedRewardLength = reward.guaranteedRewardTokenId3 != NONE
       ? 3
-      : _actionRewards.guaranteedRewardTokenId2 != NONE
+      : reward.guaranteedRewardTokenId2 != NONE
         ? 2
-        : _actionRewards.guaranteedRewardTokenId1 != NONE
+        : reward.guaranteedRewardTokenId1 != NONE
           ? 1
           : 0;
 
     _pendingPassiveActionState.producedItemTokenIds = new uint256[](guaranteedRewardLength);
     _pendingPassiveActionState.producedAmounts = new uint256[](guaranteedRewardLength);
-    if (_actionRewards.guaranteedRewardTokenId1 != NONE) {
-      _pendingPassiveActionState.producedItemTokenIds[0] = _actionRewards.guaranteedRewardTokenId1;
-      _pendingPassiveActionState.producedAmounts[0] = _actionRewards.guaranteedRewardRate1;
+    if (reward.guaranteedRewardTokenId1 != NONE) {
+      _pendingPassiveActionState.producedItemTokenIds[0] = reward.guaranteedRewardTokenId1;
+      _pendingPassiveActionState.producedAmounts[0] = reward.guaranteedRewardRate1;
     }
-    if (_actionRewards.guaranteedRewardTokenId2 != NONE) {
-      _pendingPassiveActionState.producedItemTokenIds[1] = _actionRewards.guaranteedRewardTokenId2;
-      _pendingPassiveActionState.producedAmounts[1] = _actionRewards.guaranteedRewardRate2;
+    if (reward.guaranteedRewardTokenId2 != NONE) {
+      _pendingPassiveActionState.producedItemTokenIds[1] = reward.guaranteedRewardTokenId2;
+      _pendingPassiveActionState.producedAmounts[1] = reward.guaranteedRewardRate2;
     }
-    if (_actionRewards.guaranteedRewardTokenId3 != NONE) {
-      _pendingPassiveActionState.producedItemTokenIds[2] = _actionRewards.guaranteedRewardTokenId3;
-      _pendingPassiveActionState.producedAmounts[2] = _actionRewards.guaranteedRewardRate3;
+    if (reward.guaranteedRewardTokenId3 != NONE) {
+      _pendingPassiveActionState.producedItemTokenIds[2] = reward.guaranteedRewardTokenId3;
+      _pendingPassiveActionState.producedAmounts[2] = reward.guaranteedRewardRate3;
     }
 
     // Add random rewards
     if (oracleCalled) {
-      RandomReward[] memory randomRewards = _setupRandomRewards(_actionRewards);
+      RandomReward[] memory randomRewards = _setupRandomRewards(reward);
       uint256 endTime = passiveAction.startTime + (action.durationDays - numWinners) * 1 days - 1 days;
-      bytes memory randomBytes = world.getRandomBytes(numIterations, passiveAction.startTime, endTime, _playerId);
+      bytes memory randomBytes = _world.getRandomBytes(numIterations, passiveAction.startTime, endTime, playerId);
 
       _pendingPassiveActionState.producedRandomRewardItemTokenIds = new uint256[](randomRewards.length);
       _pendingPassiveActionState.producedRandomRewardAmounts = new uint256[](randomRewards.length);
@@ -297,8 +276,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         }
       }
 
-      uint256[] memory ids = _pendingPassiveActionState.producedRandomRewardItemTokenIds;
-      uint256[] memory amounts = _pendingPassiveActionState.producedRandomRewardAmounts;
+      (uint256[] memory ids, uint256[] memory amounts) = (
+        _pendingPassiveActionState.producedRandomRewardItemTokenIds,
+        _pendingPassiveActionState.producedRandomRewardAmounts
+      );
+
       assembly ("memory-safe") {
         mstore(ids, length)
         mstore(amounts, length)
@@ -306,24 +288,27 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
   }
 
-  function _checkMinLevelRequirements(uint256 _playerId, uint256 _actionId) private view {
-    PassiveAction storage action = actions[_actionId];
-    if (action.minSkill1 != Skill.NONE && players.level(_playerId, action.minSkill1) < action.minLevel1) {
-      revert MinimumLevelNotReached(action.minSkill1, action.minLevel1);
-    }
+  function _checkMinLevelRequirements(uint256 playerId, uint256 actionId) private view {
+    PassiveAction storage action = _actions[actionId];
+    require(
+      action.minSkill1 == Skill.NONE || _players.level(playerId, action.minSkill1) >= action.minLevel1,
+      MinimumLevelNotReached(action.minSkill1, action.minLevel1)
+    );
 
-    if (action.minSkill2 != Skill.NONE && players.level(_playerId, action.minSkill2) < action.minLevel2) {
-      revert MinimumLevelNotReached(action.minSkill2, action.minLevel2);
-    }
+    require(
+      action.minSkill2 == Skill.NONE || _players.level(playerId, action.minSkill2) >= action.minLevel2,
+      MinimumLevelNotReached(action.minSkill2, action.minLevel2)
+    );
 
-    if (action.minSkill3 != Skill.NONE && players.level(_playerId, action.minSkill3) < action.minLevel3) {
-      revert MinimumLevelNotReached(action.minSkill3, action.minLevel3);
-    }
+    require(
+      action.minSkill3 == Skill.NONE || _players.level(playerId, action.minSkill3) >= action.minLevel3,
+      MinimumLevelNotReached(action.minSkill3, action.minLevel3)
+    );
   }
 
   // Action must be finished as a precondition
-  function _claim(uint256 _playerId, uint256 _queueId, bool _startingAnother) private {
-    PendingPassiveActionState memory _pendingPassiveActionState = pendingPassiveActionState(_playerId);
+  function _claim(uint256 playerId, uint256 queueId, bool startingAnother) private {
+    PendingPassiveActionState memory _pendingPassiveActionState = pendingPassiveActionState(playerId);
     uint256 numItemsToMint = _pendingPassiveActionState.producedItemTokenIds.length +
       _pendingPassiveActionState.producedRandomRewardItemTokenIds.length;
     uint256[] memory itemTokenIds = new uint256[](numItemsToMint);
@@ -340,9 +325,9 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         .producedRandomRewardAmounts[i];
     }
     if (numItemsToMint != 0) {
-      itemNFT.mintBatch(msg.sender, itemTokenIds, amounts);
+      _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
     }
-    emit ClaimPassiveAction(_playerId, msg.sender, _queueId, itemTokenIds, amounts, _startingAnother);
+    emit ClaimPassiveAction(playerId, _msgSender(), queueId, itemTokenIds, amounts, startingAnother);
   }
 
   function _getSlice(bytes memory _b, uint256 _index) private pure returns (uint16) {
@@ -351,40 +336,40 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   }
 
   function _isWinner(
-    uint256 _playerId,
-    uint256 _startTimestamp,
-    uint256 _endTimestamp,
-    uint16 _boostIncrease,
-    uint8 _skipSuccessPercent
+    uint256 playerId,
+    uint256 startTimestamp,
+    uint256 endTimestamp,
+    uint16 boostIncrease,
+    uint8 skipSuccessPercent
   ) private view returns (bool winner) {
-    bytes memory randomBytes = world.getRandomBytes(1, _startTimestamp, _endTimestamp, _playerId);
+    bytes memory randomBytes = _world.getRandomBytes(1, startTimestamp, endTimestamp, playerId);
     uint16 word = _getSlice(randomBytes, 0);
-    return word < ((type(uint16).max * (uint256(_skipSuccessPercent) + _boostIncrease)) / 100);
+    return word < ((type(uint16).max * (uint256(skipSuccessPercent) + boostIncrease)) / 100);
   }
 
-  /// @param _playerId The player id
+  /// @param playerId The player id
   /// @return finished If the action has finished
   /// @return oracleCalled If the oracle has been called for the previous day of the finished passive action
   /// @return hasRandomRewards If the passive action has random rewards
   /// @return numWinners The number of winners
   /// @return skippedToday If the player has skipped today
   function finishedInfo(
-    uint256 _playerId
+    uint256 playerId
   )
     public
     view
     returns (bool finished, bool oracleCalled, bool hasRandomRewards, uint256 numWinners, bool skippedToday)
   {
     // Check random reward results which may lower the time remaining (e.g. oracle speed boost)
-    ActivePassiveInfo storage passiveAction = activePassiveActions[_playerId];
+    ActivePassiveInfo storage passiveAction = _activePassiveActions[playerId];
     if (passiveAction.actionId == NONE) {
       return (false, false, false, 0, false);
     }
 
-    PassiveAction storage action = actions[passiveAction.actionId];
+    PassiveAction storage action = _actions[passiveAction.actionId];
     uint256 duration = action.durationDays * 1 days;
 
-    uint256 startTime = activePassiveActions[_playerId].startTime;
+    uint256 startTime = _activePassiveActions[playerId].startTime;
     uint256 timespan = Math.min(duration, (block.timestamp - startTime));
     uint256 numDays = timespan / 1 days;
 
@@ -399,12 +384,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       if (action.skipSuccessPercent != 0 && timestamp < startTime + numDays * 1 days) {
         uint16 boostIncrease;
         if (passiveAction.boostItemTokenId != NONE) {
-          boostIncrease = itemNFT.getItem(passiveAction.boostItemTokenId).boostValue;
+          boostIncrease = _itemNFT.getItem(passiveAction.boostItemTokenId).boostValue;
         }
 
-        oracleCalled = world.hasRandomWord(timestamp);
+        oracleCalled = _world.hasRandomWord(timestamp);
 
-        if (oracleCalled && _isWinner(_playerId, startTime, timestamp, boostIncrease, action.skipSuccessPercent)) {
+        if (oracleCalled && _isWinner(playerId, startTime, timestamp, boostIncrease, action.skipSuccessPercent)) {
           ++numWinners;
 
           // Is this yesterday's oracle?
@@ -419,22 +404,22 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         finished = true;
         // Actually check if it has the random word for this day
         if (action.hasRandomRewards && timestamp != startTime + duration - numWinners * 1 days - 1 days) {
-          oracleCalled = world.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
+          oracleCalled = _world.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
         }
         break;
       }
     }
   }
 
-  function _burnInputs(PassiveAction storage action, uint16 _boostItemTokenId) private {
-    if (action.inputTokenId1 == NONE && _boostItemTokenId == NONE) {
+  function _burnInputs(PassiveAction storage action, uint16 boostItemTokenId) private {
+    if (action.inputTokenId1 == NONE && boostItemTokenId == NONE) {
       // There is nothing to burn
       return;
     }
 
     uint256 inputTokenLength = action.inputTokenId2 == NONE ? 1 : (action.inputTokenId3 == NONE ? 2 : 3);
     uint256 arrLength = inputTokenLength;
-    if (_boostItemTokenId != NONE) {
+    if (boostItemTokenId != NONE) {
       ++arrLength;
     }
     uint256[] memory itemTokenIds = new uint256[](arrLength);
@@ -451,46 +436,46 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       amounts[2] = action.inputAmount3;
     }
 
-    if (_boostItemTokenId != NONE) {
-      itemTokenIds[arrLength - 1] = _boostItemTokenId;
+    if (boostItemTokenId != NONE) {
+      itemTokenIds[arrLength - 1] = boostItemTokenId;
       amounts[arrLength - 1] = 1;
     }
 
     // Burn it all
-    itemNFT.burnBatch(msg.sender, itemTokenIds, amounts);
+    _itemNFT.burnBatch(_msgSender(), itemTokenIds, amounts);
   }
 
   function _setupRandomRewards(
-    ActionRewards memory _rewards
+    ActionRewards memory rewards
   ) private pure returns (RandomReward[] memory randomRewards) {
     randomRewards = new RandomReward[](4);
     uint256 randomRewardLength;
-    if (_rewards.randomRewardTokenId1 != 0) {
+    if (rewards.randomRewardTokenId1 != 0) {
       randomRewards[randomRewardLength++] = RandomReward(
-        _rewards.randomRewardTokenId1,
-        _rewards.randomRewardChance1,
-        _rewards.randomRewardAmount1
+        rewards.randomRewardTokenId1,
+        rewards.randomRewardChance1,
+        rewards.randomRewardAmount1
       );
     }
-    if (_rewards.randomRewardTokenId2 != 0) {
+    if (rewards.randomRewardTokenId2 != 0) {
       randomRewards[randomRewardLength++] = RandomReward(
-        _rewards.randomRewardTokenId2,
-        _rewards.randomRewardChance2,
-        _rewards.randomRewardAmount2
+        rewards.randomRewardTokenId2,
+        rewards.randomRewardChance2,
+        rewards.randomRewardAmount2
       );
     }
-    if (_rewards.randomRewardTokenId3 != 0) {
+    if (rewards.randomRewardTokenId3 != 0) {
       randomRewards[randomRewardLength++] = RandomReward(
-        _rewards.randomRewardTokenId3,
-        _rewards.randomRewardChance3,
-        _rewards.randomRewardAmount3
+        rewards.randomRewardTokenId3,
+        rewards.randomRewardChance3,
+        rewards.randomRewardAmount3
       );
     }
-    if (_rewards.randomRewardTokenId4 != 0) {
+    if (rewards.randomRewardTokenId4 != 0) {
       randomRewards[randomRewardLength++] = RandomReward(
-        _rewards.randomRewardTokenId4,
-        _rewards.randomRewardChance4,
-        _rewards.randomRewardAmount4
+        rewards.randomRewardTokenId4,
+        rewards.randomRewardChance4,
+        rewards.randomRewardAmount4
       );
     }
 
@@ -499,163 +484,138 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
   }
 
-  function _isActionFullMode(uint16 _actionId) private view returns (bool) {
-    return uint8(actions[_actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+  function _isActionFullMode(uint16 actionId) private view returns (bool) {
+    return uint8(_actions[actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
-  function _isActionAvailable(uint16 _actionId) private view returns (bool) {
-    return uint8(actions[_actionId].packedData >> IS_AVAILABLE_BIT) & 1 == 1;
+  function _isActionAvailable(uint16 actionId) private view returns (bool) {
+    return uint8(_actions[actionId].packedData >> IS_AVAILABLE_BIT) & 1 == 1;
   }
 
   function _packAction(
-    PassiveActionInfoInput calldata _actionInfo,
-    bool _hasRandomRewards
+    PassiveActionInfoInput calldata actionInfo,
+    bool hasRandomRewards
   ) private pure returns (PassiveAction memory passiveAction) {
-    bytes1 packedData = bytes1(uint8(_actionInfo.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    bytes1 packedData = bytes1(uint8(actionInfo.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
     passiveAction = PassiveAction({
-      durationDays: _actionInfo.durationDays,
-      minSkill1: _actionInfo.minSkills.length != 0 ? _actionInfo.minSkills[0] : Skill.NONE,
-      minLevel1: _actionInfo.minLevels.length != 0 ? _actionInfo.minLevels[0] : 0,
-      minSkill2: _actionInfo.minSkills.length > 1 ? _actionInfo.minSkills[1] : Skill.NONE,
-      minLevel2: _actionInfo.minLevels.length > 1 ? _actionInfo.minLevels[1] : 0,
-      minSkill3: _actionInfo.minSkills.length > 2 ? _actionInfo.minSkills[2] : Skill.NONE,
-      minLevel3: _actionInfo.minLevels.length > 2 ? _actionInfo.minLevels[2] : 0,
-      inputTokenId1: _actionInfo.inputTokenIds.length != 0 ? _actionInfo.inputTokenIds[0] : NONE,
-      inputAmount1: _actionInfo.inputAmounts.length != 0 ? _actionInfo.inputAmounts[0] : 0,
-      inputTokenId2: _actionInfo.inputTokenIds.length > 1 ? _actionInfo.inputTokenIds[1] : NONE,
-      inputAmount2: _actionInfo.inputAmounts.length > 1 ? _actionInfo.inputAmounts[1] : 0,
-      inputTokenId3: _actionInfo.inputTokenIds.length > 2 ? _actionInfo.inputTokenIds[2] : NONE,
-      inputAmount3: _actionInfo.inputAmounts.length > 2 ? _actionInfo.inputAmounts[2] : 0,
-      skipSuccessPercent: _actionInfo.skipSuccessPercent,
-      hasRandomRewards: _hasRandomRewards,
+      durationDays: actionInfo.durationDays,
+      minSkill1: actionInfo.minSkills.length != 0 ? actionInfo.minSkills[0] : Skill.NONE,
+      minLevel1: actionInfo.minLevels.length != 0 ? actionInfo.minLevels[0] : 0,
+      minSkill2: actionInfo.minSkills.length > 1 ? actionInfo.minSkills[1] : Skill.NONE,
+      minLevel2: actionInfo.minLevels.length > 1 ? actionInfo.minLevels[1] : 0,
+      minSkill3: actionInfo.minSkills.length > 2 ? actionInfo.minSkills[2] : Skill.NONE,
+      minLevel3: actionInfo.minLevels.length > 2 ? actionInfo.minLevels[2] : 0,
+      inputTokenId1: actionInfo.inputTokenIds.length != 0 ? actionInfo.inputTokenIds[0] : NONE,
+      inputAmount1: actionInfo.inputAmounts.length != 0 ? actionInfo.inputAmounts[0] : 0,
+      inputTokenId2: actionInfo.inputTokenIds.length > 1 ? actionInfo.inputTokenIds[1] : NONE,
+      inputAmount2: actionInfo.inputAmounts.length > 1 ? actionInfo.inputAmounts[1] : 0,
+      inputTokenId3: actionInfo.inputTokenIds.length > 2 ? actionInfo.inputTokenIds[2] : NONE,
+      inputAmount3: actionInfo.inputAmounts.length > 2 ? actionInfo.inputAmounts[2] : 0,
+      skipSuccessPercent: actionInfo.skipSuccessPercent,
+      hasRandomRewards: hasRandomRewards,
       packedData: packedData
     });
   }
 
-  function _setAction(PassiveActionInput calldata _passiveActionInput) private {
-    if (_passiveActionInput.actionId == 0) {
-      revert ActionIdZeroNotAllowed();
-    }
-    PassiveActionInfoInput calldata actionInfo = _passiveActionInput.info;
+  function _setAction(PassiveActionInput calldata passiveActionInput) private {
+    require(passiveActionInput.actionId != 0, ActionIdZeroNotAllowed());
+    PassiveActionInfoInput calldata actionInfo = passiveActionInput.info;
     // Allow for the beta for initial testing
     //    if (_passiveActionInput.info.durationDays == 0) {
     //      revert DurationCannotBeZero();
     //    }
-    if (_passiveActionInput.info.durationDays > MAX_UNIQUE_TICKETS) {
-      revert DurationTooLong();
-    }
+    require(passiveActionInput.info.durationDays <= MAX_UNIQUE_TICKETS, DurationTooLong());
 
     _checkInfo(actionInfo);
-    actions[_passiveActionInput.actionId] = _packAction(
-      _passiveActionInput.info,
-      _passiveActionInput.randomRewards.length != 0
+    _actions[passiveActionInput.actionId] = _packAction(
+      passiveActionInput.info,
+      passiveActionInput.randomRewards.length != 0
     );
 
     // Set the rewards
-    ActionRewards storage actionReward = actionRewards[_passiveActionInput.actionId];
-    delete actionRewards[_passiveActionInput.actionId];
-    WorldLibrary.setActionGuaranteedRewards(_passiveActionInput.guaranteedRewards, actionReward);
-    WorldLibrary.setActionRandomRewards(_passiveActionInput.randomRewards, actionReward);
+    ActionRewards storage actionReward = _actionRewards[passiveActionInput.actionId];
+    delete _actionRewards[passiveActionInput.actionId];
+    WorldLibrary.setActionGuaranteedRewards(passiveActionInput.guaranteedRewards, actionReward);
+    WorldLibrary.setActionRandomRewards(passiveActionInput.randomRewards, actionReward);
   }
 
-  function _checkInfo(PassiveActionInfoInput calldata _actionInfo) private pure {
-    uint16[] calldata inputTokenIds = _actionInfo.inputTokenIds;
-    uint24[] calldata amounts = _actionInfo.inputAmounts;
+  function _checkInfo(PassiveActionInfoInput calldata actionInfo) private pure {
+    uint16[] calldata inputTokenIds = actionInfo.inputTokenIds;
+    uint24[] calldata amounts = actionInfo.inputAmounts;
 
-    if (inputTokenIds.length > 3) {
-      revert TooManyInputItems();
-    }
-    if (inputTokenIds.length != amounts.length) {
-      revert LengthMismatch();
-    }
+    require(inputTokenIds.length <= 3, TooManyInputItems());
+    require(inputTokenIds.length == amounts.length, LengthMismatch());
 
     // Must have at least 1 input
-    if (inputTokenIds.length == 0) {
-      revert NoInputItemsSpecified();
-    }
+    require(inputTokenIds.length != 0, NoInputItemsSpecified());
 
     for (uint256 i; i < inputTokenIds.length; ++i) {
-      if (inputTokenIds[i] == 0) {
-        revert InvalidInputTokenId();
-      }
-      if (amounts[i] == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
+      require(inputTokenIds[i] != 0, InvalidInputTokenId());
+      require(amounts[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != inputTokenIds.length - 1) {
-        if (amounts[i] > amounts[i + 1]) {
-          revert InputAmountsMustBeInOrder();
-        }
+        require(amounts[i] <= amounts[i + 1], InputAmountsMustBeInOrder());
         for (uint256 j; j < inputTokenIds.length; ++j) {
-          if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
-            revert InputItemNoDuplicates();
-          }
+          require(j == i || inputTokenIds[i] != inputTokenIds[j], InputItemNoDuplicates());
         }
       }
     }
 
     // Check minimum xp
-    Skill[] calldata minSkills = _actionInfo.minSkills;
-    uint16[] calldata minLevels = _actionInfo.minLevels;
+    Skill[] calldata minSkills = actionInfo.minSkills;
+    uint16[] calldata minLevels = actionInfo.minLevels;
 
-    if (minSkills.length > 3) {
-      revert TooManyMinSkills();
-    }
-    if (minSkills.length != minLevels.length) {
-      revert LengthMismatch();
-    }
+    require(minSkills.length <= 3, TooManyMinSkills());
+    require(minSkills.length == minLevels.length, LengthMismatch());
     for (uint256 i; i < minSkills.length; ++i) {
-      if (minSkills[i] == Skill.NONE) {
-        revert InvalidSkill();
-      }
-      if (minLevels[i] == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
+      require(minSkills[i] != Skill.NONE, InvalidSkill());
+      require(minLevels[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != minSkills.length - 1) {
         for (uint256 j; j < minSkills.length; ++j) {
-          if (j != i && minSkills[i] == minSkills[j]) {
-            revert MinimumSkillsNoDuplicates();
-          }
+          require(j == i || minSkills[i] != minSkills[j], MinimumSkillsNoDuplicates());
         }
       }
     }
   }
 
-  function addActions(PassiveActionInput[] calldata _passiveActionInputs) external onlyOwner {
-    for (uint256 i; i < _passiveActionInputs.length; ++i) {
-      if (actions[_passiveActionInputs[i].actionId].inputTokenId1 != 0) {
-        revert ActionAlreadyExists(_passiveActionInputs[i].actionId);
-      }
-      _setAction(_passiveActionInputs[i]);
+  function addActions(PassiveActionInput[] calldata passiveActionInputs) external onlyOwner {
+    for (uint256 i; i < passiveActionInputs.length; ++i) {
+      require(
+        _actions[passiveActionInputs[i].actionId].inputTokenId1 == 0,
+        ActionAlreadyExists(passiveActionInputs[i].actionId)
+      );
+      _setAction(passiveActionInputs[i]);
     }
-    emit AddPassiveActions(_passiveActionInputs);
+    emit AddPassiveActions(passiveActionInputs);
   }
 
   function editActions(PassiveActionInput[] calldata _passiveActionInputs) external onlyOwner {
     for (uint256 i = 0; i < _passiveActionInputs.length; ++i) {
-      if (actions[_passiveActionInputs[i].actionId].inputTokenId1 == NONE) {
-        revert ActionDoesNotExist();
-      }
+      require(_actions[_passiveActionInputs[i].actionId].inputTokenId1 != NONE, ActionDoesNotExist());
       _setAction(_passiveActionInputs[i]);
     }
     emit EditPassiveActions(_passiveActionInputs);
   }
 
-  function setAvailable(uint256[] calldata _actionIds, bool _isAvailable) external onlyOwner {
-    for (uint16 i; i < _actionIds.length; ++i) {
-      bytes1 packedData = actions[_actionIds[i]].packedData;
+  function setAvailable(uint256[] calldata actionIds, bool isAvailable) external onlyOwner {
+    for (uint16 i; i < actionIds.length; ++i) {
+      bytes1 packedData = _actions[actionIds[i]].packedData;
       bytes1 mask = bytes1(uint8(1 << IS_AVAILABLE_BIT));
-      if (_isAvailable) {
+      if (isAvailable) {
         packedData |= mask;
       } else {
         packedData &= ~mask;
       }
 
-      actions[_actionIds[i]].packedData = packedData;
+      _actions[actionIds[i]].packedData = packedData;
     }
-    emit SetAvailableActions(_actionIds, _isAvailable);
+    emit SetAvailableActions(actionIds, isAvailable);
+  }
+
+  function getAction(uint16 actionId) external view returns (PassiveAction memory) {
+    return _actions[actionId];
   }
 
   // solhint-disable-next-line no-empty-blocks

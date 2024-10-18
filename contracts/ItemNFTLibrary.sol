@@ -6,41 +6,41 @@ import "./globals/players.sol";
 
 // This file contains methods for interacting with the item NFT, used to decrease implementation deployment bytecode code.
 library ItemNFTLibrary {
-  function setItem(ItemInput calldata _inputItem, Item storage _item) external {
+  function setItem(ItemInput calldata inputItem, Item storage item) external {
     bool hasCombat;
-    CombatStats calldata _combatStats = _inputItem.combatStats;
+    CombatStats calldata combatStats = inputItem.combatStats;
     assembly ("memory-safe") {
-      hasCombat := not(iszero(_combatStats))
+      hasCombat := not(iszero(combatStats))
     }
-    _item.equipPosition = _inputItem.equipPosition;
-    _item.isTransferable = _inputItem.isTransferable;
+    item.equipPosition = inputItem.equipPosition;
+    item.isTransferable = inputItem.isTransferable;
 
     bytes1 packedData = bytes1(uint8(0x1)); // Exists
-    packedData = packedData | bytes1(uint8(_inputItem.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
-    _item.packedData = packedData;
+    packedData = packedData | bytes1(uint8(inputItem.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    item.packedData = packedData;
 
     if (hasCombat) {
       // Combat stats
-      _item.melee = _inputItem.combatStats.melee;
-      _item.ranged = _inputItem.combatStats.ranged;
-      _item.magic = _inputItem.combatStats.magic;
-      _item.meleeDefence = _inputItem.combatStats.meleeDefence;
-      _item.rangedDefence = _inputItem.combatStats.rangedDefence;
-      _item.magicDefence = _inputItem.combatStats.magicDefence;
-      _item.health = _inputItem.combatStats.health;
+      item.melee = inputItem.combatStats.melee;
+      item.ranged = inputItem.combatStats.ranged;
+      item.magic = inputItem.combatStats.magic;
+      item.meleeDefence = inputItem.combatStats.meleeDefence;
+      item.rangedDefence = inputItem.combatStats.rangedDefence;
+      item.magicDefence = inputItem.combatStats.magicDefence;
+      item.health = inputItem.combatStats.health;
     }
 
-    if (_inputItem.healthRestored != 0) {
-      _item.healthRestored = _inputItem.healthRestored;
+    if (inputItem.healthRestored != 0) {
+      item.healthRestored = inputItem.healthRestored;
     }
 
-    if (_inputItem.boostType != BoostType.NONE) {
-      _item.boostType = _inputItem.boostType;
-      _item.boostValue = _inputItem.boostValue;
-      _item.boostDuration = _inputItem.boostDuration;
+    if (inputItem.boostType != BoostType.NONE) {
+      item.boostType = inputItem.boostType;
+      item.boostValue = inputItem.boostValue;
+      item.boostDuration = inputItem.boostDuration;
     }
 
-    _item.minXP = _inputItem.minXP;
-    _item.skill = _inputItem.skill;
+    item.minXP = inputItem.minXP;
+    item.skill = inputItem.skill;
   }
 }

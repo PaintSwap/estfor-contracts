@@ -77,31 +77,31 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   uint256 constant EVOLVED_OFFSET = 10000;
 
-  uint256 private nextPlayerId;
+  uint256 private _nextPlayerId;
 
-  mapping(uint256 avatarId => AvatarInfo avatarInfo) public avatars;
-  string public imageBaseUri;
-  mapping(uint256 playerId => PlayerInfo playerInfo) public playerInfos;
-  mapping(uint256 playerId => string name) public names;
-  mapping(string name => bool exists) public lowercaseNames;
+  mapping(uint256 avatarId => AvatarInfo avatarInfo) private _avatars;
+  string private _imageBaseUri;
+  mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
+  mapping(uint256 playerId => string name) private _names;
+  mapping(string name => bool exists) private _lowercaseNames;
 
-  IBrushToken public brush;
-  IPlayers private players;
-  address public pool;
+  IBrushToken private _brush;
+  IPlayers private _players;
+  address private _pool;
 
-  address private royaltyReceiver;
-  uint8 private royaltyFee; // base 1000, highest is 25.5
-  uint72 public editNameCost; // Max is 4700 BRUSH
-  bool public isBeta;
+  address private _royaltyReceiver;
+  uint8 private _royaltyFee; // base 1000, highest is 25.5
+  uint72 private _editNameCost; // Max is 4700 BRUSH
+  bool private _isBeta;
 
-  address public dev;
-  uint80 upgradePlayerCost; // Max 1.2 million brush
+  address private _dev;
+  uint80 private _upgradePlayerCost; // Max 1.2 million brush
 
-  bytes32 private merkleRoot; // Unused now (was for alpha/beta whitelisting)
-  mapping(address whitelistedUser => uint256 amount) private numMintedFromWhitelist; // Unused now
-  AdminAccess private adminAccess; // Unused but is set
-  uint32 numBurned;
-  uint256 constant NUM_BASE_AVATARS = 8;
+  bytes32 private _merkleRoot; // Unused now (was for alpha/beta whitelisting)
+  mapping(address whitelistedUser => uint256 amount) private _numMintedFromWhitelist; // Unused now
+  AdminAccess private _adminAccess; // Unused but is set
+  uint32 private _numBurned;
+  uint256 public constant NUM_BASE_AVATARS = 8;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     if (balanceOf(_msgSender(), playerId) != 1) {
@@ -111,7 +111,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   modifier onlyPlayers() {
-    if (_msgSender() != address(players)) {
+    if (_msgSender() != address(_players)) {
       revert NotPlayers();
     }
     _;
@@ -123,121 +123,118 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function initialize(
-    IBrushToken _brush,
-    address _pool,
-    address _dev,
-    address _royaltyReceiver,
-    uint72 _editNameCost,
-    uint80 _upgradePlayerCost,
-    string calldata _imageBaseUri,
-    bool _isBeta
+    IBrushToken brush,
+    address pool,
+    address dev,
+    address royaltyReceiver,
+    uint72 editNameCost,
+    uint80 upgradePlayerCost,
+    string calldata imageBaseUri,
+    bool isBeta
   ) external initializer {
     __ERC1155_init("");
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    brush = _brush;
-    nextPlayerId = 1;
-    imageBaseUri = _imageBaseUri;
-    pool = _pool;
-    dev = _dev;
-    editNameCost = _editNameCost;
-    upgradePlayerCost = _upgradePlayerCost;
-    royaltyFee = 30; // 3%
-    royaltyReceiver = _royaltyReceiver;
-    isBeta = _isBeta;
-
-    emit EditNameCost(_editNameCost);
-    emit UpgradePlayerCost(_upgradePlayerCost);
+    _brush = brush;
+    _nextPlayerId = 1;
+    _imageBaseUri = imageBaseUri;
+    _pool = pool;
+    _dev = dev;
+    _upgradePlayerCost = upgradePlayerCost;
+    setEditNameCost(editNameCost);
+    setUpgradeCost(upgradePlayerCost);
+    _royaltyFee = 30; // 3%
+    _royaltyReceiver = royaltyReceiver;
+    _isBeta = isBeta;
   }
 
   function mint(
-    uint256 _avatarId,
-    string calldata _name,
-    string calldata _discord,
-    string calldata _twitter,
-    string calldata _telegram,
-    bool _upgrade,
-    bool _makeActive
+    uint256 avatarId,
+    string calldata heroName,
+    string calldata discord,
+    string calldata twitter,
+    string calldata telegram,
+    bool upgrade,
+    bool makeActive
   ) external {
     address from = _msgSender();
-    uint256 playerId = nextPlayerId++;
-    (string memory trimmedName, ) = _setName(playerId, _name);
-    _checkSocials(_discord, _twitter, _telegram);
-    emit NewPlayerV2(playerId, _avatarId, trimmedName, from, _discord, _twitter, _telegram, 0, _upgrade);
-    _checkMintingAvatar(_avatarId);
-    playerInfos[playerId].originalAvatarId = uint24(_avatarId);
+    uint256 playerId = _nextPlayerId++;
+    (string memory trimmedName, ) = _setName(playerId, heroName);
+    _checkSocials(discord, twitter, telegram);
+    emit NewPlayerV2(playerId, avatarId, trimmedName, from, discord, twitter, telegram, 0, upgrade);
+    _checkMintingAvatar(avatarId);
+    _playerInfos[playerId].originalAvatarId = uint24(avatarId);
     _mint(from, playerId, 1, "");
-    _mintStartingItems(from, playerId, _avatarId, _makeActive);
-    if (_upgrade) {
-      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + _avatarId);
+    _mintStartingItems(from, playerId, avatarId, makeActive);
+    if (upgrade) {
+      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
       _upgradePlayer(playerId, evolvedAvatarId);
     } else {
-      playerInfos[playerId].avatarId = uint24(_avatarId);
+      _playerInfos[playerId].avatarId = uint24(avatarId);
     }
   }
 
-  function burn(address _from, uint256 _playerId) external {
-    if (_from != _msgSender() && !isApprovedForAll(_from, _msgSender())) {
+  function burn(address from, uint256 playerId) external {
+    if (from != _msgSender() && !isApprovedForAll(from, _msgSender())) {
       revert ERC1155BurnForbidden();
     }
-    _burn(_from, _playerId, 1);
+    _burn(from, playerId, 1);
   }
 
-  function _upgradePlayer(uint256 _playerId, uint24 _newAvatarId) private {
-    playerInfos[_playerId].avatarId = _newAvatarId;
-    players.upgradePlayer(_playerId);
+  function _upgradePlayer(uint256 playerId, uint24 _newAvatarId) private {
+    _playerInfos[playerId].avatarId = _newAvatarId;
+    _players.upgradePlayer(playerId);
     // Send quarter to the pool (currently shop)
-    uint256 quarterCost = upgradePlayerCost / 4;
-    brush.transferFrom(_msgSender(), pool, quarterCost);
+    uint256 quarterCost = _upgradePlayerCost / 4;
+    _brush.transferFrom(_msgSender(), _pool, quarterCost);
     // Send rest to the dev address
-    brush.transferFrom(_msgSender(), dev, upgradePlayerCost - quarterCost);
-    emit UpgradePlayerAvatar(_playerId, _newAvatarId, 0);
+    _brush.transferFrom(_msgSender(), _dev, _upgradePlayerCost - quarterCost);
+    emit UpgradePlayerAvatar(playerId, _newAvatarId, 0);
   }
 
   function editPlayer(
-    uint256 _playerId,
-    string calldata _name,
-    string calldata _discord,
-    string calldata _twitter,
-    string calldata _telegram,
-    bool _upgrade
-  ) external isOwnerOfPlayer(_playerId) {
-    _checkSocials(_discord, _twitter, _telegram);
+    uint256 playerId,
+    string calldata playerName,
+    string calldata discord,
+    string calldata twitter,
+    string calldata telegram,
+    bool upgrade
+  ) external isOwnerOfPlayer(playerId) {
+    _checkSocials(discord, twitter, telegram);
 
     // Only charge brush if changing the name
-    (string memory trimmedName, bool nameChanged) = _setName(_playerId, _name);
+    (string memory trimmedName, bool nameChanged) = _setName(playerId, playerName);
     uint256 amountPaid;
     if (nameChanged) {
-      amountPaid = editNameCost;
-      _pay(editNameCost);
+      amountPaid = _editNameCost;
+      _pay(_editNameCost);
     }
 
-    if (_upgrade) {
-      if (playerInfos[_playerId].originalAvatarId == 0) {
-        playerInfos[_playerId].originalAvatarId = playerInfos[_playerId].avatarId;
+    if (upgrade) {
+      if (_playerInfos[playerId].originalAvatarId == 0) {
+        _playerInfos[playerId].originalAvatarId = _playerInfos[playerId].avatarId;
       }
-      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + playerInfos[_playerId].avatarId);
-      _upgradePlayer(_playerId, evolvedAvatarId);
+      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + _playerInfos[playerId].avatarId);
+      _upgradePlayer(playerId, evolvedAvatarId);
     }
 
-    emit EditPlayerV2(_playerId, msg.sender, trimmedName, amountPaid, _discord, _twitter, _telegram, _upgrade);
+    emit EditPlayerV2(playerId, _msgSender(), trimmedName, amountPaid, discord, twitter, telegram, upgrade);
   }
 
-  function _pay(uint256 _brushCost) private {
-    uint256 brushCost = _brushCost;
+  function _pay(uint256 brushCost) private {
     // Pay
-    brush.transferFrom(_msgSender(), address(this), brushCost);
+    _brush.transferFrom(_msgSender(), address(this), brushCost);
     uint256 quarterCost = brushCost / 4;
     // Send half to the pool (currently shop)
-    brush.transfer(pool, brushCost - quarterCost * 2);
+    _brush.transfer(_pool, quarterCost * 2);
     // Send 1 quarter to the dev address
-    brush.transfer(dev, quarterCost);
-    // Burn 1 quarter
-    brush.burn(quarterCost);
+    _brush.transfer(_dev, quarterCost);
+    // Burn the rest
+    _brush.burn(brushCost - quarterCost * 2 - quarterCost);
   }
 
-  function _mintStartingItems(address _from, uint256 _playerId, uint256 _avatarId, bool _makeActive) private {
+  function _mintStartingItems(address from, uint256 playerId, uint256 avatarId, bool makeActive) private {
     // Give the player some starting items
     uint256[] memory itemTokenIds = new uint256[](7);
     itemTokenIds[0] = BRONZE_SWORD;
@@ -256,15 +253,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     amounts[4] = 1;
     amounts[5] = 1;
     amounts[6] = 1;
-    players.mintedPlayer(_from, _playerId, avatars[_avatarId].startSkills, _makeActive, itemTokenIds, amounts);
+    _players.mintedPlayer(from, playerId, _avatars[avatarId].startSkills, makeActive, itemTokenIds, amounts);
   }
 
   function _setName(
-    uint256 _playerId,
-    string calldata _name
+    uint256 playerId,
+    string calldata playerName
   ) private returns (string memory trimmedName, bool nameChanged) {
     // Trimmed name cannot be empty
-    trimmedName = EstforLibrary.trim(_name);
+    trimmedName = EstforLibrary.trim(playerName);
     if (bytes(trimmedName).length < 3) {
       revert NameTooShort();
     }
@@ -277,50 +274,35 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     }
 
     string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
-    string memory oldName = EstforLibrary.toLower(names[_playerId]);
+    string memory oldName = EstforLibrary.toLower(_names[playerId]);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      if (lowercaseNames[trimmedAndLowercaseName]) {
+      if (_lowercaseNames[trimmedAndLowercaseName]) {
         revert NameAlreadyExists();
       }
       if (bytes(oldName).length != 0) {
-        delete lowercaseNames[oldName];
+        delete _lowercaseNames[oldName];
       }
-      lowercaseNames[trimmedAndLowercaseName] = true;
-      names[_playerId] = trimmedName;
+      _lowercaseNames[trimmedAndLowercaseName] = true;
+      _names[playerId] = trimmedName;
     }
   }
 
-  function _checkMintingAvatar(uint256 _avatarId) private view {
-    if (bytes(avatars[_avatarId].description).length == 0 || _avatarId > NUM_BASE_AVATARS) {
+  function _checkMintingAvatar(uint256 avatarId) private view {
+    if (bytes(_avatars[avatarId].description).length == 0 || avatarId > NUM_BASE_AVATARS) {
       revert BaseAvatarNotExists();
     }
   }
 
-  function _checkSocials(string calldata _discord, string calldata _twitter, string calldata _telegram) private pure {
-    uint256 discordLength = bytes(_discord).length;
-    if (discordLength > 32) {
-      revert DiscordTooLong();
-    }
-    if (!EstforLibrary.containsBaselineSocialNameCharacters(_discord)) {
-      revert DiscordInvalidCharacters();
-    }
+  function _checkSocials(string calldata discord, string calldata twitter, string calldata telegram) private pure {
+    require(bytes(discord).length <= 32, DiscordTooLong());
+    require(EstforLibrary.containsBaselineSocialNameCharacters(discord), DiscordInvalidCharacters());
 
-    uint256 twitterLength = bytes(_twitter).length;
-    if (twitterLength > 32) {
-      revert TwitterTooLong();
-    }
-    if (!EstforLibrary.containsBaselineSocialNameCharacters(_twitter)) {
-      revert TelegramInvalidCharacters();
-    }
+    require(bytes(twitter).length <= 32, TwitterTooLong());
+    require(EstforLibrary.containsBaselineSocialNameCharacters(twitter), TelegramInvalidCharacters());
 
-    uint256 telegramLength = bytes(_telegram).length;
-    if (telegramLength > 32) {
-      revert TelegramTooLong();
-    }
-    if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
-      revert TelegramInvalidCharacters();
-    }
+    require(bytes(telegram).length <= 32, TelegramTooLong());
+    require(EstforLibrary.containsBaselineSocialNameCharacters(telegram), TelegramInvalidCharacters());
   }
 
   function _beforeTokenTransfer(
@@ -335,65 +317,69 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       return;
     }
     U256 iter = ids.length.asU256();
+    U256 burned;
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
       uint256 playerId = ids[i];
-      players.clearEverythingBeforeTokenTransfer(from, playerId);
+      _players.clearEverythingBeforeTokenTransfer(from, playerId);
       if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
         // Burning
-        string memory oldName = EstforLibrary.toLower(names[playerId]);
-        delete lowercaseNames[oldName];
-        ++numBurned;
+        string memory oldName = EstforLibrary.toLower(_names[playerId]);
+        delete _lowercaseNames[oldName];
+        burned = burned.inc();
       } else if (from != address(0)) {
         // Not minting
-        players.beforeTokenTransferTo(to, playerId);
+        _players.beforeTokenTransferTo(to, playerId);
       }
+    }
+    if (burned.neq(0)) {
+      _numBurned += burned.asUint32();
     }
   }
 
-  function uri(uint256 _playerId) public view virtual override returns (string memory) {
-    if (!exists(_playerId)) {
+  function uri(uint256 playerId) public view virtual override returns (string memory) {
+    if (!exists(playerId)) {
       revert ERC1155Metadata_URIQueryForNonexistentToken();
     }
-    AvatarInfo storage avatarInfo = avatars[playerInfos[_playerId].avatarId];
-    string memory imageURI = string(abi.encodePacked(imageBaseUri, avatarInfo.imageURI));
-    return players.getURI(_playerId, names[_playerId], avatarInfo.name, avatarInfo.description, imageURI);
+    AvatarInfo storage avatarInfo = _avatars[_playerInfos[playerId].avatarId];
+    string memory imageURI = string(abi.encodePacked(_imageBaseUri, avatarInfo.imageURI));
+    return _players.getURI(playerId, _names[playerId], avatarInfo.name, avatarInfo.description, imageURI);
   }
 
   /**
-   * @dev Returns whether `_tokenId` exists.
+   * @dev Returns whether `tokenId` exists.
    *
    * Tokens can be managed by their owner or approved accounts via {setApprovalForAll}.
    *
    */
-  function exists(uint256 _tokenId) public view returns (bool) {
-    return playerInfos[_tokenId].avatarId != 0;
+  function exists(uint256 tokenId) public view returns (bool) {
+    return _playerInfos[tokenId].avatarId != 0;
   }
 
-  function totalSupply(uint256 _tokenId) external view returns (uint256) {
-    return exists(_tokenId) ? 1 : 0;
+  function totalSupply(uint256 tokenId) external view returns (uint256) {
+    return exists(tokenId) ? 1 : 0;
   }
 
   /**
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
-  function balanceOfs(address _account, uint16[] memory _ids) external view returns (uint256[] memory batchBalances) {
-    U256 iter = _ids.length.asU256();
+  function balanceOfs(address account, uint16[] memory ids) external view returns (uint256[] memory batchBalances) {
+    U256 iter = ids.length.asU256();
     batchBalances = new uint256[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
-      batchBalances[i] = balanceOf(_account, _ids[i]);
+      batchBalances[i] = balanceOf(account, ids[i]);
     }
   }
 
   function royaltyInfo(
-    uint256 /*_tokenId*/,
-    uint256 _salePrice
+    uint256 /*tokenId*/,
+    uint256 salePrice
   ) external view override returns (address receiver, uint256 royaltyAmount) {
-    uint256 amount = (_salePrice * royaltyFee) / 1000;
-    return (royaltyReceiver, amount);
+    uint256 amount = (salePrice * _royaltyFee) / 1000;
+    return (_royaltyReceiver, amount);
   }
 
   function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
@@ -401,43 +387,65 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function name() external view returns (string memory) {
-    return string(abi.encodePacked("Estfor Players", isBeta ? " (Beta)" : ""));
+    return string(abi.encodePacked("Estfor Players", _isBeta ? " (Beta)" : ""));
   }
 
   function symbol() external view returns (string memory) {
-    return string(abi.encodePacked("EK_P", isBeta ? "B" : ""));
+    return string(abi.encodePacked("EK_P", _isBeta ? "B" : ""));
   }
 
   function totalSupply() external view returns (uint256) {
-    return nextPlayerId - numBurned - 1;
+    return _nextPlayerId - _numBurned - 1;
   }
 
-  function setAvatars(uint256[] calldata _avatarIds, AvatarInfo[] calldata _avatarInfos) external onlyOwner {
-    if (_avatarIds.length != _avatarInfos.length) {
-      revert LengthMismatch();
+  function getBrush() external view returns (IBrushToken) {
+    return _brush;
+  }
+
+  function getPoolAddress() external view returns (address) {
+    return _pool;
+  }
+
+  function getDevAddress() external view returns (address) {
+    return _dev;
+  }
+
+  function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
+    return _playerInfos[playerId];
+  }
+
+  function hasLowercaseName(string calldata lowercaseName) external view returns (bool lowercaseNameExists) {
+    return _lowercaseNames[lowercaseName];
+  }
+
+  function getName(uint256 playerId) external view returns (string memory) {
+    return _names[playerId];
+  }
+
+  function setAvatars(uint256[] calldata avatarIds, AvatarInfo[] calldata avatarInfos) external onlyOwner {
+    require(avatarIds.length == avatarInfos.length, LengthMismatch());
+    for (uint256 i; i < avatarIds.length; ++i) {
+      _avatars[avatarIds[i]] = avatarInfos[i];
     }
-    for (uint256 i; i < _avatarIds.length; ++i) {
-      avatars[_avatarIds[i]] = _avatarInfos[i];
-    }
-    emit SetAvatarsV2(_avatarIds, _avatarInfos);
+    emit SetAvatarsV2(avatarIds, avatarInfos);
   }
 
-  function setImageBaseUri(string calldata _imageBaseUri) external onlyOwner {
-    imageBaseUri = _imageBaseUri;
+  function setImageBaseUri(string calldata imageBaseUri) external onlyOwner {
+    _imageBaseUri = imageBaseUri;
   }
 
-  function setPlayers(IPlayers _players) external onlyOwner {
-    players = _players;
+  function setPlayers(IPlayers players) external onlyOwner {
+    _players = players;
   }
 
-  function setEditNameCost(uint72 _editNameCost) external onlyOwner {
-    editNameCost = _editNameCost;
-    emit EditNameCost(_editNameCost);
+  function setEditNameCost(uint72 editNameCost) public onlyOwner {
+    _editNameCost = editNameCost;
+    emit EditNameCost(editNameCost);
   }
 
-  function setUpgradeCost(uint80 _upgradePlayerCost) external onlyOwner {
-    upgradePlayerCost = _upgradePlayerCost;
-    emit UpgradePlayerCost(_upgradePlayerCost);
+  function setUpgradeCost(uint80 upgradePlayerCost) public onlyOwner {
+    _upgradePlayerCost = upgradePlayerCost;
+    emit UpgradePlayerCost(upgradePlayerCost);
   }
 
   // solhint-disable-next-line no-empty-blocks

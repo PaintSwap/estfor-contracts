@@ -10,66 +10,58 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
 
-  mapping(address admin => bool isAdmin) private admins;
-  mapping(address admin => bool isAdmin) private promotionalAdmins;
+  mapping(address admin => bool isAdmin) private _admins;
+  mapping(address admin => bool isAdmin) private _promotionalAdmins;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(address[] calldata _admins, address[] calldata _promotionalAdmins) public initializer {
+  function initialize(address[] calldata admins, address[] calldata promotionalAdmins) public initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    _updateAdmins(_admins, true);
-    _updatePromotionalAdmins(_promotionalAdmins, true);
+    _updateAdmins(admins, true);
+    _updatePromotionalAdmins(promotionalAdmins, true);
   }
 
-  function _updateAdmins(address[] calldata _admins, bool _isAdmin) internal {
-    U256 bounds = _admins.length.asU256();
+  function _updateAdmins(address[] calldata admins, bool hasAdmin) internal {
+    U256 bounds = admins.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      admins[_admins[iter.asUint256()]] = _isAdmin;
+      _admins[admins[iter.asUint256()]] = hasAdmin;
     }
   }
 
-  function _updatePromotionalAdmins(address[] calldata _promotionalAdmins, bool _isAdmin) internal {
-    U256 bounds = _promotionalAdmins.length.asU256();
+  function _updatePromotionalAdmins(address[] calldata promotionalAdmins, bool hasAdmin) internal {
+    U256 bounds = promotionalAdmins.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      promotionalAdmins[_promotionalAdmins[iter.asUint256()]] = _isAdmin;
+      _promotionalAdmins[promotionalAdmins[iter.asUint256()]] = hasAdmin;
     }
   }
 
-  function _updateAdmin(address _admin, bool _isAdmin) internal {
-    admins[_admin] = _isAdmin;
+  function isAdmin(address admin) external view returns (bool) {
+    return _admins[admin];
   }
 
-  function isAdmin(address _admin) external view returns (bool) {
-    return admins[_admin];
+  function addAdmins(address[] calldata admins) external onlyOwner {
+    _updateAdmins(admins, true);
   }
 
-  function isPromotionalAdmin(address _admin) external view returns (bool) {
-    return promotionalAdmins[_admin];
+  function removeAdmins(address[] calldata admins) external onlyOwner {
+    _updateAdmins(admins, false);
   }
 
-  function addAdmins(address[] calldata _admins) external onlyOwner {
-    _updateAdmins(_admins, true);
+  function isPromotionalAdmin(address admin) external view returns (bool) {
+    return _promotionalAdmins[admin];
   }
 
-  function addAdmin(address _admin) external onlyOwner {
-    _updateAdmin(_admin, true);
+  function addPromotionalAdmins(address[] calldata admins) external onlyOwner {
+    _updatePromotionalAdmins(admins, true);
   }
 
-  function removeAdmin(address _admin) external onlyOwner {
-    _updateAdmin(_admin, false);
-  }
-
-  function addPromotionalAdmins(address[] calldata _admins) external onlyOwner {
-    _updatePromotionalAdmins(_admins, true);
-  }
-
-  function removePromotionalAdmins(address[] calldata _admins) external onlyOwner {
-    _updatePromotionalAdmins(_admins, false);
+  function removePromotionalAdmins(address[] calldata admins) external onlyOwner {
+    _updatePromotionalAdmins(admins, false);
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -416,7 +416,7 @@ describe("Instant VRF actions", function () {
           instantVRFActions,
           "EditInstantVRFActions"
         );
-        expect((await instantVRFActions.actions(1)).inputTokenId1).to.eq(IRON_ARROW);
+        expect((await instantVRFActions.getAction(1)).inputTokenId1).to.eq(IRON_ARROW);
       });
     });
 
@@ -452,7 +452,7 @@ describe("Instant VRF actions", function () {
           .to.emit(instantVRFActions, "RemoveInstantVRFActions")
           .withArgs([1]);
         // Confirm it no longer exists
-        expect((await instantVRFActions.actions(1)).inputTokenId1).to.eq(NONE);
+        expect((await instantVRFActions.getAction(1)).inputTokenId1).to.eq(NONE);
       });
     });
 
@@ -653,10 +653,10 @@ describe("Instant VRF actions", function () {
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
 
       // Get action
-      const action1 = await instantVRFActions.actions(1);
+      const action1 = await instantVRFActions.getAction(1);
       expect(action1.inputTokenId1).to.eq(IRON_ARROW);
       expect(action1.inputTokenId3).to.eq(NONE);
-      const action2 = await instantVRFActions.actions(2);
+      const action2 = await instantVRFActions.getAction(2);
       expect(action2.inputTokenId3).to.eq(ADAMANTINE_ARROW);
     });
 
@@ -668,7 +668,7 @@ describe("Instant VRF actions", function () {
         isFullModeOnly: true
       };
       await instantVRFActions.addActions([instantVRFActionInput]);
-      expect((await instantVRFActions.actions(instantVRFActionInput.actionId)).packedData == "0x80");
+      expect((await instantVRFActions.getAction(instantVRFActionInput.actionId)).packedData == "0x80");
     });
 
     it("Check full mode requirements", async function () {
@@ -719,13 +719,13 @@ describe("Instant VRF actions", function () {
             [await genericInstantVRFActionStrategy.getAddress(), await genericInstantVRFActionStrategy.getAddress()]
           );
 
-        expect(await instantVRFActions.strategies(InstantVRFActionType.FORGING)).to.eq(
+        expect(await instantVRFActions.getStrategy(InstantVRFActionType.FORGING)).to.eq(
           await genericInstantVRFActionStrategy.getAddress()
         );
-        expect(await instantVRFActions.strategies(InstantVRFActionType.GENERIC)).to.eq(
+        expect(await instantVRFActions.getStrategy(InstantVRFActionType.GENERIC)).to.eq(
           await genericInstantVRFActionStrategy.getAddress()
         );
-        expect(await instantVRFActions.strategies(InstantVRFActionType.EGG)).to.eq(ZeroAddress);
+        expect(await instantVRFActions.getStrategy(InstantVRFActionType.EGG)).to.eq(ZeroAddress);
       });
 
       it("Adding same strategy should revert", async function () {
