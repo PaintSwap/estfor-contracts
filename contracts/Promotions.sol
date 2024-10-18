@@ -628,17 +628,14 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _pay(uint256 _brushCost) private {
+  function _pay(uint256 brushCost) private {
     // Pay
-    IBrushToken brush = playerNFT.brush();
+    IBrushToken brush = _playerNFT.brush();
     // Send half to the pool
-    if (!brush.transferFrom(msg.sender, playerNFT.pool(), _brushCost / 2)) {
-      revert NotEnoughBrush();
-    }
+    uint256 poolAmount = brushCost / 2;
+    require(brush.transferFrom(_msgSender(), _playerNFT.pool(), brushCost / 2), NotEnoughBrush());
     // Send half to the dev address
-    if (!brush.transferFrom(msg.sender, playerNFT.dev(), _brushCost / 2)) {
-      revert NotEnoughBrush();
-    }
+    require(brush.transferFrom(_msgSender(), _playerNFT.dev(), brushCost - poolAmount), NotEnoughBrush());
   }
 
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.
