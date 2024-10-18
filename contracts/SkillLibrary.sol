@@ -9,10 +9,26 @@ library SkillLibrary {
   }
 
   function isSkill(uint8 skill, Skill check) internal pure returns (bool) {
-    return Skill(skill) == check;
+    return isSkill(Skill(skill), check);
   }
 
   function isNotSkill(uint8 skill, Skill check) internal pure returns (bool) {
-    return Skill(skill) != check;
+    return isNotSkill(Skill(skill), check);
+  }
+
+  function isSkill(Skill skill, Skill check) internal pure returns (bool) {
+    return skill == check;
+  }
+
+  function isNotSkill(Skill skill, Skill check) internal pure returns (bool) {
+    return skill != check;
+  }
+
+  function isCombat(Skill skill) internal pure returns (bool) {
+    return isSkill(skill, Skill.COMBAT);
+  }
+
+  function isNone(Skill skill) internal pure returns (bool) {
+    return isSkill(skill, Skill.NONE);
   }
 }
