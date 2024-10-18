@@ -64,7 +64,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   modifier gameNotPaused() {
-    if (gamePaused) {
+    if (_gamePaused) {
       revert GameIsPaused();
     }
     _;
@@ -459,7 +459,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory) {
-    return pendingRandomRewards[playerId];
+    return _pendingRandomRewards[playerId];
   }
 
   function getActionQueue(uint256 playerId) external view returns (QueuedAction[] memory) {
@@ -579,13 +579,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function setDailyRewardsEnabled(bool _dailyRewardsEnabled) external onlyOwner {
-    dailyRewardsEnabled = _dailyRewardsEnabled;
+  function setDailyRewardsEnabled(bool dailyRewardsEnabled) external onlyOwner {
+    _dailyRewardsEnabled = dailyRewardsEnabled;
   }
 
-  function pauseGame(bool _gamePaused) external onlyOwner {
-    gamePaused = _gamePaused;
-    emit GamePaused(_gamePaused);
+  function pauseGame(bool gamePaused) external onlyOwner {
+    _gamePaused = gamePaused;
+    emit GamePaused(gamePaused);
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {

@@ -2769,7 +2769,7 @@
     "inputs": [
       {
         "internalType": "bool",
-        "name": "_gamePaused",
+        "name": "gamePaused",
         "type": "bool"
       }
     ],
@@ -3398,7 +3398,7 @@
     "inputs": [
       {
         "internalType": "bool",
-        "name": "_dailyRewardsEnabled",
+        "name": "dailyRewardsEnabled",
         "type": "bool"
       }
     ],

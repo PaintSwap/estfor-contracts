@@ -180,7 +180,7 @@ abstract contract PlayersBase {
   uint8 internal betaCombat;
   uint56 internal nextQueueId; // Global queued action id
   uint8 internal _alphaCombatHealing; // Healing formula constants
-  bool internal dailyRewardsEnabled;
+  bool internal _dailyRewardsEnabled;
   bool internal isBeta;
 
   mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
@@ -189,13 +189,13 @@ abstract contract PlayersBase {
   mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal _attire;
   ItemNFT internal itemNFT;
   PlayerNFT internal playerNFT;
-  bool internal gamePaused;
-  mapping(uint256 playerId => PendingRandomReward[] pendingRandomRewards) internal pendingRandomRewards; // queue, will be sorted by timestamp
+  bool internal _gamePaused;
+  mapping(uint256 playerId => PendingRandomReward[] pendingRandomRewards) internal _pendingRandomRewards; // queue, will be sorted by timestamp
 
   // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
-  mapping(uint256 playerId => bytes32) internal dailyRewardMasks;
+  mapping(uint256 playerId => bytes32) internal _dailyRewardMasks;
 
-  mapping(uint256 xp => Equipment[] equipments) internal xpRewardThresholds; // Thresholds and all items rewarded for it
+  mapping(uint256 xp => Equipment[] equipments) internal _xpRewardThresholds; // Thresholds and all items rewarded for it
 
   address internal implQueueActions;
   address internal implProcessActions;
@@ -214,7 +214,7 @@ abstract contract PlayersBase {
   PlayerBoostInfo internal _globalBoost; // A boost shared by everyone
   mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
 
-  mapping(address user => WalletDailyInfo walletDailyInfo) internal walletDailyInfo;
+  mapping(address user => WalletDailyInfo walletDailyInfo) internal _walletDailyInfo;
   mapping(uint256 queueId => QueuedActionExtra queuedActionExtra) internal _queuedActionsExtra;
 
   PetNFT internal petNFT;
@@ -454,17 +454,19 @@ abstract contract PlayersBase {
     uint256 numPastRandomRewardInstancesToRemove
   ) internal {
     if (numPastRandomRewardInstancesToRemove != 0) {
-      if (numPastRandomRewardInstancesToRemove == pendingRandomRewards[playerId].length) {
-        delete pendingRandomRewards[playerId];
+      if (numPastRandomRewardInstancesToRemove == _pendingRandomRewards[playerId].length) {
+        delete _pendingRandomRewards[playerId];
       } else {
         // Shift the remaining rewards to the front of the array
-        U256 bounds = pendingRandomRewards[playerId].length.asU256().sub(numPastRandomRewardInstancesToRemove);
+        U256 bounds = _pendingRandomRewards[playerId].length.asU256().sub(numPastRandomRewardInstancesToRemove);
         for (U256 iter; iter < bounds; iter = iter.inc()) {
           uint256 i = iter.asUint256();
-          pendingRandomRewards[playerId][i] = pendingRandomRewards[playerId][i + numPastRandomRewardInstancesToRemove];
+          _pendingRandomRewards[playerId][i] = _pendingRandomRewards[playerId][
+            i + numPastRandomRewardInstancesToRemove
+          ];
         }
         for (U256 iter = numPastRandomRewardInstancesToRemove.asU256(); iter.neq(0); iter = iter.dec()) {
-          pendingRandomRewards[playerId].pop();
+          _pendingRandomRewards[playerId].pop();
         }
       }
     }

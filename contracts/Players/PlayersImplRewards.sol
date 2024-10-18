@@ -823,8 +823,8 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint256 numPastRandomRewardInstancesToRemove
     )
   {
-    PendingRandomReward[] storage _pendingRandomRewards = pendingRandomRewards[playerId];
-    U256 pendingRandomRewardsLength = _pendingRandomRewards.length.asU256();
+    PendingRandomReward[] storage pendingRandomRewards = _pendingRandomRewards[playerId];
+    U256 pendingRandomRewardsLength = pendingRandomRewards.length.asU256();
     ids = new uint256[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     amounts = new uint256[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
     queueIds = new uint256[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
@@ -832,7 +832,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256 length;
     for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      PendingRandomReward storage pendingRandomReward = _pendingRandomRewards[i];
+      PendingRandomReward storage pendingRandomReward = pendingRandomRewards[i];
       (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = world.getRewardsHelper(
         pendingRandomReward.actionId
       );

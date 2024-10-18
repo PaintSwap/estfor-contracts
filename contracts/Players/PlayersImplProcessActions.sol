@@ -283,7 +283,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       }
 
       if (uint256(pendingQueuedActionState.dailyRewardMask) != 0) {
-        dailyRewardMasks[playerId] = pendingQueuedActionState.dailyRewardMask;
+        _dailyRewardMasks[playerId] = pendingQueuedActionState.dailyRewardMask;
       }
     }
 
@@ -475,7 +475,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     );
 
     // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
-    pendingRandomRewards[playerId].push(
+    _pendingRandomRewards[playerId].push(
       PendingRandomReward({
         actionId: actionId,
         queueId: queueId,

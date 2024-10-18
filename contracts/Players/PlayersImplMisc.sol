@@ -49,7 +49,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     for (U256 iter; iter.lt(diff); iter = iter.inc()) {
       uint256 i = iter.asUint256();
       uint32 xpThreshold = _getXPReward(prevIndex.inc().add(i));
-      Equipment[] memory items = xpRewardThresholds[xpThreshold];
+      Equipment[] memory items = _xpRewardThresholds[xpThreshold];
       if (items.length != 0) {
         // TODO: Currently assumes there is only 1 item per threshold
         uint256 l = length.asUint256();
@@ -91,12 +91,12 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         revert XPThresholdNotFound();
       }
 
-      if (xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0) {
+      if (_xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0) {
         revert XPThresholdAlreadyExists();
       }
       _checkXPThresholdRewards(xpThresholdReward);
 
-      xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
+      _xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
       emit AdminAddThresholdReward(xpThresholdReward);
     }
   }
@@ -106,11 +106,11 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     while (iter.neq(0)) {
       iter = iter.dec();
       XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
-      if (xpRewardThresholds[xpThresholdReward.xpThreshold].length == 0) {
+      if (_xpRewardThresholds[xpThresholdReward.xpThreshold].length == 0) {
         revert XPThresholdDoesNotExist();
       }
       _checkXPThresholdRewards(xpThresholdReward);
-      xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
+      _xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
       emit AdminEditThresholdReward(xpThresholdReward);
     }
   }
@@ -160,7 +160,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     bool hasRandomWordLastSunday = world.lastRandomWordsUpdatedTime() >= streakStart;
     if (hasRandomWordLastSunday) {
       uint256 streakStartIndex = streakStart.div(1 weeks);
-      bytes32 mask = dailyRewardMasks[playerId];
+      bytes32 mask = _dailyRewardMasks[playerId];
       uint16 lastRewardStartIndex = uint16(uint256(mask));
       if (lastRewardStartIndex < streakStartIndex) {
         mask = bytes32(streakStartIndex); // Reset the mask
@@ -169,7 +169,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       uint256 maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
 
       // Claim daily/weekly reward
-      if (mask[maskIndex] == 0 && dailyRewardsEnabled) {
+      if (mask[maskIndex] == 0 && _dailyRewardsEnabled) {
         uint256 totalXP = _players[playerId].totalXP;
         uint256 playerTier;
 
@@ -188,7 +188,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
         (uint256 itemTokenId, uint256 amount) = world.getDailyReward(playerTier, playerId);
         // Can only get the daily reward on an account once per day regardless of how many heros claim
-        uint256 lastWalletTimestamp = walletDailyInfo[_from].lastDailyRewardClaimedTimestamp;
+        uint256 lastWalletTimestamp = _walletDailyInfo[_from].lastDailyRewardClaimedTimestamp;
         if (itemTokenId != NONE && lastWalletTimestamp < (block.timestamp / 1 days) * 1 days) {
           // Add clan member boost to daily reward (if applicable)
           uint256 clanTierMembership = clans.getClanTierMembership(playerId);
@@ -214,7 +214,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   function dailyClaimedRewardsImpl(uint256 playerId) external view returns (bool[7] memory claimed) {
     uint256 streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
     uint256 streakStartIndex = streakStart.div(1 weeks);
-    bytes32 mask = dailyRewardMasks[playerId];
+    bytes32 mask = _dailyRewardMasks[playerId];
     uint16 lastRewardStartIndex = uint16(uint256(mask));
     if (lastRewardStartIndex < streakStartIndex) {
       mask = bytes32(streakStartIndex);
@@ -233,13 +233,13 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       bytes32 dailyRewardMask
     ) = dailyRewardsViewImpl(_from, playerId);
     if (uint256(dailyRewardMask) != 0) {
-      dailyRewardMasks[playerId] = dailyRewardMask;
+      _dailyRewardMasks[playerId] = dailyRewardMask;
     }
     if (rewardAmounts.length != 0) {
       itemNFT.mint(_from, rewardItemTokenIds[0], rewardAmounts[0]);
       emit DailyReward(_from, playerId, rewardItemTokenIds[0], rewardAmounts[0]);
 
-      walletDailyInfo[_from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
+      _walletDailyInfo[_from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }
 
     if (rewardAmounts.length > 1) {
