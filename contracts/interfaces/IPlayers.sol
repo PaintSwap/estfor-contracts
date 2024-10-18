@@ -32,7 +32,7 @@ interface IPlayers {
 
   function isOwnerOfPlayerAndActive(address from, uint256 playerId) external view returns (bool);
 
-  function activePlayer(address owner) external view returns (uint256 playerId);
+  function getActivePlayer(address owner) external view returns (uint256 playerId);
 
   function xp(uint256 playerId, Skill skill) external view returns (uint256 xp);
 

@@ -1835,25 +1835,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "name": "activePlayer",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "components": [
           {
             "internalType": "enum Skill",
@@ -2239,6 +2220,25 @@
         "internalType": "struct QueuedAction[]",
         "name": "",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "getActivePlayer",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

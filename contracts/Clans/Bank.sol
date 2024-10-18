@@ -181,7 +181,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     if (msg.sender == address(bankRegistry.itemNFT()) && _operator != address(this)) {
       uint256 maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
       _receivedItemUpdateUniqueItems(_id, maxCapacity);
-      uint256 activePlayerId = bankRegistry.players().activePlayer(_from);
+      uint256 activePlayerId = bankRegistry.players().getActivePlayer(_from);
       emit DepositItem(_from, activePlayerId, _id, _value);
     }
     return super.onERC1155Received(_operator, _from, _id, _value, _data);
@@ -201,7 +201,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         _receivedItemUpdateUniqueItems(_ids[iter.asUint256()], maxCapacity);
       }
-      uint256 activePlayerId = bankRegistry.players().activePlayer(_from);
+      uint256 activePlayerId = bankRegistry.players().getActivePlayer(_from);
       emit DepositItems(_from, activePlayerId, _ids, _values);
     }
     return super.onERC1155BatchReceived(_operator, _from, _ids, _values, _data);
@@ -324,7 +324,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   // Untested
   receive() external payable {
     // Accept FTM
-    uint256 activePlayerId = bankRegistry.players().activePlayer(msg.sender);
+    uint256 activePlayerId = bankRegistry.players().getActivePlayer(msg.sender);
     emit DepositFTM(msg.sender, activePlayerId, msg.value);
   }
 }

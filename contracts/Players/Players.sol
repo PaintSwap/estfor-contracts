@@ -285,9 +285,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function clearEverythingBeforeTokenTransfer(address _from, uint256 playerId) external override onlyPlayerNFT {
     _clearEverything(_from, playerId, true);
     // If it was the active player, then clear it
-    uint256 existingActivePlayerId = activePlayer_[_from];
+    uint256 existingActivePlayerId = _activePlayers[_from];
     if (existingActivePlayerId == playerId) {
-      delete activePlayer_[_from];
+      delete _activePlayers[_from];
       emit SetActivePlayer(_from, existingActivePlayerId, 0);
     }
   }
@@ -369,8 +369,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       revert PlayerLocked();
     }
 
-    uint256 existingActivePlayerId = activePlayer_[_from];
-    activePlayer_[_from] = playerId;
+    uint256 existingActivePlayerId = _activePlayers[_from];
+    _activePlayers[_from] = playerId;
     if (existingActivePlayerId == playerId) {
       revert PlayerAlreadyActive();
     }
@@ -455,7 +455,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function isOwnerOfPlayerAndActive(address _from, uint256 playerId) public view override returns (bool) {
-    return playerNFT.balanceOf(_from, playerId) == 1 && activePlayer_[_from] == playerId;
+    return playerNFT.balanceOf(_from, playerId) == 1 && _activePlayers[_from] == playerId;
   }
 
   function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory) {
@@ -499,8 +499,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function activePlayer(address _owner) external view override returns (uint256 playerId) {
-    return activePlayer_[_owner];
+  function getActivePlayer(address _owner) external view override returns (uint256 playerId) {
+    return _activePlayers[_owner];
   }
 
   function xp(uint256 playerId, Skill _skill) external view override returns (uint256) {

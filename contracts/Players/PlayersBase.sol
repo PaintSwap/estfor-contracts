@@ -170,7 +170,7 @@ abstract contract PlayersBase {
   // *IMPORTANT* keep as the first non-constant state variable
   uint256 internal _startSlot;
 
-  mapping(address user => uint256 playerId) internal activePlayer_;
+  mapping(address user => uint256 playerId) internal _activePlayers;
 
   mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal activeBoosts_;
 

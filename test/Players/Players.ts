@@ -1335,18 +1335,18 @@ describe("Players", function () {
   it("Transferring active player", async function () {
     const {playerId, players, playerNFT, alice, owner} = await loadFixture(playersFixture);
 
-    expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
+    expect(await players.connect(alice).getActivePlayer(alice.address)).to.eq(playerId);
     await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
-    expect(await players.connect(alice).activePlayer(alice.address)).to.eq(0);
+    expect(await players.connect(alice).getActivePlayer(alice.address)).to.eq(0);
   });
 
   it("Transferring non-active player", async function () {
     const {playerId, players, playerNFT, alice, owner} = await loadFixture(playersFixture);
 
     const newPlayerId = await createPlayer(playerNFT, 1, alice, "New name", false);
-    expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
+    expect(await players.connect(alice).getActivePlayer(alice.address)).to.eq(playerId);
     await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, newPlayerId, 1, "0x");
-    expect(await players.connect(alice).activePlayer(alice.address)).to.eq(playerId);
+    expect(await players.connect(alice).getActivePlayer(alice.address)).to.eq(playerId);
   });
 
   it("Transferring a player with an active boost should remove it", async function () {
