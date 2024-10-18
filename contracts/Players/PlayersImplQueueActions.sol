@@ -189,7 +189,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     itemNFT.burn(_from, _itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
-    PlayerBoostInfo storage playerBoost = activeBoosts_[playerId];
+    PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
       itemNFT.mint(_from, playerBoost.itemTokenId, 1);
     }
@@ -650,7 +650,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     emit ClearAll(_from, playerId);
     _clearActionQueue(_from, playerId);
     // Remove any active boost
-    PlayerBoostInfo storage activeBoost = activeBoosts_[playerId];
+    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     if (activeBoost.boostType != BoostType.NONE) {
       _clearPlayerMainBoost(playerId);
       if (activeBoost.startTime > block.timestamp) {

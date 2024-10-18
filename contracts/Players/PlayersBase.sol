@@ -172,7 +172,7 @@ abstract contract PlayersBase {
 
   mapping(address user => uint256 playerId) internal _activePlayers;
 
-  mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal activeBoosts_;
+  mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal _activeBoosts;
 
   World internal world;
   // Constants for the damage formula
@@ -487,7 +487,7 @@ abstract contract PlayersBase {
   }
 
   function _clearPlayerMainBoost(uint256 playerId) internal {
-    PlayerBoostInfo storage playerBoost = activeBoosts_[playerId];
+    PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
     delete playerBoost.value;
     delete playerBoost.startTime;
     delete playerBoost.duration;

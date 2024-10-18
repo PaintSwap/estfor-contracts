@@ -311,11 +311,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     if (hasBoost) {
       // The account this player is being transferred to has a boost, so lock the player for 1 day.
       uint40 cooldownTimestamp = uint40(block.timestamp + 1 days);
-      activeBoosts_[playerId].cooldown = cooldownTimestamp;
+      _activeBoosts[playerId].cooldown = cooldownTimestamp;
       emit LockPlayer(playerId, cooldownTimestamp);
-    } else if (activeBoosts_[playerId].cooldown > block.timestamp) {
+    } else if (_activeBoosts[playerId].cooldown > block.timestamp) {
       // Remove the lock when transferring to a player without boosts
-      activeBoosts_[playerId].cooldown = 0;
+      _activeBoosts[playerId].cooldown = 0;
       emit UnlockPlayer(playerId);
     }
   }
@@ -365,7 +365,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _setActivePlayer(address _from, uint256 playerId) private {
-    if (block.timestamp < activeBoosts_[playerId].cooldown) {
+    if (block.timestamp < _activeBoosts[playerId].cooldown) {
       revert PlayerLocked();
     }
 
@@ -525,7 +525,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   // Only used by a test, could remove and replace with getStorageAt like another test uses
   function activeBoost(uint256 playerId) external view override returns (PlayerBoostInfo memory) {
-    return activeBoosts_[playerId];
+    return _activeBoosts[playerId];
   }
 
   function clanBoost(uint256 _clanId) external view returns (PlayerBoostInfo memory) {

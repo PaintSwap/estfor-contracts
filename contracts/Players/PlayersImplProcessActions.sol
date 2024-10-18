@@ -299,7 +299,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function _clearPlayerBoostsIfExpired(uint256 playerId) private {
-    PlayerBoostInfo storage playerBoost = activeBoosts_[playerId];
+    PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
       _clearPlayerMainBoost(playerId);
     }
@@ -376,7 +376,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     });
 
     if (item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL) {
-      PlayerBoostInfo storage playerBoost = activeBoosts_[playerId];
+      PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
       playerBoost.extraOrLastStartTime = _startTime;
       playerBoost.extraOrLastDuration = item.boostDuration;
       playerBoost.extraOrLastValue = item.boostValue;
@@ -445,7 +445,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint256 _rolls,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
   ) private {
-    PlayerBoostInfo storage activeBoost = activeBoosts_[playerId];
+    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     BoostType boostType;
     uint40 boostStartTime;
     uint16 boostItemTokenId;

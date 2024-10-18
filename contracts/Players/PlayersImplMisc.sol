@@ -321,7 +321,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
       if (_xpElapsedTime != 0) {
         // Check for any gathering boosts
-        PlayerBoostInfo storage activeBoost = activeBoosts_[playerId];
+        PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
         uint256 boostedTime = PlayersLibrary.getBoostedTime(
           _currentActionStartTime,
           _xpElapsedTime,

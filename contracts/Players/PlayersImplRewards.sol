@@ -723,7 +723,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     }
 
     // Check for any boosts for random rewards (guaranteed rewards already have boosts applied)
-    PlayerBoostInfo storage activeBoost = activeBoosts_[playerId];
+    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     if (activeBoost.boostType == BoostType.GATHERING) {
       uint256 boostedTime = PlayersLibrary.getBoostedTime(
         startTime,
@@ -779,7 +779,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     }
 
     // Check for any boosts
-    PlayerBoostInfo storage activeBoost = activeBoosts_[playerId];
+    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     if (activeBoost.boostType == BoostType.GATHERING) {
       uint256 boostedTime = PlayersLibrary.getBoostedTime(
         skillStartTime,
@@ -926,7 +926,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint8(skill),
       xpElapsedTime,
       attire_[playerId][queuedAction.queueId],
-      activeBoosts_[playerId],
+      _activeBoosts[playerId],
       globalBoost_,
       clanBoosts_[clans.getClanId(playerId)],
       address(itemNFT),
