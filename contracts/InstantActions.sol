@@ -13,6 +13,7 @@ import "./globals/all.sol";
 
 contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   using SkillLibrary for uint8;
+  using SkillLibrary for Skill;
 
   event AddInstantActions(InstantActionInput[] instantActionInputs);
   event EditInstantActions(InstantActionInput[] instantActionInputs);
@@ -274,11 +275,11 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   ) private pure returns (InstantAction memory instantAction) {
     bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     instantAction = InstantAction({
-      minSkill1: actionInput.minSkills.length != 0 ? actionInput.minSkills[0] : uint8(Skill.NONE),
+      minSkill1: actionInput.minSkills.length != 0 ? actionInput.minSkills[0] : Skill.NONE.asUint8(),
       minXP1: actionInput.minXPs.length != 0 ? actionInput.minXPs[0] : 0,
-      minSkill2: actionInput.minSkills.length > 1 ? actionInput.minSkills[1] : uint8(Skill.NONE),
+      minSkill2: actionInput.minSkills.length > 1 ? actionInput.minSkills[1] : Skill.NONE.asUint8(),
       minXP2: actionInput.minXPs.length > 1 ? actionInput.minXPs[1] : 0,
-      minSkill3: actionInput.minSkills.length > 2 ? actionInput.minSkills[2] : uint8(Skill.NONE),
+      minSkill3: actionInput.minSkills.length > 2 ? actionInput.minSkills[2] : Skill.NONE.asUint8(),
       minXP3: actionInput.minXPs.length > 2 ? actionInput.minXPs[2] : 0,
       inputTokenId1: actionInput.inputTokenIds.length != 0 ? actionInput.inputTokenIds[0] : NONE,
       inputAmount1: actionInput.inputAmounts.length != 0 ? actionInput.inputAmounts[0] : 0,

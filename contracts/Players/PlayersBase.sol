@@ -262,10 +262,6 @@ abstract contract PlayersBase {
     }
   }
 
-  function _isCombatStyle(CombatStyle _combatStyle) internal pure returns (bool) {
-    return _combatStyle != CombatStyle.NONE;
-  }
-
   function _isPlayerFullMode(uint256 playerId) internal view returns (bool) {
     return uint8(players_[playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }

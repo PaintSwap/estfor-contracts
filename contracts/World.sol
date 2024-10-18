@@ -497,9 +497,9 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       packedData: _packedData,
       reserved: bytes1(uint8(0)),
       // Second storage slot
-      minSkill2: actionChoiceInput.minSkills.length > 1 ? actionChoiceInput.minSkills[1] : uint8(Skill.NONE),
+      minSkill2: actionChoiceInput.minSkills.length > 1 ? actionChoiceInput.minSkills[1] : Skill.NONE.asUint8(),
       minXP2: actionChoiceInput.minXPs.length > 1 ? actionChoiceInput.minXPs[1] : 0,
-      minSkill3: actionChoiceInput.minSkills.length > 2 ? actionChoiceInput.minSkills[2] : uint8(Skill.NONE),
+      minSkill3: actionChoiceInput.minSkills.length > 2 ? actionChoiceInput.minSkills[2] : Skill.NONE.asUint8(),
       minXP3: actionChoiceInput.minXPs.length > 2 ? actionChoiceInput.minXPs[2] : 0,
       newInputAmount1: actionChoiceInput.inputAmounts.length != 0 && _anyInputExceedsStandardAmount
         ? actionChoiceInput.inputAmounts[0]
