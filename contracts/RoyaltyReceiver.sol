@@ -32,83 +32,74 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   error FailedSendToDev();
   error BrushTooLowToDistribute();
 
-  Router public router;
-  address public pool;
-  IBrushToken public brush;
-  address private wNative;
-  address private dev;
-  ITerritories private territories;
-  uint256 public constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
+  Router private _router;
+  address private _pool;
+  IBrushToken private _brush;
+  address private _wNative;
+  address private _dev;
+  ITerritories private _territories;
+  uint256 private constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
   function initialize(
-    Router _router,
-    address _pool,
-    address _dev,
-    IBrushToken _brush,
-    address _wNative
+    Router router,
+    address pool,
+    address dev,
+    IBrushToken brush,
+    address wNative
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    router = _router;
-    pool = _pool;
-    dev = _dev;
-    brush = _brush;
-    wNative = _wNative;
-    if (address(_router) == address(0)) {
-      revert AddressZero();
-    }
-    if (_pool == address(0)) {
-      revert AddressZero();
-    }
-    if (address(_brush) == address(0)) {
-      revert AddressZero();
-    }
-    if (dev == address(0)) {
-      revert AddressZero();
-    }
+    require(address(router) != address(0), AddressZero());
+    require(pool != address(0), AddressZero());
+    require(address(brush) != address(0), AddressZero());
+    require(dev != address(0), AddressZero());
+
+    _router = router;
+    _pool = pool;
+    _dev = dev;
+    _brush = brush;
+    _wNative = wNative;
   }
 
   function distributeBrush() external {
-    uint256 balance = brush.balanceOf(address(this));
+    uint256 balance = _brush.balanceOf(address(this));
     if (balance < MIN_BRUSH_TO_DISTRIBUTE) {
       revert BrushTooLowToDistribute();
     }
-    territories.addUnclaimedEmissions(balance);
+    _territories.addUnclaimedEmissions(balance);
   }
 
   function _buyPath() private view returns (address[] memory buyPath) {
     buyPath = new address[](2);
-    buyPath[0] = wNative;
-    buyPath[1] = address(brush);
+    buyPath[0] = _wNative;
+    buyPath[1] = address(_brush);
   }
 
   function canDistribute() external view returns (bool) {
-    return brush.balanceOf(address(this)) >= MIN_BRUSH_TO_DISTRIBUTE;
+    return _brush.balanceOf(address(this)) >= MIN_BRUSH_TO_DISTRIBUTE;
   }
 
-  function setTerritories(ITerritories _territories) external onlyOwner {
-    territories = _territories;
-    brush.approve(address(_territories), type(uint256).max);
+  function setTerritories(ITerritories territories) external onlyOwner {
+    _territories = territories;
+    _brush.approve(address(territories), type(uint256).max);
   }
 
   receive() external payable {
     uint256 deadline = block.timestamp.add(DEADLINE_DURATION);
 
     uint256 third = msg.value / 3;
-    (bool success, ) = dev.call{value: third}("");
-    if (!success) {
-      revert FailedSendToDev();
-    }
+    (bool success, ) = _dev.call{value: third}("");
+    require(success, FailedSendToDev());
 
     // Buy brush and send it to the pool
-    uint256[] memory amounts = router.swapExactETHForTokens{value: msg.value - third}(
+    uint256[] memory amounts = _router.swapExactETHForTokens{value: msg.value - third}(
       0,
       _buyPath(),
       address(this),
       deadline
     );
-    brush.transfer(pool, amounts[amounts.length - 1]);
+    _brush.transfer(_pool, amounts[amounts.length - 1]);
   }
 
   // solhint-disable-next-line no-empty-blocks

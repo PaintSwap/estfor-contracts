@@ -15,10 +15,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for uint80;
   using UnsafeMath for uint256;
 
-  event AddShopItem(ShopItem shopItem);
   event AddShopItems(ShopItem[] shopItems);
   event EditShopItems(ShopItem[] shopItems);
-  event RemoveShopItem(uint16 tokenId);
+  event RemoveShopItems(uint16[] tokenId);
   event Buy(address buyer, address to, uint256 tokenId, uint256 quantity, uint256 price);
   event BuyBatch(address buyer, address to, uint256[] tokenIds, uint256[] quantities, uint256[] prices);
   event Sell(address seller, uint256 tokenId, uint256 quantity, uint256 price);
@@ -49,8 +48,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint128 price;
   }
 
-  uint256 public constant SELLING_CUTOFF_DURATION = 2 days;
-
   struct TokenInfo {
     uint80 allocationRemaining;
     uint80 price;
@@ -58,122 +55,128 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     bool unsellable;
   }
 
-  mapping(uint256 tokenId => TokenInfo) public tokenInfos;
+  uint256 public constant SELLING_CUTOFF_DURATION = 2 days;
 
-  IBrushToken public brush;
-  IItemNFT public itemNFT;
-  uint16 private numUnsellableItems;
-  uint24 public minItemQuantityBeforeSellsAllowed;
-  address public dev;
-  mapping(uint256 itemId => uint256 price) public shopItems;
+  mapping(uint256 tokenId => TokenInfo tokenInfo) private _tokenInfos;
+
+  IBrushToken private _brush;
+  IItemNFT private _itemNFT;
+  uint16 private _numUnsellableItems;
+  uint24 private _minItemQuantityBeforeSellsAllowed;
+  address private _dev;
+  mapping(uint256 itemId => uint256 price) private _shopItems;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken _brush, address _dev) external initializer {
+  function initialize(IBrushToken brush, address dev) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    brush = _brush;
-    dev = _dev;
+    _brush = brush;
+    _dev = dev;
 
     setMinItemQuantityBeforeSellsAllowed(500);
   }
 
-  function liquidatePrice(uint16 _tokenId) public view returns (uint80 price) {
-    uint256 totalBrush = brush.balanceOf(address(this));
-    uint256 totalBrushForItem = totalBrush / (itemNFT.totalSupply() - numUnsellableItems);
-    return _liquidatePrice(_tokenId, totalBrushForItem);
+  function getMinItemQuantityBeforeSellsAllowed() external view returns (uint24) {
+    return _minItemQuantityBeforeSellsAllowed;
   }
 
-  function liquidatePrices(uint16[] calldata _tokenIds) external view returns (uint256[] memory prices) {
-    U256 iter = _tokenIds.length.asU256();
-    if (iter.eq(0)) {
+  function liquidatePrice(uint16 tokenId) public view returns (uint80 price) {
+    uint256 _totalBrush = _brush.balanceOf(address(this));
+    uint256 _totalBrushForItem = _totalBrush / (_itemNFT.totalSupply() - _numUnsellableItems);
+    return _liquidatePrice(tokenId, _totalBrushForItem);
+  }
+
+  function liquidatePrices(uint16[] calldata tokenIds) external view returns (uint256[] memory prices) {
+    U256 _iter = tokenIds.length.asU256();
+    if (_iter.eq(0)) {
       return prices;
     }
 
-    uint256 totalBrush = brush.balanceOf(address(this));
-    uint256 totalBrushForItem = totalBrush / (itemNFT.totalSupply() - numUnsellableItems);
+    uint256 _totalBrush = _brush.balanceOf(address(this));
+    uint256 _totalBrushForItem = _totalBrush / (_itemNFT.totalSupply() - _numUnsellableItems);
 
-    prices = new uint256[](iter.asUint256());
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      prices[i] = _liquidatePrice(_tokenIds[i], totalBrushForItem);
+    prices = new uint256[](_iter.asUint256());
+    while (_iter.neq(0)) {
+      _iter = _iter.dec();
+      uint256 i = _iter.asUint256();
+      prices[i] = _liquidatePrice(tokenIds[i], _totalBrushForItem);
     }
   }
 
   // Buy simple items and XP boosts using brush
-  function buy(address _to, uint16 _tokenId, uint256 _quantity) external {
-    uint256 price = shopItems[_tokenId];
-    if (price == 0) {
+  function buy(address to, uint16 tokenId, uint256 quantity) external {
+    uint256 _price = _shopItems[tokenId];
+    if (_price == 0) {
       revert ItemCannotBeBought();
     }
-    uint256 brushCost = price * _quantity;
+    uint256 brushCost = _price * quantity;
     // Pay
-    brush.transferFrom(msg.sender, address(this), brushCost);
-    uint256 quarterCost = brushCost / 4;
+    _brush.transferFrom(msg.sender, address(this), brushCost);
+    uint256 _quarterCost = brushCost / 4;
     // Send 1 quarter to the dev address
-    brush.transfer(dev, quarterCost);
+    _brush.transfer(_dev, _quarterCost);
     // Burn 1 quarter
-    brush.burn(quarterCost);
+    _brush.burn(_quarterCost);
 
-    itemNFT.mint(_to, _tokenId, _quantity);
-    emit Buy(msg.sender, _to, _tokenId, _quantity, price);
+    _itemNFT.mint(to, tokenId, quantity);
+    emit Buy(msg.sender, to, tokenId, quantity, _price);
   }
 
-  function buyBatch(address _to, uint256[] calldata _tokenIds, uint256[] calldata _quantities) external {
-    U256 iter = _tokenIds.length.asU256();
-    if (iter.eq(0)) {
+  function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
+    U256 _iter = tokenIds.length.asU256();
+    if (_iter.eq(0)) {
       revert LengthEmpty();
     }
-    if (iter.neq(_quantities.length)) {
+    if (_iter.neq(quantities.length)) {
       revert LengthMismatch();
     }
-    uint256 brushCost;
-    uint256[] memory prices = new uint256[](iter.asUint256());
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      uint256 price = shopItems[uint16(_tokenIds[i])];
+    uint256 _brushCost;
+    uint256[] memory _prices = new uint256[](_iter.asUint256());
+    while (_iter.neq(0)) {
+      _iter = _iter.dec();
+      uint256 i = _iter.asUint256();
+      uint256 price = _shopItems[uint16(tokenIds[i])];
       if (price == 0) {
         revert ItemCannotBeBought();
       }
-      brushCost += price * _quantities[i];
-      prices[i] = price;
+      _brushCost += price * quantities[i];
+      _prices[i] = price;
     }
 
     // Pay
-    brush.transferFrom(msg.sender, address(this), brushCost);
-    uint256 quarterCost = brushCost / 4;
+    _brush.transferFrom(msg.sender, address(this), _brushCost);
+    uint256 quarterCost = _brushCost / 4;
     // Send 1 quarter to the dev address
-    brush.transfer(dev, quarterCost);
+    _brush.transfer(_dev, quarterCost);
     // Burn 1 quarter
-    brush.burn(quarterCost);
+    _brush.burn(quarterCost);
 
-    itemNFT.mintBatch(_to, _tokenIds, _quantities);
-    emit BuyBatch(msg.sender, _to, _tokenIds, _quantities, prices);
+    _itemNFT.mintBatch(to, tokenIds, quantities);
+    emit BuyBatch(msg.sender, to, tokenIds, quantities, _prices);
   }
 
-  function sell(uint16 _tokenId, uint256 _quantity, uint256 _minExpectedBrush) external {
-    uint256 price = liquidatePrice(_tokenId);
-    uint256 totalBrush = price * _quantity;
-    _sell(_tokenId, _quantity, price);
-    if (totalBrush < _minExpectedBrush) {
-      revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
+  function sell(uint16 tokenId, uint256 quantity, uint256 minExpectedBrush) external {
+    uint256 price = liquidatePrice(tokenId);
+    uint256 totalBrush = price * quantity;
+    _sell(tokenId, quantity, price);
+    if (totalBrush < minExpectedBrush) {
+      revert MinExpectedBrushNotReached(totalBrush, minExpectedBrush);
     }
-    brush.transfer(msg.sender, totalBrush);
-    itemNFT.burn(msg.sender, _tokenId, _quantity);
-    emit Sell(msg.sender, _tokenId, _quantity, price);
+    _brush.transfer(msg.sender, totalBrush);
+    _itemNFT.burn(msg.sender, tokenId, quantity);
+    emit Sell(msg.sender, tokenId, quantity, price);
   }
 
-  function sellBatch(uint256[] calldata _tokenIds, uint256[] calldata _quantities, uint256 _minExpectedBrush) external {
-    U256 iter = _tokenIds.length.asU256();
+  function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
+    U256 iter = tokenIds.length.asU256();
     if (iter.eq(0)) {
       revert LengthEmpty();
     }
-    if (iter.neq(_quantities.length)) {
+    if (iter.neq(quantities.length)) {
       revert LengthMismatch();
     }
     U256 totalBrush;
@@ -181,33 +184,33 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     do {
       iter = iter.dec();
       uint256 i = iter.asUint256();
-      U256 sellPrice = liquidatePrice(uint16(_tokenIds[i])).asU256();
-      totalBrush = totalBrush + (sellPrice * _quantities[i].asU256());
+      U256 sellPrice = liquidatePrice(uint16(tokenIds[i])).asU256();
+      totalBrush = totalBrush + (sellPrice * quantities[i].asU256());
       prices[i] = sellPrice.asUint256();
-      _sell(_tokenIds[i], _quantities[i], prices[i]);
+      _sell(tokenIds[i], quantities[i], prices[i]);
     } while (iter.neq(0));
-    if (totalBrush.lt(_minExpectedBrush)) {
-      revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
+    if (totalBrush.lt(minExpectedBrush)) {
+      revert MinExpectedBrushNotReached(totalBrush.asUint256(), minExpectedBrush);
     }
-    brush.transfer(msg.sender, totalBrush.asUint256());
-    itemNFT.burnBatch(msg.sender, _tokenIds, _quantities);
-    emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
+    _brush.transfer(msg.sender, totalBrush.asUint256());
+    _itemNFT.burnBatch(msg.sender, tokenIds, quantities);
+    emit SellBatch(msg.sender, tokenIds, quantities, prices);
   }
 
   // Does not burn!
   function _sell(uint256 _tokenId, uint256 _quantity, uint256 _sellPrice) private {
-    uint256 price = shopItems[_tokenId];
+    uint256 price = _shopItems[_tokenId];
     if (price != 0 && price < _sellPrice) {
       revert LiquidatePriceIsHigherThanShop(_tokenId);
     }
 
     // 48 hour period of no selling for an item
-    if (itemNFT.timestampFirstMint(_tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
+    if (_itemNFT.timestampFirstMint(_tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
       revert SellingTooQuicklyAfterItemIntroduction();
     }
 
     // Check if tokenInfo checkpoint is older than 24 hours
-    TokenInfo storage tokenInfo = tokenInfos[_tokenId];
+    TokenInfo storage tokenInfo = _tokenInfos[_tokenId];
     if (tokenInfo.unsellable) {
       revert ItemNotSellable(_tokenId);
     }
@@ -215,7 +218,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint256 allocationRemaining;
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
       // New day, reset max allocation can be sold
-      allocationRemaining = uint80(brush.balanceOf(address(this)) / (itemNFT.totalSupply() - numUnsellableItems));
+      allocationRemaining = uint80(_brush.balanceOf(address(this)) / (_itemNFT.totalSupply() - _numUnsellableItems));
       tokenInfo.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
       tokenInfo.price = uint80(_sellPrice);
       emit NewAllocation(uint16(_tokenId), allocationRemaining);
@@ -231,8 +234,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _liquidatePrice(uint16 _tokenId, uint256 _totalBrushPerItem) private view returns (uint80 price) {
-    TokenInfo storage tokenInfo = tokenInfos[_tokenId];
-    uint256 totalOfThisItem = itemNFT.itemBalances(_tokenId);
+    TokenInfo storage tokenInfo = _tokenInfos[_tokenId];
+    uint256 totalOfThisItem = _itemNFT.itemBalances(_tokenId);
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
       if (totalOfThisItem != 0) {
         price = uint80(_totalBrushPerItem / totalOfThisItem);
@@ -241,101 +244,100 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       price = uint80(tokenInfo.price);
     }
 
-    if (totalOfThisItem < minItemQuantityBeforeSellsAllowed || tokenInfo.unsellable) {
+    if (totalOfThisItem < _minItemQuantityBeforeSellsAllowed || tokenInfo.unsellable) {
       // Needs to have a minimum of an item before any can be sold, and the item must be sellable
       price = 0;
     }
   }
 
-  function _addBuyableItem(ShopItem calldata _shopItem) private {
+  function _addBuyableItem(ShopItem calldata buyableItem) private {
     // Check item exists
-    if (!itemNFT.exists(_shopItem.tokenId)) {
+    if (!_itemNFT.exists(buyableItem.tokenId)) {
       revert ItemDoesNotExist();
     }
-    if (shopItems[_shopItem.tokenId] != 0) {
+    if (_shopItems[buyableItem.tokenId] != 0) {
       revert ShopItemAlreadyExists();
     }
-    if (_shopItem.price == 0) {
+    if (buyableItem.price == 0) {
       revert PriceCannotBeZero();
     }
-    shopItems[_shopItem.tokenId] = _shopItem.price;
+    _shopItems[buyableItem.tokenId] = buyableItem.price;
   }
 
   function _hasNewDailyData(uint256 checkpointTimestamp) private view returns (bool) {
-    return (block.timestamp / 1 days) * 1 days >= checkpointTimestamp.add(1 days);
+    return (block.timestamp.div(1 days)).mul(1 days) >= checkpointTimestamp.add(1 days);
   }
 
-  // Spend brush to buy some things from the shop
-  function addBuyableItem(ShopItem calldata _shopItem) external onlyOwner {
-    _addBuyableItem(_shopItem);
-    emit AddShopItem(_shopItem);
-  }
-
-  function addBuyableItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    U256 iter = _shopItems.length.asU256();
-    if (iter.eq(0)) {
-      revert LengthEmpty();
+  function addBuyableItems(ShopItem[] calldata buyableItems) external onlyOwner {
+    for (uint256 i; i < buyableItems.length; i++) {
+      _addBuyableItem(buyableItems[i]);
     }
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      _addBuyableItem(_shopItems[i]);
-    }
-    emit AddShopItems(_shopItems);
+    emit AddShopItems(buyableItems);
   }
 
-  function editItems(ShopItem[] calldata _shopItems) external onlyOwner {
-    U256 bounds = _shopItems.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      if (shopItems[_shopItems[i].tokenId] == 0) {
+  function editItems(ShopItem[] calldata itemsToEdit) external onlyOwner {
+    for (uint256 i; i < itemsToEdit.length; i++) {
+      if (_shopItems[itemsToEdit[i].tokenId] == 0) {
         revert ShopItemDoesNotExist();
       }
-      shopItems[_shopItems[i].tokenId] = _shopItems[i].price;
+      _shopItems[itemsToEdit[i].tokenId] = itemsToEdit[i].price;
     }
-    emit EditShopItems(_shopItems);
+    emit EditShopItems(itemsToEdit);
   }
 
-  function removeItem(uint16 _tokenId) external onlyOwner {
-    if (shopItems[_tokenId] == 0) {
-      revert ShopItemDoesNotExist();
+  function removeItems(uint16[] calldata tokenIds) external onlyOwner {
+    for (uint256 i; i < tokenIds.length; i++) {
+      uint16 tokenId = tokenIds[i];
+      if (_shopItems[tokenId] == 0) {
+        revert ShopItemDoesNotExist();
+      }
+      delete _shopItems[tokenId];
     }
-    delete shopItems[_tokenId];
-    emit RemoveShopItem(_tokenId);
+    emit RemoveShopItems(tokenIds);
   }
 
   function addUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
-    for (uint256 i = 0; i < itemTokenIds.length; ++i) {
-      if (tokenInfos[itemTokenIds[i]].unsellable) {
+    for (uint256 i; i < itemTokenIds.length; i++) {
+      if (_tokenInfos[itemTokenIds[i]].unsellable) {
         revert AlreadyUnsellable();
       }
-      if (!itemNFT.exists(itemTokenIds[i])) {
+      if (!_itemNFT.exists(itemTokenIds[i])) {
         revert ItemDoesNotExist();
       }
-      tokenInfos[itemTokenIds[i]].unsellable = true;
+      _tokenInfos[itemTokenIds[i]].unsellable = true;
     }
-    numUnsellableItems += uint16(itemTokenIds.length);
+    _numUnsellableItems += uint16(itemTokenIds.length);
     emit AddUnsellableItems(itemTokenIds);
   }
 
   function removeUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
-    for (uint256 i = 0; i < itemTokenIds.length; ++i) {
-      if (!tokenInfos[itemTokenIds[i]].unsellable) {
+    for (uint256 i; i < itemTokenIds.length; i++) {
+      if (!_tokenInfos[itemTokenIds[i]].unsellable) {
         revert AlreadySellable();
       }
-      tokenInfos[itemTokenIds[i]].unsellable = false;
+      _tokenInfos[itemTokenIds[i]].unsellable = false;
     }
-    numUnsellableItems -= uint16(itemTokenIds.length);
+    _numUnsellableItems -= uint16(itemTokenIds.length);
     emit RemoveUnsellableItems(itemTokenIds);
   }
 
-  function setItemNFT(IItemNFT _itemNFT) external onlyOwner {
-    itemNFT = _itemNFT;
+  function setItemNFT(IItemNFT itemNFT) external onlyOwner {
+    _itemNFT = itemNFT;
   }
 
-  function setMinItemQuantityBeforeSellsAllowed(uint24 _minItemQuantityBeforeSellsAllowed) public onlyOwner {
-    minItemQuantityBeforeSellsAllowed = _minItemQuantityBeforeSellsAllowed;
-    emit SetMinItemQuantityBeforeSellsAllowed(_minItemQuantityBeforeSellsAllowed);
+  function setMinItemQuantityBeforeSellsAllowed(uint24 minItemQuantityBeforeSellsAllowed) public onlyOwner {
+    _minItemQuantityBeforeSellsAllowed = minItemQuantityBeforeSellsAllowed;
+    emit SetMinItemQuantityBeforeSellsAllowed(minItemQuantityBeforeSellsAllowed);
+  }
+
+  // getters
+
+  function tokenInfos(uint16 tokenId) external view returns (TokenInfo memory tokenInfo) {
+    return _tokenInfos[tokenId];
+  }
+
+  function shopItems(uint16 tokenId) external view returns (uint256 price) {
+    return _shopItems[tokenId];
   }
 
   // solhint-disable-next-line no-empty-blocks

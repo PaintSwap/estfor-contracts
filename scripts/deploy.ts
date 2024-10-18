@@ -25,7 +25,7 @@ import {
   PetNFT,
   EggInstantVRFActionStrategy,
   RoyaltyReceiver,
-  AdminAccess,
+  AdminAccess
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -34,7 +34,7 @@ import {
   isBeta,
   isDevNetwork,
   setDailyAndWeeklyRewards,
-  verifyContracts,
+  verifyContracts
 } from "./utils";
 import {allItems} from "./data/items";
 import {allActions} from "./data/actions";
@@ -48,7 +48,7 @@ import {
   allActionChoicesRanged,
   allActionChoicesAlchemy,
   allActionChoicesFletching,
-  allActionChoicesForging,
+  allActionChoicesForging
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsFiremaking,
@@ -60,7 +60,7 @@ import {
   allActionChoiceIdsRanged,
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
-  allActionChoiceIdsForging,
+  allActionChoiceIdsForging
 } from "./data/actionChoiceIds";
 import {
   BAZAAR_ADDRESS,
@@ -69,7 +69,7 @@ import {
   DEV_ADDRESS,
   ORACLE_ADDRESS,
   SAMWITCH_VRF_ADDRESS,
-  WFTM_ADDRESS,
+  WFTM_ADDRESS
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
@@ -123,7 +123,7 @@ async function main() {
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
         brush,
         router,
-        wftm,
+        wftm
       ));
     } else if (network.chainId == 4002n) {
       // Fantom testnet
@@ -144,7 +144,7 @@ async function main() {
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
         brush,
         router,
-        wftm,
+        wftm
       ));
     } else if (network.chainId == 250n) {
       // Fantom mainnet
@@ -154,10 +154,10 @@ async function main() {
       vrf = (await MockVRF.attach(SAMWITCH_VRF_ADDRESS)) as MockVRF;
       router = (await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d")) as MockRouter;
       paintSwapMarketplaceWhitelist = (await MockPaintSwapMarketplaceWhitelist.attach(
-        "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD",
+        "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
       )) as MockPaintSwapMarketplaceWhitelist;
       paintSwapArtGallery = (await TestPaintSwapArtGallery.attach(
-        "0x9076C96e01F6F13e1eC4832354dF970d245e124F",
+        "0x9076C96e01F6F13e1eC4832354dF970d245e124F"
       )) as TestPaintSwapArtGallery;
       paintSwapDecorator = (await TestPaintSwapDecorator.attach(DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
       pid = 22;
@@ -213,12 +213,12 @@ async function main() {
 
   console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
   const World = await ethers.getContractFactory("World", {
-    libraries: {WorldLibrary: await worldLibrary.getAddress()},
+    libraries: {WorldLibrary: await worldLibrary.getAddress()}
   });
   const world = (await upgrades.deployProxy(World, [await vrf.getAddress()], {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout,
+    timeout
   })) as unknown as World;
   await world.waitForDeployment();
 
@@ -227,7 +227,7 @@ async function main() {
   const Shop = await ethers.getContractFactory("Shop");
   const shop = (await upgrades.deployProxy(Shop, [await brush.getAddress(), DEV_ADDRESS], {
     kind: "uups",
-    timeout,
+    timeout
   })) as unknown as Shop;
   await shop.waitForDeployment();
 
@@ -241,12 +241,12 @@ async function main() {
       await shop.getAddress(),
       DEV_ADDRESS,
       await brush.getAddress(),
-      await wftm.getAddress(),
+      await wftm.getAddress()
     ],
     {
       kind: "uups",
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as RoyaltyReceiver;
   await royaltyReceiver.waitForDeployment();
   console.log(`royaltyReceiver = "${(await royaltyReceiver.getAddress()).toLowerCase()}"`);
@@ -260,7 +260,7 @@ async function main() {
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
   const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, promotionalAdmins], {
     kind: "uups",
-    timeout,
+    timeout
   })) as unknown as AdminAccess;
   await adminAccess.waitForDeployment();
   console.log(`adminAccess = "${(await adminAccess.getAddress()).toLowerCase()}"`);
@@ -270,7 +270,7 @@ async function main() {
   await itemNFTLibrary.waitForDeployment();
   console.log(`itemNFTLibrary = "${(await itemNFTLibrary.getAddress()).toLowerCase()}"`);
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
   });
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
@@ -280,13 +280,13 @@ async function main() {
       await royaltyReceiver.getAddress(),
       await adminAccess.getAddress(),
       itemsUri,
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as ItemNFT;
   await itemNFT.waitForDeployment();
 
@@ -298,7 +298,7 @@ async function main() {
   console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
 
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()},
+    libraries: {EstforLibrary: await estforLibrary.getAddress()}
   });
   const playerNFT = (await upgrades.deployProxy(
     PlayerNFT,
@@ -310,13 +310,13 @@ async function main() {
       editNameBrushPrice,
       upgradePlayerBrushPrice,
       heroImageBaseUri,
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as PlayerNFT;
   await playerNFT.waitForDeployment();
   console.log(`playerNFT = "${(await playerNFT.getAddress()).toLowerCase()}"`);
@@ -326,7 +326,7 @@ async function main() {
   console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`);
 
   const Promotions = await ethers.getContractFactory("Promotions", {
-    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()},
+    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
   });
   const promotions = (await upgrades.deployProxy(
     Promotions,
@@ -334,8 +334,8 @@ async function main() {
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as Promotions;
   await promotions.waitForDeployment();
   console.log(`promotions = "${(await promotions.getAddress()).toLowerCase()}"`);
@@ -344,13 +344,13 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [await world.getAddress(), await router.getAddress(), buyPath], {
     kind: "uups",
-    timeout,
+    timeout
   })) as unknown as Quests;
   await quests.waitForDeployment();
   console.log(`quests = "${(await quests.getAddress()).toLowerCase()}"`);
 
   const Clans = await ethers.getContractFactory("Clans", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()},
+    libraries: {EstforLibrary: await estforLibrary.getAddress()}
   });
   const clans = (await upgrades.deployProxy(
     Clans,
@@ -361,13 +361,13 @@ async function main() {
       DEV_ADDRESS,
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
-      initialMMR,
+      initialMMR
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as Clans;
   await clans.waitForDeployment();
   console.log(`clans = "${(await clans.getAddress()).toLowerCase()}"`);
@@ -383,13 +383,12 @@ async function main() {
       await clans.getAddress(),
       raffleEntryCost,
       startGlobalDonationThresholdRewards,
-      clanDonationThresholdRewardIncrement,
-      isBeta,
+      clanDonationThresholdRewardIncrement
     ],
     {
       kind: "uups",
-      timeout,
-    },
+      timeout
+    }
   );
   await wishingWell.waitForDeployment();
   console.log(`wishingWell = "${(await wishingWell.getAddress()).toLowerCase()}"`);
@@ -404,7 +403,7 @@ async function main() {
   console.log(`petNFTLibrary = "${(await petNFTLibrary.getAddress()).toLowerCase()}"`);
 
   const PetNFT = await ethers.getContractFactory("PetNFT", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
+    libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()}
   });
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
@@ -415,13 +414,13 @@ async function main() {
       DEV_ADDRESS,
       editPetNameBrushPrice,
       await adminAccess.getAddress(),
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as PetNFT;
   await petNFT.waitForDeployment();
   console.log(`petNFT = "${(await petNFT.getAddress()).toLowerCase()}"`);
@@ -451,13 +450,13 @@ async function main() {
       await playersImplRewards.getAddress(),
       await playersImplMisc.getAddress(),
       await playersImplMisc1.getAddress(),
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as Players;
   await players.waitForDeployment();
   console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
@@ -468,8 +467,8 @@ async function main() {
     [await itemNFT.getAddress(), await playerNFT.getAddress(), await clans.getAddress(), await players.getAddress()],
     {
       kind: "uups",
-      timeout,
-    },
+      timeout
+    }
   );
   await bankRegistry.waitForDeployment();
   console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`);
@@ -480,14 +479,14 @@ async function main() {
     [await bankRegistry.getAddress(), await bank.getAddress()],
     {
       kind: "uups",
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as BankFactory;
   await bankFactory.waitForDeployment();
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 
   const PassiveActions = await ethers.getContractFactory("PassiveActions", {
-    libraries: {WorldLibrary: await worldLibrary.getAddress()},
+    libraries: {WorldLibrary: await worldLibrary.getAddress()}
   });
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
@@ -495,8 +494,8 @@ async function main() {
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as PassiveActions;
   await passiveActions.waitForDeployment();
   console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`);
@@ -507,8 +506,8 @@ async function main() {
     [await players.getAddress(), await itemNFT.getAddress()],
     {
       kind: "uups",
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as InstantActions;
   await instantActions.waitForDeployment();
   console.log(`instantActions = "${(await instantActions.getAddress()).toLowerCase()}"`);
@@ -516,7 +515,7 @@ async function main() {
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
   const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
     kind: "uups",
-    timeout,
+    timeout
   })) as unknown as VRFRequestInfo;
   await vrfRequestInfo.waitForDeployment();
   console.log(`vrfRequestInfo = "${(await vrfRequestInfo.getAddress()).toLowerCase()}"`);
@@ -530,12 +529,12 @@ async function main() {
       await petNFT.getAddress(),
       ORACLE_ADDRESS,
       await vrf.getAddress(),
-      await vrfRequestInfo.getAddress(),
+      await vrfRequestInfo.getAddress()
     ],
     {
       kind: "uups",
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as InstantVRFActions;
   await instantVRFActions.waitForDeployment();
   console.log(`instantVRFActions = "${(await instantVRFActions.getAddress()).toLowerCase()}"`);
@@ -545,12 +544,12 @@ async function main() {
     GenericInstantVRFActionStrategy,
     [await instantVRFActions.getAddress()],
     {
-      kind: "uups",
-    },
+      kind: "uups"
+    }
   )) as unknown as GenericInstantVRFActionStrategy;
   await genericInstantVRFActionStrategy.waitForDeployment();
   console.log(
-    `genericInstantVRFActionStrategy = "${(await genericInstantVRFActionStrategy.getAddress()).toLowerCase()}"`,
+    `genericInstantVRFActionStrategy = "${(await genericInstantVRFActionStrategy.getAddress()).toLowerCase()}"`
   );
 
   const EggInstantVRFActionStrategy = await ethers.getContractFactory("EggInstantVRFActionStrategy");
@@ -558,8 +557,8 @@ async function main() {
     EggInstantVRFActionStrategy,
     [await instantVRFActions.getAddress()],
     {
-      kind: "uups",
-    },
+      kind: "uups"
+    }
   )) as unknown as EggInstantVRFActionStrategy;
   await eggInstantVRFActionStrategy.waitForDeployment();
 
@@ -570,8 +569,8 @@ async function main() {
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
-      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
-    },
+      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress()
+    }
   });
   const lockedBankVaults = await upgrades.deployProxy(
     LockedBankVaults,
@@ -589,13 +588,13 @@ async function main() {
       mmrAttackDistance,
       lockedFundsPeriod,
       await adminAccess.getAddress(),
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   );
   await lockedBankVaults.waitForDeployment();
   console.log(`lockedBankVaults = "${(await lockedBankVaults.getAddress()).toLowerCase()}"`);
@@ -614,19 +613,19 @@ async function main() {
       await vrf.getAddress(),
       allBattleSkills,
       await adminAccess.getAddress(),
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   );
   await territories.waitForDeployment();
   console.log(`territories = "${(await territories.getAddress()).toLowerCase()}"`);
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()},
+    libraries: {EstforLibrary: await estforLibrary.getAddress()}
   });
   const combatantsHelper = await upgrades.deployProxy(
     CombatantsHelper,
@@ -636,13 +635,13 @@ async function main() {
       await territories.getAddress(),
       await lockedBankVaults.getAddress(),
       await adminAccess.getAddress(),
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   );
   await combatantsHelper.waitForDeployment();
 
@@ -654,7 +653,7 @@ async function main() {
     await brush.getAddress(),
     await playerNFT.getAddress(),
     DEV_ADDRESS,
-    pid,
+    pid
   ]);
   await decoratorProvider.waitForDeployment();
   console.log(`decoratorProvider = "${(await decoratorProvider.getAddress()).toLowerCase()}"`);
@@ -695,7 +694,7 @@ async function main() {
         await territories.getAddress(),
         await decoratorProvider.getAddress(),
         await combatantsHelper.getAddress(),
-        await vrfRequestInfo.getAddress(),
+        await vrfRequestInfo.getAddress()
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -768,13 +767,13 @@ async function main() {
 
   tx = await clans.setTerritoriesAndLockedBankVaults(
     await territories.getAddress(),
-    await lockedBankVaults.getAddress(),
+    await lockedBankVaults.getAddress()
   );
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
   tx = await itemNFT.setTerritoriesAndLockedBankVaults(
     await territories.getAddress(),
-    await lockedBankVaults.getAddress(),
+    await lockedBankVaults.getAddress()
   );
   await tx.wait();
   console.log("itemNFT.setTerritoriesAndLockedBankVaults");
@@ -816,8 +815,8 @@ async function main() {
     [
       await genericInstantVRFActionStrategy.getAddress(),
       await genericInstantVRFActionStrategy.getAddress(),
-      await eggInstantVRFActionStrategy.getAddress(),
-    ],
+      await eggInstantVRFActionStrategy.getAddress()
+    ]
   );
   await tx.wait();
   console.log("instantVRFActions.addStrategies");
@@ -864,7 +863,7 @@ async function main() {
   tx = await world.addBulkActionChoices(
     [fireMakingActionId, smithingActionId, cookingActionId, craftingActionId],
     [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking, allActionChoiceIdsCrafting],
-    [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking, allActionChoicesCrafting],
+    [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking, allActionChoicesCrafting]
   );
 
   await tx.wait();
@@ -874,7 +873,7 @@ async function main() {
   tx = await world.addBulkActionChoices(
     [fletchingActionId, alchemyActionId, forgingActionId],
     [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
-    [allActionChoicesFletching, allActionChoicesAlchemy, allActionChoicesForging],
+    [allActionChoicesFletching, allActionChoicesAlchemy, allActionChoicesForging]
   );
 
   await tx.wait();
@@ -883,7 +882,7 @@ async function main() {
   tx = await world.addBulkActionChoices(
     [genericCombatActionId, genericCombatActionId, genericCombatActionId],
     [allActionChoiceIdsMelee, allActionChoiceIdsRanged, allActionChoiceIdsMagic],
-    [allActionChoicesMelee, allActionChoicesRanged, allActionChoicesMagic],
+    [allActionChoicesMelee, allActionChoicesRanged, allActionChoicesMagic]
   );
 
   await tx.wait();
@@ -958,7 +957,7 @@ async function main() {
     EstforConstants.ANNIV1_EGG_TIER3,
     EstforConstants.ANNIV1_EGG_TIER4,
     EstforConstants.ANNIV1_EGG_TIER5,
-    EstforConstants.ANNIV1_KEY,
+    EstforConstants.ANNIV1_KEY
   ];
 
   // Only works if not trying to sell anything

@@ -107,7 +107,7 @@ describe("Shop", function () {
     ]);
 
     const sellingCutoffDuration = parseInt((await shop.SELLING_CUTOFF_DURATION()).toString());
-    const minItemQuantityBeforeSellsAllowed = await shop.minItemQuantityBeforeSellsAllowed();
+    const minItemQuantityBeforeSellsAllowed = await shop.getMinItemQuantityBeforeSellsAllowed();
 
     return {
       itemNFT,
@@ -123,14 +123,14 @@ describe("Shop", function () {
 
   it("Set up shop", async function () {
     const {shop} = await loadFixture(deployContracts);
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
 
     // Check that it's in the shop
     expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(500);
 
     // Update price
     await expect(
-      shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 400})
+      shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 400}])
     ).to.be.revertedWithCustomError(shop, "ShopItemAlreadyExists");
     await shop.editItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 400}]);
     expect(await shop.shopItems(EstforConstants.BRONZE_SHIELD)).to.eq(400);
@@ -189,7 +189,7 @@ describe("Shop", function () {
   it("Set up shop with items which don't exist", async function () {
     const {shop} = await loadFixture(deployContracts);
     await expect(
-      shop.addBuyableItem({tokenId: EstforConstants.TITANIUM_ARMOR, price: 500})
+      shop.addBuyableItems([{tokenId: EstforConstants.TITANIUM_ARMOR, price: 500}])
     ).to.be.revertedWithCustomError(shop, "ItemDoesNotExist");
     await expect(
       shop.addBuyableItems([{tokenId: EstforConstants.TITANIUM_ARMOR, price: 500}])
@@ -198,10 +198,9 @@ describe("Shop", function () {
 
   it("Set up shop with 0 prices is not allowed", async function () {
     const {shop} = await loadFixture(deployContracts);
-    await expect(shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 0})).to.be.revertedWithCustomError(
-      shop,
-      "PriceCannotBeZero"
-    );
+    await expect(
+      shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 0}])
+    ).to.be.revertedWithCustomError(shop, "PriceCannotBeZero");
     await expect(
       shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 0}])
     ).to.be.revertedWithCustomError(shop, "PriceCannotBeZero");
@@ -209,7 +208,7 @@ describe("Shop", function () {
 
   it("Buy", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
 
     const quantityBought = 2;
     // Hasn't approved brush yet
@@ -225,8 +224,8 @@ describe("Shop", function () {
 
   it("Buy batch", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
-    await shop.addBuyableItem({tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200});
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
+    await shop.addBuyableItems([{tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200}]);
 
     await brush.mint(alice.address, 900);
     await brush.connect(alice).approve(await shop.getAddress(), 900);
@@ -249,7 +248,7 @@ describe("Shop", function () {
 
   it("Gift", async function () {
     const {itemNFT, shop, brush, alice, bob} = await loadFixture(deployContracts);
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
 
     const quantityBought = 2;
     // Hasn't approved brush yet
@@ -265,8 +264,8 @@ describe("Shop", function () {
 
   it("Gift batch", async function () {
     const {itemNFT, shop, brush, alice, bob} = await loadFixture(deployContracts);
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 500});
-    await shop.addBuyableItem({tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200});
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
+    await shop.addBuyableItems([{tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200}]);
 
     await brush.mint(alice.address, 900);
     await brush.connect(alice).approve(await shop.getAddress(), 900);
@@ -426,7 +425,7 @@ describe("Shop", function () {
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
     expect(await itemNFT["totalSupply()"]()).to.eq(1);
 
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price: 1});
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 1}]);
 
     // Give the contract some brush to assign to the items
     const totalBrush = parseEther("1");
@@ -566,11 +565,11 @@ describe("Shop", function () {
   it("Remove shop item", async function () {
     const {shop} = await loadFixture(deployContracts);
     const price = 500;
-    await shop.addBuyableItem({tokenId: EstforConstants.BRONZE_SHIELD, price});
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price}]);
     expect(await shop.shopItems(BRONZE_SHIELD)).eq(price);
-    await shop.removeItem(BRONZE_SHIELD);
+    await shop.removeItems([BRONZE_SHIELD]);
     expect(await shop.shopItems(BRONZE_SHIELD)).eq(0);
-    await expect(shop.removeItem(BRONZE_SHIELD)).to.be.revertedWithCustomError(shop, "ShopItemDoesNotExist");
+    await expect(shop.removeItems([BRONZE_SHIELD])).to.be.revertedWithCustomError(shop, "ShopItemDoesNotExist");
   });
 
   describe("Unsellable items", async function () {

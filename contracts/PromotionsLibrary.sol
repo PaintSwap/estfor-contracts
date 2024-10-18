@@ -21,208 +21,177 @@ library PromotionsLibrary {
   error NoItemsToPickFrom();
 
   function addPromotion(
-    mapping(Promotion promotion => PromotionInfo) storage _activePromotions,
-    PromotionInfoInput calldata _promotionInfoInput
+    mapping(Promotion promotion => PromotionInfo) storage activePromotions,
+    PromotionInfoInput calldata promotionInfoInput
   ) external {
-    _checkAddingGenericPromotion(_promotionInfoInput);
-    if (_activePromotions[_promotionInfoInput.promotion].promotion != Promotion.NONE) {
+    _checkAddingGenericPromotion(promotionInfoInput);
+    if (activePromotions[promotionInfoInput.promotion].promotion != Promotion.NONE) {
       revert PromotionAlreadyAdded();
     }
 
-    if (_promotionInfoInput.isMultiday) {
-      _checkAddingMultidayMintPromotion(_promotionInfoInput);
+    if (promotionInfoInput.isMultiday) {
+      _checkAddingMultidayMintPromotion(promotionInfoInput);
     } else {
-      _checkAddingSinglePromotion(_promotionInfoInput);
+      _checkAddingSinglePromotion(promotionInfoInput);
     }
 
-    _activePromotions[_promotionInfoInput.promotion] = _packPromotionInfo(_promotionInfoInput);
+    activePromotions[promotionInfoInput.promotion] = _packPromotionInfo(promotionInfoInput);
   }
 
   function editPromotion(
-    mapping(Promotion promotion => PromotionInfo) storage _activePromotions,
-    PromotionInfoInput calldata _promotionInfoInput
+    mapping(Promotion promotion => PromotionInfo) storage activePromotions,
+    PromotionInfoInput calldata promotionInfoInput
   ) external {
-    _checkAddingGenericPromotion(_promotionInfoInput);
+    _checkAddingGenericPromotion(promotionInfoInput);
 
-    if (_promotionInfoInput.isMultiday) {
-      _checkAddingMultidayMintPromotion(_promotionInfoInput);
+    if (promotionInfoInput.isMultiday) {
+      _checkAddingMultidayMintPromotion(promotionInfoInput);
     } else {
-      _checkAddingSinglePromotion(_promotionInfoInput);
+      _checkAddingSinglePromotion(promotionInfoInput);
     }
 
-    _activePromotions[_promotionInfoInput.promotion] = _packPromotionInfo(_promotionInfoInput);
+    activePromotions[promotionInfoInput.promotion] = _packPromotionInfo(promotionInfoInput);
   }
 
-  function _checkAddingGenericPromotion(PromotionInfoInput calldata _promotionInfoInput) private pure {
-    if (_promotionInfoInput.guaranteedItemTokenIds.length != _promotionInfoInput.guaranteedAmounts.length) {
-      revert LengthMismatch();
-    }
-
-    if (_promotionInfoInput.promotion == Promotion.NONE) {
-      revert PromotionNotSet();
-    }
-
-    if (_promotionInfoInput.startTime > _promotionInfoInput.endTime) {
-      revert StartTimeMustBeHigherEndTime();
-    }
-
-    if (_promotionInfoInput.numDailyRandomItemsToPick == 0) {
-      revert NoNumItemsToPick();
-    }
-
-    if (_promotionInfoInput.numDailyRandomItemsToPick != 1) {
-      // TODO: Special handling for now, only allowing 1 item to be picked
-      revert InvalidPromotion();
-    }
-
+  function _checkAddingGenericPromotion(PromotionInfoInput calldata promotionInfoInput) private pure {
+    require(promotionInfoInput.randomItemTokenIds.length == promotionInfoInput.randomAmounts.length, LengthMismatch());
+    require(promotionInfoInput.promotion != Promotion.NONE, PromotionNotSet());
+    require(promotionInfoInput.startTime < promotionInfoInput.endTime, StartTimeMustBeHigherEndTime());
+    require(promotionInfoInput.numDailyRandomItemsToPick != 0, NoNumItemsToPick());
+    // TODO: Special handling for now, only allowing 1 item to be picked
+    require(promotionInfoInput.numDailyRandomItemsToPick == 1, InvalidPromotion());
     // Check brush input is valid
-    if (_promotionInfoInput.brushCost % 1 ether != 0) {
-      revert InvalidBrushCost();
-    }
-
+    require(promotionInfoInput.brushCost % 1 ether == 0, InvalidBrushCost());
     // start and endTime must be factors of 24 hours apart
-    if ((_promotionInfoInput.endTime - _promotionInfoInput.startTime) % 1 days != 0) {
-      revert InvalidMultidayPromotionTimeInterval();
-    }
+    require(
+      (promotionInfoInput.endTime - promotionInfoInput.startTime) % 1 days == 0,
+      InvalidMultidayPromotionTimeInterval()
+    );
   }
 
   // Precondition that the promotion is multiday
-  function _checkAddingMultidayMintPromotion(PromotionInfoInput calldata _promotionInfoInput) private pure {
-    bool hasStreakBonus = _promotionInfoInput.numDaysClaimablePeriodStreakBonus != 0;
+  function _checkAddingMultidayMintPromotion(PromotionInfoInput calldata promotionInfoInput) private pure {
+    bool hasStreakBonus = promotionInfoInput.numDaysClaimablePeriodStreakBonus != 0;
 
     if (hasStreakBonus) {
-      if (
-        _promotionInfoInput.numRandomStreakBonusItemsToPick1 == 0 ||
-        _promotionInfoInput.randomStreakBonusItemTokenIds1.length == 0 ||
-        _promotionInfoInput.numDaysHitNeededForStreakBonus == 0
-      ) {
-        revert InvalidStreakBonus();
-      }
-
+      require(
+        promotionInfoInput.numRandomStreakBonusItemsToPick1 != 0 &&
+          promotionInfoInput.randomStreakBonusItemTokenIds1.length != 0 &&
+          promotionInfoInput.numDaysHitNeededForStreakBonus != 0,
+        InvalidStreakBonus()
+      );
       // Cannot specify pool2 without pool 1
-      if (
-        _promotionInfoInput.numRandomStreakBonusItemsToPick1 == 0 &&
-        _promotionInfoInput.numRandomStreakBonusItemsToPick2 != 0
-      ) {
-        revert InvalidStreakBonus();
-      }
-
-      if (
-        _promotionInfoInput.numDaysHitNeededForStreakBonus >
-        ((_promotionInfoInput.endTime - _promotionInfoInput.startTime) / 1 days)
-      ) {
-        revert InvalidNumDaysHitNeededForStreakBonus();
-      }
-
-      if (
-        _promotionInfoInput.randomStreakBonusItemTokenIds1.length !=
-        _promotionInfoInput.randomStreakBonusAmounts1.length
-      ) {
-        revert LengthMismatch();
-      }
-
-      if (
-        _promotionInfoInput.randomStreakBonusItemTokenIds2.length !=
-        _promotionInfoInput.randomStreakBonusAmounts2.length
-      ) {
-        revert LengthMismatch();
-      }
-
-      if (
-        _promotionInfoInput.guaranteedStreakBonusItemTokenIds.length !=
-        _promotionInfoInput.guaranteedStreakBonusAmounts.length
-      ) {
-        revert LengthMismatch();
-      }
+      require(
+        promotionInfoInput.numRandomStreakBonusItemsToPick1 != 0 ||
+          promotionInfoInput.numRandomStreakBonusItemsToPick2 == 0,
+        InvalidStreakBonus()
+      );
+      require(
+        promotionInfoInput.numDaysHitNeededForStreakBonus <=
+          ((promotionInfoInput.endTime - promotionInfoInput.startTime) / 1 days),
+        InvalidNumDaysHitNeededForStreakBonus()
+      );
+      require(
+        promotionInfoInput.randomStreakBonusItemTokenIds1.length == promotionInfoInput.randomStreakBonusAmounts1.length,
+        LengthMismatch()
+      );
+      require(
+        promotionInfoInput.randomStreakBonusItemTokenIds2.length == promotionInfoInput.randomStreakBonusAmounts2.length,
+        LengthMismatch()
+      );
+      require(
+        promotionInfoInput.guaranteedStreakBonusItemTokenIds.length ==
+          promotionInfoInput.guaranteedStreakBonusAmounts.length,
+        LengthMismatch()
+      );
     } else {
       // No streak bonus
-      if (
-        _promotionInfoInput.randomStreakBonusItemTokenIds1.length != 0 ||
-        _promotionInfoInput.randomStreakBonusItemTokenIds2.length != 0 ||
-        _promotionInfoInput.numRandomStreakBonusItemsToPick1 != 0 ||
-        _promotionInfoInput.numRandomStreakBonusItemsToPick2 != 0 ||
-        _promotionInfoInput.numDaysHitNeededForStreakBonus != 0 ||
-        _promotionInfoInput.guaranteedStreakBonusItemTokenIds.length != 0 ||
-        _promotionInfoInput.guaranteedStreakBonusAmounts.length != 0
-      ) {
-        revert InvalidStreakBonus();
-      }
+      require(
+        promotionInfoInput.randomStreakBonusItemTokenIds1.length == 0 &&
+          promotionInfoInput.randomStreakBonusItemTokenIds2.length == 0 &&
+          promotionInfoInput.numRandomStreakBonusItemsToPick1 == 0 &&
+          promotionInfoInput.numRandomStreakBonusItemsToPick2 == 0 &&
+          promotionInfoInput.numDaysHitNeededForStreakBonus == 0 &&
+          promotionInfoInput.guaranteedStreakBonusItemTokenIds.length == 0 &&
+          promotionInfoInput.guaranteedStreakBonusAmounts.length == 0,
+        InvalidStreakBonus()
+      );
     }
 
     if (
-      _promotionInfoInput.numRandomStreakBonusItemsToPick1 > _promotionInfoInput.randomStreakBonusItemTokenIds1.length
+      promotionInfoInput.numRandomStreakBonusItemsToPick1 > promotionInfoInput.randomStreakBonusItemTokenIds1.length
     ) {
       revert PickingTooManyItems();
     }
     if (
-      _promotionInfoInput.numRandomStreakBonusItemsToPick2 > _promotionInfoInput.randomStreakBonusItemTokenIds2.length
+      promotionInfoInput.numRandomStreakBonusItemsToPick2 > promotionInfoInput.randomStreakBonusItemTokenIds2.length
     ) {
       revert PickingTooManyItems();
     }
 
     // Check brush input is valid
-    if (_promotionInfoInput.brushCostMissedDay % 1 ether != 0 || _promotionInfoInput.brushCostMissedDay > 25 ether) {
+    if (promotionInfoInput.brushCostMissedDay % 1 ether != 0 || promotionInfoInput.brushCostMissedDay > 25 ether) {
       revert InvalidBrushCost();
     }
   }
 
-  function _checkAddingSinglePromotion(PromotionInfoInput calldata _promotionInfoInput) private pure {
+  function _checkAddingSinglePromotion(PromotionInfoInput calldata promotionInfoInput) private pure {
     // Should not have any multi-day promotion specific fields set
     if (
-      _promotionInfoInput.numDaysHitNeededForStreakBonus != 0 ||
-      _promotionInfoInput.numDaysClaimablePeriodStreakBonus != 0 ||
-      _promotionInfoInput.numRandomStreakBonusItemsToPick1 != 0 ||
-      _promotionInfoInput.randomStreakBonusItemTokenIds1.length != 0 ||
-      _promotionInfoInput.randomStreakBonusAmounts1.length != 0 ||
-      _promotionInfoInput.numRandomStreakBonusItemsToPick2 != 0 ||
-      _promotionInfoInput.randomStreakBonusItemTokenIds2.length != 0 ||
-      _promotionInfoInput.randomStreakBonusAmounts2.length != 0
+      promotionInfoInput.numDaysHitNeededForStreakBonus != 0 ||
+      promotionInfoInput.numDaysClaimablePeriodStreakBonus != 0 ||
+      promotionInfoInput.numRandomStreakBonusItemsToPick1 != 0 ||
+      promotionInfoInput.randomStreakBonusItemTokenIds1.length != 0 ||
+      promotionInfoInput.randomStreakBonusAmounts1.length != 0 ||
+      promotionInfoInput.numRandomStreakBonusItemsToPick2 != 0 ||
+      promotionInfoInput.randomStreakBonusItemTokenIds2.length != 0 ||
+      promotionInfoInput.randomStreakBonusAmounts2.length != 0
     ) {
       revert MultidaySpecified();
     }
 
-    if (_promotionInfoInput.randomItemTokenIds.length == 0) {
+    if (promotionInfoInput.randomItemTokenIds.length == 0) {
       revert NoItemsToPickFrom();
     }
 
-    if (_promotionInfoInput.numDailyRandomItemsToPick > _promotionInfoInput.randomItemTokenIds.length) {
+    if (promotionInfoInput.numDailyRandomItemsToPick > promotionInfoInput.randomItemTokenIds.length) {
       revert PickingTooManyItems();
     }
   }
 
   function _packPromotionInfo(
-    PromotionInfoInput calldata _promotionInfoInput
+    PromotionInfoInput calldata promotionInfoInput
   ) private pure returns (PromotionInfo memory) {
     return
       PromotionInfo({
-        promotion: _promotionInfoInput.promotion,
-        startTime: _promotionInfoInput.startTime,
-        numDays: uint8((_promotionInfoInput.endTime - _promotionInfoInput.startTime) / 1 days),
-        numDailyRandomItemsToPick: _promotionInfoInput.numDailyRandomItemsToPick,
-        minTotalXP: _promotionInfoInput.minTotalXP,
-        evolvedHeroOnly: _promotionInfoInput.evolvedHeroOnly,
-        brushCost: uint24(_promotionInfoInput.brushCost / 1 ether),
-        redeemCodeLength: _promotionInfoInput.redeemCodeLength,
-        adminOnly: _promotionInfoInput.adminOnly,
-        promotionTiedToUser: _promotionInfoInput.promotionTiedToUser,
-        promotionTiedToPlayer: _promotionInfoInput.promotionTiedToPlayer,
-        promotionMustOwnPlayer: _promotionInfoInput.promotionMustOwnPlayer,
-        isMultiday: _promotionInfoInput.isMultiday,
-        brushCostMissedDay: uint8((_promotionInfoInput.brushCostMissedDay * BRUSH_COST_MISSED_DAY_MUL) / 1 ether),
-        numDaysHitNeededForStreakBonus: _promotionInfoInput.numDaysHitNeededForStreakBonus,
-        numDaysClaimablePeriodStreakBonus: _promotionInfoInput.numDaysClaimablePeriodStreakBonus,
-        numRandomStreakBonusItemsToPick1: _promotionInfoInput.numRandomStreakBonusItemsToPick1,
-        randomStreakBonusItemTokenIds1: _promotionInfoInput.randomStreakBonusItemTokenIds1,
-        randomStreakBonusAmounts1: _promotionInfoInput.randomStreakBonusAmounts1,
-        numRandomStreakBonusItemsToPick2: _promotionInfoInput.numRandomStreakBonusItemsToPick2,
-        randomStreakBonusItemTokenIds2: _promotionInfoInput.randomStreakBonusItemTokenIds2,
-        randomStreakBonusAmounts2: _promotionInfoInput.randomStreakBonusAmounts2,
-        guaranteedStreakBonusItemTokenIds: _promotionInfoInput.guaranteedStreakBonusItemTokenIds,
-        guaranteedStreakBonusAmounts: _promotionInfoInput.guaranteedStreakBonusAmounts,
-        guaranteedItemTokenIds: _promotionInfoInput.guaranteedItemTokenIds,
-        guaranteedAmounts: _promotionInfoInput.guaranteedAmounts,
-        randomItemTokenIds: _promotionInfoInput.randomItemTokenIds,
-        randomAmounts: _promotionInfoInput.randomAmounts
+        promotion: promotionInfoInput.promotion,
+        startTime: promotionInfoInput.startTime,
+        numDays: uint8((promotionInfoInput.endTime - promotionInfoInput.startTime) / 1 days),
+        numDailyRandomItemsToPick: promotionInfoInput.numDailyRandomItemsToPick,
+        minTotalXP: promotionInfoInput.minTotalXP,
+        evolvedHeroOnly: promotionInfoInput.evolvedHeroOnly,
+        brushCost: uint24(promotionInfoInput.brushCost / 1 ether),
+        redeemCodeLength: promotionInfoInput.redeemCodeLength,
+        adminOnly: promotionInfoInput.adminOnly,
+        promotionTiedToUser: promotionInfoInput.promotionTiedToUser,
+        promotionTiedToPlayer: promotionInfoInput.promotionTiedToPlayer,
+        promotionMustOwnPlayer: promotionInfoInput.promotionMustOwnPlayer,
+        isMultiday: promotionInfoInput.isMultiday,
+        brushCostMissedDay: uint8((promotionInfoInput.brushCostMissedDay * BRUSH_COST_MISSED_DAY_MUL) / 1 ether),
+        numDaysHitNeededForStreakBonus: promotionInfoInput.numDaysHitNeededForStreakBonus,
+        numDaysClaimablePeriodStreakBonus: promotionInfoInput.numDaysClaimablePeriodStreakBonus,
+        numRandomStreakBonusItemsToPick1: promotionInfoInput.numRandomStreakBonusItemsToPick1,
+        randomStreakBonusItemTokenIds1: promotionInfoInput.randomStreakBonusItemTokenIds1,
+        randomStreakBonusAmounts1: promotionInfoInput.randomStreakBonusAmounts1,
+        numRandomStreakBonusItemsToPick2: promotionInfoInput.numRandomStreakBonusItemsToPick2,
+        randomStreakBonusItemTokenIds2: promotionInfoInput.randomStreakBonusItemTokenIds2,
+        randomStreakBonusAmounts2: promotionInfoInput.randomStreakBonusAmounts2,
+        guaranteedStreakBonusItemTokenIds: promotionInfoInput.guaranteedStreakBonusItemTokenIds,
+        guaranteedStreakBonusAmounts: promotionInfoInput.guaranteedStreakBonusAmounts,
+        guaranteedItemTokenIds: promotionInfoInput.guaranteedItemTokenIds,
+        guaranteedAmounts: promotionInfoInput.guaranteedAmounts,
+        randomItemTokenIds: promotionInfoInput.randomItemTokenIds,
+        randomAmounts: promotionInfoInput.randomAmounts
       });
   }
 }

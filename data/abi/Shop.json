@@ -221,31 +221,6 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct Shop.ShopItem",
-        "name": "shopItem",
-        "type": "tuple"
-      }
-    ],
-    "name": "AddShopItem",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint16",
-            "name": "tokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint128",
-            "name": "price",
-            "type": "uint128"
-          }
-        ],
-        "indexed": false,
         "internalType": "struct Shop.ShopItem[]",
         "name": "shopItems",
         "type": "tuple[]"
@@ -454,12 +429,12 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint16",
+        "internalType": "uint16[]",
         "name": "tokenId",
-        "type": "uint16"
+        "type": "uint16[]"
       }
     ],
-    "name": "RemoveShopItem",
+    "name": "RemoveShopItems",
     "type": "event"
   },
   {
@@ -591,33 +566,8 @@
             "type": "uint128"
           }
         ],
-        "internalType": "struct Shop.ShopItem",
-        "name": "_shopItem",
-        "type": "tuple"
-      }
-    ],
-    "name": "addBuyableItem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint16",
-            "name": "tokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint128",
-            "name": "price",
-            "type": "uint128"
-          }
-        ],
         "internalType": "struct Shop.ShopItem[]",
-        "name": "_shopItems",
+        "name": "buyableItems",
         "type": "tuple[]"
       }
     ],
@@ -640,33 +590,20 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "brush",
-    "outputs": [
-      {
-        "internalType": "contract IBrushToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint16",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint16"
       },
       {
         "internalType": "uint256",
-        "name": "_quantity",
+        "name": "quantity",
         "type": "uint256"
       }
     ],
@@ -679,36 +616,23 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_quantities",
+        "name": "quantities",
         "type": "uint256[]"
       }
     ],
     "name": "buyBatch",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "dev",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -727,7 +651,7 @@
           }
         ],
         "internalType": "struct Shop.ShopItem[]",
-        "name": "_shopItems",
+        "name": "itemsToEdit",
         "type": "tuple[]"
       }
     ],
@@ -737,15 +661,28 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getMinItemQuantityBeforeSellsAllowed",
+    "outputs": [
+      {
+        "internalType": "uint24",
+        "name": "",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_dev",
+        "name": "dev",
         "type": "address"
       }
     ],
@@ -755,23 +692,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "itemNFT",
-    "outputs": [
-      {
-        "internalType": "contract IItemNFT",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint16"
       }
     ],
@@ -790,7 +714,7 @@
     "inputs": [
       {
         "internalType": "uint16[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint16[]"
       }
     ],
@@ -800,19 +724,6 @@
         "internalType": "uint256[]",
         "name": "prices",
         "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "minItemQuantityBeforeSellsAllowed",
-    "outputs": [
-      {
-        "internalType": "uint24",
-        "name": "",
-        "type": "uint24"
       }
     ],
     "stateMutability": "view",
@@ -847,12 +758,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
-        "name": "_tokenId",
-        "type": "uint16"
+        "internalType": "uint16[]",
+        "name": "tokenIds",
+        "type": "uint16[]"
       }
     ],
-    "name": "removeItem",
+    "name": "removeItems",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -881,17 +792,17 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint16"
       },
       {
         "internalType": "uint256",
-        "name": "_quantity",
+        "name": "quantity",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_minExpectedBrush",
+        "name": "minExpectedBrush",
         "type": "uint256"
       }
     ],
@@ -904,17 +815,17 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_tokenIds",
+        "name": "tokenIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_quantities",
+        "name": "quantities",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256",
-        "name": "_minExpectedBrush",
+        "name": "minExpectedBrush",
         "type": "uint256"
       }
     ],
@@ -927,7 +838,7 @@
     "inputs": [
       {
         "internalType": "contract IItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       }
     ],
@@ -940,7 +851,7 @@
     "inputs": [
       {
         "internalType": "uint24",
-        "name": "_minItemQuantityBeforeSellsAllowed",
+        "name": "minItemQuantityBeforeSellsAllowed",
         "type": "uint24"
       }
     ],
@@ -952,9 +863,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "itemId",
-        "type": "uint256"
+        "internalType": "uint16",
+        "name": "tokenId",
+        "type": "uint16"
       }
     ],
     "name": "shopItems",
@@ -971,32 +882,39 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint16",
         "name": "tokenId",
-        "type": "uint256"
+        "type": "uint16"
       }
     ],
     "name": "tokenInfos",
     "outputs": [
       {
-        "internalType": "uint80",
-        "name": "allocationRemaining",
-        "type": "uint80"
-      },
-      {
-        "internalType": "uint80",
-        "name": "price",
-        "type": "uint80"
-      },
-      {
-        "internalType": "uint40",
-        "name": "checkpointTimestamp",
-        "type": "uint40"
-      },
-      {
-        "internalType": "bool",
-        "name": "unsellable",
-        "type": "bool"
+        "components": [
+          {
+            "internalType": "uint80",
+            "name": "allocationRemaining",
+            "type": "uint80"
+          },
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          },
+          {
+            "internalType": "uint40",
+            "name": "checkpointTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "bool",
+            "name": "unsellable",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct Shop.TokenInfo",
+        "name": "tokenInfo",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

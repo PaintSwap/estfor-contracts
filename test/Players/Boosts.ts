@@ -602,7 +602,7 @@ describe("Boosts", function () {
     await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
 
     const clanId = 1;
-    const clanDonationInfo = await wishingWell.clanDonationInfo(clanId);
+    const clanDonationInfo = await wishingWell.getClanDonationInfo(clanId);
     expect(clanDonationInfo.totalDonated).to.be.eq(0);
     expect(clanDonationInfo.lastThreshold).to.be.eq(0);
 

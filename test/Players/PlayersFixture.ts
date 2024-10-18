@@ -188,8 +188,7 @@ export const playersFixture = async function () {
       await clans.getAddress(),
       parseEther("5"),
       parseEther("1000"),
-      parseEther("250"),
-      isBeta
+      parseEther("250")
     ],
     {
       kind: "uups"

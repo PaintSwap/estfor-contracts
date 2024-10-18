@@ -11,10 +11,10 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
 
   uint256 constant GAS_PRICE_WINDOW_SIZE = 4;
 
-  uint8 private indexGasPrice;
-  uint64 private movingAverageGasPrice;
-  uint88 private baseRequestCost;
-  uint64[GAS_PRICE_WINDOW_SIZE] private prices;
+  uint8 private _indexGasPrice;
+  uint64 private _movingAverageGasPrice;
+  uint88 private _baseRequestCost;
+  uint64[GAS_PRICE_WINDOW_SIZE] private _prices;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -28,34 +28,34 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
     setBaseAttackCost(0.01 ether);
     _updateMovingAverageGasPrice(uint64(tx.gasprice));
     for (uint256 i; i < GAS_PRICE_WINDOW_SIZE; ++i) {
-      prices[i] = uint64(tx.gasprice);
+      _prices[i] = uint64(tx.gasprice);
     }
   }
 
   function get() external view returns (uint64, uint88) {
-    return (movingAverageGasPrice, baseRequestCost);
+    return (_movingAverageGasPrice, _baseRequestCost);
   }
 
   function updateAverageGasPrice() external {
-    uint256 sum = 0;
-    prices[indexGasPrice] = uint64(tx.gasprice);
-    indexGasPrice = uint8((indexGasPrice + 1) % GAS_PRICE_WINDOW_SIZE);
+    uint256 _sum = 0;
+    _prices[_indexGasPrice] = uint64(tx.gasprice);
+    _indexGasPrice = uint8((_indexGasPrice + 1) % GAS_PRICE_WINDOW_SIZE);
 
     for (uint256 i = 0; i < GAS_PRICE_WINDOW_SIZE; ++i) {
-      sum += prices[i];
+      _sum += _prices[i];
     }
 
-    _updateMovingAverageGasPrice(uint64(sum / GAS_PRICE_WINDOW_SIZE));
+    _updateMovingAverageGasPrice(uint64(_sum / GAS_PRICE_WINDOW_SIZE));
   }
 
-  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
-    movingAverageGasPrice = _movingAverageGasPrice;
-    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
+  function _updateMovingAverageGasPrice(uint64 movingAverageGasPrice) private {
+    _movingAverageGasPrice = movingAverageGasPrice;
+    emit UpdateMovingAverageGasPrice(movingAverageGasPrice);
   }
 
-  function setBaseAttackCost(uint256 _baseRequestCost) public onlyOwner {
-    baseRequestCost = uint88(_baseRequestCost);
-    emit SetBaseRequestCost(_baseRequestCost);
+  function setBaseAttackCost(uint256 baseRequestCost) public onlyOwner {
+    _baseRequestCost = uint88(baseRequestCost);
+    emit SetBaseRequestCost(baseRequestCost);
   }
 
   // solhint-disable-next-line no-empty-blocks

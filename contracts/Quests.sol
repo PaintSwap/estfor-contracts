@@ -69,41 +69,41 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     uint32 numFixedQuestsCompleted;
   }
 
-  address private world;
-  IPlayers private players;
-  uint40 public randomQuestId;
-  uint16 public numTotalQuests;
-  mapping(uint256 questId => Quest quest) public allFixedQuests;
-  mapping(uint256 playerId => BitMaps.BitMap) private questsCompleted;
-  mapping(uint256 playerId => PlayerQuest playerQuest) public activeQuests;
-  mapping(uint256 playerId => PlayerQuest playerQuest) public inProgressRandomQuests;
-  mapping(uint256 playerId => mapping(uint256 queueId => PlayerQuest quest)) public inProgressFixedQuests; // Only puts it here if changing active quest for something else
-  mapping(uint256 questId => MinimumRequirement[3]) minimumRequirements; // Not checked yet
-  BitMaps.BitMap private questIsRandom;
-  mapping(uint256 playerId => PlayerQuestInfo) public playerInfo;
-  Quest[] private randomQuests;
-  Quest private previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
-  Quest private randomQuest; // Same for everyone
-  IRouterV2 private router;
-  address private buyPath1; // For buying brush
-  address private buyPath2;
+  address private _world;
+  IPlayers private _players;
+  uint40 private _randomQuestId;
+  uint16 private _numTotalQuests;
+  mapping(uint256 questId => Quest quest) private _allFixedQuests;
+  mapping(uint256 playerId => BitMaps.BitMap) private _questsCompleted;
+  mapping(uint256 playerId => PlayerQuest playerQuest) private _activeQuests;
+  mapping(uint256 playerId => PlayerQuest playerQuest) private _inProgressRandomQuests;
+  mapping(uint256 playerId => mapping(uint256 queueId => PlayerQuest quest)) private _inProgressFixedQuests; // Only puts it here if changing active quest for something else
+  mapping(uint256 questId => MinimumRequirement[3]) _minimumRequirements; // Not checked yet
+  BitMaps.BitMap private _questIsRandom;
+  mapping(uint256 playerId => PlayerQuestInfo) private _playerInfo;
+  Quest[] private _randomQuests;
+  Quest private _previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
+  Quest private _randomQuest; // Same for everyone
+  IRouterV2 private _router;
+  address private _buyPath1; // For buying brush
+  address private _buyPath2;
 
   modifier onlyWorld() {
-    if (msg.sender != world) {
+    if (msg.sender != _world) {
       revert NotWorld();
     }
     _;
   }
 
   modifier onlyPlayers() {
-    if (msg.sender != address(players)) {
+    if (msg.sender != address(_players)) {
       revert NotPlayers();
     }
     _;
   }
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    if (!_players.isOwnerOfPlayerAndActive(msg.sender, playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
@@ -114,206 +114,208 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     _disableInitializers();
   }
 
-  function initialize(address _world, IRouterV2 _router, address[2] calldata _buyPath) external initializer {
+  function initialize(address world, IRouterV2 router, address[2] calldata buyPath) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    world = _world;
-    router = _router;
-    buyPath1 = _buyPath[0];
-    buyPath2 = _buyPath[1];
+    _world = world;
+    _router = router;
+    _buyPath1 = buyPath[0];
+    _buyPath2 = buyPath[1];
 
-    IERC20(buyPath2).approve(address(_router), type(uint256).max);
+    IERC20(buyPath[1]).approve(address(router), type(uint256).max);
   }
 
-  function activateQuest(address _from, uint256 _playerId, uint256 _questId) external onlyPlayers {
-    if (_questId == 0) {
+  function allFixedQuests(uint256 questId) external view returns (Quest memory) {
+    return _allFixedQuests[questId];
+  }
+
+  function activeQuests(uint256 playerId) external view returns (PlayerQuest memory) {
+    return _activeQuests[playerId];
+  }
+
+  function activateQuest(address from, uint256 playerId, uint256 questId) external onlyPlayers {
+    if (questId == 0) {
       revert InvalidQuestId();
     }
-    if (!_questExists(_questId)) {
+    if (!_questExists(questId)) {
       revert QuestDoesntExist();
     }
-    if (questsCompleted[_playerId].get(_questId)) {
+    if (_questsCompleted[playerId].get(questId)) {
       revert QuestCompletedAlready();
     }
 
-    Quest storage quest = allFixedQuests[_questId];
+    Quest storage quest = _allFixedQuests[questId];
     if (quest.dependentQuestId != 0) {
-      if (!questsCompleted[_playerId].get(quest.dependentQuestId)) {
+      if (!_questsCompleted[playerId].get(quest.dependentQuestId)) {
         revert DependentQuestNotCompleted(quest.dependentQuestId);
       }
     }
 
-    if (_isQuestPackedDataFullMode(quest.packedData) && !players.isPlayerUpgraded(_playerId)) {
+    if (_isQuestPackedDataFullMode(quest.packedData) && !_players.isPlayerUpgraded(playerId)) {
       revert CannotStartFullModeQuest();
     }
 
-    for (uint256 i = 0; i < minimumRequirements[_questId].length; ++i) {
-      MinimumRequirement storage minimumRequirement = minimumRequirements[_questId][i];
+    for (uint256 i = 0; i < _minimumRequirements[questId].length; ++i) {
+      MinimumRequirement storage minimumRequirement = _minimumRequirements[questId][i];
       if (minimumRequirement.skill != Skill.NONE) {
-        uint256 xp = players.xp(_playerId, minimumRequirement.skill);
+        uint256 xp = _players.xp(playerId, minimumRequirement.skill);
         if (xp < minimumRequirement.xp) {
           revert InvalidMinimumRequirement();
         }
       }
     }
 
-    uint256 existingActiveQuestId = activeQuests[_playerId].questId;
-    if (existingActiveQuestId == _questId) {
+    uint256 existingActiveQuestId = _activeQuests[playerId].questId;
+    if (existingActiveQuestId == questId) {
       revert ActivatingQuestAlreadyActivated();
     }
 
     if (existingActiveQuestId != 0) {
       // Another quest was activated
-      emit DeactivateQuest(_playerId, existingActiveQuestId);
-      inProgressFixedQuests[_playerId][existingActiveQuestId] = activeQuests[_playerId];
+      emit DeactivateQuest(playerId, existingActiveQuestId);
+      _inProgressFixedQuests[playerId][existingActiveQuestId] = _activeQuests[playerId];
     }
 
-    if (inProgressFixedQuests[_playerId][_questId].questId != 0) {
+    if (_inProgressFixedQuests[playerId][questId].questId != 0) {
       // If the quest is already in progress, just activate it
-      activeQuests[_playerId] = inProgressFixedQuests[_playerId][_questId];
+      _activeQuests[playerId] = _inProgressFixedQuests[playerId][questId];
     } else {
       // Start fresh quest
       PlayerQuest memory playerQuest;
-      playerQuest.questId = uint32(_questId);
+      playerQuest.questId = uint32(questId);
       playerQuest.isFixed = true;
-      activeQuests[_playerId] = playerQuest;
+      _activeQuests[playerId] = playerQuest;
     }
-    emit ActivateQuest(_from, _playerId, _questId);
+    emit ActivateQuest(from, playerId, questId);
   }
 
-  function deactivateQuest(uint256 _playerId) external onlyPlayers {
-    PlayerQuest storage playerQuest = activeQuests[_playerId];
+  function deactivateQuest(uint256 playerId) external onlyPlayers {
+    PlayerQuest storage playerQuest = _activeQuests[playerId];
     uint256 questId = playerQuest.questId;
     if (questId == 0) {
       revert NoActiveQuest();
     }
 
     // Move it to in progress
-    inProgressFixedQuests[_playerId][activeQuests[_playerId].questId] = activeQuests[_playerId];
-    delete activeQuests[_playerId];
+    _inProgressFixedQuests[playerId][_activeQuests[playerId].questId] = _activeQuests[playerId];
+    delete _activeQuests[playerId];
 
-    emit DeactivateQuest(_playerId, questId);
+    emit DeactivateQuest(playerId, questId);
   }
 
-  function newOracleRandomWords(uint256 _randomWord) external override onlyWorld {
+  function newOracleRandomWords(uint256 randomWord) external override onlyWorld {
     // For later
   }
 
   function processQuests(
-    address _from,
-    uint256 _playerId,
-    PlayerQuest[] calldata _activeQuestInfo,
-    uint256[] memory _questsCompleted
+    address from,
+    uint256 playerId,
+    PlayerQuest[] calldata activeQuestInfo,
+    uint256[] memory questsCompleted
   ) external onlyPlayers {
-    if (_questsCompleted.length != 0) {
-      U256 bounds = _questsCompleted.length.asU256();
+    if (questsCompleted.length != 0) {
+      U256 bounds = questsCompleted.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        uint256 questId = _questsCompleted[i];
-        _questCompleted(_from, _playerId, questId);
+        uint256 questId = questsCompleted[i];
+        _questCompleted(from, playerId, questId);
       }
-    } else if (_activeQuestInfo.length != 0) {
-      PlayerQuest storage activeQuest = activeQuests[_playerId];
+    } else if (activeQuestInfo.length != 0) {
+      PlayerQuest storage activeQuest = _activeQuests[playerId];
       // Only handling 1 active quest at a time currently
-      PlayerQuest calldata activeQuestInfo = _activeQuestInfo[0];
-      bool hasQuestProgress = activeQuestInfo.actionCompletedNum1 != activeQuest.actionCompletedNum1 ||
-        activeQuestInfo.actionChoiceCompletedNum != activeQuest.actionChoiceCompletedNum ||
-        activeQuestInfo.burnCompletedAmount != activeQuest.burnCompletedAmount;
+      PlayerQuest calldata activeQuestInfo0 = activeQuestInfo[0];
+      bool hasQuestProgress = activeQuestInfo0.actionCompletedNum1 != activeQuest.actionCompletedNum1 ||
+        activeQuestInfo0.actionChoiceCompletedNum != activeQuest.actionChoiceCompletedNum ||
+        activeQuestInfo0.burnCompletedAmount != activeQuest.burnCompletedAmount;
 
       if (hasQuestProgress) {
-        activeQuests[_playerId] = activeQuestInfo;
-        emit UpdateQuestProgress(_playerId, activeQuestInfo);
+        _activeQuests[playerId] = activeQuestInfo0;
+        emit UpdateQuestProgress(playerId, activeQuestInfo0);
       }
     }
   }
 
   function buyBrushQuest(
-    address _from,
-    address _to,
-    uint256 _playerId,
-    uint256 _minimumBrushBack,
-    bool _useExactETH
+    address from,
+    address to,
+    uint256 playerId,
+    uint256 minimumBrushBack,
+    bool useExactETH
   ) external payable onlyPlayers returns (bool success) {
-    PlayerQuest storage playerQuest = activeQuests[_playerId];
+    PlayerQuest storage playerQuest = _activeQuests[playerId];
     if (playerQuest.questId != QUEST_PURSE_STRINGS) {
       revert InvalidActiveQuest();
     }
-    uint256[] memory amounts = buyBrush(_to, _minimumBrushBack, _useExactETH);
+    uint256[] memory amounts = buyBrush(to, minimumBrushBack, useExactETH);
     if (amounts[0] != 0) {
       // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
-      (success, ) = _from.call{value: msg.value - amounts[0]}("");
+      (success, ) = from.call{value: msg.value - amounts[0]}("");
       if (!success) {
         revert RefundFailed();
       }
     }
-    _questCompleted(_from, _playerId, playerQuest.questId);
+    _questCompleted(from, playerId, playerQuest.questId);
     success = true;
   }
 
   function buyBrush(
-    address _to,
-    uint256 _minimumBrushExpected,
-    bool _useExactETH
+    address to,
+    uint256 minimumBrushExpected,
+    bool useExactETH
   ) public payable returns (uint256[] memory amounts) {
-    if (msg.value == 0) {
-      revert InvalidFTMAmount();
-    }
+    require(msg.value != 0, InvalidFTMAmount());
 
     uint256 deadline = block.timestamp.add(10 minutes);
     // Buy brush and send it back to the user
     address[] memory buyPath = new address[](2);
-    buyPath[0] = buyPath1;
-    buyPath[1] = buyPath2;
+    buyPath[0] = _buyPath1;
+    buyPath[1] = _buyPath2;
 
-    if (_useExactETH) {
-      uint256 amountOutMin = _minimumBrushExpected;
-      amounts = router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, _to, deadline);
+    if (useExactETH) {
+      uint256 amountOutMin = minimumBrushExpected;
+      amounts = _router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, to, deadline);
     } else {
-      uint256 amountOut = _minimumBrushExpected;
-      amounts = router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, _to, deadline);
-      if (amounts[0] != 0 && msg.sender != address(players)) {
+      uint256 amountOut = minimumBrushExpected;
+      amounts = _router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, to, deadline);
+      if (amounts[0] != 0 && msg.sender != address(_players)) {
         // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
         (bool success, ) = msg.sender.call{value: msg.value - amounts[0]}("");
-        if (!success) {
-          revert RefundFailed();
-        }
+        require(success, RefundFailed());
       }
     }
   }
 
   // This doesn't really belong here, just for consistency
-  function sellBrush(address _to, uint256 _brushAmount, uint256 _minFTM, bool _useExactETH) external {
-    if (_brushAmount == 0) {
-      revert InvalidBrushAmount();
-    }
+  function sellBrush(address to, uint256 brushAmount, uint256 minFTM, bool useExactETH) external {
+    require(brushAmount != 0, InvalidBrushAmount());
 
     uint256 deadline = block.timestamp.add(10 minutes);
     // Sell brush and send ftm back to the user
     address[] memory sellPath = new address[](2);
-    sellPath[0] = buyPath2;
-    sellPath[1] = buyPath1;
+    sellPath[0] = _buyPath2;
+    sellPath[1] = _buyPath1;
 
-    IERC20(buyPath2).transferFrom(msg.sender, address(this), _brushAmount);
+    IERC20(_buyPath2).transferFrom(msg.sender, address(this), brushAmount);
 
-    if (_useExactETH) {
-      uint256 amountOut = _minFTM;
-      uint256 amountInMax = _brushAmount;
-      router.swapTokensForExactETH(amountOut, amountInMax, sellPath, _to, deadline);
+    if (useExactETH) {
+      uint256 amountOut = minFTM;
+      uint256 amountInMax = brushAmount;
+      _router.swapTokensForExactETH(amountOut, amountInMax, sellPath, to, deadline);
     } else {
-      uint256 amountIn = _brushAmount;
-      uint256 amountOutMin = _minFTM;
-      router.swapExactTokensForETH(amountIn, amountOutMin, sellPath, _to, deadline);
+      uint256 amountIn = brushAmount;
+      uint256 amountOutMin = minFTM;
+      _router.swapExactTokensForETH(amountIn, amountOutMin, sellPath, to, deadline);
     }
   }
 
   function processQuestsView(
-    uint256 _playerId,
-    uint256[] calldata _actionIds,
-    uint256[] calldata _actionAmounts,
-    uint256[] calldata _choiceIds,
-    uint256[] calldata _choiceAmounts,
-    uint256 _burnedAmountOwned
+    uint256 playerId,
+    uint256[] calldata actionIds,
+    uint256[] calldata actionAmounts,
+    uint256[] calldata choiceIds,
+    uint256[] calldata choiceAmounts,
+    uint256 burnedAmountOwned
   )
     external
     view
@@ -324,12 +326,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       uint256[] memory amountsBurned,
       Skill[] memory skillsGained,
       uint32[] memory xpGained,
-      uint256[] memory _questsCompleted,
+      uint256[] memory questsCompleted,
       PlayerQuest[] memory activeQuestsCompletionInfo
     )
   {
     // Handle active quest
-    PlayerQuest memory questCompletionInfo = activeQuests[_playerId];
+    PlayerQuest memory questCompletionInfo = _activeQuests[playerId];
     if (questCompletionInfo.questId != 0) {
       activeQuestsCompletionInfo = new PlayerQuest[](2);
       itemTokenIds = new uint256[](2 * MAX_QUEST_REWARDS);
@@ -338,7 +340,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       amountsBurned = new uint256[](2);
       skillsGained = new Skill[](2);
       xpGained = new uint32[](2);
-      _questsCompleted = new uint256[](2);
+      questsCompleted = new uint256[](2);
       uint256 itemTokenIdsLength;
       uint256 itemTokenIdsBurnedLength;
       uint256 skillsGainedLength;
@@ -346,32 +348,25 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       uint256 activeQuestsLength;
 
       (
-        uint256[] memory _itemTokenIds,
-        uint256[] memory _amounts,
+        uint256[] memory itemTokenIds_,
+        uint256[] memory amounts_,
         uint256 itemTokenIdBurned,
         uint256 amountBurned,
         Skill skillGained,
         uint32 xp,
         bool questCompleted
-      ) = _processQuestView(
-          _actionIds,
-          _actionAmounts,
-          _choiceIds,
-          _choiceAmounts,
-          questCompletionInfo,
-          _burnedAmountOwned
-        );
+      ) = _processQuestView(actionIds, actionAmounts, choiceIds, choiceAmounts, questCompletionInfo, burnedAmountOwned);
 
-      U256 bounds = _itemTokenIds.length.asU256();
+      U256 bounds = itemTokenIds_.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        itemTokenIds[itemTokenIdsLength] = _itemTokenIds[i];
-        amounts[itemTokenIdsLength] = _amounts[i];
+        itemTokenIds[itemTokenIdsLength] = itemTokenIds_[i];
+        amounts[itemTokenIdsLength] = amounts_[i];
         itemTokenIdsLength = itemTokenIdsLength.inc();
       }
 
       if (questCompleted) {
-        _questsCompleted[questsCompletedLength++] = questCompletionInfo.questId;
+        questsCompleted[questsCompletedLength++] = questCompletionInfo.questId;
       } else {
         activeQuestsCompletionInfo[activeQuestsLength++] = questCompletionInfo;
       }
@@ -391,58 +386,58 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         mstore(amountsBurned, itemTokenIdsBurnedLength)
         mstore(skillsGained, skillsGainedLength)
         mstore(xpGained, skillsGainedLength)
-        mstore(_questsCompleted, questsCompletedLength)
+        mstore(questsCompleted, questsCompletedLength)
         mstore(activeQuestsCompletionInfo, activeQuestsLength)
       }
     }
   }
 
-  function isQuestCompleted(uint256 _playerId, uint256 _questId) external view returns (bool) {
-    return questsCompleted[_playerId].get(_questId);
+  function isQuestCompleted(uint256 playerId, uint256 questId) external view returns (bool) {
+    return _questsCompleted[playerId].get(questId);
   }
 
-  function getActiveQuestId(uint256 _player) external view returns (uint256) {
-    return activeQuests[_player].questId;
+  function getActiveQuestId(uint256 playerId) external view returns (uint256) {
+    return _activeQuests[playerId].questId;
   }
 
-  function getActiveQuestBurnedItemTokenId(uint256 _playerId) external view returns (uint256) {
-    uint256 questId = activeQuests[_playerId].questId;
+  function getActiveQuestBurnedItemTokenId(uint256 playerId) external view returns (uint256) {
+    uint256 questId = _activeQuests[playerId].questId;
     if (questId == 0) {
       return NONE;
     }
 
-    return allFixedQuests[questId].burnItemTokenId;
+    return _allFixedQuests[questId].burnItemTokenId;
   }
 
-  function _questCompleted(address _from, uint256 _playerId, uint256 _questId) private {
-    emit QuestCompleted(_from, _playerId, _questId);
-    questsCompleted[_playerId].set(_questId);
-    delete activeQuests[_playerId];
-    ++playerInfo[_playerId].numFixedQuestsCompleted;
+  function _questCompleted(address from, uint256 playerId, uint256 questId) private {
+    emit QuestCompleted(from, playerId, questId);
+    _questsCompleted[playerId].set(questId);
+    delete _activeQuests[playerId];
+    ++_playerInfo[playerId].numFixedQuestsCompleted;
   }
 
   function _addToBurn(
-    Quest storage _quest,
-    PlayerQuest memory _playerQuest,
-    uint256 _burnedAmountOwned
+    Quest storage quest,
+    PlayerQuest memory playerQuest,
+    uint256 burnedAmountOwned
   ) private view returns (uint256 amountBurned) {
     // Handle quest that burns and requires actions to be done at the same time
-    uint256 burnRemainingAmount = _quest.burnAmount > _playerQuest.burnCompletedAmount
-      ? _quest.burnAmount - _playerQuest.burnCompletedAmount
+    uint256 burnRemainingAmount = quest.burnAmount > playerQuest.burnCompletedAmount
+      ? quest.burnAmount - playerQuest.burnCompletedAmount
       : 0;
-    amountBurned = Math.min(burnRemainingAmount, _burnedAmountOwned);
+    amountBurned = Math.min(burnRemainingAmount, burnedAmountOwned);
     if (amountBurned != 0) {
-      _playerQuest.burnCompletedAmount += uint16(amountBurned);
+      playerQuest.burnCompletedAmount += uint16(amountBurned);
     }
   }
 
   function _processQuestView(
-    uint256[] calldata _actionIds,
-    uint256[] calldata _actionAmounts,
-    uint256[] calldata _choiceIds,
-    uint256[] calldata _choiceAmounts,
-    PlayerQuest memory _playerQuest,
-    uint256 _burnedAmountOwned
+    uint256[] calldata actionIds,
+    uint256[] calldata actionAmounts,
+    uint256[] calldata choiceIds,
+    uint256[] calldata choiceAmounts,
+    PlayerQuest memory playerQuest,
+    uint256 burnedAmountOwned
   )
     private
     view
@@ -456,58 +451,58 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       bool questCompleted
     )
   {
-    Quest storage quest = allFixedQuests[_playerQuest.questId];
-    U256 bounds = _actionIds.length.asU256();
+    Quest storage quest = _allFixedQuests[playerQuest.questId];
+    U256 bounds = actionIds.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      if (quest.actionId1 == _actionIds[i]) {
-        uint256 remainingAmount = quest.actionNum1 > _playerQuest.actionCompletedNum1
-          ? quest.actionNum1 - _playerQuest.actionCompletedNum1
+      if (quest.actionId1 == actionIds[i]) {
+        uint256 remainingAmount = quest.actionNum1 > playerQuest.actionCompletedNum1
+          ? quest.actionNum1 - playerQuest.actionCompletedNum1
           : 0;
-        uint256 amount = Math.min(remainingAmount, _actionAmounts[i]);
+        uint256 amount = Math.min(remainingAmount, actionAmounts[i]);
         if (quest.burnItemTokenId != NONE) {
-          amount = Math.min(_burnedAmountOwned, amount);
-          _burnedAmountOwned -= amount;
-          amount = _addToBurn(quest, _playerQuest, amount);
+          amount = Math.min(burnedAmountOwned, amount);
+          burnedAmountOwned -= amount;
+          amount = _addToBurn(quest, playerQuest, amount);
           amountBurned += amount;
 
           if (
             amount == 0 &&
-            _playerQuest.burnCompletedAmount >= quest.burnAmount &&
-            _playerQuest.actionCompletedNum1 < quest.actionNum1
+            playerQuest.burnCompletedAmount >= quest.burnAmount &&
+            playerQuest.actionCompletedNum1 < quest.actionNum1
           ) {
             // Needed in case the quest is changed later where the amount to burn has already been exceeded
-            _playerQuest.actionCompletedNum1 = _playerQuest.burnCompletedAmount;
+            playerQuest.actionCompletedNum1 = playerQuest.burnCompletedAmount;
           }
         }
-        _playerQuest.actionCompletedNum1 += uint16(amount);
+        playerQuest.actionCompletedNum1 += uint16(amount);
       }
     }
 
-    bounds = _choiceIds.length.asU256();
+    bounds = choiceIds.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      if (quest.actionChoiceId == _choiceIds[i]) {
-        uint256 remainingAmount = quest.actionChoiceNum > _playerQuest.actionChoiceCompletedNum
-          ? quest.actionChoiceNum - _playerQuest.actionChoiceCompletedNum
+      if (quest.actionChoiceId == choiceIds[i]) {
+        uint256 remainingAmount = quest.actionChoiceNum > playerQuest.actionChoiceCompletedNum
+          ? quest.actionChoiceNum - playerQuest.actionChoiceCompletedNum
           : 0;
-        uint256 amount = Math.min(remainingAmount, _choiceAmounts[i]);
+        uint256 amount = Math.min(remainingAmount, choiceAmounts[i]);
         if (quest.burnItemTokenId != NONE) {
-          amount = Math.min(_burnedAmountOwned, amount);
-          _burnedAmountOwned -= amount;
-          amount = _addToBurn(quest, _playerQuest, amount);
+          amount = Math.min(burnedAmountOwned, amount);
+          burnedAmountOwned -= amount;
+          amount = _addToBurn(quest, playerQuest, amount);
           amountBurned += amount;
 
           if (
             amount == 0 &&
-            _playerQuest.burnCompletedAmount >= quest.burnAmount &&
-            _playerQuest.actionChoiceCompletedNum < quest.actionChoiceNum
+            playerQuest.burnCompletedAmount >= quest.burnAmount &&
+            playerQuest.actionChoiceCompletedNum < quest.actionChoiceNum
           ) {
             // Needed in case the quest is changed later where the amount to burn has already been exceeded
-            _playerQuest.actionChoiceCompletedNum = _playerQuest.burnCompletedAmount;
+            playerQuest.actionChoiceCompletedNum = playerQuest.burnCompletedAmount;
           }
         }
-        _playerQuest.actionChoiceCompletedNum += uint16(amount);
+        playerQuest.actionChoiceCompletedNum += uint16(amount);
       }
     }
 
@@ -518,20 +513,20 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     // Buy brush quest is handled specially for instance and doesn't have any of these set
     if (quest.actionNum1 != 0 || quest.actionChoiceNum != 0 || quest.burnAmount != 0) {
       questCompleted =
-        _playerQuest.actionCompletedNum1 >= quest.actionNum1 &&
-        _playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum &&
-        _playerQuest.burnCompletedAmount >= quest.burnAmount;
+        playerQuest.actionCompletedNum1 >= quest.actionNum1 &&
+        playerQuest.actionChoiceCompletedNum >= quest.actionChoiceNum &&
+        playerQuest.burnCompletedAmount >= quest.burnAmount;
     }
 
     if (questCompleted) {
-      (itemTokenIds, amounts, skillGained, xpGained) = getQuestCompletedRewards(_playerQuest.questId);
+      (itemTokenIds, amounts, skillGained, xpGained) = getQuestCompletedRewards(playerQuest.questId);
     }
   }
 
   function getQuestCompletedRewards(
-    uint256 _questId
+    uint256 questId
   ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained) {
-    Quest storage quest = allFixedQuests[_questId];
+    Quest storage quest = _allFixedQuests[questId];
     // length can be 0, 1 or 2
     uint256 mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
     mintLength += (quest.rewardItemTokenId2 == NONE ? 0 : 1);
@@ -550,151 +545,127 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     xpGained = quest.skillXPGained;
   }
 
-  function _checkQuest(QuestInput calldata _quest) private pure {
-    if (_quest.rewardItemTokenId1 != NONE && _quest.rewardAmount1 == 0) {
-      revert InvalidRewardAmount();
-    }
-    if (_quest.rewardItemTokenId2 != NONE && _quest.rewardAmount2 == 0) {
-      revert InvalidRewardAmount();
-    }
-    if (_quest.actionId1 != 0 && _quest.actionNum1 == 0) {
-      revert InvalidActionNum();
-    }
-    if (_quest.actionId2 != 0 && _quest.actionNum2 == 0) {
-      revert InvalidActionNum();
-    }
-    if (_quest.actionChoiceId != 0 && _quest.actionChoiceNum == 0) {
-      revert InvalidActionChoiceNum();
-    }
-    if (_quest.skillReward != Skill.NONE && _quest.skillXPGained == 0) {
-      revert InvalidSkillXPGained();
-    }
-    if (_quest.burnItemTokenId != NONE && _quest.burnAmount == 0) {
-      revert InvalidBurnAmount();
-    }
-    if (_quest.questId == 0) {
-      revert InvalidQuestId();
-    }
+  function _checkQuest(QuestInput calldata quest) private pure {
+    require(quest.rewardItemTokenId1 == NONE || quest.rewardAmount1 != 0, InvalidRewardAmount());
+    require(quest.rewardItemTokenId2 == NONE || quest.rewardAmount2 != 0, InvalidRewardAmount());
+    require(quest.actionId1 == 0 || quest.actionNum1 != 0, InvalidActionNum());
+    require(quest.actionId2 == 0 || quest.actionNum2 != 0, InvalidActionNum());
+    require(quest.actionChoiceId == 0 || quest.actionChoiceNum != 0, InvalidActionChoiceNum());
+    require(quest.skillReward == Skill.NONE || quest.skillXPGained != 0, InvalidSkillXPGained());
+    require(quest.burnItemTokenId == NONE || quest.burnAmount != 0, InvalidBurnAmount());
+    require(quest.questId != 0, InvalidQuestId());
   }
 
-  function _addQuest(QuestInput calldata _quest, MinimumRequirement[3] calldata _minimumRequirements) private {
-    _checkQuest(_quest);
+  function _addQuest(QuestInput calldata quest, MinimumRequirement[3] calldata minimumRequirements) private {
+    _checkQuest(quest);
 
     bool anyMinimumRequirement;
-    U256 bounds = _minimumRequirements.length.asU256();
+    U256 bounds = minimumRequirements.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      if (_minimumRequirements[i].skill != Skill.NONE) {
+      if (minimumRequirements[i].skill != Skill.NONE) {
         anyMinimumRequirement = true;
         break;
       }
     }
 
     if (anyMinimumRequirement) {
-      minimumRequirements[_quest.questId] = _minimumRequirements;
+      _minimumRequirements[quest.questId] = minimumRequirements;
     }
 
-    if (_questExists(_quest.questId)) {
-      revert QuestWithIdAlreadyExists();
-    }
+    require(!_questExists(quest.questId), QuestWithIdAlreadyExists());
 
-    allFixedQuests[_quest.questId] = _packQuest(_quest);
+    _allFixedQuests[quest.questId] = _packQuest(quest);
   }
 
-  function _editQuest(QuestInput calldata _quest, MinimumRequirement[3] calldata _minimumRequirements) private {
-    _checkQuest(_quest);
+  function _editQuest(QuestInput calldata quest, MinimumRequirement[3] calldata minimumRequirements) private {
+    _checkQuest(quest);
 
-    minimumRequirements[_quest.questId] = _minimumRequirements;
+    _minimumRequirements[quest.questId] = minimumRequirements;
 
-    if (!_questExists(_quest.questId)) {
-      revert QuestDoesntExist();
-    }
-
+    require(_questExists(quest.questId), QuestDoesntExist());
     // Cannot change from free to full-mode
-    if (!_isQuestPackedDataFullMode(allFixedQuests[_quest.questId].packedData) && _quest.isFullModeOnly) {
-      revert CannotChangeBackToFullMode();
-    }
+    require(
+      _isQuestPackedDataFullMode(_allFixedQuests[quest.questId].packedData) == quest.isFullModeOnly,
+      CannotChangeBackToFullMode()
+    );
 
-    allFixedQuests[_quest.questId] = _packQuest(_quest);
+    _allFixedQuests[quest.questId] = _packQuest(quest);
   }
 
-  function _questExists(uint256 _questId) private view returns (bool) {
+  function _questExists(uint256 questId) private view returns (bool) {
     return
-      allFixedQuests[_questId].actionId1 != NONE ||
-      allFixedQuests[_questId].actionChoiceId != NONE ||
-      allFixedQuests[_questId].skillReward != Skill.NONE ||
-      allFixedQuests[_questId].rewardItemTokenId1 != NONE;
+      _allFixedQuests[questId].actionId1 != NONE ||
+      _allFixedQuests[questId].actionChoiceId != NONE ||
+      _allFixedQuests[questId].skillReward != Skill.NONE ||
+      _allFixedQuests[questId].rewardItemTokenId1 != NONE;
   }
 
-  function _isQuestPackedDataFullMode(bytes1 _packedData) private pure returns (bool) {
-    return uint8(_packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+  function _isQuestPackedDataFullMode(bytes1 packedData) private pure returns (bool) {
+    return uint8(packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
-  function _packQuest(QuestInput calldata _questInput) private pure returns (Quest memory quest) {
-    bytes1 packedData = bytes1(uint8(_questInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+  function _packQuest(QuestInput calldata questInput) private pure returns (Quest memory quest) {
+    bytes1 packedData = bytes1(uint8(questInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     quest = Quest({
-      dependentQuestId: _questInput.dependentQuestId,
-      actionId1: _questInput.actionId1,
-      actionNum1: _questInput.actionNum1,
-      actionId2: _questInput.actionId2,
-      actionNum2: _questInput.actionNum2,
-      actionChoiceId: _questInput.actionChoiceId,
-      actionChoiceNum: _questInput.actionChoiceNum,
-      skillReward: _questInput.skillReward,
-      skillXPGained: _questInput.skillXPGained,
-      rewardItemTokenId1: _questInput.rewardItemTokenId1,
-      rewardAmount1: _questInput.rewardAmount1,
-      rewardItemTokenId2: _questInput.rewardItemTokenId2,
-      rewardAmount2: _questInput.rewardAmount2,
-      burnItemTokenId: _questInput.burnItemTokenId,
-      burnAmount: _questInput.burnAmount,
+      dependentQuestId: questInput.dependentQuestId,
+      actionId1: questInput.actionId1,
+      actionNum1: questInput.actionNum1,
+      actionId2: questInput.actionId2,
+      actionNum2: questInput.actionNum2,
+      actionChoiceId: questInput.actionChoiceId,
+      actionChoiceNum: questInput.actionChoiceNum,
+      skillReward: questInput.skillReward,
+      skillXPGained: questInput.skillXPGained,
+      rewardItemTokenId1: questInput.rewardItemTokenId1,
+      rewardAmount1: questInput.rewardAmount1,
+      rewardItemTokenId2: questInput.rewardItemTokenId2,
+      rewardAmount2: questInput.rewardAmount2,
+      burnItemTokenId: questInput.burnItemTokenId,
+      burnAmount: questInput.burnAmount,
       reserved: 0,
       packedData: packedData
     });
   }
 
-  function setPlayers(IPlayers _players) external onlyOwner {
-    players = _players;
+  function setPlayers(IPlayers players) external onlyOwner {
+    _players = players;
   }
 
   function addQuests(
-    QuestInput[] calldata _quests,
-    MinimumRequirement[3][] calldata _minimumRequirements
+    QuestInput[] calldata quests,
+    MinimumRequirement[3][] calldata minimumRequirements
   ) external onlyOwner {
-    if (_quests.length != _minimumRequirements.length) {
+    if (quests.length != minimumRequirements.length) {
       revert LengthMismatch();
     }
 
-    U256 bounds = _quests.length.asU256();
+    U256 bounds = quests.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      _addQuest(_quests[i], _minimumRequirements[i]);
+      _addQuest(quests[i], minimumRequirements[i]);
     }
-    numTotalQuests += uint16(_quests.length);
-    emit AddQuests(_quests, _minimumRequirements);
+    _numTotalQuests += uint16(quests.length);
+    emit AddQuests(quests, minimumRequirements);
   }
 
   function editQuests(
-    QuestInput[] calldata _quests,
-    MinimumRequirement[3][] calldata _minimumRequirements
+    QuestInput[] calldata quests,
+    MinimumRequirement[3][] calldata minimumRequirements
   ) external onlyOwner {
-    for (uint256 i = 0; i < _quests.length; ++i) {
-      _editQuest(_quests[i], _minimumRequirements[i]);
+    for (uint256 i = 0; i < quests.length; ++i) {
+      _editQuest(quests[i], minimumRequirements[i]);
     }
-    emit EditQuests(_quests, _minimumRequirements);
+    emit EditQuests(quests, minimumRequirements);
   }
 
-  function removeQuest(uint256 _questId) external onlyOwner {
-    if (_questId == 0) {
-      revert InvalidQuestId();
-    }
-    if (!_questExists(_questId)) {
-      revert QuestDoesntExist();
-    }
+  function removeQuest(uint256 questId) external onlyOwner {
+    require(questId != 0, InvalidQuestId());
+    require(_questExists(questId), QuestDoesntExist());
 
-    delete allFixedQuests[_questId];
-    emit RemoveQuest(_questId);
-    --numTotalQuests;
+    delete _allFixedQuests[questId];
+    emit RemoveQuest(questId);
+    --_numTotalQuests;
   }
 
   receive() external payable {}

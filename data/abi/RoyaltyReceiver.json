@@ -173,38 +173,12 @@
   },
   {
     "inputs": [],
-    "name": "DEADLINE_DURATION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "MIN_BRUSH_TO_DISTRIBUTE",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "brush",
-    "outputs": [
-      {
-        "internalType": "contract IBrushToken",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -234,27 +208,27 @@
     "inputs": [
       {
         "internalType": "contract Router",
-        "name": "_router",
+        "name": "router",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_pool",
+        "name": "pool",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_dev",
+        "name": "dev",
         "type": "address"
       },
       {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_wNative",
+        "name": "wNative",
         "type": "address"
       }
     ],
@@ -266,19 +240,6 @@
   {
     "inputs": [],
     "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pool",
     "outputs": [
       {
         "internalType": "address",
@@ -310,23 +271,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "router",
-    "outputs": [
-      {
-        "internalType": "contract Router",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "contract ITerritories",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       }
     ],

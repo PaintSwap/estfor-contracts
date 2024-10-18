@@ -920,17 +920,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       }
     ],
@@ -950,34 +950,41 @@
     "name": "activeQuests",
     "outputs": [
       {
-        "internalType": "uint32",
-        "name": "questId",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionCompletedNum1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionCompletedNum2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionChoiceCompletedNum",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "burnCompletedAmount",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bool",
-        "name": "isFixed",
-        "type": "bool"
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "questId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionCompletedNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceCompletedNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnCompletedAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFixed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct PlayerQuest",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1079,7 +1086,7 @@
           }
         ],
         "internalType": "struct QuestInput[]",
-        "name": "_quests",
+        "name": "quests",
         "type": "tuple[]"
       },
       {
@@ -1096,7 +1103,7 @@
           }
         ],
         "internalType": "struct Quests.MinimumRequirement[3][]",
-        "name": "_minimumRequirements",
+        "name": "minimumRequirements",
         "type": "tuple[3][]"
       }
     ],
@@ -1116,89 +1123,96 @@
     "name": "allFixedQuests",
     "outputs": [
       {
-        "internalType": "uint16",
-        "name": "dependentQuestId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionId1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionNum1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionId2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionNum2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionChoiceId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionChoiceNum",
-        "type": "uint16"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "skillReward",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "skillXPGained",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "rewardItemTokenId1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "rewardAmount1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "rewardItemTokenId2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "rewardAmount2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "burnItemTokenId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "burnAmount",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "reserved",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bytes1",
-        "name": "packedData",
-        "type": "bytes1"
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "dependentQuestId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionNum2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "actionChoiceNum",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillReward",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "skillXPGained",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardItemTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rewardAmount2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "burnAmount",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "reserved",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          }
+        ],
+        "internalType": "struct Quest",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1208,17 +1222,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_minimumBrushExpected",
+        "name": "minimumBrushExpected",
         "type": "uint256"
       },
       {
         "internalType": "bool",
-        "name": "_useExactETH",
+        "name": "useExactETH",
         "type": "bool"
       }
     ],
@@ -1237,27 +1251,27 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_minimumBrushBack",
+        "name": "minimumBrushBack",
         "type": "uint256"
       },
       {
         "internalType": "bool",
-        "name": "_useExactETH",
+        "name": "useExactETH",
         "type": "bool"
       }
     ],
@@ -1276,7 +1290,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1381,7 +1395,7 @@
           }
         ],
         "internalType": "struct QuestInput[]",
-        "name": "_quests",
+        "name": "quests",
         "type": "tuple[]"
       },
       {
@@ -1398,7 +1412,7 @@
           }
         ],
         "internalType": "struct Quests.MinimumRequirement[3][]",
-        "name": "_minimumRequirements",
+        "name": "minimumRequirements",
         "type": "tuple[3][]"
       }
     ],
@@ -1411,7 +1425,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1430,7 +1444,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_player",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1449,7 +1463,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       }
     ],
@@ -1482,111 +1496,18 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "queueId",
-        "type": "uint256"
-      }
-    ],
-    "name": "inProgressFixedQuests",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "questId",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionCompletedNum1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionCompletedNum2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionChoiceCompletedNum",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "burnCompletedAmount",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bool",
-        "name": "isFixed",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "inProgressRandomQuests",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "questId",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionCompletedNum1",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionCompletedNum2",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "actionChoiceCompletedNum",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "burnCompletedAmount",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bool",
-        "name": "isFixed",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "_world",
+        "name": "world",
         "type": "address"
       },
       {
         "internalType": "contract IRouterV2",
-        "name": "_router",
+        "name": "router",
         "type": "address"
       },
       {
         "internalType": "address[2]",
-        "name": "_buyPath",
+        "name": "buyPath",
         "type": "address[2]"
       }
     ],
@@ -1599,12 +1520,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       }
     ],
@@ -1623,26 +1544,13 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_randomWord",
+        "name": "randomWord",
         "type": "uint256"
       }
     ],
     "name": "newOracleRandomWords",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "numTotalQuests",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1661,32 +1569,13 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "playerInfo",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "numFixedQuestsCompleted",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -1723,12 +1612,12 @@
           }
         ],
         "internalType": "struct PlayerQuest[]",
-        "name": "_activeQuestInfo",
+        "name": "activeQuestInfo",
         "type": "tuple[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_questsCompleted",
+        "name": "questsCompleted",
         "type": "uint256[]"
       }
     ],
@@ -1741,32 +1630,32 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256[]",
-        "name": "_actionIds",
+        "name": "actionIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_actionAmounts",
+        "name": "actionAmounts",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_choiceIds",
+        "name": "choiceIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_choiceAmounts",
+        "name": "choiceAmounts",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256",
-        "name": "_burnedAmountOwned",
+        "name": "burnedAmountOwned",
         "type": "uint256"
       }
     ],
@@ -1804,7 +1693,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_questsCompleted",
+        "name": "questsCompleted",
         "type": "uint256[]"
       },
       {
@@ -1862,23 +1751,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "randomQuestId",
-    "outputs": [
-      {
-        "internalType": "uint40",
-        "name": "",
-        "type": "uint40"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_questId",
+        "name": "questId",
         "type": "uint256"
       }
     ],
@@ -1898,22 +1774,22 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_brushAmount",
+        "name": "brushAmount",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_minFTM",
+        "name": "minFTM",
         "type": "uint256"
       },
       {
         "internalType": "bool",
-        "name": "_useExactETH",
+        "name": "useExactETH",
         "type": "bool"
       }
     ],
@@ -1926,7 +1802,7 @@
     "inputs": [
       {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       }
     ],

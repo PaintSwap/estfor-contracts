@@ -32,6 +32,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   error MinimumOneBrush();
   error NotPlayers();
   error OnlyWorld();
+  error NoDecimalsAllowed(uint256 invalidAmount);
 
   struct ClanInfo {
     uint40 totalDonated;
@@ -43,44 +44,43 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
   using BitMaps for BitMaps.BitMap;
 
-  IBrushToken public brush;
-  PlayerNFT public playerNFT;
-  address public shop;
-  mapping(uint256 lotteryId => BitMaps.BitMap) private playersEntered;
-  mapping(uint256 lotteryId => mapping(uint256 raffleId => uint256 playerId)) public raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
-  mapping(uint256 lotteryId => LotteryWinnerInfo winner) public winners;
-  BitMaps.BitMap private claimedRewards;
-  IPlayers private players;
-  address private world;
-  mapping(uint256 clanId => ClanInfo clanInfo) public clanDonationInfo;
-  uint16 public donationRewardItemTokenId;
-  uint40 private totalDonated; // In BRUSH ether (no wei decimals)
-  uint40 private lastGlobalThreshold; // In BRUSH ether (no wei decimals)
-  uint16 public nextGlobalRewardItemTokenId;
-  uint16 public nextLotteryWinnerRewardItemTokenId;
+  IBrushToken private _brush;
+  PlayerNFT private _playerNFT;
+  address private _shop;
+  mapping(uint256 lotteryId => BitMaps.BitMap) private _playersEntered;
+  mapping(uint256 lotteryId => mapping(uint256 raffleId => uint256 playerId)) private _raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
+  mapping(uint256 lotteryId => LotteryWinnerInfo winner) private _winners;
+  BitMaps.BitMap private _claimedRewards;
+  IPlayers private _players;
+  address private _world;
+  mapping(uint256 clanId => ClanInfo clanInfo) private _clanDonationInfo;
+  uint16 private _donationRewardItemTokenId;
+  uint40 private _totalDonated; // In BRUSH ether (no wei decimals)
+  uint40 private _lastGlobalThreshold; // In BRUSH ether (no wei decimals)
+  uint16 private _nextGlobalRewardItemTokenId;
+  uint16 public _nextLotteryWinnerRewardItemTokenId;
   /// @custom:oz-renamed-from instantConsume
-  bool public nextLotteryWinnerRewardInstantConsume;
-  uint16 public lastLotteryId;
-  uint24 public lastRaffleId; // Relative to each lottery
-  uint40 public lastOracleRandomWordTimestamp;
-  uint16 private raffleEntryCost; // In BRUSH ether (no wei decimals)
-  uint24 private globalThresholdIncrement;
-  uint40[6] public lastUnclaimedWinners; // 1 storage slot to keep track of the last 3 winning playerId & lotteryId, stored as [playerId, lotteryId, playerId, lotteryId, playerId, lotteryId]
-  Clans private clans;
-  uint40 public clanThresholdIncrement;
-  bool public isBeta; // (Unused) But state is set on beta
-  uint16[3] private globalBoostRewardItemTokenIds;
-  uint16[3] private clanBoostRewardItemTokenIds;
+  bool private _nextLotteryWinnerRewardInstantConsume;
+  uint16 private _lastLotteryId;
+  uint24 private _lastRaffleId; // Relative to each lottery
+  uint40 private _lastOracleRandomWordTimestamp;
+  uint16 private _raffleEntryCost; // In BRUSH ether (no wei decimals)
+  uint24 private _globalThresholdIncrement;
+  uint40[6] private _lastUnclaimedWinners; // 1 storage slot to keep track of the last 3 winning playerId & lotteryId, stored as [playerId, lotteryId, playerId, lotteryId, playerId, lotteryId]
+  Clans private _clans;
+  uint24 private _clanThresholdIncrement;
+  uint16[3] private _globalBoostRewardItemTokenIds;
+  uint16[3] private _clanBoostRewardItemTokenIds;
 
   modifier onlyPlayers() {
-    if (address(players) != msg.sender) {
+    if (address(_players) != msg.sender) {
       revert NotPlayers();
     }
     _;
   }
 
   modifier onlyWorld() {
-    if (world != msg.sender) {
+    if (_world != msg.sender) {
       revert OnlyWorld();
     }
     _;
@@ -92,188 +92,185 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   }
 
   function initialize(
-    IBrushToken _brush,
-    PlayerNFT _playerNFT,
-    address _shop,
-    address _world,
-    Clans _clans,
-    uint256 _raffleEntryCost,
-    uint256 _globalThresholdIncrement,
-    uint256 _clanThresholdIncrement,
-    bool _isBeta
+    IBrushToken brush,
+    PlayerNFT playerNFT,
+    address shop,
+    address world,
+    Clans clans,
+    uint256 raffleEntryCost,
+    uint256 globalThresholdIncrement,
+    uint256 clanThresholdIncrement
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    brush = _brush;
-    playerNFT = _playerNFT;
-    shop = _shop;
-    world = _world;
-    clans = _clans;
+    _brush = brush;
+    _playerNFT = playerNFT;
+    _shop = shop;
+    _world = world;
+    _clans = clans;
 
-    globalBoostRewardItemTokenIds = [PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3];
-    clanBoostRewardItemTokenIds = [CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3];
+    setRaffleEntryCost(raffleEntryCost);
+    setGlobalDonationThresholdIncrement(globalThresholdIncrement);
+    setClanDonationThresholdIncrement(clanThresholdIncrement);
 
-    raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
-    donationRewardItemTokenId = LUCK_OF_THE_DRAW;
-    nextGlobalRewardItemTokenId = globalBoostRewardItemTokenIds[0];
-    lastLotteryId = 1;
-    clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
-    globalThresholdIncrement = _isBeta ? 1000 : 100_000;
-    nextLotteryWinnerRewardItemTokenId = LUCKY_POTION;
-    nextLotteryWinnerRewardInstantConsume = true;
+    _globalBoostRewardItemTokenIds = [PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3];
+    _clanBoostRewardItemTokenIds = [CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3];
 
-    emit SetRaffleEntryCost(_raffleEntryCost);
-    emit LastGlobalDonationThreshold(0, globalBoostRewardItemTokenIds[0]);
-    emit GlobalDonationThreshold(_globalThresholdIncrement);
-    emit ClanDonationThreshold(_clanThresholdIncrement, clanBoostRewardItemTokenIds[0]);
-    emit WinnerAndNewLottery(0, 0, nextLotteryWinnerRewardItemTokenId, 1);
+    _donationRewardItemTokenId = LUCK_OF_THE_DRAW;
+    _nextGlobalRewardItemTokenId = _globalBoostRewardItemTokenIds[0];
+    _lastLotteryId = 1;
+    _nextLotteryWinnerRewardItemTokenId = LUCKY_POTION;
+    _nextLotteryWinnerRewardInstantConsume = true;
+
+    emit LastGlobalDonationThreshold(0, _globalBoostRewardItemTokenIds[0]);
+    emit WinnerAndNewLottery(0, 0, _nextLotteryWinnerRewardItemTokenId, 1);
   }
 
   // _playerId can be 0 to ignore it, otherwise sender must own it
   // Cannot donate until the oracle has finished being called if using a player
   function donate(
-    address _from,
-    uint256 _playerId,
-    uint256 _amount
+    address from,
+    uint256 playerId,
+    uint256 amount
   )
     external
     onlyPlayers
     returns (uint16 itemTokenId, uint16 globalItemTokenId, uint256 clanId, uint16 clanItemTokenId)
   {
-    if (!brush.transferFrom(_from, shop, _amount)) {
+    if (!_brush.transferFrom(from, _shop, amount)) {
       revert NotEnoughBrush();
     }
 
     bool isRaffleDonation = false;
 
-    uint256 flooredAmountWei = (_amount / 1 ether) * 1 ether;
+    uint256 flooredAmountWei = (amount / 1 ether) * 1 ether;
     if (flooredAmountWei == 0) {
       revert MinimumOneBrush();
     }
 
-    if (_playerId != 0) {
-      bool hasEnoughForRaffle = (_amount / 1 ether) >= raffleEntryCost;
-      uint256 _lastLotteryId = lastLotteryId;
-      bool hasEnteredAlready = playersEntered[_lastLotteryId].get(_playerId);
+    if (playerId != 0) {
+      bool hasEnoughForRaffle = (amount / 1 ether) >= _raffleEntryCost;
+      uint256 lastLotteryId = _lastLotteryId;
+      bool hasEnteredAlready = _playersEntered[lastLotteryId].get(playerId);
 
       if (hasEnoughForRaffle && !hasEnteredAlready) {
-        uint256 flooredTime = lastOracleRandomWordTimestamp;
+        uint256 flooredTime = _lastOracleRandomWordTimestamp;
         if (flooredTime != 0 && flooredTime < (block.timestamp / 1 days) * 1 days) {
           revert OracleNotCalledYet();
         }
 
-        raffleIdToPlayerId[_lastLotteryId][++lastRaffleId] = _playerId;
+        _raffleIdToPlayerId[lastLotteryId][++_lastRaffleId] = playerId;
 
         // Do not override this boost if you have one that started at this timestamp already (i.e winning lottery boost)
         // Note: Ideally this would be set inside Players but contract size issues....
-        if (players.activeBoost(_playerId).extraOrLastStartTime != uint40(block.timestamp)) {
-          itemTokenId = donationRewardItemTokenId;
+        if (_players.activeBoost(playerId).extraOrLastStartTime != uint40(block.timestamp)) {
+          itemTokenId = _donationRewardItemTokenId;
         }
-        playersEntered[_lastLotteryId].set(_playerId);
+        _playersEntered[lastLotteryId].set(playerId);
         isRaffleDonation = true;
       }
 
-      clanId = clans.getClanId(_playerId);
+      clanId = _clans.getClanId(playerId);
       if (clanId != 0) {
-        if (clanDonationInfo[clanId].nextReward == 0) {
+        if (_clanDonationInfo[clanId].nextReward == 0) {
           // First time this clan has been donated to
-          clanDonationInfo[clanId].nextReward = clanBoostRewardItemTokenIds[0];
+          _clanDonationInfo[clanId].nextReward = _clanBoostRewardItemTokenIds[0];
         }
 
-        uint40 totalDonatedToClan = clanDonationInfo[clanId].totalDonated;
-        totalDonatedToClan += uint40(_amount / 1 ether);
+        uint40 totalDonatedToClan = _clanDonationInfo[clanId].totalDonated;
+        totalDonatedToClan += uint40(amount / 1 ether);
 
-        uint256 nextClanThreshold = clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement;
+        uint40 clanThresholdIncrement = _clanThresholdIncrement;
+        uint256 nextClanThreshold = _clanDonationInfo[clanId].lastThreshold + clanThresholdIncrement;
         if (totalDonatedToClan >= nextClanThreshold) {
           // Give the whole clan a reward
-          clanItemTokenId = clanDonationInfo[clanId].nextReward;
-          uint256 remainder = (totalDonatedToClan - nextClanThreshold);
-          uint256 numThresholdIncrements = (remainder / clanThresholdIncrement) + 1;
-          clanDonationInfo[clanId].lastThreshold += uint40(numThresholdIncrements * clanThresholdIncrement);
+          clanItemTokenId = _clanDonationInfo[clanId].nextReward;
+          uint256 numThresholdIncrements = ((totalDonatedToClan - nextClanThreshold) / clanThresholdIncrement) + 1;
+          _clanDonationInfo[clanId].lastThreshold += uint40(numThresholdIncrements * clanThresholdIncrement);
 
           // Cycle through them
-          uint16 nextReward;
-          if (clanItemTokenId == clanBoostRewardItemTokenIds[clanBoostRewardItemTokenIds.length - 1]) {
-            // Reached the end so start again
-            nextReward = clanBoostRewardItemTokenIds[0];
-          } else {
-            // They just happen to be id'ed sequentially. If this changes then this logic will need to change
-            nextReward = clanItemTokenId + 1;
-          }
-          emit LastClanDonationThreshold(clanId, uint256(clanDonationInfo[clanId].lastThreshold) * 1 ether, nextReward);
-          clanDonationInfo[clanId].nextReward = nextReward;
+          uint16 nextReward = clanItemTokenId == _clanBoostRewardItemTokenIds[_clanBoostRewardItemTokenIds.length - 1] // Reached the end so start again
+            ? _clanBoostRewardItemTokenIds[0] // They just happen to be id'ed sequentially. If this changes then this logic will need to change
+            : clanItemTokenId + 1;
+
+          emit LastClanDonationThreshold(
+            clanId,
+            uint256(_clanDonationInfo[clanId].lastThreshold) * 1 ether,
+            nextReward
+          );
+          _clanDonationInfo[clanId].nextReward = nextReward;
         }
 
-        clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
-        emit DonateToClan(_from, _playerId, flooredAmountWei, clanId);
+        _clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
+        emit DonateToClan(from, playerId, flooredAmountWei, clanId);
       }
     }
 
     if (isRaffleDonation) {
-      emit Donate(_from, _playerId, flooredAmountWei, lastLotteryId, lastRaffleId);
+      emit Donate(from, playerId, flooredAmountWei, _lastLotteryId, _lastRaffleId);
     } else {
-      emit Donate(_from, _playerId, flooredAmountWei, 0, 0);
+      emit Donate(from, playerId, flooredAmountWei, 0, 0);
     }
 
-    totalDonated += uint40(_amount / 1 ether);
+    _totalDonated += uint40(amount / 1 ether);
 
     // Is a global donation threshold hit?
-    uint256 nextGlobalThreshold = lastGlobalThreshold + globalThresholdIncrement;
-    if (totalDonated >= nextGlobalThreshold) {
-      globalItemTokenId = nextGlobalRewardItemTokenId;
-      uint256 remainder = (totalDonated - nextGlobalThreshold);
-      uint256 numThresholdIncrements = (remainder / globalThresholdIncrement) + 1;
-      lastGlobalThreshold += uint40(numThresholdIncrements * globalThresholdIncrement);
+    uint256 nextGlobalThreshold = _lastGlobalThreshold + _globalThresholdIncrement;
+    if (_totalDonated >= nextGlobalThreshold) {
+      globalItemTokenId = _nextGlobalRewardItemTokenId;
+      uint256 remainder = (_totalDonated - nextGlobalThreshold);
+      uint256 numThresholdIncrements = (remainder / _globalThresholdIncrement) + 1;
+      _lastGlobalThreshold += uint40(numThresholdIncrements * _globalThresholdIncrement);
 
       // Cycle through them
       uint16 nextReward;
-      if (globalItemTokenId == globalBoostRewardItemTokenIds[globalBoostRewardItemTokenIds.length - 1]) {
+      if (globalItemTokenId == _globalBoostRewardItemTokenIds[_globalBoostRewardItemTokenIds.length - 1]) {
         // Reached the end so start again
-        nextReward = globalBoostRewardItemTokenIds[0];
+        nextReward = _globalBoostRewardItemTokenIds[0];
       } else {
         // They just happen to be id'ed sequentially. If this changes then this logic will need to change
         nextReward = globalItemTokenId + 1;
       }
 
-      nextGlobalRewardItemTokenId = nextReward;
+      _nextGlobalRewardItemTokenId = nextReward;
 
-      emit LastGlobalDonationThreshold(uint256(lastGlobalThreshold) * 1 ether, nextReward);
+      emit LastGlobalDonationThreshold(uint256(_lastGlobalThreshold) * 1 ether, nextReward);
     }
   }
 
-  function newOracleRandomWords(uint256 _randomWord) external onlyWorld {
-    uint16 _lastLotteryId = lastLotteryId;
-
-    bool hasDonations = lastRaffleId != 0;
-    if (!hasDonations && _lastLotteryId == 1) {
+  function newOracleRandomWords(uint256 randomWord) external onlyWorld {
+    uint16 lastLotteryId = _lastLotteryId;
+    uint24 lastRaffleId = _lastRaffleId;
+    bool _hasDonations = lastRaffleId != 0;
+    if (!_hasDonations && lastLotteryId == 1) {
       // No raffle winner and this is the first one so do nothing as sometimes
       // this callback can be called many times
       return;
     }
 
-    if (hasDonations) {
+    if (_hasDonations) {
       // Decide the winner
-      uint24 raffleIdWinner = uint24(_randomWord % lastRaffleId) + 1;
-      winners[_lastLotteryId] = LotteryWinnerInfo({
-        lotteryId: _lastLotteryId,
-        raffleId: raffleIdWinner,
-        itemTokenId: nextLotteryWinnerRewardItemTokenId,
+      uint24 _raffleIdWinner = uint24(randomWord % lastRaffleId) + 1;
+      _winners[lastLotteryId] = LotteryWinnerInfo({
+        lotteryId: lastLotteryId,
+        raffleId: _raffleIdWinner,
+        itemTokenId: _nextLotteryWinnerRewardItemTokenId,
         amount: 1,
-        instantConsume: nextLotteryWinnerRewardInstantConsume,
-        playerId: uint40(raffleIdToPlayerId[_lastLotteryId][raffleIdWinner])
+        instantConsume: _nextLotteryWinnerRewardInstantConsume,
+        playerId: uint40(_raffleIdToPlayerId[lastLotteryId][_raffleIdWinner])
       });
 
-      lastRaffleId = 0;
+      _lastRaffleId = 0;
       // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId & nextLotteryWinnerRewardInstantConsume;
-      emit WinnerAndNewLottery(_lastLotteryId, raffleIdWinner, nextLotteryWinnerRewardItemTokenId, 1);
+      emit WinnerAndNewLottery(lastLotteryId, _raffleIdWinner, _nextLotteryWinnerRewardItemTokenId, 1);
 
       // Add to the last 3 unclaimed winners queue
       bool added;
-      for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
-        if (lastUnclaimedWinners[i] == 0) {
-          lastUnclaimedWinners[i] = winners[_lastLotteryId].playerId;
-          lastUnclaimedWinners[i + 1] = _lastLotteryId;
+      for (uint256 i = 0; i < _lastUnclaimedWinners.length; i += 2) {
+        if (_lastUnclaimedWinners[i] == 0) {
+          _lastUnclaimedWinners[i] = _winners[lastLotteryId].playerId;
+          _lastUnclaimedWinners[i + 1] = lastLotteryId;
           added = true;
           break;
         }
@@ -281,112 +278,132 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       if (!added) {
         // Shift the remaining ones down and add it to the end
-        for (uint256 i = 2; i < lastUnclaimedWinners.length; i += 2) {
-          lastUnclaimedWinners[i - 2] = lastUnclaimedWinners[i];
-          lastUnclaimedWinners[i - 1] = lastUnclaimedWinners[i + 1];
+        for (uint256 i = 2; i < _lastUnclaimedWinners.length; i += 2) {
+          _lastUnclaimedWinners[i - 2] = _lastUnclaimedWinners[i];
+          _lastUnclaimedWinners[i - 1] = _lastUnclaimedWinners[i + 1];
         }
-        lastUnclaimedWinners[lastUnclaimedWinners.length - 2] = winners[_lastLotteryId].playerId;
-        lastUnclaimedWinners[lastUnclaimedWinners.length - 1] = _lastLotteryId;
+        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 2] = _winners[lastLotteryId].playerId;
+        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 1] = lastLotteryId;
       }
     } else {
-      emit WinnerAndNewLottery(_lastLotteryId, 0, nextLotteryWinnerRewardItemTokenId, 1);
+      emit WinnerAndNewLottery(lastLotteryId, 0, _nextLotteryWinnerRewardItemTokenId, 1);
     }
 
     // Start new lottery
-    lastLotteryId = _lastLotteryId + 1;
-    lastOracleRandomWordTimestamp = uint40((block.timestamp / 1 days) * 1 days);
+    _lastLotteryId = lastLotteryId + 1;
+    _lastOracleRandomWordTimestamp = uint40((block.timestamp / 1 days) * 1 days);
   }
 
-  function claimedLotteryWinnings(uint256 _lotteryId) external onlyPlayers {
-    LotteryWinnerInfo storage lotteryWinner = winners[_lotteryId];
+  function claimedLotteryWinnings(uint256 lotteryId) external onlyPlayers {
+    LotteryWinnerInfo storage _lotteryWinner = _winners[lotteryId];
     emit ClaimedLotteryWinnings(
-      lotteryWinner.lotteryId,
-      lotteryWinner.raffleId,
-      lotteryWinner.itemTokenId,
-      lotteryWinner.amount
+      _lotteryWinner.lotteryId,
+      _lotteryWinner.raffleId,
+      _lotteryWinner.itemTokenId,
+      _lotteryWinner.amount
     );
 
-    delete winners[_lotteryId];
-    claimedRewards.set(_lotteryId);
+    delete _winners[lotteryId];
+    _claimedRewards.set(lotteryId);
 
     // Shift the remaining ones down
-    for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
-      if (lastUnclaimedWinners[i + 1] == _lotteryId) {
+    for (uint256 i = 0; i < _lastUnclaimedWinners.length; i += 2) {
+      if (_lastUnclaimedWinners[i + 1] == lotteryId) {
         // Shift the rest if there are any
-        for (uint256 j = i + 2; j < lastUnclaimedWinners.length; j += 2) {
-          lastUnclaimedWinners[j - 2] = lastUnclaimedWinners[j];
-          lastUnclaimedWinners[j - 1] = lastUnclaimedWinners[j + 1];
+        for (uint256 j = i + 2; j < _lastUnclaimedWinners.length; j += 2) {
+          _lastUnclaimedWinners[j - 2] = _lastUnclaimedWinners[j];
+          _lastUnclaimedWinners[j - 1] = _lastUnclaimedWinners[j + 1];
         }
         break;
       }
     }
     // Delete last ones
-    delete lastUnclaimedWinners[lastUnclaimedWinners.length - 2];
-    delete lastUnclaimedWinners[lastUnclaimedWinners.length - 1];
+    delete _lastUnclaimedWinners[_lastUnclaimedWinners.length - 2];
+    delete _lastUnclaimedWinners[_lastUnclaimedWinners.length - 1];
   }
 
-  function _awaitingClaim(uint256 _playerId) private view returns (uint256 lotteryId) {
-    for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
-      if (lastUnclaimedWinners[i] == _playerId) {
-        lotteryId = lastUnclaimedWinners[i + 1];
+  function _awaitingClaim(uint256 playerId) private view returns (uint256 lotteryId) {
+    for (uint256 i = 0; i < _lastUnclaimedWinners.length; i += 2) {
+      if (_lastUnclaimedWinners[i] == playerId) {
+        lotteryId = _lastUnclaimedWinners[i + 1];
         break;
       }
     }
   }
 
   // Scans the last 3 unclaimed winners to see if this playerId belongs there.
-  function getUnclaimedLotteryWinnings(uint256 _playerId) external view returns (LotteryWinnerInfo memory winner) {
-    uint256 _lotteryId = _awaitingClaim(_playerId);
+  function getUnclaimedLotteryWinnings(uint256 playerId) external view returns (LotteryWinnerInfo memory winner) {
+    uint256 _lotteryId = _awaitingClaim(playerId);
     if (_lotteryId != 0) {
-      winner = winners[_lotteryId];
+      winner = _winners[_lotteryId];
     }
   }
 
   function getTotalDonated() external view returns (uint256) {
-    return uint256(totalDonated) * 1 ether;
+    return uint256(_totalDonated) * 1 ether;
   }
 
-  function getClanTotalDonated(uint256 _clanId) external view returns (uint256) {
-    return uint256(clanDonationInfo[_clanId].totalDonated) * 1 ether;
+  function getClanTotalDonated(uint256 clanId) external view returns (uint256) {
+    return uint256(_clanDonationInfo[clanId].totalDonated) * 1 ether;
   }
 
   function getNextGlobalThreshold() external view returns (uint256) {
-    return uint256(lastGlobalThreshold + globalThresholdIncrement) * 1 ether;
+    return uint256(_lastGlobalThreshold + _globalThresholdIncrement) * 1 ether;
   }
 
-  function getNextClanThreshold(uint256 _clanId) external view returns (uint256) {
-    return (uint256(clanDonationInfo[_clanId].lastThreshold) + clanThresholdIncrement) * 1 ether;
+  function getNextClanThreshold(uint256 clanId) external view returns (uint256) {
+    return (uint256(_clanDonationInfo[clanId].lastThreshold) + _clanThresholdIncrement) * 1 ether;
   }
 
   function getRaffleEntryCost() external view returns (uint256) {
-    return uint256(raffleEntryCost) * 1 ether;
+    return uint256(_raffleEntryCost) * 1 ether;
   }
 
-  function hasClaimedReward(uint256 _lotteryId) external view returns (bool) {
-    return claimedRewards.get(_lotteryId);
+  function hasClaimedReward(uint256 lotteryId) external view returns (bool) {
+    return _claimedRewards.get(lotteryId);
   }
 
-  function hasPlayerEntered(uint256 _lotteryId, uint256 _playerId) external view returns (bool) {
-    return playersEntered[_lotteryId].get(_playerId);
+  function hasPlayerEntered(uint256 lotteryId, uint256 playerId) external view returns (bool) {
+    return _playersEntered[lotteryId].get(playerId);
   }
 
-  function setPlayers(IPlayers _players) external onlyOwner {
-    players = _players;
+  function getLastLotteryId() external view returns (uint256) {
+    return uint256(_lastLotteryId);
   }
 
-  function setRaffleEntryCost(uint256 _raffleEntryCost) external onlyOwner {
-    raffleEntryCost = uint16(_raffleEntryCost / 1 ether);
-    emit SetRaffleEntryCost(_raffleEntryCost);
+  function getWinner(uint256 lotteryId) external view returns (LotteryWinnerInfo memory) {
+    return _winners[lotteryId];
   }
 
-  function setClanDonationThresholdIncrement(uint256 _clanThresholdIncrement) external onlyOwner {
-    clanThresholdIncrement = uint40(_clanThresholdIncrement / 1 ether);
-    emit ClanDonationThreshold(_clanThresholdIncrement, clanBoostRewardItemTokenIds[0]); // This passes in the first reward
+  function getClanDonationInfo(uint256 clanId) external view returns (ClanInfo memory) {
+    return _clanDonationInfo[clanId];
   }
 
-  function setGlobalDonationThresholdIncrement(uint256 _globalThresholdIncrement) external onlyOwner {
-    globalThresholdIncrement = uint24(_globalThresholdIncrement / 1 ether);
-    emit GlobalDonationThreshold(_globalThresholdIncrement);
+  function getLastUnclaimedWinner(uint256 index) external view returns (uint256) {
+    return uint256(_lastUnclaimedWinners[index]);
+  }
+
+  function setPlayers(IPlayers players) external onlyOwner {
+    _players = players;
+  }
+
+  function setRaffleEntryCost(uint256 raffleEntryCost) public onlyOwner {
+    require(raffleEntryCost % 1 ether == 0, NoDecimalsAllowed(raffleEntryCost));
+    _raffleEntryCost = uint16(raffleEntryCost / 1 ether);
+    emit SetRaffleEntryCost(raffleEntryCost);
+  }
+
+  function setGlobalDonationThresholdIncrement(uint256 globalThresholdIncrement) public onlyOwner {
+    require(globalThresholdIncrement % 1 ether == 0, NoDecimalsAllowed(globalThresholdIncrement));
+    _globalThresholdIncrement = uint24(globalThresholdIncrement / 1 ether);
+    emit GlobalDonationThreshold(globalThresholdIncrement);
+  }
+
+  function setClanDonationThresholdIncrement(uint256 clanThresholdIncrement) public onlyOwner {
+    require(clanThresholdIncrement % 1 ether == 0, NoDecimalsAllowed(clanThresholdIncrement));
+
+    _clanThresholdIncrement = uint24(clanThresholdIncrement / 1 ether);
+    emit ClanDonationThreshold(clanThresholdIncrement, _clanBoostRewardItemTokenIds[0]); // This passes in the first reward
   }
 
   // solhint-disable-next-line no-empty-blocks
