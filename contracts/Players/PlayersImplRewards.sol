@@ -426,14 +426,14 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
       // Include loot
       {
-        uint8 bonusRewardsPercent = fullAttireBonus[skill].bonusRewardsPercent;
+        uint8 bonusRewardsPercent = _fullAttireBonus[skill].bonusRewardsPercent;
         uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
           from,
           _attire[playerId][queuedAction.queueId],
           address(itemNFT),
           pendingQueuedActionState.equipmentStates,
           bonusRewardsPercent,
-          fullAttireBonus[skill].itemTokenIds
+          _fullAttireBonus[skill].itemTokenIds
         );
 
         // Full
@@ -927,12 +927,12 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       xpElapsedTime,
       _attire[playerId][queuedAction.queueId],
       _activeBoosts[playerId],
-      globalBoost_,
-      clanBoosts_[clans.getClanId(playerId)],
+      _globalBoost,
+      _clanBoosts[clans.getClanId(playerId)],
       address(itemNFT),
       address(world),
-      fullAttireBonus[skill].bonusXPPercent,
-      fullAttireBonus[skill].itemTokenIds,
+      _fullAttireBonus[skill].bonusXPPercent,
+      _fullAttireBonus[skill].itemTokenIds,
       pendingQueuedActionEquipmentStates
     );
   }

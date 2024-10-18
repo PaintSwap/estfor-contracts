@@ -205,14 +205,14 @@ abstract contract PlayersBase {
 
   AdminAccess internal adminAccess;
 
-  mapping(Skill skill => FullAttireBonus) internal fullAttireBonus;
+  mapping(Skill skill => FullAttireBonus) internal _fullAttireBonus;
   Quests internal quests;
   Clans internal clans;
   WishingWell internal wishingWell;
   address internal reserved1;
 
-  PlayerBoostInfo internal globalBoost_; // A boost shared by everyone
-  mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal clanBoosts_; // Clan specific boosts
+  PlayerBoostInfo internal _globalBoost; // A boost shared by everyone
+  mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
 
   mapping(address user => WalletDailyInfo walletDailyInfo) internal walletDailyInfo;
   mapping(uint256 queueId => QueuedActionExtra queuedActionExtra) internal _queuedActionsExtra;

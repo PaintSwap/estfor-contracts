@@ -384,15 +384,15 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       playerBoost.extraOrLastItemTokenId = _itemTokenId;
       emit ConsumeExtraBoostVial(_from, playerId, boostInfo);
     } else if (item.equipPosition == EquipPosition.GLOBAL_BOOST_VIAL) {
-      _setLastBoostIfAppropriate(globalBoost_); // Must be set before making any changes
-      globalBoost_.startTime = _startTime;
-      globalBoost_.duration = item.boostDuration;
-      globalBoost_.value = item.boostValue;
-      globalBoost_.boostType = item.boostType;
-      globalBoost_.itemTokenId = _itemTokenId;
+      _setLastBoostIfAppropriate(_globalBoost); // Must be set before making any changes
+      _globalBoost.startTime = _startTime;
+      _globalBoost.duration = item.boostDuration;
+      _globalBoost.value = item.boostValue;
+      _globalBoost.boostType = item.boostType;
+      _globalBoost.itemTokenId = _itemTokenId;
       emit ConsumeGlobalBoostVial(_from, playerId, boostInfo);
     } else {
-      PlayerBoostInfo storage clanBoost = clanBoosts_[_clanId];
+      PlayerBoostInfo storage clanBoost = _clanBoosts[_clanId];
       _setLastBoostIfAppropriate(clanBoost); // Must be set before making any changes
       clanBoost.startTime = _startTime;
       clanBoost.duration = item.boostDuration;
@@ -464,14 +464,14 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
 
     // Special case where thieving gives you a bonus if wearing full equipment
-    uint8 bonusRewardsPercent = fullAttireBonus[skill].bonusRewardsPercent;
+    uint8 bonusRewardsPercent = _fullAttireBonus[skill].bonusRewardsPercent;
     uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
       from,
       attire,
       address(itemNFT),
       _pendingQueuedActionEquipmentStates,
       bonusRewardsPercent,
-      fullAttireBonus[skill].itemTokenIds
+      _fullAttireBonus[skill].itemTokenIds
     );
 
     // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)

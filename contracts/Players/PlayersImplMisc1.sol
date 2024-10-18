@@ -201,9 +201,9 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     U256 bounds = _fullAttireBonuses.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      FullAttireBonusInput calldata _fullAttireBonus = _fullAttireBonuses[i];
+      FullAttireBonusInput calldata fullAttireBonus = _fullAttireBonuses[i];
 
-      if (_fullAttireBonus.skill == Skill.NONE) {
+      if (fullAttireBonus.skill == Skill.NONE) {
         revert InvalidSkill();
       }
       EquipPosition[5] memory expectedEquipPositions = [
@@ -216,24 +216,24 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       U256 jbounds = expectedEquipPositions.length.asU256();
       for (U256 jter; jter < jbounds; jter = jter.inc()) {
         uint256 j = jter.asUint256();
-        if (_fullAttireBonus.itemTokenIds[j] == NONE) {
+        if (fullAttireBonus.itemTokenIds[j] == NONE) {
           revert InvalidItemTokenId();
         }
-        if (itemNFT.getEquipPosition(_fullAttireBonus.itemTokenIds[j]) != expectedEquipPositions[j]) {
+        if (itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[j]) != expectedEquipPositions[j]) {
           revert InvalidEquipPosition();
         }
       }
 
-      fullAttireBonus[_fullAttireBonus.skill] = FullAttireBonus(
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent,
-        _fullAttireBonus.itemTokenIds
+      _fullAttireBonus[fullAttireBonus.skill] = FullAttireBonus(
+        fullAttireBonus.bonusXPPercent,
+        fullAttireBonus.bonusRewardsPercent,
+        fullAttireBonus.itemTokenIds
       );
       emit AddFullAttireBonus(
-        _fullAttireBonus.skill,
-        _fullAttireBonus.itemTokenIds,
-        _fullAttireBonus.bonusXPPercent,
-        _fullAttireBonus.bonusRewardsPercent
+        fullAttireBonus.skill,
+        fullAttireBonus.itemTokenIds,
+        fullAttireBonus.bonusXPPercent,
+        fullAttireBonus.bonusRewardsPercent
       );
     }
   }
