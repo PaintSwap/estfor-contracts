@@ -168,7 +168,7 @@ abstract contract PlayersBase {
   uint256 internal constant MAX_LEVEL_1 = 500; // TODO: Update later
 
   // *IMPORTANT* keep as the first non-constant state variable
-  uint256 internal startSlot;
+  uint256 internal _startSlot;
 
   mapping(address user => uint256 playerId) internal activePlayer_;
 
@@ -424,7 +424,7 @@ abstract contract PlayersBase {
     uint256 expectedStartSlotNumber = 251; // From the various slot arrays expected in the base classes
     uint256 slot;
     assembly ("memory-safe") {
-      slot := startSlot.slot
+      slot := _startSlot.slot
     }
     if (slot != expectedStartSlotNumber) {
       revert InvalidStartSlot();
