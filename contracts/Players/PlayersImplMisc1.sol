@@ -85,9 +85,9 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     string calldata _avatarName,
     string calldata _avatarDescription,
     string calldata _imageURI,
-    uint256 _playerId
+    uint256 playerId
   ) external view returns (string memory) {
-    PackedXP storage packedXP = xp_[_playerId];
+    PackedXP storage packedXP = xp_[playerId];
     uint256 overallLevel = PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.RANGED, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MAGIC, packedXP)) +
@@ -109,9 +109,9 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       abi.encodePacked(
         _getTraitStringJSON("Avatar", _avatarName),
         ",",
-        _getTraitStringJSON("Clan", clans.getClanNameOfPlayer(_playerId)),
+        _getTraitStringJSON("Clan", clans.getClanNameOfPlayer(playerId)),
         ",",
-        _getTraitStringJSON("Full version", _isPlayerFullMode(_playerId) ? "true" : "false"),
+        _getTraitStringJSON("Full version", _isPlayerFullMode(playerId) ? "true" : "false"),
         ",",
         _getTraitNumberJSON("Melee level", PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP))),
         ",",
@@ -163,7 +163,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       "https://",
       isBeta ? "beta." : "",
       "estfor.com/journal/",
-      _playerId.toString()
+      playerId.toString()
     );
 
     string memory json = Base64.encode(
