@@ -186,7 +186,8 @@ describe("Fuzz testing", async function () {
           rightHandItem.minXP != 0 &&
           hasItemMinimumRequirements
         ) {
-          hasItemMinimumRequirements = (await players.xp(playerId, rightHandItem.skill)) >= rightHandItem.minXP;
+          hasItemMinimumRequirements =
+            (await players.getPlayerXP(playerId, rightHandItem.skill)) >= rightHandItem.minXP;
         } else if (!rightHandItem) {
           hasItemMinimumRequirements = false;
         }
@@ -194,7 +195,7 @@ describe("Fuzz testing", async function () {
       if (leftHandEquipmentTokenId != EstforConstants.NONE) {
         leftHandItem = allItems.find((inputItem) => inputItem.tokenId == leftHandEquipmentTokenId);
         if (leftHandItem && leftHandItem.skill != Skill.NONE && leftHandItem.minXP != 0 && hasItemMinimumRequirements) {
-          hasItemMinimumRequirements = (await players.xp(playerId, leftHandItem.skill)) >= leftHandItem.minXP;
+          hasItemMinimumRequirements = (await players.getPlayerXP(playerId, leftHandItem.skill)) >= leftHandItem.minXP;
         } else if (!leftHandItem) {
           hasItemMinimumRequirements = false;
         }
@@ -203,14 +204,14 @@ describe("Fuzz testing", async function () {
       const timespan = Math.floor(Math.random() * 24 * 3601); // Up to 24 hours
       let hasActionMinimumRequirements = true;
       if (!isCombat) {
-        hasActionMinimumRequirements = (await players.xp(playerId, action.info.skill)) >= action.info.minXP;
+        hasActionMinimumRequirements = (await players.getPlayerXP(playerId, action.info.skill)) >= action.info.minXP;
       }
       const correctChoiceId =
         (!action.info.actionChoiceRequired && choiceId == EstforConstants.NONE) ||
         (action.info.actionChoiceRequired && choiceId != EstforConstants.NONE);
       let hasActionChoiceMinimumRequirements = true;
       if (actionChoice != null) {
-        hasActionChoiceMinimumRequirements = (await players.xp(playerId, actionChoice.skill)) >= minXP;
+        hasActionChoiceMinimumRequirements = (await players.getPlayerXP(playerId, actionChoice.skill)) >= minXP;
       }
 
       const correctCombatStyle = (combatStyle == EstforTypes.CombatStyle.NONE) !== isCombat;
@@ -260,7 +261,7 @@ describe("Fuzz testing", async function () {
         );
         if (!hasActionMinimumRequirements) {
           console.log(action);
-          console.log("Action Min XP", await players.xp(playerId, action.info.skill), action.info.minXP);
+          console.log("Action Min XP", await players.getPlayerXP(playerId, action.info.skill), action.info.minXP);
         }
 
         await expect(

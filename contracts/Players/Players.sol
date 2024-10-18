@@ -503,12 +503,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return _activePlayers[_owner];
   }
 
-  function xp(uint256 playerId, Skill _skill) external view override returns (uint256) {
-    return PlayersLibrary.readXP(_skill, xp_[playerId]);
+  function getPlayerXP(uint256 playerId, Skill _skill) external view override returns (uint256) {
+    return PlayersLibrary.readXP(_skill, _playerXP[playerId]);
   }
 
   function level(uint256 playerId, Skill _skill) external view override returns (uint256) {
-    return PlayersLibrary._getLevel(PlayersLibrary.readXP(_skill, xp_[playerId]));
+    return PlayersLibrary._getLevel(PlayersLibrary.readXP(_skill, _playerXP[playerId]));
   }
 
   function totalXP(uint256 playerId) external view override returns (uint256) {
@@ -516,7 +516,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function packedXP(uint256 playerId) external view returns (PackedXP memory) {
-    return xp_[playerId];
+    return _playerXP[playerId];
   }
 
   function players(uint256 playerId) external view returns (Player memory) {
@@ -595,16 +595,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function testModifyXP(
-    address _from,
-    uint256 playerId,
-    Skill _skill,
-    uint56 _xp,
-    bool _force
-  ) external isAdminAndBeta {
+  function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external isAdminAndBeta {
     _delegatecall(
       implProcessActions,
-      abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, _from, playerId, _skill, _xp, _force)
+      abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, from, playerId, skill, xp, force)
     );
   }
 

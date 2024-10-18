@@ -51,7 +51,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (boostDuration * boostValue) / 100
     );
     // Check the drops are as expected
@@ -98,7 +98,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (queuedAction.timespan * boostValue) / 100
     );
     // Check the drops are as expected
@@ -151,7 +151,7 @@ describe("Boosts", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(queuedAction.timespan);
 
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
         queuedAction.timespan + (queuedAction.timespan * boostValue) / 100 + queuedAction.timespan
       );
     });
@@ -300,8 +300,8 @@ describe("Boosts", function () {
       BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -352,8 +352,8 @@ describe("Boosts", function () {
       BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -399,7 +399,7 @@ describe("Boosts", function () {
       queuedAction.timespan + (boostDuration * boostValue) / 100
     );
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       queuedAction.timespan + (boostDuration * boostValue) / 100
     );
     // Check the drops are as expected
@@ -465,8 +465,8 @@ describe("Boosts", function () {
       BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -530,8 +530,8 @@ describe("Boosts", function () {
       BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -640,8 +640,8 @@ describe("Boosts", function () {
       BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -766,8 +766,8 @@ describe("Boosts", function () {
       BigInt(meleeXP + healthXP - 1)
     ]);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -939,8 +939,8 @@ describe("Boosts", function () {
     ]);
 
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP - 1);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP - 1);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -1097,8 +1097,8 @@ describe("Boosts", function () {
     ]);
 
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
-    expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(meleeXP);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
       BigInt(healthXP),
       BigInt(healthXP - 1)
     ]);
@@ -1183,7 +1183,7 @@ describe("Boosts", function () {
     await players.connect(alice).processActions(playerId);
 
     // 2 hours boosted XP, 6 hours not boosted in total
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.deep.oneOf([
       BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100),
       BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1)
     ]);
@@ -1241,7 +1241,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
       Math.floor(
@@ -1297,7 +1297,7 @@ describe("Boosts", function () {
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(foodCooked);
 
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.COOKING)).to.eq(queuedAction.timespan);
     // Check the drops are as expected
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(foodCooked);
   });
@@ -1491,24 +1491,24 @@ describe("Boosts", function () {
     let pendingRandomRewards = await players.getPendingRandomRewards(playerId);
     expect(pendingRandomRewards.length).to.eq(1);
     expect(pendingRandomRewards[0].xpElapsedTime).to.eq(3600);
-    expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour);
     await ethers.provider.send("evm_increaseTime", [3600 + 60]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId); // Still in same action
     pendingRandomRewards = await players.getPendingRandomRewards(playerId);
     expect(pendingRandomRewards.length).to.eq(2);
     expect(pendingRandomRewards[1].xpElapsedTime).to.eq(3600);
-    expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 2);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 2);
     await ethers.provider.send("evm_increaseTime", [100]); // Next action
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 2); // Thieving is untouched
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 2); // Thieving is untouched
     pendingRandomRewards = await players.getPendingRandomRewards(playerId);
     expect(pendingRandomRewards.length).to.eq(2); // Not added as there was no xp time Action still going so no pending random rewards
     await ethers.provider.send("evm_increaseTime", [7200]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 4);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * 4);
     pendingRandomRewards = await players.getPendingRandomRewards(playerId);
     expect(pendingRandomRewards.length).to.eq(3); // Action still going so no pending random rewards
     expect(pendingRandomRewards[2].xpElapsedTime).to.eq(7200);
@@ -1686,7 +1686,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.ALCHEMY)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.ALCHEMY)).to.eq(queuedAction.timespan);
 
     const outputBalance = await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.ANCIENT_SCROLL)).to.eq(

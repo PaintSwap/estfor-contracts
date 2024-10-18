@@ -188,20 +188,20 @@ describe("Rewards", function () {
         .withArgs(alice.address, playerId, EstforTypes.Skill.MELEE, 2070952)
         .and.to.emit(players, "ClaimedXPThresholdRewards")
         .withArgs(alice.address, playerId, [EstforConstants.BRONZE_BAR, EstforConstants.BRONZE_HELMET], [3, 4]);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
 
       await expect(players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, 2080952, false))
         .to.emit(players, "AddXP")
         .withArgs(alice.address, playerId, EstforTypes.Skill.MELEE, 10000)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.equal(2080952);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2080952);
 
       // Check balance
       await expect(players.testModifyXP(alice.address, playerId, EstforTypes.Skill.DEFENCE, 2070952, false))
         .to.emit(players, "AddXP")
         .withArgs(alice.address, playerId, EstforTypes.Skill.DEFENCE, 2070952)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.equal(2070952);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.equal(2070952);
     });
 
     // This was for a reported bug by doughbender where multiple actions were giving the same xp rewards triggering
@@ -2837,10 +2837,10 @@ describe("Rewards", function () {
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.gt(0);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.LOG);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     await players.connect(alice).processActions(playerId);
     // Confirm 0 XP but got wood
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.be.gt(0);
   });
 });

@@ -34,14 +34,14 @@ describe("Players", function () {
     await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const playerId = await createPlayer(playerNFT, avatarId, alice, "Name", true);
 
-    expect(await players.xp(playerId, Skill.FIREMAKING)).to.eq(START_XP);
+    expect(await players.getPlayerXP(playerId, Skill.FIREMAKING)).to.eq(START_XP);
 
     avatarInfo.startSkills = [Skill.FIREMAKING, Skill.HEALTH];
 
     await playerNFT.setAvatars([avatarId], [avatarInfo]);
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
-    expect(await players.xp(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP / 2n);
-    expect(await players.xp(newPlayerId, Skill.HEALTH)).to.eq(START_XP / 2n);
+    expect(await players.getPlayerXP(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP / 2n);
+    expect(await players.getPlayerXP(newPlayerId, Skill.HEALTH)).to.eq(START_XP / 2n);
     expect((await players.players(newPlayerId)).totalXP).to.eq(START_XP);
   });
 
@@ -52,7 +52,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [361]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(360);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(360);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(10); // Should be rounded down
     expect((await players.players(playerId)).totalXP).to.eq(START_XP + 360n);
   });
@@ -66,7 +66,7 @@ describe("Players", function () {
       await ethers.provider.send("evm_increaseTime", [7200]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.eq((i + 1) * 3600);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.eq((i + 1) * 3600);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq((i + 1) * 100); // Should be rounded down
     }
   });
@@ -79,7 +79,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.deep.oneOf([
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.be.deep.oneOf([
       BigInt(queuedAction.timespan / 2),
       BigInt(queuedAction.timespan / 2 + 1)
     ]);
@@ -97,7 +97,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
   });
 
   it("Multi-skill points", async function () {
@@ -1060,9 +1060,9 @@ describe("Players", function () {
       expect(actionQueue[0].queueId).to.eq(2);
       expect(actionQueue[1].queueId).to.eq(3);
       await expectRemovedCurrentAction(players, playerId, NOW + 1);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(36);
-      expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(36);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
     });
 
     it("Finish first action, then no item, haven't started other actions", async function () {
@@ -1093,9 +1093,9 @@ describe("Players", function () {
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].queueId).to.eq(3);
       await expectRemovedCurrentAction(players, playerId, NOW + 1);
-      expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
     });
 
     it("Finish first action, then no items for the other 2", async function () {
@@ -1131,9 +1131,9 @@ describe("Players", function () {
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
       await expectRemovedCurrentAction(players, playerId, 0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
     });
 
     it("Have no items, partial start the last action", async function () {
@@ -1166,9 +1166,9 @@ describe("Players", function () {
       const actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
       await expectRemovedCurrentAction(players, playerId, 0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
     });
 
     it("Have no items, finish all actions", async function () {
@@ -1203,9 +1203,9 @@ describe("Players", function () {
       const actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
       await expectRemovedCurrentAction(players, playerId, 0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
     });
 
     it("Missing middle item, 3 fully finished actions, checking consumed/produced is correct", async function () {
@@ -1321,7 +1321,7 @@ describe("Players", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     }
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(Math.pow(2, 32) - 1);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(Math.pow(2, 32) - 1);
   });
 
   it("Set active player to existing", async function () {
@@ -1465,7 +1465,7 @@ describe("Players", function () {
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP;
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
     );
   });
@@ -1492,7 +1492,7 @@ describe("Players", function () {
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.05));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP / 2n;
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       startXP + BigInt(Math.floor(queuedAction.timespan * 1.05))
     );
   });
@@ -1525,7 +1525,7 @@ describe("Players", function () {
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.2));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP;
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       startXP + BigInt(Math.floor(queuedAction.timespan * 1.2))
     );
   });
@@ -1558,7 +1558,7 @@ describe("Players", function () {
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP / 2n;
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
       startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
     );
   });
@@ -2177,7 +2177,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.SMITHING)).to.eq(queuedAction.timespan);
 
     // Check how many bars they have now, 100 bars created per hour, burns 2 coal and 1 mithril
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_BAR)).to.eq(
@@ -2248,13 +2248,13 @@ describe("Players", function () {
     await players.connect(alice).processActions(playerId);
     expect((await players.players(playerId)).packedData).to.eq("0x01");
     // Should earn agility xp
-    expect(await players.xp(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
 
     // Trying to travel from 0 to 1 should do nothing and earn no xp. Should be allowed to queue but it does nothing
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    expect(await players.xp(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
 
     // Can process an action that is intended for area 1 only
     const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
@@ -2264,6 +2264,6 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedActionWoodcutting.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
   });
 });

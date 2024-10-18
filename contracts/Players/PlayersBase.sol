@@ -183,7 +183,7 @@ abstract contract PlayersBase {
   bool internal dailyRewardsEnabled;
   bool internal isBeta;
 
-  mapping(uint256 playerId => PackedXP packedXP) internal xp_;
+  mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
 
   mapping(uint256 playerId => Player player) internal players_;
   mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal attire_;
@@ -311,7 +311,7 @@ abstract contract PlayersBase {
 
   // This does not update player.totalXP!!
   function _updateXP(address _from, uint256 playerId, Skill _skill, uint128 _pointsAccrued) internal {
-    PackedXP storage packedXP = xp_[playerId];
+    PackedXP storage packedXP = _playerXP[playerId];
     uint256 oldPoints = PlayersLibrary.readXP(_skill, packedXP);
     uint256 newPoints = oldPoints.add(_pointsAccrued);
 

@@ -34,7 +34,7 @@ interface IPlayers {
 
   function getActivePlayer(address owner) external view returns (uint256 playerId);
 
-  function xp(uint256 playerId, Skill skill) external view returns (uint256 xp);
+  function getPlayerXP(uint256 playerId, Skill skill) external view returns (uint256 xp);
 
   function level(uint256 playerId, Skill skill) external view returns (uint256 level);
 

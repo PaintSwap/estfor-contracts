@@ -285,7 +285,7 @@ describe("Quests", function () {
       // Check the rewards are as expected
       expect(quest.rewardItemTokenId1).to.eq(0);
       expect(quest.skillXPGained).to.not.eq(0);
-      expect(await players.xp(playerId, quest.skillReward)).to.eq(quest.skillXPGained);
+      expect(await players.getPlayerXP(playerId, quest.skillReward)).to.eq(quest.skillXPGained);
     });
 
     it("Check that quest is not completed after an action", async function () {
@@ -843,8 +843,8 @@ describe("Quests", function () {
     await players.addXPThresholdRewards([{xpThreshold: 10000, rewards}]);
 
     await players.connect(alice).processActions(playerId);
-    const cookingXP = await players.xp(playerId, Skill.COOKING);
-    expect(await players.xp(playerId, Skill.WOODCUTTING)).to.eq(10000);
+    const cookingXP = await players.getPlayerXP(playerId, Skill.COOKING);
+    expect(await players.getPlayerXP(playerId, Skill.WOODCUTTING)).to.eq(10000);
     expect((await players.players(playerId)).totalXP).to.eq(START_XP + cookingXP + 10000n);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
   });
@@ -1078,7 +1078,7 @@ describe("Quests", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, quest.skillReward)).to.eq(quest.skillXPGained);
+      expect(await players.getPlayerXP(playerId, quest.skillReward)).to.eq(quest.skillXPGained);
     });
   });
 });

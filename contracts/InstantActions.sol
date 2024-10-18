@@ -242,19 +242,19 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   function _checkMinXPRequirements(uint256 playerId, InstantAction storage instantAction) private view {
     Skill minSkill1 = instantAction.minSkill1.asSkill();
     require(
-      minSkill1 == Skill.NONE || _players.xp(playerId, minSkill1) >= instantAction.minXP1,
+      minSkill1 == Skill.NONE || _players.getPlayerXP(playerId, minSkill1) >= instantAction.minXP1,
       MinimumXPNotReached(minSkill1, instantAction.minXP1)
     );
 
     Skill minSkill2 = instantAction.minSkill2.asSkill();
     require(
-      minSkill2 == Skill.NONE || _players.xp(playerId, minSkill2) >= instantAction.minXP2,
+      minSkill2 == Skill.NONE || _players.getPlayerXP(playerId, minSkill2) >= instantAction.minXP2,
       MinimumXPNotReached(minSkill2, instantAction.minXP2)
     );
 
     Skill minSkill3 = instantAction.minSkill3.asSkill();
     require(
-      minSkill3 == Skill.NONE || _players.xp(playerId, minSkill3) >= instantAction.minXP3,
+      minSkill3 == Skill.NONE || _players.getPlayerXP(playerId, minSkill3) >= instantAction.minXP3,
       MinimumXPNotReached(minSkill3, instantAction.minXP3)
     );
   }

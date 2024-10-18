@@ -87,7 +87,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     string calldata _imageURI,
     uint256 playerId
   ) external view returns (string memory) {
-    PackedXP storage packedXP = xp_[playerId];
+    PackedXP storage packedXP = _playerXP[playerId];
     uint256 overallLevel = PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.RANGED, packedXP)) +
       PlayersLibrary.getLevel(PlayersLibrary.readXP(Skill.MAGIC, packedXP)) +

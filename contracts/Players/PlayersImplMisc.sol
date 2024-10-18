@@ -116,7 +116,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   // Index not level, add one after (check for > max)
-  function _findBaseXPThreshold(uint256 _xp) private pure returns (uint16) {
+  function _findBaseXPThreshold(uint256 xp) private pure returns (uint16) {
     U256 low;
     U256 high = xpRewardBytes.length.asU256().div(4);
 
@@ -125,7 +125,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
       // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
       // Math.average rounds down (it does integer division with truncation).
-      if (_getXPReward(mid.asUint256()) > _xp) {
+      if (_getXPReward(mid.asUint256()) > xp) {
         high = mid;
       } else {
         low = mid.inc();
@@ -307,7 +307,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           PlayersLibrary.getAbsoluteActionStartXP(
             uint8(_actionChoice.skill),
             _pendingQueuedActionProcessed,
-            xp_[playerId]
+            _playerXP[playerId]
           )
         );
         uint256 extraBoost = skillLevel - minLevel;

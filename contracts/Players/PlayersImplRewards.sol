@@ -152,7 +152,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
       CombatStats memory combatStats;
       if (isCombat) {
-        combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, xp_[playerId]);
+        combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, _playerXP[playerId]);
         if (queuedAction.choiceId != 0) {
           combatStats = PlayersLibrary.updateCombatStatsFromSkill(
             combatStats,
@@ -806,7 +806,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         pendingQueuedActionProcessed,
         address(world),
         MAX_SUCCESS_PERCENT_CHANCE_,
-        xp_[playerId]
+        _playerXP[playerId]
       );
   }
 

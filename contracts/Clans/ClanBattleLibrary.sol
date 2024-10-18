@@ -103,8 +103,8 @@ library ClanBattleLibrary {
           rollsB[i] = _clanMembersB[i] == 0 ? 0 : 1;
         } else {
           {
-            uint256 levelA = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersA[i], _skills[i]));
-            uint256 levelB = PlayersLibrary._getLevel(IPlayers(_players).xp(_clanMembersB[i], _skills[i]));
+            uint256 levelA = PlayersLibrary._getLevel(IPlayers(_players).getPlayerXP(_clanMembersA[i], _skills[i]));
+            uint256 levelB = PlayersLibrary._getLevel(IPlayers(_players).getPlayerXP(_clanMembersB[i], _skills[i]));
             if (levelA > 20 * 6 || levelB > 20 * 6) {
               assert(false); // Unsupported
             }

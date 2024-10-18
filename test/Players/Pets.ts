@@ -53,7 +53,7 @@ describe("Pets", function () {
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
 
   it("Queue a pet with combat, partial action consumption", async function () {
@@ -81,12 +81,12 @@ describe("Pets", function () {
     await ethers.provider.send("evm_mine", []);
 
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5));
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5));
 
     await ethers.provider.send("evm_increaseTime", [10]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
 
   it("Transfer away and back and the pet should no longer be used", async function () {
@@ -132,7 +132,7 @@ describe("Pets", function () {
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5)); // No XP gained
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5)); // No XP gained
   });
 
   it("Transfer away and back and the pet can should still be used for later queued actions", async function () {
@@ -188,7 +188,7 @@ describe("Pets", function () {
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36); // Now gain some XP
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36); // Now gain some XP
   });
 
   it("Queue a pet with combat and startActionsExtraV2", async function () {
@@ -225,7 +225,7 @@ describe("Pets", function () {
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
 
   it("Queue a pet with combat, percentage + fixed", async function () {
@@ -253,7 +253,7 @@ describe("Pets", function () {
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36);
   });
 
   it("Cannot transfer an anniversary pet", async function () {

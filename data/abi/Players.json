@@ -2318,6 +2318,30 @@
         "type": "uint256"
       },
       {
+        "internalType": "enum Skill",
+        "name": "_skill",
+        "type": "uint8"
+      }
+    ],
+    "name": "getPlayerXP",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
         "internalType": "string",
         "name": "_name",
         "type": "string"
@@ -3898,7 +3922,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
@@ -3908,17 +3932,17 @@
       },
       {
         "internalType": "enum Skill",
-        "name": "_skill",
+        "name": "skill",
         "type": "uint8"
       },
       {
         "internalType": "uint56",
-        "name": "_xp",
+        "name": "xp",
         "type": "uint56"
       },
       {
         "internalType": "bool",
-        "name": "_force",
+        "name": "force",
         "type": "bool"
       }
     ],
@@ -4239,30 +4263,6 @@
         "internalType": "bytes[]",
         "name": "reasons",
         "type": "bytes[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "_skill",
-        "type": "uint8"
-      }
-    ],
-    "name": "xp",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",

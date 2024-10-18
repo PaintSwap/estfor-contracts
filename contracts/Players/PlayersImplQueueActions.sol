@@ -237,7 +237,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     if (
       actionInfo.minXP != 0 &&
-      _getRealXP(actionInfo.skill.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+      _getRealXP(actionInfo.skill.asSkill(), _playerXP[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
       actionInfo.minXP
     ) {
       revert ActionMinimumXPNotReached();
@@ -255,15 +255,24 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
 
       if (
-        _getRealXP(actionChoice.skill.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
-        actionChoice.minXP
+        _getRealXP(
+          actionChoice.skill.asSkill(),
+          _playerXP[playerId],
+          _pendingQueuedActionProcessed,
+          _pendingQuestState
+        ) < actionChoice.minXP
       ) {
         revert ActionChoiceMinimumXPNotReached();
       }
 
       if (
         actionChoice.minSkill2.asSkill() != Skill.NONE &&
-        _getRealXP(actionChoice.minSkill2.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        _getRealXP(
+          actionChoice.minSkill2.asSkill(),
+          _playerXP[playerId],
+          _pendingQueuedActionProcessed,
+          _pendingQuestState
+        ) <
         actionChoice.minXP2
       ) {
         revert ActionChoiceMinimumXPNotReached();
@@ -271,7 +280,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       if (
         actionChoice.minSkill3.asSkill() != Skill.NONE &&
-        _getRealXP(actionChoice.minSkill3.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        _getRealXP(
+          actionChoice.minSkill3.asSkill(),
+          _playerXP[playerId],
+          _pendingQueuedActionProcessed,
+          _pendingQuestState
+        ) <
         actionChoice.minXP3
       ) {
         revert ActionChoiceMinimumXPNotReached();
@@ -419,7 +433,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       (Skill skill, uint32 minXP, , bool isFoodFullModeOnly) = itemNFT.getEquipPositionAndMinRequirement(
         _queuedActionInput.regenerateId
       );
-      if (_getRealXP(skill, xp_[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
+      if (_getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
         revert ConsumableMinimumXPNotReached();
       }
       // TODO: Untested
@@ -528,7 +542,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       while (iter.neq(0)) {
         iter = iter.dec();
         uint256 i = iter.asUint256();
-        if (_getRealXP(skills[i], xp_[playerId], _pendingQueuedActionProcessed, _questState) < minXPs[i]) {
+        if (_getRealXP(skills[i], _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXPs[i]) {
           revert AttireMinimumXPNotReached();
         }
         if (balances[i] == 0) {
@@ -582,7 +596,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         }
         (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isItemFullModeOnly) = itemNFT
           .getEquipPositionAndMinRequirement(equippedItemTokenId);
-        if (_getRealXP(skill, xp_[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
+        if (_getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
           revert ItemMinimumXPNotReached();
         }
         if (isItemFullModeOnly && !_isPlayerUpgraded) {

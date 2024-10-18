@@ -159,7 +159,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     for (uint256 i = 0; i < _minimumRequirements[questId].length; ++i) {
       MinimumRequirement storage minimumRequirement = _minimumRequirements[questId][i];
       if (minimumRequirement.skill != Skill.NONE) {
-        uint256 xp = _players.xp(playerId, minimumRequirement.skill);
+        uint256 xp = _players.getPlayerXP(playerId, minimumRequirement.skill);
         if (xp < minimumRequirement.xp) {
           revert InvalidMinimumRequirement();
         }

@@ -505,23 +505,23 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function testModifyXP(address _from, uint256 playerId, Skill _skill, uint56 _xp, bool _force) external {
-    if (!_force && players_[playerId].actionQueue.length != 0) {
+  function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external {
+    if (!force && players_[playerId].actionQueue.length != 0) {
       revert HasQueuedActions();
     }
 
     // Make sure it isn't less XP
-    uint256 oldXP = PlayersLibrary.readXP(_skill, xp_[playerId]);
-    if (_xp < oldXP) {
+    uint256 oldXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
+    if (xp < oldXP) {
       revert TestInvalidXP();
     }
-    if (playerNFT.balanceOf(_from, playerId) == 0) {
+    if (playerNFT.balanceOf(from, playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
-    uint56 gainedXP = uint56(_xp.sub(oldXP));
-    _updateXP(_from, playerId, _skill, gainedXP);
+    uint56 gainedXP = uint56(xp.sub(oldXP));
+    _updateXP(from, playerId, skill, gainedXP);
     uint56 newTotalXP = uint56(players_[playerId].totalXP.add(gainedXP));
-    _claimTotalXPThresholdRewards(_from, playerId, players_[playerId].totalXP, newTotalXP);
+    _claimTotalXPThresholdRewards(from, playerId, players_[playerId].totalXP, newTotalXP);
     players_[playerId].totalXP = newTotalXP;
   }
 

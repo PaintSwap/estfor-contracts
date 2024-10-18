@@ -55,12 +55,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.be.deep.oneOf([BigInt(time), BigInt(time + 1)]);
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.be.deep.oneOf([
+        BigInt(time),
+        BigInt(time + 1)
+      ]);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(time / 3) - 1),
         BigInt(Math.floor(time / 3))
       ]); // Health should get 33% of the stats
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -91,7 +94,7 @@ describe("Combat Actions", function () {
         await players.connect(alice).processActions(playerId);
       }
 
-      const healthXP = await players.xp(playerId, EstforTypes.Skill.HEALTH);
+      const healthXP = await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH);
       // Check that some are used at least before completing the action
       expect(healthXP).to.not.eq(0);
       // Check the drops are as expected
@@ -102,8 +105,8 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // This makes sure everything is used
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(queuedAction.timespan);
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(queuedAction.timespan);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(queuedAction.timespan / 3) - 1),
         BigInt(Math.floor(queuedAction.timespan / 3))
       ]); // Health should get 33% of the stats
@@ -139,12 +142,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.be.deep.oneOf([BigInt(time), BigInt(time + 1)]);
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.be.deep.oneOf([
+        BigInt(time),
+        BigInt(time + 1)
+      ]);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(time / 3) - 1),
         BigInt(Math.floor(time / 3))
       ]); // Health should get 33% of the stats
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -164,7 +170,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
@@ -192,8 +198,11 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.be.deep.oneOf([BigInt(time), BigInt(time + 1)]);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.be.deep.oneOf([
+        BigInt(time),
+        BigInt(time + 1)
+      ]);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -246,7 +255,10 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
 
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.deep.oneOf([BigInt(time), BigInt(time + 1)]);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.deep.oneOf([
+        BigInt(time),
+        BigInt(time + 1)
+      ]);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -321,7 +333,7 @@ describe("Combat Actions", function () {
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
 
       // Check food is consumed
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
@@ -500,8 +512,8 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
 
       // Should have died. You still get XP for the ones you killed while processing.it  He could kill
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(2484); // Killed 67
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(2484); // Killed 67
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(69);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance - BigInt(Math.pow(2, 16) - 1)
@@ -566,7 +578,7 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
 
       // Should have died. You still get XP for the ones you killed while processing.it  He could kill
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(2520); // Killed 68 (the healing helped us kill 1 more)
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(2520); // Killed 68 (the healing helped us kill 1 more)
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(70);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance - BigInt(Math.pow(2, 16) - 1)
@@ -638,8 +650,8 @@ describe("Combat Actions", function () {
       }
 
       // Should have died. You still get XP for the ones you killed while processing
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(2484); // Killed 69
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(2484); // Killed 69
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(69);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance - BigInt(Math.pow(2, 16) - 1)
@@ -753,7 +765,7 @@ describe("Combat Actions", function () {
 
       await players.connect(alice).processActions(playerId);
 
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250);
 
       let player = await players.players(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
@@ -916,11 +928,11 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
 
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250n);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(START_XP + 250n);
-      expect(await players.xp(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(250n);
-      expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(1145n + 250n);
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(381n + 250n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(START_XP + 250n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(250n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(1145n + 250n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(381n + 250n);
 
       let player = await players.players(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
@@ -1296,15 +1308,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
         BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -1347,15 +1359,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(
         startXP + BigInt(Math.floor(queuedActionDefence.timespan * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedActionDefence.timespan / 3)),
         BigInt(Math.floor(queuedActionDefence.timespan / 3) - 1)
       ]);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -1398,15 +1410,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(
         startXP + BigInt(Math.floor(queuedActionDefence.timespan * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedActionDefence.timespan / 3)),
         BigInt(Math.floor(queuedActionDefence.timespan / 3) - 1)
       ]);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -1539,20 +1551,20 @@ describe("Combat Actions", function () {
       // Check the XP is as expected
       const startXP = START_XP;
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [30]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [10]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       // Killed 1 monster, 80s of combat has passed
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + (36n * 11n) / 10n); // Add the boost
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + (36n * 11n) / 10n); // Add the boost
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(Math.floor(dropRate / 10));
 
@@ -1571,10 +1583,12 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(0);
 
       // Killed 50 monsters (10% base boost)
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(
+        Math.floor(queuedAction.timespan / (2 * 3))
+      );
     });
 
     it("In-progress combat updates (many)", async function () {
@@ -1707,10 +1721,12 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(0);
 
       // Killed 50 monsters (10% base boost)
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(
         START_XP + BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(Math.floor(queuedAction.timespan / (2 * 3)));
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(
+        Math.floor(queuedAction.timespan / (2 * 3))
+      );
     });
 
     it("No-Bonus XP", async function () {
@@ -1733,12 +1749,12 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(noSkillPlayerId);
-      expect(await players.xp(noSkillPlayerId, EstforTypes.Skill.MAGIC)).to.eq(queuedAction.timespan);
-      expect(await players.xp(noSkillPlayerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(noSkillPlayerId, EstforTypes.Skill.MAGIC)).to.eq(queuedAction.timespan);
+      expect(await players.getPlayerXP(noSkillPlayerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         BigInt(Math.floor(queuedAction.timespan / 3)),
         BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
-      expect(await players.xp(noSkillPlayerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(noSkillPlayerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -1774,10 +1790,10 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -1851,8 +1867,8 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       // Should get no XP
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       // Check food is consumed
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 40);
 
@@ -1870,7 +1886,7 @@ describe("Combat Actions", function () {
       let {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players.connect(alice).processActions(playerId);
       const xpGained = BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1));
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
 
       let player = await players.players(playerId);
       expect(player.currentActionStartTime).to.eq(NOW + 1);
@@ -1944,7 +1960,7 @@ describe("Combat Actions", function () {
       );
 
       let xpGained = BigInt(Math.floor(queuedAction.timespan * 0.2 * 1.1));
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
       await ethers.provider.send("evm_mine", []);
@@ -1965,7 +1981,7 @@ describe("Combat Actions", function () {
       );
 
       xpGained += BigInt(Math.floor(queuedAction.timespan * 0.2 * 0.5 * 1.1)); // Kill 1 more
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
 
       // Now have enough scrolls
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
@@ -1981,7 +1997,7 @@ describe("Combat Actions", function () {
       );
 
       xpGained += BigInt(Math.floor(queuedAction.timespan * 0.2 * 2 * 1.1)); // Kill 4 more
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
 
       // Finish it off
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
@@ -1996,7 +2012,7 @@ describe("Combat Actions", function () {
       );
 
       xpGained = BigInt(Math.floor(queuedAction.timespan * 1.1));
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
     });
 
     it("Add multi actionChoice", async function () {
@@ -2105,8 +2121,8 @@ describe("Combat Actions", function () {
         beforeBal = newBalance;
       }
 
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(3106);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(3106);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance - BigInt(Math.pow(2, 16) - 1)
       );
@@ -2169,8 +2185,8 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       // Died but still get XP
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + 2732n);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + 2732n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
         foodBalance - BigInt(Math.pow(2, 16) - 1)
       );
@@ -2232,8 +2248,8 @@ describe("Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
       await players.connect(alice).processActions(playerId);
       // Died but still get some XP
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + 3960n);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + 3960n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
       // Use up everything
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.SHADOW_SCROLL)).to.eq(0);
@@ -2371,8 +2387,8 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
 
       // Died but still get some XP
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(55921n);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250n); // Should be the same as before
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(55921n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250n); // Should be the same as before
 
       // Use up everything
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0n);
@@ -2432,15 +2448,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.MAGIC)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by magic boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
         BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
@@ -2612,15 +2628,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.RANGED)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
         BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
@@ -2741,9 +2757,9 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(startXP);
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.eq(0);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.RANGED)).to.eq(startXP);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // No arrows used
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(200);
@@ -2826,15 +2842,15 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await players.xp(playerId, EstforTypes.Skill.RANGED)).to.eq(
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.RANGED)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
-      expect(await players.xp(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
         BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
-      expect(await players.xp(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.NATURE_SCROLL)).to.eq(
@@ -2955,7 +2971,7 @@ describe("Combat Actions", function () {
 
     await players.connect(alice).processActions(playerId);
     // Should die, but still get skill points & loot for the ones you did kill. Also food should be consumed
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(1332);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(1332);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(222000);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
 
@@ -3182,7 +3198,7 @@ describe("Combat Actions", function () {
     expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
     await players.connect(alice).processActions(playerId);
     // Should die so doesn't get any attack skill points, and food should be consumed
-    expect(await players.xp(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(0);
   });
