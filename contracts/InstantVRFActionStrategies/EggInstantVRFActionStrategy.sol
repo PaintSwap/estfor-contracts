@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 
-import {IInstantVRFActionStrategy} from "./IInstantVRFActionStrategy.sol";
+import {IInstantVRFActionStrategy} from "./interfaces/IInstantVRFActionStrategy.sol";
 import {Skill} from "../globals/players.sol";
 import {InstantVRFActionInput} from "../globals/rewards.sol";
 

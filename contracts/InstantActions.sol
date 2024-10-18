@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {ItemNFT} from "./ItemNFT.sol";
-import {SkillLibrary} from "./SkillLibrary.sol";
+import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";

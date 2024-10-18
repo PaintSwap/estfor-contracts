@@ -7,7 +7,7 @@ import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelegate} from "../interfaces/IPlayersDelegates.sol";
-import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
+import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";

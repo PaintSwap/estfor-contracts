@@ -23,8 +23,8 @@ contract BrushNonTransferrable is ERC20Upgradeable, UUPSUpgradeable, OwnableUpgr
     __Ownable_init(_msgSender());
   }
 
-  function mint(address _to, uint256 _amount) external onlyOwner {
-    _mint(_to, _amount);
+  function mint(address to, uint256 amount) external onlyOwner {
+    _mint(to, amount);
   }
 
   function _update(address from, address to, uint256 amount) internal override {

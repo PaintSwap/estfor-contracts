@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Skill} from "./globals/misc.sol";
+import {Skill} from "../globals/misc.sol";
 
 library SkillLibrary {
   function asSkill(uint8 skill) internal pure returns (Skill) {

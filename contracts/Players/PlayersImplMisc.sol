@@ -12,7 +12,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {World} from "../World.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
-import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
+import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import

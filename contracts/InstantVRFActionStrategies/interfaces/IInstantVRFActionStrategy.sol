@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {InstantVRFActionInput, InstantVRFActionType} from "../globals/rewards.sol";
+import {InstantVRFActionInput, InstantVRFActionType} from "../../globals/rewards.sol";
 
-import {Skill} from "../globals/players.sol";
+import {Skill} from "../../globals/players.sol";
 
 interface IInstantVRFActionStrategy {
   function getRandomRewards(

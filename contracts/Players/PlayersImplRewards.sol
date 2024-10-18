@@ -8,8 +8,8 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
 
-import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
-import {SkillLibrary} from "../SkillLibrary.sol";
+import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
+import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";

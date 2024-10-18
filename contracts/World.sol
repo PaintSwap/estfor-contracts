@@ -8,7 +8,7 @@ import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.
 import {SamWitchVRFConsumerUpgradeable} from "./SamWitchVRFConsumerUpgradeable.sol";
 
 import {WorldLibrary} from "./WorldLibrary.sol";
-import {SkillLibrary} from "./SkillLibrary.sol";
+import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 

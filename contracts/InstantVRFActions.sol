@@ -5,7 +5,7 @@ import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
-import {IInstantVRFActionStrategy} from "./InstantVRFActionStrategies/IInstantVRFActionStrategy.sol";
+import {IInstantVRFActionStrategy} from "./InstantVRFActionStrategies/interfaces/IInstantVRFActionStrategy.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 import {PetNFT} from "./PetNFT.sol";
 import {Players} from "./Players/Players.sol";

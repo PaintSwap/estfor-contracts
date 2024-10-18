@@ -11,8 +11,8 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 
 import {PlayersLibrary} from "./PlayersLibrary.sol";
-import {SkillLibrary} from "../SkillLibrary.sol";
-import {CombatStyleLibrary} from "../CombatStyleLibrary.sol";
+import {SkillLibrary} from "../libraries/SkillLibrary.sol";
+import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";

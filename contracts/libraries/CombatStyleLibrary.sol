@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {CombatStyle} from "./globals/misc.sol";
+import {CombatStyle} from "../globals/misc.sol";
 
 library CombatStyleLibrary {
   function asCombatStyle(uint8 combatStyle) internal pure returns (CombatStyle) {

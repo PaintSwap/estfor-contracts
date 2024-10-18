@@ -11,7 +11,7 @@ import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {WishingWell} from "../WishingWell.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
-import {SkillLibrary} from "../SkillLibrary.sol";
+import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 import "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
