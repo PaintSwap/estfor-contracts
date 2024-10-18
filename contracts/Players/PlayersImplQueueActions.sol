@@ -25,6 +25,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   using UnsafeMath for uint64;
   using UnsafeMath for uint256;
   using SkillLibrary for uint8;
+  using SkillLibrary for Skill;
   using CombatStyleLibrary for uint8;
 
   constructor() {
@@ -32,23 +33,23 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   }
 
   function startActions(
-    uint256 _playerId,
+    uint256 playerId,
     QueuedActionInputV2[] memory _queuedActionInputs,
-    uint16 _boostItemTokenId,
-    uint40 _boostStartTime,
-    uint256 _questId,
-    uint256 _donationAmount,
-    ActionQueueStatus _queueStatus
+    uint16 boostItemTokenId,
+    uint40 boostStartTime,
+    uint256 questId,
+    uint256 donationAmount,
+    ActionQueueStatus queueStatus
   ) external {
     address from = msg.sender;
     uint256 totalTimespan;
     (
       QueuedAction[] memory remainingQueuedActions,
       PendingQueuedActionData memory currentActionProcessed
-    ) = _processActions(from, _playerId);
+    ) = _processActions(from, playerId);
 
-    Player storage player = players_[_playerId];
-    if (_queueStatus == ActionQueueStatus.NONE) {
+    Player storage player = players_[playerId];
+    if (queueStatus == ActionQueueStatus.NONE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
         delete player.actionQueue;
@@ -62,7 +63,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         revert TooManyActionsQueued();
       }
     } else {
-      if (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingQueuedActions.length > 1) {
+      if (queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingQueuedActions.length > 1) {
         // Only want one
         assembly ("memory-safe") {
           mstore(remainingQueuedActions, 1)
@@ -82,12 +83,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     if (
-      (_queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || _queueStatus == ActionQueueStatus.APPEND) &&
+      (queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || queueStatus == ActionQueueStatus.APPEND) &&
       remainingQueuedActions.length != 0
     ) {
       _setPrevPlayerState(player, currentActionProcessed);
     } else {
-      _clearCurrentActionProcessed(_playerId);
+      _clearCurrentActionProcessed(playerId);
     }
 
     U256 queueId = nextQueueId.asU256();
@@ -131,7 +132,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) = _addToQueue(
         from,
-        _playerId,
+        playerId,
         _queuedActionInputs[i],
         queueId.asUint64(),
         uint40(startTimeNewActions)
@@ -148,31 +149,31 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint256 length = remainingQueuedActions.length + _queuedActionInputs.length;
     Attire[] memory attire = new Attire[](length);
     for (uint256 i = 0; i < remainingQueuedActions.length; ++i) {
-      attire[i] = attire_[_playerId][remainingQueuedActions[i].queueId];
+      attire[i] = attire_[playerId][remainingQueuedActions[i].queueId];
     }
     for (uint256 i = 0; i < _queuedActionInputs.length; ++i) {
       attire[i + remainingQueuedActions.length] = _queuedActionInputs[i].attire;
     }
 
-    emit SetActionQueueV2(from, _playerId, queuedActions, attire, player.currentActionStartTime, _queuedActionsExtra);
+    emit SetActionQueueV2(from, playerId, queuedActions, attire, player.currentActionStartTime, _queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
     nextQueueId = queueId.asUint56();
 
-    if (_questId != 0) {
-      quests.activateQuest(from, _playerId, _questId);
+    if (questId != 0) {
+      quests.activateQuest(from, playerId, questId);
     }
 
-    if (_boostItemTokenId != NONE) {
-      _consumeBoost(from, _playerId, _boostItemTokenId, _boostStartTime);
+    if (boostItemTokenId != NONE) {
+      _consumeBoost(from, playerId, boostItemTokenId, boostStartTime);
     }
 
-    if (_donationAmount != 0) {
-      _donate(from, _playerId, _donationAmount);
+    if (donationAmount != 0) {
+      _donate(from, playerId, donationAmount);
     }
   }
 
-  function _consumeBoost(address _from, uint256 _playerId, uint16 _itemTokenId, uint40 _startTime) private {
+  function _consumeBoost(address _from, uint256 playerId, uint16 _itemTokenId, uint40 _startTime) private {
     Item memory item = itemNFT.getItem(_itemTokenId);
     if (item.equipPosition != EquipPosition.BOOST_VIAL) {
       revert NotABoostVial();
@@ -188,7 +189,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     itemNFT.burn(_from, _itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
-    PlayerBoostInfo storage playerBoost = activeBoosts_[_playerId];
+    PlayerBoostInfo storage playerBoost = activeBoosts_[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
       itemNFT.mint(_from, playerBoost.itemTokenId, 1);
     }
@@ -201,7 +202,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     emit ConsumeBoostVial(
       _from,
-      _playerId,
+      playerId,
       BoostInfo({
         startTime: _startTime,
         duration: item.boostDuration,
@@ -214,7 +215,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function checkAddToQueue(
     address _from,
-    uint256 _playerId,
+    uint256 playerId,
     QueuedActionInputV2 memory _queuedActionInput,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _pendingQuestState
@@ -236,14 +237,14 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     if (
       actionInfo.minXP != 0 &&
-      _getRealXP(actionInfo.skill.asSkill(), xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+      _getRealXP(actionInfo.skill.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
       actionInfo.minXP
     ) {
       revert ActionMinimumXPNotReached();
     }
 
-    bool isCombat = actionInfo.skill.asSkill() == Skill.COMBAT;
-    bool isPlayerUpgraded = _isPlayerFullMode(_playerId);
+    bool isCombat = actionInfo.skill.asSkill().isCombat();
+    bool isPlayerUpgraded = _isPlayerFullMode(playerId);
 
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
@@ -254,7 +255,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       actionChoice = world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
 
       if (
-        _getRealXP(actionChoice.skill.asSkill(), xp_[_playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
+        _getRealXP(actionChoice.skill.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
         actionChoice.minXP
       ) {
         revert ActionChoiceMinimumXPNotReached();
@@ -262,12 +263,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       if (
         actionChoice.minSkill2.asSkill() != Skill.NONE &&
-        _getRealXP(
-          actionChoice.minSkill2.asSkill(),
-          xp_[_playerId],
-          _pendingQueuedActionProcessed,
-          _pendingQuestState
-        ) <
+        _getRealXP(actionChoice.minSkill2.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
         actionChoice.minXP2
       ) {
         revert ActionChoiceMinimumXPNotReached();
@@ -275,12 +271,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       if (
         actionChoice.minSkill3.asSkill() != Skill.NONE &&
-        _getRealXP(
-          actionChoice.minSkill3.asSkill(),
-          xp_[_playerId],
-          _pendingQueuedActionProcessed,
-          _pendingQuestState
-        ) <
+        _getRealXP(actionChoice.minSkill3.asSkill(), xp_[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
         actionChoice.minXP3
       ) {
         revert ActionChoiceMinimumXPNotReached();
@@ -331,13 +322,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire.feet != NONE ||
       attire.ring != NONE
     ) {
-      _checkAttire(_from, _playerId, isPlayerUpgraded, attire, _pendingQueuedActionProcessed, _pendingQuestState);
+      _checkAttire(_from, playerId, isPlayerUpgraded, attire, _pendingQueuedActionProcessed, _pendingQuestState);
       setAttire = true;
     }
 
     _checkHandEquipments(
       _from,
-      _playerId,
+      playerId,
       isPlayerUpgraded,
       [_queuedActionInput.leftHandEquipmentTokenId, _queuedActionInput.rightHandEquipmentTokenId],
       actionInfo.handItemTokenIdRangeMin,
@@ -348,7 +339,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _pendingQuestState
     );
 
-    _checkFood(_playerId, isPlayerUpgraded, _queuedActionInput, _pendingQueuedActionProcessed, _pendingQuestState);
+    _checkFood(playerId, isPlayerUpgraded, _queuedActionInput, _pendingQueuedActionProcessed, _pendingQuestState);
 
     _checkPet(_from, isPlayerUpgraded, _queuedActionInput.petId);
   }
@@ -378,7 +369,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _addToQueue(
     address _from,
-    uint256 _playerId,
+    uint256 playerId,
     QueuedActionInputV2 memory _queuedActionInput,
     uint64 _queueId,
     uint40 _startTime
@@ -387,13 +378,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QuestState memory pendingQuestState; // Empty
     bool setAttire = checkAddToQueue(
       _from,
-      _playerId,
+      playerId,
       _queuedActionInput,
       pendingQueuedActionProcessed,
       pendingQuestState
     );
     if (setAttire) {
-      attire_[_playerId][_queueId] = _queuedActionInput.attire;
+      attire_[playerId][_queueId] = _queuedActionInput.attire;
     }
 
     queuedAction.timespan = _queuedActionInput.timespan;
@@ -411,14 +402,14 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       packed |= bytes1(uint8(1 << HAS_PET_BIT));
       queuedActionExtra.petId = _queuedActionInput.petId;
       queuedActionsExtra[_queueId] = queuedActionExtra;
-      petNFT.assignPet(_from, _playerId, _queuedActionInput.petId, _startTime);
+      petNFT.assignPet(_from, playerId, _queuedActionInput.petId, _startTime);
     }
     queuedAction.packed = packed;
-    players_[_playerId].actionQueue.push(queuedAction);
+    players_[playerId].actionQueue.push(queuedAction);
   }
 
   function _checkFood(
-    uint256 _playerId,
+    uint256 playerId,
     bool _isPlayerUpgraded,
     QueuedActionInputV2 memory _queuedActionInput,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
@@ -428,7 +419,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       (Skill skill, uint32 minXP, , bool isFoodFullModeOnly) = itemNFT.getEquipPositionAndMinRequirement(
         _queuedActionInput.regenerateId
       );
-      if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
+      if (_getRealXP(skill, xp_[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
         revert ConsumableMinimumXPNotReached();
       }
       // TODO: Untested
@@ -510,7 +501,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   // Checks they have sufficient balance to equip the items, and minimum skill points
   function _checkAttire(
     address _from,
-    uint256 _playerId,
+    uint256 playerId,
     bool _isPlayerUpgraded,
     Attire memory _attire,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
@@ -537,7 +528,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       while (iter.neq(0)) {
         iter = iter.dec();
         uint256 i = iter.asUint256();
-        if (_getRealXP(skills[i], xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXPs[i]) {
+        if (_getRealXP(skills[i], xp_[playerId], _pendingQueuedActionProcessed, _questState) < minXPs[i]) {
           revert AttireMinimumXPNotReached();
         }
         if (balances[i] == 0) {
@@ -552,7 +543,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _checkHandEquipments(
     address _from,
-    uint256 _playerId,
+    uint256 playerId,
     bool _isPlayerUpgraded,
     uint16[2] memory _equippedItemTokenIds, // left, right
     uint16 _handItemTokenIdRangeMin,
@@ -591,7 +582,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         }
         (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isItemFullModeOnly) = itemNFT
           .getEquipPositionAndMinRequirement(equippedItemTokenId);
-        if (_getRealXP(skill, xp_[_playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
+        if (_getRealXP(skill, xp_[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
           revert ItemMinimumXPNotReached();
         }
         if (isItemFullModeOnly && !_isPlayerUpgraded) {
@@ -624,16 +615,16 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function _clearActionQueue(address _from, uint256 _playerId) private {
-    QueuedAction[] memory _queuedActions;
+  function _clearActionQueue(address _from, uint256 playerId) private {
+    QueuedAction[] memory queuedActions;
     QueuedActionExtra[] memory _queuedActionsExtra;
     Attire[] memory attire;
     uint256 startTime = 0;
-    _setActionQueue(_from, _playerId, _queuedActions, _queuedActionsExtra, attire, startTime);
+    _setActionQueue(_from, playerId, queuedActions, _queuedActionsExtra, attire, startTime);
   }
 
-  function _clearCurrentActionProcessed(uint256 _playerId) private {
-    Player storage player = players_[_playerId];
+  function _clearCurrentActionProcessed(uint256 playerId) private {
+    Player storage player = players_[playerId];
     player.currentActionProcessedSkill1 = Skill.NONE;
     player.currentActionProcessedXPGained1 = 0;
     player.currentActionProcessedSkill2 = Skill.NONE;
@@ -647,21 +638,21 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   // Consumes all the actions in the queue up to this time.
   // Mints the boost vial if it hasn't been consumed at all yet, otherwise removese any active ones
   // Removes all the actions from the queue
-  function clearEverything(address _from, uint256 _playerId, bool _processTheActions) public {
+  function clearEverything(address _from, uint256 playerId, bool _processTheActions) public {
     if (_processTheActions) {
-      _processActions(_from, _playerId);
+      _processActions(_from, playerId);
     }
     // Ensure player info is cleared
-    _clearCurrentActionProcessed(_playerId);
-    Player storage player = players_[_playerId];
+    _clearCurrentActionProcessed(playerId);
+    Player storage player = players_[playerId];
     player.currentActionStartTime = 0;
 
-    emit ClearAll(_from, _playerId);
-    _clearActionQueue(_from, _playerId);
+    emit ClearAll(_from, playerId);
+    _clearActionQueue(_from, playerId);
     // Remove any active boost
-    PlayerBoostInfo storage activeBoost = activeBoosts_[_playerId];
+    PlayerBoostInfo storage activeBoost = activeBoosts_[playerId];
     if (activeBoost.boostType != BoostType.NONE) {
-      _clearPlayerMainBoost(_playerId);
+      _clearPlayerMainBoost(playerId);
       if (activeBoost.startTime > block.timestamp) {
         // Mint it if it hasn't been consumed yet
         itemNFT.mint(_from, activeBoost.itemTokenId, 1);
@@ -671,19 +662,19 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function validateActionsImpl(
     address owner,
-    uint256 _playerId,
-    QueuedActionInputV2[] memory _queuedActionInputs
+    uint256 playerId,
+    QueuedActionInputV2[] memory queuedActionInputs
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
-    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(owner, _playerId);
-    successes = new bool[](_queuedActionInputs.length);
-    reasons = new bytes[](_queuedActionInputs.length);
+    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(owner, playerId);
+    successes = new bool[](queuedActionInputs.length);
+    reasons = new bytes[](queuedActionInputs.length);
 
-    for (uint256 i; i < _queuedActionInputs.length; ++i) {
+    for (uint256 i; i < queuedActionInputs.length; ++i) {
       try
         this.checkAddToQueue(
           owner,
-          _playerId,
-          _queuedActionInputs[i],
+          playerId,
+          queuedActionInputs[i],
           pendingQueuedActionState.processedData,
           pendingQueuedActionState.quests
         )
