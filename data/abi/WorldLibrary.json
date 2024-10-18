@@ -181,7 +181,7 @@
           }
         ],
         "internalType": "struct ActionChoiceInput",
-        "name": "_actionChoiceInput",
+        "name": "actionChoiceInput",
         "type": "tuple"
       }
     ],

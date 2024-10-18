@@ -667,7 +667,7 @@ describe("Rewards", function () {
         3,
         playerId,
         0,
-        await world.thisWeeksRandomWordSegment()
+        await world.getThisWeeksRandomWordSegment()
       );
 
       // Double check it is different to the other tiers
@@ -675,13 +675,13 @@ describe("Rewards", function () {
         1,
         playerId,
         0,
-        await world.thisWeeksRandomWordSegment()
+        await world.getThisWeeksRandomWordSegment()
       );
       let dailyRewardsTier2 = await world.getSpecificDailyReward(
         2,
         playerId,
         0,
-        await world.thisWeeksRandomWordSegment()
+        await world.getThisWeeksRandomWordSegment()
       );
       // TODO: Fix this - what should it be checking?
       // expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1.itemTokenId);

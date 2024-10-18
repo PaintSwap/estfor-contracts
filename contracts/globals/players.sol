@@ -409,7 +409,7 @@ struct ItemInput {
   string name;
 }
 
-uint256 constant MAX_UNIQUE_TICKETS_ = 64;
+uint256 constant MAX_UNIQUE_TICKETS = 64;
 uint256 constant IS_FULL_MODE_BIT = 7;
 
 // Passive/InstantVRF action

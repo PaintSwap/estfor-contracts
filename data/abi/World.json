@@ -2202,6 +2202,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "NUM_WORDS",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -2212,64 +2225,71 @@
     "name": "actions",
     "outputs": [
       {
-        "internalType": "uint8",
-        "name": "skill",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bool",
-        "name": "isAvailable",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "isDynamic",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "actionChoiceRequired",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint24",
-        "name": "xpPerHour",
-        "type": "uint24"
-      },
-      {
-        "internalType": "uint32",
-        "name": "minXP",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint24",
-        "name": "numSpawned",
-        "type": "uint24"
-      },
-      {
-        "internalType": "uint16",
-        "name": "handItemTokenIdRangeMin",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "handItemTokenIdRangeMax",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint8",
-        "name": "successPercent",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "worldLocation",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bool",
-        "name": "isFullModeOnly",
-        "type": "bool"
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isDynamic",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "actionChoiceRequired",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint24",
+            "name": "numSpawned",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "worldLocation",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFullModeOnly",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct ActionInfo",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -2279,12 +2299,12 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       },
       {
         "internalType": "uint16[]",
-        "name": "_actionChoiceIds",
+        "name": "actionChoiceIds",
         "type": "uint16[]"
       },
       {
@@ -2361,7 +2381,7 @@
           }
         ],
         "internalType": "struct ActionChoiceInput[]",
-        "name": "_actionChoices",
+        "name": "actionChoicesToAdd",
         "type": "tuple[]"
       }
     ],
@@ -2529,7 +2549,7 @@
           }
         ],
         "internalType": "struct Action[]",
-        "name": "_actions",
+        "name": "actionsToAdd",
         "type": "tuple[]"
       }
     ],
@@ -2542,12 +2562,12 @@
     "inputs": [
       {
         "internalType": "uint16[]",
-        "name": "_actionIds",
+        "name": "actionIds",
         "type": "uint16[]"
       },
       {
         "internalType": "uint16[][]",
-        "name": "_actionChoiceIds",
+        "name": "actionChoiceIds",
         "type": "uint16[][]"
       },
       {
@@ -2624,7 +2644,7 @@
           }
         ],
         "internalType": "struct ActionChoiceInput[][]",
-        "name": "_actionChoices",
+        "name": "actionChoicesToAdd",
         "type": "tuple[][]"
       }
     ],
@@ -2636,42 +2656,13 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "tier",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "dailyRewardPool",
-    "outputs": [
-      {
         "internalType": "uint16",
-        "name": "itemTokenId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint24",
-        "name": "amount",
-        "type": "uint24"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       },
       {
         "internalType": "uint16[]",
-        "name": "_actionChoiceIds",
+        "name": "actionChoiceIds",
         "type": "uint16[]"
       },
       {
@@ -2748,7 +2739,7 @@
           }
         ],
         "internalType": "struct ActionChoiceInput[]",
-        "name": "_actionChoices",
+        "name": "actionChoicesToEdit",
         "type": "tuple[]"
       }
     ],
@@ -2916,7 +2907,7 @@
           }
         ],
         "internalType": "struct Action[]",
-        "name": "_actions",
+        "name": "actionsToEdit",
         "type": "tuple[]"
       }
     ],
@@ -2929,12 +2920,12 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "_requestId",
+        "name": "requestId",
         "type": "bytes32"
       },
       {
         "internalType": "uint256[]",
-        "name": "_randomWords",
+        "name": "words",
         "type": "uint256[]"
       }
     ],
@@ -2947,12 +2938,12 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       },
       {
         "internalType": "uint16",
-        "name": "_choiceId",
+        "name": "choiceId",
         "type": "uint16"
       }
     ],
@@ -3098,7 +3089,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint256"
       }
     ],
@@ -3179,7 +3170,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint256"
       }
     ],
@@ -3290,7 +3281,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       }
     ],
@@ -3314,12 +3305,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tier",
+        "name": "tier",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3350,7 +3341,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       }
     ],
@@ -3406,12 +3397,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tier",
+        "name": "tier",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3435,7 +3426,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_timestamp",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
@@ -3454,7 +3445,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       }
     ],
@@ -3473,22 +3464,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_numTickets",
+        "name": "numTickets",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_startTimestamp",
+        "name": "startTimestamp",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_endTimestamp",
+        "name": "endTimestamp",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -3496,7 +3487,7 @@
     "outputs": [
       {
         "internalType": "bytes",
-        "name": "b",
+        "name": "randomBytes",
         "type": "bytes"
       }
     ],
@@ -3507,7 +3498,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_timestamp",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
@@ -3526,7 +3517,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       }
     ],
@@ -3652,7 +3643,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint256"
       }
     ],
@@ -3671,22 +3662,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tier",
+        "name": "tier",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_day",
+        "name": "day",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_randomWord",
+        "name": "randomWord",
         "type": "uint256"
       }
     ],
@@ -3701,6 +3692,19 @@
         "internalType": "uint24",
         "name": "amount",
         "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getThisWeeksRandomWordSegment",
+    "outputs": [
+      {
+        "internalType": "bytes8",
+        "name": "",
+        "type": "bytes8"
       }
     ],
     "stateMutability": "view",
@@ -3739,12 +3743,12 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       },
       {
         "internalType": "uint16",
-        "name": "_actionChoiceId",
+        "name": "actionChoiceId",
         "type": "uint16"
       }
     ],
@@ -3763,7 +3767,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_timestamp",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
@@ -3782,7 +3786,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_vrf",
+        "name": "vrf",
         "type": "address"
       }
     ],
@@ -3796,9 +3800,9 @@
     "name": "lastRandomWordsUpdatedTime",
     "outputs": [
       {
-        "internalType": "uint40",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint40"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -3842,7 +3846,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "randomWord",
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -3853,12 +3857,12 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint16"
       },
       {
         "internalType": "uint16[]",
-        "name": "_actionChoiceIds",
+        "name": "actionChoiceIds",
         "type": "uint16[]"
       }
     ],
@@ -3878,7 +3882,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "requestId",
         "type": "uint256"
       }
     ],
@@ -3910,7 +3914,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_gasLimit",
+        "name": "gasLimit",
         "type": "uint256"
       }
     ],
@@ -3923,7 +3927,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tier",
+        "name": "tier",
         "type": "uint256"
       },
       {
@@ -3940,7 +3944,7 @@
           }
         ],
         "internalType": "struct Equipment[]",
-        "name": "_dailyRewards",
+        "name": "dailyRewards",
         "type": "tuple[]"
       }
     ],
@@ -3953,7 +3957,7 @@
     "inputs": [
       {
         "internalType": "contract IOracleRewardCB",
-        "name": "_quests",
+        "name": "iOracleRewardCB",
         "type": "address"
       }
     ],
@@ -3979,7 +3983,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tier",
+        "name": "tier",
         "type": "uint256"
       },
       {
@@ -3996,7 +4000,7 @@
           }
         ],
         "internalType": "struct Equipment[]",
-        "name": "_weeklyRewards",
+        "name": "weeklyRewards",
         "type": "tuple[]"
       }
     ],
@@ -4009,26 +4013,13 @@
     "inputs": [
       {
         "internalType": "contract IOracleRewardCB",
-        "name": "_wishingWell",
+        "name": "iOracleRewardCB",
         "type": "address"
       }
     ],
     "name": "setWishingWell",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "thisWeeksRandomWordSegment",
-    "outputs": [
-      {
-        "internalType": "bytes8",
-        "name": "",
-        "type": "bytes8"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -4073,35 +4064,6 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tier",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "weeklyRewardPool",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "itemTokenId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint24",
-        "name": "amount",
-        "type": "uint24"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ]

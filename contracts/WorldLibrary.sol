@@ -34,9 +34,9 @@ library WorldLibrary {
   error TooManyRandomRewards();
   error FirstMinSkillMustBeActionChoiceSkill();
 
-  function checkActionChoice(ActionChoiceInput calldata _actionChoiceInput) external pure {
-    uint16[] calldata inputTokenIds = _actionChoiceInput.inputTokenIds;
-    uint24[] calldata amounts = _actionChoiceInput.inputAmounts;
+  function checkActionChoice(ActionChoiceInput calldata actionChoiceInput) external pure {
+    uint16[] calldata inputTokenIds = actionChoiceInput.inputTokenIds;
+    uint24[] calldata amounts = actionChoiceInput.inputAmounts;
 
     if (inputTokenIds.length > 3) {
       revert TooManyInputItems();
@@ -45,10 +45,10 @@ library WorldLibrary {
       revert LengthMismatch();
     }
 
-    if (_actionChoiceInput.outputTokenId != NONE && _actionChoiceInput.outputAmount == 0) {
+    if (actionChoiceInput.outputTokenId != NONE && actionChoiceInput.outputAmount == 0) {
       revert OutputAmountCannotBeZero();
     }
-    if (_actionChoiceInput.outputTokenId == NONE && _actionChoiceInput.outputAmount != 0) {
+    if (actionChoiceInput.outputTokenId == NONE && actionChoiceInput.outputAmount != 0) {
       revert OutputTokenIdCannotBeEmpty();
     }
 
@@ -73,11 +73,11 @@ library WorldLibrary {
     }
 
     // Check minimum xp
-    uint8[] calldata minSkills = _actionChoiceInput.minSkills;
-    uint32[] calldata minXPs = _actionChoiceInput.minXPs;
+    uint8[] calldata minSkills = actionChoiceInput.minSkills;
+    uint32[] calldata minXPs = actionChoiceInput.minXPs;
 
     // First minSkill must be the same as the action choice skill
-    if (minSkills.length > 0 && minSkills[0] != _actionChoiceInput.skill) {
+    if (minSkills.length > 0 && minSkills[0] != actionChoiceInput.skill) {
       revert FirstMinSkillMustBeActionChoiceSkill();
     }
 
@@ -106,38 +106,38 @@ library WorldLibrary {
       }
     }
 
-    if (_actionChoiceInput.rate != 0) {
+    if (actionChoiceInput.rate != 0) {
       // Check that it is a factor of 3600
-      if ((3600 * RATE_MUL) % _actionChoiceInput.rate != 0) {
+      if ((3600 * RATE_MUL) % actionChoiceInput.rate != 0) {
         revert NotAFactorOf3600();
       }
     }
   }
 
   function setActionGuaranteedRewards(
-    GuaranteedReward[] calldata _guaranteedRewards,
-    ActionRewards storage _actionRewards
+    GuaranteedReward[] calldata guaranteedRewards,
+    ActionRewards storage actionRewards
   ) external {
-    uint256 guaranteedRewardsLength = _guaranteedRewards.length;
+    uint256 guaranteedRewardsLength = guaranteedRewards.length;
     if (guaranteedRewardsLength != 0) {
-      _actionRewards.guaranteedRewardTokenId1 = _guaranteedRewards[0].itemTokenId;
-      _actionRewards.guaranteedRewardRate1 = _guaranteedRewards[0].rate;
+      actionRewards.guaranteedRewardTokenId1 = guaranteedRewards[0].itemTokenId;
+      actionRewards.guaranteedRewardRate1 = guaranteedRewards[0].rate;
     }
     if (guaranteedRewardsLength > 1) {
-      _actionRewards.guaranteedRewardTokenId2 = _guaranteedRewards[1].itemTokenId;
-      _actionRewards.guaranteedRewardRate2 = _guaranteedRewards[1].rate;
-      if (_actionRewards.guaranteedRewardTokenId1 == _actionRewards.guaranteedRewardTokenId2) {
+      actionRewards.guaranteedRewardTokenId2 = guaranteedRewards[1].itemTokenId;
+      actionRewards.guaranteedRewardRate2 = guaranteedRewards[1].rate;
+      if (actionRewards.guaranteedRewardTokenId1 == actionRewards.guaranteedRewardTokenId2) {
         revert GuaranteedRewardsNoDuplicates();
       }
     }
     if (guaranteedRewardsLength > 2) {
-      _actionRewards.guaranteedRewardTokenId3 = _guaranteedRewards[2].itemTokenId;
-      _actionRewards.guaranteedRewardRate3 = _guaranteedRewards[2].rate;
+      actionRewards.guaranteedRewardTokenId3 = guaranteedRewards[2].itemTokenId;
+      actionRewards.guaranteedRewardRate3 = guaranteedRewards[2].rate;
 
-      U256 bounds = guaranteedRewardsLength.dec().asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
+      U256 _bounds = guaranteedRewardsLength.dec().asU256();
+      for (U256 iter; iter < _bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        if (_guaranteedRewards[i].itemTokenId == _guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId) {
+        if (guaranteedRewards[i].itemTokenId == guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId) {
           revert GuaranteedRewardsNoDuplicates();
         }
       }
@@ -148,59 +148,59 @@ library WorldLibrary {
   }
 
   // Random rewards have most common one first
-  function setActionRandomRewards(RandomReward[] calldata _randomRewards, ActionRewards storage actionReward) external {
-    uint256 randomRewardsLength = _randomRewards.length;
+  function setActionRandomRewards(RandomReward[] calldata randomRewards, ActionRewards storage actionReward) external {
+    uint256 randomRewardsLength = randomRewards.length;
     if (randomRewardsLength != 0) {
-      actionReward.randomRewardTokenId1 = _randomRewards[0].itemTokenId;
-      actionReward.randomRewardChance1 = _randomRewards[0].chance;
-      actionReward.randomRewardAmount1 = _randomRewards[0].amount;
+      actionReward.randomRewardTokenId1 = randomRewards[0].itemTokenId;
+      actionReward.randomRewardChance1 = randomRewards[0].chance;
+      actionReward.randomRewardAmount1 = randomRewards[0].amount;
     }
     if (randomRewardsLength > 1) {
-      actionReward.randomRewardTokenId2 = _randomRewards[1].itemTokenId;
-      actionReward.randomRewardChance2 = _randomRewards[1].chance;
-      actionReward.randomRewardAmount2 = _randomRewards[1].amount;
+      actionReward.randomRewardTokenId2 = randomRewards[1].itemTokenId;
+      actionReward.randomRewardChance2 = randomRewards[1].chance;
+      actionReward.randomRewardAmount2 = randomRewards[1].amount;
 
       if (actionReward.randomRewardChance2 > actionReward.randomRewardChance1) {
-        revert RandomRewardsMustBeInOrder(_randomRewards[0].chance, _randomRewards[1].chance);
+        revert RandomRewardsMustBeInOrder(randomRewards[0].chance, randomRewards[1].chance);
       }
       if (actionReward.randomRewardTokenId1 == actionReward.randomRewardTokenId2) {
         revert RandomRewardNoDuplicates();
       }
     }
     if (randomRewardsLength > 2) {
-      actionReward.randomRewardTokenId3 = _randomRewards[2].itemTokenId;
-      actionReward.randomRewardChance3 = _randomRewards[2].chance;
-      actionReward.randomRewardAmount3 = _randomRewards[2].amount;
+      actionReward.randomRewardTokenId3 = randomRewards[2].itemTokenId;
+      actionReward.randomRewardChance3 = randomRewards[2].chance;
+      actionReward.randomRewardAmount3 = randomRewards[2].amount;
 
       if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
-        revert RandomRewardsMustBeInOrder(_randomRewards[1].chance, _randomRewards[2].chance);
+        revert RandomRewardsMustBeInOrder(randomRewards[1].chance, randomRewards[2].chance);
       }
 
-      U256 bounds = randomRewardsLength.dec().asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
+      U256 _bounds = randomRewardsLength.dec().asU256();
+      for (U256 iter; iter < _bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        if (_randomRewards[i].itemTokenId == _randomRewards[randomRewardsLength.dec()].itemTokenId) {
+        if (randomRewards[i].itemTokenId == randomRewards[randomRewardsLength.dec()].itemTokenId) {
           revert RandomRewardNoDuplicates();
         }
       }
     }
-    if (_randomRewards.length > 3) {
-      actionReward.randomRewardTokenId4 = _randomRewards[3].itemTokenId;
-      actionReward.randomRewardChance4 = _randomRewards[3].chance;
-      actionReward.randomRewardAmount4 = _randomRewards[3].amount;
+    if (randomRewards.length > 3) {
+      actionReward.randomRewardTokenId4 = randomRewards[3].itemTokenId;
+      actionReward.randomRewardChance4 = randomRewards[3].chance;
+      actionReward.randomRewardAmount4 = randomRewards[3].amount;
       if (actionReward.randomRewardChance4 > actionReward.randomRewardChance3) {
-        revert RandomRewardsMustBeInOrder(_randomRewards[2].chance, _randomRewards[3].chance);
+        revert RandomRewardsMustBeInOrder(randomRewards[2].chance, randomRewards[3].chance);
       }
-      U256 bounds = _randomRewards.length.dec().asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
+      U256 _bounds = randomRewards.length.dec().asU256();
+      for (U256 iter; iter < _bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        if (_randomRewards[i].itemTokenId == _randomRewards[_randomRewards.length - 1].itemTokenId) {
+        if (randomRewards[i].itemTokenId == randomRewards[randomRewards.length - 1].itemTokenId) {
           revert RandomRewardNoDuplicates();
         }
       }
     }
 
-    if (_randomRewards.length > 4) {
+    if (randomRewards.length > 4) {
       revert TooManyRandomRewards();
     }
   }

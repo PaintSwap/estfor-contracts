@@ -641,10 +641,10 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     if (randomRewards.length != 0) {
       hasRandomWord = world.hasRandomWord(_skillSentinelTime);
       if (hasRandomWord) {
-        uint256 numIterations = Math.min(MAX_UNIQUE_TICKETS_, _numTickets);
+        uint256 numIterations = Math.min(MAX_UNIQUE_TICKETS, _numTickets);
 
         bytes memory randomBytes = world.getRandomBytes(numIterations, _startTimestamp, _skillSentinelTime, _playerId);
-        uint256 multiplier = _numTickets / MAX_UNIQUE_TICKETS_;
+        uint256 multiplier = _numTickets / MAX_UNIQUE_TICKETS;
 
         // Cache some values for later
         uint16[] memory extraChances = new uint16[](MAX_RANDOM_REWARDS_PER_ACTION);
@@ -657,7 +657,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           RandomReward memory randomReward = randomRewards[j];
           mintMultipliers[j] = 1;
           mintMultipliersExcess[j] = 1;
-          if (_numTickets > MAX_UNIQUE_TICKETS_) {
+          if (_numTickets > MAX_UNIQUE_TICKETS) {
             if (randomReward.chance <= RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_) {
               // Rare item, increase chance if there aren't enough unique tickets
               extraChances[j] = uint16(randomReward.chance * multiplier);
@@ -669,7 +669,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           }
         }
 
-        uint256 remainder = _numTickets % MAX_UNIQUE_TICKETS_;
+        uint256 remainder = _numTickets % MAX_UNIQUE_TICKETS;
         // The first set has an increased mint multiplier as the tickets spill over
         length = _randomRewardsLoop(
           0,
@@ -770,7 +770,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       uint256 i = iter.asUint256();
       uint256 operation = (uint256(_getSlice(_randomBytes, i)) * 100) / _successPercent;
 
-      // If there is above MAX_UNIQUE_TICKETS_ tickets we need to mint more if a ticket is hit unless it
+      // If there is above MAX_UNIQUE_TICKETS tickets we need to mint more if a ticket is hit unless it
       // is a rare item in which case we just increase the change that it can get get
 
       // The random component is out of 65535, so we can take 2 bytes at a time from the total bytes array

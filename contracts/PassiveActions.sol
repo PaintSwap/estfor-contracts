@@ -542,7 +542,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     //    if (_passiveActionInput.info.durationDays == 0) {
     //      revert DurationCannotBeZero();
     //    }
-    if (_passiveActionInput.info.durationDays > MAX_UNIQUE_TICKETS_) {
+    if (_passiveActionInput.info.durationDays > MAX_UNIQUE_TICKETS) {
       revert DurationTooLong();
     }
 
