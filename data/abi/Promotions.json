@@ -779,110 +779,6 @@
   {
     "inputs": [
       {
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
-      }
-    ],
-    "name": "activePromotions",
-    "outputs": [
-      {
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint40",
-        "name": "startTime",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numDays",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numDailyRandomItemsToPick",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint40",
-        "name": "minTotalXP",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint24",
-        "name": "brushCost",
-        "type": "uint24"
-      },
-      {
-        "internalType": "uint8",
-        "name": "redeemCodeLength",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bool",
-        "name": "adminOnly",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "promotionTiedToUser",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "promotionTiedToPlayer",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "promotionMustOwnPlayer",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "evolvedHeroOnly",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "isMultiday",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint8",
-        "name": "brushCostMissedDay",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numDaysHitNeededForStreakBonus",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numDaysClaimablePeriodStreakBonus",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numRandomStreakBonusItemsToPick1",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numRandomStreakBonusItemsToPick2",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "components": [
           {
             "internalType": "enum Promotion",
@@ -1026,7 +922,7 @@
           }
         ],
         "internalType": "struct PromotionInfoInput",
-        "name": "_promotionInfoInput",
+        "name": "promotionInfoInput",
         "type": "tuple"
       }
     ],
@@ -1039,22 +935,22 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "string",
-        "name": "_redeemCode",
+        "name": "redeemCode",
         "type": "string"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       }
     ],
@@ -1209,7 +1105,7 @@
           }
         ],
         "internalType": "struct PromotionInfoInput",
-        "name": "_promotionInfoInput",
+        "name": "promotionInfoInput",
         "type": "tuple"
       }
     ],
@@ -1222,12 +1118,202 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "promotionId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getActivePromotion",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum Promotion",
+            "name": "promotion",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numDays",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numDailyRandomItemsToPick",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "minTotalXP",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "brushCost",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint8",
+            "name": "redeemCodeLength",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "adminOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "promotionTiedToUser",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "promotionTiedToPlayer",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "promotionMustOwnPlayer",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "evolvedHeroOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isMultiday",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint8",
+            "name": "brushCostMissedDay",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numDaysHitNeededForStreakBonus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numDaysClaimablePeriodStreakBonus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numRandomStreakBonusItemsToPick1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numRandomStreakBonusItemsToPick2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "randomStreakBonusItemTokenIds1",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "randomStreakBonusAmounts1",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "randomStreakBonusItemTokenIds2",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "randomStreakBonusAmounts2",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "guaranteedStreakBonusItemTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "guaranteedStreakBonusAmounts",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "guaranteedItemTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "guaranteedAmounts",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "randomItemTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "randomAmounts",
+            "type": "uint32[]"
+          }
+        ],
+        "internalType": "struct PromotionInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "day",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMultidayPlayerPromotionsCompleted",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum Promotion",
+        "name": "promotion",
         "type": "uint8"
       }
     ],
@@ -1246,12 +1332,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       }
     ],
@@ -1270,22 +1356,22 @@
     "inputs": [
       {
         "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       },
       {
         "internalType": "contract PlayerNFT",
-        "name": "_playerNFT",
+        "name": "playerNFT",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
@@ -1298,12 +1384,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       }
     ],
@@ -1316,17 +1402,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       },
       {
         "internalType": "uint256",
-        "name": "_timestamp",
+        "name": "timestamp",
         "type": "uint256"
       }
     ],
@@ -1360,12 +1446,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       }
     ],
@@ -1399,52 +1485,23 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "_redeemCode",
-        "type": "string"
-      }
-    ],
-    "name": "mintStarterPromotionalPack",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
       {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
       },
       {
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "redeemCode",
+        "type": "string"
       }
     ],
-    "name": "multidayPlayerPromotionsCompleted",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "daysCompleted",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "mintStarterPromotionalPack",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1464,17 +1521,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       },
       {
         "internalType": "uint256[]",
-        "name": "_days",
+        "name": "missedDays",
         "type": "uint256[]"
       }
     ],
@@ -1500,7 +1557,7 @@
     "inputs": [
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       }
     ],
@@ -1520,12 +1577,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "enum Promotion",
-        "name": "_promotion",
+        "name": "promotion",
         "type": "uint8"
       }
     ],
@@ -1538,7 +1595,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_toClear",
+        "name": "toClear",
         "type": "address"
       }
     ],
@@ -1589,25 +1646,6 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "users",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "noLongerUsed",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ]
