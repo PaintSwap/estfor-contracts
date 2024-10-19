@@ -176,7 +176,7 @@ contract Territories is
   ItemNFT private _itemNFT;
 
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanInfos;
-  uint16 public totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
+  uint16 public _totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
   IBrushToken private brush;
 
   Skill[] private comparableSkills;
@@ -321,7 +321,7 @@ contract Territories is
     _checkCanAttackTerritory(clanId, clanIdOccupier, territoryId);
 
     // Check they are paying enough
-    if (msg.value < attackCost()) {
+    if (msg.value < getAttackCost()) {
       revert NotEnoughFTM();
     }
 
@@ -462,13 +462,13 @@ contract Territories is
   }
 
   function addUnclaimedEmissions(uint256 amount) external {
-    if (amount < totalEmissionPercentage) {
+    if (amount < _totalEmissionPercentage) {
       revert AmountTooLow();
     }
 
     for (uint256 i = 1; i < _nextTerritoryId; ++i) {
       _territories[i].unclaimedEmissions += uint88(
-        (amount * _territories[i].percentageEmissions) / totalEmissionPercentage
+        (amount * _territories[i].percentageEmissions) / _totalEmissionPercentage
       );
     }
 
@@ -614,7 +614,7 @@ contract Territories is
   }
 
   function _addTerritories(TerritoryInput[] calldata territories) private {
-    uint256 _totalEmissionPercentage = totalEmissionPercentage;
+    uint256 totalEmissionPercentage = _totalEmissionPercentage;
     uint256 nextTerritoryId = _nextTerritoryId;
     for (uint256 i; i < territories.length; ++i) {
       TerritoryInput calldata territoryInput = territories[i];
@@ -631,16 +631,16 @@ contract Territories is
         lastClaimTimestamp: 0,
         minimumMMR: 0
       });
-      _totalEmissionPercentage += territoryInput.percentageEmissions;
+      totalEmissionPercentage += territoryInput.percentageEmissions;
     }
 
     _nextTerritoryId = uint16(nextTerritoryId + territories.length);
 
-    if (_totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
+    if (totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
       revert InvalidEmissionPercentage();
     }
 
-    totalEmissionPercentage = uint16(_totalEmissionPercentage);
+    _totalEmissionPercentage = uint16(totalEmissionPercentage);
     emit AddTerritories(territories);
   }
 
@@ -649,7 +649,7 @@ contract Territories is
     emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
-  function attackCost() public view returns (uint256) {
+  function getAttackCost() public view returns (uint256) {
     return _baseAttackCost + (_movingAverageGasPrice * _expectedGasLimitFulfill);
   }
 
@@ -685,6 +685,10 @@ contract Territories is
     return _expectedGasLimitFulfill;
   }
 
+  function getTotalEmissionPercentage() external view returns (uint16 totalEmissionPercentage) {
+    return _totalEmissionPercentage;
+  }
+
   function isCombatant(uint256 clanId, uint256 playerId) external view override returns (bool combatant) {
     // Check if this player is in the defenders list and remove them if so
     if (_clanInfos[clanId].playerIds.length != 0) {
@@ -698,33 +702,33 @@ contract Territories is
   }
 
   function editTerritories(TerritoryInput[] calldata territories) external onlyOwner {
-    uint256 _totalEmissionPercentage = totalEmissionPercentage;
+    uint256 totalEmissionPercentage = _totalEmissionPercentage;
     for (uint256 i; i < territories.length; ++i) {
       _checkTerritory(territories[i]);
-      _totalEmissionPercentage -= _territories[territories[i].territoryId].percentageEmissions;
-      _totalEmissionPercentage += territories[i].percentageEmissions;
+      totalEmissionPercentage -= _territories[territories[i].territoryId].percentageEmissions;
+      totalEmissionPercentage += territories[i].percentageEmissions;
       _territories[territories[i].territoryId].percentageEmissions = territories[i].percentageEmissions;
     }
 
-    if (_totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
+    if (totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
       revert InvalidEmissionPercentage();
     }
-    totalEmissionPercentage = uint8(_totalEmissionPercentage);
+    _totalEmissionPercentage = uint8(totalEmissionPercentage);
     emit EditTerritories(territories);
   }
 
   function removeTerritories(uint256[] calldata territoryIds) external onlyOwner {
-    uint256 _totalEmissionPercentage = totalEmissionPercentage;
+    uint256 totalEmissionPercentage = _totalEmissionPercentage;
     for (uint256 i; i < territoryIds.length; ++i) {
       if (_territories[territoryIds[i]].territoryId == 0) {
         revert InvalidTerritoryId();
       }
 
-      _totalEmissionPercentage -= _territories[territoryIds[i]].percentageEmissions;
+      totalEmissionPercentage -= _territories[territoryIds[i]].percentageEmissions;
       delete _territories[territoryIds[i]];
     }
 
-    totalEmissionPercentage = uint16(_totalEmissionPercentage);
+    _totalEmissionPercentage = uint16(totalEmissionPercentage);
     emit RemoveTerritories(territoryIds);
   }
 

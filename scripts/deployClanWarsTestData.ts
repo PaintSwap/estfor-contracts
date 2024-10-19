@@ -5,7 +5,7 @@ import {
   DECORATOR_ADDRESS,
   DECORATOR_PROVIDER_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
-  TERRITORIES_ADDRESS,
+  TERRITORIES_ADDRESS
 } from "./contractAddresses";
 import {
   CombatantsHelper,
@@ -13,7 +13,7 @@ import {
   LockedBankVaults,
   MockBrushToken,
   Territories,
-  TestPaintSwapDecorator,
+  TestPaintSwapDecorator
 } from "../typechain-types";
 import {getChainId} from "./utils";
 import {parseEther} from "ethers";
@@ -29,17 +29,17 @@ async function main() {
   const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
   const lockedBankVaults = (await ethers.getContractAt(
     "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS,
+    LOCKED_BANK_VAULTS_ADDRESS
   )) as LockedBankVaults;
   const decorator = (await ethers.getContractAt("TestPaintSwapDecorator", DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
   const combatantsHelper = (await ethers.getContractAt(
     "CombatantsHelper",
-    COMBATANTS_HELPER_ADDRESS,
+    COMBATANTS_HELPER_ADDRESS
   )) as CombatantsHelper;
 
   const decoratorProvider = (await ethers.getContractAt(
     "DecoratorProvider",
-    DECORATOR_PROVIDER_ADDRESS,
+    DECORATOR_PROVIDER_ADDRESS
   )) as DecoratorProvider;
 
   const pid = 22;
@@ -78,7 +78,7 @@ async function main() {
   tx = await combatantsHelper.connect(owner).assignCombatants(1, true, [1], false, [], 1);
   await tx.wait();
   console.log("assign combatants for territories");
-  let territoryAttackCost = await territories.attackCost();
+  let territoryAttackCost = await territories.getAttackCost();
   tx = await territories.connect(owner).attackTerritory(1, 1, 1, {value: territoryAttackCost}); // Unclaimed
   await tx.wait();
   console.log("attack territory");
@@ -101,12 +101,12 @@ async function main() {
   await tx.wait();
   console.log("combatantsHelper clear cooldowns");
 
-  const vaultAttackCost = await lockedBankVaults.attackCost();
+  const vaultAttackCost = await lockedBankVaults.getAttackCost();
   tx = await lockedBankVaults.connect(alice).attackVaults(aliceClanId, 1, 0, 2, {value: vaultAttackCost});
   await tx.wait();
   console.log("attack vaults");
 
-  territoryAttackCost = await territories.attackCost();
+  territoryAttackCost = await territories.getAttackCost();
   tx = await territories.connect(alice).attackTerritory(aliceClanId, 1, 2, {value: territoryAttackCost});
   await tx.wait();
   console.log("attack territory");

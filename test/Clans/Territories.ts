@@ -19,7 +19,7 @@ describe("Territories", function () {
     expect((await territories.getTerrorities()).length).to.eq(allTerritories.length);
     expect((await territories.getTerritory(1)).territoryId).to.eq(allTerritories[0].territoryId);
     expect((await territories.getTerritory(1)).percentageEmissions).to.eq(allTerritories[0].percentageEmissions);
-    expect(await territories.totalEmissionPercentage()).to.eq(1000);
+    expect(await territories.getTotalEmissionPercentage()).to.eq(1000);
   });
 
   it("Claim an unoccupied territory", async () => {
@@ -29,7 +29,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -59,7 +59,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
@@ -77,7 +77,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     await ethers.provider.send("evm_increaseTime", [86400]);
     await ethers.provider.send("evm_mine", []);
@@ -87,7 +87,7 @@ describe("Territories", function () {
 
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId + 1, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId + 1, playerId, {value: await territories.getAttackCost()});
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
     // Old territory should be relinquished has no occupier now
     expect((await territories.getTerritory(territoryId)).clanIdOccupier).eq(0);
@@ -121,7 +121,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     let {timestamp: battleTimestampAlice} = (await ethers.provider.getBlock("latest")) as Block;
 
     const requestId = 1;
@@ -139,7 +139,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
     await territories
       .connect(bob)
-      .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
     let {timestamp: battleTimestampBob} = (await ethers.provider.getBlock("latest")) as Block;
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
@@ -179,7 +179,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     let {timestamp: battleTimestampAlice} = (await ethers.provider.getBlock("latest")) as Block;
 
     const requestId = 1;
@@ -197,7 +197,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
     await territories
       .connect(bob)
-      .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
     let {timestamp: battleTimestampBob} = (await ethers.provider.getBlock("latest")) as Block;
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
@@ -247,7 +247,7 @@ describe("Territories", function () {
       .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
@@ -292,7 +292,7 @@ describe("Territories", function () {
     await ethers.provider.send("evm_mine", []);
     await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
-      value: await territories.attackCost()
+      value: await territories.getAttackCost()
     });
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
@@ -304,7 +304,7 @@ describe("Territories", function () {
       .assignCombatants(bobClanId, true, [bobPlayerId, charliePlayerId, erinPlayerId], false, [], bobPlayerId);
     await territories
       .connect(bob)
-      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
     await fulfillRandomWords(requestId + 2, territories, mockVRF);
 
     territory = (await territories.getTerrorities())[0];
@@ -337,7 +337,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
@@ -354,7 +354,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [charliePlayerId], false, [], bobPlayerId);
     await territories
       .connect(bob)
-      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
     // After attacking, leave the clan before the battle is resolved
 
     let pendingAttack = await territories.getPendingAttack(2);
@@ -395,7 +395,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
@@ -405,7 +405,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
     await territories
       .connect(bob)
-      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
     // After attacking, leave the clan which destroys it before the battle is resolved
 
     let pendingAttack = await territories.getPendingAttack(2);
@@ -447,7 +447,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
@@ -460,7 +460,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
     await territories
       .connect(bob)
-      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
     const territory = await territories.getTerritory(territoryId);
@@ -503,12 +503,12 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(owner)
-        .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.attackCost()})
+        .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()})
     ).to.be.revertedWithCustomError(territories, "NotLeader");
     await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.LEADER, playerId);
     await territories
       .connect(owner)
-      .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()});
   });
 
   it("Is owner of player when attacking", async () => {
@@ -528,7 +528,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
@@ -560,7 +560,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
@@ -607,7 +607,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
@@ -739,7 +739,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     // Create a new player and a new clan
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
@@ -753,7 +753,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
     const tx = await territories
       .connect(bob)
-      .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
@@ -764,7 +764,7 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockVRF);
     expect(await territories.getMovingAverageGasPrice()).to.eq(0);
 
-    let attackCost = await territories.attackCost();
+    let attackCost = await territories.getAttackCost();
     const baseAttackCost = await territories.getBaseAttackCost();
     expect(attackCost).to.eq(baseAttackCost);
 
@@ -773,7 +773,7 @@ describe("Territories", function () {
     const bigZero = 0n;
     expect(await territories.getMovingAverageGasPrice()).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
 
-    attackCost = await territories.attackCost();
+    attackCost = await territories.getAttackCost();
     const expectedGasLimit = await territories.getExpectedGasLimitFulfill();
     expect(attackCost).to.eq(baseAttackCost + (await territories.getMovingAverageGasPrice()) * expectedGasLimit);
 
@@ -789,7 +789,7 @@ describe("Territories", function () {
     expect(await territories.getMovingAverageGasPrice()).to.eq(
       (gasPrice + 900n + gasPrice + 800n + gasPrice + 500n + gasPrice + 200n) / 4n
     );
-    attackCost = await territories.attackCost();
+    attackCost = await territories.getAttackCost();
     expect(attackCost).to.eq(baseAttackCost + (await territories.getMovingAverageGasPrice()) * expectedGasLimit);
   });
 
@@ -801,7 +801,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
     expect((await territories.getTerritory(territoryId)).clanIdOccupier).eq(territoryId);
@@ -841,7 +841,7 @@ describe("Territories", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
     await territories
       .connect(alice)
-      .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
@@ -887,7 +887,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()})
     ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
 
     await ethers.provider.send("evm_increaseTime", [mirrorShield.boostDuration - 10]);
@@ -896,7 +896,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()})
     ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
 
     // Cannot apply it until the cooldown is done
@@ -922,7 +922,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()})
     ).to.be.revertedWithCustomError(territories, "ClanIsBlockingAttacks");
 
     // Can now attack
@@ -931,7 +931,7 @@ describe("Territories", function () {
     await expect(
       territories
         .connect(bob)
-        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()})
+        .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()})
     ).to.not.be.reverted;
     expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(0);
   });
@@ -964,12 +964,16 @@ describe("Territories", function () {
     await territories.setMinimumMMRs([territoryId], [initialMMR + 1]);
 
     await expect(
-      territories.connect(alice).attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()})
+      territories
+        .connect(alice)
+        .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()})
     ).to.be.revertedWithCustomError(territories, "NotEnoughMMR");
 
     await territories.setMinimumMMRs([territoryId], [initialMMR]);
     await expect(
-      territories.connect(alice).attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()})
+      territories
+        .connect(alice)
+        .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()})
     ).to.not.be.reverted;
   });
 

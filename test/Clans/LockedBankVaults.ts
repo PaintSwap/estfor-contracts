@@ -64,7 +64,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, clanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, clanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "CannotAttackSelf");
   });
 
@@ -167,7 +167,7 @@ describe("LockedBankVaults", function () {
       .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], bobPlayerId);
     await lockedBankVaults
       .connect(bob)
-      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
     const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
     // Should win as they have more players
@@ -228,7 +228,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "NoCombatants");
   });
 
@@ -294,7 +294,7 @@ describe("LockedBankVaults", function () {
       .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], bobPlayerId);
     await lockedBankVaults
       .connect(bob)
-      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100);
@@ -303,7 +303,7 @@ describe("LockedBankVaults", function () {
     // Alice's clan can attack back because they haven't attacked anything yet but will lose.
     await lockedBankVaults
       .connect(alice)
-      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(2, lockedBankVaults, mockVRF);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(855); // lost 5% for losing
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100); // // unchanged
@@ -336,7 +336,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingCooldown");
 
     await ethers.provider.send("evm_increaseTime", [attackingCooldown]);
@@ -344,7 +344,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingSameClanCooldown");
 
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
@@ -357,7 +357,7 @@ describe("LockedBankVaults", function () {
     await ethers.provider.send("evm_mine", []);
     await lockedBankVaults
       .connect(alice)
-      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(3, lockedBankVaults, mockVRF);
     const {timestamp: NOW2} = (await ethers.provider.getBlock("latest")) as Block;
 
@@ -486,12 +486,12 @@ describe("LockedBankVaults", function () {
       .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], bobPlayerId);
     const tx = await lockedBankVaults
       .connect(bob)
-      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
     const {gasPrice} = tx;
     const requestId = 1;
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
 
-    let attackCost = await lockedBankVaults.attackCost();
+    let attackCost = await lockedBankVaults.getAttackCost();
     const slot = 221;
     let oracleCostStorage = await getStorageAt(await lockedBankVaults.getAddress(), slot);
     let movingAverageGasPrice = BigInt(parseInt(oracleCostStorage.slice(48, 64), 16));
@@ -507,7 +507,7 @@ describe("LockedBankVaults", function () {
     const bigZero = 0n;
     expect(movingAverageGasPrice).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
 
-    attackCost = await lockedBankVaults.attackCost();
+    attackCost = await lockedBankVaults.getAttackCost();
     const expectedGasLimit = BigInt(parseInt(oracleCostStorage.slice(20, 26), 16));
     expect(attackCost).to.eq(baseAttackCost + movingAverageGasPrice * expectedGasLimit);
 
@@ -525,7 +525,7 @@ describe("LockedBankVaults", function () {
     expect(movingAverageGasPrice).to.eq(
       (gasPrice + 900n + (gasPrice + 800n) + (gasPrice + 500n) + (gasPrice + 200n)) / 4n
     );
-    attackCost = await lockedBankVaults.attackCost();
+    attackCost = await lockedBankVaults.getAttackCost();
     expect(attackCost).to.eq(baseAttackCost + movingAverageGasPrice * expectedGasLimit);
   });
 
@@ -692,7 +692,7 @@ describe("LockedBankVaults", function () {
     // Attack
     await lockedBankVaults
       .connect(alice)
-      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
     await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
 
@@ -701,7 +701,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "MaxLockedVaultsReached");
   });
 
@@ -812,7 +812,7 @@ describe("LockedBankVaults", function () {
 
     await lockedBankVaults
       .connect(bob)
-      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
   });
 
@@ -855,7 +855,7 @@ describe("LockedBankVaults", function () {
     // But have to wait for the cooldown and not just the generic attack cooldown, the same clan attacking cooldown
     await lockedBankVaults
       .connect(alice)
-      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
 
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
@@ -864,7 +864,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingSameClanCooldown");
 
     const items = allItems.filter(
@@ -881,7 +881,7 @@ describe("LockedBankVaults", function () {
     // Wrong item
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.PROTECTION_SHIELD, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "NotALockedVaultAttackItem");
 
@@ -890,7 +890,7 @@ describe("LockedBankVaults", function () {
     const beforeCooldownTimestamp = battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp;
     expect(battleInfo.numReattacks).to.eq(0);
     await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.DEVILISH_FINGERS, playerId, {
-      value: await lockedBankVaults.attackCost()
+      value: await lockedBankVaults.getAttackCost()
     });
 
     await fulfillRandomWords(2, lockedBankVaults, mockVRF);
@@ -903,7 +903,7 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanAttackingSameClanCooldown");
 
     // TODO: Check other clan
@@ -952,7 +952,7 @@ describe("LockedBankVaults", function () {
     let highestRoll = 0n;
     for (let i = 0; i < 10; ++i, ++requestId) {
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.SHARPENED_CLAW, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       });
 
       const tx = await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
@@ -1014,7 +1014,7 @@ describe("LockedBankVaults", function () {
     let requestId = 1;
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.SHARPENED_CLAW, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     )
       .to.emit(lockedBankVaults, "SuperAttackCooldown")
@@ -1048,7 +1048,7 @@ describe("LockedBankVaults", function () {
     // Fails due to cooldown not reached
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, charlieClanId, EstforConstants.SHARPENED_CLAW, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanSuperAttackingCooldown");
 
@@ -1058,7 +1058,7 @@ describe("LockedBankVaults", function () {
     // Cooldown is now reached
     await expect(
       lockedBankVaults.connect(alice).attackVaults(clanId, charlieClanId, EstforConstants.SHARPENED_CLAW, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     )
       .to.emit(lockedBankVaults, "SuperAttackCooldown")
@@ -1117,7 +1117,7 @@ describe("LockedBankVaults", function () {
 
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanIsBlockingAttacks");
 
@@ -1127,7 +1127,7 @@ describe("LockedBankVaults", function () {
 
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanIsBlockingAttacks");
 
@@ -1151,7 +1151,7 @@ describe("LockedBankVaults", function () {
 
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "ClanIsBlockingAttacks");
 
@@ -1159,7 +1159,7 @@ describe("LockedBankVaults", function () {
     await ethers.provider.send("evm_mine", []);
     await expect(
       lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, 0, bobPlayerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       })
     ).to.not.be.reverted;
 
@@ -1223,7 +1223,7 @@ describe("LockedBankVaults", function () {
     // Alice's clan attacks but will lose.
     await lockedBankVaults
       .connect(alice)
-      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(950); // lost 5%
@@ -1281,7 +1281,7 @@ describe("LockedBankVaults", function () {
     // Bobs's clan attacks and will win.
     await lockedBankVaults
       .connect(bob)
-      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900); // lost 10%
@@ -1324,7 +1324,7 @@ describe("LockedBankVaults", function () {
 
     await lockedBankVaults
       .connect(alice)
-      .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()});
+      .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
 
     await expect(fulfillRandomWords(3, lockedBankVaults, mockVRF)).to.revertedWithCustomError(
       lockedBankVaults,
@@ -1384,13 +1384,13 @@ describe("LockedBankVaults", function () {
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.be.revertedWithCustomError(lockedBankVaults, "AttacksPrevented");
     await lockedBankVaults.setPreventAttacks(false);
     await expect(
       lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.attackCost()})
+        .attackVaults(clanId, clanId + 1, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
     ).to.not.be.reverted;
   });
 
@@ -1487,7 +1487,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
       // Should win as they have more players
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
@@ -1579,7 +1579,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
       // Bob wins against alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
@@ -1595,7 +1595,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(erin)
-        .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(2, lockedBankVaults, mockVRF);
       // Erin wins against alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810);
@@ -1631,7 +1631,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(erin)
-        .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(3, lockedBankVaults, mockVRF);
       // Erin wins against alice (most likely)
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 500, 501, 502]);
@@ -1646,7 +1646,7 @@ describe("LockedBankVaults", function () {
       // Alice attacks erin and loses
       await lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(4, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([496, 500, 501, 503]);
@@ -1656,7 +1656,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.clearCooldowns(clanId, []);
       await lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, frankClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(clanId, frankClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(5, lockedBankVaults, mockVRF);
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([495, 501, 501, 503]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
@@ -1733,7 +1733,7 @@ describe("LockedBankVaults", function () {
 
       // Win
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       });
       let requestId = 1;
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
@@ -1763,7 +1763,7 @@ describe("LockedBankVaults", function () {
         await players.testModifyXP(frank.address, frankPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
       }
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
@@ -1777,7 +1777,7 @@ describe("LockedBankVaults", function () {
       await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [], bobPlayerId);
 
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
@@ -1795,7 +1795,7 @@ describe("LockedBankVaults", function () {
         .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId, frankPlayerId], bobPlayerId);
 
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
@@ -1804,7 +1804,7 @@ describe("LockedBankVaults", function () {
       // Lose
       await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
@@ -1820,7 +1820,7 @@ describe("LockedBankVaults", function () {
       await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [], bobPlayerId);
 
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
-        value: await lockedBankVaults.attackCost()
+        value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
@@ -1872,7 +1872,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
 
       // Clan is deleted
       await clans.connect(alice).changeRank(clanId, clanId, ClanRank.NONE, playerId);
@@ -1938,7 +1938,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
 
       // Both clans are deleted
       await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
@@ -2001,7 +2001,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
 
       await ethers.provider.send("evm_increaseTime", [lockedFundsPeriod + 1]);
       await ethers.provider.send("evm_mine", []);
@@ -2063,7 +2063,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
 
       await ethers.provider.send("evm_increaseTime", [lockedFundsPeriod + 1]);
       await ethers.provider.send("evm_mine", []);
@@ -2165,7 +2165,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
       // Bob wins against alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(900);
@@ -2181,7 +2181,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(erin)
-        .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(2, lockedBankVaults, mockVRF);
       // Erin wins again alice (more likely at least)
       expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(810);
@@ -2211,7 +2211,7 @@ describe("LockedBankVaults", function () {
       await expect(
         lockedBankVaults
           .connect(alice)
-          .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.attackCost()})
+          .attackVaults(clanId, erinClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()})
       ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "OutsideMMRRange");
 
       await lockedBankVaults.clearCooldowns(erinClanId, [clanId]);
@@ -2220,7 +2220,7 @@ describe("LockedBankVaults", function () {
       await expect(
         lockedBankVaults
           .connect(erin)
-          .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()})
+          .attackVaults(erinClanId, clanId, 0, erinPlayerId, {value: await lockedBankVaults.getAttackCost()})
       ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "OutsideMMRRange");
 
       // Erin can attack frank.
@@ -2231,7 +2231,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(erin)
-        .attackVaults(erinClanId, frankClanId, 0, erinPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(erinClanId, frankClanId, 0, erinPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(3, lockedBankVaults, mockVRF);
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 499, 501, 502]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
@@ -2278,7 +2278,7 @@ describe("LockedBankVaults", function () {
       // Attacker wins (most likely)
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
@@ -2292,7 +2292,7 @@ describe("LockedBankVaults", function () {
 
       await lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(2, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
@@ -2303,7 +2303,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
       await lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(3, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
@@ -2316,7 +2316,7 @@ describe("LockedBankVaults", function () {
       await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
       await lockedBankVaults
         .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(4, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
@@ -2480,7 +2480,7 @@ describe("LockedBankVaults", function () {
       // Attacker wins (most likely)
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([0, 501]);
@@ -2532,7 +2532,7 @@ describe("LockedBankVaults", function () {
       // Attacker loses (most likely)
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([30n, 470n]);
@@ -2585,7 +2585,7 @@ describe("LockedBankVaults", function () {
       // Attacker wins (most likely)
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([30, 470]);
@@ -2640,7 +2640,7 @@ describe("LockedBankVaults", function () {
       // Attacker loses (most likely)
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(1, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([0, 501]);
@@ -2693,7 +2693,7 @@ describe("LockedBankVaults", function () {
       // Attacker wins (most likely)
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([0]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId]);
@@ -2739,7 +2739,7 @@ describe("LockedBankVaults", function () {
       // Attacker loses (most likely)
       await lockedBankVaults
         .connect(bob)
-        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.attackCost()});
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
 
       let clanInfo = await lockedBankVaults.getClanInfo(clanId);
       expect(clanInfo.isInMMRArray).to.eq(true);

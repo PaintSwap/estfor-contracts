@@ -322,7 +322,7 @@ contract LockedBankVaults is
     }
 
     // Check they are paying enough
-    if (msg.value < attackCost()) {
+    if (msg.value < getAttackCost()) {
       revert NotEnoughFTM();
     }
 
@@ -640,7 +640,7 @@ contract LockedBankVaults is
     emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
   }
 
-  function attackCost() public view returns (uint256) {
+  function getAttackCost() public view returns (uint256) {
     return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
   }
 
