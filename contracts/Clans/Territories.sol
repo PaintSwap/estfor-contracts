@@ -183,12 +183,6 @@ contract Territories is
 
   address private _combatantsHelper;
 
-  // These 4 are no longer used
-  address public airnode; // The address of the QRNG Airnode
-  address public sponsorWallet; // The wallet that will cover the gas costs of the request
-  bytes32 public endpointIdUint256; // The endpoint ID for requesting a single random number
-  bytes32 public endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
-
   uint8 public indexGasPrice;
   uint64 public _movingAverageGasPrice;
   uint88 public _baseAttackCost; // To offset gas costs in response
