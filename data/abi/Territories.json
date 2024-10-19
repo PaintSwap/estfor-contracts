@@ -856,58 +856,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "_baseAttackCost",
-    "outputs": [
-      {
-        "internalType": "uint88",
-        "name": "",
-        "type": "uint88"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_expectedGasLimitFulfill",
-    "outputs": [
-      {
-        "internalType": "uint24",
-        "name": "",
-        "type": "uint24"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_movingAverageGasPrice",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_totalEmissionPercentage",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "components": [
@@ -1380,19 +1328,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "indexGasPrice",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "components": [
@@ -1438,12 +1373,12 @@
       },
       {
         "internalType": "address",
-        "name": "_oracle",
+        "name": "oracle",
         "type": "address"
       },
       {
         "internalType": "contract ISamWitchVRF",
-        "name": "_samWitchVRF",
+        "name": "samWitchVRF",
         "type": "address"
       },
       {

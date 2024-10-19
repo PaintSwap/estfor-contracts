@@ -176,22 +176,22 @@ contract Territories is
   ItemNFT private _itemNFT;
 
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanInfos;
-  uint16 public _totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
+  uint16 private _totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
   IBrushToken private _brush;
 
   Skill[] private comparableSkills;
 
   address private _combatantsHelper;
 
-  uint8 public indexGasPrice;
-  uint64 public _movingAverageGasPrice;
-  uint88 public _baseAttackCost; // To offset gas costs in response
-  uint24 public _expectedGasLimitFulfill;
-  uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
+  uint8 private _indexGasPrice;
+  uint64 private _movingAverageGasPrice;
+  uint88 private _baseAttackCost; // To offset gas costs in response
+  uint24 private _expectedGasLimitFulfill;
+  uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private _prices;
 
-  address private oracle;
-  uint24 private combatantChangeCooldown;
-  ISamWitchVRF private samWitchVRF;
+  address private _oracle;
+  uint24 private _combatantChangeCooldown;
+  ISamWitchVRF private _samWitchVRF;
 
   uint256 private constant NUM_WORDS = 3;
   uint256 private constant CALLBACK_GAS_LIMIT = 3_000_000;
@@ -244,7 +244,7 @@ contract Territories is
 
   /// @dev Reverts if the caller is not the SamWitchVRF contract.
   modifier onlySamWitchVRF() {
-    if (_msgSender() != address(samWitchVRF)) {
+    if (_msgSender() != address(_samWitchVRF)) {
       revert CallerNotSamWitchVRF();
     }
     _;
@@ -262,8 +262,8 @@ contract Territories is
     IBrushToken brush,
     LockedBankVaults lockedBankVaults,
     ItemNFT itemNFT,
-    address _oracle,
-    ISamWitchVRF _samWitchVRF,
+    address oracle,
+    ISamWitchVRF samWitchVRF,
     Skill[] calldata _comparableSkills,
     AdminAccess adminAccess,
     bool isBeta
@@ -275,15 +275,15 @@ contract Territories is
     _brush = brush;
     _lockedBankVaults = lockedBankVaults;
     _itemNFT = itemNFT;
-    oracle = _oracle;
-    samWitchVRF = _samWitchVRF;
+    _oracle = oracle;
+    _samWitchVRF = samWitchVRF;
     _nextTerritoryId = 1;
     _nextPendingAttackId = 1;
     _adminAccess = adminAccess;
     _isBeta = isBeta;
 
     for (uint256 i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
-      prices[i] = uint64(tx.gasprice);
+      _prices[i] = uint64(tx.gasprice);
     }
     _updateMovingAverageGasPrice(uint64(tx.gasprice));
     setBaseAttackCost(0.01 ether);
@@ -292,7 +292,7 @@ contract Territories is
     setComparableSkills(_comparableSkills);
 
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
-    combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
+    _combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
 
     _addTerritories(territories);
   }
@@ -306,7 +306,7 @@ contract Territories is
     _checkCanAssignCombatants(clanId, playerIds);
 
     _clanInfos[clanId].playerIds = playerIds;
-    _clanInfos[clanId].assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
+    _clanInfos[clanId].assignCombatantsCooldownTimestamp = uint40(block.timestamp + _combatantChangeCooldown);
     emit AssignCombatants(clanId, playerIds, _msgSender(), leaderPlayerId, combatantCooldownTimestamp);
   }
 
@@ -325,7 +325,7 @@ contract Territories is
       revert NotEnoughFTM();
     }
 
-    (bool success, ) = oracle.call{value: msg.value}("");
+    (bool success, ) = _oracle.call{value: msg.value}("");
     if (!success) {
       revert TransferFailed();
     }
@@ -529,11 +529,11 @@ contract Territories is
 
   function _updateAverageGasPrice() private {
     uint256 sum = 0;
-    prices[indexGasPrice] = uint64(tx.gasprice);
-    indexGasPrice = uint8((indexGasPrice + 1) % CLAN_WARS_GAS_PRICE_WINDOW_SIZE);
+    _prices[_indexGasPrice] = uint64(tx.gasprice);
+    _indexGasPrice = uint8((_indexGasPrice + 1) % CLAN_WARS_GAS_PRICE_WINDOW_SIZE);
 
     for (uint256 i = 0; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
-      sum += prices[i];
+      sum += _prices[i];
     }
 
     _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
@@ -588,7 +588,7 @@ contract Territories is
   }
 
   function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
+    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
   }
 
   function _updateMovingAverageGasPrice(uint64 movingAverageGasPrice) private {
