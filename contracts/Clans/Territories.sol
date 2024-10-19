@@ -177,7 +177,7 @@ contract Territories is
 
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanInfos;
   uint16 public _totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
-  IBrushToken private brush;
+  IBrushToken private _brush;
 
   Skill[] private comparableSkills;
 
@@ -259,7 +259,7 @@ contract Territories is
     TerritoryInput[] calldata territories,
     address players,
     IClans clans,
-    IBrushToken _brush,
+    IBrushToken brush,
     LockedBankVaults lockedBankVaults,
     ItemNFT itemNFT,
     address _oracle,
@@ -272,7 +272,7 @@ contract Territories is
     __Ownable_init();
     _players = players;
     _clans = clans;
-    brush = _brush;
+    _brush = brush;
     _lockedBankVaults = lockedBankVaults;
     _itemNFT = itemNFT;
     oracle = _oracle;
@@ -291,7 +291,7 @@ contract Territories is
 
     setComparableSkills(_comparableSkills);
 
-    brush.approve(address(_lockedBankVaults), type(uint256).max);
+    _brush.approve(address(_lockedBankVaults), type(uint256).max);
     combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
 
     _addTerritories(territories);
@@ -472,7 +472,7 @@ contract Territories is
       );
     }
 
-    if (!brush.transferFrom(_msgSender(), address(this), amount)) {
+    if (!_brush.transferFrom(_msgSender(), address(this), amount)) {
       revert TransferFailed();
     }
     emit Deposit(amount);

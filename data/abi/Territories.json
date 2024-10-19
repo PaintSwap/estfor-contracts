@@ -1423,7 +1423,7 @@
       },
       {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
