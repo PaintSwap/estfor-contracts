@@ -211,6 +211,11 @@
   },
   {
     "inputs": [],
+    "name": "TwitterInvalidCharacters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "TwitterTooLong",
     "type": "error"
   },

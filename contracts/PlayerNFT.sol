@@ -68,6 +68,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error TelegramTooLong();
   error TelegramInvalidCharacters();
   error TwitterTooLong();
+  error TwitterInvalidCharacters();
   error LengthMismatch();
 
   struct PlayerInfo {
@@ -299,7 +300,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     require(EstforLibrary.containsBaselineSocialNameCharacters(discord), DiscordInvalidCharacters());
 
     require(bytes(twitter).length <= 32, TwitterTooLong());
-    require(EstforLibrary.containsBaselineSocialNameCharacters(twitter), TelegramInvalidCharacters());
+    require(EstforLibrary.containsBaselineSocialNameCharacters(twitter), TwitterInvalidCharacters());
 
     require(bytes(telegram).length <= 32, TelegramTooLong());
     require(EstforLibrary.containsBaselineSocialNameCharacters(telegram), TelegramInvalidCharacters());
