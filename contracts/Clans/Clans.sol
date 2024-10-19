@@ -156,14 +156,14 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IClanMemberLeftCB private lockedBankVaults;
 
   modifier isOwnerOfPlayer(uint256 _playerId) {
-    if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
+    if (playerNFT.balanceOf(_msgSender(), _playerId) == 0) {
       revert NotOwnerOfPlayer();
     }
     _;
   }
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+    if (!players.isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
@@ -187,7 +187,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   modifier onlyMMRSetter() {
-    if (msg.sender != address(lockedBankVaults)) {
+    if (_msgSender() != address(lockedBankVaults)) {
       revert NotMMRSetter();
     }
     _;
@@ -260,7 +260,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanCreated(clanId, _playerId, clanInfo, _imageId, _tierId);
     _pay(tier.price);
 
-    bankFactory.createBank(msg.sender, clanId);
+    bankFactory.createBank(_msgSender(), clanId);
   }
 
   function editClan(
@@ -790,7 +790,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _pay(uint256 _brushCost) private {
     // Pay
-    brush.transferFrom(msg.sender, address(this), _brushCost);
+    brush.transferFrom(_msgSender(), address(this), _brushCost);
     uint256 quarterCost = _brushCost / 4;
     // Send half to the pool (currently shop)
     brush.transfer(pool, _brushCost - quarterCost * 2);

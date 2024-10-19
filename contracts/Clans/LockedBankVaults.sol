@@ -172,7 +172,7 @@ contract LockedBankVaults is
   uint256 private constant NUM_PACKED_VAULTS = 2;
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+    if (!players.isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
@@ -193,28 +193,28 @@ contract LockedBankVaults is
   }
 
   modifier onlyClans() {
-    if (msg.sender != address(clans)) {
+    if (_msgSender() != address(clans)) {
       revert OnlyClans();
     }
     _;
   }
 
   modifier onlyTerritories() {
-    if (msg.sender != address(territories)) {
+    if (_msgSender() != address(territories)) {
       revert OnlyTerritories();
     }
     _;
   }
 
   modifier isAdminAndBeta() {
-    if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
+    if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
       revert NotAdminAndBeta();
     }
     _;
   }
 
   modifier onlyCombatantsHelper() {
-    if (msg.sender != combatantsHelper) {
+    if (_msgSender() != combatantsHelper) {
       revert OnlyCombatantsHelper();
     }
     _;
@@ -222,7 +222,7 @@ contract LockedBankVaults is
 
   /// @dev Reverts if the caller is not the SamWitchVRF contract.
   modifier onlySamWitchVRF() {
-    if (msg.sender != address(samWitchVRF)) {
+    if (_msgSender() != address(samWitchVRF)) {
       revert CallerNotSamWitchVRF();
     }
     _;
@@ -290,7 +290,7 @@ contract LockedBankVaults is
     LockedBankVaultsLibrary.checkCanAssignCombatants(clanInfo, _playerIds);
     clanInfo.playerIds = _playerIds;
     clanInfo.assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
-    emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
+    emit AssignCombatants(_clanId, _playerIds, _msgSender(), _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
   // Some vaults may no longer be attackable if they don't have any funds, so force the MMR arrays to be re-calculated.
@@ -343,7 +343,7 @@ contract LockedBankVaults is
         lastClanBattles
       );
     if ((isReattacking || isUsingSuperAttack) && _itemTokenId != NONE) {
-      itemNFT.burn(msg.sender, _itemTokenId, 1);
+      itemNFT.burn(_msgSender(), _itemTokenId, 1);
     }
 
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
@@ -396,7 +396,7 @@ contract LockedBankVaults is
     emit AttackVaults(
       _clanId,
       _defendingClanId,
-      msg.sender,
+      _msgSender(),
       _leaderPlayerId,
       uint256(requestId),
       _nextPendingAttackId,
@@ -517,9 +517,9 @@ contract LockedBankVaults is
       clanInfos[_clanId],
       _clanId
     );
-    emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
+    emit ClaimFunds(_clanId, _msgSender(), _playerId, total, numLocksClaimed);
     address bankAddress = _getBankAddress(_clanId);
-    IBank(bankAddress).depositToken(msg.sender, _playerId, address(brush), total);
+    IBank(bankAddress).depositToken(_msgSender(), _playerId, address(brush), total);
   }
 
   function blockAttacks(
@@ -529,7 +529,7 @@ contract LockedBankVaults is
   ) external isOwnerOfPlayerAndActive(_playerId) isClanMember(_clanId, _playerId) {
     uint256 blockAttacksTimestamp = LockedBankVaultsLibrary.blockAttacks(itemNFT, _itemTokenId, clanInfos[_clanId]);
     // TODO: Add blockAttacksCooldownHours to a BlockingAttacksV2
-    emit BlockingAttacks(_clanId, _itemTokenId, msg.sender, _playerId, blockAttacksTimestamp, block.timestamp);
+    emit BlockingAttacks(_clanId, _itemTokenId, _msgSender(), _playerId, blockAttacksTimestamp, block.timestamp);
   }
 
   function lockFunds(uint256 _clanId, address _from, uint256 _playerId, uint256 _amount) external onlyTerritories {
@@ -539,7 +539,7 @@ contract LockedBankVaults is
       LockedBankVaultsLibrary.insertMMRArray(sortedClansByMMR, clans.getMMR(_clanId), uint32(_clanId));
       clanInfo.isInMMRArray = true;
     }
-    if (_amount != 0 && !brush.transferFrom(msg.sender, address(this), _amount)) {
+    if (_amount != 0 && !brush.transferFrom(_msgSender(), address(this), _amount)) {
       revert TransferFailed();
     }
   }

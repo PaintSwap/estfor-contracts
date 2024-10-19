@@ -5,7 +5,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 
@@ -15,7 +15,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 
-contract Bank is ERC1155Holder, IBank, Initializable {
+contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
   using UnsafeMath for U256;
   using UnsafeMath for uint16;
   using UnsafeMath for uint256;
@@ -67,7 +67,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   mapping(uint256 itemTokenId => bool hasAny) public uniqueItems;
 
   modifier isOwnerOfPlayer(uint256 _playerId) {
-    if (bankRegistry.playerNFT().balanceOf(msg.sender, _playerId) != 1) {
+    if (bankRegistry.playerNFT().balanceOf(_msgSender(), _playerId) != 1) {
       revert NotOwnerOfPlayer();
     }
     _;
@@ -120,8 +120,8 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       _receivedItemUpdateUniqueItems(_ids[iter.asUint256()], maxCapacity);
     }
-    bankRegistry.itemNFT().safeBatchTransferFrom(msg.sender, address(this), _ids, _values, "");
-    emit DepositItems(msg.sender, _playerId, _ids, _values);
+    bankRegistry.itemNFT().safeBatchTransferFrom(_msgSender(), address(this), _ids, _values, "");
+    emit DepositItems(_msgSender(), _playerId, _ids, _values);
   }
 
   function withdrawItems(
@@ -142,7 +142,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
         uniqueItems[id] = false;
       }
     }
-    emit WithdrawItems(msg.sender, _to, _playerId, _ids, _amounts);
+    emit WithdrawItems(_msgSender(), _to, _playerId, _ids, _amounts);
   }
 
   function withdrawItemsBulk(
@@ -167,7 +167,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       }
     }
 
-    emit WithdrawItemsBulk(msg.sender, _nftsInfo, _playerId);
+    emit WithdrawItemsBulk(_msgSender(), _nftsInfo, _playerId);
   }
 
   function onERC1155Received(
@@ -178,7 +178,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     bytes memory _data
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
-    if (msg.sender == address(bankRegistry.itemNFT()) && _operator != address(this)) {
+    if (_msgSender() == address(bankRegistry.itemNFT()) && _operator != address(this)) {
       uint256 maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
       _receivedItemUpdateUniqueItems(_id, maxCapacity);
       uint256 activePlayerId = bankRegistry.players().getActivePlayer(_from);
@@ -195,7 +195,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     bytes memory _data
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
-    if (msg.sender == address(bankRegistry.itemNFT()) && _operator != address(this)) {
+    if (_msgSender() == address(bankRegistry.itemNFT()) && _operator != address(this)) {
       uint256 maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
       U256 bounds = _ids.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
@@ -209,7 +209,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
 
   function depositFTM(uint256 _playerId) external payable isOwnerOfPlayer(_playerId) {
     if (msg.value != 0) {
-      emit DepositFTM(msg.sender, _playerId, msg.value);
+      emit DepositFTM(_msgSender(), _playerId, msg.value);
     }
   }
 
@@ -219,15 +219,15 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     uint256 _playerId,
     uint256 _amount
   ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
-    (bool success, ) = msg.sender.call{value: _amount}("");
+    (bool success, ) = _msgSender().call{value: _amount}("");
     if (!success) {
       revert WithdrawFailed();
     }
-    emit WithdrawFTM(msg.sender, _to, _playerId, _amount);
+    emit WithdrawFTM(_msgSender(), _to, _playerId, _amount);
   }
 
   function depositToken(address _from, uint256 _playerId, address _token, uint256 _amount) external {
-    if (_from != msg.sender && msg.sender != address(bankRegistry.lockedBankVaults())) {
+    if (_from != _msgSender() && _msgSender() != address(bankRegistry.lockedBankVaults())) {
       revert NotOwnerOfPlayer();
     }
 
@@ -235,7 +235,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       revert NotOwnerOfPlayer();
     }
 
-    bool success = IERC20(_token).transferFrom(msg.sender, address(this), _amount);
+    bool success = IERC20(_token).transferFrom(_msgSender(), address(this), _amount);
     if (!success) {
       revert DepositFailed();
     }
@@ -257,7 +257,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     if (!success) {
       revert WithdrawFailed();
     }
-    emit WithdrawToken(msg.sender, _playerId, _to, _toPlayerId, _token, _amount);
+    emit WithdrawToken(_msgSender(), _playerId, _to, _toPlayerId, _token, _amount);
   }
 
   function withdrawTokenToMany(
@@ -285,7 +285,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
       }
     }
 
-    emit WithdrawTokens(msg.sender, _playerId, _tos, _toPlayerIds, _token, _amounts);
+    emit WithdrawTokens(_msgSender(), _playerId, _tos, _toPlayerIds, _token, _amounts);
   }
 
   function withdrawNFT(
@@ -308,7 +308,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
     }
 
     IERC1155(_nft).safeTransferFrom(address(this), _to, _tokenId, _amount, "");
-    emit WithdrawNFT(msg.sender, _playerId, _to, _toPlayerId, _nft, _tokenId, _amount);
+    emit WithdrawNFT(_msgSender(), _playerId, _to, _toPlayerId, _nft, _tokenId, _amount);
   }
 
   function _receivedItemUpdateUniqueItems(uint256 _id, uint256 _maxCapacity) private {
@@ -324,7 +324,7 @@ contract Bank is ERC1155Holder, IBank, Initializable {
   // Untested
   receive() external payable {
     // Accept FTM
-    uint256 activePlayerId = bankRegistry.players().getActivePlayer(msg.sender);
-    emit DepositFTM(msg.sender, activePlayerId, msg.value);
+    uint256 activePlayerId = bankRegistry.players().getActivePlayer(_msgSender());
+    emit DepositFTM(_msgSender(), activePlayerId, msg.value);
   }
 }

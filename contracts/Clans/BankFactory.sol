@@ -24,7 +24,7 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   address public bankRegistry;
 
   modifier onlyClans() {
-    if (address(BankRegistry(bankRegistry).clans()) != msg.sender) {
+    if (address(BankRegistry(bankRegistry).clans()) != _msgSender()) {
       revert OnlyClans();
     }
     _;

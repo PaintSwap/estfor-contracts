@@ -207,7 +207,7 @@ contract Territories is
   uint256 public constant HARVESTING_COOLDOWN = 8 hours;
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!IPlayers(players).isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+    if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
@@ -228,21 +228,21 @@ contract Territories is
   }
 
   modifier onlyClans() {
-    if (msg.sender != address(clans)) {
+    if (_msgSender() != address(clans)) {
       revert OnlyClans();
     }
     _;
   }
 
   modifier isAdminAndBeta() {
-    if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
+    if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
       revert NotAdminAndBeta();
     }
     _;
   }
 
   modifier onlyCombatantsHelper() {
-    if (msg.sender != combatantsHelper) {
+    if (_msgSender() != combatantsHelper) {
       revert OnlyCombatantsHelper();
     }
     _;
@@ -250,7 +250,7 @@ contract Territories is
 
   /// @dev Reverts if the caller is not the SamWitchVRF contract.
   modifier onlySamWitchVRF() {
-    if (msg.sender != address(samWitchVRF)) {
+    if (_msgSender() != address(samWitchVRF)) {
       revert CallerNotSamWitchVRF();
     }
     _;
@@ -313,7 +313,7 @@ contract Territories is
 
     clanInfos[_clanId].playerIds = _playerIds;
     clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
-    emit AssignCombatants(_clanId, _playerIds, msg.sender, _leaderPlayerId, _combatantCooldownTimestamp);
+    emit AssignCombatants(_clanId, _playerIds, _msgSender(), _leaderPlayerId, _combatantCooldownTimestamp);
   }
 
   // This needs to call the oracle VRF on-demand and calls the callback
@@ -348,7 +348,7 @@ contract Territories is
       territoryId: uint16(_territoryId),
       attackInProgress: true,
       leaderPlayerId: uint40(_leaderPlayerId),
-      from: msg.sender
+      from: _msgSender()
     });
     bytes32 requestId = _requestRandomWords();
     requestToPendingAttackIds[requestId] = _nextPendingAttackId;
@@ -356,7 +356,7 @@ contract Territories is
     emit AttackTerritory(
       _clanId,
       _territoryId,
-      msg.sender,
+      _msgSender(),
       _leaderPlayerId,
       uint256(requestId),
       _nextPendingAttackId,
@@ -463,8 +463,8 @@ contract Territories is
       revert NoEmissionsToHarvest();
     }
 
-    lockedBankVaults.lockFunds(territory.clanIdOccupier, msg.sender, _playerId, unclaimedEmissions);
-    emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
+    lockedBankVaults.lockFunds(territory.clanIdOccupier, _msgSender(), _playerId, unclaimedEmissions);
+    emit Harvest(_territoryId, _msgSender(), _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }
 
   function addUnclaimedEmissions(uint256 _amount) external {
@@ -478,7 +478,7 @@ contract Territories is
       );
     }
 
-    if (!brush.transferFrom(msg.sender, address(this), _amount)) {
+    if (!brush.transferFrom(_msgSender(), address(this), _amount)) {
       revert TransferFailed();
     }
     emit Deposit(_amount);
@@ -505,12 +505,12 @@ contract Territories is
     clanInfos[_clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
     clanInfos[_clanId].blockAttacksCooldownHours = uint8(item.boostValue);
 
-    itemNFT.burn(msg.sender, _itemTokenId, 1);
+    itemNFT.burn(_msgSender(), _itemTokenId, 1);
 
     emit BlockingAttacks(
       _clanId,
       _itemTokenId,
-      msg.sender,
+      _msgSender(),
       _playerId,
       blockAttacksTimestamp,
       blockAttacksTimestamp + uint256(item.boostValue) * 3600
