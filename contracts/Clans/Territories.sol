@@ -166,7 +166,7 @@ contract Territories is
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
   mapping(bytes32 requestId => uint256 pendingAttackId) public _requestToPendingAttackIds;
   mapping(uint256 territoryId => Territory territory) private _territories;
-  address private players;
+  address private _players;
   uint16 public nextTerritoryId;
   uint64 public _nextPendingAttackId;
   IClans public clans;
@@ -207,7 +207,7 @@ contract Territories is
   uint256 public constant HARVESTING_COOLDOWN = 8 hours;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
-    if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
+    if (!IPlayers(_players).isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
@@ -263,7 +263,7 @@ contract Territories is
 
   function initialize(
     TerritoryInput[] calldata territories,
-    address _players,
+    address players,
     IClans _clans,
     IBrushToken _brush,
     LockedBankVaults _lockedBankVaults,
@@ -276,7 +276,7 @@ contract Territories is
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    players = _players;
+    _players = players;
     clans = _clans;
     brush = _brush;
     lockedBankVaults = _lockedBankVaults;
@@ -414,7 +414,7 @@ contract Territories is
       }
 
       (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary.doBattle(
-        players,
+        _players,
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
