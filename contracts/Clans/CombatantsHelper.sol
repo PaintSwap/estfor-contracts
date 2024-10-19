@@ -44,7 +44,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   ICombatants public lockedVaults;
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
+    if (!players.isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
@@ -58,7 +58,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   modifier isAdminAndBeta() {
-    if (!(adminAccess.isAdmin(msg.sender) && isBeta)) {
+    if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
       revert NotAdminAndBeta();
     }
     _;

@@ -2,9 +2,9 @@
 pragma solidity ^0.8.28;
 
 interface IPaintSwapDecorator {
-  function deposit(uint256 pid, uint256 _amount) external;
+  function deposit(uint256 pid, uint256 amount) external;
 
-  function pendingBrush(uint256 pid, address _user) external view returns (uint256);
+  function pendingBrush(uint256 pid, address user) external view returns (uint256);
 
   function updatePool(uint256 pid) external;
 

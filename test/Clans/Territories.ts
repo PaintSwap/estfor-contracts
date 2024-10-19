@@ -17,8 +17,8 @@ describe("Territories", function () {
 
     expect(allTerritories.length).to.eq(25);
     expect((await territories.getTerrorities()).length).to.eq(allTerritories.length);
-    expect((await territories.territories(1)).territoryId).to.eq(allTerritories[0].territoryId);
-    expect((await territories.territories(1)).percentageEmissions).to.eq(allTerritories[0].percentageEmissions);
+    expect((await territories.getTerritory(1)).territoryId).to.eq(allTerritories[0].territoryId);
+    expect((await territories.getTerritory(1)).percentageEmissions).to.eq(allTerritories[0].percentageEmissions);
     expect(await territories.totalEmissionPercentage()).to.eq(1000);
   });
 
@@ -34,11 +34,11 @@ describe("Territories", function () {
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
-    expect((await territories.territories(territoryId)).clanIdOccupier).eq(0); // Still 0 until the oracle response is made
+    expect((await territories.getTerritory(territoryId)).clanIdOccupier).eq(0); // Still 0 until the oracle response is made
 
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
-    expect((await territories.territories(territoryId)).clanIdOccupier).eq(territoryId);
+    expect((await territories.getTerritory(territoryId)).clanIdOccupier).eq(territoryId);
 
     const clanInfo = await territories.getClanInfo(clanId);
     expect(clanInfo.ownsTerritoryId).eq(territoryId);
@@ -90,8 +90,8 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId + 1, playerId, {value: await territories.attackCost()});
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
     // Old territory should be relinquished has no occupier now
-    expect((await territories.territories(territoryId)).clanIdOccupier).eq(0);
-    expect((await territories.territories(territoryId + 1)).clanIdOccupier).eq(clanId);
+    expect((await territories.getTerritory(territoryId)).clanIdOccupier).eq(0);
+    expect((await territories.getTerritory(territoryId + 1)).clanIdOccupier).eq(clanId);
   });
 
   it("Attack an occupied territory and win", async () => {
@@ -366,7 +366,7 @@ describe("Territories", function () {
     expect(clanInfo.playerIds.length).eq(0);
 
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
-    const territory = await territories.territories(territoryId);
+    const territory = await territories.getTerritory(territoryId);
     expect(territory.clanIdOccupier).eq(clanId);
   });
 
@@ -418,7 +418,7 @@ describe("Territories", function () {
     expect(clanInfo.playerIds.length).eq(0);
 
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
-    const territory = await territories.territories(territoryId);
+    const territory = await territories.getTerritory(territoryId);
     expect(territory.clanIdOccupier).eq(clanId);
   });
 
@@ -463,7 +463,7 @@ describe("Territories", function () {
       .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.attackCost()});
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
-    const territory = await territories.territories(territoryId);
+    const territory = await territories.getTerritory(territoryId);
     expect(territory.clanIdOccupier).eq(bobClanId);
   });
 
@@ -536,7 +536,7 @@ describe("Territories", function () {
     await brush.connect(alice).approve(await territories.getAddress(), parseEther("1000"));
     await territories.connect(alice).addUnclaimedEmissions(parseEther("1000"));
 
-    expect((await territories.territories(territoryId)).unclaimedEmissions).to.eq(parseEther("100"));
+    expect((await territories.getTerritory(territoryId)).unclaimedEmissions).to.eq(parseEther("100"));
 
     //    const bankAddress = await bankFactory.bankAddress(clanId);
     //    expect((await territories.getClanInfo(clanId)).bank).to.eq(ZeroAddress);
@@ -545,8 +545,8 @@ describe("Territories", function () {
     //    expect((await territories.getClanInfo(clanId)).bank).to.eq(bankAddress);
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
-    expect((await territories.territories(territoryId)).unclaimedEmissions).to.eq(parseEther("0"));
-    expect((await territories.territories(territoryId)).lastClaimTimestamp).to.eq(NOW);
+    expect((await territories.getTerritory(territoryId)).unclaimedEmissions).to.eq(parseEther("0"));
+    expect((await territories.getTerritory(territoryId)).lastClaimTimestamp).to.eq(NOW);
 
     expect(await brush.balanceOf(await lockedBankVaults.getAddress())).to.eq(parseEther("100"));
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(parseEther("100"));
@@ -680,7 +680,7 @@ describe("Territories", function () {
 
     await territories.addTerritories([addTerritory]);
 
-    const newTerritoryAdded = await territories.territories(26);
+    const newTerritoryAdded = await territories.getTerritory(26);
     expect(newTerritoryAdded.percentageEmissions).eq(addTerritory.percentageEmissions);
   });
 
@@ -690,13 +690,13 @@ describe("Territories", function () {
     const editedTerritory = {...allTerritories[0], percentageEmissions: 90};
 
     await territories.editTerritories([editedTerritory]);
-    expect((await territories.territories(allTerritories[0].territoryId)).percentageEmissions).to.eq(90);
+    expect((await territories.getTerritory(allTerritories[0].territoryId)).percentageEmissions).to.eq(90);
 
     // Other ones should not be changed
     for (const territory of allTerritories) {
       if (territory.territoryId != 1) {
         expect(territory.percentageEmissions).to.eq(
-          (await territories.territories(territory.territoryId)).percentageEmissions
+          (await territories.getTerritory(territory.territoryId)).percentageEmissions
         );
       }
     }
@@ -707,9 +707,9 @@ describe("Territories", function () {
 
     const territoryId = 1;
     await territories.removeTerritories([territoryId]);
-    expect((await territories.territories(territoryId)).percentageEmissions).to.eq(0);
+    expect((await territories.getTerritory(territoryId)).percentageEmissions).to.eq(0);
     // Check the others haven't changed
-    expect((await territories.territories(territoryId + 1)).percentageEmissions).to.eq(100);
+    expect((await territories.getTerritory(territoryId + 1)).percentageEmissions).to.eq(100);
   });
 
   it("Attack territory gas price", async () => {
@@ -762,20 +762,20 @@ describe("Territories", function () {
     // Useful to re-run a battle for testing
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF);
-    expect(await territories.movingAverageGasPrice()).to.eq(0);
+    expect(await territories.getMovingAverageGasPrice()).to.eq(0);
 
     let attackCost = await territories.attackCost();
-    const baseAttackCost = await territories.baseAttackCost();
+    const baseAttackCost = await territories.getBaseAttackCost();
     expect(attackCost).to.eq(baseAttackCost);
 
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 1000n);
     const bigZero = 0n;
-    expect(await territories.movingAverageGasPrice()).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
+    expect(await territories.getMovingAverageGasPrice()).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
 
     attackCost = await territories.attackCost();
-    const expectedGasLimit = await territories.expectedGasLimitFulfill();
-    expect(attackCost).to.eq(baseAttackCost + (await territories.movingAverageGasPrice()) * expectedGasLimit);
+    const expectedGasLimit = await territories.getExpectedGasLimitFulfill();
+    expect(attackCost).to.eq(baseAttackCost + (await territories.getMovingAverageGasPrice()) * expectedGasLimit);
 
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 900n);
@@ -786,11 +786,11 @@ describe("Territories", function () {
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 200n);
 
-    expect(await territories.movingAverageGasPrice()).to.eq(
+    expect(await territories.getMovingAverageGasPrice()).to.eq(
       (gasPrice + 900n + gasPrice + 800n + gasPrice + 500n + gasPrice + 200n) / 4n
     );
     attackCost = await territories.attackCost();
-    expect(attackCost).to.eq(baseAttackCost + (await territories.movingAverageGasPrice()) * expectedGasLimit);
+    expect(attackCost).to.eq(baseAttackCost + (await territories.getMovingAverageGasPrice()) * expectedGasLimit);
   });
 
   it("Assigning new combatants is allowed while holding a territory", async () => {
@@ -804,7 +804,7 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.attackCost()});
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
-    expect((await territories.territories(territoryId)).clanIdOccupier).eq(territoryId);
+    expect((await territories.getTerritory(territoryId)).clanIdOccupier).eq(territoryId);
 
     const clanInfo = await territories.getClanInfo(clanId);
     expect(clanInfo.ownsTerritoryId).eq(territoryId);

@@ -856,6 +856,58 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "_baseAttackCost",
+    "outputs": [
+      {
+        "internalType": "uint88",
+        "name": "",
+        "type": "uint88"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "_expectedGasLimitFulfill",
+    "outputs": [
+      {
+        "internalType": "uint24",
+        "name": "",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "_movingAverageGasPrice",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "_nextPendingAttackId",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "components": [
@@ -871,7 +923,7 @@
           }
         ],
         "internalType": "struct Territories.TerritoryInput[]",
-        "name": "_territories",
+        "name": "territories",
         "type": "tuple[]"
       }
     ],
@@ -884,7 +936,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -910,22 +962,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint48[]",
-        "name": "_playerIds",
+        "name": "playerIds",
         "type": "uint48[]"
       },
       {
         "internalType": "uint256",
-        "name": "_combatantCooldownTimestamp",
+        "name": "combatantCooldownTimestamp",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_leaderPlayerId",
+        "name": "leaderPlayerId",
         "type": "uint256"
       }
     ],
@@ -951,17 +1003,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_territoryId",
+        "name": "territoryId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_leaderPlayerId",
+        "name": "leaderPlayerId",
         "type": "uint256"
       }
     ],
@@ -971,33 +1023,20 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "baseAttackCost",
-    "outputs": [
-      {
-        "internalType": "uint88",
-        "name": "",
-        "type": "uint88"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint16",
-        "name": "_itemTokenId",
+        "name": "itemTokenId",
         "type": "uint16"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1010,12 +1049,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1041,7 +1080,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       }
     ],
@@ -1066,7 +1105,7 @@
           }
         ],
         "internalType": "struct Territories.TerritoryInput[]",
-        "name": "_territories",
+        "name": "territories",
         "type": "tuple[]"
       }
     ],
@@ -1102,28 +1141,15 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "expectedGasLimitFulfill",
-    "outputs": [
-      {
-        "internalType": "uint24",
-        "name": "",
-        "type": "uint24"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "_requestId",
+        "name": "requestId",
         "type": "bytes32"
       },
       {
         "internalType": "uint256[]",
-        "name": "_randomWords",
+        "name": "randomWords",
         "type": "uint256[]"
       }
     ],
@@ -1133,10 +1159,23 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getBaseAttackCost",
+    "outputs": [
+      {
+        "internalType": "uint88",
+        "name": "baseAttachCost",
+        "type": "uint88"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       }
     ],
@@ -1194,10 +1233,36 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getExpectedGasLimitFulfill",
+    "outputs": [
+      {
+        "internalType": "uint88",
+        "name": "expectedGasLimitFulfill",
+        "type": "uint88"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMovingAverageGasPrice",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "movingAverageGasPrice",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_pendingAttackId",
+        "name": "pendingAttackId",
         "type": "uint256"
       }
     ],
@@ -1233,6 +1298,57 @@
         ],
         "internalType": "struct Territories.PendingAttack",
         "name": "pendingAttack",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "territoryId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTerritory",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "territoryId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "percentageEmissions",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint40",
+            "name": "clanIdOccupier",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint88",
+            "name": "unclaimedEmissions",
+            "type": "uint88"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastClaimTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint16",
+            "name": "minimumMMR",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct Territories.Territory",
+        "name": "territory",
         "type": "tuple"
       }
     ],
@@ -1288,12 +1404,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_territoryId",
+        "name": "territoryId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1331,7 +1447,7 @@
           }
         ],
         "internalType": "struct Territories.TerritoryInput[]",
-        "name": "_territories",
+        "name": "territories",
         "type": "tuple[]"
       },
       {
@@ -1394,12 +1510,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1409,32 +1525,6 @@
         "internalType": "bool",
         "name": "combatant",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "movingAverageGasPrice",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nextPendingAttackId",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
       }
     ],
     "stateMutability": "view",
@@ -1483,7 +1573,7 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_territoryIds",
+        "name": "territoryIds",
         "type": "uint256[]"
       }
     ],
@@ -1522,7 +1612,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_requestId",
+        "name": "requestId",
         "type": "uint256"
       }
     ],
@@ -1535,7 +1625,7 @@
     "inputs": [
       {
         "internalType": "uint88",
-        "name": "_baseAttackCost",
+        "name": "baseAttackCost",
         "type": "uint88"
       }
     ],
@@ -1548,7 +1638,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_combatantsHelper",
+        "name": "combatantsHelper",
         "type": "address"
       }
     ],
@@ -1561,7 +1651,7 @@
     "inputs": [
       {
         "internalType": "enum Skill[]",
-        "name": "_skills",
+        "name": "skills",
         "type": "uint8[]"
       }
     ],
@@ -1574,7 +1664,7 @@
     "inputs": [
       {
         "internalType": "uint24",
-        "name": "_expectedGasLimitFulfill",
+        "name": "expectedGasLimitFulfill",
         "type": "uint24"
       }
     ],
@@ -1587,12 +1677,12 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_territoryIds",
+        "name": "territoryIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint16[]",
-        "name": "_minimumMMRs",
+        "name": "minimumMMRs",
         "type": "uint16[]"
       }
     ],
@@ -1609,50 +1699,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "territoryId",
-        "type": "uint256"
-      }
-    ],
-    "name": "territories",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "territoryId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "percentageEmissions",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint40",
-        "name": "clanIdOccupier",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint88",
-        "name": "unclaimedEmissions",
-        "type": "uint88"
-      },
-      {
-        "internalType": "uint40",
-        "name": "lastClaimTimestamp",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint16",
-        "name": "minimumMMR",
-        "type": "uint16"
       }
     ],
     "stateMutability": "view",

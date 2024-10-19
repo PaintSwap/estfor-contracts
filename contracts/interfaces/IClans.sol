@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {ClanRank} from "../globals/clans.sol";
 
 interface IClans {
-  function canWithdraw(uint256 _clanId, uint256 _playerId) external view returns (bool);
+  function canWithdraw(uint256 clanId, uint256 playerId) external view returns (bool);
 
   function isClanMember(uint256 clanId, uint256 playerId) external view returns (bool);
 

@@ -165,10 +165,10 @@ contract Territories is
 
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
   mapping(bytes32 requestId => uint256 pendingAttackId) public requestToPendingAttackIds;
-  mapping(uint256 territoryId => Territory territory) public territories;
+  mapping(uint256 territoryId => Territory territory) private _territories;
   address private players;
   uint16 public nextTerritoryId;
-  uint64 public nextPendingAttackId;
+  uint64 public _nextPendingAttackId;
   IClans public clans;
   AdminAccess private adminAccess;
   bool private isBeta;
@@ -181,7 +181,7 @@ contract Territories is
 
   Skill[] private comparableSkills;
 
-  address private combatantsHelper;
+  address private _combatantsHelper;
 
   // These 4 are no longer used
   address public airnode; // The address of the QRNG Airnode
@@ -190,9 +190,9 @@ contract Territories is
   bytes32 public endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
 
   uint8 public indexGasPrice;
-  uint64 public movingAverageGasPrice;
-  uint88 public baseAttackCost; // To offset gas costs in response
-  uint24 public expectedGasLimitFulfill;
+  uint64 public _movingAverageGasPrice;
+  uint88 public _baseAttackCost; // To offset gas costs in response
+  uint24 public _expectedGasLimitFulfill;
   uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
 
   address private oracle;
@@ -206,22 +206,22 @@ contract Territories is
   uint256 public constant PERCENTAGE_EMISSION_MUL = 10;
   uint256 public constant HARVESTING_COOLDOWN = 8 hours;
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint256 _clanId, uint256 _playerId) {
-    if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
+  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 playerId) {
+    if (clans.getRank(clanId, playerId) < ClanRank.LEADER) {
       revert NotLeader();
     }
     _;
   }
 
-  modifier isClanMember(uint256 _clanId, uint256 _playerId) {
-    if (clans.getRank(_clanId, _playerId) == ClanRank.NONE) {
+  modifier isClanMember(uint256 clanId, uint256 playerId) {
+    if (clans.getRank(clanId, playerId) == ClanRank.NONE) {
       revert NotMemberOfClan();
     }
     _;
@@ -242,7 +242,7 @@ contract Territories is
   }
 
   modifier onlyCombatantsHelper() {
-    if (_msgSender() != combatantsHelper) {
+    if (_msgSender() != _combatantsHelper) {
       revert OnlyCombatantsHelper();
     }
     _;
@@ -262,7 +262,7 @@ contract Territories is
   }
 
   function initialize(
-    TerritoryInput[] calldata _territories,
+    TerritoryInput[] calldata territories,
     address _players,
     IClans _clans,
     IBrushToken _brush,
@@ -284,7 +284,7 @@ contract Territories is
     oracle = _oracle;
     samWitchVRF = _samWitchVRF;
     nextTerritoryId = 1;
-    nextPendingAttackId = 1;
+    _nextPendingAttackId = 1;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
 
@@ -300,31 +300,31 @@ contract Territories is
     brush.approve(address(_lockedBankVaults), type(uint256).max);
     combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
 
-    _addTerritories(_territories);
+    _addTerritories(territories);
   }
 
   function assignCombatants(
-    uint256 _clanId,
-    uint48[] calldata _playerIds,
-    uint256 _combatantCooldownTimestamp,
-    uint256 _leaderPlayerId
+    uint256 clanId,
+    uint48[] calldata playerIds,
+    uint256 combatantCooldownTimestamp,
+    uint256 leaderPlayerId
   ) external override onlyCombatantsHelper {
-    _checkCanAssignCombatants(_clanId, _playerIds);
+    _checkCanAssignCombatants(clanId, playerIds);
 
-    clanInfos[_clanId].playerIds = _playerIds;
-    clanInfos[_clanId].assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
-    emit AssignCombatants(_clanId, _playerIds, _msgSender(), _leaderPlayerId, _combatantCooldownTimestamp);
+    clanInfos[clanId].playerIds = playerIds;
+    clanInfos[clanId].assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
+    emit AssignCombatants(clanId, playerIds, _msgSender(), leaderPlayerId, combatantCooldownTimestamp);
   }
 
   // This needs to call the oracle VRF on-demand and calls the callback
   function attackTerritory(
-    uint256 _clanId,
-    uint256 _territoryId,
-    uint256 _leaderPlayerId
-  ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
-    uint256 clanIdOccupier = territories[_territoryId].clanIdOccupier;
+    uint256 clanId,
+    uint256 territoryId,
+    uint256 leaderPlayerId
+  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isAtLeastLeaderOfClan(clanId, leaderPlayerId) {
+    uint256 clanIdOccupier = _territories[territoryId].clanIdOccupier;
 
-    _checkCanAttackTerritory(_clanId, clanIdOccupier, _territoryId);
+    _checkCanAttackTerritory(clanId, clanIdOccupier, territoryId);
 
     // Check they are paying enough
     if (msg.value < attackCost()) {
@@ -336,48 +336,48 @@ contract Territories is
       revert TransferFailed();
     }
 
-    uint64 _nextPendingAttackId = nextPendingAttackId++;
+    uint64 nextPendingAttackId = _nextPendingAttackId++;
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    ClanInfo storage clanInfo = clanInfos[clanId];
     clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
 
     clanInfo.currentlyAttacking = true;
 
-    pendingAttacks[_nextPendingAttackId] = PendingAttack({
-      clanId: uint40(_clanId),
-      territoryId: uint16(_territoryId),
+    pendingAttacks[nextPendingAttackId] = PendingAttack({
+      clanId: uint40(clanId),
+      territoryId: uint16(territoryId),
       attackInProgress: true,
-      leaderPlayerId: uint40(_leaderPlayerId),
+      leaderPlayerId: uint40(leaderPlayerId),
       from: _msgSender()
     });
     bytes32 requestId = _requestRandomWords();
-    requestToPendingAttackIds[requestId] = _nextPendingAttackId;
+    requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
     emit AttackTerritory(
-      _clanId,
-      _territoryId,
+      clanId,
+      territoryId,
       _msgSender(),
-      _leaderPlayerId,
+      leaderPlayerId,
       uint256(requestId),
-      _nextPendingAttackId,
+      nextPendingAttackId,
       attackingCooldownTimestamp
     );
   }
 
   /// @notice Called by the SamWitchVRF contract to fulfill the request
-  function fulfillRandomWords(bytes32 _requestId, uint256[] calldata _randomWords) external onlySamWitchVRF {
-    if (_randomWords.length != NUM_WORDS) {
+  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+    if (randomWords.length != NUM_WORDS) {
       revert LengthMismatch();
     }
 
-    PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
+    PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[requestId]];
     if (!pendingAttack.attackInProgress) {
       revert RequestIdNotKnown();
     }
 
     uint256 attackingClanId = pendingAttack.clanId;
     uint16 territoryId = pendingAttack.territoryId;
-    uint256 defendingClanId = territories[territoryId].clanIdOccupier;
+    uint256 defendingClanId = _territories[territoryId].clanIdOccupier;
 
     _updateAverageGasPrice();
     clanInfos[attackingClanId].currentlyAttacking = false;
@@ -391,7 +391,7 @@ contract Territories is
         attackingClanId,
         pendingAttack.from,
         pendingAttack.leaderPlayerId,
-        uint256(_requestId)
+        uint256(requestId)
       );
       return;
     }
@@ -410,7 +410,7 @@ contract Territories is
 
       randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
       for (uint256 i; i < randomSkills.length; ++i) {
-        randomSkills[i] = comparableSkills[uint8(_randomWords[2] >> (i * 8)) % comparableSkills.length];
+        randomSkills[i] = comparableSkills[uint8(randomWords[2] >> (i * 8)) % comparableSkills.length];
       }
 
       (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary.doBattle(
@@ -418,14 +418,14 @@ contract Territories is
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        [_randomWords[0], _randomWords[1]],
+        [randomWords[0], randomWords[1]],
         0,
         0
       );
     }
 
     emit BattleResult(
-      uint256(_requestId),
+      uint256(requestId),
       attackingPlayerIds,
       defendingPlayerIds,
       attackingRolls,
@@ -435,7 +435,7 @@ contract Territories is
       didAttackersWin,
       attackingClanId,
       defendingClanId,
-      _randomWords,
+      randomWords,
       territoryId
     );
 
@@ -447,10 +447,10 @@ contract Territories is
   }
 
   function harvest(
-    uint256 _territoryId,
-    uint256 _playerId
-  ) external isOwnerOfPlayerAndActive(_playerId) isClanMember(territories[_territoryId].clanIdOccupier, _playerId) {
-    Territory storage territory = territories[_territoryId];
+    uint256 territoryId,
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) isClanMember(_territories[territoryId].clanIdOccupier, playerId) {
+    Territory storage territory = _territories[territoryId];
     uint256 unclaimedEmissions = territory.unclaimedEmissions;
 
     if (territory.lastClaimTimestamp + HARVESTING_COOLDOWN > block.timestamp) {
@@ -463,72 +463,72 @@ contract Territories is
       revert NoEmissionsToHarvest();
     }
 
-    lockedBankVaults.lockFunds(territory.clanIdOccupier, _msgSender(), _playerId, unclaimedEmissions);
-    emit Harvest(_territoryId, _msgSender(), _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
+    lockedBankVaults.lockFunds(territory.clanIdOccupier, _msgSender(), playerId, unclaimedEmissions);
+    emit Harvest(territoryId, _msgSender(), playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
   }
 
-  function addUnclaimedEmissions(uint256 _amount) external {
-    if (_amount < totalEmissionPercentage) {
+  function addUnclaimedEmissions(uint256 amount) external {
+    if (amount < totalEmissionPercentage) {
       revert AmountTooLow();
     }
 
     for (uint256 i = 1; i < nextTerritoryId; ++i) {
-      territories[i].unclaimedEmissions += uint88(
-        (_amount * territories[i].percentageEmissions) / totalEmissionPercentage
+      _territories[i].unclaimedEmissions += uint88(
+        (amount * _territories[i].percentageEmissions) / totalEmissionPercentage
       );
     }
 
-    if (!brush.transferFrom(_msgSender(), address(this), _amount)) {
+    if (!brush.transferFrom(_msgSender(), address(this), amount)) {
       revert TransferFailed();
     }
-    emit Deposit(_amount);
+    emit Deposit(amount);
   }
 
   function blockAttacks(
-    uint256 _clanId,
-    uint16 _itemTokenId,
-    uint256 _playerId
-  ) external isOwnerOfPlayerAndActive(_playerId) isClanMember(_clanId, _playerId) {
-    Item memory item = itemNFT.getItem(_itemTokenId);
+    uint256 clanId,
+    uint16 itemTokenId,
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) isClanMember(clanId, playerId) {
+    Item memory item = itemNFT.getItem(itemTokenId);
     if (item.equipPosition != EquipPosition.TERRITORY || item.boostType != BoostType.PVP_BLOCK) {
       revert NotATerritoryDefenceItem();
     }
 
     if (
-      (clanInfos[_clanId].blockAttacksTimestamp + uint256(clanInfos[_clanId].blockAttacksCooldownHours) * 3600) >
+      (clanInfos[clanId].blockAttacksTimestamp + uint256(clanInfos[clanId].blockAttacksCooldownHours) * 3600) >
       block.timestamp
     ) {
       revert BlockAttacksCooldown();
     }
 
     uint256 blockAttacksTimestamp = block.timestamp + item.boostDuration;
-    clanInfos[_clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
-    clanInfos[_clanId].blockAttacksCooldownHours = uint8(item.boostValue);
+    clanInfos[clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
+    clanInfos[clanId].blockAttacksCooldownHours = uint8(item.boostValue);
 
-    itemNFT.burn(_msgSender(), _itemTokenId, 1);
+    itemNFT.burn(_msgSender(), itemTokenId, 1);
 
     emit BlockingAttacks(
-      _clanId,
-      _itemTokenId,
+      clanId,
+      itemTokenId,
       _msgSender(),
-      _playerId,
+      playerId,
       blockAttacksTimestamp,
       blockAttacksTimestamp + uint256(item.boostValue) * 3600
     );
   }
 
-  function clanMemberLeft(uint256 _clanId, uint256 _playerId) external override onlyClans {
+  function clanMemberLeft(uint256 clanId, uint256 playerId) external override onlyClans {
     // Remove a player combatant if they are currently assigned in this clan
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    ClanInfo storage clanInfo = clanInfos[clanId];
     if (clanInfo.playerIds.length != 0) {
-      uint256 searchIndex = EstforLibrary._binarySearch(clanInfo.playerIds, _playerId);
+      uint256 searchIndex = EstforLibrary._binarySearch(clanInfo.playerIds, playerId);
       if (searchIndex != type(uint256).max) {
         // Shift the whole array to delete the element
         for (uint256 i = searchIndex; i < clanInfo.playerIds.length - 1; ++i) {
           clanInfo.playerIds[i] = clanInfo.playerIds[i + 1];
         }
         clanInfo.playerIds.pop();
-        emit RemoveCombatant(_playerId, _clanId);
+        emit RemoveCombatant(playerId, clanId);
       }
     }
   }
@@ -545,32 +545,32 @@ contract Territories is
     _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
   }
 
-  function _checkCanAssignCombatants(uint256 _clanId, uint48[] calldata _playerIds) private view {
-    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
+  function _checkCanAssignCombatants(uint256 clanId, uint48[] calldata playerIds) private view {
+    if (playerIds.length > MAX_CLAN_COMBATANTS) {
       revert TooManyCombatants();
     }
 
     // Can only change combatants every so often
-    if (clanInfos[_clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
+    if (clanInfos[clanId].assignCombatantsCooldownTimestamp > block.timestamp) {
       revert ClanCombatantsChangeCooldown();
     }
   }
 
-  function _checkCanAttackTerritory(uint256 _clanId, uint256 _defendingClanId, uint256 _territoryId) private view {
-    if (_clanId == _defendingClanId) {
+  function _checkCanAttackTerritory(uint256 clanId, uint256 defendingClanId, uint256 territoryId) private view {
+    if (clanId == defendingClanId) {
       revert CannotAttackSelf();
     }
 
-    Territory storage territory = territories[_territoryId];
-    if (territory.territoryId != _territoryId) {
+    Territory storage territory = _territories[territoryId];
+    if (territory.territoryId != territoryId) {
       revert InvalidTerritory();
     }
 
-    if (territory.minimumMMR > clans.getMMR(_clanId)) {
+    if (territory.minimumMMR > clans.getMMR(clanId)) {
       revert NotEnoughMMR(territory.minimumMMR);
     }
 
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+    ClanInfo storage clanInfo = clanInfos[clanId];
     // Must have at least 1 combatant
     if (clanInfo.playerIds.length == 0) {
       revert NoCombatants();
@@ -584,7 +584,7 @@ contract Territories is
       revert ClanAttackingCooldown();
     }
 
-    if (clanInfos[_defendingClanId].blockAttacksTimestamp > block.timestamp) {
+    if (clanInfos[defendingClanId].blockAttacksTimestamp > block.timestamp) {
       revert ClanIsBlockingAttacks();
     }
 
@@ -597,20 +597,20 @@ contract Territories is
     requestId = samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
   }
 
-  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
-    movingAverageGasPrice = _movingAverageGasPrice;
-    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
+  function _updateMovingAverageGasPrice(uint64 movingAverageGasPrice) private {
+    _movingAverageGasPrice = movingAverageGasPrice;
+    emit UpdateMovingAverageGasPrice(movingAverageGasPrice);
   }
 
-  function _claimTerritory(uint256 _territoryId, uint256 _attackingClanId) private {
-    territories[_territoryId].clanIdOccupier = uint32(_attackingClanId);
+  function _claimTerritory(uint256 territoryId, uint256 attackingClanId) private {
+    _territories[territoryId].clanIdOccupier = uint32(attackingClanId);
 
-    if (clanInfos[_attackingClanId].ownsTerritoryId != 0) {
+    if (clanInfos[attackingClanId].ownsTerritoryId != 0) {
       // This clan already owns a territory, so unclaim that one
-      territories[clanInfos[_attackingClanId].ownsTerritoryId].clanIdOccupier = 0;
+      _territories[clanInfos[attackingClanId].ownsTerritoryId].clanIdOccupier = 0;
     }
 
-    clanInfos[_attackingClanId].ownsTerritoryId = uint16(_territoryId);
+    clanInfos[attackingClanId].ownsTerritoryId = uint16(territoryId);
   }
 
   function _checkTerritory(TerritoryInput calldata _territory) private pure {
@@ -619,17 +619,17 @@ contract Territories is
     }
   }
 
-  function _addTerritories(TerritoryInput[] calldata _territories) private {
+  function _addTerritories(TerritoryInput[] calldata territories) private {
     uint256 _totalEmissionPercentage = totalEmissionPercentage;
     uint256 _nextTerritoryId = nextTerritoryId;
-    for (uint256 i; i < _territories.length; ++i) {
-      TerritoryInput calldata territoryInput = _territories[i];
-      _checkTerritory(_territories[i]);
+    for (uint256 i; i < territories.length; ++i) {
+      TerritoryInput calldata territoryInput = territories[i];
+      _checkTerritory(territories[i]);
       if (i + _nextTerritoryId != territoryInput.territoryId) {
         revert InvalidTerritoryId();
       }
 
-      territories[territoryInput.territoryId] = Territory({
+      _territories[territoryInput.territoryId] = Territory({
         territoryId: territoryInput.territoryId,
         clanIdOccupier: 0,
         percentageEmissions: territoryInput.percentageEmissions,
@@ -640,121 +640,137 @@ contract Territories is
       _totalEmissionPercentage += territoryInput.percentageEmissions;
     }
 
-    nextTerritoryId = uint16(_nextTerritoryId + _territories.length);
+    nextTerritoryId = uint16(_nextTerritoryId + territories.length);
 
     if (_totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
       revert InvalidEmissionPercentage();
     }
 
     totalEmissionPercentage = uint16(_totalEmissionPercentage);
-    emit AddTerritories(_territories);
+    emit AddTerritories(territories);
   }
 
-  function _setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) private {
-    expectedGasLimitFulfill = _expectedGasLimitFulfill;
-    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  function _setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) private {
+    _expectedGasLimitFulfill = expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
   function attackCost() public view returns (uint256) {
-    return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
+    return _baseAttackCost + (_movingAverageGasPrice * _expectedGasLimitFulfill);
   }
 
   function getTerrorities() external view returns (Territory[] memory) {
-    Territory[] memory _territories = new Territory[](nextTerritoryId - 1);
-    for (uint256 i; i < _territories.length; ++i) {
-      _territories[i] = territories[i + 1];
+    Territory[] memory territories = new Territory[](nextTerritoryId - 1);
+    for (uint256 i; i < territories.length; ++i) {
+      territories[i] = _territories[i + 1];
     }
-    return _territories;
+    return territories;
   }
 
-  function getClanInfo(uint256 _clanId) external view returns (ClanInfo memory clanInfo) {
-    return clanInfos[_clanId];
+  function getClanInfo(uint256 clanId) external view returns (ClanInfo memory clanInfo) {
+    return clanInfos[clanId];
   }
 
-  function getPendingAttack(uint256 _pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
-    return pendingAttacks[_pendingAttackId];
+  function getPendingAttack(uint256 pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
+    return pendingAttacks[pendingAttackId];
   }
 
-  function isCombatant(uint256 _clanId, uint256 _playerId) external view override returns (bool combatant) {
+  function getTerritory(uint256 territoryId) external view returns (Territory memory territory) {
+    return _territories[territoryId];
+  }
+
+  function getMovingAverageGasPrice() external view returns (uint64 movingAverageGasPrice) {
+    return _movingAverageGasPrice;
+  }
+
+  function getBaseAttackCost() external view returns (uint88 baseAttachCost) {
+    return _baseAttackCost;
+  }
+
+  function getExpectedGasLimitFulfill() external view returns (uint88 expectedGasLimitFulfill) {
+    return _expectedGasLimitFulfill;
+  }
+
+  function isCombatant(uint256 clanId, uint256 playerId) external view override returns (bool combatant) {
     // Check if this player is in the defenders list and remove them if so
-    if (clanInfos[_clanId].playerIds.length != 0) {
-      uint256 searchIndex = EstforLibrary._binarySearch(clanInfos[_clanId].playerIds, _playerId);
+    if (clanInfos[clanId].playerIds.length != 0) {
+      uint256 searchIndex = EstforLibrary._binarySearch(clanInfos[clanId].playerIds, playerId);
       combatant = searchIndex != type(uint256).max;
     }
   }
 
-  function addTerritories(TerritoryInput[] calldata _territories) external onlyOwner {
-    _addTerritories(_territories);
+  function addTerritories(TerritoryInput[] calldata territories) external onlyOwner {
+    _addTerritories(territories);
   }
 
-  function editTerritories(TerritoryInput[] calldata _territories) external onlyOwner {
+  function editTerritories(TerritoryInput[] calldata territories) external onlyOwner {
     uint256 _totalEmissionPercentage = totalEmissionPercentage;
-    for (uint256 i; i < _territories.length; ++i) {
-      _checkTerritory(_territories[i]);
-      _totalEmissionPercentage -= territories[_territories[i].territoryId].percentageEmissions;
-      _totalEmissionPercentage += _territories[i].percentageEmissions;
-      territories[_territories[i].territoryId].percentageEmissions = _territories[i].percentageEmissions;
+    for (uint256 i; i < territories.length; ++i) {
+      _checkTerritory(territories[i]);
+      _totalEmissionPercentage -= _territories[territories[i].territoryId].percentageEmissions;
+      _totalEmissionPercentage += territories[i].percentageEmissions;
+      _territories[territories[i].territoryId].percentageEmissions = territories[i].percentageEmissions;
     }
 
     if (_totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
       revert InvalidEmissionPercentage();
     }
     totalEmissionPercentage = uint8(_totalEmissionPercentage);
-    emit EditTerritories(_territories);
+    emit EditTerritories(territories);
   }
 
-  function removeTerritories(uint256[] calldata _territoryIds) external onlyOwner {
+  function removeTerritories(uint256[] calldata territoryIds) external onlyOwner {
     uint256 _totalEmissionPercentage = totalEmissionPercentage;
-    for (uint256 i; i < _territoryIds.length; ++i) {
-      if (territories[_territoryIds[i]].territoryId == 0) {
+    for (uint256 i; i < territoryIds.length; ++i) {
+      if (_territories[territoryIds[i]].territoryId == 0) {
         revert InvalidTerritoryId();
       }
 
-      _totalEmissionPercentage -= territories[_territoryIds[i]].percentageEmissions;
-      delete territories[_territoryIds[i]];
+      _totalEmissionPercentage -= _territories[territoryIds[i]].percentageEmissions;
+      delete _territories[territoryIds[i]];
     }
 
     totalEmissionPercentage = uint16(_totalEmissionPercentage);
-    emit RemoveTerritories(_territoryIds);
+    emit RemoveTerritories(territoryIds);
   }
 
-  function setMinimumMMRs(uint256[] calldata _territoryIds, uint16[] calldata _minimumMMRs) external onlyOwner {
-    if (_territoryIds.length != _minimumMMRs.length) {
+  function setMinimumMMRs(uint256[] calldata territoryIds, uint16[] calldata minimumMMRs) external onlyOwner {
+    if (territoryIds.length != minimumMMRs.length) {
       revert LengthMismatch();
     }
 
-    for (uint256 i; i < _territoryIds.length; ++i) {
-      territories[_territoryIds[i]].minimumMMR = _minimumMMRs[i];
+    for (uint256 i; i < territoryIds.length; ++i) {
+      _territories[territoryIds[i]].minimumMMR = minimumMMRs[i];
     }
-    emit SetMinimumMMRs(_territoryIds, _minimumMMRs); // TODO: Currently not used elsewhere
+    emit SetMinimumMMRs(territoryIds, minimumMMRs); // TODO: Currently not used elsewhere
   }
 
-  function setComparableSkills(Skill[] calldata _skills) public onlyOwner {
-    for (uint256 i = 0; i < _skills.length; ++i) {
-      if (_skills[i] == Skill.NONE || _skills[i] == Skill.COMBAT) {
-        revert InvalidSkill(_skills[i]);
+  function setComparableSkills(Skill[] calldata skills) public onlyOwner {
+    for (uint256 i = 0; i < skills.length; ++i) {
+      if (skills[i] == Skill.NONE || skills[i] == Skill.COMBAT) {
+        revert InvalidSkill(skills[i]);
       }
 
-      comparableSkills.push(_skills[i]);
+      comparableSkills.push(skills[i]);
     }
-    emit SetComparableSkills(_skills);
+    emit SetComparableSkills(skills);
   }
 
-  function setCombatantsHelper(address _combatantsHelper) external onlyOwner {
-    combatantsHelper = _combatantsHelper;
+  function setCombatantsHelper(address combatantsHelper) external onlyOwner {
+    _combatantsHelper = combatantsHelper;
   }
 
-  function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
-    baseAttackCost = _baseAttackCost;
-    emit SetBaseAttackCost(_baseAttackCost);
+  function setBaseAttackCost(uint88 baseAttackCost) public onlyOwner {
+    _baseAttackCost = baseAttackCost;
+    emit SetBaseAttackCost(baseAttackCost);
   }
 
-  function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
-    _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
+    _setExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
-  function clearCooldowns(uint256 _clanId) external isAdminAndBeta {
-    ClanInfo storage clanInfo = clanInfos[_clanId];
+  function clearCooldowns(uint256 clanId) external isAdminAndBeta {
+    ClanInfo storage clanInfo = clanInfos[clanId];
     clanInfo.attackingCooldownTimestamp = 0;
     clanInfo.assignCombatantsCooldownTimestamp = 0;
     clanInfo.blockAttacksTimestamp = 0;
@@ -762,8 +778,8 @@ contract Territories is
   }
 
   // Useful to re-run a battle for testing
-  function setAttackInProgress(uint256 _requestId) external isAdminAndBeta {
-    pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
+  function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
+    pendingAttacks[requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks
