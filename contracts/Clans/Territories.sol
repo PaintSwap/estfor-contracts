@@ -167,7 +167,7 @@ contract Territories is
   mapping(bytes32 requestId => uint256 pendingAttackId) public _requestToPendingAttackIds;
   mapping(uint256 territoryId => Territory territory) private _territories;
   address private _players;
-  uint16 public nextTerritoryId;
+  uint16 public _nextTerritoryId;
   uint64 public _nextPendingAttackId;
   IClans public clans;
   AdminAccess private adminAccess;
@@ -283,7 +283,7 @@ contract Territories is
     itemNFT = _itemNFT;
     oracle = _oracle;
     samWitchVRF = _samWitchVRF;
-    nextTerritoryId = 1;
+    _nextTerritoryId = 1;
     _nextPendingAttackId = 1;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
@@ -472,7 +472,7 @@ contract Territories is
       revert AmountTooLow();
     }
 
-    for (uint256 i = 1; i < nextTerritoryId; ++i) {
+    for (uint256 i = 1; i < _nextTerritoryId; ++i) {
       _territories[i].unclaimedEmissions += uint88(
         (amount * _territories[i].percentageEmissions) / totalEmissionPercentage
       );
@@ -613,19 +613,19 @@ contract Territories is
     clanInfos[attackingClanId].ownsTerritoryId = uint16(territoryId);
   }
 
-  function _checkTerritory(TerritoryInput calldata _territory) private pure {
-    if (_territory.territoryId == 0 || _territory.percentageEmissions == 0) {
+  function _checkTerritory(TerritoryInput calldata territory) private pure {
+    if (territory.territoryId == 0 || territory.percentageEmissions == 0) {
       revert InvalidTerritory();
     }
   }
 
   function _addTerritories(TerritoryInput[] calldata territories) private {
     uint256 _totalEmissionPercentage = totalEmissionPercentage;
-    uint256 _nextTerritoryId = nextTerritoryId;
+    uint256 nextTerritoryId = _nextTerritoryId;
     for (uint256 i; i < territories.length; ++i) {
       TerritoryInput calldata territoryInput = territories[i];
       _checkTerritory(territories[i]);
-      if (i + _nextTerritoryId != territoryInput.territoryId) {
+      if (i + nextTerritoryId != territoryInput.territoryId) {
         revert InvalidTerritoryId();
       }
 
@@ -640,7 +640,7 @@ contract Territories is
       _totalEmissionPercentage += territoryInput.percentageEmissions;
     }
 
-    nextTerritoryId = uint16(_nextTerritoryId + territories.length);
+    _nextTerritoryId = uint16(nextTerritoryId + territories.length);
 
     if (_totalEmissionPercentage > 100 * PERCENTAGE_EMISSION_MUL) {
       revert InvalidEmissionPercentage();
@@ -660,7 +660,7 @@ contract Territories is
   }
 
   function getTerrorities() external view returns (Territory[] memory) {
-    Territory[] memory territories = new Territory[](nextTerritoryId - 1);
+    Territory[] memory territories = new Territory[](_nextTerritoryId - 1);
     for (uint256 i; i < territories.length; ++i) {
       territories[i] = _territories[i + 1];
     }
