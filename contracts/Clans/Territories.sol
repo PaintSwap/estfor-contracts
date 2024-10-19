@@ -164,12 +164,12 @@ contract Territories is
   }
 
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
-  mapping(bytes32 requestId => uint256 pendingAttackId) public _requestToPendingAttackIds;
+  mapping(bytes32 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
   mapping(uint256 territoryId => Territory territory) private _territories;
   address private _players;
-  uint16 public _nextTerritoryId;
-  uint64 public _nextPendingAttackId;
-  IClans public clans;
+  uint16 private _nextTerritoryId;
+  uint64 private _nextPendingAttackId;
+  IClans private _clans;
   AdminAccess private adminAccess;
   bool private isBeta;
   LockedBankVaults private lockedBankVaults;
@@ -214,21 +214,21 @@ contract Territories is
   }
 
   modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 playerId) {
-    if (clans.getRank(clanId, playerId) < ClanRank.LEADER) {
+    if (_clans.getRank(clanId, playerId) < ClanRank.LEADER) {
       revert NotLeader();
     }
     _;
   }
 
   modifier isClanMember(uint256 clanId, uint256 playerId) {
-    if (clans.getRank(clanId, playerId) == ClanRank.NONE) {
+    if (_clans.getRank(clanId, playerId) == ClanRank.NONE) {
       revert NotMemberOfClan();
     }
     _;
   }
 
   modifier onlyClans() {
-    if (_msgSender() != address(clans)) {
+    if (_msgSender() != address(_clans)) {
       revert OnlyClans();
     }
     _;
@@ -264,7 +264,7 @@ contract Territories is
   function initialize(
     TerritoryInput[] calldata territories,
     address players,
-    IClans _clans,
+    IClans clans,
     IBrushToken _brush,
     LockedBankVaults _lockedBankVaults,
     ItemNFT _itemNFT,
@@ -277,7 +277,7 @@ contract Territories is
     __UUPSUpgradeable_init();
     __Ownable_init();
     _players = players;
-    clans = _clans;
+    _clans = clans;
     brush = _brush;
     lockedBankVaults = _lockedBankVaults;
     itemNFT = _itemNFT;
@@ -566,7 +566,7 @@ contract Territories is
       revert InvalidTerritory();
     }
 
-    if (territory.minimumMMR > clans.getMMR(clanId)) {
+    if (territory.minimumMMR > _clans.getMMR(clanId)) {
       revert NotEnoughMMR(territory.minimumMMR);
     }
 
