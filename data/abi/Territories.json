@@ -910,6 +910,25 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "requestId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "_requestToPendingAttackIds",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "pendingAttackId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "uint16",
@@ -1587,25 +1606,6 @@
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "requestId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "requestToPendingAttackIds",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "pendingAttackId",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

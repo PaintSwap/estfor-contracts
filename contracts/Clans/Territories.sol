@@ -164,7 +164,7 @@ contract Territories is
   }
 
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
-  mapping(bytes32 requestId => uint256 pendingAttackId) public requestToPendingAttackIds;
+  mapping(bytes32 requestId => uint256 pendingAttackId) public _requestToPendingAttackIds;
   mapping(uint256 territoryId => Territory territory) private _territories;
   address private players;
   uint16 public nextTerritoryId;
@@ -351,7 +351,7 @@ contract Territories is
       from: _msgSender()
     });
     bytes32 requestId = _requestRandomWords();
-    requestToPendingAttackIds[requestId] = nextPendingAttackId;
+    _requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
     emit AttackTerritory(
       clanId,
@@ -370,7 +370,7 @@ contract Territories is
       revert LengthMismatch();
     }
 
-    PendingAttack storage pendingAttack = _pendingAttacks[requestToPendingAttackIds[requestId]];
+    PendingAttack storage pendingAttack = _pendingAttacks[_requestToPendingAttackIds[requestId]];
     if (!pendingAttack.attackInProgress) {
       revert RequestIdNotKnown();
     }
@@ -779,7 +779,7 @@ contract Territories is
 
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
-    _pendingAttacks[requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
+    _pendingAttacks[_requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks
