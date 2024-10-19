@@ -1441,12 +1441,12 @@
       },
       {
         "internalType": "contract LockedBankVaults",
-        "name": "_lockedBankVaults",
+        "name": "lockedBankVaults",
         "type": "address"
       },
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       },
       {
@@ -1466,12 +1466,12 @@
       },
       {
         "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
