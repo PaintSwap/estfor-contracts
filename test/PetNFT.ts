@@ -5,6 +5,7 @@ import {BasePetInput, PetEnhancementType, PetSkin, Skill} from "@paintswap/estfo
 import {ethers, upgrades} from "hardhat";
 import {PetNFT} from "../typechain-types";
 import {getXPFromLevel} from "./Players/utils";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 
 describe("PetNFT", function () {
   async function deployContracts() {
@@ -265,6 +266,28 @@ describe("PetNFT", function () {
 
     await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.reverted;
+  });
+
+  it("Check all skins", async function () {
+    const {petNFT, alice} = await loadFixture(deployContracts);
+
+    const skins = Object.keys(EstforTypes.PetSkin).filter((item) => {
+      return item != "NONE" && isNaN(Number(item));
+    });
+
+    let modifiedPet = deepClonePet(pet);
+    let petId = 1;
+    for (const skin of skins) {
+      modifiedPet.skin = EstforTypes.PetSkin[skin as keyof typeof EstforTypes.PetSkin];
+      await petNFT.addBasePets([modifiedPet]);
+      await petNFT.connect(alice).mint(alice.address, modifiedPet.baseId, 0);
+      ++modifiedPet.baseId;
+
+      const uri = await petNFT.uri(petId);
+      const metadata = JSON.parse(Buffer.from(uri.split(";base64,")[1], "base64").toString());
+      expect(metadata.attributes[0].value.toLowerCase()).to.equal(skin.toLowerCase());
+      ++petId;
+    }
   });
 
   it("Check 0 for fixed or percentage does not revert", async function () {

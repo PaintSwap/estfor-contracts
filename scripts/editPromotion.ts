@@ -69,7 +69,7 @@ async function main() {
     numDaysHitNeededForStreakBonus: 20,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
-    randomStreakBonusItemTokenIds1: [EstforConstants.SECRET_EGG_3, EstforConstants.SECRET_EGG_4],
+    randomStreakBonusItemTokenIds1: [EstforConstants.SECRET_EGG_3_TIER1, EstforConstants.SECRET_EGG_4_TIER1],
     randomStreakBonusAmounts1: [1, 1],
     randomStreakBonusItemTokenIds2: [],
     randomStreakBonusAmounts2: [],

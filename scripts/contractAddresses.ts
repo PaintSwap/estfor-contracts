@@ -121,7 +121,7 @@ if (!isBeta) {
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
-  petNFTLibrary = "0x04a11e4afd667ca55b10d834a7367c4bed107750";
+  petNFTLibrary = "0x1445660336c1b0bcb2b484e86a56297f1da6575d";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
   passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
 }
