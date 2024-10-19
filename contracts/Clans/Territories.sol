@@ -163,7 +163,7 @@ contract Territories is
     address from;
   }
 
-  mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
+  mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
   mapping(bytes32 requestId => uint256 pendingAttackId) public requestToPendingAttackIds;
   mapping(uint256 territoryId => Territory territory) private _territories;
   address private players;
@@ -343,7 +343,7 @@ contract Territories is
 
     clanInfo.currentlyAttacking = true;
 
-    pendingAttacks[nextPendingAttackId] = PendingAttack({
+    _pendingAttacks[nextPendingAttackId] = PendingAttack({
       clanId: uint40(clanId),
       territoryId: uint16(territoryId),
       attackInProgress: true,
@@ -370,7 +370,7 @@ contract Territories is
       revert LengthMismatch();
     }
 
-    PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[requestId]];
+    PendingAttack storage pendingAttack = _pendingAttacks[requestToPendingAttackIds[requestId]];
     if (!pendingAttack.attackInProgress) {
       revert RequestIdNotKnown();
     }
@@ -672,7 +672,7 @@ contract Territories is
   }
 
   function getPendingAttack(uint256 pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
-    return pendingAttacks[pendingAttackId];
+    return _pendingAttacks[pendingAttackId];
   }
 
   function getTerritory(uint256 territoryId) external view returns (Territory memory territory) {
@@ -779,7 +779,7 @@ contract Territories is
 
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
-    pendingAttacks[requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
+    _pendingAttacks[requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks
