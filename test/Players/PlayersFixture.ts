@@ -32,7 +32,8 @@ import {
   VRFRequestInfo,
   WishingWell,
   World,
-  WorldLibrary
+  WorldLibrary,
+  Treasury
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -63,10 +64,20 @@ export const playersFixture = async function () {
 
   await setDailyAndWeeklyRewards(world);
 
-  const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [await brush.getAddress(), dev.address], {
+  const Treasury = await ethers.getContractFactory("Treasury");
+  const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
     kind: "uups"
-  })) as unknown as Shop;
+  })) as unknown as Treasury;
+
+  const minItemQuantityBeforeSellsAllowed = 500n;
+  const Shop = await ethers.getContractFactory("Shop");
+  const shop = (await upgrades.deployProxy(
+    Shop,
+    [await brush.getAddress(), await treasury.getAddress(), dev.address, minItemQuantityBeforeSellsAllowed],
+    {
+      kind: "uups"
+    }
+  )) as unknown as Shop;
 
   const router = (await ethers.deployContract("MockRouter")) as MockRouter;
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
@@ -465,6 +476,11 @@ export const playersFixture = async function () {
 
   await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
 
+  const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
+  const treasuryPercentages = [10, 90];
+  await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
+  await treasury.initializeAddresses(territories, shop);
+
   await bankRegistry.setLockedBankVaults(await lockedBankVaults.getAddress());
 
   await clans.setTerritoriesAndLockedBankVaults(await territories.getAddress(), await lockedBankVaults.getAddress());
@@ -512,6 +528,7 @@ export const playersFixture = async function () {
     mockVRF,
     avatarInfo,
     adminAccess,
+    treasury,
     shop,
     royaltyReceiver,
     playersImplProcessActions,

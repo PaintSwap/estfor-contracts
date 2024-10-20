@@ -2,6 +2,7 @@ import {isBeta} from "./utils";
 
 let worldLibrary;
 let world;
+let treasury;
 let shop;
 let royaltyReceiver;
 let adminAccess;
@@ -44,6 +45,7 @@ let passiveActions;
 if (!isBeta) {
   worldLibrary = "0xcba2273a46649cc0ce76e69eb0bb05d9b699ca38";
   world = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
+  treasury = "";
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
   royaltyReceiver = "0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b";
   adminAccess = "0xe63b7195b301b9313c9e337df4aceac436c3751e";
@@ -85,6 +87,7 @@ if (!isBeta) {
 } else {
   worldLibrary = "0x31edace030c71d33bd8b6e53c1df123c0404e5ca";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
+  treasury = "";
   shop = "0xc5e24fbaba1a945226ad2f882e14fc7b44dc1f30";
   royaltyReceiver = "0xc5de7625e1b5cb91d92bc65fd4d787f01c43e38e";
   adminAccess = "0xa298f1636dacab0db352fec84d2079814e0ce778";
@@ -128,6 +131,7 @@ if (!isBeta) {
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
 export const WORLD_ADDRESS = world;
+export const TREASURY_ADDRESS = treasury;
 export const SHOP_ADDRESS = shop;
 export const ROYALTY_RECEIVER_ADDRESS = royaltyReceiver;
 export const ADMIN_ACCESS_ADDRESS = adminAccess;

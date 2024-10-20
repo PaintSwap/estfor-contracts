@@ -12,11 +12,8 @@ async function main() {
   const shop = Shop.attach(SHOP_ADDRESS) as Shop;
 
   const shopItems = [EstforConstants.CAGE, EstforConstants.LARGE_NET];
-
-  for (const shopItem of shopItems) {
-    const tx = await shop.removeItem(shopItem);
-    await tx.wait();
-  }
+  const tx = await shop.removeItems(shopItems);
+  await tx.wait();
 }
 
 main().catch((error) => {

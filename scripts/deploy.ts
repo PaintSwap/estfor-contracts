@@ -25,7 +25,11 @@ import {
   PetNFT,
   EggInstantVRFActionStrategy,
   RoyaltyReceiver,
-  AdminAccess
+  AdminAccess,
+  Treasury,
+  Territories,
+  CombatantsHelper,
+  LockedBankVaults
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -205,6 +209,7 @@ async function main() {
   }
 
   const initialMMR = 500;
+  const minItemQuantityBeforeSellsAllowed = 500n;
 
   // Create the world
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
@@ -224,11 +229,24 @@ async function main() {
 
   console.log(`world = "${(await world.getAddress()).toLowerCase()}"`);
 
-  const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(Shop, [await brush.getAddress(), DEV_ADDRESS], {
+  const Treasury = await ethers.getContractFactory("Treasury");
+  const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
     kind: "uups",
     timeout
-  })) as unknown as Shop;
+  })) as unknown as Treasury;
+  await treasury.waitForDeployment();
+
+  console.log(`treasury = "${(await treasury.getAddress()).toLowerCase()}"`);
+
+  const Shop = await ethers.getContractFactory("Shop");
+  const shop = (await upgrades.deployProxy(
+    Shop,
+    [await brush.getAddress(), await treasury.getAddress(), DEV_ADDRESS, minItemQuantityBeforeSellsAllowed],
+    {
+      kind: "uups",
+      timeout
+    }
+  )) as unknown as Shop;
   await shop.waitForDeployment();
 
   console.log(`shop = "${(await shop.getAddress()).toLowerCase()}"`);
@@ -572,7 +590,7 @@ async function main() {
       LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress()
     }
   });
-  const lockedBankVaults = await upgrades.deployProxy(
+  const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
     [
       await players.getAddress(),
@@ -595,12 +613,12 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout
     }
-  );
+  )) as unknown as LockedBankVaults;
   await lockedBankVaults.waitForDeployment();
   console.log(`lockedBankVaults = "${(await lockedBankVaults.getAddress()).toLowerCase()}"`);
 
   const Territories = await ethers.getContractFactory("Territories");
-  const territories = await upgrades.deployProxy(
+  const territories = (await upgrades.deployProxy(
     Territories,
     [
       allTerritories,
@@ -620,14 +638,14 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout
     }
-  );
+  )) as unknown as Territories;
   await territories.waitForDeployment();
   console.log(`territories = "${(await territories.getAddress()).toLowerCase()}"`);
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()}
   });
-  const combatantsHelper = await upgrades.deployProxy(
+  const combatantsHelper = (await upgrades.deployProxy(
     CombatantsHelper,
     [
       await players.getAddress(),
@@ -642,7 +660,7 @@ async function main() {
       unsafeAllow: ["external-library-linking"],
       timeout
     }
-  );
+  )) as unknown as CombatantsHelper;
   await combatantsHelper.waitForDeployment();
 
   const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
@@ -694,7 +712,8 @@ async function main() {
         await territories.getAddress(),
         await decoratorProvider.getAddress(),
         await combatantsHelper.getAddress(),
-        await vrfRequestInfo.getAddress()
+        await vrfRequestInfo.getAddress(),
+        await treasury.getAddress()
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -706,54 +725,54 @@ async function main() {
     console.log("Skipping verifying contracts");
   }
 
-  tx = await world.setQuests(await quests.getAddress());
+  tx = await world.setQuests(quests);
   await tx.wait();
   console.log("world setQuests");
-  tx = await world.setWishingWell(await wishingWell.getAddress());
+  tx = await world.setWishingWell(wishingWell);
   await tx.wait();
   console.log("world setWishingWell");
-  tx = await itemNFT.setPlayers(await players.getAddress());
+  tx = await itemNFT.setPlayers(players);
   await tx.wait();
   console.log("itemNFT setPlayers");
-  tx = await playerNFT.setPlayers(await players.getAddress());
+  tx = await playerNFT.setPlayers(players);
   await tx.wait();
   console.log("playerNFT setPlayers");
-  tx = await petNFT.setPlayers(await players.getAddress());
+  tx = await petNFT.setPlayers(players);
   await tx.wait();
   console.log("petNFT setPlayers");
-  tx = await quests.setPlayers(await players.getAddress());
+  tx = await quests.setPlayers(players);
   await tx.wait();
   console.log("quests setPlayers");
-  tx = await clans.setPlayers(await players.getAddress());
+  tx = await clans.setPlayers(players);
   await tx.wait();
   console.log("clans setPlayers");
-  tx = await wishingWell.setPlayers(await players.getAddress());
+  tx = await wishingWell.setPlayers(players);
   await tx.wait();
   console.log("wishingWell setPlayers");
 
-  tx = await clans.setBankFactory(await bankFactory.getAddress());
+  tx = await clans.setBankFactory(bankFactory);
   await tx.wait();
   console.log("clans setBankFactory");
-  tx = await itemNFT.setBankFactory(await bankFactory.getAddress());
+  tx = await itemNFT.setBankFactory(bankFactory);
   await tx.wait();
   console.log("itemNFT setBankFactory");
 
-  tx = await itemNFT.setPromotions(await promotions.getAddress());
+  tx = await itemNFT.setPromotions(promotions);
   await tx.wait();
   console.log("itemNFT setPromotions");
 
-  tx = await itemNFT.setPassiveActions(await passiveActions.getAddress());
+  tx = await itemNFT.setPassiveActions(passiveActions);
   await tx.wait();
   console.log("itemNFT setPassiveActions");
 
-  tx = await itemNFT.setInstantActions(await instantActions.getAddress());
+  tx = await itemNFT.setInstantActions(instantActions);
   await tx.wait();
   console.log("itemNFT setInstantActions");
 
-  tx = await itemNFT.setInstantVRFActions(await instantVRFActions.getAddress());
+  tx = await itemNFT.setInstantVRFActions(instantVRFActions);
   await tx.wait();
   console.log("itemNFT setInstantVRFActions");
-  tx = await petNFT.setInstantVRFActions(await instantVRFActions.getAddress());
+  tx = await petNFT.setInstantVRFActions(instantVRFActions);
   await tx.wait();
   console.log("petNFT setInstantVRFActions");
 
@@ -761,42 +780,33 @@ async function main() {
   await tx.wait();
   console.log("petNFT setBrushDistributionPercentages");
 
-  tx = await shop.setItemNFT(await itemNFT.getAddress());
+  tx = await shop.setItemNFT(itemNFT);
   await tx.wait();
   console.log("shop.setItemNFT");
 
-  tx = await clans.setTerritoriesAndLockedBankVaults(
-    await territories.getAddress(),
-    await lockedBankVaults.getAddress()
-  );
+  tx = await clans.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
-  tx = await itemNFT.setTerritoriesAndLockedBankVaults(
-    await territories.getAddress(),
-    await lockedBankVaults.getAddress()
-  );
+  tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
   await tx.wait();
   console.log("itemNFT.setTerritoriesAndLockedBankVaults");
-  tx = await royaltyReceiver.setTerritories(await territories.getAddress());
+  tx = await royaltyReceiver.setTerritories(territories);
   await tx.wait();
   console.log("royaltyReceiver.setTerritories");
-  tx = await petNFT.setTerritories(await territories.getAddress());
+  tx = await petNFT.setTerritories(territories);
   await tx.wait();
   console.log("petNFT.setTerritories");
 
   tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
   console.log("Set Bazaar");
 
-  const clanWars = [lockedBankVaults, territories];
-  for (const clanWar of clanWars) {
-    try {
-      tx = await clanWar.setAddresses(await territories.getAddress(), await combatantsHelper.getAddress());
-      await tx.wait();
-      console.log("clanWar setAddresses");
-    } catch (error) {
-      console.error(`Error: ${error}`);
-    }
-  }
+  tx = await lockedBankVaults.setAddresses(territories, combatantsHelper);
+  await tx.wait();
+  console.log("lockedBankVaults setAddresses");
+
+  tx = await territories.setCombatantsHelper(combatantsHelper);
+  await tx.wait();
+  console.log("territories.setAddresses");
 
   const territoryIds = allTerritories.map((territory) => {
     return territory.territoryId;
@@ -806,9 +816,19 @@ async function main() {
   await tx.wait();
   console.log("territories.setMinimumMMRs");
 
-  tx = await bankRegistry.setLockedBankVaults(await lockedBankVaults.getAddress());
+  tx = await bankRegistry.setLockedBankVaults(lockedBankVaults);
   await tx.wait();
   console.log("bankRegistry.setLockedBankVaults");
+
+  const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
+  const treasuryPercentages = [10, 90];
+  tx = await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
+  await tx.wait();
+  console.log("treasury.setFundAllocationPercentages");
+
+  tx = await territories.setCombatantsHelper(combatantsHelper);
+  await tx.wait();
+  console.log("treasury.initializeAddresses");
 
   tx = await instantVRFActions.addStrategies(
     [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],
@@ -965,7 +985,7 @@ async function main() {
 
   // Add test data for the game
   if (isBeta) {
-    await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory);
+    await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory, minItemQuantityBeforeSellsAllowed);
   }
 }
 

@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {AdminAccess, ItemNFT, RoyaltyReceiver, World} from "../typechain-types";
+import {AdminAccess, ItemNFT, RoyaltyReceiver, Treasury, World} from "../typechain-types";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
@@ -33,10 +33,25 @@ describe("ItemNFT", function () {
 
     await setDailyAndWeeklyRewards(world);
 
-    const Shop = await ethers.getContractFactory("Shop");
-    const shop = await upgrades.deployProxy(Shop, [await brush.getAddress(), await dev.getAddress()], {
+    const Treasury = await ethers.getContractFactory("Treasury");
+    const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
       kind: "uups"
-    });
+    })) as unknown as Treasury;
+
+    const minItemQuantityBeforeSellsAllowed = 500n;
+    const Shop = await ethers.getContractFactory("Shop");
+    const shop = await upgrades.deployProxy(
+      Shop,
+      [
+        await brush.getAddress(),
+        await treasury.getAddress(),
+        await dev.getAddress(),
+        minItemQuantityBeforeSellsAllowed
+      ],
+      {
+        kind: "uups"
+      }
+    );
 
     const router = await ethers.deployContract("MockRouter");
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");

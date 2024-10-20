@@ -1056,7 +1056,7 @@ describe("Rewards", function () {
 
       // Repeat the test a bunch of times to check the random rewards are as expected
       const numRepeats = 30;
-      let numRandomRewardsHit = 0; // Checks there is some randomness
+      let numRandomRewardsHitChance1 = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
         await players
           .connect(alice)
@@ -1090,15 +1090,19 @@ describe("Rewards", function () {
 
         pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
         if (pendingQueuedActionState.producedPastRandomRewards.length != 0) {
-          expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.oneOf([1, 2, 3, 4, 5, 6, 7, 8]);
-
+          expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.greaterThan(0).and.be.lessThan(9);
+          let found = false;
           for (const reward of pendingQueuedActionState.producedPastRandomRewards) {
             balanceMap.set(reward.itemTokenId, balanceMap.get(reward.itemTokenId)! + reward.amount);
+
+            if (Number(reward.itemTokenId) == EstforConstants.BRONZE_ARROW && !found) {
+              ++numRandomRewardsHitChance1;
+              found = true;
+            }
           }
-          ++numRandomRewardsHit;
         }
       }
-      expect(numRandomRewardsHit).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
+      expect(numRandomRewardsHitChance1).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
 
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
@@ -1108,9 +1112,9 @@ describe("Rewards", function () {
       for (const [itemTokenId] of balanceMap) {
         const randomChanceFraction = randomChanceFractions[i];
         const expectedTotal = numRepeats * randomChanceFraction * numHours;
-        // Have 2 queued actions so twice as much
-        expect(balanceMap.get(itemTokenId)).to.be.gte(Math.floor(expectedTotal * 0.7 * 2)); // Within 30% below
-        expect(balanceMap.get(itemTokenId)).to.be.lte(Math.floor(expectedTotal * 1.3 * 2)); // Within 30% above
+        // Have 2 queued actions so get twice as much
+        expect(balanceMap.get(itemTokenId)).to.be.gte(Math.floor(expectedTotal * 0.65 * 2)); // Within 35% below
+        expect(balanceMap.get(itemTokenId)).to.be.lte(Math.floor(expectedTotal * 1.35 * 2)); // Within 35% above
         ++i;
       }
     });

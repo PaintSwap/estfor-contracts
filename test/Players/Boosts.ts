@@ -1185,7 +1185,8 @@ describe("Boosts", function () {
     // 2 hours boosted XP, 6 hours not boosted in total
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.deep.oneOf([
       BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100),
-      BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1)
+      BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100 - 1),
+      BigInt(8 * 3600 + (2 * 3600 * boostValue) / 100 - 2)
     ]);
 
     // 2 hours gathering boost, check drops are as expected

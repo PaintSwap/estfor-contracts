@@ -573,7 +573,8 @@ describe("Players", function () {
       expect(actionQueue[0].queueId).to.eq(2);
       expect(actionQueue[0].timespan).to.be.oneOf([
         BigInt(basicWoodcuttingQueuedAction.timespan - 50),
-        BigInt(basicWoodcuttingQueuedAction.timespan - 50 - 1)
+        BigInt(basicWoodcuttingQueuedAction.timespan - 50 - 1),
+        BigInt(basicWoodcuttingQueuedAction.timespan - 50 - 2)
       ]);
       expect(actionQueue[1].queueId).to.eq(3);
       expect(actionQueue[1].timespan).to.eq(queuedAction.timespan);

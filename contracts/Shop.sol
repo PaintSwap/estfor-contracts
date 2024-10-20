@@ -5,6 +5,9 @@ import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
+
+import {Treasury} from "./Treasury.sol";
+
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
@@ -60,6 +63,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint256 tokenId => TokenInfo tokenInfo) private _tokenInfos;
 
   IBrushToken private _brush;
+  Treasury private _treasury;
   IItemNFT private _itemNFT;
   uint16 private _numUnsellableItems;
   uint24 private _minItemQuantityBeforeSellsAllowed;
@@ -71,13 +75,19 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(IBrushToken brush, address dev) external initializer {
+  function initialize(
+    IBrushToken brush,
+    Treasury treasury,
+    address dev,
+    uint24 minItemQuantityBeforeSellsAllowed
+  ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
     _brush = brush;
+    _treasury = treasury;
     _dev = dev;
 
-    setMinItemQuantityBeforeSellsAllowed(500);
+    setMinItemQuantityBeforeSellsAllowed(minItemQuantityBeforeSellsAllowed);
   }
 
   function getMinItemQuantityBeforeSellsAllowed() external view returns (uint24) {
@@ -85,7 +95,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function liquidatePrice(uint16 tokenId) public view returns (uint80 price) {
-    uint256 totalBrush = _brush.balanceOf(address(this));
+    uint256 totalBrush = _treasury.totalClaimable(address(this));
     uint256 totalBrushForItem = totalBrush / (_itemNFT.totalSupply() - _numUnsellableItems);
     return _liquidatePrice(tokenId, totalBrushForItem);
   }
@@ -96,7 +106,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       return prices;
     }
 
-    uint256 totalBrush = _brush.balanceOf(address(this));
+    uint256 totalBrush = _treasury.totalClaimable(address(this));
     uint256 totalBrushForItem = totalBrush / (_itemNFT.totalSupply() - _numUnsellableItems);
 
     prices = new uint256[](iter.asUint256());
@@ -115,13 +125,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     }
     uint256 brushCost = price * quantity;
     // Pay
-    _brush.transferFrom(msg.sender, address(this), brushCost);
-    uint256 quarterCost = brushCost / 4;
-    // Send 1 quarter to the dev address
-    _brush.transfer(_dev, quarterCost);
-    // Burn 1 quarter
-    _brush.burn(quarterCost);
-
+    (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(brushCost);
+    _brush.transferFromBulk(msg.sender, accounts, amounts);
     _itemNFT.mint(to, tokenId, quantity);
     emit Buy(msg.sender, to, tokenId, quantity, price);
   }
@@ -148,13 +153,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     // Pay
-    _brush.transferFrom(msg.sender, address(this), brushCost);
-    uint256 quarterCost = brushCost / 4;
-    // Send 1 quarter to the dev address
-    _brush.transfer(_dev, quarterCost);
-    // Burn 1 quarter
-    _brush.burn(quarterCost);
-
+    (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(brushCost);
+    _brush.transferFromBulk(msg.sender, accounts, amounts);
     _itemNFT.mintBatch(to, tokenIds, quantities);
     emit BuyBatch(msg.sender, to, tokenIds, quantities, prices);
   }
@@ -166,7 +166,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     if (totalBrush < minExpectedBrush) {
       revert MinExpectedBrushNotReached(totalBrush, minExpectedBrush);
     }
-    _brush.transfer(msg.sender, totalBrush);
+    _treasury.spend(msg.sender, totalBrush);
     _itemNFT.burn(msg.sender, tokenId, quantity);
     emit Sell(msg.sender, tokenId, quantity, price);
   }
@@ -192,7 +192,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     if (totalBrush.lt(minExpectedBrush)) {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), minExpectedBrush);
     }
-    _brush.transfer(msg.sender, totalBrush.asUint256());
+    _treasury.spend(msg.sender, totalBrush.asUint256());
     _itemNFT.burnBatch(msg.sender, tokenIds, quantities);
     emit SellBatch(msg.sender, tokenIds, quantities, prices);
   }
@@ -218,7 +218,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint256 allocationRemaining;
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
       // New day, reset max allocation can be sold
-      allocationRemaining = uint80(_brush.balanceOf(address(this)) / (_itemNFT.totalSupply() - _numUnsellableItems));
+      allocationRemaining = uint80(
+        _treasury.totalClaimable(address(this)) / (_itemNFT.totalSupply() - _numUnsellableItems)
+      );
       tokenInfo.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
       tokenInfo.price = uint80(sellPrice);
       emit NewAllocation(uint16(tokenId), allocationRemaining);
@@ -248,6 +250,21 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       // Needs to have a minimum of an item before any can be sold, and the item must be sellable
       price = 0;
     }
+  }
+
+  function _buyDistribution(
+    uint256 brushCost
+  ) private view returns (address[] memory accounts, uint256[] memory amounts) {
+    // Send 1 quarter to the dev address, burn 1 quarter and the rest to the treasury
+    accounts = new address[](3);
+    amounts = new uint256[](3);
+    uint256 quarterCost = brushCost / 4;
+    amounts[0] = quarterCost;
+    amounts[1] = quarterCost;
+    amounts[2] = brushCost - quarterCost * 2;
+    accounts[0] = address(0);
+    accounts[1] = _dev;
+    accounts[2] = address(_treasury);
   }
 
   function _addBuyableItem(ShopItem calldata buyableItem) private {
