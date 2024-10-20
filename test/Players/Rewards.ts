@@ -927,6 +927,7 @@ describe("Rewards", function () {
 
       // Repeat the test a bunch of times to check the random rewards are as expected
       const numRepeats = 50;
+      let numRandomRewardsHit = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
         let endTime;
@@ -938,8 +939,7 @@ describe("Rewards", function () {
 
         expect(await world.hasRandomWord(endTime)).to.be.false;
 
-        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await ethers.provider.send("evm_mine", []);
+        await timeTravel24Hours();
         await players.connect(alice).processActions(playerId);
         expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(numProduced);
 
@@ -949,8 +949,7 @@ describe("Rewards", function () {
         expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
         await requestAndFulfillRandomWords(world, mockVRF);
-        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await ethers.provider.send("evm_mine", []);
+        await timeTravel24Hours();
         await requestAndFulfillRandomWords(world, mockVRF);
 
         expect(await world.hasRandomWord(endTime)).to.be.true;
@@ -965,16 +964,16 @@ describe("Rewards", function () {
           expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.be.eq(
             EstforConstants.BRONZE_ARROW
           );
+          ++numRandomRewardsHit;
         }
       }
+      expect(numRandomRewardsHit).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
 
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
       const expectedTotal = numRepeats * randomChanceFraction * numHours;
-      expect(numProduced).to.not.eq(expectedTotal); // Very unlikely to be exact, but possible. This checks there is at least some randomness
       expect(numProduced).to.be.gte(Math.floor(expectedTotal * 0.8)); // Within 20% below
       expect(numProduced).to.be.lte(Math.floor(expectedTotal * 1.2)); // 20% of the time we should get more than 50% of the reward
     });
@@ -1034,13 +1033,7 @@ describe("Rewards", function () {
       const actionId = await getActionId(tx, world);
       const numHours = 2;
 
-      // Make sure it passes the next checkpoint so there are no issues running
-      const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
-      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
-      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-      await ethers.provider.send("evm_mine", []);
-
+      await timeTravelToNextCheckpoint();
       await requestAndFulfillRandomWords(world, mockVRF);
       await requestAndFulfillRandomWords(world, mockVRF);
 
@@ -1063,6 +1056,7 @@ describe("Rewards", function () {
 
       // Repeat the test a bunch of times to check the random rewards are as expected
       const numRepeats = 30;
+      let numRandomRewardsHit = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
         await players
           .connect(alice)
@@ -1079,10 +1073,9 @@ describe("Rewards", function () {
 
         expect(await world.hasRandomWord(endTime)).to.be.false;
 
-        await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-        await ethers.provider.send("evm_mine", []);
+        await timeTravel24Hours();
         await players.connect(alice).processActions(playerId);
-        for (const [itemTokenId, amount] of balanceMap) {
+        for (const [itemTokenId] of balanceMap) {
           expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(balanceMap.get(itemTokenId));
         }
 
@@ -1102,11 +1095,12 @@ describe("Rewards", function () {
           for (const reward of pendingQueuedActionState.producedPastRandomRewards) {
             balanceMap.set(reward.itemTokenId, balanceMap.get(reward.itemTokenId)! + reward.amount);
           }
+          ++numRandomRewardsHit;
         }
       }
+      expect(numRandomRewardsHit).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
 
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
@@ -1115,7 +1109,6 @@ describe("Rewards", function () {
         const randomChanceFraction = randomChanceFractions[i];
         const expectedTotal = numRepeats * randomChanceFraction * numHours;
         // Have 2 queued actions so twice as much
-        expect(balanceMap.get(itemTokenId)).to.not.eq(expectedTotal * 2); // Very unlikely to be exact, but possible. This checks there is at least some randomness
         expect(balanceMap.get(itemTokenId)).to.be.gte(Math.floor(expectedTotal * 0.7 * 2)); // Within 30% below
         expect(balanceMap.get(itemTokenId)).to.be.lte(Math.floor(expectedTotal * 1.3 * 2)); // Within 30% above
         ++i;
@@ -2515,11 +2508,11 @@ describe("Rewards", function () {
         health: 0
       };
 
-      const randomChance = 35; // Very low chance
+      const randomChance = 70; // Very low chance
       const numSpawned = 100 * SPAWN_MUL; // per hour
 
       const numHours = 23;
-      // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 35) / 65535) a 1.9% chance and each roll hitting, and there are 64 dice.
+      // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 50) / 65535) a 2.67% chance and each roll hitting, and there are 64 dice.
 
       let tx = await world.addActions([
         {
@@ -2637,7 +2630,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       // Check output (add some tolerance in case it's hit more than once)
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.oneOf([1n, 2n, 3n, 4n]);
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.oneOf([1n, 2n]);
     });
 
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit none", async function () {
@@ -2703,12 +2696,7 @@ describe("Rewards", function () {
       );
 
       // Make sure it passes the next checkpoint so there are no issues running
-      const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-      const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
-      const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
-      await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-      await ethers.provider.send("evm_mine", []);
-
+      await timeTravelToNextCheckpoint();
       await requestAndFulfillRandomWords(world, mockVRF);
       await requestAndFulfillRandomWords(world, mockVRF);
 
@@ -2755,9 +2743,7 @@ describe("Rewards", function () {
       ]);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-
-      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
 
       let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);

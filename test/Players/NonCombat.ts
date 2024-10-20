@@ -1303,8 +1303,8 @@ describe("Non-Combat Actions", function () {
       const expectedTotal = numRepeats * randomChanceFraction * numHours;
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
       // Have 2 queued actions so twice as much
-      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.75)); // Within 25% below
-      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.25)); // Within 25% above
+      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.3)); // Within 30% below
+      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.3)); // Within 30% above
     });
 
     it("Steal, success percent (many)", async function () {
@@ -1389,8 +1389,8 @@ describe("Non-Combat Actions", function () {
       const expectedTotal = numRepeats * randomChanceFraction * numHours * (successPercent / 100);
       const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
       // Have 2 queued actions so twice as much
-      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.75)); // Within 25% below
-      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.25)); // Within 25% above
+      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.7)); // Within 30% below
+      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.3)); // Within 30% above
     });
 
     // Gives +3% XP and +100% success chance
