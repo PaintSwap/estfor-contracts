@@ -134,8 +134,10 @@ describe("Instant VRF actions", function () {
       ).to.deep.eq([2, 1, 0]);
     });
 
-    it("Cannot use greater than MAX_ACTION_AMOUNT for a single action", async function () {
-      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
+    it("Cannot use greater than maxActionAmount for a single action", async function () {
+      const {playerId, instantVRFActions, itemNFT, maxInstantVRFActionAmount, alice} = await loadFixture(
+        forgingFixture
+      );
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -157,9 +159,7 @@ describe("Instant VRF actions", function () {
         [1000, 1000, 1000]
       );
 
-      const MAX_ACTION_AMOUNT = await instantVRFActions.MAX_ACTION_AMOUNT();
-
-      const actionAmount = MAX_ACTION_AMOUNT + 1n;
+      const actionAmount = maxInstantVRFActionAmount + 1n;
       await expect(
         instantVRFActions
           .connect(alice)
@@ -171,14 +171,16 @@ describe("Instant VRF actions", function () {
       await expect(
         instantVRFActions
           .connect(alice)
-          .doInstantVRFActions(playerId, [instantVRFActionInput1.actionId], [MAX_ACTION_AMOUNT], {
-            value: await instantVRFActions.requestCost(MAX_ACTION_AMOUNT)
+          .doInstantVRFActions(playerId, [instantVRFActionInput1.actionId], [maxInstantVRFActionAmount], {
+            value: await instantVRFActions.requestCost(maxInstantVRFActionAmount)
           })
       ).to.not.be.reverted;
     });
 
-    it("Cannot use greater than MAX_ACTION_AMOUNT for the combined action amounts", async function () {
-      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
+    it("Cannot use greater than maxActionAmount for the combined action amounts", async function () {
+      const {playerId, instantVRFActions, itemNFT, maxInstantVRFActionAmount, alice} = await loadFixture(
+        forgingFixture
+      );
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -200,9 +202,7 @@ describe("Instant VRF actions", function () {
         [1000, 1000, 1000]
       );
 
-      const MAX_ACTION_AMOUNT = await instantVRFActions.MAX_ACTION_AMOUNT();
-
-      const actionAmount = MAX_ACTION_AMOUNT - 2n;
+      const actionAmount = maxInstantVRFActionAmount - 2n;
       let actionAmount1 = 3;
       await expect(
         instantVRFActions
@@ -976,7 +976,9 @@ describe("Instant VRF actions", function () {
     });
 
     it("Check random rewards (many)", async function () {
-      const {playerId, instantVRFActions, mockVRF, itemNFT, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, mockVRF, itemNFT, maxInstantVRFActionAmount, alice} = await loadFixture(
+        forgingFixture
+      );
       this.timeout(100000); // 100 seconds, this test might take a while on CI
 
       const randomRewards = [
@@ -1001,10 +1003,8 @@ describe("Instant VRF actions", function () {
 
       await itemNFT.testMint(await alice.getAddress(), BRONZE_ARROW, 1000000);
 
-      const MAX_ACTION_AMOUNT = await instantVRFActions.MAX_ACTION_AMOUNT();
-
-      const actionAmount1 = MAX_ACTION_AMOUNT / 2n;
-      const actionAmount2 = MAX_ACTION_AMOUNT / 2n - 1n;
+      const actionAmount1 = maxInstantVRFActionAmount / 2n;
+      const actionAmount2 = maxInstantVRFActionAmount / 2n - 1n;
       const actionAmount = actionAmount1 + actionAmount2;
       // Repeat the test a bunch of times to check the random rewards are as expected
       const numRepeats = 50n;

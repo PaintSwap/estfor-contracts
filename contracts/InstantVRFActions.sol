@@ -39,6 +39,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   );
   event AddStrategies(InstantVRFActionType[] actionTypes, address[] strategies);
   event SetAvailableActions(uint256[] actionIds, bool isAvailable); // TODO: Combine this with InstantVRFActionsInput later
+  event SetMaxActionAmount(uint8 maxActionAmount);
 
   error ActionIdZeroNotAllowed();
   error ActionDoesNotExist();
@@ -94,12 +95,12 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
   VRFRequestInfo private _vrfRequestInfo;
   uint64 private _gasCostPerUnit;
+  uint8 private _maxActionAmount;
 
   address private _oracle;
   ISamWitchVRF private _samWitchVRF;
   PetNFT private _petNFT;
 
-  uint256 public constant MAX_ACTION_AMOUNT = 64;
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 120_000;
   uint256 private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
 
@@ -125,7 +126,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     PetNFT petNFT,
     address oracle,
     ISamWitchVRF samWitchVRF,
-    VRFRequestInfo vrfRequestInfo
+    VRFRequestInfo vrfRequestInfo,
+    uint8 maxActionAmount
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
@@ -136,6 +138,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _samWitchVRF = samWitchVRF;
     _vrfRequestInfo = vrfRequestInfo;
     setGasCostPerUnit(15_000);
+    setMaxActionAmount(maxActionAmount);
   }
 
   function doInstantVRFActions(
@@ -163,7 +166,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     // Mainly to keep response gas costs down
-    require(totalAmount <= MAX_ACTION_AMOUNT, TooManyActionAmounts());
+    require(totalAmount <= _maxActionAmount, TooManyActionAmounts());
     // // Check they are paying enough
     require(msg.value >= requestCost(totalAmount), NotEnoughFTM());
 
@@ -276,10 +279,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   {
     uint16[10] storage playerActionInfos = _playerActionInfos[playerId].actionIdAmountPairs;
     uint256 playerActionInfoLength = playerActionInfos.length;
-    itemTokenIds = new uint256[](MAX_ACTION_AMOUNT);
-    itemAmounts = new uint256[](MAX_ACTION_AMOUNT);
-    petBaseIds = new uint256[](MAX_ACTION_AMOUNT);
-    petRandomWords = new uint256[](MAX_ACTION_AMOUNT);
+    uint8 maxActionAmount = _maxActionAmount;
+    itemTokenIds = new uint256[](maxActionAmount);
+    itemAmounts = new uint256[](maxActionAmount);
+    petBaseIds = new uint256[](maxActionAmount);
+    petRandomWords = new uint256[](maxActionAmount);
 
     uint256 actualItemLength;
     uint256 actualPetLength;
@@ -502,6 +506,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       _actions[actionIds[i]].packedData = packedData;
     }
     emit SetAvailableActions(actionIds, isAvailable);
+  }
+
+  function setMaxActionAmount(uint8 maxActionAmount) public onlyOwner {
+    _maxActionAmount = maxActionAmount;
+    emit SetMaxActionAmount(maxActionAmount);
   }
 
   // solhint-disable-next-line no-empty-blocks

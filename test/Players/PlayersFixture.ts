@@ -323,6 +323,7 @@ export const playersFixture = async function () {
     kind: "uups"
   })) as unknown as VRFRequestInfo;
 
+  const maxInstantVRFActionAmount = 64n;
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
@@ -332,7 +333,8 @@ export const playersFixture = async function () {
       await petNFT.getAddress(),
       oracleAddress,
       await mockVRF.getAddress(),
-      await vrfRequestInfo.getAddress()
+      await vrfRequestInfo.getAddress(),
+      maxInstantVRFActionAmount
     ],
     {
       kind: "uups"
@@ -590,6 +592,7 @@ export const playersFixture = async function () {
     lockedBankVaultsLibrary,
     lockedFundsPeriod,
     initialMMR,
-    sellingCutoffDuration
+    sellingCutoffDuration,
+    maxInstantVRFActionAmount
   };
 };

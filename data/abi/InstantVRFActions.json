@@ -503,6 +503,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "maxActionAmount",
+        "type": "uint8"
+      }
+    ],
+    "name": "SetMaxActionAmount",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -511,19 +524,6 @@
     ],
     "name": "Upgraded",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "MAX_ACTION_AMOUNT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [
@@ -785,6 +785,11 @@
         "internalType": "contract VRFRequestInfo",
         "name": "vrfRequestInfo",
         "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "maxActionAmount",
+        "type": "uint8"
       }
     ],
     "name": "initialize",
@@ -884,6 +889,19 @@
       }
     ],
     "name": "setGasCostPerUnit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "maxActionAmount",
+        "type": "uint8"
+      }
+    ],
+    "name": "setMaxActionAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

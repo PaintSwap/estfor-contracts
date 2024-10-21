@@ -1143,19 +1143,16 @@ describe("Combat Actions", function () {
       for (let i = 0; i < numLoops; ++i) {
         // Increase by random time
         const randomTimespan = Math.floor(Math.random() * 240);
-        await ethers.provider.send("evm_increaseTime", [randomTimespan]);
-        await ethers.provider.send("evm_mine", []);
+        await timeTravel(randomTimespan);
         await players.connect(alice).processActions(playerId);
       }
 
       await requestAndFulfillRandomWords(world, mockVRF);
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]); // This makes sure everything is used
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
-      await ethers.provider.send("evm_increaseTime", [3600 * 24]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
 
       const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
