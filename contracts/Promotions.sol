@@ -503,9 +503,15 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     PromotionInfo memory promotionInfo = activePromotions[_promotion];
     promotionMintStatus = _checkMintPromotion(_playerId, _promotion, _timestamp);
     if (promotionMintStatus == PromotionMintStatus.SUCCESS) {
-      // TODO: Support itemTokenIds later
+      // TODO: Support more than 1 numDailyRandomItemsToPick later
       itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
       amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
+
+      // First add the guaranteed items
+      for (uint i; i < promotionInfo.guaranteedItemTokenIds.length; ++i) {
+        itemTokenIds[i] = promotionInfo.guaranteedItemTokenIds[i];
+        amounts[i] = promotionInfo.guaranteedAmounts[i];
+      }
 
       // Pick a random item from the list, only supports 1 item atm
       uint numAvailableItems = promotionInfo.randomItemTokenIds.length;
@@ -518,8 +524,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         uint randomWord = itemNFT.world().getRandomWord(oracleTime);
         uint modifiedRandomWord = uint(keccak256(abi.encodePacked(randomWord, _playerId)));
         uint index = modifiedRandomWord % numAvailableItems;
-        itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
-        amounts[0] = promotionInfo.randomAmounts[index];
+
+        uint startIndex = promotionInfo.guaranteedItemTokenIds.length; // Guaranteed items are in front
+        itemTokenIds[startIndex] = promotionInfo.randomItemTokenIds[index];
+        amounts[startIndex] = promotionInfo.randomAmounts[index];
       }
     }
   }
@@ -545,16 +553,27 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       itemTokenIds = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
       amounts = new uint[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
 
+      // First add the guaranteed items
+      for (uint i; i < promotionInfo.guaranteedItemTokenIds.length; ++i) {
+        itemTokenIds[i] = promotionInfo.guaranteedItemTokenIds[i];
+        amounts[i] = promotionInfo.guaranteedAmounts[i];
+      }
+
       promotionMintStatus = _checkMultidayDailyMintPromotion(_playerId, _promotion, _timestamp);
       if (promotionMintStatus == PromotionMintStatus.SUCCESS) {
-        if (promotionInfo.randomItemTokenIds.length == 0) {
+        // TODO: Update this on Sonic branch with better flags. Currently only supports tiered rewards
+        if (promotionInfo.guaranteedItemTokenIds.length == 0 && promotionInfo.randomItemTokenIds.length == 0) {
+          // Currently assumes tiered rewards
           uint oracleTime = ((promotionInfo.startTime / 1 days + today) * 1 days) - 1;
-          (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(
+          uint startIndex = promotionInfo.guaranteedItemTokenIds.length; // Guaranteed items are in front
+          (itemTokenIds[startIndex], amounts[startIndex], promotionMintStatus) = _getTierReward(
             _playerId,
             world,
             oracleTime,
             promotionMintStatus
           );
+        } else if (promotionInfo.guaranteedItemTokenIds.length != 0) {
+          // TODO: Just temporary until the migration with better types to determine what rewards are given
         } else {
           // Not supported yet
           assert(false);

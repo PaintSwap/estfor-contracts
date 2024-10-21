@@ -131,6 +131,9 @@ library PetNFTLibrary {
     if (_skin == PetSkin.ANNIV1) {
       return "Anniv1";
     }
+    if (_skin == PetSkin.KRAGSTYR) {
+      return "Kragstyr";
+    }
     revert InvalidSkin(_skin);
   }
 

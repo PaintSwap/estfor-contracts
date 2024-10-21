@@ -846,6 +846,55 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     actionType: InstantVRFActionType.GENERIC,
   },
   {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_TRICK_CHEST,
+    inputTokenIds: [EstforConstants.TRICK_CHEST2024, EstforConstants.TRICK_OR_TREAT_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.COIN, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 52428, amount: 2},
+          {itemTokenId: EstforConstants.COIN, chance: 39321, amount: 5},
+          {itemTokenId: EstforConstants.COIN, chance: 26214, amount: 15},
+          {itemTokenId: EstforConstants.LIFFYN, chance: 19661, amount: 1},
+          {itemTokenId: EstforConstants.VANAGLOT, chance: 15073, amount: 1},
+          {itemTokenId: EstforConstants.FANGENSTORM, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.RING_OF_TUR, chance: 5898, amount: 1},
+          {itemTokenId: EstforConstants.KEPHRI_AMULET, chance: 3277, amount: 1},
+          {itemTokenId: EstforConstants.KRAGSTYR_EGG_TIER1, chance: 655, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_TREAT_CHEST,
+    inputTokenIds: [EstforConstants.TREAT_CHEST2024, EstforConstants.TRICK_OR_TREAT_KEY],
+    inputAmounts: [1, 1],
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.XP_BOOST, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.GATHERING_BOOST, chance: 52428, amount: 1},
+          {itemTokenId: EstforConstants.COMBAT_BOOST, chance: 42598, amount: 1},
+          {itemTokenId: EstforConstants.SKILL_BOOST, chance: 32768, amount: 1},
+          {itemTokenId: EstforConstants.XP_BOOST, chance: 22937, amount: 2},
+          {itemTokenId: EstforConstants.GATHERING_BOOST, chance: 16384, amount: 2},
+          {itemTokenId: EstforConstants.LIFFYN, chance: 9830, amount: 1},
+          {itemTokenId: EstforConstants.VANAGLOT, chance: 6554, amount: 1},
+          {itemTokenId: EstforConstants.FANGENSTORM, chance: 3277, amount: 1},
+        ],
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+  },
+  {
     actionType: InstantVRFActionType.EGG,
     inputTokenIds: [EstforConstants.EGG_TIER1],
     inputAmounts: [1],
@@ -1202,6 +1251,91 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     data: ethers.utils.defaultAbiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER5}]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER1,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {
+          rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER1,
+          rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER1,
+        },
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER2,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {
+          rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER2,
+          rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER2,
+        },
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER3,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {
+          rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER3,
+          rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER3,
+        },
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER4,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {
+          rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER4,
+          rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER4,
+        },
+      ]
+    ),
+    isFullModeOnly: true,
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER5,
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {
+          rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER5,
+          rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER5,
+        },
+      ]
     ),
     isFullModeOnly: true,
   },

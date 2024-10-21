@@ -759,7 +759,7 @@
     "name": "itemNFT",
     "outputs": [
       {
-        "internalType": "contract IItemNFT",
+        "internalType": "contract ItemNFT",
         "name": "",
         "type": "address"
       }
@@ -926,7 +926,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IItemNFT",
+        "internalType": "contract ItemNFT",
         "name": "_itemNFT",
         "type": "address"
       }

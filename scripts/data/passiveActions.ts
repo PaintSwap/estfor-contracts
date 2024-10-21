@@ -12,6 +12,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -32,6 +33,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -52,6 +54,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -72,6 +75,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -92,6 +96,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -112,6 +117,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -132,6 +138,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -152,6 +159,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -172,6 +180,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -192,6 +201,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -212,6 +222,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -232,6 +243,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -252,6 +264,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -272,6 +285,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -292,6 +306,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -312,6 +327,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -332,6 +348,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -352,6 +369,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -372,6 +390,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -392,6 +411,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -412,6 +432,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true,
     },
     guaranteedRewards: [
       {
@@ -432,6 +453,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: false,
     },
     guaranteedRewards: [
       {
@@ -452,6 +474,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: false,
     },
     guaranteedRewards: [
       {
@@ -472,6 +495,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: false,
     },
     guaranteedRewards: [
       {
@@ -492,10 +516,116 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: false,
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.ANNIV1_EGG_TIER5,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER1,
+    info: {
+      durationDays: 0,
+      inputTokenIds: [EstforConstants.LIFFYN, EstforConstants.VANAGLOT, EstforConstants.FANGENSTORM],
+      inputAmounts: [1, 1, 1],
+      minSkills: [Skill.ALCHEMY],
+      minLevels: [1],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.KRAGSTYR_EGG_TIER1,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER2,
+    info: {
+      durationDays: 5,
+      inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER1],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
+      minLevels: [10, 15, 15],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.KRAGSTYR_EGG_TIER2,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER3,
+    info: {
+      durationDays: 8,
+      inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER2],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
+      minLevels: [20, 20, 20],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.KRAGSTYR_EGG_TIER3,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER4,
+    info: {
+      durationDays: 13,
+      inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER3],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
+      minLevels: [30, 25, 25],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.KRAGSTYR_EGG_TIER4,
+        rate: 1,
+      },
+    ],
+    randomRewards: [],
+  },
+  {
+    actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER5,
+    info: {
+      durationDays: 21,
+      inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER4],
+      inputAmounts: [1],
+      minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
+      minLevels: [40, 30, 20],
+      skipSuccessPercent: 0,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      isAvailable: true,
+    },
+    guaranteedRewards: [
+      {
+        itemTokenId: EstforConstants.KRAGSTYR_EGG_TIER5,
         rate: 1,
       },
     ],

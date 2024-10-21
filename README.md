@@ -137,7 +137,7 @@ Territories [0xf31517db9f0987002f3a0fb4f787dfb9e892f184](https://ftmscan.com/add
 CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.com/address/0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c)  
 DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
-PetNFTLibrary [0x04a11e4afd667ca55b10d834a7367c4bed107750](https://ftmscan.com/address/0x04a11e4afd667ca55b10d834a7367c4bed107750)  
+PetNFTLibrary [0x1445660336c1b0bcb2b484e86a56297f1da6575d](https://ftmscan.com/address/0x1445660336c1b0bcb2b484e86a56297f1da6575d)  
 PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/0xa6489181b24e966402891225c65f8e2d136ddd2e)  
 PassiveActions [0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6](https://ftmscan.com/address/0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6)
 

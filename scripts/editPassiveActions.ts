@@ -46,8 +46,10 @@ async function main() {
     map.set(key, values[index]);
   });
 
-  const actions = isBeta
-    ? allPassiveActions.map((passiveAction) => {
+  const actions = allPassiveActions.filter((action) => map.has(action.actionId));
+
+  const actionsToEdit = isBeta
+    ? actions.map((passiveAction) => {
         const actionId = passiveAction.actionId;
 
         let durationDays = map.has(actionId) ? map.get(actionId) : passiveAction.info.durationDays;
@@ -59,12 +61,12 @@ async function main() {
           },
         };
       })
-    : allPassiveActions;
+    : actions;
 
-  if (actions.length !== 21) {
+  if (actionsToEdit.length !== actionsToReduce.length) {
     console.log("Cannot find actions");
   } else {
-    await passiveActions.editActions(actions);
+    await passiveActions.editActions(actionsToEdit);
   }
 }
 

@@ -8,7 +8,7 @@ async function main() {
 
   const petNFT = (await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS)).connect(owner);
 
-  const chunkSize = 20;
+  const chunkSize = 40;
   for (let i = 0; i < allBasePets.length; i += chunkSize) {
     const chunk = allBasePets.slice(i, i + chunkSize);
     const tx = await petNFT.editBasePets(chunk);

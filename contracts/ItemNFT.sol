@@ -266,7 +266,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       return;
     }
 
-    bool isBurnt = _to == address(0) || _to == 0x000000000000000000000000000000000000dEaD;
+    bool isBurnt = _to == address(0);
     if (isBurnt) {
       _removeAnyBurntFromTotal(_ids, _amounts);
     } else {
@@ -433,7 +433,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
    * @dev See {IERC1155-isApprovedForAll}.
    */
   function isApprovedForAll(address _account, address _operator) public view virtual override returns (bool) {
-    return super.isApprovedForAll(_account, _operator) || _operator == bazaar;
+    return super.isApprovedForAll(_account, _operator) || _operator == bazaar || _operator == shop;
   }
 
   function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
