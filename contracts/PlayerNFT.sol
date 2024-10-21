@@ -45,7 +45,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   event EditNameCost(uint256 newCost);
   event UpgradePlayerCost(uint256 newCost);
   event SetAvatarsV2(uint256[] avatarIds, AvatarInfo[] avatarInfos);
-  event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId, uint256 brushBurnt);
+  event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId);
+  event SetBrushDistributionPercentages(
+    uint256 brushBurntPercentage,
+    uint256 brushTreasuryPercentage,
+    uint256 brushDevPercentage
+  );
 
   // For ABI backwards compatibility
   event NewPlayer(uint256 playerId, uint256 avatarId, string name);
@@ -70,6 +75,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error TwitterTooLong();
   error TwitterInvalidCharacters();
   error LengthMismatch();
+  error PercentNotTotal100();
 
   struct PlayerInfo {
     uint24 avatarId;
@@ -88,17 +94,18 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   IBrushToken private _brush;
   IPlayers private _players;
-  address private _pool;
+  address private _treasury;
 
   address private _royaltyReceiver;
   uint8 private _royaltyFee; // base 1000, highest is 25.5
   uint72 private _editNameCost; // Max is 4700 BRUSH
-  bool private _isBeta;
-
   address private _dev;
-  uint80 private _upgradePlayerCost; // Max 1.2 million brush
-
+  uint72 private _upgradePlayerCost; // Max is 4700 BRUSH
+  uint8 _brushBurntPercentage;
+  uint8 _brushTreasuryPercentage;
+  uint8 _brushDevPercentage;
   bytes32 private _merkleRoot; // Unused now (was for alpha/beta whitelisting)
+  bool private _isBeta; // Not need to pack this
   mapping(address whitelistedUser => uint256 amount) private _numMintedFromWhitelist; // Unused now
   AdminAccess private _adminAccess; // Unused but is set
   uint32 private _numBurned;
@@ -125,11 +132,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function initialize(
     IBrushToken brush,
-    address pool,
+    address treasury,
     address dev,
     address royaltyReceiver,
     uint72 editNameCost,
-    uint80 upgradePlayerCost,
+    uint72 upgradePlayerCost,
     string calldata imageBaseUri,
     bool isBeta
   ) external initializer {
@@ -140,7 +147,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _brush = brush;
     _nextPlayerId = 1;
     _imageBaseUri = imageBaseUri;
-    _pool = pool;
+    _treasury = treasury;
     _dev = dev;
     _upgradePlayerCost = upgradePlayerCost;
     setEditNameCost(editNameCost);
@@ -186,12 +193,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function _upgradePlayer(uint256 playerId, uint24 _newAvatarId) private {
     _playerInfos[playerId].avatarId = _newAvatarId;
     _players.upgradePlayer(playerId);
-    // Send quarter to the pool (currently shop)
-    uint256 quarterCost = _upgradePlayerCost / 4;
-    _brush.transferFrom(_msgSender(), _pool, quarterCost);
-    // Send rest to the dev address
-    _brush.transferFrom(_msgSender(), _dev, _upgradePlayerCost - quarterCost);
-    emit UpgradePlayerAvatar(playerId, _newAvatarId, 0);
+    _pay(_upgradePlayerCost);
+    emit UpgradePlayerAvatar(playerId, _newAvatarId);
   }
 
   function editPlayer(
@@ -224,15 +227,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function _pay(uint256 brushCost) private {
-    // Pay
-    _brush.transferFrom(_msgSender(), address(this), brushCost);
-    uint256 quarterCost = brushCost / 4;
-    // Send half to the pool (currently shop)
-    _brush.transfer(_pool, quarterCost * 2);
-    // Send 1 quarter to the dev address
-    _brush.transfer(_dev, quarterCost);
-    // Burn the rest
-    _brush.burn(brushCost - quarterCost * 2 - quarterCost);
+    _brush.transferFrom(msg.sender, _treasury, (brushCost * _brushTreasuryPercentage) / 100);
+    _brush.transferFrom(msg.sender, _dev, (brushCost * _brushDevPercentage) / 100);
+    _brush.burnFrom(msg.sender, (brushCost * _brushBurntPercentage) / 100);
   }
 
   function _mintStartingItems(address from, uint256 playerId, uint256 avatarId, bool makeActive) private {
@@ -399,18 +396,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return _nextPlayerId - _numBurned - 1;
   }
 
-  function getBrush() external view returns (IBrushToken) {
-    return _brush;
-  }
-
-  function getPoolAddress() external view returns (address) {
-    return _pool;
-  }
-
-  function getDevAddress() external view returns (address) {
-    return _dev;
-  }
-
   function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
     return _playerInfos[playerId];
   }
@@ -444,9 +429,22 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     emit EditNameCost(editNameCost);
   }
 
-  function setUpgradeCost(uint80 upgradePlayerCost) public onlyOwner {
+  function setUpgradeCost(uint72 upgradePlayerCost) public onlyOwner {
     _upgradePlayerCost = upgradePlayerCost;
     emit UpgradePlayerCost(upgradePlayerCost);
+  }
+
+  function setBrushDistributionPercentages(
+    uint8 brushBurntPercentage,
+    uint8 brushTreasuryPercentage,
+    uint8 brushDevPercentage
+  ) external onlyOwner {
+    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
+
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
   // solhint-disable-next-line no-empty-blocks

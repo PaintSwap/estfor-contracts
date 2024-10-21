@@ -17,7 +17,7 @@ contract MockBrushToken is ERC20("PaintSwap Token", "BRUSH") {
     _burn(msg.sender, amount);
   }
 
-  function burnFrom(address account, uint256 amount) public virtual {
+  function burnFrom(address account, uint256 amount) public {
     amountBurnt += amount;
     _spendAllowance(account, _msgSender(), amount);
     _burn(account, amount);

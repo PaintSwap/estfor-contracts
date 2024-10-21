@@ -348,7 +348,7 @@ describe("Promotions", function () {
       });
 
       it("Brush cost to enter promotion", async function () {
-        const {promotions, playerId, brush, alice, shop, dev, world, mockVRF} = await loadFixture(playersFixture);
+        const {promotions, playerId, brush, alice, treasury, dev, world, mockVRF} = await loadFixture(playersFixture);
         let promotion = await getBasicSingleMintPromotion();
         promotion = {...promotion, brushCost: parseEther("1")};
         await promotions.addPromotion(promotion);
@@ -362,8 +362,8 @@ describe("Promotions", function () {
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
 
         expect(await brush.balanceOf(alice.address)).to.eq(0);
-        expect(await brush.balanceOf(await shop.getAddress())).to.eq(parseEther("0.5"));
-        expect(await brush.balanceOf(dev.address)).to.eq(parseEther("0.5"));
+        expect(await brush.balanceOf(await treasury.getAddress())).to.eq(parseEther("0.5"));
+        expect(await brush.balanceOf(dev.address)).to.eq(parseEther("0.25"));
       });
     });
   });
@@ -1150,7 +1150,7 @@ describe("Promotions", function () {
       });
 
       it("Brush cost to enter promotion", async function () {
-        const {promotions, playerId, brush, alice, shop, dev, world, mockVRF} = await loadFixture(promotionFixture);
+        const {promotions, playerId, brush, alice, treasury, dev} = await loadFixture(promotionFixture);
 
         let promotion = await getStreakBonusPromotion();
         promotion = {...promotion, brushCost: parseEther("1")};
@@ -1166,8 +1166,8 @@ describe("Promotions", function () {
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
         expect(await brush.balanceOf(alice.address)).to.eq(0);
-        expect(await brush.balanceOf(await shop.getAddress())).to.eq(parseEther("0.5"));
-        expect(await brush.balanceOf(dev.address)).to.eq(parseEther("0.5"));
+        expect(await brush.balanceOf(await treasury.getAddress())).to.eq(parseEther("0.5"));
+        expect(await brush.balanceOf(dev.address)).to.eq(parseEther("0.25"));
       });
     });
   });

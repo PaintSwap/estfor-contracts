@@ -165,14 +165,14 @@ describe("PlayerNFT", function () {
       .to.emit(playerNFT, "EditPlayerV2")
       .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
-      .withArgs(playerId, 10001, 0);
+      .withArgs(playerId, 10001);
 
     expect(await brush.balanceOf(alice.address)).to.eq(brushAmount - (editNameBrushPrice + upgradePlayerBrushPrice));
 
-    // 75% goes to the dev address & 25% goes to the treasury for player upgrades. For editing name, 25% goes to the dev address & 50% goes to the treasury (25% burnt)
-    expect(await brush.balanceOf(dev.address)).to.eq((upgradePlayerBrushPrice / 4n) * 3n + editNameBrushPrice / 4n);
+    // 25% goes to the dev address, 25% burned & 50% goes to the treasury for player upgrades & editing name.
+    expect(await brush.balanceOf(dev.address)).to.eq(upgradePlayerBrushPrice / 4n + editNameBrushPrice / 4n);
     expect(await brush.balanceOf(await shop.getAddress())).to.eq(
-      upgradePlayerBrushPrice / 4n + editNameBrushPrice / 2n
+      upgradePlayerBrushPrice / 2n + editNameBrushPrice / 2n
     );
 
     // Check upgraded flag
@@ -214,13 +214,13 @@ describe("PlayerNFT", function () {
       .to.emit(playerNFT, "NewPlayerV2")
       .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, 0, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
-      .withArgs(playerId, 10001, 0);
+      .withArgs(playerId, 10001);
 
     expect(await brush.balanceOf(alice.address)).to.eq(0);
 
-    // 75% goes to the dev address & 25% goes to the treasury for player upgrades
-    expect(await brush.balanceOf(dev.address)).to.eq((upgradePlayerBrushPrice / 4n) * 3n);
-    expect(await brush.balanceOf(await shop.getAddress())).to.eq(upgradePlayerBrushPrice / 4n);
+    // 25% goes to the dev address, 25% burned & 50% goes to the treasury for player upgrades & editing name.
+    expect(await brush.balanceOf(dev.address)).to.eq(upgradePlayerBrushPrice / 4n);
+    expect(await brush.balanceOf(await shop.getAddress())).to.eq(upgradePlayerBrushPrice / 2n);
 
     // Check upgraded flag
     const player = await players.players(playerId);

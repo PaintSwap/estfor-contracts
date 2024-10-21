@@ -201,6 +201,11 @@
   },
   {
     "inputs": [],
+    "name": "PercentNotTotal100",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "TelegramInvalidCharacters",
     "type": "error"
   },
@@ -572,6 +577,31 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushBurntPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushTreasuryPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushDevPercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetBrushDistributionPercentages",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "operator",
@@ -674,12 +704,6 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "newAvatarId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "brushBurnt",
         "type": "uint256"
       }
     ],
@@ -873,32 +897,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getBrush",
-    "outputs": [
-      {
-        "internalType": "contract IBrushToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getDevAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -949,19 +947,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getPoolAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "string",
@@ -989,7 +974,7 @@
       },
       {
         "internalType": "address",
-        "name": "pool",
+        "name": "treasury",
         "type": "address"
       },
       {
@@ -1008,9 +993,9 @@
         "type": "uint72"
       },
       {
-        "internalType": "uint80",
+        "internalType": "uint72",
         "name": "upgradePlayerCost",
-        "type": "uint80"
+        "type": "uint72"
       },
       {
         "internalType": "string",
@@ -1297,6 +1282,29 @@
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "brushBurntPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushTreasuryPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushDevPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "setBrushDistributionPercentages",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint72",
         "name": "editNameCost",
         "type": "uint72"
@@ -1336,9 +1344,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint80",
+        "internalType": "uint72",
         "name": "upgradePlayerCost",
-        "type": "uint80"
+        "type": "uint72"
       }
     ],
     "name": "setUpgradeCost",

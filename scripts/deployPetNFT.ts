@@ -7,6 +7,7 @@ import {
   INSTANT_VRF_ACTIONS_ADDRESS,
   PLAYERS_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
+  TREASURY_ADDRESS
 } from "./contractAddresses";
 import {getChainId, isBeta} from "./utils";
 import {PetNFT, EggInstantVRFActionStrategy} from "../typechain-types";
@@ -29,7 +30,7 @@ async function main() {
   console.log(`petNFTLibrary = "${(await petNFTLibrary.getAddress()).toLowerCase()}"`);
 
   const PetNFT = await ethers.getContractFactory("PetNFT", {
-    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: await petNFTLibrary.getAddress()},
+    libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: await petNFTLibrary.getAddress()}
   });
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
@@ -39,14 +40,15 @@ async function main() {
       petImageBaseUri,
       DEV_ADDRESS,
       editPetNameBrushPrice,
+      TREASURY_ADDRESS,
       ADMIN_ACCESS_ADDRESS,
-      isBeta,
+      isBeta
     ],
     {
       kind: "uups",
       unsafeAllow: ["delegatecall", "external-library-linking"],
-      timeout,
-    },
+      timeout
+    }
   )) as unknown as PetNFT;
 
   console.log(`petNFT = "${(await petNFT.getAddress()).toLowerCase()}"`);
@@ -77,15 +79,15 @@ async function main() {
     EggInstantVRFActionStrategy,
     [await instantVRFActions.getAddress()],
     {
-      kind: "uups",
-    },
+      kind: "uups"
+    }
   )) as unknown as EggInstantVRFActionStrategy;
 
   console.log(`eggInstantVRFActionStrategy = "${(await eggInstantVRFActionStrategy.getAddress()).toLowerCase()}"`);
 
   tx = await instantVRFActions.addStrategies(
     [InstantVRFActionType.EGG],
-    [await eggInstantVRFActionStrategy.getAddress()],
+    [await eggInstantVRFActionStrategy.getAddress()]
   );
   await tx.wait();
   console.log("InstantVRFActions addStrategies");

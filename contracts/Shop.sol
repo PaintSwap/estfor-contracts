@@ -293,19 +293,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     return (block.timestamp.div(1 days)).mul(1 days) >= checkpointTimestamp.add(1 days);
   }
 
-  function _setBrushDistributionPercentages(
-    uint8 brushBurntPercentage,
-    uint8 brushTreasuryPercentage,
-    uint8 brushDevPercentage
-  ) private {
-    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
-
-    _brushBurntPercentage = brushBurntPercentage;
-    _brushTreasuryPercentage = brushTreasuryPercentage;
-    _brushDevPercentage = brushDevPercentage;
-    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
-  }
-
   function tokenInfos(uint16 tokenId) external view returns (TokenInfo memory tokenInfo) {
     return _tokenInfos[tokenId];
   }
@@ -381,7 +368,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint8 brushTreasuryPercentage,
     uint8 brushDevPercentage
   ) external onlyOwner {
-    _setBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
+
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
   // solhint-disable-next-line no-empty-blocks

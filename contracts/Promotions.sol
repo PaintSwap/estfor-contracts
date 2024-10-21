@@ -37,6 +37,11 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   event EditPromotion(PromotionInfoInput promotionInfo);
   event RemovePromotion(Promotion promotion);
   event ClearPlayerPromotion(uint256 playerId, Promotion promotion);
+  event SetBrushDistributionPercentages(
+    uint256 brushBurntPercentage,
+    uint256 brushTreasuryPercentage,
+    uint256 brushDevPercentage
+  );
 
   // For previous versions of the events
   event PromotionAdded(PromotionInfoV1 promotionInfo);
@@ -69,6 +74,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error CannotPayForToday();
   error DaysArrayNotSortedOrDuplicates();
   error PromotionFinished();
+  error PercentNotTotal100();
 
   struct PromotionInfoV1 {
     Promotion promotion;
@@ -81,10 +87,15 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint32[] amounts; // Corresponding amounts to the itemTokenIds
   }
 
-  mapping(address user => uint256 noLongerUsed) private _users; // No longer used
   AdminAccess private _adminAccess;
   ItemNFT private _itemNFT;
   PlayerNFT private _playerNFT;
+  IBrushToken private _brush;
+  address private _dev;
+  address private _treasury;
+  uint8 private _brushBurntPercentage;
+  uint8 private _brushTreasuryPercentage;
+  uint8 private _brushDevPercentage;
   bool private _isBeta;
   mapping(uint256 playerId => BitMaps.BitMap) private _singlePlayerPromotionsCompleted;
   mapping(Promotion promotion => PromotionInfo) private _activePromotions;
@@ -110,12 +121,23 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(AdminAccess adminAccess, ItemNFT itemNFT, PlayerNFT playerNFT, bool isBeta) external initializer {
+  function initialize(
+    ItemNFT itemNFT,
+    PlayerNFT playerNFT,
+    IBrushToken brush,
+    address treasury,
+    address dev,
+    AdminAccess adminAccess,
+    bool isBeta
+  ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;
+    _brush = brush;
+    _treasury = treasury;
+    _dev = dev;
     _adminAccess = adminAccess;
     _isBeta = isBeta;
   }
@@ -599,13 +621,9 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _pay(uint256 brushCost) private {
-    // Pay
-    IBrushToken brush = _playerNFT.getBrush();
-    // Send half to the pool
-    uint256 poolAmount = brushCost / 2;
-    require(brush.transferFrom(_msgSender(), _playerNFT.getPoolAddress(), brushCost / 2), NotEnoughBrush());
-    // Send half to the dev address
-    require(brush.transferFrom(_msgSender(), _playerNFT.getDevAddress(), brushCost - poolAmount), NotEnoughBrush());
+    require(_brush.transferFrom(msg.sender, _treasury, (brushCost * _brushTreasuryPercentage) / 100), NotEnoughBrush());
+    require(_brush.transferFrom(msg.sender, _dev, (brushCost * _brushDevPercentage) / 100), NotEnoughBrush());
+    _brush.burnFrom(msg.sender, (brushCost * _brushBurntPercentage) / 100);
   }
 
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.
@@ -626,8 +644,18 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
   }
 
-  function testClearPromotionalPack(address toClear) external isAdminAndBeta {
-    delete _users[toClear];
+  function hasClaimedAny(uint256 playerId, Promotion promotion) public view returns (bool) {
+    PromotionInfo storage promotionInfo = _activePromotions[promotion];
+    if (promotionInfo.isMultiday) {
+      bool anyClaimed;
+      uint8[32] storage daysCompleted = _multidayPlayerPromotionsCompleted[playerId][promotion];
+      assembly ("memory-safe") {
+        // Anything set in the word would mean at least 1 is claimed
+        anyClaimed := iszero(iszero(sload(daysCompleted.slot)))
+      }
+      return anyClaimed;
+    }
+    return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
   }
 
   function testClearPlayerPromotion(uint256 playerId, Promotion promotion) external isAdminAndBeta {
@@ -646,24 +674,23 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     emit EditPromotion(promotionInfoInput);
   }
 
-  function hasClaimedAny(uint256 playerId, Promotion promotion) public view returns (bool) {
-    PromotionInfo storage promotionInfo = _activePromotions[promotion];
-    if (promotionInfo.isMultiday) {
-      bool anyClaimed;
-      uint8[32] storage daysCompleted = _multidayPlayerPromotionsCompleted[playerId][promotion];
-      assembly ("memory-safe") {
-        // Anything set in the word would mean at least 1 is claimed
-        anyClaimed := iszero(iszero(sload(daysCompleted.slot)))
-      }
-      return anyClaimed;
-    }
-    return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
-  }
-
   function removePromotion(Promotion promotion) external onlyOwner {
     require(_activePromotions[promotion].promotion != Promotion.NONE, PromotionNotAdded());
     delete _activePromotions[promotion];
     emit RemovePromotion(promotion);
+  }
+
+  function setBrushDistributionPercentages(
+    uint8 brushBurntPercentage,
+    uint8 brushTreasuryPercentage,
+    uint8 brushDevPercentage
+  ) external onlyOwner {
+    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
+
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
   // solhint-disable-next-line no-empty-blocks

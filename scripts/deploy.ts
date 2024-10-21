@@ -348,7 +348,15 @@ async function main() {
   });
   const promotions = (await upgrades.deployProxy(
     Promotions,
-    [await adminAccess.getAddress(), await itemNFT.getAddress(), await playerNFT.getAddress(), isBeta],
+    [
+      await itemNFT.getAddress(),
+      await playerNFT.getAddress(),
+      await brush.getAddress(),
+      await treasury.getAddress(),
+      DEV_ADDRESS,
+      await adminAccess.getAddress(),
+      isBeta
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -431,6 +439,7 @@ async function main() {
       petImageBaseUri,
       DEV_ADDRESS,
       editPetNameBrushPrice,
+      await treasury.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -776,13 +785,21 @@ async function main() {
   await tx.wait();
   console.log("petNFT setInstantVRFActions");
 
-  tx = await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
+  tx = await playerNFT.setBrushDistributionPercentages(25, 50, 25);
+  await tx.wait();
+  console.log("petNFT setBrushDistributionPercentages");
+
+  tx = await petNFT.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
   console.log("petNFT setBrushDistributionPercentages");
 
   tx = await shop.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
   console.log("shop.setBrushDistributionPercentages");
+
+  tx = await promotions.setBrushDistributionPercentages(25, 50, 25);
+  await tx.wait();
+  console.log("promotions.setBrushDistributionPercentages");
 
   tx = await shop.setItemNFT(itemNFT);
   await tx.wait();

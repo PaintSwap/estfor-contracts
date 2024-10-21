@@ -141,6 +141,11 @@
   },
   {
     "inputs": [],
+    "name": "PercentNotTotal100",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PlayerDoesNotQualify",
     "type": "error"
   },
@@ -754,6 +759,31 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushBurntPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushTreasuryPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushDevPercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetBrushDistributionPercentages",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -1355,11 +1385,6 @@
   {
     "inputs": [
       {
-        "internalType": "contract AdminAccess",
-        "name": "adminAccess",
-        "type": "address"
-      },
-      {
         "internalType": "contract ItemNFT",
         "name": "itemNFT",
         "type": "address"
@@ -1367,6 +1392,26 @@
       {
         "internalType": "contract PlayerNFT",
         "name": "playerNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IBrushToken",
+        "name": "brush",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "treasury",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "dev",
+        "type": "address"
+      },
+      {
+        "internalType": "contract AdminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
@@ -1576,6 +1621,29 @@
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "brushBurntPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushTreasuryPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushDevPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "setBrushDistributionPercentages",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
@@ -1587,19 +1655,6 @@
       }
     ],
     "name": "testClearPlayerPromotion",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "toClear",
-        "type": "address"
-      }
-    ],
-    "name": "testClearPromotionalPack",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -34,8 +34,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
-    uint256 brushDevPercentage,
-    uint256 brushTerritoriesPercentage
+    uint256 brushDevPercentage
   );
   event EditPlayerPet(uint256 playerId, uint256 petId, address from, string newName);
   event AddBasePets(BasePetInput[] basePetInputs);
@@ -57,7 +56,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   error NameTooLong();
   error NameTooShort();
   error NameInvalidCharacters();
-  error NotSupportedYet();
   error PercentNotTotal100();
   error InvalidAddress();
   error SkillEnhancementIncorrectOrder();
@@ -115,11 +113,11 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   address private _dev;
   IBrushToken private _brush;
+  address private _treasury;
   uint72 private _editNameCost; // Max is 4700 BRUSH
   uint8 private _brushBurntPercentage;
   uint8 private _brushTreasuryPercentage;
   uint8 private _brushDevPercentage;
-  uint8 private _brushTerritoriesPercentage;
   address private _territories;
   address private _players;
 
@@ -163,6 +161,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     string calldata imageBaseUri,
     address dev,
     uint72 editNameCost,
+    address treasury,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -186,6 +185,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _dev = dev;
     _isBeta = isBeta;
     _nextPetId = 1;
+    _treasury = treasury;
     setEditNameCost(editNameCost);
   }
 
@@ -411,22 +411,15 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     if (_brushCost == 0) {
       return;
     }
-    if (_brushTreasuryPercentage != 0) {
-      revert NotSupportedYet();
-    }
 
-    if (_brushTerritoriesPercentage != 0) {
-      _brush.transferFrom(_msgSender(), _territories, (_brushCost * _brushTerritoriesPercentage) / 100);
-    }
+    _brush.transferFrom(_msgSender(), _treasury, (_brushCost * _brushTreasuryPercentage) / 100);
 
     if (_brushDevPercentage != 0) {
       _brush.transferFrom(_msgSender(), _dev, (_brushCost * _brushDevPercentage) / 100);
     }
 
     if (_brushBurntPercentage != 0) {
-      uint256 amountBurnt = (_brushCost * _brushBurntPercentage) / 100;
-      _brush.transferFrom(_msgSender(), address(this), amountBurnt);
-      _brush.burn(amountBurnt);
+      _brush.burnFrom(_msgSender(), (_brushCost * _brushBurntPercentage) / 100);
     }
   }
 
@@ -530,29 +523,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function _basePetExists(BasePetInput calldata basePetInput) private view returns (bool) {
     return _basePetMetadatas[basePetInput.baseId].skillEnhancement1 != Skill.NONE;
-  }
-
-  function _setBrushDistributionPercentages(
-    uint8 brushBurntPercentage,
-    uint8 brushTreasuryPercentage,
-    uint8 brushDevPercentage,
-    uint8 brushTerritoriesPercentage
-  ) private {
-    require(
-      brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage + brushTerritoriesPercentage == 100,
-      PercentNotTotal100()
-    );
-
-    _brushBurntPercentage = brushBurntPercentage;
-    _brushTreasuryPercentage = brushTreasuryPercentage;
-    _brushDevPercentage = brushDevPercentage;
-    _brushTerritoriesPercentage = brushTerritoriesPercentage;
-    emit SetBrushDistributionPercentages(
-      brushBurntPercentage,
-      brushTreasuryPercentage,
-      brushDevPercentage,
-      brushTerritoriesPercentage
-    );
   }
 
   /**
@@ -662,15 +632,14 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   function setBrushDistributionPercentages(
     uint8 brushBurntPercentage,
     uint8 brushTreasuryPercentage,
-    uint8 brushDevPercentage,
-    uint8 brushTerritoriesPercentage
+    uint8 brushDevPercentage
   ) external onlyOwner {
-    _setBrushDistributionPercentages(
-      brushBurntPercentage,
-      brushTreasuryPercentage,
-      brushDevPercentage,
-      brushTerritoriesPercentage
-    );
+    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
+
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
   // solhint-disable-next-line no-empty-blocks

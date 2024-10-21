@@ -152,7 +152,15 @@ export const playersFixture = async function () {
   });
   const promotions = (await upgrades.deployProxy(
     Promotions,
-    [await adminAccess.getAddress(), await itemNFT.getAddress(), await playerNFT.getAddress(), isBeta],
+    [
+      await itemNFT.getAddress(),
+      await playerNFT.getAddress(),
+      await brush.getAddress(),
+      await treasury.getAddress(),
+      await dev.getAddress(),
+      await adminAccess.getAddress(),
+      isBeta
+    ],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"]
@@ -218,6 +226,7 @@ export const playersFixture = async function () {
       imageBaseUri,
       dev.address,
       editNameBrushPrice,
+      await treasury.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -474,8 +483,10 @@ export const playersFixture = async function () {
   await itemNFT.setInstantVRFActions(await instantVRFActions.getAddress());
   await petNFT.setInstantVRFActions(await instantVRFActions.getAddress());
 
-  await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
+  await playerNFT.setBrushDistributionPercentages(25, 50, 25);
+  await petNFT.setBrushDistributionPercentages(25, 50, 25);
   await shop.setBrushDistributionPercentages(25, 50, 25);
+  await promotions.setBrushDistributionPercentages(25, 50, 25);
 
   const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
   const treasuryPercentages = [10, 90];

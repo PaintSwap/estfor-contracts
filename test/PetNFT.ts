@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {playersFixture} from "./Players/PlayersFixture";
 import {BasePetInput, PetEnhancementType, PetSkin, Skill} from "@paintswap/estfor-definitions/types";
-import {ethers, upgrades} from "hardhat";
+import {upgrades} from "hardhat";
 import {PetNFT} from "../typechain-types";
 import {getXPFromLevel} from "./Players/utils";
 import {parseEther} from "ethers";
@@ -122,7 +122,7 @@ describe("PetNFT", function () {
   });
 
   it("external_url when not in beta", async function () {
-    const {adminAccess, brush, dev, royaltyReceiver, alice, PetNFT} = await loadFixture(deployContracts);
+    const {adminAccess, brush, treasury, dev, royaltyReceiver, alice, PetNFT} = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
     const isBeta = false;
@@ -134,8 +134,9 @@ describe("PetNFT", function () {
         await brush.getAddress(),
         await royaltyReceiver.getAddress(),
         imageBaseUri,
-        await dev.getAddress(),
+        dev.address,
         editNameCost,
+        await treasury.getAddress(),
         await adminAccess.getAddress(),
         isBeta
       ],
@@ -182,7 +183,7 @@ describe("PetNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {petNFT, adminAccess, brush, dev, royaltyReceiver, PetNFT} = await loadFixture(deployContracts);
+    const {petNFT, adminAccess, brush, dev, royaltyReceiver, treasury, PetNFT} = await loadFixture(deployContracts);
     expect(await petNFT.name()).to.be.eq("Estfor Pets (Beta)");
     expect(await petNFT.symbol()).to.be.eq("EK_PETS_B");
 
@@ -197,6 +198,7 @@ describe("PetNFT", function () {
         imageBaseUri,
         dev.address,
         editNameCost,
+        await treasury.getAddress(),
         await adminAccess.getAddress(),
         isBeta
       ],
@@ -443,25 +445,17 @@ describe("PetNFT", function () {
       await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       const newName = "New name";
-      await petNFT.connect(alice).editPet(playerId, petId, newName);
 
-      const brushBurntPercentage = 25n;
+      const brushBurntPercentage = 75n;
       const brushTreasuryPercentage = 0n;
       const brushDevPercentage = 25n;
-      const brushTerritoriesPercentage = 50n;
 
-      await petNFT.setBrushDistributionPercentages(
-        brushBurntPercentage,
-        brushTreasuryPercentage,
-        brushDevPercentage,
-        brushTerritoriesPercentage
-      );
+      await petNFT.setBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+
+      await petNFT.connect(alice).editPet(playerId, petId, newName);
 
       expect(await brush.balanceOf(alice.address)).to.eq(editNameBrushPrice * 2n);
       expect(await brush.balanceOf(dev.address)).to.eq((editNameBrushPrice * brushDevPercentage) / 100n);
-      expect(await brush.balanceOf(await territories.getAddress())).to.eq(
-        (editNameBrushPrice * brushTerritoriesPercentage) / 100n
-      );
       expect(await brush.amountBurnt()).to.eq((editNameBrushPrice * brushBurntPercentage) / 100n);
     });
   });
