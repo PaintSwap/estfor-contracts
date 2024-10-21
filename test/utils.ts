@@ -9,18 +9,18 @@ export const getRequestId = async (tx: ContractTransactionResponse, contract: Ba
 };
 
 export const getActionId = async (tx: ContractTransactionResponse, contract: BaseContract): Promise<number> => {
-  return Number((await getEventLog(tx, contract, "AddActionsV2")).actions[0].actionId);
+  return Number((await getEventLog(tx, contract, "AddActions")).actions[0].actionId);
 };
 
 export const getActionChoiceId = async (tx: ContractTransactionResponse, contract: BaseContract): Promise<number> => {
-  return Number((await getEventLog(tx, contract, "AddActionChoicesV4")).actionChoiceIds[0]);
+  return Number((await getEventLog(tx, contract, "AddActionChoices")).actionChoiceIds[0]);
 };
 
 export const getActionChoiceIds = async (
   tx: ContractTransactionResponse,
   contract: BaseContract
 ): Promise<number[]> => {
-  return (await getEventLog(tx, contract, "AddActionChoicesV4")).actionChoiceIds;
+  return (await getEventLog(tx, contract, "AddActionChoices")).actionChoiceIds;
 };
 
 export const requestAndFulfillRandomWords = async (world: World, mockVRF: MockVRF) => {

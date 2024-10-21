@@ -19,7 +19,7 @@ describe("Pets", function () {
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await expect(
-      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PetNotOwned");
   });
 
@@ -39,7 +39,7 @@ describe("Pets", function () {
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
     await expect(
-      players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     // Upgrade player, can now equip pet
@@ -48,7 +48,7 @@ describe("Pets", function () {
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
-    await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
@@ -76,7 +76,7 @@ describe("Pets", function () {
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
-    await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [62]);
     await ethers.provider.send("evm_mine", []);
 
@@ -120,7 +120,7 @@ describe("Pets", function () {
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
-    await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     let pet = await petNFT.getPet(petId);
     expect(pet.lastAssignmentTimestamp).to.eq(NOW);
     await petNFT.connect(alice).safeTransferFrom(alice.address, owner.address, petId, 1, "0x");
@@ -167,7 +167,7 @@ describe("Pets", function () {
 
     await players
       .connect(alice)
-      .startActionsV2(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await petNFT.connect(alice).safeTransferFrom(alice.address, owner.address, petId, 1, "0x");
     await petNFT.safeTransferFrom(owner.address, alice.address, petId, 1, "0x");
     await itemNFT
@@ -191,7 +191,7 @@ describe("Pets", function () {
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36); // Now gain some XP
   });
 
-  it("Queue a pet with combat and startActionsExtraV2", async function () {
+  it("Queue a pet with combat and startActionsExtra", async function () {
     const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
       await loadFixture(playersFixture);
 
@@ -212,7 +212,7 @@ describe("Pets", function () {
 
     await players
       .connect(alice)
-      .startActionsExtraV2(
+      .startActionsExtra(
         playerId,
         [queuedAction],
         EstforConstants.NONE,
@@ -249,7 +249,7 @@ describe("Pets", function () {
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
-    await players.connect(alice).startActionsV2(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);

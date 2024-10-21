@@ -691,7 +691,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 86400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -741,7 +742,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 32400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       // Activate a quest
@@ -813,7 +815,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 86400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -863,7 +866,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 32400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       // Activate a quest
@@ -998,7 +1002,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_BLEKK,
         timespan: 86400,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
@@ -1245,7 +1250,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
-        leftHandEquipmentTokenId: EstforConstants.NONE // 2 handed, must specify this for both?
+        leftHandEquipmentTokenId: EstforConstants.NONE, // 2 handed, must specify this for both?
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -1511,7 +1517,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -1667,7 +1674,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.TOTEM_STAFF,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -2565,7 +2573,8 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BASIC_BOW,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -2938,7 +2947,8 @@ describe("Combat Actions", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -3059,7 +3069,8 @@ describe("Combat Actions", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -3161,7 +3172,8 @@ describe("Combat Actions", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([

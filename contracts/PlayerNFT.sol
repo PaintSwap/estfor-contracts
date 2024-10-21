@@ -21,7 +21,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
 
-  event NewPlayerV2(
+  event NewPlayer(
     uint256 playerId,
     uint256 avatarId,
     string name,
@@ -32,7 +32,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint256 paid,
     bool upgrade
   );
-  event EditPlayerV2(
+  event EditPlayer(
     uint256 playerId,
     address from,
     string newName,
@@ -44,18 +44,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   );
   event EditNameCost(uint256 newCost);
   event UpgradePlayerCost(uint256 newCost);
-  event SetAvatarsV2(uint256[] avatarIds, AvatarInfo[] avatarInfos);
+  event SetAvatars(uint256[] avatarIds, AvatarInfo[] avatarInfos);
   event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
-
-  // For ABI backwards compatibility
-  event NewPlayer(uint256 playerId, uint256 avatarId, string name);
-  event EditPlayer(uint256 playerId, string newName);
-  event SetAvatars(uint256 startAvatarId, AvatarInfo[] avatarInfos);
 
   error NotOwnerOfPlayer();
   error NotPlayers();
@@ -170,7 +165,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     uint256 playerId = _nextPlayerId++;
     (string memory trimmedName, ) = _setName(playerId, heroName);
     _checkSocials(discord, twitter, telegram);
-    emit NewPlayerV2(playerId, avatarId, trimmedName, from, discord, twitter, telegram, 0, upgrade);
+    emit NewPlayer(playerId, avatarId, trimmedName, from, discord, twitter, telegram, 0, upgrade);
     _checkMintingAvatar(avatarId);
     _playerInfos[playerId].originalAvatarId = uint24(avatarId);
     _mint(from, playerId, 1, "");
@@ -223,7 +218,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
       _upgradePlayer(playerId, evolvedAvatarId);
     }
 
-    emit EditPlayerV2(playerId, _msgSender(), trimmedName, amountPaid, discord, twitter, telegram, upgrade);
+    emit EditPlayer(playerId, _msgSender(), trimmedName, amountPaid, discord, twitter, telegram, upgrade);
   }
 
   function _pay(uint256 brushCost) private {
@@ -413,7 +408,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     for (uint256 i; i < avatarIds.length; ++i) {
       _avatars[avatarIds[i]] = avatarInfos[i];
     }
-    emit SetAvatarsV2(avatarIds, avatarInfos);
+    emit SetAvatars(avatarIds, avatarInfos);
   }
 
   function setImageBaseUri(string calldata imageBaseUri) external onlyOwner {

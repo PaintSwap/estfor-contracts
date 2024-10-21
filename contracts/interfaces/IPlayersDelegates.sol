@@ -17,7 +17,7 @@ import "../globals/all.sol";
 interface IPlayersDelegate {
   function startActions(
     uint256 playerId,
-    QueuedActionInputV2[] calldata queuedActions,
+    QueuedActionInput[] calldata queuedActions,
     uint16 boostItemTokenId,
     uint40 boostStartTime,
     uint256 questId,
@@ -141,13 +141,13 @@ interface IPlayersQueuedActionsDelegateView {
   function validateActionsImpl(
     address owner,
     uint256 playerId,
-    QueuedActionInputV2[] memory queuedActions
+    QueuedActionInput[] memory queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons);
 
   function checkAddToQueue(
     address from,
     uint256 playerId,
-    QueuedActionInputV2 memory queuedAction,
+    QueuedActionInput memory queuedAction,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory pendingQuestState
   ) external view returns (bool setAttire);

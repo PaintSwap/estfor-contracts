@@ -50,7 +50,8 @@ export const setupBasicWoodcutting = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -99,7 +100,8 @@ export const setupBasicFishing = async function (itemNFT: ItemNFT, world: World)
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NET_STICK,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -169,7 +171,8 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -252,7 +255,8 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     regenerateId: EstforConstants.COOKED_MINNUS,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -337,7 +341,7 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
   const choiceId = await getActionChoiceId(tx, world);
 
   const timespan = 3600;
-  const queuedAction: EstforTypes.QueuedActionInputV2 = {
+  const queuedAction: EstforTypes.QueuedActionInput = {
     attire: EstforTypes.noAttire,
     actionId,
     combatStyle: EstforTypes.CombatStyle.ATTACK,
@@ -427,7 +431,8 @@ export const setupBasicCooking = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -507,7 +512,8 @@ export const setupBasicCrafting = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -584,7 +590,8 @@ export const setupBasicAlchemy = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -671,7 +678,8 @@ export const setupBasicFletching = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -759,7 +767,8 @@ export const setupBasicForging = async function (
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   await itemNFT.addItems([
@@ -842,7 +851,8 @@ export const setupTravelling = async function (world: World, rate = RATE_MUL / 8
     regenerateId: EstforConstants.NONE,
     timespan,
     rightHandEquipmentTokenId: EstforConstants.NONE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   return {queuedAction};

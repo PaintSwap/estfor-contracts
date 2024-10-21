@@ -581,104 +581,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "enum Promotion",
-            "name": "promotion",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint40",
-            "name": "dateStart",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint40",
-            "name": "dateEnd",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint16",
-            "name": "minTotalXP",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint8",
-            "name": "numItemsToPick",
-            "type": "uint8"
-          },
-          {
-            "internalType": "bool",
-            "name": "isRandom",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint16[]",
-            "name": "itemTokenIds",
-            "type": "uint16[]"
-          },
-          {
-            "internalType": "uint32[]",
-            "name": "amounts",
-            "type": "uint32[]"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct Promotions.PromotionInfoV1",
-        "name": "promotionInfo",
-        "type": "tuple"
-      }
-    ],
-    "name": "PromotionAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "redeemCode",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "itemTokenIds",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "PromotionRedeemed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "to",
@@ -739,7 +641,7 @@
         "type": "uint256"
       }
     ],
-    "name": "PromotionRedeemedV2",
+    "name": "PromotionRedeemed",
     "type": "event"
   },
   {

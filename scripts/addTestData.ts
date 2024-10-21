@@ -38,7 +38,8 @@ export const addTestData = async (
     regenerateId: EstforConstants.NONE,
     timespan: 3600,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   let gasLimit = await players.startActions.estimateGas(
@@ -79,7 +80,8 @@ export const addTestData = async (
     regenerateId: EstforConstants.NONE,
     timespan: 3600,
     rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   gasLimit = await players.startActions.estimateGas(
@@ -138,7 +140,8 @@ export const addTestData = async (
     regenerateId: EstforConstants.NONE,
     timespan: 7200,
     rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-    leftHandEquipmentTokenId: EstforConstants.NONE
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
   };
 
   gasLimit = await players.startActions.estimateGas(playerId, [queuedActionCombat], EstforTypes.ActionQueueStatus.NONE);

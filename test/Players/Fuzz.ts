@@ -227,7 +227,8 @@ describe("Fuzz testing", async function () {
         regenerateId,
         timespan,
         rightHandEquipmentTokenId,
-        leftHandEquipmentTokenId
+        leftHandEquipmentTokenId,
+        petId: EstforConstants.NONE
       };
 
       const shouldRevert =

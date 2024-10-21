@@ -77,25 +77,6 @@ struct Item {
   uint32 minXP;
 }
 
-struct ItemV1 {
-  EquipPosition equipPosition;
-  bool exists;
-  bool isTransferable;
-  uint16 healthRestored;
-  BoostType boostType;
-  uint16 boostValue;
-  uint24 boostDuration;
-  int16 melee;
-  int16 magic;
-  int16 ranged;
-  int16 meleeDefence;
-  int16 magicDefence;
-  int16 rangedDefence;
-  int16 health;
-  Skill skill;
-  uint32 minXP;
-}
-
 struct ItemOutput {
   EquipPosition equipPosition;
   bool isFullModeOnly;
@@ -158,43 +139,6 @@ struct ActionChoiceInput {
   uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
 }
 
-struct ActionChoiceInputV3 {
-  uint8 skill; // Skill that this action choice is related to
-  int16 skillDiff; // How much the skill is increased/decreased by this action choice
-  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
-  uint24 xpPerHour;
-  uint16[] inputTokenIds;
-  uint8[] inputAmounts;
-  uint16 outputTokenId;
-  uint8 outputAmount;
-  uint8 successPercent; // 0-100
-  uint16 handItemTokenIdRangeMin; // Inclusive
-  uint16 handItemTokenIdRangeMax; // Inclusive
-  bool isFullModeOnly;
-  uint8[] minSkills; // Skills required to do this action choice
-  uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
-}
-
-struct ActionChoiceInputV2 {
-  uint8 skill; // Skill that this action choice is related to
-  uint32 minXP; // Min XP in the skill to be able to do this action choice
-  int16 skillDiff; // How much the skill is increased/decreased by this action choice
-  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
-  uint24 xpPerHour;
-  uint16 inputTokenId1;
-  uint8 inputAmount1;
-  uint16 inputTokenId2;
-  uint8 inputAmount2;
-  uint16 inputTokenId3;
-  uint8 inputAmount3;
-  uint16 outputTokenId;
-  uint8 outputAmount;
-  uint8 successPercent; // 0-100
-  uint16 handItemTokenIdRangeMin; // Inclusive
-  uint16 handItemTokenIdRangeMax; // Inclusive
-  bool isFullModeOnly;
-}
-
 struct ActionChoice {
   uint8 skill; // Skill that this action choice is related to
   uint32 minXP; // Min XP in the skill to be able to do this action choice
@@ -225,43 +169,6 @@ struct ActionChoice {
   uint24 newInputAmount1; // alternative inputAmount1 which is larger
   uint24 newInputAmount2; // alternative inputAmount2 which is larger
   uint24 newInputAmount3; // alternative inputAmount3 which is larger
-}
-
-struct ActionChoiceV2 {
-  uint8 skill; // Skill that this action choice is related to
-  uint32 minXP; // Min XP in the skill to be able to do this action choice
-  int16 skillDiff; // How much the skill is increased/decreased by this action choice
-  uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
-  uint24 xpPerHour;
-  uint16 inputTokenId1;
-  uint8 inputAmount1;
-  uint16 inputTokenId2;
-  uint8 inputAmount2;
-  uint16 inputTokenId3;
-  uint8 inputAmount3;
-  uint16 outputTokenId;
-  uint8 outputAmount;
-  uint8 successPercent; // 0-100
-  uint16 handItemTokenIdRangeMin; // Inclusive
-  uint16 handItemTokenIdRangeMax; // Inclusive
-  bytes1 packedData; // FullMode is last bit
-}
-
-struct ActionChoiceV1 {
-  uint8 skill;
-  uint32 minXP;
-  int16 skillDiff;
-  uint24 rate;
-  uint24 xpPerHour;
-  uint16 inputTokenId1;
-  uint8 inputAmount1;
-  uint16 inputTokenId2;
-  uint8 inputAmount2;
-  uint16 inputTokenId3;
-  uint8 inputAmount3;
-  uint16 outputTokenId;
-  uint8 outputAmount;
-  uint8 successPercent; // 0-100
 }
 
 // Must be in the same order as Skill enum

@@ -310,25 +310,6 @@
       },
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "newName",
-        "type": "string"
-      }
-    ],
-    "name": "EditPlayer",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
         "internalType": "address",
         "name": "from",
         "type": "address"
@@ -370,7 +351,7 @@
         "type": "bool"
       }
     ],
-    "name": "EditPlayerV2",
+    "name": "EditPlayer",
     "type": "event"
   },
   {
@@ -406,31 +387,6 @@
         "internalType": "string",
         "name": "name",
         "type": "string"
-      }
-    ],
-    "name": "NewPlayer",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "avatarId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
       },
       {
         "indexed": false,
@@ -469,7 +425,7 @@
         "type": "bool"
       }
     ],
-    "name": "NewPlayerV2",
+    "name": "NewPlayer",
     "type": "event"
   },
   {
@@ -489,47 +445,6 @@
       }
     ],
     "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "startAvatarId",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "imageURI",
-            "type": "string"
-          },
-          {
-            "internalType": "enum Skill[2]",
-            "name": "startSkills",
-            "type": "uint8[2]"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct AvatarInfo[]",
-        "name": "avatarInfos",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "SetAvatars",
     "type": "event"
   },
   {
@@ -570,7 +485,7 @@
         "type": "tuple[]"
       }
     ],
-    "name": "SetAvatarsV2",
+    "name": "SetAvatars",
     "type": "event"
   },
   {

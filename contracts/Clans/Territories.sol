@@ -62,7 +62,7 @@ contract Territories is
   );
   event Deposit(uint256 amount);
   event SetComparableSkills(Skill[] skills);
-  event ClaimUnoccupiedTerritoryV2(
+  event ClaimUnoccupiedTerritory(
     uint256 territoryId,
     uint256 clanId,
     address from,
@@ -88,15 +88,6 @@ contract Territories is
     uint256 leaderPlayerId,
     uint256 blockAttacksTimestamp,
     uint256 blockAttacksCooldownTimestamp
-  );
-
-  // Legacy for ABI/old event purposes
-  event ClaimUnoccupiedTerritory(
-    uint256 territoryId,
-    uint256 clanId,
-    address from,
-    uint256 leaderPlayerId,
-    uint256 cooldownTimestamp
   );
 
   error InvalidTerritory();
@@ -358,7 +349,7 @@ contract Territories is
     bool clanUnoccupied = defendingClanId == 0;
     if (clanUnoccupied) {
       _claimTerritory(territoryId, attackingClanId);
-      emit ClaimUnoccupiedTerritoryV2(
+      emit ClaimUnoccupiedTerritory(
         territoryId,
         attackingClanId,
         pendingAttack.from,

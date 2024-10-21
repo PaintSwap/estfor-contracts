@@ -849,10 +849,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       );
       bool processedAny;
 
-      // TODO: Remove everything related to this later
       // boostType was removed and shifted everything up in the PendingRandomReward struct
-      bool isLegacyWithBoostPendingRandomReward = pendingRandomReward.boostItemTokenId != 0 &&
-        pendingRandomReward.boostItemTokenId < 10;
       uint256 numTickets = isCombat ? monstersKilled : pendingRandomReward.xpElapsedTime / 3600;
 
       uint256[] memory randomIds;
@@ -872,7 +869,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       }
 
       if (randomIds.length != 0) {
-        if (!isLegacyWithBoostPendingRandomReward && pendingRandomReward.boostItemTokenId != NONE) {
+        if (pendingRandomReward.boostItemTokenId != NONE) {
           // Check for boosts
           (BoostType boostType, uint16 boostValue, uint24 boostDuration) = _itemNFT.getBoostInfo(
             pendingRandomReward.boostItemTokenId

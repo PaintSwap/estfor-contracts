@@ -901,25 +901,6 @@
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
-      }
-    ],
-    "name": "MemberLeft",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "clanId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
       },
       {
         "indexed": false,
@@ -928,7 +909,7 @@
         "type": "uint256"
       }
     ],
-    "name": "MemberLeftV2",
+    "name": "MemberLeft",
     "type": "event"
   },
   {

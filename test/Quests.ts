@@ -502,7 +502,8 @@ describe("Quests", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await players
@@ -584,7 +585,8 @@ describe("Quests", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     // Activate a quest

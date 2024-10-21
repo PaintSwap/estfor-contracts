@@ -23,7 +23,7 @@ abstract contract PlayersBase {
   using SkillLibrary for uint8;
 
   event ClearAll(address from, uint256 playerId);
-  event SetActionQueueV2(
+  event SetActionQueue(
     address from,
     uint256 playerId,
     QueuedAction[] queuedActions,
@@ -37,8 +37,7 @@ abstract contract PlayersBase {
   event ConsumeGlobalBoostVial(address from, uint256 playerId, BoostInfo globalBoost);
   event ConsumeClanBoostVial(address from, uint256 playerId, uint256 clanId, BoostInfo clanBoost);
   event SetActivePlayer(address account, uint256 oldPlayerId, uint256 newPlayerId);
-  event AddPendingRandomReward(address from, uint256 playerId, uint256 queueId, uint256 startTime, uint256 elapsed);
-  event AddPendingRandomRewardV2(
+  event AddPendingRandomReward(
     address from,
     uint256 playerId,
     uint256 queueId,
@@ -80,15 +79,6 @@ abstract contract PlayersBase {
   event ClaimedXPThresholdRewards(address from, uint256 playerId, uint256[] itemTokenIds, uint256[] amounts);
   event LevelUp(address from, uint256 playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
-
-  // legacy
-  event SetActionQueue(
-    address from,
-    uint256 playerId,
-    QueuedActionV1[] queuedActions,
-    Attire[] attire,
-    uint256 startTime
-  );
 
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
@@ -306,7 +296,7 @@ abstract contract PlayersBase {
         _attire[playerId][player.actionQueue[i].queueId] = attire[i];
       }
     }
-    emit SetActionQueueV2(from, playerId, queuedActions, attire, startTime, queuedActionsExtra);
+    emit SetActionQueue(from, playerId, queuedActions, attire, startTime, queuedActionsExtra);
   }
 
   // This does not update player.totalXP!!

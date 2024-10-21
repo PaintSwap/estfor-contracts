@@ -152,7 +152,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -198,7 +199,7 @@ describe("Players", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
   });
 
-  it("validateActionsV2", async function () {
+  it("validateActions", async function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     let tx = await world.addActions([
@@ -237,7 +238,7 @@ describe("Players", function () {
     const choiceId = await getActionChoiceId(tx, world);
     const timespan = 3600;
 
-    const queuedAction: EstforTypes.QueuedActionInputV2 = {
+    const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_GAUNTLETS}, // Incorrect attire
       actionId,
       combatStyle: EstforTypes.CombatStyle.ATTACK,
@@ -267,7 +268,7 @@ describe("Players", function () {
 
     let {successes, reasons} = await players
       .connect(alice)
-      .validateActionsV2(alice.address, playerId, [queuedAction, queuedActionCorrect, queuedAction]);
+      .validateActions(alice.address, playerId, [queuedAction, queuedActionCorrect, queuedAction]);
 
     const InvalidEquipPositionSelector = "0x9378eb35";
     expect(successes.length).to.eq(3);
@@ -281,14 +282,14 @@ describe("Players", function () {
 
     ({successes, reasons} = await players
       .connect(alice)
-      .validateActionsV2(alice.address, playerId, [queuedActionCorrect]));
+      .validateActions(alice.address, playerId, [queuedActionCorrect]));
 
     expect(successes.length).to.eq(1);
     expect(reasons.length).to.eq(1);
     expect(successes[0]).to.eq(true);
     expect(reasons[0]).to.eq("0x");
 
-    ({successes, reasons} = await players.connect(alice).validateActionsV2(alice.address, playerId, [queuedAction]));
+    ({successes, reasons} = await players.connect(alice).validateActions(alice.address, playerId, [queuedAction]));
 
     expect(successes.length).to.eq(1);
     expect(reasons.length).to.eq(1);
@@ -343,7 +344,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -619,7 +621,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -831,7 +834,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     const minXP = getXPFromLevel(70);
@@ -999,7 +1003,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     const minXP = getXPFromLevel(70);
@@ -1298,7 +1303,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.ORICHALCUM_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     const minXP = getXPFromLevel(98);
@@ -2073,7 +2079,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await expect(
@@ -2144,7 +2151,8 @@ describe("Players", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([

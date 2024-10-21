@@ -123,60 +123,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param queuedActions Actions to queue
   /// @param queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
   ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
-  function startActionsV2(
-    uint256 playerId,
-    QueuedActionInputV2[] calldata queuedActions,
-    ActionQueueStatus queueStatus
-  ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _startActions(playerId, queuedActions, NONE, uint40(block.timestamp), 0, 0, queueStatus);
-  }
-
-  /// @notice Start actions for a player
-  /// @param playerId Id for the player
-  /// @param queuedActions Actions to queue
-  /// @param boostItemTokenId Which boost to consume, can be NONE
-  /// @param boostStartTime (Not used yet)
-  /// @param queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
-  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
-  function startActionsExtraV2(
-    uint256 playerId,
-    QueuedActionInputV2[] calldata queuedActions,
-    uint16 boostItemTokenId,
-    uint40 boostStartTime, // Not used yet (always current time)
-    uint256 questId,
-    uint256 donationAmount,
-    ActionQueueStatus queueStatus
-  ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _startActions(
-      playerId,
-      queuedActions,
-      boostItemTokenId,
-      uint40(block.timestamp),
-      questId,
-      donationAmount,
-      queueStatus
-    );
-  }
-
-  /// @notice Start actions for a player
-  /// @param playerId Id for the player
-  /// @param queuedActions Actions to queue
-  /// @param queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
-  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
   function startActions(
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions,
     ActionQueueStatus queueStatus
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _startActions(
-      playerId,
-      _convertQueuedActionInputV1ToV2(queuedActions),
-      NONE,
-      uint40(block.timestamp),
-      0,
-      0,
-      queueStatus
-    );
+    _startActions(playerId, queuedActions, NONE, uint40(block.timestamp), 0, 0, queueStatus);
   }
 
   /// @notice Start actions for a player
@@ -197,7 +149,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _startActions(
       playerId,
-      _convertQueuedActionInputV1ToV2(queuedActions),
+      queuedActions,
       boostItemTokenId,
       uint40(block.timestamp),
       questId,
@@ -335,7 +287,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function _startActions(
     uint256 playerId,
-    QueuedActionInputV2[] memory queuedActions,
+    QueuedActionInput[] memory queuedActions,
     uint16 boostItemTokenId,
     uint40 boostStartTime,
     uint256 questId,
@@ -381,26 +333,6 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     emit SetActivePlayer(_from, existingActivePlayerId, playerId);
   }
 
-  function _convertQueuedActionInputV1ToV2(
-    QueuedActionInput[] calldata queuedActions
-  ) private pure returns (QueuedActionInputV2[] memory) {
-    QueuedActionInputV2[] memory actions = new QueuedActionInputV2[](queuedActions.length);
-    for (uint256 i; i < queuedActions.length; ++i) {
-      actions[i] = QueuedActionInputV2(
-        queuedActions[i].attire,
-        queuedActions[i].actionId,
-        queuedActions[i].regenerateId,
-        queuedActions[i].choiceId,
-        queuedActions[i].rightHandEquipmentTokenId,
-        queuedActions[i].leftHandEquipmentTokenId,
-        queuedActions[i].timespan,
-        queuedActions[i].combatStyle,
-        0
-      );
-    }
-    return actions;
-  }
-
   function setActivePlayer(uint256 playerId) external isOwnerOfPlayerMod(playerId) {
     _setActivePlayer(_msgSender(), playerId);
   }
@@ -417,28 +349,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bool[7]));
   }
 
-  function validateActionsV2(
-    address _owner,
-    uint256 playerId,
-    QueuedActionInputV2[] calldata queuedActions
-  ) external view returns (bool[] memory successes, bytes[] memory reasons) {
-    bytes memory data = _staticcall(
-      address(this),
-      abi.encodeWithSelector(
-        IPlayersQueuedActionsDelegateView.validateActionsImpl.selector,
-        _owner,
-        playerId,
-        queuedActions
-      )
-    );
-    return abi.decode(data, (bool[], bytes[]));
-  }
-
   /// @notice Validate if these actions can occur
   /// @param playerId Id for the player
   /// @param queuedActions Actions to queue
   function validateActions(
-    address _owner,
+    address owner_,
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
@@ -446,9 +361,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       address(this),
       abi.encodeWithSelector(
         IPlayersQueuedActionsDelegateView.validateActionsImpl.selector,
-        _owner,
+        owner_,
         playerId,
-        _convertQueuedActionInputV1ToV2(queuedActions)
+        queuedActions
       )
     );
     return abi.decode(data, (bool[], bytes[]));

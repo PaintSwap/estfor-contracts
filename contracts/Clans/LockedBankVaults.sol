@@ -528,7 +528,7 @@ contract LockedBankVaults is
     uint256 _playerId
   ) external isOwnerOfPlayerAndActive(_playerId) isClanMember(_clanId, _playerId) {
     uint256 blockAttacksTimestamp = LockedBankVaultsLibrary.blockAttacks(itemNFT, _itemTokenId, clanInfos[_clanId]);
-    // TODO: Add blockAttacksCooldownHours to a BlockingAttacksV2
+    // TODO: Add blockAttacksCooldownHours to a BlockingAttacks
     emit BlockingAttacks(_clanId, _itemTokenId, _msgSender(), _playerId, blockAttacksTimestamp, block.timestamp);
   }
 

@@ -13,7 +13,7 @@ import {
   PlayersImplRewards,
   TestPaintSwapArtGallery,
   TestPaintSwapDecorator,
-  World,
+  World
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
@@ -29,11 +29,11 @@ export const createPlayer = async (
   discord = "",
   twitter = "",
   telegram = "",
-  upgrade = false,
+  upgrade = false
 ): Promise<bigint> => {
   const tx = await playerNFT.connect(account).mint(avatarId, name, discord, twitter, telegram, upgrade, makeActive);
 
-  return (await getEventLog(tx, playerNFT, "NewPlayerV2")).playerId;
+  return (await getEventLog(tx, playerNFT, "NewPlayer")).playerId;
 };
 export type AvatarInfo = {
   name: string;
@@ -46,7 +46,7 @@ export type AvatarInfo = {
 export const verifyContracts = async (addresses: string[]) => {
   for (const address of addresses) {
     await run("verify:verify", {
-      address,
+      address
     });
   }
   console.log("Verified all contracts");
@@ -55,7 +55,7 @@ export const verifyContracts = async (addresses: string[]) => {
 export const verifyContract = async (address: string, constructorArguments: any[]) => {
   return run("verify:verify", {
     address,
-    constructorArguments,
+    constructorArguments
   });
 };
 
@@ -89,27 +89,27 @@ interface IPlayerImpls {
 
 export const deployPlayerImplementations = async (playersLibraryAddress: string): Promise<IPlayerImpls> => {
   const playersImplQueueActions = (await ethers.deployContract("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playersLibraryAddress},
+    libraries: {PlayersLibrary: playersLibraryAddress}
   })) as PlayersImplQueueActions;
   console.log(`playersImplQueueActions = "${(await playersImplQueueActions.getAddress()).toLowerCase()}"`);
 
   const playersImplProcessActions = (await ethers.deployContract("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playersLibraryAddress},
+    libraries: {PlayersLibrary: playersLibraryAddress}
   })) as PlayersImplProcessActions;
   console.log(`playersImplProcessActions = "${(await playersImplProcessActions.getAddress()).toLowerCase()}"`);
 
   const playersImplRewards = (await ethers.deployContract("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playersLibraryAddress},
+    libraries: {PlayersLibrary: playersLibraryAddress}
   })) as PlayersImplRewards;
   console.log(`playersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc = (await ethers.deployContract("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playersLibraryAddress},
+    libraries: {PlayersLibrary: playersLibraryAddress}
   })) as PlayersImplMisc;
   console.log(`playersImplMisc = "${(await playersImplMisc.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc1 = (await ethers.deployContract("PlayersImplMisc1", {
-    libraries: {PlayersLibrary: playersLibraryAddress},
+    libraries: {PlayersLibrary: playersLibraryAddress}
   })) as PlayersImplMisc1;
   console.log(`playersImplMisc1 = "${(await playersImplMisc1.getAddress()).toLowerCase()}"`);
 
@@ -118,14 +118,14 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
     playersImplProcessActions,
     playersImplRewards,
     playersImplMisc,
-    playersImplMisc1,
+    playersImplMisc1
   };
 };
 
 export const deployMockPaintSwapContracts = async (
   brush: MockBrushToken,
   router: MockRouter,
-  wftm: MockWrappedFantom,
+  wftm: MockWrappedFantom
 ): Promise<{
   paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   paintSwapDecorator: TestPaintSwapDecorator;
@@ -150,7 +150,7 @@ export const deployMockPaintSwapContracts = async (
     await router.getAddress(),
     await wftm.getAddress(),
     brushPerSecond,
-    NOW,
+    NOW
   );
 
   console.log(`paintSwapDecorator = "${(await paintSwapDecorator.getAddress()).toLowerCase()}"`);
@@ -179,7 +179,7 @@ export const getChainId = async (signer: HardhatEthersSigner) => {
 export const estimateGas = async (signer: SignerWithAddress, contract: Contract, args: any[]) => {
   const gasLimit = await signer.estimateGas({
     to: await contract.getAddress(),
-    data: contract.interface.encodeFunctionData("startActions", args),
+    data: contract.interface.encodeFunctionData("startActions", args)
   });
   return gasLimit;
 };

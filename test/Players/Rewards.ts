@@ -103,7 +103,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 1600,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
@@ -745,7 +746,8 @@ describe("Rewards", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -822,7 +824,8 @@ describe("Rewards", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -920,7 +923,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * numHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       let numProduced = 0n;
@@ -1045,7 +1049,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * numHours,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const balanceMap = new Map<bigint, bigint>();
@@ -1177,7 +1182,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * numHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -1264,7 +1270,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * firstThievingNumHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const secondThievingNumHours = 3;
@@ -1370,7 +1377,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * firstThievingNumHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const secondThievingNumHours = 3;
@@ -1481,7 +1489,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * firstThievingNumHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const secondThievingNumHours = 3;
@@ -1588,7 +1597,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * firstThievingNumHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const secondThievingNumHours = 3;
@@ -1713,7 +1723,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * thievingNumHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players
@@ -1817,7 +1828,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * thievingNumHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const secondThievingNumHours = 24; // ends at 00:001 the day after
@@ -1925,7 +1937,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * thievingNumHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players
@@ -2022,7 +2035,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan: 3600 * numHours,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2077,7 +2091,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2156,7 +2171,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await requestAndFulfillRandomWords(world, mockVRF);
@@ -2259,7 +2275,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -2429,7 +2446,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -2575,7 +2593,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -2714,7 +2733,8 @@ describe("Rewards", function () {
         regenerateId: EstforConstants.COOKED_MINNUS,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_SWORD,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -2807,7 +2827,8 @@ describe("Rewards", function () {
       regenerateId: EstforConstants.NONE,
       timespan: 24 * 3600,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([

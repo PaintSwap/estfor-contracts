@@ -20,7 +20,7 @@ import "./globals/promotions.sol";
 contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   using BitMaps for BitMaps.BitMap;
 
-  event PromotionRedeemedV2(
+  event PromotionRedeemed(
     address indexed to,
     uint256 playerId,
     Promotion promotion,
@@ -41,17 +41,6 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
-  );
-
-  // For previous versions of the events
-  event PromotionAdded(PromotionInfoV1 promotionInfo);
-  event PromotionRedeemed(
-    address indexed to,
-    uint256 playerId,
-    Promotion promotion,
-    string redeemCode,
-    uint256[] itemTokenIds,
-    uint256[] amounts
   );
 
   error NotOwnerOfPlayer();
@@ -75,17 +64,6 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error DaysArrayNotSortedOrDuplicates();
   error PromotionFinished();
   error PercentNotTotal100();
-
-  struct PromotionInfoV1 {
-    Promotion promotion;
-    uint40 dateStart;
-    uint40 dateEnd; // Exclusive
-    uint16 minTotalXP; // Minimum level required to claim
-    uint8 numItemsToPick; // Number of items to pick
-    bool isRandom; // The selection is random
-    uint16[] itemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
-    uint32[] amounts; // Corresponding amounts to the itemTokenIds
-  }
 
   AdminAccess private _adminAccess;
   ItemNFT private _itemNFT;
@@ -189,7 +167,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       daysToSet[i] = FINAL_PROMOTION_DAY_INDEX;
     }
 
-    emit PromotionRedeemedV2(to, playerId, Promotion.STARTER, redeemCode, itemTokenIds, amounts, daysToSet, 0, 0, 0);
+    emit PromotionRedeemed(to, playerId, Promotion.STARTER, redeemCode, itemTokenIds, amounts, daysToSet, 0, 0, 0);
   }
 
   function adminMintPromotionalPack(
@@ -231,7 +209,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         mstore(amounts, 0)
       }
     }
-    emit PromotionRedeemedV2(to, playerId, promotion, redeemCode, itemTokenIds, amounts, daysToSet, 0, 0, 0);
+    emit PromotionRedeemed(to, playerId, promotion, redeemCode, itemTokenIds, amounts, daysToSet, 0, 0, 0);
   }
 
   // 0 indexed
@@ -284,7 +262,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
     _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
 
-    emit PromotionRedeemedV2(
+    emit PromotionRedeemed(
       _msgSender(),
       playerId,
       promotion,
@@ -350,7 +328,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
     }
 
-    emit PromotionRedeemedV2(_msgSender(), playerId, promotion, "", itemTokenIds, amounts, daysToSet, 0, 0, 0);
+    emit PromotionRedeemed(_msgSender(), playerId, promotion, "", itemTokenIds, amounts, daysToSet, 0, 0, 0);
   }
 
   function mintPromotionViewNow(

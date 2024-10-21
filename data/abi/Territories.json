@@ -536,48 +536,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "cooldownTimestamp",
-        "type": "uint256"
-      }
-    ],
-    "name": "ClaimUnoccupiedTerritory",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "territoryId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "clanId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "leaderPlayerId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "requestId",
         "type": "uint256"
       }
     ],
-    "name": "ClaimUnoccupiedTerritoryV2",
+    "name": "ClaimUnoccupiedTerritory",
     "type": "event"
   },
   {

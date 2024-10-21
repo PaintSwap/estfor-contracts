@@ -30,7 +30,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event InviteSent(uint256 clanId, uint256 playerId, uint256 fromPlayerId);
   event InvitesSent(uint256 clanId, uint256[] playerIds, uint256 fromPlayerId);
   event InviteAccepted(uint256 clanId, uint256 playerId);
-  event MemberLeftV2(uint256 clanId, uint256 playerId, uint256 removedByPlayerId);
+  event MemberLeft(uint256 clanId, uint256 playerId, uint256 removedByPlayerId);
   event JoinRequestSent(uint256 clanId, uint256 playerId);
   event JoinRequestAccepted(uint256 clanId, uint256 playerId, uint256 acceptedByPlayerId);
   event JoinRequestsAccepted(uint256 clanId, uint256[] playerIds, uint256 acceptedByPlayerId);
@@ -51,9 +51,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event GateKeepNFTs(uint256 clanId, address[] nfts, uint256 playerId);
   event PinMessage(uint256 clanId, string message, uint256 playerId);
   event SetInitialMMR(uint256 mmr);
-
-  // legacy for ABI reasons on old beta version
-  event MemberLeft(uint256 clanId, uint256 playerId);
 
   error AlreadyInClan();
   error NotOwnerOfPlayer();
@@ -770,7 +767,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     if (clan.memberCount == 0) {
       _destroyClan(_clanId);
     } else {
-      emit MemberLeftV2(_clanId, _playerId, _removingPlayerId);
+      emit MemberLeft(_clanId, _playerId, _removingPlayerId);
     }
     PlayerInfo storage player = playerInfo[_playerId];
     player.clanId = 0;

@@ -34,7 +34,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function startActions(
     uint256 playerId,
-    QueuedActionInputV2[] memory _queuedActionInputs,
+    QueuedActionInput[] memory _queuedActionInputs,
     uint16 boostItemTokenId,
     uint40 boostStartTime,
     uint256 questId,
@@ -155,7 +155,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire[i + remainingQueuedActions.length] = _queuedActionInputs[i].attire;
     }
 
-    emit SetActionQueueV2(from, playerId, queuedActions, attire, player.currentActionStartTime, queuedActionsExtra);
+    emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTime, queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
     _nextQueueId = queueId.asUint56();
@@ -216,7 +216,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function checkAddToQueue(
     address _from,
     uint256 playerId,
-    QueuedActionInputV2 memory _queuedActionInput,
+    QueuedActionInput memory _queuedActionInput,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _pendingQuestState
   ) public view returns (bool setAttire) {
@@ -384,7 +384,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function _addToQueue(
     address _from,
     uint256 playerId,
-    QueuedActionInputV2 memory _queuedActionInput,
+    QueuedActionInput memory _queuedActionInput,
     uint64 _queueId,
     uint40 _startTime
   ) private returns (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) {
@@ -425,7 +425,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function _checkFood(
     uint256 playerId,
     bool _isPlayerUpgraded,
-    QueuedActionInputV2 memory _queuedActionInput,
+    QueuedActionInput memory _queuedActionInput,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
     QuestState memory _questState
   ) private view {
@@ -677,7 +677,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function validateActionsImpl(
     address owner,
     uint256 playerId,
-    QueuedActionInputV2[] memory queuedActionInputs
+    QueuedActionInput[] memory queuedActionInputs
   ) external view returns (bool[] memory successes, bytes[] memory reasons) {
     PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(owner, playerId);
     successes = new bool[](queuedActionInputs.length);

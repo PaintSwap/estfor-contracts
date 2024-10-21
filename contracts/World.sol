@@ -22,28 +22,12 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   using SkillLibrary for Skill;
 
   event RequestSent(uint256 requestId, uint32 numWords, uint256 lastRandomWordsUpdatedTime);
-  event RequestFulfilledV2(uint256 requestId, uint256 randomWord);
-  event AddActionsV2(Action[] actions);
-  event EditActionsV2(Action[] actions);
-  event AddActionChoicesV4(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
-  event EditActionChoicesV4(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
-  event RemoveActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds);
-
-  // Legacy for old live events
-  event AddActionChoicesV3(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV3[] choices);
-  event EditActionChoicesV3(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV3[] choices);
-  event AddActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV2[] choices);
-  event EditActionChoicesV2(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInputV2[] choices);
-
-  // Legacy, just for ABI reasons and old beta events
-  event AddAction(ActionV1 action);
-  event AddActions(ActionV1[] actions);
-  event EditActions(ActionV1[] actions);
-  event AddActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
-  event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
-  event EditActionChoice(uint16 actionId, uint16 actionChoiceId, ActionChoiceV1 choice);
-  event EditActionChoices_(uint16[] actionIds, uint16[] actionChoiceIds, ActionChoiceV1[] choices);
-  event RequestFulfilled(uint256 requestId, uint256[3] randomWords);
+  event RequestFulfilled(uint256 requestId, uint256 randomWord);
+  event AddActions(Action[] actions);
+  event EditActions(Action[] actions);
+  event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
+  event EditActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
+  event RemoveActionChoices(uint16 actionId, uint16[] actionChoiceIds);
 
   error RandomWordsCannotBeUpdatedYet();
   error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
@@ -535,7 +519,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     if (address(_wishingWell) != address(0)) {
       _wishingWell.newOracleRandomWords(_randomWord);
     }
-    emit RequestFulfilledV2(requestId, _randomWord);
+    emit RequestFulfilled(requestId, _randomWord);
 
     // Are we at the threshold for a new week
     if (_weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
@@ -553,7 +537,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       uint16 i = _iter.asUint16();
       _addAction(actionsToAdd[i]);
     }
-    emit AddActionsV2(actionsToAdd);
+    emit AddActions(actionsToAdd);
   }
 
   function editActions(Action[] calldata actionsToEdit) external onlyOwner {
@@ -563,7 +547,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       }
       _setAction(actionsToEdit[i]);
     }
-    emit EditActionsV2(actionsToEdit);
+    emit EditActions(actionsToEdit);
   }
 
   function addActionChoices(
@@ -571,7 +555,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     uint16[] calldata actionChoiceIds,
     ActionChoiceInput[] calldata actionChoicesToAdd
   ) public onlyOwner {
-    emit AddActionChoicesV4(actionId, actionChoiceIds, actionChoicesToAdd);
+    emit AddActionChoices(actionId, actionChoiceIds, actionChoicesToAdd);
 
     U256 actionChoiceLength = actionChoicesToAdd.length.asU256();
     if (actionChoiceLength.neq(actionChoiceIds.length)) {
@@ -630,7 +614,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       _actionChoices[actionId][actionChoiceIds[i]] = _packActionChoice(actionChoicesToEdit[i]);
     }
 
-    emit EditActionChoicesV4(actionId, actionChoiceIds, actionChoicesToEdit);
+    emit EditActionChoices(actionId, actionChoiceIds, actionChoicesToEdit);
   }
 
   function removeActionChoices(uint16 actionId, uint16[] calldata actionChoiceIds) external onlyOwner {
@@ -643,7 +627,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
       uint16 i = iter.asUint16();
       delete _actionChoices[actionId][actionChoiceIds[i]];
     }
-    emit RemoveActionChoicesV2(actionId, actionChoiceIds);
+    emit RemoveActionChoices(actionId, actionChoiceIds);
   }
 
   function setQuests(IOracleRewardCB iOracleRewardCB) external onlyOwner {

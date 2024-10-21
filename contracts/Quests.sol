@@ -30,11 +30,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   event QuestCompleted(address from, uint256 playerId, uint256 questId);
   event UpdateQuestProgress(uint256 playerId, PlayerQuest playerQuest);
 
-  // Legacy for abi and old beta
-  event ActivateNewQuest(uint256 playerId, uint256 questId);
-  event AddFixedQuest(QuestV1 quest, MinimumRequirement[3] minimumRequirements);
-  event EditQuest(QuestV1 quest, MinimumRequirement[3] minimumRequirements);
-
   error NotWorld();
   error NotOwnerOfPlayerAndActive();
   error NotPlayers();

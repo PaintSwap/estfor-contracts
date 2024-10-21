@@ -137,7 +137,7 @@ describe("PlayerNFT", function () {
     const twitter = "1231231";
     const telegram = "";
     await expect(playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, false))
-      .to.emit(playerNFT, "EditPlayerV2")
+      .to.emit(playerNFT, "EditPlayer")
       .withArgs(playerId, alice.address, origName, 0, discord, twitter, telegram, false);
 
     // Name changed should be true if name changed
@@ -145,7 +145,7 @@ describe("PlayerNFT", function () {
     await brush.mint(alice.address, editNameBrushPrice);
     const newName = "New name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, false))
-      .to.emit(playerNFT, "EditPlayerV2")
+      .to.emit(playerNFT, "EditPlayer")
       .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, false);
   });
 
@@ -162,7 +162,7 @@ describe("PlayerNFT", function () {
 
     const newName = "new name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
-      .to.emit(playerNFT, "EditPlayerV2")
+      .to.emit(playerNFT, "EditPlayer")
       .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001);
@@ -211,7 +211,7 @@ describe("PlayerNFT", function () {
     const upgrade = true;
     const playerId = prevPlayerId + 1n;
     await expect(playerNFT.connect(alice).mint(1, "name", discord, twitter, telegram, upgrade, true))
-      .to.emit(playerNFT, "NewPlayerV2")
+      .to.emit(playerNFT, "NewPlayer")
       .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, 0, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001);
@@ -282,7 +282,7 @@ describe("PlayerNFT", function () {
 
   it("Cannot mint non-base avatar", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
-    await expect(playerNFT.setAvatars(avatarIds, avatarInfos)).to.emit(playerNFT, "SetAvatarsV2");
+    await expect(playerNFT.setAvatars(avatarIds, avatarInfos)).to.emit(playerNFT, "SetAvatars");
 
     // Cannot use it on an evolved avatar, only the base
     await expect(createPlayer(playerNFT, 10001, alice, "New name", true)).to.be.revertedWithCustomError(

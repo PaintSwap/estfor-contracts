@@ -493,7 +493,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       })
     );
 
-    emit AddPendingRandomRewardV2(from, playerId, queueId, skillStartTime, xpElapsedTime, rolls);
+    emit AddPendingRandomReward(from, playerId, queueId, skillStartTime, xpElapsedTime, rolls);
   }
 
   function _claimTotalXPThresholdRewards(

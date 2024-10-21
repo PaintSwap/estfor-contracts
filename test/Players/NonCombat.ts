@@ -146,7 +146,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.testMints(
@@ -214,7 +215,8 @@ describe("Non-Combat Actions", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -289,7 +291,8 @@ describe("Non-Combat Actions", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -365,7 +368,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       queuedActions.push(queuedAction);
@@ -432,7 +436,8 @@ describe("Non-Combat Actions", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     queuedActions.push(queuedAction);
@@ -532,7 +537,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       queuedActions.push(queuedAction);
@@ -598,7 +604,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       queuedActions.push(queuedAction);
@@ -673,7 +680,8 @@ describe("Non-Combat Actions", function () {
       regenerateId: EstforConstants.NONE,
       timespan: 100,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_PICKAXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.addItems([
@@ -757,7 +765,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -867,7 +876,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -1076,7 +1086,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.addItems([
@@ -1183,7 +1194,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -1276,7 +1288,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const numRepeats = 25;
@@ -1362,7 +1375,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       const numRepeats = 25;
@@ -1457,7 +1471,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       await itemNFT.testMints(
@@ -1585,7 +1600,8 @@ describe("Non-Combat Actions", function () {
         regenerateId: EstforConstants.NONE,
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
-        leftHandEquipmentTokenId: EstforConstants.NONE
+        leftHandEquipmentTokenId: EstforConstants.NONE,
+        petId: EstforConstants.NONE
       };
 
       // Make sure it passes the next checkpoint so there are no issues running
@@ -2314,7 +2330,8 @@ describe("Non-Combat Actions", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);

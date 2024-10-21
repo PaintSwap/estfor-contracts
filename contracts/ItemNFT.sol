@@ -22,15 +22,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   using UnsafeMath for uint256;
   using UnsafeMath for uint16;
 
-  event AddItemsV2(ItemOutput[] items, uint16[] tokenIds, string[] names);
-  event EditItemsV2(ItemOutput[] items, uint16[] tokenIds, string[] names);
-  event RemoveItemsV2(uint16[] tokenIds);
-
-  // Legacy for ABI
-  event AddItem(ItemV1 item, uint16 tokenId, string name);
-  event AddItems(ItemV1[] items, uint16[] tokenIds, string[] names);
-  event EditItem(ItemV1 item, uint16 tokenId, string name);
-  event EditItems(ItemV1[] items, uint16[] tokenIds, string[] names);
+  event AddItems(ItemOutput[] items, uint16[] tokenIds, string[] names);
+  event EditItems(ItemOutput[] items, uint16[] tokenIds, string[] names);
+  event RemoveItems(uint16[] tokenIds);
 
   error IdTooHigh();
   error ItemNotTransferable();
@@ -480,7 +474,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       names[i] = _inputItems[i].name;
     }
 
-    emit AddItemsV2(items, tokenIds, names);
+    emit AddItems(items, tokenIds, names);
   }
 
   function editItems(ItemInput[] calldata _inputItems) external onlyOwner {
@@ -494,7 +488,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       names[i] = _inputItems[i].name;
     }
 
-    emit EditItemsV2(items, tokenIds, names);
+    emit EditItems(items, tokenIds, names);
   }
 
   // This should be only used when an item is not in active use
@@ -508,7 +502,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       delete _tokenURIs[_itemTokenIds[i]];
     }
 
-    emit RemoveItemsV2(_itemTokenIds);
+    emit RemoveItems(_itemTokenIds);
   }
 
   function setPlayers(address players) external onlyOwner {

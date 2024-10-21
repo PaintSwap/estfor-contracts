@@ -1370,7 +1370,8 @@ describe("Boosts", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
@@ -1467,7 +1468,8 @@ describe("Boosts", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 2);
@@ -1602,7 +1604,8 @@ describe("Boosts", function () {
       regenerateId: EstforConstants.NONE,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
-      leftHandEquipmentTokenId: EstforConstants.NONE
+      leftHandEquipmentTokenId: EstforConstants.NONE,
+      petId: EstforConstants.NONE
     };
 
     await itemNFT.testMint(alice.address, EstforConstants.GATHERING_BOOST, 1);
