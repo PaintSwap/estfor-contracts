@@ -854,7 +854,7 @@ async function main() {
   await tx.wait();
   console.log("treasury.setFundAllocationPercentages");
 
-  tx = await territories.setCombatantsHelper(combatantsHelper);
+  tx = await treasury.initializeAddresses(territories, shop);
   await tx.wait();
   console.log("treasury.initializeAddresses");
 
