@@ -571,19 +571,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "baseAttackCost",
-        "type": "uint256"
-      }
-    ],
-    "name": "SetBaseAttackCost",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "enum Skill[]",
         "name": "skills",
         "type": "uint8[]"
@@ -698,19 +685,6 @@
       }
     ],
     "name": "UpdateMMR",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "movingAverage",
-        "type": "uint256"
-      }
-    ],
-    "name": "UpdateMovingAverageGasPrice",
     "type": "event"
   },
   {
@@ -1103,6 +1077,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract VRFRequestInfo",
+        "name": "_vrfRequestInfo",
+        "type": "address"
+      },
+      {
         "internalType": "enum Skill[]",
         "name": "_comparableSkills",
         "type": "uint8[]"
@@ -1307,19 +1286,6 @@
       }
     ],
     "name": "setAttackInProgress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint88",
-        "name": "_baseAttackCost",
-        "type": "uint88"
-      }
-    ],
-    "name": "setBaseAttackCost",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -464,7 +464,8 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockVRF
+      mockVRF,
+      vrfRequestInfo
     } = await loadFixture(clanFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
@@ -492,23 +493,21 @@ describe("LockedBankVaults", function () {
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
 
     let attackCost = await lockedBankVaults.getAttackCost();
-    const slot = 221;
-    let oracleCostStorage = await getStorageAt(await lockedBankVaults.getAddress(), slot);
-    let movingAverageGasPrice = BigInt(parseInt(oracleCostStorage.slice(48, 64), 16));
-
-    const baseAttackCost = BigInt("0x" + oracleCostStorage.slice(26, 48));
+    let [movingAverageGasPrice, baseAttackCost] = await vrfRequestInfo.get();
     expect(attackCost).to.eq(baseAttackCost);
 
     await lockedBankVaults.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice + 1000n);
-    oracleCostStorage = await getStorageAt(await lockedBankVaults.getAddress(), slot);
-    movingAverageGasPrice = BigInt(parseInt(oracleCostStorage.slice(48, 64), 16));
 
+    [movingAverageGasPrice, baseAttackCost] = await vrfRequestInfo.get();
+    // The big zeros are there to show all the values used
     const bigZero = 0n;
     expect(movingAverageGasPrice).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
 
     attackCost = await lockedBankVaults.getAttackCost();
-    const expectedGasLimit = BigInt(parseInt(oracleCostStorage.slice(20, 26), 16));
+
+    const expectedGasLimit = 1_500_000n;
+    await lockedBankVaults.setExpectedGasLimitFulfill(expectedGasLimit);
     expect(attackCost).to.eq(baseAttackCost + movingAverageGasPrice * expectedGasLimit);
 
     await lockedBankVaults.setAttackInProgress(requestId);
@@ -520,8 +519,7 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice + 200n);
 
-    oracleCostStorage = await getStorageAt(await lockedBankVaults.getAddress(), slot);
-    movingAverageGasPrice = BigInt(parseInt(oracleCostStorage.slice(48, 64), 16));
+    [movingAverageGasPrice, baseAttackCost] = await vrfRequestInfo.get();
     expect(movingAverageGasPrice).to.eq(
       (gasPrice + 900n + (gasPrice + 800n) + (gasPrice + 500n) + (gasPrice + 200n)) / 4n
     );

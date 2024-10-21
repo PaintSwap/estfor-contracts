@@ -5,8 +5,6 @@ import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol"
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {RrpRequesterV0Upgradeable} from "../legacy/RrpRequesterV0Upgradeable.sol";
-
 import {IClans} from "../interfaces/IClans.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
@@ -19,6 +17,7 @@ import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
+import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
 import {BattleResultEnum, ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, VaultClanInfo, Vault, ClanBattleInfo} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
@@ -29,13 +28,7 @@ import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 import {LockedBankVaultsLibrary} from "./LockedBankVaultsLibrary.sol";
 
-contract LockedBankVaults is
-  RrpRequesterV0Upgradeable,
-  UUPSUpgradeable,
-  OwnableUpgradeable,
-  ILockedBankVaults,
-  IClanMemberLeftCB
-{
+contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVaults, IClanMemberLeftCB {
   event AttackVaults(
     uint256 clanId,
     uint256 defendingClanId,
@@ -74,9 +67,7 @@ contract LockedBankVaults is
   event RemoveCombatant(uint256 playerId, uint256 clanId);
   event ClaimFunds(uint256 clanId, address from, uint256 playerId, uint256 amount, uint256 numLocksClaimed);
   event LockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount, uint256 lockingTimestamp);
-  event UpdateMovingAverageGasPrice(uint256 movingAverage);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
-  event SetBaseAttackCost(uint256 baseAttackCost);
   event BlockingAttacks(
     uint256 clanId,
     uint256 itemTokenId,
@@ -138,26 +129,15 @@ contract LockedBankVaults is
   address private pool;
   address private dev;
 
-  // These 4 are no longer used
-  address private airnode; // The address of the QRNG Airnode
-  address private sponsorWallet; // The wallet that will cover the gas costs of the request
-  bytes32 private endpointIdUint256; // The endpoint ID for requesting a single random number
-  bytes32 private endpointIdUint256Array; // The endpoint ID for requesting an array of random numbers
-
-  uint8 private indexGasPrice;
-  uint64 private movingAverageGasPrice;
-  uint88 private baseAttackCost; // To offset gas costs in response
-  uint24 private expectedGasLimitFulfill;
-  uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private prices;
-
+  VRFRequestInfo vrfRequestInfo;
   address private oracle;
   uint16 private mmrAttackDistance;
-  uint8 private Ka; // attacker K-factor
-  uint8 private Kd; // defender K-factor
+  uint24 private expectedGasLimitFulfill;
   uint24 private attackingCooldown;
   uint24 private reattackingCooldown;
-
   ISamWitchVRF private samWitchVRF;
+  uint8 private Ka; // attacker K-factor
+  uint8 private Kd; // defender K-factor
   uint24 private lockFundsPeriod;
   // Clans are sorted as follows:
   // 1 - From lower MMR to higher MMR
@@ -243,6 +223,7 @@ contract LockedBankVaults is
     address _dev,
     address _oracle,
     ISamWitchVRF _samWitchVRF,
+    VRFRequestInfo _vrfRequestInfo,
     Skill[] calldata _comparableSkills,
     uint16 _mmrAttackDistance,
     uint24 _lockFundsPeriod,
@@ -265,13 +246,9 @@ contract LockedBankVaults is
     isBeta = _isBeta;
     attackingCooldown = _isBeta ? 1 minutes + 30 seconds : 4 hours;
     reattackingCooldown = _isBeta ? 6 minutes : 1 days;
+    vrfRequestInfo = _vrfRequestInfo;
     combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
 
-    for (uint256 i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
-      prices[i] = uint64(tx.gasprice);
-    }
-    _updateMovingAverageGasPrice(uint64(tx.gasprice));
-    setBaseAttackCost(0.01 ether);
     _setExpectedGasLimitFulfill(1_500_000);
 
     setKValues(32, 32);
@@ -462,7 +439,7 @@ contract LockedBankVaults is
       totalWon += _stealFromVault(losersVault, losingClanId, percentageToTake);
     }
 
-    _updateAverageGasPrice();
+    vrfRequestInfo.updateAverageGasPrice();
 
     (int256 attackingMMRDiff, int256 defendingMMRDiff) = LockedBankVaultsLibrary.fulfillUpdateMMR(
       Ka,
@@ -591,23 +568,6 @@ contract LockedBankVaults is
     }
   }
 
-  function _updateAverageGasPrice() private {
-    uint256 sum = 0;
-    prices[indexGasPrice] = uint64(tx.gasprice);
-    indexGasPrice = uint8((indexGasPrice + 1) % CLAN_WARS_GAS_PRICE_WINDOW_SIZE);
-
-    for (uint256 i = 0; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
-      sum += prices[i];
-    }
-
-    _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
-  }
-
-  function _updateMovingAverageGasPrice(uint64 _movingAverageGasPrice) private {
-    movingAverageGasPrice = _movingAverageGasPrice;
-    emit UpdateMovingAverageGasPrice(_movingAverageGasPrice);
-  }
-
   function _lockFunds(uint256 _clanId, address _from, uint256 _playerId, uint256 _amount) private {
     if (_amount == 0) {
       return;
@@ -641,7 +601,8 @@ contract LockedBankVaults is
   }
 
   function getAttackCost() public view returns (uint256) {
-    return baseAttackCost + (movingAverageGasPrice * expectedGasLimitFulfill);
+    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = vrfRequestInfo.get();
+    return baseRequestCost + (movingAverageGasPrice * expectedGasLimitFulfill);
   }
 
   function getClanInfo(uint256 _clanId) external view returns (VaultClanInfo memory) {
@@ -691,11 +652,6 @@ contract LockedBankVaults is
   function setMMRAttackDistance(uint16 _mmrAttackDistance) public onlyOwner {
     mmrAttackDistance = _mmrAttackDistance;
     emit SetMMRAttackDistance(_mmrAttackDistance);
-  }
-
-  function setBaseAttackCost(uint88 _baseAttackCost) public onlyOwner {
-    baseAttackCost = _baseAttackCost;
-    emit SetBaseAttackCost(_baseAttackCost);
   }
 
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {

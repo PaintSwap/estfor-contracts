@@ -5,7 +5,6 @@ import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-import {SamWitchVRFConsumerUpgradeable} from "./SamWitchVRFConsumerUpgradeable.sol";
 
 import {WorldLibrary} from "./WorldLibrary.sol";
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
@@ -15,7 +14,7 @@ import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgradeable {
+contract World is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
   using SkillLibrary for uint8;
@@ -50,12 +49,12 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   error InvalidReward();
   error TooManyRewardsInPool();
   error CallbackGasLimitTooHigh();
+  error CallerNotSamWitchVRF();
 
-  // solhint-disable-next-line var-name-mixedcase
-  address private COORDINATOR; // Not used anymore
-
-  // Your subscription ID.
-  uint64 private _subscriptionId; // Not used anymore
+  uint32 public constant NUM_WORDS = 1;
+  uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
+  uint32 private constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
+  uint32 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
 
   // Past request ids
   uint256[] private _requestIds; // Each one is a set of random words for 1 day
@@ -65,13 +64,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
   uint40 private _weeklyRewardCheckpoint;
   bytes8 private _thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
   uint24 private _callbackGasLimit;
-
-  uint32 public constant NUM_WORDS = 1;
-
-  uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
-  uint32 private constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
-
-  uint32 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
+  ISamWitchVRF private _samWitchVRF;
 
   mapping(uint256 actionId => ActionInfo actionInfo) private _actions;
   uint16[] private _lastAddedDynamicActions;
@@ -89,13 +82,18 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
 
   IOracleRewardCB private _wishingWell;
 
+  /// @dev Reverts if the caller is not the SamWitchVRF contract.
+  modifier onlySamWitchVRF() {
+    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
   function initialize(address vrf) external initializer {
-    __SamWitchVRFConsumerUpgradeable_init(ISamWitchVRF(vrf));
     __UUPSUpgradeable_init();
     __Ownable_init();
 
@@ -109,6 +107,7 @@ contract World is SamWitchVRFConsumerUpgradeable, UUPSUpgradeable, OwnableUpgrad
     _lastRandomWordsUpdatedTime = uint40(startTime + NUM_DAYS_RANDOM_WORDS_INITIALIZED * 1 days);
     _weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
     _callbackGasLimit = 600_000;
+    _samWitchVRF = ISamWitchVRF(vrf);
 
     // Initialize a few days worth of random words so that we have enough data to fetch the first day
     for (U256 iter; iter.lt(NUM_DAYS_RANDOM_WORDS_INITIALIZED); iter = iter.inc()) {

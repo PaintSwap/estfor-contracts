@@ -404,6 +404,7 @@ export const playersFixture = async function () {
       dev.address,
       oracleAddress,
       await mockVRF.getAddress(),
+      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
@@ -431,6 +432,7 @@ export const playersFixture = async function () {
       await itemNFT.getAddress(),
       oracleAddress,
       await mockVRF.getAddress(),
+      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       await adminAccess.getAddress(),
       isBeta

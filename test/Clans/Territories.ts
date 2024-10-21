@@ -731,7 +731,8 @@ describe("Territories", function () {
       tierId,
       imageId,
       origName,
-      mockVRF
+      mockVRF,
+      vrfRequestInfo
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
@@ -762,20 +763,23 @@ describe("Territories", function () {
     // Useful to re-run a battle for testing
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF);
-    expect(await territories.getMovingAverageGasPrice()).to.eq(0);
+    expect(await vrfRequestInfo.getMovingAverageGasPrice()).to.eq(0);
 
     let attackCost = await territories.getAttackCost();
-    const baseAttackCost = await territories.getBaseAttackCost();
+    const baseAttackCost = await vrfRequestInfo.getBaseRequestCost();
     expect(attackCost).to.eq(baseAttackCost);
 
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 1000n);
     const bigZero = 0n;
-    expect(await territories.getMovingAverageGasPrice()).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
+    // The big zeros are there to show all the values used
+    expect(await vrfRequestInfo.getMovingAverageGasPrice()).to.eq(
+      (bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n
+    );
 
     attackCost = await territories.getAttackCost();
     const expectedGasLimit = await territories.getExpectedGasLimitFulfill();
-    expect(attackCost).to.eq(baseAttackCost + (await territories.getMovingAverageGasPrice()) * expectedGasLimit);
+    expect(attackCost).to.eq(baseAttackCost + (await vrfRequestInfo.getMovingAverageGasPrice()) * expectedGasLimit);
 
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 900n);
@@ -786,11 +790,11 @@ describe("Territories", function () {
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 200n);
 
-    expect(await territories.getMovingAverageGasPrice()).to.eq(
+    expect(await vrfRequestInfo.getMovingAverageGasPrice()).to.eq(
       (gasPrice + 900n + gasPrice + 800n + gasPrice + 500n + gasPrice + 200n) / 4n
     );
     attackCost = await territories.getAttackCost();
-    expect(attackCost).to.eq(baseAttackCost + (await territories.getMovingAverageGasPrice()) * expectedGasLimit);
+    expect(attackCost).to.eq(baseAttackCost + (await vrfRequestInfo.getMovingAverageGasPrice()) * expectedGasLimit);
   });
 
   it("Assigning new combatants is allowed while holding a territory", async () => {

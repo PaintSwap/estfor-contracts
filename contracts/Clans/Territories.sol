@@ -5,7 +5,6 @@ import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol"
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {RrpRequesterV0Upgradeable} from "../legacy/RrpRequesterV0Upgradeable.sol";
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
@@ -17,6 +16,7 @@ import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 import {LockedBankVaults} from "./LockedBankVaults.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
+import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
 import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
@@ -26,13 +26,7 @@ import {BattleResultEnum} from "../globals/clans.sol";
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
-contract Territories is
-  RrpRequesterV0Upgradeable,
-  UUPSUpgradeable,
-  OwnableUpgradeable,
-  ITerritories,
-  IClanMemberLeftCB
-{
+contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClanMemberLeftCB {
   event AddTerritories(TerritoryInput[] territories);
   event EditTerritories(TerritoryInput[] territories);
   event RemoveTerritories(uint256[] territoryIds);
@@ -78,9 +72,7 @@ contract Territories is
   );
   event RemoveCombatant(uint256 playerId, uint256 clanId);
   event Harvest(uint256 territoryId, address from, uint256 playerId, uint256 cooldownTimestamp, uint256 amount);
-  event UpdateMovingAverageGasPrice(uint256 movingAverage);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
-  event SetBaseAttackCost(uint256 baseAttackCost);
   event BlockingAttacks(
     uint256 clanId,
     uint256 itemTokenId,
@@ -174,15 +166,11 @@ contract Territories is
 
   address private _combatantsHelper;
 
-  uint8 private _indexGasPrice;
-  uint64 private _movingAverageGasPrice;
-  uint88 private _baseAttackCost; // To offset gas costs in response
-  uint24 private _expectedGasLimitFulfill;
-  uint64[CLAN_WARS_GAS_PRICE_WINDOW_SIZE] private _prices;
-
   address private _oracle;
+  VRFRequestInfo private _vrfRequestInfo;
   uint24 private _combatantChangeCooldown;
   ISamWitchVRF private _samWitchVRF;
+  uint24 private _expectedGasLimitFulfill;
 
   uint256 private constant NUM_WORDS = 3;
   uint256 private constant CALLBACK_GAS_LIMIT = 3_000_000;
@@ -241,6 +229,7 @@ contract Territories is
     ItemNFT itemNFT,
     address oracle,
     ISamWitchVRF samWitchVRF,
+    VRFRequestInfo vrfRequestInfo,
     Skill[] calldata _comparableSkills,
     AdminAccess adminAccess,
     bool isBeta
@@ -254,24 +243,21 @@ contract Territories is
     _itemNFT = itemNFT;
     _oracle = oracle;
     _samWitchVRF = samWitchVRF;
+    _vrfRequestInfo = vrfRequestInfo;
+
     _nextTerritoryId = 1;
     _nextPendingAttackId = 1;
     _adminAccess = adminAccess;
     _isBeta = isBeta;
 
-    for (uint256 i; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
-      _prices[i] = uint64(tx.gasprice);
-    }
-    _updateMovingAverageGasPrice(uint64(tx.gasprice));
-    setBaseAttackCost(0.01 ether);
-    _setExpectedGasLimitFulfill(1_500_000);
+    setExpectedGasLimitFulfill(1_500_000);
 
     setComparableSkills(_comparableSkills);
 
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
-    _combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
-    _addTerritories(territories);
+    addTerritories(territories);
   }
 
   function assignCombatants(
@@ -342,7 +328,7 @@ contract Territories is
     uint16 territoryId = pendingAttack.territoryId;
     uint256 defendingClanId = _territories[territoryId].clanIdOccupier;
 
-    _updateAverageGasPrice();
+    _vrfRequestInfo.updateAverageGasPrice();
     _clanInfos[attackingClanId].currentlyAttacking = false;
     pendingAttack.attackInProgress = false;
 
@@ -488,18 +474,6 @@ contract Territories is
     }
   }
 
-  function _updateAverageGasPrice() private {
-    uint256 sum = 0;
-    _prices[_indexGasPrice] = uint64(tx.gasprice);
-    _indexGasPrice = uint8((_indexGasPrice + 1) % CLAN_WARS_GAS_PRICE_WINDOW_SIZE);
-
-    for (uint256 i = 0; i < CLAN_WARS_GAS_PRICE_WINDOW_SIZE; ++i) {
-      sum += _prices[i];
-    }
-
-    _updateMovingAverageGasPrice(uint64(sum / CLAN_WARS_GAS_PRICE_WINDOW_SIZE));
-  }
-
   function _checkCanAssignCombatants(uint256 clanId, uint48[] calldata playerIds) private view {
     require(playerIds.length <= MAX_CLAN_COMBATANTS, TooManyCombatants());
     // Can only change combatants every so often
@@ -529,11 +503,6 @@ contract Territories is
     requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
   }
 
-  function _updateMovingAverageGasPrice(uint64 movingAverageGasPrice) private {
-    _movingAverageGasPrice = movingAverageGasPrice;
-    emit UpdateMovingAverageGasPrice(movingAverageGasPrice);
-  }
-
   function _claimTerritory(uint256 territoryId, uint256 attackingClanId) private {
     _territories[territoryId].clanIdOccupier = uint32(attackingClanId);
 
@@ -549,7 +518,48 @@ contract Territories is
     require(territory.territoryId != 0 && territory.percentageEmissions != 0, InvalidTerritory());
   }
 
-  function _addTerritories(TerritoryInput[] calldata territories) private {
+  function getAttackCost() public view returns (uint256) {
+    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
+    return baseRequestCost + (movingAverageGasPrice * _expectedGasLimitFulfill);
+  }
+
+  function getTerrorities() external view returns (Territory[] memory) {
+    Territory[] memory territories = new Territory[](_nextTerritoryId - 1);
+    for (uint256 i; i < territories.length; ++i) {
+      territories[i] = _territories[i + 1];
+    }
+    return territories;
+  }
+
+  function getClanInfo(uint256 clanId) external view returns (ClanInfo memory clanInfo) {
+    return _clanInfos[clanId];
+  }
+
+  function getPendingAttack(uint256 pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
+    return _pendingAttacks[pendingAttackId];
+  }
+
+  function getTerritory(uint256 territoryId) external view returns (Territory memory territory) {
+    return _territories[territoryId];
+  }
+
+  function getExpectedGasLimitFulfill() external view returns (uint88 expectedGasLimitFulfill) {
+    return _expectedGasLimitFulfill;
+  }
+
+  function getTotalEmissionPercentage() external view returns (uint16 totalEmissionPercentage) {
+    return _totalEmissionPercentage;
+  }
+
+  function isCombatant(uint256 clanId, uint256 playerId) external view override returns (bool combatant) {
+    // Check if this player is in the defenders list and remove them if so
+    if (_clanInfos[clanId].playerIds.length != 0) {
+      uint256 searchIndex = EstforLibrary._binarySearch(_clanInfos[clanId].playerIds, playerId);
+      combatant = searchIndex != type(uint256).max;
+    }
+  }
+
+  function addTerritories(TerritoryInput[] calldata territories) public onlyOwner {
     uint256 totalEmissionPercentage = _totalEmissionPercentage;
     uint256 nextTerritoryId = _nextTerritoryId;
     for (uint256 i; i < territories.length; ++i) {
@@ -574,63 +584,6 @@ contract Territories is
 
     _totalEmissionPercentage = uint16(totalEmissionPercentage);
     emit AddTerritories(territories);
-  }
-
-  function _setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) private {
-    _expectedGasLimitFulfill = expectedGasLimitFulfill;
-    emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
-  }
-
-  function getAttackCost() public view returns (uint256) {
-    return _baseAttackCost + (_movingAverageGasPrice * _expectedGasLimitFulfill);
-  }
-
-  function getTerrorities() external view returns (Territory[] memory) {
-    Territory[] memory territories = new Territory[](_nextTerritoryId - 1);
-    for (uint256 i; i < territories.length; ++i) {
-      territories[i] = _territories[i + 1];
-    }
-    return territories;
-  }
-
-  function getClanInfo(uint256 clanId) external view returns (ClanInfo memory clanInfo) {
-    return _clanInfos[clanId];
-  }
-
-  function getPendingAttack(uint256 pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
-    return _pendingAttacks[pendingAttackId];
-  }
-
-  function getTerritory(uint256 territoryId) external view returns (Territory memory territory) {
-    return _territories[territoryId];
-  }
-
-  function getMovingAverageGasPrice() external view returns (uint64 movingAverageGasPrice) {
-    return _movingAverageGasPrice;
-  }
-
-  function getBaseAttackCost() external view returns (uint88 baseAttachCost) {
-    return _baseAttackCost;
-  }
-
-  function getExpectedGasLimitFulfill() external view returns (uint88 expectedGasLimitFulfill) {
-    return _expectedGasLimitFulfill;
-  }
-
-  function getTotalEmissionPercentage() external view returns (uint16 totalEmissionPercentage) {
-    return _totalEmissionPercentage;
-  }
-
-  function isCombatant(uint256 clanId, uint256 playerId) external view override returns (bool combatant) {
-    // Check if this player is in the defenders list and remove them if so
-    if (_clanInfos[clanId].playerIds.length != 0) {
-      uint256 searchIndex = EstforLibrary._binarySearch(_clanInfos[clanId].playerIds, playerId);
-      combatant = searchIndex != type(uint256).max;
-    }
-  }
-
-  function addTerritories(TerritoryInput[] calldata territories) external onlyOwner {
-    _addTerritories(territories);
   }
 
   function editTerritories(TerritoryInput[] calldata territories) external onlyOwner {
@@ -682,13 +635,9 @@ contract Territories is
     _combatantsHelper = combatantsHelper;
   }
 
-  function setBaseAttackCost(uint88 baseAttackCost) public onlyOwner {
-    _baseAttackCost = baseAttackCost;
-    emit SetBaseAttackCost(baseAttackCost);
-  }
-
   function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
-    _setExpectedGasLimitFulfill(expectedGasLimitFulfill);
+    _expectedGasLimitFulfill = expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
   function clearCooldowns(uint256 clanId) external isAdminAndBeta {

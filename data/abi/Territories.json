@@ -687,19 +687,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "baseAttackCost",
-        "type": "uint256"
-      }
-    ],
-    "name": "SetBaseAttackCost",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "enum Skill[]",
         "name": "skills",
         "type": "uint8[]"
@@ -738,19 +725,6 @@
       }
     ],
     "name": "SetMinimumMMRs",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "movingAverage",
-        "type": "uint256"
-      }
-    ],
-    "name": "UpdateMovingAverageGasPrice",
     "type": "event"
   },
   {
@@ -1018,19 +992,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getBaseAttackCost",
-    "outputs": [
-      {
-        "internalType": "uint88",
-        "name": "baseAttachCost",
-        "type": "uint88"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -1099,19 +1060,6 @@
         "internalType": "uint88",
         "name": "expectedGasLimitFulfill",
         "type": "uint88"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getMovingAverageGasPrice",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "movingAverageGasPrice",
-        "type": "uint64"
       }
     ],
     "stateMutability": "view",
@@ -1345,6 +1293,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract VRFRequestInfo",
+        "name": "vrfRequestInfo",
+        "type": "address"
+      },
+      {
         "internalType": "enum Skill[]",
         "name": "_comparableSkills",
         "type": "uint8[]"
@@ -1444,19 +1397,6 @@
       }
     ],
     "name": "setAttackInProgress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint88",
-        "name": "baseAttackCost",
-        "type": "uint88"
-      }
-    ],
-    "name": "setBaseAttackCost",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

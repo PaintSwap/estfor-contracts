@@ -53,6 +53,14 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
     emit UpdateMovingAverageGasPrice(movingAverageGasPrice);
   }
 
+  function getMovingAverageGasPrice() external view returns (uint64) {
+    return _movingAverageGasPrice;
+  }
+
+  function getBaseRequestCost() external view returns (uint88) {
+    return _baseRequestCost;
+  }
+
   function setBaseAttackCost(uint256 baseRequestCost) public onlyOwner {
     _baseRequestCost = uint88(baseRequestCost);
     emit SetBaseRequestCost(baseRequestCost);

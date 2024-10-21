@@ -618,6 +618,7 @@ async function main() {
       DEV_ADDRESS,
       ORACLE_ADDRESS,
       await vrf.getAddress(),
+      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
@@ -645,6 +646,7 @@ async function main() {
       await itemNFT.getAddress(),
       ORACLE_ADDRESS,
       await vrf.getAddress(),
+      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       await adminAccess.getAddress(),
       isBeta
