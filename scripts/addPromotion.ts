@@ -72,7 +72,7 @@ async function main() {
   });
   */
 
-  const startTime = 1729756800; // Thur Oct 24th 08:00 UTC
+  const startTime = 1729760400; // Thur Oct 24th 09:00 UTC
   const numDays = 14;
   await promotions.connect(owner).addPromotion({
     promotion: Promotion.HALLOWEEN_2024,

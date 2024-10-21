@@ -48,7 +48,7 @@ async function main() {
   await tx.wait();
   console.log("edit first one"); */
 
-  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
+  /*  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
   const numDays = 22;
   await promotions.connect(owner).editPromotion({
     promotion: Promotion.XMAS_2023,
@@ -77,6 +77,39 @@ async function main() {
     guaranteedStreakBonusAmounts: [],
     guaranteedItemTokenIds: [],
     guaranteedAmounts: [],
+    randomItemTokenIds: [],
+    randomAmounts: [],
+  }); */
+
+  const startTime = 1729513530; // Thur Oct 24th 09:00 UTC
+  const numDays = 2;
+  await promotions.connect(owner).editPromotion({
+    promotion: Promotion.HALLOWEEN_2024,
+    startTime,
+    endTime: startTime + 24 * 3600 * numDays,
+    minTotalXP: 0,
+    numDailyRandomItemsToPick: 1,
+    isMultiday: true,
+    brushCostMissedDay: "0",
+    brushCost: "0",
+    redeemCodeLength: 0,
+    adminOnly: false,
+    promotionTiedToUser: false,
+    promotionTiedToPlayer: true,
+    promotionMustOwnPlayer: true,
+    evolvedHeroOnly: true,
+    numDaysClaimablePeriodStreakBonus: 0,
+    numDaysHitNeededForStreakBonus: 0,
+    numRandomStreakBonusItemsToPick1: 0,
+    numRandomStreakBonusItemsToPick2: 0,
+    randomStreakBonusItemTokenIds1: [],
+    randomStreakBonusAmounts1: [],
+    randomStreakBonusItemTokenIds2: [],
+    randomStreakBonusAmounts2: [],
+    guaranteedStreakBonusItemTokenIds: [],
+    guaranteedStreakBonusAmounts: [],
+    guaranteedItemTokenIds: [EstforConstants.COIN],
+    guaranteedAmounts: [5],
     randomItemTokenIds: [],
     randomAmounts: [],
   });
