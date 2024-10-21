@@ -446,13 +446,13 @@ describe("PetNFT", function () {
       await petNFT.connect(alice).editPet(playerId, petId, newName);
 
       const brushBurntPercentage = 25n;
-      const brushPoolPercentage = 0n;
+      const brushTreasuryPercentage = 0n;
       const brushDevPercentage = 25n;
       const brushTerritoriesPercentage = 50n;
 
       await petNFT.setBrushDistributionPercentages(
         brushBurntPercentage,
-        brushPoolPercentage,
+        brushTreasuryPercentage,
         brushDevPercentage,
         brushTerritoriesPercentage
       );

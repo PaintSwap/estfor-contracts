@@ -122,6 +122,10 @@ describe("Shop", function () {
     const treasuryPercentages = [100];
     await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
 
+    await expect(shop.setBrushDistributionPercentages(25, 50, 25))
+      .to.emit(shop, "SetBrushDistributionPercentages")
+      .withArgs(25, 50, 25);
+
     return {
       itemNFT,
       shop,

@@ -802,7 +802,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "brushPoolPercentage",
+        "name": "brushTreasuryPercentage",
         "type": "uint256"
       },
       {
@@ -1627,7 +1627,7 @@
       },
       {
         "internalType": "uint8",
-        "name": "brushPoolPercentage",
+        "name": "brushTreasuryPercentage",
         "type": "uint8"
       },
       {

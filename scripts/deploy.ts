@@ -780,6 +780,10 @@ async function main() {
   await tx.wait();
   console.log("petNFT setBrushDistributionPercentages");
 
+  tx = await shop.setBrushDistributionPercentages(25, 50, 25);
+  await tx.wait();
+  console.log("shop.setBrushDistributionPercentages");
+
   tx = await shop.setItemNFT(itemNFT);
   await tx.wait();
   console.log("shop.setItemNFT");

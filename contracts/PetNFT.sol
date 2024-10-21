@@ -33,7 +33,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
-    uint256 brushPoolPercentage,
+    uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage,
     uint256 brushTerritoriesPercentage
   );
@@ -117,7 +117,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   IBrushToken private _brush;
   uint72 private _editNameCost; // Max is 4700 BRUSH
   uint8 private _brushBurntPercentage;
-  uint8 private _brushPoolPercentage;
+  uint8 private _brushTreasuryPercentage;
   uint8 private _brushDevPercentage;
   uint8 private _brushTerritoriesPercentage;
   address private _territories;
@@ -411,7 +411,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     if (_brushCost == 0) {
       return;
     }
-    if (_brushPoolPercentage != 0) {
+    if (_brushTreasuryPercentage != 0) {
       revert NotSupportedYet();
     }
 
@@ -534,22 +534,22 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function _setBrushDistributionPercentages(
     uint8 brushBurntPercentage,
-    uint8 brushPoolPercentage,
+    uint8 brushTreasuryPercentage,
     uint8 brushDevPercentage,
     uint8 brushTerritoriesPercentage
   ) private {
     require(
-      brushBurntPercentage + brushPoolPercentage + brushDevPercentage + brushTerritoriesPercentage == 100,
+      brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage + brushTerritoriesPercentage == 100,
       PercentNotTotal100()
     );
 
     _brushBurntPercentage = brushBurntPercentage;
-    _brushPoolPercentage = brushPoolPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;
     _brushTerritoriesPercentage = brushTerritoriesPercentage;
     emit SetBrushDistributionPercentages(
       brushBurntPercentage,
-      brushPoolPercentage,
+      brushTreasuryPercentage,
       brushDevPercentage,
       brushTerritoriesPercentage
     );
@@ -661,13 +661,13 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function setBrushDistributionPercentages(
     uint8 brushBurntPercentage,
-    uint8 brushPoolPercentage,
+    uint8 brushTreasuryPercentage,
     uint8 brushDevPercentage,
     uint8 brushTerritoriesPercentage
   ) external onlyOwner {
     _setBrushDistributionPercentages(
       brushBurntPercentage,
-      brushPoolPercentage,
+      brushTreasuryPercentage,
       brushDevPercentage,
       brushTerritoriesPercentage
     );

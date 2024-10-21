@@ -29,6 +29,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   event AddUnsellableItems(uint16[] tokenIds);
   event RemoveUnsellableItems(uint16[] tokenIds);
   event SetMinItemQuantityBeforeSellsAllowed(uint256 minItemQuantityBeforeSellsAllowed);
+  event SetBrushDistributionPercentages(
+    uint256 brushBurntPercentage,
+    uint256 brushTreasuryPercentage,
+    uint256 brushDevPercentage
+  );
 
   error LengthMismatch();
   error LengthEmpty();
@@ -45,6 +50,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   error AlreadyUnsellable();
   error AlreadySellable();
   error ItemNotSellable(uint256 tokenId);
+  error PercentNotTotal100();
 
   struct ShopItem {
     uint16 tokenId;
@@ -68,6 +74,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   uint16 private _numUnsellableItems;
   uint24 private _minItemQuantityBeforeSellsAllowed;
   address private _dev;
+  uint8 private _brushBurntPercentage;
+  uint8 private _brushTreasuryPercentage;
+  uint8 private _brushDevPercentage;
   mapping(uint256 itemId => uint256 price) private _shopItems;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -258,13 +267,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     // Send 1 quarter to the dev address, burn 1 quarter and the rest to the treasury
     accounts = new address[](3);
     amounts = new uint256[](3);
-    uint256 quarterCost = brushCost / 4;
-    amounts[0] = quarterCost;
-    amounts[1] = quarterCost;
-    amounts[2] = brushCost - quarterCost * 2;
+    amounts[0] = (brushCost * _brushBurntPercentage) / 100;
+    amounts[1] = (brushCost * _brushTreasuryPercentage) / 100;
+    amounts[2] = (brushCost * _brushDevPercentage) / 100;
     accounts[0] = address(0);
-    accounts[1] = _dev;
-    accounts[2] = address(_treasury);
+    accounts[1] = address(_treasury);
+    accounts[2] = _dev;
   }
 
   function _addBuyableItem(ShopItem calldata buyableItem) private {
@@ -283,6 +291,27 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function _hasNewDailyData(uint256 checkpointTimestamp) private view returns (bool) {
     return (block.timestamp.div(1 days)).mul(1 days) >= checkpointTimestamp.add(1 days);
+  }
+
+  function _setBrushDistributionPercentages(
+    uint8 brushBurntPercentage,
+    uint8 brushTreasuryPercentage,
+    uint8 brushDevPercentage
+  ) private {
+    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
+
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+  }
+
+  function tokenInfos(uint16 tokenId) external view returns (TokenInfo memory tokenInfo) {
+    return _tokenInfos[tokenId];
+  }
+
+  function shopItems(uint16 tokenId) external view returns (uint256 price) {
+    return _shopItems[tokenId];
   }
 
   function addBuyableItems(ShopItem[] calldata buyableItems) external onlyOwner {
@@ -347,14 +376,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     emit SetMinItemQuantityBeforeSellsAllowed(minItemQuantityBeforeSellsAllowed);
   }
 
-  // getters
-
-  function tokenInfos(uint16 tokenId) external view returns (TokenInfo memory tokenInfo) {
-    return _tokenInfos[tokenId];
-  }
-
-  function shopItems(uint16 tokenId) external view returns (uint256 price) {
-    return _shopItems[tokenId];
+  function setBrushDistributionPercentages(
+    uint8 brushBurntPercentage,
+    uint8 brushTreasuryPercentage,
+    uint8 brushDevPercentage
+  ) external onlyOwner {
+    _setBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
   // solhint-disable-next-line no-empty-blocks

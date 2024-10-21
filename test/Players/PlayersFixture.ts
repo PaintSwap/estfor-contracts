@@ -475,6 +475,7 @@ export const playersFixture = async function () {
   await petNFT.setInstantVRFActions(await instantVRFActions.getAddress());
 
   await petNFT.setBrushDistributionPercentages(25, 0, 25, 50);
+  await shop.setBrushDistributionPercentages(25, 50, 25);
 
   const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
   const treasuryPercentages = [10, 90];
