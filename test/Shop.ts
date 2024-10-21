@@ -43,10 +43,17 @@ describe("Shop", function () {
     })) as unknown as Treasury;
 
     const minItemQuantityBeforeSellsAllowed = 500n;
+    const sellingCutoffDuration = 48 * 3600; // 48 hours
     const Shop = await ethers.getContractFactory("Shop");
     const shop = (await upgrades.deployProxy(
       Shop,
-      [await brush.getAddress(), await treasury.getAddress(), dev.address, minItemQuantityBeforeSellsAllowed],
+      [
+        await brush.getAddress(),
+        await treasury.getAddress(),
+        dev.address,
+        minItemQuantityBeforeSellsAllowed,
+        sellingCutoffDuration
+      ],
       {
         kind: "uups"
       }
@@ -116,7 +123,6 @@ describe("Shop", function () {
       }
     ]);
 
-    const sellingCutoffDuration = parseInt((await shop.SELLING_CUTOFF_DURATION()).toString());
     await treasury.initializeAddresses(ethers.ZeroAddress, shop);
     const treasuryAccounts = [await shop.getAddress()];
     const treasuryPercentages = [100];

@@ -210,6 +210,7 @@ async function main() {
 
   const initialMMR = 500;
   const minItemQuantityBeforeSellsAllowed = 500n;
+  const sellingCutoffDuration = 48 * 3600; // 48 hours
 
   // Create the world
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
@@ -241,7 +242,13 @@ async function main() {
   const Shop = await ethers.getContractFactory("Shop");
   const shop = (await upgrades.deployProxy(
     Shop,
-    [await brush.getAddress(), await treasury.getAddress(), DEV_ADDRESS, minItemQuantityBeforeSellsAllowed],
+    [
+      await brush.getAddress(),
+      await treasury.getAddress(),
+      DEV_ADDRESS,
+      minItemQuantityBeforeSellsAllowed,
+      sellingCutoffDuration
+    ],
     {
       kind: "uups",
       timeout

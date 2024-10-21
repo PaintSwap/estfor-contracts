@@ -559,6 +559,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetSellingCutoffDuration",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -567,19 +580,6 @@
     ],
     "name": "Upgraded",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "SELLING_CUTOFF_DURATION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [
@@ -723,6 +723,11 @@
       {
         "internalType": "uint24",
         "name": "minItemQuantityBeforeSellsAllowed",
+        "type": "uint24"
+      },
+      {
+        "internalType": "uint24",
+        "name": "sellingCutoffDuration",
         "type": "uint24"
       }
     ],
@@ -919,6 +924,19 @@
       }
     ],
     "name": "setMinItemQuantityBeforeSellsAllowed",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24",
+        "name": "duration",
+        "type": "uint24"
+      }
+    ],
+    "name": "setSellingCutoffDuration",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -70,10 +70,17 @@ export const playersFixture = async function () {
   })) as unknown as Treasury;
 
   const minItemQuantityBeforeSellsAllowed = 500n;
+  const sellingCutoffDuration = 48 * 3600; // 48 hours
   const Shop = await ethers.getContractFactory("Shop");
   const shop = (await upgrades.deployProxy(
     Shop,
-    [await brush.getAddress(), await treasury.getAddress(), dev.address, minItemQuantityBeforeSellsAllowed],
+    [
+      await brush.getAddress(),
+      await treasury.getAddress(),
+      dev.address,
+      minItemQuantityBeforeSellsAllowed,
+      sellingCutoffDuration
+    ],
     {
       kind: "uups"
     }
@@ -582,6 +589,7 @@ export const playersFixture = async function () {
     PetNFT,
     lockedBankVaultsLibrary,
     lockedFundsPeriod,
-    initialMMR
+    initialMMR,
+    sellingCutoffDuration
   };
 };

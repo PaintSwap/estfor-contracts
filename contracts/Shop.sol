@@ -34,6 +34,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
+  event SetSellingCutoffDuration(uint256 duration);
 
   error LengthMismatch();
   error LengthEmpty();
@@ -64,8 +65,6 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     bool unsellable;
   }
 
-  uint256 public constant SELLING_CUTOFF_DURATION = 2 days;
-
   mapping(uint256 tokenId => TokenInfo tokenInfo) private _tokenInfos;
 
   IBrushToken private _brush;
@@ -77,6 +76,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   uint8 private _brushBurntPercentage;
   uint8 private _brushTreasuryPercentage;
   uint8 private _brushDevPercentage;
+  uint24 private _sellingCutoffDuration;
   mapping(uint256 itemId => uint256 price) private _shopItems;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -88,7 +88,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     IBrushToken brush,
     Treasury treasury,
     address dev,
-    uint24 minItemQuantityBeforeSellsAllowed
+    uint24 minItemQuantityBeforeSellsAllowed,
+    uint24 sellingCutoffDuration
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
@@ -97,6 +98,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     _dev = dev;
 
     setMinItemQuantityBeforeSellsAllowed(minItemQuantityBeforeSellsAllowed);
+    setSellingCutoffDuration(sellingCutoffDuration);
   }
 
   function getMinItemQuantityBeforeSellsAllowed() external view returns (uint24) {
@@ -213,8 +215,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       revert LiquidatePriceIsHigherThanShop(tokenId);
     }
 
-    // 48 hour period of no selling for an item
-    if (_itemNFT.getTimestampFirstMint(tokenId).add(SELLING_CUTOFF_DURATION) > block.timestamp) {
+    // A period of no selling allowed for a newly minted item
+    if (_itemNFT.getTimestampFirstMint(tokenId).add(_sellingCutoffDuration) > block.timestamp) {
       revert SellingTooQuicklyAfterItemIntroduction();
     }
 
@@ -374,6 +376,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+  }
+
+  function setSellingCutoffDuration(uint24 duration) public onlyOwner {
+    _sellingCutoffDuration = duration;
+    emit SetSellingCutoffDuration(duration);
   }
 
   // solhint-disable-next-line no-empty-blocks

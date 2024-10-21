@@ -39,6 +39,7 @@ describe("ItemNFT", function () {
     })) as unknown as Treasury;
 
     const minItemQuantityBeforeSellsAllowed = 500n;
+    const sellingCutoffDuration = 48 * 3600; // 48 hours
     const Shop = await ethers.getContractFactory("Shop");
     const shop = await upgrades.deployProxy(
       Shop,
@@ -46,7 +47,8 @@ describe("ItemNFT", function () {
         await brush.getAddress(),
         await treasury.getAddress(),
         await dev.getAddress(),
-        minItemQuantityBeforeSellsAllowed
+        minItemQuantityBeforeSellsAllowed,
+        sellingCutoffDuration
       ],
       {
         kind: "uups"
