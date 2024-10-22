@@ -453,7 +453,7 @@ async function main() {
     ],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
+      unsafeAllow: ["external-library-linking"],
       timeout
     }
   )) as unknown as PetNFT;
@@ -489,7 +489,7 @@ async function main() {
     ],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
+      unsafeAllow: ["delegatecall"],
       timeout
     }
   )) as unknown as Players;
@@ -528,7 +528,7 @@ async function main() {
     [await players.getAddress(), await itemNFT.getAddress(), await world.getAddress()],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
+      unsafeAllow: ["external-library-linking"],
       timeout
     }
   )) as unknown as PassiveActions;

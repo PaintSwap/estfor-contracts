@@ -13,28 +13,28 @@ async function main() {
 
   const World = (
     await ethers.getContractFactory("World", {
-      libraries: {WorldLibrary: await worldLibrary.getAddress()},
+      libraries: {WorldLibrary: await worldLibrary.getAddress()}
     })
   ).connect(owner);
   const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout: 1000000,
+    timeout: 1000000
   });
   await world.waitForDeployment();
   console.log(`world = "${(await world.getAddress()).toLowerCase()}"`);
 
   const PassiveActions = await ethers.getContractFactory("PassiveActions", {
-    libraries: {WorldLibrary: await worldLibrary.getAddress()},
+    libraries: {WorldLibrary: await worldLibrary.getAddress()}
   });
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
     [PLAYERS_ADDRESS, ITEM_NFT_ADDRESS, WORLD_ADDRESS],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
-      timeout: 100000,
-    },
+      unsafeAllow: ["external-library-linking"],
+      timeout: 100000
+    }
   )) as unknown as PassiveActions;
 
   console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`);
@@ -45,7 +45,7 @@ async function main() {
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout: 100000,
+    timeout: 100000
   });
   await itemNFT.waitForDeployment();
   console.log(`itemNFT = "${(await itemNFT.getAddress()).toLowerCase()}"`);

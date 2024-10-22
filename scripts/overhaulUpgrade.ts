@@ -10,7 +10,7 @@ import {
   ESTFOR_LIBRARY_ADDRESS,
   SHOP_ADDRESS,
   QUESTS_ADDRESS,
-  INSTANT_ACTIONS_ADDRESS,
+  INSTANT_ACTIONS_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {Players, World} from "../typechain-types";
@@ -48,7 +48,7 @@ async function main() {
   await players.pauseGame(true);
   players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"],
+    unsafeAllow: ["delegatecall"],
   })) as Players;
   await players.waitForDeployment();
   console.log("Deployed Players");
@@ -122,7 +122,7 @@ async function main() {
   ).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"],
+    unsafeAllow: ["delegatecall"],
     timeout,
   })) as Players;
   await players.waitForDeployment();
@@ -228,8 +228,8 @@ async function main() {
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"],
-    timeout,
+    unsafeAllow: ["delegatecall"],
+    timeout
   })) as unknown as Players;
 
   console.log("Deployed Players");
@@ -242,7 +242,7 @@ async function main() {
     await playersImplProcessActions.getAddress(),
     await playersImplRewards.getAddress(),
     await playersImplMisc.getAddress(),
-    await playersImplMisc1.getAddress(),
+    await playersImplMisc1.getAddress()
   );
   await tx.wait();
   console.log("setImpls");
@@ -255,7 +255,7 @@ async function main() {
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout,
+    timeout
   });
   await itemNFT.waitForDeployment();
   console.log("itemNFT deployed");
@@ -267,7 +267,7 @@ async function main() {
       item.tokenId === EstforConstants.MEDIUM_ELIXIUM ||
       item.tokenId === EstforConstants.LARGE_ELIXIUM ||
       item.tokenId === EstforConstants.EXTRA_LARGE_ELIXIUM ||
-      item.tokenId === EstforConstants.FLUX,
+      item.tokenId === EstforConstants.FLUX
   );
 
   if (items.length !== 6) {
@@ -281,14 +281,14 @@ async function main() {
   // Update player upgrade cost
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: await estforLibrary.getAddress()},
+      libraries: {EstforLibrary: await estforLibrary.getAddress()}
     })
   ).connect(owner);
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     unsafeSkipStorageCheck: true,
-    timeout,
+    timeout
   });
   await playerNFT.waitForDeployment();
   tx = await playerNFT.setUpgradeCost(parseEther("1400")); // 30% discount
@@ -308,7 +308,7 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     unsafeSkipStorageCheck: true,
-    timeout,
+    timeout
   })) as unknown as World;
 
   console.log("world upgraded");
@@ -330,7 +330,7 @@ async function main() {
       action.actionId === EstforConstants.ACTION_COMBAT_ROCKHAWK ||
       action.actionId === EstforConstants.ACTION_COMBAT_QRAKUR ||
       action.actionId === EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON ||
-      action.actionId === EstforConstants.ACTION_COMBAT_ERKAD,
+      action.actionId === EstforConstants.ACTION_COMBAT_ERKAD
   );
 
   tx = await world.editActions(actions);
@@ -363,7 +363,7 @@ async function main() {
     EstforConstants.ACTIONCHOICE_ALCHEMY_ASH_LOG,
     EstforConstants.ACTIONCHOICE_ALCHEMY_ENCHANTED_LOG,
     EstforConstants.ACTIONCHOICE_ALCHEMY_LIVING_LOG,
-    EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER
   ];
 
   const newActionChoicesAlchemy: ActionChoiceInput[] = [];
@@ -380,7 +380,7 @@ async function main() {
     .addBulkActionChoices(
       [alchemyActionId, forgingActionId],
       [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
-      [newActionChoicesAlchemy, allActionChoicesForging],
+      [newActionChoicesAlchemy, allActionChoicesForging]
     );
   await tx.wait();
 
@@ -403,7 +403,7 @@ async function main() {
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
     kind: "uups",
     timeout,
-    unsafeSkipStorageCheck: true,
+    unsafeSkipStorageCheck: true
   });
   await quests.waitForDeployment();
   console.log("Deployed quests");
@@ -430,7 +430,7 @@ async function main() {
     await playersLibrary.getAddress(),
     await world.getAddress(),
     await worldLibrary.getAddress(),
-    await instantActions.getAddress(),
+    await instantActions.getAddress()
   ]);
 }
 

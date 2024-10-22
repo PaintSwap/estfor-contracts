@@ -32,7 +32,7 @@ describe("Shop", function () {
     });
     const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"]
+      unsafeAllow: ["external-library-linking"]
     })) as unknown as World;
 
     await setDailyAndWeeklyRewards(world);

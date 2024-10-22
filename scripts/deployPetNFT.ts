@@ -46,7 +46,7 @@ async function main() {
     ],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"],
+      unsafeAllow: ["external-library-linking"],
       timeout
     }
   )) as unknown as PetNFT;

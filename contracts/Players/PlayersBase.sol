@@ -58,6 +58,7 @@ abstract contract PlayersBase {
 
   event BoostFinished(uint256 playerId);
   event ExtraBoostFinished(uint256 playerId);
+  event SetCombatParams(uint256 alphaCombat, uint256 betaCombat, uint256 alphaCombatHealing);
 
   // For logging
   event Died(address from, uint256 playerId, uint256 queueId);

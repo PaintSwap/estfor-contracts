@@ -77,6 +77,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     _alphaCombat = 1;
     _betaCombat = 1;
     _alphaCombatHealing = 8;
+    emit SetCombatParams(1, 1, 8);
   }
 
   // Show all the player stats, return metadata json

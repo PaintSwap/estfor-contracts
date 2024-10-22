@@ -1290,6 +1290,31 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "alphaCombat",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "betaCombat",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "alphaCombatHealing",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetCombatParams",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "from",
         "type": "address"

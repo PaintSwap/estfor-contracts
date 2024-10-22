@@ -369,7 +369,7 @@ describe("PlayerNFT", function () {
       ],
       {
         kind: "uups",
-        unsafeAllow: ["delegatecall", "external-library-linking"]
+        unsafeAllow: ["delegatecall"]
       }
     );
 

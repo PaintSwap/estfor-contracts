@@ -13,7 +13,7 @@ import {
   QUESTS_ADDRESS,
   SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
-  WORLD_ADDRESS,
+  WORLD_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
 import {
@@ -33,7 +33,7 @@ import {
   Quests,
   Shop,
   Territories,
-  WorldLibrary,
+  WorldLibrary
 } from "../typechain-types";
 import {LockedBankVault} from "@paintswap/estfor-definitions/types";
 
@@ -52,7 +52,7 @@ async function main() {
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"],
+    unsafeAllow: ["delegatecall"]
   })) as unknown as Players;
 
   // Set the implementations
@@ -66,7 +66,7 @@ async function main() {
       await playersImplProcessActions.getAddress(),
       await playersImplRewards.getAddress(),
       await playersImplMisc.getAddress(),
-      await playersImplMisc1.getAddress(),
+      await playersImplMisc1.getAddress()
     );
   await tx.wait();
   /*

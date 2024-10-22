@@ -2,9 +2,18 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforTypes, EstforConstants} from "@paintswap/estfor-definitions";
 import {Attire, Skill, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
-import {ethers} from "hardhat";
+import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
-import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, SPAWN_MUL, START_XP} from "../utils";
+import {
+  getActionChoiceId,
+  getActionId,
+  getEventLog,
+  GUAR_MUL,
+  NO_DONATION_AMOUNT,
+  RATE_MUL,
+  SPAWN_MUL,
+  START_XP
+} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
   getXPFromLevel,
@@ -16,11 +25,72 @@ import {
 } from "./utils";
 import {Players} from "../../typechain-types";
 import {ACTION_FISHING_MINNUS} from "@paintswap/estfor-definitions/constants";
-import {Block, ZeroAddress} from "ethers";
+import {Block, ContractTransactionReceipt, ZeroAddress} from "ethers";
 
 const actionIsAvailable = true;
 
 describe("Players", function () {
+  it("Check initialized", async function () {
+    const {
+      itemNFT,
+      playerNFT,
+      petNFT,
+      world,
+      adminAccess,
+      quests,
+      clans,
+      wishingWell,
+      playersImplQueueActions,
+      playersImplProcessActions,
+      playersImplRewards,
+      playersImplMisc,
+      playersImplMisc1
+    } = await loadFixture(playersFixture);
+
+    const isBeta = true;
+    const Players = await ethers.getContractFactory("Players");
+    // Deploy proxy and get transaction
+    const proxy = (await upgrades.deployProxy(
+      Players,
+      [
+        await itemNFT.getAddress(),
+        await playerNFT.getAddress(),
+        await petNFT.getAddress(),
+        await world.getAddress(),
+        await adminAccess.getAddress(),
+        await quests.getAddress(),
+        await clans.getAddress(),
+        await wishingWell.getAddress(),
+        await playersImplQueueActions.getAddress(),
+        await playersImplProcessActions.getAddress(),
+        await playersImplRewards.getAddress(),
+        await playersImplMisc.getAddress(),
+        await playersImplMisc1.getAddress(),
+        isBeta
+      ],
+      {
+        kind: "uups",
+        unsafeAllow: ["delegatecall"]
+      }
+    )) as unknown as Players;
+
+    // Wait for deployment and get transaction receipt
+    const receipt = (await proxy.deploymentTransaction()?.wait()) as ContractTransactionReceipt;
+
+    const eventArgs = receipt.logs
+      .map((log) => {
+        try {
+          return Players.interface.parseLog(log); // Parse the log using the contract ABI
+        } catch (error) {
+          return null; // Ignore logs that don't match the contract ABI
+        }
+      })
+      .find((parsedLog) => parsedLog && parsedLog.name === "SetCombatParams")?.args; // Filter for the specific event
+    expect(eventArgs?.[0]).to.equal(1); // alpha compbat
+    expect(eventArgs?.[1]).to.equal(1); // beta combat
+    expect(eventArgs?.[2]).to.equal(8); // alpha combat healing
+  });
+
   it("New player stats", async function () {
     const {players, playerNFT, alice} = await loadFixture(playersFixture);
 

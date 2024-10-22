@@ -66,7 +66,7 @@ async function main() {
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"],
+    unsafeAllow: ["delegatecall"],
     timeout
   });
   await players.waitForDeployment();
@@ -377,7 +377,7 @@ async function main() {
   ).connect(owner);
   const passiveActions = await upgrades.upgradeProxy(PASSIVE_ACTIONS_ADDRESS, PassiveActions, {
     kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"],
+    unsafeAllow: ["external-library-linking"],
     timeout
   });
   await passiveActions.waitForDeployment();

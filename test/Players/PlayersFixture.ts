@@ -59,7 +59,7 @@ export const playersFixture = async function () {
   const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: await worldLibrary.getAddress()}});
   const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
     kind: "uups",
-    unsafeAllow: ["delegatecall", "external-library-linking"]
+    unsafeAllow: ["external-library-linking"]
   })) as unknown as World;
 
   await setDailyAndWeeklyRewards(world);
@@ -239,7 +239,7 @@ export const playersFixture = async function () {
     ],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"]
+      unsafeAllow: ["external-library-linking"]
     }
   )) as unknown as PetNFT;
 
@@ -282,7 +282,7 @@ export const playersFixture = async function () {
     ],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"]
+      unsafeAllow: ["delegatecall"]
     }
   )) as unknown as Players;
 
@@ -470,7 +470,7 @@ export const playersFixture = async function () {
     [await players.getAddress(), await itemNFT.getAddress(), await world.getAddress()],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall", "external-library-linking"]
+      unsafeAllow: ["external-library-linking"]
     }
   )) as unknown as PassiveActions;
 
