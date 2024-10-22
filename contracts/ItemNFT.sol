@@ -505,41 +505,32 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     emit RemoveItems(_itemTokenIds);
   }
 
-  function setPlayers(address players) external onlyOwner {
+  function initializeAddresses(
+    address players,
+    IBankFactory bankFactory,
+    address shop,
+    address promotions,
+    address instantActions,
+    address territories,
+    address lockedBankVaults,
+    address bazaar,
+    address instantVRFActions,
+    address passiveActions
+  ) external onlyOwner {
     _players = players;
-  }
-
-  function setBankFactory(IBankFactory bankFactory) external onlyOwner {
     _bankFactory = bankFactory;
-  }
-
-  function setPromotions(address promotions) external onlyOwner {
+    _shop = shop;
     _promotions = promotions;
-  }
-
-  function setPassiveActions(address passiveActions) external onlyOwner {
-    _passiveActions = passiveActions;
-  }
-
-  function setInstantActions(address instantActions) external onlyOwner {
     _instantActions = instantActions;
-  }
-
-  function setInstantVRFActions(address instantVRFActions) external onlyOwner {
-    _instantVRFActions = instantVRFActions;
-  }
-
-  function setTerritoriesAndLockedBankVaults(address territories, address lockedBankVaults) external onlyOwner {
     _territories = territories;
     _lockedBankVaults = lockedBankVaults;
+    _bazaar = bazaar;
+    _instantVRFActions = instantVRFActions;
+    _passiveActions = passiveActions;
   }
 
   function setBaseURI(string calldata baseURI) external onlyOwner {
     _baseURI = baseURI;
-  }
-
-  function setBazaar(address bazaar) external onlyOwner {
-    _bazaar = bazaar;
   }
 
   // solhint-disable-next-line no-empty-blocks

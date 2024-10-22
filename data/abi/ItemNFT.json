@@ -1449,6 +1449,64 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "players",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IBankFactory",
+        "name": "bankFactory",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "shop",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "promotions",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "instantActions",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "territories",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lockedBankVaults",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "bazaar",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "instantVRFActions",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "passiveActions",
+        "type": "address"
+      }
+    ],
+    "name": "initializeAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "account",
         "type": "address"
       },
@@ -1720,121 +1778,12 @@
   {
     "inputs": [
       {
-        "internalType": "contract IBankFactory",
-        "name": "bankFactory",
-        "type": "address"
-      }
-    ],
-    "name": "setBankFactory",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "string",
         "name": "baseURI",
         "type": "string"
       }
     ],
     "name": "setBaseURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "bazaar",
-        "type": "address"
-      }
-    ],
-    "name": "setBazaar",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "instantActions",
-        "type": "address"
-      }
-    ],
-    "name": "setInstantActions",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "instantVRFActions",
-        "type": "address"
-      }
-    ],
-    "name": "setInstantVRFActions",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "passiveActions",
-        "type": "address"
-      }
-    ],
-    "name": "setPassiveActions",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "players",
-        "type": "address"
-      }
-    ],
-    "name": "setPlayers",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "promotions",
-        "type": "address"
-      }
-    ],
-    "name": "setPromotions",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "territories",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "lockedBankVaults",
-        "type": "address"
-      }
-    ],
-    "name": "setTerritoriesAndLockedBankVaults",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

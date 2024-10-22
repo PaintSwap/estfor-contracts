@@ -209,6 +209,7 @@ async function main() {
   }
 
   const initialMMR = 500;
+  const maxActionAmount = 64;
   const minItemQuantityBeforeSellsAllowed = 500n;
   const sellingCutoffDuration = 48 * 3600; // 48 hours
 
@@ -563,7 +564,8 @@ async function main() {
       await petNFT.getAddress(),
       ORACLE_ADDRESS,
       await vrf.getAddress(),
-      await vrfRequestInfo.getAddress()
+      await vrfRequestInfo.getAddress(),
+      maxActionAmount
     ],
     {
       kind: "uups",
@@ -749,9 +751,6 @@ async function main() {
   tx = await world.setWishingWell(wishingWell);
   await tx.wait();
   console.log("world setWishingWell");
-  tx = await itemNFT.setPlayers(players);
-  await tx.wait();
-  console.log("itemNFT setPlayers");
   tx = await playerNFT.setPlayers(players);
   await tx.wait();
   console.log("playerNFT setPlayers");
@@ -771,25 +770,7 @@ async function main() {
   tx = await clans.setBankFactory(bankFactory);
   await tx.wait();
   console.log("clans setBankFactory");
-  tx = await itemNFT.setBankFactory(bankFactory);
-  await tx.wait();
-  console.log("itemNFT setBankFactory");
 
-  tx = await itemNFT.setPromotions(promotions);
-  await tx.wait();
-  console.log("itemNFT setPromotions");
-
-  tx = await itemNFT.setPassiveActions(passiveActions);
-  await tx.wait();
-  console.log("itemNFT setPassiveActions");
-
-  tx = await itemNFT.setInstantActions(instantActions);
-  await tx.wait();
-  console.log("itemNFT setInstantActions");
-
-  tx = await itemNFT.setInstantVRFActions(instantVRFActions);
-  await tx.wait();
-  console.log("itemNFT setInstantVRFActions");
   tx = await petNFT.setInstantVRFActions(instantVRFActions);
   await tx.wait();
   console.log("petNFT setInstantVRFActions");
@@ -817,18 +798,28 @@ async function main() {
   tx = await clans.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
-  tx = await itemNFT.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
+
+  tx = await itemNFT.initializeAddresses(
+    players,
+    bankFactory,
+    shop,
+    promotions,
+    instantActions,
+    territories,
+    lockedBankVaults,
+    BAZAAR_ADDRESS,
+    instantVRFActions,
+    passiveActions
+  );
   await tx.wait();
-  console.log("itemNFT.setTerritoriesAndLockedBankVaults");
+  console.log("itemNFT.initializeAddresses");
+
   tx = await royaltyReceiver.setTerritories(territories);
   await tx.wait();
   console.log("royaltyReceiver.setTerritories");
   tx = await petNFT.setTerritories(territories);
   await tx.wait();
   console.log("petNFT.setTerritories");
-
-  tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
-  console.log("Set Bazaar");
 
   tx = await lockedBankVaults.setAddresses(territories, combatantsHelper);
   await tx.wait();

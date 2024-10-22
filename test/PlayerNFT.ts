@@ -314,6 +314,12 @@ describe("PlayerNFT", function () {
       wishingWell,
       bankFactory,
       petNFT,
+      promotions,
+      instantActions,
+      territories,
+      lockedBankVaults,
+      instantVRFActions,
+      passiveActions,
       estforLibrary
     } = await loadFixture(deployContracts);
 
@@ -367,9 +373,19 @@ describe("PlayerNFT", function () {
       }
     );
 
-    await itemNFT.setPlayers(await players.getAddress());
-    await itemNFT.setBankFactory(await bankFactory.getAddress());
-    await itemNFT.setPromotions(await players.getAddress());
+    await itemNFT.initializeAddresses(
+      players,
+      bankFactory,
+      shop,
+      promotions,
+      instantActions,
+      territories,
+      lockedBankVaults,
+      ethers.ZeroAddress,
+      instantVRFActions,
+      passiveActions
+    );
+
     await playerNFTNotBeta.setPlayers(await players.getAddress());
     await playerNFTNotBeta.setAvatars([avatarId], [avatarInfo]);
 

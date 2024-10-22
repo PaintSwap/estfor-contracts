@@ -126,7 +126,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as ItemNFT;
 
-  await shop.setItemNFT(await itemNFT.getAddress());
+  await shop.setItemNFT(itemNFT);
   // Create NFT contract which contains all the players
   const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -474,25 +474,18 @@ export const playersFixture = async function () {
     }
   )) as unknown as PassiveActions;
 
-  await world.setQuests(await quests.getAddress());
-  await world.setWishingWell(await wishingWell.getAddress());
+  await world.setQuests(quests);
+  await world.setWishingWell(wishingWell);
 
-  await itemNFT.setPlayers(await players.getAddress());
-  await playerNFT.setPlayers(await players.getAddress());
-  await petNFT.setPlayers(await players.getAddress());
-  await quests.setPlayers(await players.getAddress());
-  await clans.setPlayers(await players.getAddress());
-  await wishingWell.setPlayers(await players.getAddress());
+  await playerNFT.setPlayers(players);
+  await petNFT.setPlayers(players);
+  await quests.setPlayers(players);
+  await clans.setPlayers(players);
+  await wishingWell.setPlayers(players);
 
-  await itemNFT.setBankFactory(await bankFactory.getAddress());
-  await clans.setBankFactory(await bankFactory.getAddress());
+  await clans.setBankFactory(bankFactory);
 
-  await itemNFT.setPromotions(await promotions.getAddress());
-  await itemNFT.setPassiveActions(await passiveActions.getAddress());
-  await itemNFT.setInstantActions(await instantActions.getAddress());
-
-  await itemNFT.setInstantVRFActions(await instantVRFActions.getAddress());
-  await petNFT.setInstantVRFActions(await instantVRFActions.getAddress());
+  await petNFT.setInstantVRFActions(instantVRFActions);
 
   await playerNFT.setBrushDistributionPercentages(25, 50, 25);
   await petNFT.setBrushDistributionPercentages(25, 50, 25);
@@ -504,14 +497,27 @@ export const playersFixture = async function () {
   await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
   await treasury.initializeAddresses(territories, shop);
 
-  await bankRegistry.setLockedBankVaults(await lockedBankVaults.getAddress());
+  await bankRegistry.setLockedBankVaults(lockedBankVaults);
 
-  await clans.setTerritoriesAndLockedBankVaults(await territories.getAddress(), await lockedBankVaults.getAddress());
-  await itemNFT.setTerritoriesAndLockedBankVaults(await territories.getAddress(), await lockedBankVaults.getAddress());
-  await royaltyReceiver.setTerritories(await territories.getAddress());
-  await petNFT.setTerritories(await territories.getAddress());
-  await territories.setCombatantsHelper(await combatantsHelper.getAddress());
-  await lockedBankVaults.setAddresses(await territories.getAddress(), await combatantsHelper.getAddress());
+  await clans.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
+
+  await itemNFT.initializeAddresses(
+    players,
+    bankFactory,
+    shop,
+    promotions,
+    instantActions,
+    territories,
+    lockedBankVaults,
+    ethers.ZeroAddress,
+    instantVRFActions,
+    passiveActions
+  );
+
+  await royaltyReceiver.setTerritories(territories);
+  await petNFT.setTerritories(territories);
+  await territories.setCombatantsHelper(combatantsHelper);
+  await lockedBankVaults.setAddresses(territories, combatantsHelper);
 
   await players.setAlphaCombatHealing(0); // This was introduced later, so to not mess up existing tests reset this to 0
 

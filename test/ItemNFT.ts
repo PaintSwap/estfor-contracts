@@ -318,7 +318,7 @@ describe("ItemNFT", function () {
         .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferFromNotApproved");
 
-    await itemNFT.setBazaar(alice.getAddress());
+    await itemNFT.initializeAddresses(alice, alice, alice, alice, alice, alice, alice, alice, alice, alice);
     await expect(
       itemNFT
         .connect(alice)
