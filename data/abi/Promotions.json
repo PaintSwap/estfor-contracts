@@ -625,19 +625,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "brushPaid",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "brushBurnt",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "brushTreasure",
+        "name": "brushCost",
         "type": "uint256"
       }
     ],

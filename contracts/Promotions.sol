@@ -28,9 +28,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256[] itemTokenIds,
     uint256[] amounts,
     uint256[] daysRedeemed,
-    uint256 brushPaid,
-    uint256 brushBurnt,
-    uint256 brushTreasure
+    uint256 brushCost
   );
 
   event AddPromotion(PromotionInfoInput promotionInfo);
@@ -167,7 +165,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       daysToSet[i] = FINAL_PROMOTION_DAY_INDEX;
     }
 
-    emit PromotionRedeemed(to, playerId, Promotion.STARTER, redeemCode, itemTokenIds, amounts, daysToSet, 0, 0, 0);
+    emit PromotionRedeemed(to, playerId, Promotion.STARTER, redeemCode, itemTokenIds, amounts, daysToSet, 0);
   }
 
   function adminMintPromotionalPack(
@@ -209,7 +207,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         mstore(amounts, 0)
       }
     }
-    emit PromotionRedeemed(to, playerId, promotion, redeemCode, itemTokenIds, amounts, daysToSet, 0, 0, 0);
+    emit PromotionRedeemed(to, playerId, promotion, redeemCode, itemTokenIds, amounts, daysToSet, 0);
   }
 
   // 0 indexed
@@ -262,18 +260,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
     _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
 
-    emit PromotionRedeemed(
-      _msgSender(),
-      playerId,
-      promotion,
-      "",
-      itemTokenIds,
-      amounts,
-      daysToSet,
-      totalCost,
-      0,
-      totalCost / 2
-    );
+    emit PromotionRedeemed(_msgSender(), playerId, promotion, "", itemTokenIds, amounts, daysToSet, totalCost);
   }
 
   function _checkPromotionMintStatus(PromotionMintStatus promotionMintStatus) private pure {
@@ -328,7 +315,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
     }
 
-    emit PromotionRedeemed(_msgSender(), playerId, promotion, "", itemTokenIds, amounts, daysToSet, 0, 0, 0);
+    emit PromotionRedeemed(_msgSender(), playerId, promotion, "", itemTokenIds, amounts, daysToSet, 0);
   }
 
   function mintPromotionViewNow(
