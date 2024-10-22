@@ -59,7 +59,7 @@ async function main() {
   console.log("Harvest");
 
   // Lock some brush in a vault
-  tx = await lockedBankVaults.connect(owner).setAddresses(owner.address, await combatantsHelper.getAddress());
+  tx = await lockedBankVaults.connect(owner).initializeAddresses(owner.address, await combatantsHelper.getAddress());
   await tx.wait();
   console.log("set territories");
   tx = await brush.connect(owner).approve(await lockedBankVaults.getAddress(), parseEther("100"));
@@ -70,7 +70,7 @@ async function main() {
   console.log("LockFunds");
   tx = await lockedBankVaults
     .connect(owner)
-    .setAddresses(await territories.getAddress(), await combatantsHelper.getAddress());
+    .initializeAddresses(await territories.getAddress(), await combatantsHelper.getAddress());
   await tx.wait();
   console.log("SetTerritories");
 

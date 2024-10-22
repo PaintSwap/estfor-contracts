@@ -644,7 +644,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     emit SetKValues(_Ka, _Kd);
   }
 
-  function setAddresses(ITerritories _territories, address _combatantsHelper) external onlyOwner {
+  function initializeAddresses(ITerritories _territories, address _combatantsHelper) external onlyOwner {
     territories = _territories;
     combatantsHelper = _combatantsHelper;
   }

@@ -818,13 +818,13 @@ async function main() {
   await tx.wait();
   console.log("petNFT.setTerritories");
 
-  tx = await lockedBankVaults.setAddresses(territories, combatantsHelper);
+  tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper);
   await tx.wait();
-  console.log("lockedBankVaults setAddresses");
+  console.log("lockedBankVaults initializeAddresses");
 
   tx = await territories.setCombatantsHelper(combatantsHelper);
   await tx.wait();
-  console.log("territories.setAddresses");
+  console.log("territories.initializeAddresses");
 
   const territoryIds = allTerritories.map((territory) => {
     return territory.territoryId;

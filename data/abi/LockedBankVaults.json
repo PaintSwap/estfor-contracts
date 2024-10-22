@@ -1115,6 +1115,24 @@
   {
     "inputs": [
       {
+        "internalType": "contract ITerritories",
+        "name": "_territories",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_combatantsHelper",
+        "type": "address"
+      }
+    ],
+    "name": "initializeAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256[]",
         "name": "_clanIds",
         "type": "uint256[]"
@@ -1255,24 +1273,6 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ITerritories",
-        "name": "_territories",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_combatantsHelper",
-        "type": "address"
-      }
-    ],
-    "name": "setAddresses",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
