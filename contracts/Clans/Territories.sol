@@ -132,7 +132,6 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint40 attackingCooldownTimestamp;
     uint40 assignCombatantsCooldownTimestamp;
     bool currentlyAttacking;
-    uint88 gasPaid; // TODO remove in migration
     uint40 blockAttacksTimestamp;
     uint8 blockAttacksCooldownHours; // Have many hours after blockAttacksTimestamp there is a cooldown for
     uint48[] playerIds;

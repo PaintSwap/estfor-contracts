@@ -41,14 +41,13 @@ struct VaultClanInfo {
   uint40 attackingCooldownTimestamp;
   uint40 assignCombatantsCooldownTimestamp;
   bool currentlyAttacking;
-  uint88 gasPaid; // TODO remove in migration
   uint24 defendingVaultsOffset;
   uint40 blockAttacksTimestamp;
   uint8 blockAttacksCooldownHours;
   bool isInMMRArray;
+  uint40 superAttackCooldownTimestamp;
   uint48[] playerIds;
   Vault[] defendingVaults; // Append only, and use defendingVaultsOffset to decide where the real start is
-  uint40 superAttackCooldownTimestamp;
 }
 
 uint256 constant MAX_CLAN_COMBATANTS = 20;
