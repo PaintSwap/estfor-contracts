@@ -616,7 +616,7 @@ async function main() {
       await brush.getAddress(),
       await bankFactory.getAddress(),
       await itemNFT.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       DEV_ADDRESS,
       ORACLE_ADDRESS,
       await vrf.getAddress(),
@@ -787,6 +787,10 @@ async function main() {
   tx = await promotions.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
   console.log("promotions.setBrushDistributionPercentages");
+
+  tx = await lockedBankVaults.setBrushDistributionPercentages(25, 50, 25);
+  await tx.wait();
+  console.log("lockedBankVaults.setBrushDistributionPercentages");
 
   tx = await shop.setItemNFT(itemNFT);
   await tx.wait();

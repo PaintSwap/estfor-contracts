@@ -38,7 +38,10 @@ describe("PetNFT", function () {
 
   it("Must be a minter to mint", async function () {
     const {petNFT, frank} = await loadFixture(deployContracts);
-    await expect(petNFT.connect(frank).mint(frank.address, 1, 1)).to.be.revertedWithCustomError(petNFT, "NotMinter");
+    await expect(petNFT.connect(frank).mintBatch(frank.address, [1], [1])).to.be.revertedWithCustomError(
+      petNFT,
+      "NotMinter"
+    );
   });
 
   it("Mint a standard pet", async function () {
@@ -46,7 +49,7 @@ describe("PetNFT", function () {
 
     const randomWord = 1;
     await petNFT.addBasePets([pet]);
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
     expect(await petNFT.getNextPetId()).to.eq(2);
     expect(await petNFT.balanceOf(alice.address, petId)).to.eq(1);
   });
@@ -55,7 +58,7 @@ describe("PetNFT", function () {
     const {petNFT, alice} = await loadFixture(deployContracts);
     const randomWord = 1;
     await petNFT.addBasePets([pet]);
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
     const uri = await petNFT.uri(petId);
 
     const skin = "OG";
@@ -115,7 +118,7 @@ describe("PetNFT", function () {
   it("Mint non-existent pet", async function () {
     const {petNFT, alice} = await loadFixture(deployContracts);
     const randomWord = 1;
-    await expect(petNFT.connect(alice).mint(alice.address, baseId, randomWord)).to.be.revertedWithCustomError(
+    await expect(petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord])).to.be.revertedWithCustomError(
       petNFT,
       "PetDoesNotExist"
     );
@@ -148,12 +151,12 @@ describe("PetNFT", function () {
 
     const randomWord = 1;
     await petNFTNotBeta.addBasePets([pet]);
-    await expect(petNFTNotBeta.mint(alice.address, baseId, randomWord)).to.be.revertedWithCustomError(
+    await expect(petNFTNotBeta.mintBatch(alice.address, [baseId], [randomWord])).to.be.revertedWithCustomError(
       petNFTNotBeta,
       "NotMinter"
     );
     await petNFTNotBeta.setInstantVRFActions(alice.address);
-    await petNFTNotBeta.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFTNotBeta.connect(alice).mintBatch(alice.address, [baseId], [randomWord]);
 
     const uriNotBeta = await petNFTNotBeta.uri(petId);
     const metadataNotBeta = JSON.parse(Buffer.from(uriNotBeta.split(";base64,")[1], "base64").toString());
@@ -228,7 +231,7 @@ describe("PetNFT", function () {
     const modifiedPet = deepClonePet(pet);
     modifiedPet.skillMinLevels[0] = 2;
     await petNFT.addBasePets([modifiedPet]);
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
 
     await expect(petNFT.connect(alice).assignPet(alice.address, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
@@ -245,7 +248,7 @@ describe("PetNFT", function () {
     const randomWord = 0;
     const modifiedPet = deepClonePet(pet);
     await petNFT.addBasePets([modifiedPet]);
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
 
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
@@ -282,7 +285,7 @@ describe("PetNFT", function () {
     modifiedPet.skillFixedMaxs[0] = 0;
     await petNFT.addBasePets([modifiedPet]);
 
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.reverted;
   });
 
@@ -292,7 +295,7 @@ describe("PetNFT", function () {
     const randomWord = 0;
     const modifiedPet = deepClonePet(pet);
     await petNFT.addBasePets([modifiedPet]);
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
     await expect(petNFT.assignPet(alice.address, playerId, petId, 0)).to.not.be.reverted;
 
     // 0 percentage min/max is fine
@@ -332,7 +335,7 @@ describe("PetNFT", function () {
 
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
 
       await expect(petNFT.connect(alice).editPet(playerId, petId, name)).to.be.revertedWithCustomError(
         brush,
@@ -355,7 +358,7 @@ describe("PetNFT", function () {
         .to.emit(petNFT, "EditPlayerPet")
         .withArgs(playerId, petId, alice.address, name);
 
-      await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
       await expect(petNFT.connect(alice).editPet(playerId, petId + 1, name)).to.be.revertedWithCustomError(
         petNFT,
         "NameAlreadyExists"
@@ -368,7 +371,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
       await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       const newName = "CHOO CHOO";
@@ -383,7 +386,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
       await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       const newName = "CHOO CHOO";
@@ -400,7 +403,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
       await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       let newName = "1234567890123456";
@@ -419,7 +422,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
       await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       let illegalName = "Pet sdfs";
@@ -441,7 +444,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
       await brush.mint(alice.address, editNameBrushPrice * 3n);
 
       const newName = "New name";
@@ -466,8 +469,8 @@ describe("PetNFT", function () {
     expect(await petNFT["totalSupply()"]()).to.be.eq(0);
     const randomWord = 1;
     await petNFT.addBasePets([pet]);
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
-    await petNFT.connect(alice).mint(alice.address, baseId, randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
     expect(await petNFT["totalSupply()"]()).to.be.eq(2);
     expect(await petNFT["totalSupply(uint256)"](1)).to.be.eq(1);
     expect(await petNFT["totalSupply(uint256)"](2)).to.be.eq(1);

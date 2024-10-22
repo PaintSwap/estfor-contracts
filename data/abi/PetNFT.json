@@ -616,84 +616,6 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "petId",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "enum Skill",
-            "name": "skillEnhancement1",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "skillFixedEnhancement1",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "skillPercentageEnhancement1",
-            "type": "uint8"
-          },
-          {
-            "internalType": "enum Skill",
-            "name": "skillEnhancement2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "skillFixedEnhancement2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "skillPercentageEnhancement2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint40",
-            "name": "lastAssignmentTimestamp",
-            "type": "uint40"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint24",
-            "name": "baseId",
-            "type": "uint24"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct Pet",
-        "name": "pet",
-        "type": "tuple"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      }
-    ],
-    "name": "NewPet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "startPetId",
         "type": "uint256"
       },
@@ -1399,29 +1321,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "basePetId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "randomWord",
-        "type": "uint256"
-      }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

@@ -29,7 +29,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   using UnsafeMath for uint256;
   using UnsafeMath for uint40;
 
-  event NewPet(uint256 petId, Pet pet, string name, address from);
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
@@ -270,7 +269,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       uint256 petId = startPetId + i;
       Pet memory pet = _createPet(petId, basePetIds[i], uint16(randomWords[i]));
       pets[i] = pet;
-      pets[petId] = pet;
       tokenIds[i] = petId;
       amounts[i] = 1;
       _names[i] = PetNFTLibrary._defaultPetName(petId);
@@ -279,13 +277,6 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _mintBatch(to, tokenIds, amounts, "");
     _nextPetId = uint40(startPetId + pets.length);
     emit NewPets(startPetId, pets, names, to);
-  }
-
-  function mint(address to, uint256 basePetId, uint256 randomWord) external onlyMinters {
-    uint256 petId = _nextPetId++;
-    Pet memory pet = _createPet(petId, basePetId, uint16(randomWord));
-    _mint(to, petId, 1, "");
-    emit NewPet(petId, pet, PetNFTLibrary._defaultPetName(petId), _msgSender());
   }
 
   function burnBatch(address from, uint256[] memory tokenIds) external onlyBurners(from) {

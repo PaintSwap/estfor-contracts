@@ -54,7 +54,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint256 defendingClanId,
     uint256[] randomWords,
     uint256 percentageToTake,
-    uint256 brushBurnt
+    uint256 brushLost
   );
 
   event AssignCombatants(
@@ -82,6 +82,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   event UpdateMMR(uint256 requestId, int attackingMMRDiff, int defendingMMRDiff);
   event SetMMRs(uint256[] clanIds, uint16[] mmrs);
   event SetKValues(uint256 Ka, uint256 Kd);
+  event SetBrushDistributionPercentages(
+    uint256 brushBurntPercentage,
+    uint256 brushTreasuryPercentage,
+    uint256 brushDevPercentage
+  );
 
   error PlayerOnTerritory();
   error TooManyCombatants();
@@ -100,6 +105,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   error RequestIdNotKnown();
   error CallerNotSamWitchVRF();
   error AttacksPrevented();
+  error PercentNotTotal100();
 
   struct PendingAttack {
     uint40 clanId;
@@ -126,8 +132,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   IBankFactory private bankFactory;
   address private combatantsHelper;
   uint24 private combatantChangeCooldown;
-  address private pool;
+  address private treasury;
   address private dev;
+  uint8 private _brushBurntPercentage;
+  uint8 private _brushTreasuryPercentage;
+  uint8 private _brushDevPercentage;
 
   VRFRequestInfo vrfRequestInfo;
   address private oracle;
@@ -219,7 +228,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     IBrushToken _brush,
     IBankFactory _bankFactory,
     ItemNFT _itemNFT,
-    address _pool,
+    address _treasury,
     address _dev,
     address _oracle,
     ISamWitchVRF _samWitchVRF,
@@ -237,7 +246,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     brush = _brush;
     bankFactory = _bankFactory;
     itemNFT = _itemNFT;
-    pool = _pool;
+    treasury = _treasury;
     dev = _dev;
     oracle = _oracle;
     samWitchVRF = _samWitchVRF;
@@ -452,17 +461,18 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       clanInfos
     );
 
-    uint256 brushBurnt;
+    uint256 brushLost;
     if (!didAttackersWin && totalWon != 0) {
-      // Lost so take a percentage from the loser's vaults
-      uint256 amountToTreasure = totalWon / 2;
-      uint256 amountToDao = totalWon / 4;
-      brushBurnt = totalWon - (amountToTreasure + amountToDao);
+      // Lost so take a percentage from the loser's vaults and distribute it
+      uint256 amountToTreasure = (totalWon * _brushTreasuryPercentage) / 100;
+      uint256 amountToDao = (totalWon * _brushDevPercentage) / 100;
+      uint256 brushBurnt = (totalWon * _brushBurntPercentage) / 100;
 
-      // Send to the treasure
-      brush.transfer(pool, amountToTreasure);
+      brush.transfer(treasury, amountToTreasure);
       brush.transfer(dev, amountToDao);
       brush.burn(brushBurnt);
+
+      brushLost = totalWon;
     }
 
     emit BattleResult(
@@ -478,7 +488,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       defendingClanId,
       _randomWords,
       percentageToTake,
-      brushBurnt
+      brushLost
     );
 
     emit UpdateMMR(uint256(_requestId), attackingMMRDiff, defendingMMRDiff);
@@ -656,6 +666,19 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
     _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  }
+
+  function setBrushDistributionPercentages(
+    uint8 brushBurntPercentage,
+    uint8 brushTreasuryPercentage,
+    uint8 brushDevPercentage
+  ) external onlyOwner {
+    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
+
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
   // TODO: Can delete if necessary

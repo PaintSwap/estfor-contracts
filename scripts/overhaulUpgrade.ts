@@ -394,7 +394,7 @@ async function main() {
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
   tx = await shop
     .connect(owner)
-    .addBuyableItem(allShopItems.find((shopItem) => shopItem.tokenId == EstforConstants.FLUX) as ShopItem);
+    .addBuyableItems(allShopItems.filter((shopItem) => shopItem.tokenId == EstforConstants.FLUX));
   await tx.wait();
   console.log("Add flux");
 

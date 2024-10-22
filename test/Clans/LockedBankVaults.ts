@@ -1187,7 +1187,7 @@ describe("LockedBankVaults", function () {
       tierId,
       brush,
       mockVRF,
-      shop,
+      treasury,
       players
     } = await loadFixture(clanFixture);
 
@@ -1228,9 +1228,9 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(800);
 
     // Check it went to the correct places
-    expect(await brush.balanceOf(await shop.getAddress())).to.eq(25);
-    expect(await brush.balanceOf(dev.address)).to.eq(12);
-    expect(await brush.amountBurnt()).to.eq(13);
+    expect(await brush.balanceOf(treasury)).to.eq(25);
+    expect(await brush.balanceOf(dev)).to.eq(12);
+    expect(await brush.amountBurnt()).to.eq(12);
   });
 
   it("Win an attack with some locked vaults", async () => {

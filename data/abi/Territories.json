@@ -1024,11 +1024,6 @@
             "type": "bool"
           },
           {
-            "internalType": "uint88",
-            "name": "gasPaid",
-            "type": "uint88"
-          },
-          {
             "internalType": "uint40",
             "name": "blockAttacksTimestamp",
             "type": "uint40"

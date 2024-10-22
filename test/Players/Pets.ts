@@ -32,7 +32,7 @@ describe("Pets", function () {
     basePet.skillPercentageMins = [100, 0];
     basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
-    await petNFT.mint(alice.address, basePet.baseId, 0);
+    await petNFT.mintBatch(alice, [basePet.baseId], [0]);
 
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
@@ -65,7 +65,7 @@ describe("Pets", function () {
     basePet.skillPercentageMins = [100, 0];
     basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
-    await petNFT.mint(alice.address, basePet.baseId, 0);
+    await petNFT.mintBatch(alice, [basePet.baseId], [0]);
 
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
@@ -109,7 +109,7 @@ describe("Pets", function () {
     basePet.skillPercentageMins = [100, 0];
     basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
-    await petNFT.mint(alice.address, basePet.baseId, 0);
+    await petNFT.mintBatch(alice, [basePet.baseId], [0]);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
@@ -155,7 +155,7 @@ describe("Pets", function () {
     basePet.skillPercentageMins = [100, 0];
     basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
-    await petNFT.mint(alice.address, basePet.baseId, 0);
+    await petNFT.mintBatch(alice, [basePet.baseId], [0]);
 
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
@@ -200,7 +200,7 @@ describe("Pets", function () {
     basePet.skillPercentageMins = [100, 0];
     basePet.skillPercentageMaxs = [101, 0];
     await petNFT.addBasePets([basePet]);
-    await petNFT.mint(alice.address, basePet.baseId, 0);
+    await petNFT.mintBatch(alice, [basePet.baseId], [0]);
 
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
@@ -238,7 +238,7 @@ describe("Pets", function () {
     basePet.skillPercentageMins = [60, 0];
     basePet.skillPercentageMaxs = [60, 0];
     await petNFT.addBasePets([basePet]);
-    await petNFT.mint(alice.address, basePet.baseId, 0);
+    await petNFT.mintBatch(alice, [basePet.baseId], [0]);
 
     await players.testModifyXP(alice.address, playerId, Skill.MELEE, getXPFromLevel(5), true);
     const petId = 1;
@@ -262,7 +262,7 @@ describe("Pets", function () {
     const basePet = allBasePets.find((pet) => pet.skin === PetSkin.ANNIV1) as EstforTypes.BasePetInput;
     expect(basePet.skin).to.eq(PetSkin.ANNIV1);
     await petNFT.addBasePets([basePet]);
-    await petNFT.mint(alice.address, basePet.baseId, 0);
+    await petNFT.mintBatch(alice, [basePet.baseId], [0]);
 
     const petId = 1;
     await expect(petNFT.connect(alice).safeTransferFrom(alice.address, owner.address, petId, 1, "0x"))

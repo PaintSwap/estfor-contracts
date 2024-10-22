@@ -400,7 +400,7 @@ export const playersFixture = async function () {
       await brush.getAddress(),
       await bankFactory.getAddress(),
       await itemNFT.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       dev.address,
       oracleAddress,
       await mockVRF.getAddress(),
@@ -490,6 +490,7 @@ export const playersFixture = async function () {
   await petNFT.setBrushDistributionPercentages(25, 50, 25);
   await shop.setBrushDistributionPercentages(25, 50, 25);
   await promotions.setBrushDistributionPercentages(25, 50, 25);
+  await lockedBankVaults.setBrushDistributionPercentages(25, 50, 25);
 
   const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
   const treasuryPercentages = [10, 90];

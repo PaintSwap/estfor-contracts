@@ -147,6 +147,11 @@
   },
   {
     "inputs": [],
+    "name": "PercentNotTotal100",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PlayerOnTerritory",
     "type": "error"
   },
@@ -365,7 +370,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "brushBurnt",
+        "name": "brushLost",
         "type": "uint256"
       }
     ],
@@ -564,6 +569,31 @@
       }
     ],
     "name": "RemoveCombatant",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushBurntPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushTreasuryPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushDevPercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetBrushDistributionPercentages",
     "type": "event"
   },
   {
@@ -915,11 +945,6 @@
             "type": "bool"
           },
           {
-            "internalType": "uint88",
-            "name": "gasPaid",
-            "type": "uint88"
-          },
-          {
             "internalType": "uint24",
             "name": "defendingVaultsOffset",
             "type": "uint24"
@@ -938,6 +963,11 @@
             "internalType": "bool",
             "name": "isInMMRArray",
             "type": "bool"
+          },
+          {
+            "internalType": "uint40",
+            "name": "superAttackCooldownTimestamp",
+            "type": "uint40"
           },
           {
             "internalType": "uint48[]",
@@ -975,11 +1005,6 @@
             "internalType": "struct Vault[]",
             "name": "defendingVaults",
             "type": "tuple[]"
-          },
-          {
-            "internalType": "uint40",
-            "name": "superAttackCooldownTimestamp",
-            "type": "uint40"
           }
         ],
         "internalType": "struct VaultClanInfo",
@@ -1058,7 +1083,7 @@
       },
       {
         "internalType": "address",
-        "name": "_pool",
+        "name": "_treasury",
         "type": "address"
       },
       {
@@ -1286,6 +1311,29 @@
       }
     ],
     "name": "setAttackInProgress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "brushBurntPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushTreasuryPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushDevPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "setBrushDistributionPercentages",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
