@@ -17,15 +17,12 @@ async function main() {
   console.log(`Deploying player implementation contracts with the account: ${owner.address} on chain id ${chainId}`);
 
   // Players
-  const newPlayersLibrary = false;
+  const newPlayersLibrary = true;
   const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
   let playersLibrary: PlayersLibrary;
   if (newPlayersLibrary) {
     playersLibrary = await PlayersLibrary.deploy();
     await playersLibrary.deployed();
-    if (chainId == 250) {
-      await verifyContracts([playersLibrary.address]);
-    }
   } else {
     playersLibrary = await PlayersLibrary.attach(PLAYERS_LIBRARY_ADDRESS);
   }
@@ -41,16 +38,6 @@ async function main() {
   await playersImplRewards.deployed();
   console.log(`PlayersImplRewards = "${playersImplRewards.address.toLowerCase()}"`);
 */
-  if (chainId == 250) {
-    await verifyContracts([
-      playersImplQueueActions.address,
-      playersImplProcessActions.address,
-      playersImplRewards.address,
-      playersImplMisc.address,
-      playersImplMisc1.address,
-    ]);
-  }
-
   /* Use these when keeping old implementations
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
     PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
@@ -67,6 +54,20 @@ async function main() {
     playersImplMisc1.address
   );
   await tx.wait();
+
+  if (chainId == 250) {
+    await verifyContracts([
+      playersImplQueueActions.address,
+      playersImplProcessActions.address,
+      playersImplRewards.address,
+      playersImplMisc.address,
+      playersImplMisc1.address,
+    ]);
+  }
+
+  if (chainId == 250) {
+    await verifyContracts([playersLibrary.address]);
+  }
 }
 
 main().catch((error) => {
