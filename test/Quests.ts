@@ -237,13 +237,6 @@ describe("Quests", function () {
     it("TODO - Lowering amounts where amount completed is already above should not cause underflows (burnAmount)", async function () {});
   });
 
-  describe("Set new oracle random words", function () {
-    it("Should fail to set the random quest for non-world", async function () {
-      const {alice, quests} = await loadFixture(questsFixture);
-      await expect(quests.connect(alice).newOracleRandomWords(1)).to.be.revertedWithCustomError(quests, "NotWorld");
-    });
-  });
-
   describe("Brush buying quest", function () {
     it("Quest not activated", async function () {
       const {alice, playerId, quests, players} = await loadFixture(questsFixture);

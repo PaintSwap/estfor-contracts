@@ -26,9 +26,9 @@ const lockFundsForClan = async (
 ) => {
   await brush.mint(alice.address, amount);
   await brush.connect(alice).approve(await lockedBankVaults.getAddress(), amount);
-  await lockedBankVaults.setAddresses(alice.address, await combatantsHelper.getAddress()); // Set it to alice so we can lock funds
+  await lockedBankVaults.initializeAddresses(alice.address, await combatantsHelper.getAddress()); // Set it to alice so we can lock funds
   await lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, amount);
-  await lockedBankVaults.setAddresses(await territories.getAddress(), await combatantsHelper.getAddress()); // Set it back after locking funds
+  await lockedBankVaults.initializeAddresses(await territories.getAddress(), await combatantsHelper.getAddress()); // Set it back after locking funds
 };
 
 describe("LockedBankVaults", function () {
@@ -37,7 +37,7 @@ describe("LockedBankVaults", function () {
 
     await brush.mint(alice.address, 1000);
     await brush.connect(alice).approve(await lockedBankVaults.getAddress(), 1000);
-    await lockedBankVaults.setAddresses(alice.address, await combatantsHelper.getAddress());
+    await lockedBankVaults.initializeAddresses(alice.address, await combatantsHelper.getAddress());
     await lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, 400);
     expect(await brush.balanceOf(alice.address)).to.eq(600);
     expect(await brush.balanceOf(await lockedBankVaults.getAddress())).to.eq(400);

@@ -474,7 +474,6 @@ export const playersFixture = async function () {
     }
   )) as unknown as PassiveActions;
 
-  await world.setQuests(quests);
   await world.setWishingWell(wishingWell);
 
   await playerNFT.setPlayers(players);
@@ -517,7 +516,8 @@ export const playersFixture = async function () {
   await royaltyReceiver.setTerritories(territories);
   await petNFT.setTerritories(territories);
   await territories.setCombatantsHelper(combatantsHelper);
-  await lockedBankVaults.setAddresses(territories, combatantsHelper);
+  await lockedBankVaults.initializeAddresses(territories, combatantsHelper);
+  await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories], true);
 
   await players.setAlphaCombatHealing(0); // This was introduced later, so to not mess up existing tests reset this to 0
 

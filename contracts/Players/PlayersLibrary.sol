@@ -577,7 +577,6 @@ library PlayersLibrary {
     uint256 _healthRestoredFromItem,
     uint256 _healingDoneFromHealth
   ) private pure returns (uint256 totalFoodRequired) {
-    // totalFoodRequired = (totalHealthLost * HEALING_SCALE) / (healthRestoredFromItem * healingDoneFromHealth)
     uint256 numerator = _totalHealthLost * HEALING_SCALE;
     uint256 denominator = _healthRestoredFromItem * _healingDoneFromHealth;
     totalFoodRequired = Math.ceilDiv(numerator, denominator);
