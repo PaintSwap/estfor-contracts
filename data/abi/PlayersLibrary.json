@@ -109,7 +109,7 @@
       },
       {
         "internalType": "address",
-        "name": "itemNFTAddress",
+        "name": "itemNFT",
         "type": "address"
       },
       {
@@ -204,12 +204,12 @@
       },
       {
         "internalType": "address",
-        "name": "itemNFTAddress",
+        "name": "itemNFT",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "worldAddress",
+        "name": "world",
         "type": "address"
       },
       {
@@ -607,7 +607,7 @@
       },
       {
         "internalType": "address",
-        "name": "itemNFTAddress",
+        "name": "itemNFT",
         "type": "address"
       },
       {
@@ -805,7 +805,7 @@
       },
       {
         "internalType": "address",
-        "name": "itemNFTAddress",
+        "name": "itemNFT",
         "type": "address"
       },
       {
@@ -861,7 +861,7 @@
       },
       {
         "internalType": "address",
-        "name": "itemNFTAddress",
+        "name": "itemNFT",
         "type": "address"
       },
       {
@@ -1177,7 +1177,7 @@
       },
       {
         "internalType": "address",
-        "name": "itemNFTAddress",
+        "name": "itemNFT",
         "type": "address"
       },
       {

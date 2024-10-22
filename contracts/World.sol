@@ -10,11 +10,12 @@ import {WorldLibrary} from "./WorldLibrary.sol";
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
+import {IWorld} from "./interfaces/IWorld.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract World is UUPSUpgradeable, OwnableUpgradeable {
+contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   using UnsafeMath for U256;
   using UnsafeMath for uint256;
   using SkillLibrary for uint8;
@@ -247,11 +248,11 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     return _actions[actionId];
   }
 
-  function getXPPerHour(uint16 actionId, uint16 actionChoiceId) external view returns (uint24 xpPerHour) {
+  function getXPPerHour(uint16 actionId, uint16 actionChoiceId) external view override returns (uint24 xpPerHour) {
     return actionChoiceId != 0 ? _actionChoices[actionId][actionChoiceId].xpPerHour : _actions[actionId].xpPerHour;
   }
 
-  function getNumSpawn(uint16 actionId) external view returns (uint256 numSpawned) {
+  function getNumSpawn(uint16 actionId) external view override returns (uint256 numSpawned) {
     return _actions[actionId].numSpawned;
   }
 
@@ -294,7 +295,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function getActionSuccessPercentAndMinXP(uint16 actionId) external view returns (uint8 successPercent, uint32 minXP) {
+  function getActionSuccessPercentAndMinXP(
+    uint16 actionId
+  ) external view override returns (uint8 successPercent, uint32 minXP) {
     return (_actions[actionId].successPercent, _actions[actionId].minXP);
   }
 
