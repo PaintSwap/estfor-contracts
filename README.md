@@ -106,7 +106,7 @@ ItemNFTLibrary [0x2d0b79a4d76d6fd86b8ba08acc68d3f35430aa7a](https://ftmscan.com/
 ItemNFT [0x1dae89b469d15b0ded980007dfdc8e68c363203d](https://ftmscan.com/address/0x1dae89b469d15b0ded980007dfdc8e68c363203d)  
 EstforLibrary [0xAD4Fe5A1d43F986659F548Cc899dCD4045FA9974](https://ftmscan.com/address/0xAD4Fe5A1d43F986659F548Cc899dCD4045FA9974)  
 PlayerNFT [0xde70e49756322afdf7714d3aca963abcb4547b8d](https://ftmscan.com/address/0xde70e49756322afdf7714d3aca963abcb4547b8d)  
-PromotionsLibrary [0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9](https://ftmscan.com/address/0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9)  
+PromotionsLibrary [0x13af205b631928f0ccb582cf6c5cae4d92470d2a](https://ftmscan.com/address/0x13af205b631928f0ccb582cf6c5cae4d92470d2a)  
 Promotions [0xf28cab48e29be56fcc68574b5c147b780c35647c](https://ftmscan.com/address/0xf28cab48e29be56fcc68574b5c147b780c35647c)  
 Quests [0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9](https://ftmscan.com/address/0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9)  
 Clans [0xd35410f526db135f09bb8e2bb066c8a63135d812](https://ftmscan.com/address/0xd35410f526db135f09bb8e2bb066c8a63135d812)  

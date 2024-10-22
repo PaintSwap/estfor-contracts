@@ -79,7 +79,7 @@ async function main() {
     startTime,
     endTime: startTime + 24 * 3600 * numDays,
     minTotalXP: 0,
-    numDailyRandomItemsToPick: 1,
+    numDailyRandomItemsToPick: 0,
     isMultiday: true,
     brushCostMissedDay: "0",
     brushCost: "0",

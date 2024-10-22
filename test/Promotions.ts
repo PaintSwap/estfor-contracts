@@ -432,14 +432,17 @@ describe("Promotions", function () {
       promotion = {
         ...promotion,
         endTime: NOW + 3 * 24 * 3600,
+        numDailyRandomItemsToPick: 0,
         guaranteedItemTokenIds: [EstforConstants.COIN],
         guaranteedAmounts: [5],
       };
 
       await promotions.addPromotion(promotion);
 
-      // Doesn't not need oracle to be called
-      await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
+      // Doesn't need oracle to be called
+      await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023))
+        .to.emit(itemNFT, "TransferBatch")
+        .withArgs(promotions.address, ethers.constants.AddressZero, alice.address, [EstforConstants.COIN], [5]);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);

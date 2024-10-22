@@ -93,7 +93,7 @@ if (!isBeta) {
   estforLibrary = "0xAD4Fe5A1d43F986659F548Cc899dCD4045FA9974";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
-  promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
+  promotionsLibrary = "0x13af205b631928f0ccb582cf6c5cae4d92470d2a";
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";

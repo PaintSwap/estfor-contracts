@@ -81,14 +81,14 @@ async function main() {
     randomAmounts: [],
   }); */
 
-  const startTime = 1729513530; // Thur Oct 24th 09:00 UTC
+  const startTime = 1729513530; // Mon Oct 21th 12:25:30 UTC
   const numDays = 2;
   await promotions.connect(owner).editPromotion({
     promotion: Promotion.HALLOWEEN_2024,
     startTime,
     endTime: startTime + 24 * 3600 * numDays,
     minTotalXP: 0,
-    numDailyRandomItemsToPick: 1,
+    numDailyRandomItemsToPick: 0,
     isMultiday: true,
     brushCostMissedDay: "0",
     brushCost: "0",

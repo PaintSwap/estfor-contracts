@@ -190,15 +190,12 @@ async function main() {
   await adminAccess.deployed();
   console.log(`adminAccess = "${adminAccess.address.toLowerCase()}"`);
 */
-  const newPromotionsLibrary = false;
+  const newPromotionsLibrary = true;
   const PromotionsLibrary = await ethers.getContractFactory("PromotionsLibrary");
   let promotionsLibrary: PromotionsLibrary;
   if (newPromotionsLibrary) {
     promotionsLibrary = await PromotionsLibrary.deploy();
     await promotionsLibrary.deployed();
-    if (network.chainId == 250) {
-      await verifyContracts([promotionsLibrary.address]);
-    }
   } else {
     promotionsLibrary = await PromotionsLibrary.attach(PROMOTIONS_LIBRARY_ADDRESS);
   }
@@ -264,6 +261,7 @@ async function main() {
   await eggInstantVRFActionStrategy.deployed();
   console.log(`eggInstantVRFActionStrategy = "${eggInstantVRFActionStrategy.address.toLowerCase()}"`);
 */
+
   const newPetNFTLibrary = true;
   let petNFTLibrary: PetNFTLibrary;
   if (newPetNFTLibrary) {
@@ -286,6 +284,7 @@ async function main() {
   });
   await petNFT.deployed();
   console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
+
   /*
   const VRFRequestInfo = (await ethers.getContractFactory("VRFRequestInfo")).connect(owner);
   const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
@@ -384,13 +383,15 @@ async function main() {
     await verifyContracts([estforLibrary.address]);
     await verifyContracts([adminAccess.address]);
     await verifyContracts([wishingWell.address]); */
-    await verifyContracts([promotions.address]); /*
+    await verifyContracts([promotions.address]);
+    await verifyContracts([promotionsLibrary.address]);
+    /*
     await verifyContracts([instantActions.address]);
     await verifyContracts([vrfRequestInfo.address]);
     await verifyContracts([instantVRFActions.address]);
     await verifyContracts([genericInstantVRFActionStrategy.address]);
     await verifyContracts([eggInstantVRFActionStrategy.address]);
-*/
+    */
     await verifyContracts([petNFT.address]);
     await verifyContracts([petNFTLibrary.address]);
     /*    await verifyContracts([lockedBankVaults.address]);

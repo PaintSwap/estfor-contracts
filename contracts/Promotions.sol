@@ -532,7 +532,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  // TODO: Only really supporting xmas 2023 so far with tiered rewards
+  // TODO: Only really supporting xmas 2023 so far with tiered rewards (and halloween 2024)
   function _handleMultidayPromotion(
     uint _playerId,
     Promotion _promotion,
