@@ -6,7 +6,6 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IRouterV2} from "./interfaces/IRouterV2.sol";
 
@@ -16,7 +15,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
+contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   using UnsafeMath for uint256;
   using UnsafeMath for U256;
   using Math for uint256;
@@ -197,10 +196,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     delete _activeQuests[playerId];
 
     emit DeactivateQuest(playerId, questId);
-  }
-
-  function newOracleRandomWords(uint256 randomWord) external override onlyWorld {
-    // For later
   }
 
   function processQuests(

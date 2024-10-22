@@ -75,8 +75,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
 
   mapping(uint256 actionId => ActionRewards actionRewards) private _actionRewards;
 
-  IOracleRewardCB private _quests;
-
   mapping(uint256 tier => Equipment[]) private _dailyRewardPool;
   mapping(uint256 tier => Equipment[]) private _weeklyRewardPool;
 
@@ -512,9 +510,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     _randomWords[requestId] = _randomWord;
-    if (address(_quests) != address(0)) {
-      _quests.newOracleRandomWords(_randomWord);
-    }
     if (address(_wishingWell) != address(0)) {
       _wishingWell.newOracleRandomWords(_randomWord);
     }
@@ -629,10 +624,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     emit RemoveActionChoices(actionId, actionChoiceIds);
   }
 
-  function setQuests(IOracleRewardCB iOracleRewardCB) external onlyOwner {
-    _quests = iOracleRewardCB;
-  }
-
   function setWishingWell(IOracleRewardCB iOracleRewardCB) external onlyOwner {
     _wishingWell = iOracleRewardCB;
   }
@@ -672,10 +663,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
       revert CallbackGasLimitTooHigh();
     }
     _callbackGasLimit = uint24(gasLimit);
-  }
-
-  function setVRF(address _vrf) external onlyOwner {
-    _samWitchVRF = ISamWitchVRF(_vrf);
   }
 
   // solhint-disable-next-line no-empty-blocks

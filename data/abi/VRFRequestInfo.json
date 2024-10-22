@@ -76,6 +76,11 @@
   },
   {
     "inputs": [],
+    "name": "NotUpdater",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "UnsupportedProxiableUUID",
     "type": "error"
   },
@@ -269,12 +274,30 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint88",
         "name": "baseRequestCost",
-        "type": "uint256"
+        "type": "uint88"
       }
     ],
     "name": "setBaseAttackCost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "updaters",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "isUpdater",
+        "type": "bool"
+      }
+    ],
+    "name": "setUpdaters",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

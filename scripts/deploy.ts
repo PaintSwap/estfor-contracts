@@ -745,9 +745,6 @@ async function main() {
     console.log("Skipping verifying contracts");
   }
 
-  tx = await world.setQuests(quests);
-  await tx.wait();
-  console.log("world setQuests");
   tx = await world.setWishingWell(wishingWell);
   await tx.wait();
   console.log("world setWishingWell");
@@ -850,6 +847,10 @@ async function main() {
   tx = await treasury.initializeAddresses(territories, shop);
   await tx.wait();
   console.log("treasury.initializeAddresses");
+
+  tx = await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories], true);
+  await tx.wait();
+  console.log("vrfRequestInfo.setUpdaters");
 
   tx = await instantVRFActions.addStrategies(
     [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],

@@ -9,12 +9,20 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
   event UpdateMovingAverageGasPrice(uint256 movingAverageGasPrice);
   event SetBaseRequestCost(uint256 baseRequestCost);
 
+  error NotUpdater();
+
   uint256 constant GAS_PRICE_WINDOW_SIZE = 4;
 
   uint8 private _indexGasPrice;
   uint64 private _movingAverageGasPrice;
   uint88 private _baseRequestCost;
   uint64[GAS_PRICE_WINDOW_SIZE] private _prices;
+  mapping(address account => bool isUpdater) private _updaters;
+
+  modifier onlyUpdater() {
+    require(_updaters[_msgSender()], NotUpdater());
+    _;
+  }
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -32,11 +40,7 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function get() external view returns (uint64, uint88) {
-    return (_movingAverageGasPrice, _baseRequestCost);
-  }
-
-  function updateAverageGasPrice() external {
+  function updateAverageGasPrice() external onlyUpdater {
     uint256 _sum = 0;
     _prices[_indexGasPrice] = uint64(tx.gasprice);
     _indexGasPrice = uint8((_indexGasPrice + 1) % GAS_PRICE_WINDOW_SIZE);
@@ -53,6 +57,10 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
     emit UpdateMovingAverageGasPrice(movingAverageGasPrice);
   }
 
+  function get() external view returns (uint64, uint88) {
+    return (_movingAverageGasPrice, _baseRequestCost);
+  }
+
   function getMovingAverageGasPrice() external view returns (uint64) {
     return _movingAverageGasPrice;
   }
@@ -61,9 +69,15 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
     return _baseRequestCost;
   }
 
-  function setBaseAttackCost(uint256 baseRequestCost) public onlyOwner {
-    _baseRequestCost = uint88(baseRequestCost);
+  function setBaseAttackCost(uint88 baseRequestCost) public onlyOwner {
+    _baseRequestCost = baseRequestCost;
     emit SetBaseRequestCost(baseRequestCost);
+  }
+
+  function setUpdaters(address[] calldata updaters, bool isUpdater) external onlyOwner {
+    for (uint256 i; i < updaters.length; ++i) {
+      _updaters[updaters[i]] = isUpdater;
+    }
   }
 
   // solhint-disable-next-line no-empty-blocks

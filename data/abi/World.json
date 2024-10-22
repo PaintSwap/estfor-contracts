@@ -2657,32 +2657,6 @@
   {
     "inputs": [
       {
-        "internalType": "contract IOracleRewardCB",
-        "name": "iOracleRewardCB",
-        "type": "address"
-      }
-    ],
-    "name": "setQuests",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_vrf",
-        "type": "address"
-      }
-    ],
-    "name": "setVRF",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "tier",
         "type": "uint256"
