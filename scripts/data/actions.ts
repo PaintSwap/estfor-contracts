@@ -2762,7 +2762,7 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 5 * 10},
       {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 3 * 10},
     ],
-    randomRewards: [{itemTokenId: EstforConstants.COIN, chance: 2731, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.COIN, chance: 1365, amount: 1}],
     combatStats: {
       melee: 1,
       magic: 0,
