@@ -34,33 +34,27 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     uint40 combatantCooldownTimestamp;
   }
 
-  mapping(uint256 playerId => PlayerInfo playerInfos) private playerInfos;
-  AdminAccess private adminAccess;
-  bool private isBeta;
-  IClans public clans;
-  IPlayers public players;
-  ICombatants public territories;
-  uint24 private combatantChangeCooldown;
-  ICombatants public lockedVaults;
+  mapping(uint256 playerId => PlayerInfo playerInfos) private _playerInfos;
+  AdminAccess private _adminAccess;
+  bool private _isBeta;
+  IClans private _clans;
+  IPlayers private _players;
+  ICombatants private _territories;
+  uint24 private _combatantChangeCooldown;
+  ICombatants private _lockedVaults;
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint256 _clanId, uint256 _playerId) {
-    if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
-      revert NotLeader();
-    }
+  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 playerId) {
+    require(_clans.getRank(clanId, playerId) >= ClanRank.LEADER, NotLeader());
     _;
   }
 
   modifier isAdminAndBeta() {
-    if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
-      revert NotAdminAndBeta();
-    }
+    require(_adminAccess.isAdmin(_msgSender()) && _isBeta, NotAdminAndBeta());
     _;
   }
 
@@ -70,115 +64,107 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(
-    IPlayers _players,
-    IClans _clans,
-    ICombatants _territories,
-    ICombatants _lockedVaults,
-    AdminAccess _adminAccess,
-    bool _isBeta
+    IPlayers players,
+    IClans clans,
+    ICombatants territories,
+    ICombatants lockedVaults,
+    AdminAccess adminAccess,
+    bool isBeta
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    players = _players;
-    clans = _clans;
-    territories = _territories;
-    lockedVaults = _lockedVaults;
+    _players = players;
+    _clans = clans;
+    _territories = territories;
+    _lockedVaults = lockedVaults;
 
-    adminAccess = AdminAccess(_adminAccess);
-    isBeta = _isBeta;
+    _adminAccess = AdminAccess(adminAccess);
+    _isBeta = isBeta;
 
-    combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
   }
 
   function assignCombatants(
-    uint256 _clanId,
-    bool _setTerritoryCombatants,
-    uint48[] calldata _territoryPlayerIds,
-    bool _setLockedVaultCombatants,
-    uint48[] calldata _lockedVaultPlayerIds,
-    uint256 _leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
-    if (!_setTerritoryCombatants && !_setLockedVaultCombatants) {
-      revert NotSettingCombatants();
-    }
+    uint256 clanId,
+    bool setTerritoryCombatants,
+    uint48[] calldata territoryPlayerIds,
+    bool setLockedVaultCombatants,
+    uint48[] calldata lockedVaultPlayerIds,
+    uint256 leaderPlayerId
+  ) external isOwnerOfPlayerAndActive(leaderPlayerId) isAtLeastLeaderOfClan(clanId, leaderPlayerId) {
+    require(setTerritoryCombatants || setLockedVaultCombatants, NotSettingCombatants());
 
     _checkAndSetAssignCombatants(
-      territories,
-      _setTerritoryCombatants,
-      _territoryPlayerIds,
-      lockedVaults,
-      _setLockedVaultCombatants,
-      _lockedVaultPlayerIds,
-      _clanId,
-      _leaderPlayerId
+      _territories,
+      setTerritoryCombatants,
+      territoryPlayerIds,
+      _lockedVaults,
+      setLockedVaultCombatants,
+      lockedVaultPlayerIds,
+      clanId,
+      leaderPlayerId
     );
     _checkAndSetAssignCombatants(
-      lockedVaults,
-      _setLockedVaultCombatants,
-      _lockedVaultPlayerIds,
-      territories,
-      _setTerritoryCombatants,
-      _territoryPlayerIds,
-      _clanId,
-      _leaderPlayerId
+      _lockedVaults,
+      setLockedVaultCombatants,
+      lockedVaultPlayerIds,
+      _territories,
+      setTerritoryCombatants,
+      territoryPlayerIds,
+      clanId,
+      leaderPlayerId
     );
   }
 
   function _checkAndSetAssignCombatants(
-    ICombatants _combatants,
-    bool _setCombatants,
-    uint48[] calldata _playerIds,
-    ICombatants _otherCombatants,
-    bool _setOtherCombatants,
-    uint48[] calldata _otherPlayerIds,
-    uint256 _clanId,
-    uint256 _leaderPlayerId
+    ICombatants combatants,
+    bool setCombatants,
+    uint48[] calldata playerIds,
+    ICombatants otherCombatants,
+    bool setOtherCombatants,
+    uint48[] calldata otherPlayerIds,
+    uint256 clanId,
+    uint256 leaderPlayerId
   ) private {
-    if (_setCombatants) {
-      uint256 newCombatantCooldownTimestamp = block.timestamp + combatantChangeCooldown;
+    if (setCombatants) {
+      uint256 newCombatantCooldownTimestamp = block.timestamp + _combatantChangeCooldown;
       // Check they are not being placed as a locked vault combatant
-      for (uint256 i; i < _playerIds.length; ++i) {
-        if (_setOtherCombatants) {
-          if (_otherPlayerIds.length != 0) {
-            uint256 searchIndex = EstforLibrary.binarySearchMemory(_otherPlayerIds, _playerIds[i]);
-            if (searchIndex != type(uint256).max) {
-              revert PlayerOnTerritoryAndLockedVault();
-            }
+      for (uint256 i; i < playerIds.length; ++i) {
+        if (setOtherCombatants) {
+          if (otherPlayerIds.length != 0) {
+            uint256 searchIndex = EstforLibrary.binarySearchMemory(otherPlayerIds, playerIds[i]);
+            require(searchIndex == type(uint256).max, PlayerOnTerritoryAndLockedVault());
           }
         } else {
-          bool isCombatant = _otherCombatants.isCombatant(_clanId, _playerIds[i]);
-          if (isCombatant) {
-            revert PlayerAlreadyExistingCombatant();
-          }
+          require(!otherCombatants.isCombatant(clanId, playerIds[i]), PlayerAlreadyExistingCombatant());
         }
 
         // Check the cooldown periods on combatant assignment.
         // They might have just joined from another clan or assigned from territory to locked vaults
-        if (playerInfos[_playerIds[i]].combatantCooldownTimestamp > block.timestamp) {
-          revert PlayerCombatantCooldownTimestamp();
-        }
+        require(
+          _playerInfos[playerIds[i]].combatantCooldownTimestamp <= block.timestamp,
+          PlayerCombatantCooldownTimestamp()
+        );
 
         // Check they are part of the clan
-        if (clans.getRank(_clanId, _playerIds[i]) == ClanRank.NONE) {
-          revert NotMemberOfClan();
+        require(_clans.getRank(clanId, playerIds[i]) != ClanRank.NONE, NotMemberOfClan());
+
+        if (i != playerIds.length - 1) {
+          require(playerIds[i] < playerIds[i + 1], PlayerIdsNotSortedOrDuplicates());
         }
 
-        if (i != _playerIds.length - 1 && _playerIds[i] >= _playerIds[i + 1]) {
-          revert PlayerIdsNotSortedOrDuplicates();
-        }
-
-        playerInfos[_playerIds[i]].combatantCooldownTimestamp = uint40(newCombatantCooldownTimestamp);
+        _playerInfos[playerIds[i]].combatantCooldownTimestamp = uint40(newCombatantCooldownTimestamp);
       }
-      _combatants.assignCombatants(_clanId, _playerIds, newCombatantCooldownTimestamp, _leaderPlayerId);
-    } else if (_playerIds.length != 0) {
-      revert SetCombatantsIncorrectly();
+      combatants.assignCombatants(clanId, playerIds, newCombatantCooldownTimestamp, leaderPlayerId);
+    } else {
+      require(playerIds.length == 0, SetCombatantsIncorrectly());
     }
   }
 
-  function clearCooldowns(uint48[] calldata _playerIds) public isAdminAndBeta {
-    for (uint256 i; i < _playerIds.length; ++i) {
-      playerInfos[_playerIds[i]].combatantCooldownTimestamp = 0;
+  function clearCooldowns(uint48[] calldata playerIds) public isAdminAndBeta {
+    for (uint256 i; i < playerIds.length; ++i) {
+      _playerInfos[playerIds[i]].combatantCooldownTimestamp = 0;
     }
   }
 

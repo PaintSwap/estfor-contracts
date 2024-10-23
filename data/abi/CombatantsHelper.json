@@ -210,32 +210,32 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "bool",
-        "name": "_setTerritoryCombatants",
+        "name": "setTerritoryCombatants",
         "type": "bool"
       },
       {
         "internalType": "uint48[]",
-        "name": "_territoryPlayerIds",
+        "name": "territoryPlayerIds",
         "type": "uint48[]"
       },
       {
         "internalType": "bool",
-        "name": "_setLockedVaultCombatants",
+        "name": "setLockedVaultCombatants",
         "type": "bool"
       },
       {
         "internalType": "uint48[]",
-        "name": "_lockedVaultPlayerIds",
+        "name": "lockedVaultPlayerIds",
         "type": "uint48[]"
       },
       {
         "internalType": "uint256",
-        "name": "_leaderPlayerId",
+        "name": "leaderPlayerId",
         "type": "uint256"
       }
     ],
@@ -245,23 +245,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "clans",
-    "outputs": [
-      {
-        "internalType": "contract IClans",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint48[]",
-        "name": "_playerIds",
+        "name": "playerIds",
         "type": "uint48[]"
       }
     ],
@@ -274,32 +261,32 @@
     "inputs": [
       {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       },
       {
         "internalType": "contract IClans",
-        "name": "_clans",
+        "name": "clans",
         "type": "address"
       },
       {
         "internalType": "contract ICombatants",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       },
       {
         "internalType": "contract ICombatants",
-        "name": "_lockedVaults",
+        "name": "lockedVaults",
         "type": "address"
       },
       {
         "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
@@ -310,36 +297,10 @@
   },
   {
     "inputs": [],
-    "name": "lockedVaults",
-    "outputs": [
-      {
-        "internalType": "contract ICombatants",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "players",
-    "outputs": [
-      {
-        "internalType": "contract IPlayers",
         "name": "",
         "type": "address"
       }
@@ -365,19 +326,6 @@
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "territories",
-    "outputs": [
-      {
-        "internalType": "contract ICombatants",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
