@@ -114,27 +114,27 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_Ka",
+        "name": "kA",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_Kd",
+        "name": "kD",
         "type": "uint256"
       },
       {
         "internalType": "uint16",
-        "name": "_attackingMMR",
+        "name": "attackingMMR",
         "type": "uint16"
       },
       {
         "internalType": "uint16",
-        "name": "_defendingMMR",
+        "name": "defendingMMR",
         "type": "uint16"
       },
       {
         "internalType": "bool",
-        "name": "_didAttackersWin",
+        "name": "didAttackersWin",
         "type": "bool"
       }
     ],
@@ -168,17 +168,17 @@
       },
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_defendingClanId",
+        "name": "defendingClanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_mmrAttackDistance",
+        "name": "mmrAttackDistance",
         "type": "uint256"
       }
     ],

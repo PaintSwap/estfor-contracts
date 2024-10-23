@@ -32,40 +32,38 @@ library LockedBankVaultsLibrary {
   error ClanDoesntExist(uint256 clanId);
 
   function initializeMMR(
-    uint48[] storage _sortedClansByMMR,
-    IClans _clans,
-    mapping(uint256 clanId => VaultClanInfo _clanInfo) storage _clanInfos,
-    uint256[] calldata _clanIds,
-    uint16[] calldata _mmrs
+    uint48[] storage sortedClansByMMR,
+    IClans clans,
+    mapping(uint256 clanId => VaultClanInfo _clanInfo) storage clanInfos,
+    uint256[] calldata clanIds,
+    uint16[] calldata mmrs
   ) external {
-    if (_clanIds.length != _mmrs.length) {
-      revert LengthMismatch();
-    }
+    require(clanIds.length == mmrs.length, LengthMismatch());
 
-    for (uint256 i = 0; i < _clanIds.length; ++i) {
-      _clans.setMMR(_clanIds[i], _mmrs[i]);
-      _insertMMRArray(_sortedClansByMMR, _mmrs[i], uint32(_clanIds[i]));
-      _clanInfos[_clanIds[i]].isInMMRArray = true;
+    for (uint256 i = 0; i < clanIds.length; ++i) {
+      clans.setMMR(clanIds[i], mmrs[i]);
+      _insertMMRArray(sortedClansByMMR, mmrs[i], uint32(clanIds[i]));
+      clanInfos[clanIds[i]].isInMMRArray = true;
     }
   }
 
   function forceMMRUpdate(
-    uint48[] storage _sortedClansByMMR,
-    IClans _clans,
-    mapping(uint256 clanId => VaultClanInfo _clanInfo) storage _clanInfos,
-    uint256[] calldata _clanIds
+    uint48[] storage sortedClansByMMR,
+    IClans clans,
+    mapping(uint256 clanId => VaultClanInfo _clanInfo) storage clanInfos,
+    uint256[] calldata clanIds
   ) external returns (uint256[] memory clanIdsToDelete) {
     // Create an array to mark elements for deletion
-    uint256 length = _sortedClansByMMR.length;
+    uint256 length = sortedClansByMMR.length;
     bool[] memory toDelete = new bool[](length);
-    clanIdsToDelete = new uint256[](_clanIds.length);
+    clanIdsToDelete = new uint256[](clanIds.length);
     uint256 clanIdsToDeletelength;
 
     // Mark elements for deletion
-    for (uint256 i = 0; i < _clanIds.length; ++i) {
+    for (uint256 i = 0; i < clanIds.length; ++i) {
       uint256 index = type(uint256).max;
       for (uint256 j = 0; j < length; ++j) {
-        if (_getClanId(_sortedClansByMMR[j]) == _clanIds[i]) {
+        if (_getClanId(sortedClansByMMR[j]) == clanIds[i]) {
           index = j;
           break;
         }
@@ -73,11 +71,11 @@ library LockedBankVaultsLibrary {
 
       if (
         index != type(uint256).max &&
-        (!_hasLockedFunds(_clanInfos[_clanIds[i]]) || _clans.maxMemberCapacity(_clanIds[i]) == 0)
+        (!_hasLockedFunds(clanInfos[clanIds[i]]) || clans.maxMemberCapacity(clanIds[i]) == 0)
       ) {
         toDelete[index] = true;
-        _clanInfos[_clanIds[i]].isInMMRArray = false;
-        clanIdsToDelete[clanIdsToDeletelength++] = _clanIds[i];
+        clanInfos[clanIds[i]].isInMMRArray = false;
+        clanIdsToDelete[clanIdsToDeletelength++] = clanIds[i];
       }
     }
 
@@ -87,13 +85,13 @@ library LockedBankVaultsLibrary {
       if (toDelete[i]) {
         ++shiftCount;
       } else if (shiftCount != 0) {
-        _sortedClansByMMR[i - shiftCount] = _sortedClansByMMR[i];
+        sortedClansByMMR[i - shiftCount] = sortedClansByMMR[i];
       }
     }
 
     // Reduce the length of the array
     assembly ("memory-safe") {
-      sstore(_sortedClansByMMR.slot, sub(length, shiftCount))
+      sstore(sortedClansByMMR.slot, sub(length, shiftCount))
       mstore(clanIdsToDelete, clanIdsToDeletelength)
     }
   }
@@ -139,9 +137,7 @@ library LockedBankVaultsLibrary {
       }
     }
 
-    if (total == 0) {
-      revert NothingToClaim();
-    }
+    require(total != 0, NothingToClaim());
 
     uint256 totalBrushLocked = _clanInfo.totalBrushLocked;
     _clanInfo.totalBrushLocked = uint96(totalBrushLocked - total);
@@ -186,9 +182,10 @@ library LockedBankVaultsLibrary {
       modifiedSortedClansByMMR = _sortedClansByMMR;
     }
 
-    if (!_isWithinRange(modifiedSortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance)) {
-      revert OutsideMMRRange();
-    }
+    require(
+      _isWithinRange(modifiedSortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance),
+      OutsideMMRRange()
+    );
   }
 
   function _hasLockedFunds(VaultClanInfo storage _clanInfo) internal view returns (bool) {
@@ -256,28 +253,20 @@ library LockedBankVaultsLibrary {
   function isWithinRange(
     uint32[] calldata clanIds,
     uint16[] calldata mmrs,
-    uint256 _clanId,
-    uint256 _defendingClanId,
-    uint256 _mmrAttackDistance
+    uint256 clanId,
+    uint256 defendingClanId,
+    uint256 mmrAttackDistance
   ) external pure returns (bool) {
     uint48[] memory sortedClansByMMR = new uint48[](clanIds.length);
     for (uint256 i = 0; i < clanIds.length; ++i) {
       sortedClansByMMR[i] = (uint32(clanIds[i]) << 16) | mmrs[i];
     }
-    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndicesMemory(
-      sortedClansByMMR,
-      _clanId,
-      _defendingClanId
-    );
+    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndicesMemory(sortedClansByMMR, clanId, defendingClanId);
 
-    if (clanIndex == type(uint256).max) {
-      revert ClanDoesntExist(_clanId);
-    }
-    if (defendingClanIndex == type(uint256).max) {
-      revert ClanDoesntExist(_defendingClanId);
-    }
+    require(clanIndex != type(uint256).max, ClanDoesntExist(clanId));
+    require(defendingClanIndex != type(uint256).max, ClanDoesntExist(defendingClanId));
 
-    return _isWithinRange(sortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance);
+    return _isWithinRange(sortedClansByMMR, clanIndex, defendingClanIndex, mmrAttackDistance);
   }
 
   // Range is not taken into account for the attacker with the same MMR as surrounding clans.
@@ -285,116 +274,118 @@ library LockedBankVaultsLibrary {
   // If there are any duplicates at the edge of the range, then the attacker can attack any with that MMR
   // So with the above array the 400 MMR clan can attack any 500 MMR clans with a range of 1
   function _isWithinRange(
-    uint48[] memory _sortedClansByMMR,
-    uint256 _clanIdIndex,
-    uint256 _defendingClanIdIndex,
-    uint256 _mmrAttackDistance
+    uint48[] memory sortedClansByMMR,
+    uint256 clanIdIndex,
+    uint256 defendingClanIdIndex,
+    uint256 mmrAttackDistance
   ) private pure returns (bool) {
     // If they are within range then just return
-    uint256 directDistance = (_clanIdIndex > _defendingClanIdIndex)
-      ? _clanIdIndex - _defendingClanIdIndex
-      : _defendingClanIdIndex - _clanIdIndex;
-    if (_mmrAttackDistance >= directDistance) {
+    uint256 directDistance = (clanIdIndex > defendingClanIdIndex)
+      ? clanIdIndex - defendingClanIdIndex
+      : defendingClanIdIndex - clanIdIndex;
+    if (mmrAttackDistance >= directDistance) {
       return true;
     }
 
     // Have the same MMR
-    uint256 defenderMMR = _getMMR(_sortedClansByMMR[_defendingClanIdIndex]);
-    uint256 attackerMMR = _getMMR(_sortedClansByMMR[_clanIdIndex]);
+    uint256 defenderMMR = _getMMR(sortedClansByMMR[defendingClanIdIndex]);
+    uint256 attackerMMR = _getMMR(sortedClansByMMR[clanIdIndex]);
     if (defenderMMR == attackerMMR) {
       return true;
     }
 
     // Find the lower and upper bounds of clans with the same MMR as the attacking clan so that
-    uint256 attackerLowerBound = _clanIdIndex;
-    uint256 attackerUpperBound = _clanIdIndex;
+    uint256 attackerLowerBound = clanIdIndex;
+    uint256 attackerUpperBound = clanIdIndex;
 
     while (
       attackerLowerBound != 0 &&
-      _getMMR(_sortedClansByMMR[attackerLowerBound - 1]) == _getMMR(_sortedClansByMMR[_clanIdIndex])
+      _getMMR(sortedClansByMMR[attackerLowerBound - 1]) == _getMMR(sortedClansByMMR[clanIdIndex])
     ) {
       --attackerLowerBound;
     }
 
     while (
-      attackerUpperBound < _sortedClansByMMR.length - 1 &&
-      _getMMR(_sortedClansByMMR[attackerUpperBound + 1]) == _getMMR(_sortedClansByMMR[_clanIdIndex])
+      attackerUpperBound < sortedClansByMMR.length - 1 &&
+      _getMMR(sortedClansByMMR[attackerUpperBound + 1]) == _getMMR(sortedClansByMMR[clanIdIndex])
     ) {
       ++attackerUpperBound;
     }
 
-    uint256 boundDistance = _defendingClanIdIndex > _clanIdIndex
-      ? _defendingClanIdIndex - attackerUpperBound
-      : attackerLowerBound - _defendingClanIdIndex;
-    if (_mmrAttackDistance >= boundDistance) {
+    uint256 boundDistance = defendingClanIdIndex > clanIdIndex
+      ? defendingClanIdIndex - attackerUpperBound
+      : attackerLowerBound - defendingClanIdIndex;
+    if (mmrAttackDistance >= boundDistance) {
       return true;
     }
 
     // If outside range, check if MMR is the same as the MMR as that at the edge of the range
     int256 rangeEdgeIndex = int256(
-      _defendingClanIdIndex > _clanIdIndex
-        ? attackerUpperBound + _mmrAttackDistance
-        : attackerLowerBound - _mmrAttackDistance
+      defendingClanIdIndex > clanIdIndex
+        ? attackerUpperBound + mmrAttackDistance
+        : attackerLowerBound - mmrAttackDistance
     );
 
     if (rangeEdgeIndex < 0) {
       rangeEdgeIndex = 0;
-    } else if (rangeEdgeIndex >= int256(_sortedClansByMMR.length)) {
-      rangeEdgeIndex = int256(_sortedClansByMMR.length - 1);
+    } else if (rangeEdgeIndex >= int256(sortedClansByMMR.length)) {
+      rangeEdgeIndex = int256(sortedClansByMMR.length - 1);
     }
 
-    return defenderMMR == _getMMR(_sortedClansByMMR[uint256(rangeEdgeIndex)]);
+    return defenderMMR == _getMMR(sortedClansByMMR[uint256(rangeEdgeIndex)]);
   }
 
   function blockAttacks(
-    IItemNFT _itemNFT,
-    uint16 _itemTokenId,
-    VaultClanInfo storage _clanInfo
+    IItemNFT itemNFT,
+    uint16 itemTokenId,
+    VaultClanInfo storage clanInfo
   ) external returns (uint256 blockAttacksTimestamp) {
-    Item memory item = _itemNFT.getItem(_itemTokenId);
-    if (item.equipPosition != EquipPosition.LOCKED_VAULT || item.boostType != BoostType.PVP_BLOCK) {
-      revert NotALockedVaultDefenceItem();
-    }
+    Item memory item = itemNFT.getItem(itemTokenId);
+    require(
+      item.equipPosition == EquipPosition.LOCKED_VAULT && item.boostType == BoostType.PVP_BLOCK,
+      NotALockedVaultDefenceItem()
+    );
 
-    if ((_clanInfo.blockAttacksTimestamp + uint256(_clanInfo.blockAttacksCooldownHours) * 3600) > block.timestamp) {
-      revert BlockAttacksCooldown();
-    }
+    require(
+      (clanInfo.blockAttacksTimestamp + uint256(clanInfo.blockAttacksCooldownHours) * 3600) <= block.timestamp,
+      BlockAttacksCooldown()
+    );
 
     blockAttacksTimestamp = block.timestamp + item.boostDuration;
-    _clanInfo.blockAttacksTimestamp = uint40(blockAttacksTimestamp);
-    _clanInfo.blockAttacksCooldownHours = uint8(item.boostValue);
+    clanInfo.blockAttacksTimestamp = uint40(blockAttacksTimestamp);
+    clanInfo.blockAttacksCooldownHours = uint8(item.boostValue);
 
-    _itemNFT.burn(msg.sender, _itemTokenId, 1);
+    itemNFT.burn(msg.sender, itemTokenId, 1);
   }
 
   function fulfillUpdateMMR(
-    uint256 _Ka,
-    uint256 _Kd,
-    uint48[] storage _sortedClansByMMR,
-    IClans _clans,
-    uint256 _attackingClanId,
-    uint256 _defendingClanId,
-    bool _didAttackersWin,
-    mapping(uint256 clanId => VaultClanInfo clanInfo) storage _clanInfos
+    uint256 kA,
+    uint256 kD,
+    uint48[] storage sortedClansByMMR,
+    IClans clans,
+    uint256 attackingClanId,
+    uint256 defendingClanId,
+    bool didAttackersWin,
+    mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos
   ) external returns (int256 attackingMMRDiff, int256 defendingMMRDiff) {
     (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndices(
-      _sortedClansByMMR,
-      _attackingClanId,
-      _defendingClanId
+      sortedClansByMMR,
+      attackingClanId,
+      defendingClanId
     );
     bool clanInArray = clanIndex != type(uint256).max;
-    uint256 attackingMMR = clanInArray ? _getMMR(_sortedClansByMMR[clanIndex]) : _clans.getMMR(_attackingClanId);
+    uint256 attackingMMR = clanInArray ? _getMMR(sortedClansByMMR[clanIndex]) : clans.getMMR(attackingClanId);
 
     uint256 defendingMMR = defendingClanIndex != type(uint256).max
-      ? _getMMR(_sortedClansByMMR[defendingClanIndex])
-      : _clans.getMMR(_defendingClanId);
+      ? _getMMR(sortedClansByMMR[defendingClanIndex])
+      : clans.getMMR(defendingClanId);
 
     (uint256 newAttackingMMR, uint256 newDefendingMMR) = getNewMMRs(
-      _Ka,
-      _Kd,
+      kA,
+      kD,
       uint16(attackingMMR),
       uint16(defendingMMR),
-      _didAttackersWin
+      didAttackersWin
     );
 
     attackingMMRDiff = int256(newAttackingMMR) - int256(attackingMMR);
@@ -408,18 +399,18 @@ library LockedBankVaultsLibrary {
     uint256 length;
 
     if (attackingMMRDiff != 0) {
-      _clans.setMMR(_attackingClanId, uint16(newAttackingMMR));
+      clans.setMMR(attackingClanId, uint16(newAttackingMMR));
 
       if (clanInArray) {
         // Attacking a clan while you have locked funds
         indices[length] = clanIndex;
         newMMRs[length] = uint16(newAttackingMMR);
-        clanIds[length] = uint32(_attackingClanId);
-        upwardFlags[length++] = _didAttackersWin;
-      } else if (_didAttackersWin) {
+        clanIds[length] = uint32(attackingClanId);
+        upwardFlags[length++] = didAttackersWin;
+      } else if (didAttackersWin) {
         // Attacking a clan while you have no locked funds and win
-        clanIndex = _insertMMRArray(_sortedClansByMMR, uint16(newAttackingMMR), uint32(_attackingClanId));
-        _clanInfos[_attackingClanId].isInMMRArray = true;
+        clanIndex = _insertMMRArray(sortedClansByMMR, uint16(newAttackingMMR), uint32(attackingClanId));
+        clanInfos[attackingClanId].isInMMRArray = true;
         if (clanIndex <= defendingClanIndex && defendingClanIndex != type(uint256).max) {
           ++defendingClanIndex;
         }
@@ -427,15 +418,15 @@ library LockedBankVaultsLibrary {
     }
 
     if (defendingMMRDiff != 0) {
-      _clans.setMMR(_defendingClanId, uint16(newDefendingMMR));
+      clans.setMMR(defendingClanId, uint16(newDefendingMMR));
 
       bool defendingClanInArray = defendingClanIndex != type(uint256).max;
       if (defendingClanInArray) {
         // Attacking a clan while they have locked funds
         indices[length] = defendingClanIndex;
         newMMRs[length] = uint16(newDefendingMMR);
-        clanIds[length] = uint32(_defendingClanId);
-        upwardFlags[length++] = !_didAttackersWin;
+        clanIds[length] = uint32(defendingClanId);
+        upwardFlags[length++] = !didAttackersWin;
       }
     }
 
@@ -446,107 +437,75 @@ library LockedBankVaultsLibrary {
       mstore(upwardFlags, length)
     }
     if (length != 0) {
-      _updateMMRArrays(_sortedClansByMMR, indices, newMMRs, clanIds, upwardFlags);
+      _updateMMRArrays(sortedClansByMMR, indices, newMMRs, clanIds, upwardFlags);
     }
   }
 
   function checkCanAttackVaults(
-    uint256 _clanId,
-    uint256 _defendingClanId,
-    uint16 _itemTokenId,
-    uint256 _maxLockedVaults,
-    uint256 _numPackedVaults,
-    IItemNFT _itemNFT,
-    mapping(uint256 clanId => VaultClanInfo clanInfo) storage _clanInfos,
-    mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) storage _lastClanBattles
+    uint256 clanId,
+    uint256 defendingClanId,
+    uint16 itemTokenId,
+    uint256 maxLockedVaults,
+    uint256 numPackedVaults,
+    IItemNFT itemNFT,
+    mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos,
+    mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) storage lastClanBattles
   ) external view returns (bool isReattacking, bool isUsingSuperAttack, uint256 superAttackCooldownTimestamp) {
     // Must have at least 1 combatant
-    VaultClanInfo storage clanInfo = _clanInfos[_clanId];
-    if (clanInfo.playerIds.length == 0) {
-      revert NoCombatants();
-    }
-
-    if (_clanId == _defendingClanId) {
-      revert CannotAttackSelf();
-    }
+    VaultClanInfo storage clanInfo = clanInfos[clanId];
+    require(clanInfo.playerIds.length != 0, NoCombatants());
+    require(clanId != defendingClanId, CannotAttackSelf());
 
     // Does this clan have any brush to even attack?
-    VaultClanInfo storage defendingClanInfo = _clanInfos[_defendingClanId];
-    if (defendingClanInfo.totalBrushLocked == 0) {
-      revert NoBrushToAttack();
-    }
-
-    if (defendingClanInfo.blockAttacksTimestamp > block.timestamp) {
-      revert ClanIsBlockingAttacks();
-    }
-
-    if (clanInfo.attackingCooldownTimestamp > block.timestamp) {
-      revert ClanAttackingCooldown();
-    }
-
-    if (clanInfo.currentlyAttacking) {
-      revert CannotAttackWhileStillAttacking();
-    }
+    VaultClanInfo storage defendingClanInfo = clanInfos[defendingClanId];
+    require(defendingClanInfo.totalBrushLocked != 0, NoBrushToAttack());
+    require(defendingClanInfo.blockAttacksTimestamp <= block.timestamp, ClanIsBlockingAttacks());
+    require(clanInfo.attackingCooldownTimestamp <= block.timestamp, ClanAttackingCooldown());
+    require(!clanInfo.currentlyAttacking, CannotAttackWhileStillAttacking());
 
     uint256 length = clanInfo.defendingVaults.length;
     uint256 defendingVaultsOffset = clanInfo.defendingVaultsOffset;
-    if (length - defendingVaultsOffset > _maxLockedVaults / _numPackedVaults) {
-      revert MaxLockedVaultsReached();
-    }
+    require(length - defendingVaultsOffset <= maxLockedVaults / numPackedVaults, MaxLockedVaultsReached());
 
     uint256 numReattacks;
-    (isReattacking, numReattacks) = _checkCanReattackVaults(_clanId, _defendingClanId, _lastClanBattles);
+    (isReattacking, numReattacks) = _checkCanReattackVaults(clanId, defendingClanId, lastClanBattles);
 
     bool canReattack;
-    if (_itemTokenId != 0) {
-      Item memory item = _itemNFT.getItem(_itemTokenId);
+    if (itemTokenId != 0) {
+      Item memory item = itemNFT.getItem(itemTokenId);
       bool isValidItem = item.equipPosition == EquipPosition.LOCKED_VAULT;
-      if (!isValidItem) {
-        revert NotALockedVaultAttackItem();
-      }
+      require(isValidItem, NotALockedVaultAttackItem());
 
       if (isReattacking) {
-        if (item.boostType != BoostType.PVP_REATTACK) {
-          revert NotALockedVaultAttackItem();
-        }
+        require(item.boostType == BoostType.PVP_REATTACK, NotALockedVaultAttackItem());
         canReattack = item.boostValue > numReattacks;
       } else {
         isUsingSuperAttack = item.boostType == BoostType.PVP_SUPER_ATTACK;
-        if (!isUsingSuperAttack) {
-          revert SpecifyingItemWhenNotReattackingOrSuperAttacking();
-        }
-
-        if (clanInfo.superAttackCooldownTimestamp > block.timestamp) {
-          revert ClanSuperAttackingCooldown();
-        }
+        require(isUsingSuperAttack, SpecifyingItemWhenNotReattackingOrSuperAttacking());
+        require(clanInfo.superAttackCooldownTimestamp <= block.timestamp, ClanSuperAttackingCooldown());
         superAttackCooldownTimestamp = block.timestamp + item.boostDuration;
       }
     }
 
-    if (isReattacking && !canReattack) {
-      revert ClanAttackingSameClanCooldown();
-    }
-
-    if (isReattacking && isUsingSuperAttack) {
-      revert CannotReattackAndSuperAttackSameTime();
-    }
+    require(!(isReattacking && !canReattack), ClanAttackingSameClanCooldown());
+    require(!(isReattacking && isUsingSuperAttack), CannotReattackAndSuperAttackSameTime());
   }
 
   function getNewMMRs(
-    uint256 _Ka,
-    uint256 _Kd,
-    uint16 _attackingMMR,
-    uint16 _defendingMMR,
-    bool _didAttackersWin
+    uint256 kA,
+    uint256 kD,
+    uint16 attackingMMR,
+    uint16 defendingMMR,
+    bool didAttackersWin
   ) public pure returns (uint16 newAttackerMMR, uint16 newDefenderMMR) {
-    uint256 Sa = _didAttackersWin ? 100 : 0; // attacker score variable scaled up
-    uint256 Sd = _didAttackersWin ? 0 : 100; // defender score variable scaled up
+    uint256 Sa = didAttackersWin ? 100 : 0; // attacker score variable scaled up
+    uint256 Sd = didAttackersWin ? 0 : 100; // defender score variable scaled up
 
-    (uint256 changeA, bool negativeA) = _ratingChange(_attackingMMR, _defendingMMR, Sa, _Ka);
-    (uint256 changeD, bool negativeD) = _ratingChange(_defendingMMR, _attackingMMR, Sd, _Kd);
+    (uint256 changeA, bool negativeA) = _ratingChange(attackingMMR, defendingMMR, Sa, kA);
+    (uint256 changeD, bool negativeD) = _ratingChange(defendingMMR, attackingMMR, Sd, kD);
 
-    int _newAttackerMMR = int24(uint24(_attackingMMR)) + (negativeA ? -int(changeA) : int(changeA));
-    int _newDefenderMMR = int24(uint24(_defendingMMR)) + (negativeD ? -int(changeD) : int(changeD));
+    int _newAttackerMMR = int24(uint24(attackingMMR)) + (negativeA ? -int(changeA) : int(changeA));
+    int _newDefenderMMR = int24(uint24(defendingMMR)) + (negativeD ? -int(changeD) : int(changeD));
 
     if (_newAttackerMMR < 0) {
       _newAttackerMMR = 0;
@@ -560,34 +519,34 @@ library LockedBankVaultsLibrary {
     newDefenderMMR = uint16(uint24(int24(_newDefenderMMR)));
   }
 
-  function getSortedClanIdsByMMR(uint48[] storage _sortedClansByMMR) external view returns (uint32[] memory clanIds) {
-    uint256 length = _sortedClansByMMR.length;
+  function getSortedClanIdsByMMR(uint48[] storage sortedClansByMMR) external view returns (uint32[] memory clanIds) {
+    uint256 length = sortedClansByMMR.length;
     clanIds = new uint32[](length);
     for (uint256 i; i < length; ++i) {
-      clanIds[i] = uint32(_getClanId(_sortedClansByMMR[i]));
+      clanIds[i] = uint32(_getClanId(sortedClansByMMR[i]));
     }
   }
 
-  function getSortedMMR(uint48[] storage _sortedClansByMMR) external view returns (uint16[] memory mmrs) {
-    uint256 length = _sortedClansByMMR.length;
+  function getSortedMMR(uint48[] storage sortedClansByMMR) external view returns (uint16[] memory mmrs) {
+    uint256 length = sortedClansByMMR.length;
     mmrs = new uint16[](length);
     for (uint256 i; i < length; ++i) {
-      mmrs[i] = uint16(_getMMR(_sortedClansByMMR[i]));
+      mmrs[i] = uint16(_getMMR(sortedClansByMMR[i]));
     }
   }
 
   function getIdleClans(
-    uint48[] storage _sortedClansByMMR,
-    mapping(uint256 clanId => VaultClanInfo _clanInfo) storage _clanInfos,
-    IClans _clans
+    uint48[] storage sortedClansByMMR,
+    mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos,
+    IClans clans
   ) external view returns (uint256[] memory clanIds) {
-    uint256 origLength = _sortedClansByMMR.length;
+    uint256 origLength = sortedClansByMMR.length;
     clanIds = new uint256[](origLength);
     uint256 length;
 
     for (uint256 i; i < origLength; ++i) {
-      uint256 clanId = _getClanId(_sortedClansByMMR[i]);
-      if (!_hasLockedFunds(_clanInfos[clanId]) || _clans.maxMemberCapacity(clanId) == 0) {
+      uint256 clanId = _getClanId(sortedClansByMMR[i]);
+      if (!_hasLockedFunds(clanInfos[clanId]) || clans.maxMemberCapacity(clanId) == 0) {
         clanIds[length++] = uint32(clanId);
       }
     }
@@ -597,18 +556,18 @@ library LockedBankVaultsLibrary {
     }
   }
 
-  function _lowerBound(uint48[] storage _sortedClansByMMR, uint256 _targetMMR) internal view returns (uint256) {
-    if (_sortedClansByMMR.length == 0) {
+  function _lowerBound(uint48[] storage sortedClansByMMR, uint256 targetMMR) internal view returns (uint256) {
+    if (sortedClansByMMR.length == 0) {
       return 0;
     }
 
     uint256 low = 0;
-    uint256 high = _sortedClansByMMR.length;
+    uint256 high = sortedClansByMMR.length;
 
     while (low < high) {
       uint256 mid = (low + high) / 2;
-      uint256 clanMMR = _getMMR(_sortedClansByMMR[mid]);
-      if (clanMMR < _targetMMR) {
+      uint256 clanMMR = _getMMR(sortedClansByMMR[mid]);
+      if (clanMMR < targetMMR) {
         low = mid + 1;
       } else {
         high = mid;
@@ -619,178 +578,165 @@ library LockedBankVaultsLibrary {
   }
 
   function checkCanAssignCombatants(
-    VaultClanInfo storage _clanInfo,
-    uint48[] calldata _playerIds,
+    VaultClanInfo storage clanInfo,
+    uint48[] calldata playerIds,
     uint8 maxClanCombatants
   ) external view {
-    if (_clanInfo.currentlyAttacking) {
-      revert CannotChangeCombatantsDuringAttack();
-    }
-
-    if (_playerIds.length > maxClanCombatants) {
-      revert TooManyCombatants();
-    }
-
+    require(!clanInfo.currentlyAttacking, CannotChangeCombatantsDuringAttack());
+    require(playerIds.length <= maxClanCombatants, TooManyCombatants());
     // Can only change combatants every so often
-    if (_clanInfo.assignCombatantsCooldownTimestamp > block.timestamp) {
-      revert ClanCombatantsChangeCooldown();
-    }
+    require(clanInfo.assignCombatantsCooldownTimestamp <= block.timestamp, ClanCombatantsChangeCooldown());
   }
 
   function clearCooldowns(
-    uint256 _clanId,
-    uint256[] calldata _otherClanIds,
-    VaultClanInfo storage _clanInfo,
-    mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) storage _lastClanBattles
+    uint256 clanId,
+    uint256[] calldata otherClanIds,
+    VaultClanInfo storage clanInfo,
+    mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) storage lastClanBattles
   ) external {
-    _clanInfo.attackingCooldownTimestamp = 0;
-    _clanInfo.assignCombatantsCooldownTimestamp = 0;
-    _clanInfo.currentlyAttacking = false;
-    _clanInfo.superAttackCooldownTimestamp = 0;
-    _clanInfo.blockAttacksTimestamp = 0;
-    _clanInfo.blockAttacksCooldownHours = 0;
+    clanInfo.attackingCooldownTimestamp = 0;
+    clanInfo.assignCombatantsCooldownTimestamp = 0;
+    clanInfo.currentlyAttacking = false;
+    clanInfo.superAttackCooldownTimestamp = 0;
+    clanInfo.blockAttacksTimestamp = 0;
+    clanInfo.blockAttacksCooldownHours = 0;
 
-    for (uint256 i; i < _otherClanIds.length; ++i) {
-      uint256 lowerClanId = _clanId < _otherClanIds[i] ? _clanId : _otherClanIds[i];
-      uint256 higherClanId = _clanId < _otherClanIds[i] ? _otherClanIds[i] : _clanId;
-      delete _lastClanBattles[lowerClanId][higherClanId];
+    for (uint256 i; i < otherClanIds.length; ++i) {
+      uint256 lowerClanId = clanId < otherClanIds[i] ? clanId : otherClanIds[i];
+      uint256 higherClanId = clanId < otherClanIds[i] ? otherClanIds[i] : clanId;
+      delete lastClanBattles[lowerClanId][higherClanId];
     }
   }
 
   function _updateMMRArrays(
-    uint48[] storage _sortedClansByMMR,
-    uint256[] memory _indices,
-    uint16[] memory _newMMRs,
-    uint32[] memory _clanIds,
-    bool[] memory _upwardFlags
+    uint48[] storage sortedClansByMMR,
+    uint256[] memory indices,
+    uint16[] memory newMMRs,
+    uint32[] memory clanIds,
+    bool[] memory upwardFlags
   ) private {
     // Adjust each index, update one by one
-    for (uint256 i = 0; i < _indices.length; ++i) {
-      uint256 currentIndex = _indices[i];
-      uint16 newMMR = _newMMRs[i];
-      uint32 clanId = _clanIds[i];
-      bool upward = _upwardFlags[i];
+    for (uint256 i = 0; i < indices.length; ++i) {
+      uint256 currentIndex = indices[i];
+      uint16 newMMR = newMMRs[i];
+      uint32 clanId = clanIds[i];
+      bool upward = upwardFlags[i];
 
-      uint256 newIndex = _updateSingleMMR(_sortedClansByMMR, currentIndex, newMMR, clanId, upward);
+      uint256 newIndex = _updateSingleMMR(sortedClansByMMR, currentIndex, newMMR, clanId, upward);
       // Adjust subsequent indices if needed
-      for (uint256 j = i + 1; j < _indices.length; ++j) {
-        if (upward && _indices[j] >= currentIndex && _indices[j] <= newIndex) {
-          --_indices[j]; // Adjust index if it falls within the shifted range
-        } else if (!upward && _indices[j] <= currentIndex && _indices[j] >= newIndex) {
-          ++_indices[j]; // Adjust index if it falls within the shifted range
+      for (uint256 j = i + 1; j < indices.length; ++j) {
+        if (upward && indices[j] >= currentIndex && indices[j] <= newIndex) {
+          --indices[j]; // Adjust index if it falls within the shifted range
+        } else if (!upward && indices[j] <= currentIndex && indices[j] >= newIndex) {
+          ++indices[j]; // Adjust index if it falls within the shifted range
         }
       }
     }
   }
 
   function _updateSingleMMR(
-    uint48[] storage _sortedClansByMMR,
-    uint256 _currentIndex,
-    uint16 _newMMR,
-    uint32 _clanId,
-    bool _upward
+    uint48[] storage sortedClansByMMR,
+    uint256 currentIndex,
+    uint16 newMMR,
+    uint32 clanId,
+    bool upward
   ) internal returns (uint256) {
-    uint256 i = _currentIndex;
+    uint256 i = currentIndex;
     // Check if the new position would be different
     bool shouldMove = false;
-    if (_upward && i < _sortedClansByMMR.length - 1) {
-      shouldMove = _getMMR(_sortedClansByMMR[i + 1]) < _newMMR;
-    } else if (!_upward && i != 0) {
-      shouldMove = _getMMR(_sortedClansByMMR[i - 1]) >= _newMMR;
+    if (upward && i < sortedClansByMMR.length - 1) {
+      shouldMove = _getMMR(sortedClansByMMR[i + 1]) < newMMR;
+    } else if (!upward && i != 0) {
+      shouldMove = _getMMR(sortedClansByMMR[i - 1]) >= newMMR;
     }
 
     if (!shouldMove) {
       // If position doesn't change, just update the MMR and return
-      _setPackedClanIdAndMMR(_sortedClansByMMR, i, _clanId, _newMMR);
+      _setPackedClanIdAndMMR(sortedClansByMMR, i, clanId, newMMR);
       return i;
     }
 
-    if (_upward) {
+    if (upward) {
       // Shift elements left if newMMR is higher
-      while (i < _sortedClansByMMR.length - 1 && _getMMR(_sortedClansByMMR[i + 1]) < _newMMR) {
-        _sortedClansByMMR[i] = _sortedClansByMMR[i + 1];
+      while (i < sortedClansByMMR.length - 1 && _getMMR(sortedClansByMMR[i + 1]) < newMMR) {
+        sortedClansByMMR[i] = sortedClansByMMR[i + 1];
         ++i;
       }
     } else {
       // Shift elements right if newMMR is lower
-      while (i != 0 && _getMMR(_sortedClansByMMR[i - 1]) >= _newMMR) {
-        _sortedClansByMMR[i] = _sortedClansByMMR[i - 1];
+      while (i != 0 && _getMMR(sortedClansByMMR[i - 1]) >= newMMR) {
+        sortedClansByMMR[i] = sortedClansByMMR[i - 1];
         --i;
       }
     }
 
-    _setPackedClanIdAndMMR(_sortedClansByMMR, i, _clanId, _newMMR);
+    _setPackedClanIdAndMMR(sortedClansByMMR, i, clanId, newMMR);
     return i;
   }
 
-  function insertMMRArray(uint48[] storage _sortedClansByMMR, uint16 _mmr, uint32 _clanId) external {
-    _insertMMRArray(_sortedClansByMMR, _mmr, _clanId);
+  function insertMMRArray(uint48[] storage sortedClansByMMR, uint16 mmr, uint32 clanId) external {
+    _insertMMRArray(sortedClansByMMR, mmr, clanId);
   }
 
   function _insertMMRArray(
-    uint48[] storage _sortedClansByMMR,
-    uint16 _mmr,
-    uint32 _clanId
+    uint48[] storage sortedClansByMMR,
+    uint16 mmr,
+    uint32 clanId
   ) private returns (uint256 index) {
     // Find where to insert it into the array
-    index = _lowerBound(_sortedClansByMMR, _mmr);
-    _sortedClansByMMR.push(); // expand array
+    index = _lowerBound(sortedClansByMMR, mmr);
+    sortedClansByMMR.push(); // expand array
     // Shift array to the right
-    for (uint256 i = _sortedClansByMMR.length - 1; i > index; --i) {
-      _sortedClansByMMR[i] = _sortedClansByMMR[i - 1];
+    for (uint256 i = sortedClansByMMR.length - 1; i > index; --i) {
+      sortedClansByMMR[i] = sortedClansByMMR[i - 1];
     }
-    _setPackedClanIdAndMMR(_sortedClansByMMR, index, _clanId, _mmr);
+    _setPackedClanIdAndMMR(sortedClansByMMR, index, clanId, mmr);
   }
 
   function _insertMMRArrayInMemory(
-    uint48[] storage _sortedClansByMMR,
-    uint16 _mmr,
-    uint32 _clanId
+    uint48[] storage sortedClansByMMR,
+    uint16 mmr,
+    uint32 clanId
   ) private view returns (uint48[] memory newSortedClansByMMR, uint256 index) {
     // Find where to insert it into the array
-    index = _lowerBound(_sortedClansByMMR, _mmr);
+    index = _lowerBound(sortedClansByMMR, mmr);
 
     // Copy to memory and shift any after the index to the right
-    newSortedClansByMMR = new uint48[](_sortedClansByMMR.length + 1);
+    newSortedClansByMMR = new uint48[](sortedClansByMMR.length + 1);
     for (uint256 i = 0; i < newSortedClansByMMR.length; ++i) {
       if (i < index) {
-        newSortedClansByMMR[i] = _sortedClansByMMR[i];
+        newSortedClansByMMR[i] = sortedClansByMMR[i];
       } else if (i == index) {
-        newSortedClansByMMR[i] = (uint32(_clanId) << 16) | _mmr;
+        newSortedClansByMMR[i] = (uint32(clanId) << 16) | mmr;
       } else {
-        newSortedClansByMMR[i] = _sortedClansByMMR[i - 1];
+        newSortedClansByMMR[i] = sortedClansByMMR[i - 1];
       }
     }
   }
 
-  function _setPackedClanIdAndMMR(
-    uint48[] storage _sortedClansByMMR,
-    uint256 _index,
-    uint32 _clanId,
-    uint16 _mmr
-  ) private {
-    _sortedClansByMMR[_index] = (uint32(_clanId) << 16) | _mmr;
+  function _setPackedClanIdAndMMR(uint48[] storage sortedClansByMMR, uint256 index, uint32 clanId, uint16 mmr) private {
+    sortedClansByMMR[index] = (uint32(clanId) << 16) | mmr;
   }
 
   function _getUnpackedClanIdAndMMR(
-    uint48[] storage _sortedClansByMMR,
-    uint256 _index
+    uint48[] storage sortedClansByMMR,
+    uint256 index
   ) private view returns (uint32 clanId, uint16 mmr) {
-    uint48 packed = _sortedClansByMMR[_index];
+    uint48 packed = sortedClansByMMR[index];
     clanId = uint32(packed >> 16);
     mmr = uint16(packed);
   }
 
   function _checkCanReattackVaults(
-    uint256 _clanId,
-    uint256 _defendingClanId,
+    uint256 clanId,
+    uint256 defendingClanId,
     mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) storage lastClanBattles
   ) private view returns (bool isReattacking, uint256 numReattacks) {
     // Check if they are re-attacking this clan and allowed to
-    uint256 lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
-    uint256 higherClanId = _clanId < _defendingClanId ? _defendingClanId : _clanId;
+    uint256 lowerClanId = clanId < defendingClanId ? clanId : defendingClanId;
+    uint256 higherClanId = clanId < defendingClanId ? defendingClanId : clanId;
     ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][higherClanId];
-    if (lowerClanId == _clanId) {
+    if (lowerClanId == clanId) {
       if (battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp > block.timestamp) {
         numReattacks = battleInfo.numReattacks;
         isReattacking = true;
@@ -803,12 +749,12 @@ library LockedBankVaultsLibrary {
     }
   }
 
-  function _getMMR(uint48 _packed) private pure returns (uint256) {
-    return uint16(_packed);
+  function _getMMR(uint48 packed) private pure returns (uint256) {
+    return uint16(packed);
   }
 
-  function _getClanId(uint48 _packed) private pure returns (uint256) {
-    return uint32(_packed >> 16);
+  function _getClanId(uint48 packed) private pure returns (uint256) {
+    return uint32(packed >> 16);
   }
 
   // This function is adapted from the solidity ELO library
@@ -820,27 +766,27 @@ library LockedBankVaultsLibrary {
 
   // This function is adapted from the solidity ELO library
   /// @notice Calculates the change in MMR rating, after a given outcome.
-  /// @param _ratingA the MMR rating of the clan A
-  /// @param _ratingD the MMR rating of the clan D
-  /// @param _score the _score of the clan A, scaled by 100. 100 = win, 0 = loss
-  /// @param _kFactor the k-factor or development multiplier used to calculate the change in MMR rating. 20 is the typical value
+  /// @param ratingA the MMR rating of the clan A
+  /// @param ratingD the MMR rating of the clan D
+  /// @param score the _score of the clan A, scaled by 100. 100 = win, 0 = loss
+  /// @param kFactor the k-factor or development multiplier used to calculate the change in MMR rating. 20 is the typical value
   /// @return change the change in MMR rating of clan D
   /// @return isNegative the directional change of clan A's MMR. Opposite sign for clan D
   function _ratingChange(
-    uint256 _ratingA,
-    uint256 _ratingD,
-    uint256 _score,
-    uint256 _kFactor
+    uint256 ratingA,
+    uint256 ratingD,
+    uint256 score,
+    uint256 kFactor
   ) internal pure returns (uint256 change, bool isNegative) {
-    uint256 kFactor; // scaled up `_kFactor` by 100
-    bool negative = _ratingD < _ratingA;
+    uint256 kFactorScaled; // scaled up `kFactor` by 100
+    bool negative = ratingD < ratingA;
     uint256 ratingDiff; // absolute value difference between `_ratingA` and `_ratingD`
 
     unchecked {
       // scale up the inputs by a factor of 100
       // since our MMR math is scaled up by 100 (to avoid low precision integer division)
-      kFactor = _kFactor * 10_000;
-      ratingDiff = negative ? _ratingA - _ratingD : _ratingD - _ratingA;
+      kFactorScaled = kFactor * 10_000;
+      ratingDiff = negative ? ratingA - ratingD : ratingD - ratingA;
     }
 
     // checks against overflow/underflow, discovered via fuzzing
@@ -855,8 +801,8 @@ library LockedBankVaultsLibrary {
     // MMR change = _kFactor * (_score - expectedScore)
 
     uint256 n; // numerator of the power, with scaling, (numerator of `ratingDiff / 400`)
-    uint256 _powered; // the value of 10 ^ numerator
-    uint256 powered; // the value of 16th root of 10 ^ numerator (fully resolved 10 ^ (ratingDiff / 400))
+    uint256 powered; // the value of 10 ^ numerator
+    uint256 poweredRoot; // the value of 16th root of 10 ^ numerator (fully resolved 10 ^ (ratingDiff / 400))
     uint256 kExpectedScore; // the expected _score with K factor distributed
     uint256 kScore; // the actual _score with K factor distributed
 
@@ -865,12 +811,12 @@ library LockedBankVaultsLibrary {
       n = negative ? 800 - ratingDiff : 800 + ratingDiff;
 
       // (x / 400) is the same as ((x / 25) / 16))
-      _powered = 10 ** (n / 25); // divide by 25 to avoid reach uint256 max
-      powered = _sixteenthRoot(_powered); // x ^ (1 / 16) is the same as 16th root of x
+      powered = 10 ** (n / 25); // divide by 25 to avoid reach uint256 max
+      poweredRoot = _sixteenthRoot(powered); // x ^ (1 / 16) is the same as 16th root of x
 
       // given `change = _kFactor * (_score - expectedScore)` we can distribute _kFactor to both terms
-      kExpectedScore = kFactor / (100 + powered); // both numerator and denominator scaled up by 100
-      kScore = _kFactor * _score; // input _score is already scaled up by 100
+      kExpectedScore = kFactorScaled / (100 + poweredRoot); // both numerator and denominator scaled up by 100
+      kScore = kFactor * score; // input _score is already scaled up by 100
 
       // determines the sign of the MMR change
       isNegative = kScore < kExpectedScore;
