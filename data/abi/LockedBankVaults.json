@@ -1122,6 +1122,11 @@
         "type": "uint24"
       },
       {
+        "internalType": "uint8",
+        "name": "_maxClanCombatants",
+        "type": "uint8"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "_adminAccess",
         "type": "address"

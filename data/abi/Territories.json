@@ -713,6 +713,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "maxClanCombatants",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMaxClanCombatants",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256[]",
         "name": "territoryIds",
         "type": "uint256[]"
@@ -1298,6 +1311,11 @@
         "type": "uint8[]"
       },
       {
+        "internalType": "uint8",
+        "name": "_maxClanCombatants",
+        "type": "uint8"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "adminAccess",
         "type": "address"
@@ -1431,6 +1449,19 @@
       }
     ],
     "name": "setExpectedGasLimitFulfill",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "maxClanCombatants",
+        "type": "uint8"
+      }
+    ],
+    "name": "setMaxClanCombatants",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

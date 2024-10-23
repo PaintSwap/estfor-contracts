@@ -73,6 +73,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   event RemoveCombatant(uint256 playerId, uint256 clanId);
   event Harvest(uint256 territoryId, address from, uint256 playerId, uint256 cooldownTimestamp, uint256 amount);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
+  event SetMaxClanCombatants(uint256 maxClanCombatants);
   event BlockingAttacks(
     uint256 clanId,
     uint256 itemTokenId,
@@ -145,6 +146,13 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     address from;
   }
 
+  uint256 private constant NUM_WORDS = 3;
+  uint256 private constant CALLBACK_GAS_LIMIT = 3_000_000;
+  uint256 public constant MAX_DAILY_EMISSIONS = 10000 ether;
+  uint256 public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
+  uint256 public constant PERCENTAGE_EMISSION_MUL = 10;
+  uint256 public constant HARVESTING_COOLDOWN = 8 hours;
+
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
   mapping(bytes32 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
   mapping(uint256 territoryId => Territory territory) private _territories;
@@ -164,19 +172,13 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   Skill[] private comparableSkills;
 
   address private _combatantsHelper;
+  uint8 private _maxClanCombatants;
 
   address private _oracle;
   VRFRequestInfo private _vrfRequestInfo;
   uint24 private _combatantChangeCooldown;
   ISamWitchVRF private _samWitchVRF;
   uint24 private _expectedGasLimitFulfill;
-
-  uint256 private constant NUM_WORDS = 3;
-  uint256 private constant CALLBACK_GAS_LIMIT = 3_000_000;
-  uint256 public constant MAX_DAILY_EMISSIONS = 10000 ether;
-  uint256 public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
-  uint256 public constant PERCENTAGE_EMISSION_MUL = 10;
-  uint256 public constant HARVESTING_COOLDOWN = 8 hours;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(IPlayers(_players).isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -230,6 +232,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     ISamWitchVRF samWitchVRF,
     VRFRequestInfo vrfRequestInfo,
     Skill[] calldata _comparableSkills,
+    uint8 _maxClanCombatants,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -252,6 +255,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     setExpectedGasLimitFulfill(1_500_000);
 
     setComparableSkills(_comparableSkills);
+
+    setMaxClanCombatants(_maxClanCombatants);
 
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
@@ -474,7 +479,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   }
 
   function _checkCanAssignCombatants(uint256 clanId, uint48[] calldata playerIds) private view {
-    require(playerIds.length <= MAX_CLAN_COMBATANTS, TooManyCombatants());
+    require(playerIds.length <= _maxClanCombatants, TooManyCombatants());
     // Can only change combatants every so often
     require(_clanInfos[clanId].assignCombatantsCooldownTimestamp <= block.timestamp, ClanCombatantsChangeCooldown());
   }
@@ -637,6 +642,11 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
     _expectedGasLimitFulfill = expectedGasLimitFulfill;
     emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
+  }
+
+  function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
+    _maxClanCombatants = maxClanCombatants;
+    emit SetMaxClanCombatants(maxClanCombatants);
   }
 
   function clearCooldowns(uint256 clanId) external isAdminAndBeta {

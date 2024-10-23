@@ -386,6 +386,8 @@ export const playersFixture = async function () {
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   const mmrAttackDistance = 4;
   const lockedFundsPeriod = 7 * 86400; // 7 days
+  const maxClanCombatantsTerritories = 20;
+  const maxClanComabtantsLockedBankVaults = 20;
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
@@ -408,6 +410,7 @@ export const playersFixture = async function () {
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
+      maxClanComabtantsLockedBankVaults,
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -434,6 +437,7 @@ export const playersFixture = async function () {
       await mockVRF.getAddress(),
       await vrfRequestInfo.getAddress(),
       allBattleSkills,
+      maxClanCombatantsTerritories,
       await adminAccess.getAddress(),
       isBeta
     ],

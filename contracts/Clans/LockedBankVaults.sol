@@ -19,7 +19,7 @@ import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
-import {BattleResultEnum, ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, VaultClanInfo, Vault, ClanBattleInfo} from "../globals/clans.sol";
+import {BattleResultEnum, ClanRank, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, VaultClanInfo, Vault, ClanBattleInfo} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
 import {BoostType, Skill} from "../globals/misc.sol";
 import {NONE} from "../globals/items.sol";
@@ -132,6 +132,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   IBankFactory private bankFactory;
   address private combatantsHelper;
   uint24 private combatantChangeCooldown;
+  uint8 private maxClanCombatants;
   address private treasury;
   address private dev;
   uint8 private _brushBurntPercentage;
@@ -157,7 +158,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
   uint256 private constant NUM_WORDS = 3;
   uint256 private constant CALLBACK_GAS_LIMIT = 3_500_000;
-  uint256 private constant MAX_LOCKED_VAULTS = 100;
+  uint256 private constant MAX_LOCKED_VAULTS = 100; // TODO: Update this
   uint256 private constant NUM_PACKED_VAULTS = 2;
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
@@ -236,6 +237,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     Skill[] calldata _comparableSkills,
     uint16 _mmrAttackDistance,
     uint24 _lockFundsPeriod,
+    uint8 _maxClanCombatants,
     AdminAccess _adminAccess,
     bool _isBeta
   ) external initializer {
@@ -253,6 +255,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     lockFundsPeriod = _lockFundsPeriod;
     adminAccess = _adminAccess;
     isBeta = _isBeta;
+    maxClanCombatants = _maxClanCombatants;
     attackingCooldown = _isBeta ? 1 minutes + 30 seconds : 4 hours;
     reattackingCooldown = _isBeta ? 6 minutes : 1 days;
     vrfRequestInfo = _vrfRequestInfo;
@@ -273,7 +276,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint256 _leaderPlayerId
   ) external override onlyCombatantsHelper {
     VaultClanInfo storage clanInfo = clanInfos[_clanId];
-    LockedBankVaultsLibrary.checkCanAssignCombatants(clanInfo, _playerIds);
+    LockedBankVaultsLibrary.checkCanAssignCombatants(clanInfo, _playerIds, maxClanCombatants);
     clanInfo.playerIds = _playerIds;
     clanInfo.assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
     emit AssignCombatants(_clanId, _playerIds, _msgSender(), _leaderPlayerId, _combatantCooldownTimestamp);

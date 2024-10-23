@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {VaultClanInfo, ClanBattleInfo, Vault, MAX_CLAN_COMBATANTS} from "../globals/clans.sol";
+import {VaultClanInfo, ClanBattleInfo, Vault} from "../globals/clans.sol";
 import {Item, EquipPosition, BoostType} from "../globals/players.sol";
 import {IItemNFT} from "../interfaces/IItemNFT.sol";
 import {IClans} from "../interfaces/IClans.sol";
@@ -618,12 +618,16 @@ library LockedBankVaultsLibrary {
     return low;
   }
 
-  function checkCanAssignCombatants(VaultClanInfo storage _clanInfo, uint48[] calldata _playerIds) external view {
+  function checkCanAssignCombatants(
+    VaultClanInfo storage _clanInfo,
+    uint48[] calldata _playerIds,
+    uint8 maxClanCombatants
+  ) external view {
     if (_clanInfo.currentlyAttacking) {
       revert CannotChangeCombatantsDuringAttack();
     }
 
-    if (_playerIds.length > MAX_CLAN_COMBATANTS) {
+    if (_playerIds.length > maxClanCombatants) {
       revert TooManyCombatants();
     }
 

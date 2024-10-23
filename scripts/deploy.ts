@@ -602,6 +602,7 @@ async function main() {
   console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
 
   const lockedFundsPeriod = (isBeta ? 1 : 7) * 86400; // 7 days
+  const maxClanComabtantsLockedBankVaults = 20;
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
@@ -624,6 +625,7 @@ async function main() {
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
+      maxClanComabtantsLockedBankVaults,
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -636,6 +638,7 @@ async function main() {
   await lockedBankVaults.waitForDeployment();
   console.log(`lockedBankVaults = "${(await lockedBankVaults.getAddress()).toLowerCase()}"`);
 
+  const maxClanCombatantsTerritories = 20;
   const Territories = await ethers.getContractFactory("Territories");
   const territories = (await upgrades.deployProxy(
     Territories,
@@ -650,6 +653,7 @@ async function main() {
       await vrf.getAddress(),
       await vrfRequestInfo.getAddress(),
       allBattleSkills,
+      maxClanCombatantsTerritories,
       await adminAccess.getAddress(),
       isBeta
     ],
