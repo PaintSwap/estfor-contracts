@@ -884,7 +884,7 @@ describe("LockedBankVaults", function () {
     ).to.be.revertedWithCustomError(LockedBankVaultsLibrary, "NotALockedVaultAttackItem");
 
     // The re-attacking cooldown should be the same afterwards when using an item
-    let battleInfo = await lockedBankVaults.lastClanBattles(clanId, bobClanId);
+    let battleInfo = await lockedBankVaults.getLastClanBattles(clanId, bobClanId);
     const beforeCooldownTimestamp = battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp;
     expect(battleInfo.numReattacks).to.eq(0);
     await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.DEVILISH_FINGERS, playerId, {
@@ -892,7 +892,7 @@ describe("LockedBankVaults", function () {
     });
 
     await fulfillRandomWords(2, lockedBankVaults, mockVRF);
-    battleInfo = await lockedBankVaults.lastClanBattles(clanId, bobClanId);
+    battleInfo = await lockedBankVaults.getLastClanBattles(clanId, bobClanId);
     expect(battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp).to.eq(beforeCooldownTimestamp);
     expect(battleInfo.numReattacks).to.eq(1);
 

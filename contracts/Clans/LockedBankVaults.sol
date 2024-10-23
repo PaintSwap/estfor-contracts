@@ -115,46 +115,46 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint8 extraRollsDefender;
   }
 
-  Skill[] private comparableSkills;
-  uint64 private nextPendingAttackId;
-  bool private preventAttacks;
-  mapping(uint256 clanId => VaultClanInfo clanInfo) private clanInfos;
-  mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private pendingAttacks;
-  mapping(bytes32 requestId => uint256 pendingAttackId) private requestToPendingAttackIds;
-  mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) public lastClanBattles; // Always ordered from lowest clanId to highest
-  IClans private clans;
-  IPlayers private players;
-  IBrushToken private brush;
-  ITerritories private territories;
-  ItemNFT private itemNFT;
-  AdminAccess private adminAccess;
-  bool private isBeta;
-  IBankFactory private bankFactory;
-  address private combatantsHelper;
-  uint24 private combatantChangeCooldown;
-  uint8 private maxClanCombatants;
-  address private treasury;
-  address private dev;
+  Skill[] private _comparableSkills;
+  uint64 private _nextPendingAttackId;
+  bool private _preventAttacks;
+  mapping(uint256 clanId => VaultClanInfo clanInfo) private _clanInfos;
+  mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
+  mapping(bytes32 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
+  mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) private _lastClanBattles; // Always ordered from lowest clanId to highest
+  IClans private _clans;
+  IPlayers private _players;
+  IBrushToken private _brush;
+  ITerritories private _territories;
+  ItemNFT private _itemNFT;
+  AdminAccess private _adminAccess;
+  bool private _isBeta;
+  IBankFactory private _bankFactory;
+  address private _combatantsHelper;
+  uint24 private _combatantChangeCooldown;
+  uint8 private _maxClanCombatants;
+  address private _treasury;
+  address private _dev;
   uint8 private _brushBurntPercentage;
   uint8 private _brushTreasuryPercentage;
   uint8 private _brushDevPercentage;
 
-  VRFRequestInfo vrfRequestInfo;
-  address private oracle;
-  uint16 private mmrAttackDistance;
-  uint24 private expectedGasLimitFulfill;
-  uint24 private attackingCooldown;
-  uint24 private reattackingCooldown;
-  ISamWitchVRF private samWitchVRF;
-  uint8 private Ka; // attacker K-factor
-  uint8 private Kd; // defender K-factor
-  uint24 private lockFundsPeriod;
+  VRFRequestInfo _vrfRequestInfo;
+  address private _oracle;
+  uint16 private _mmrAttackDistance;
+  uint24 private _expectedGasLimitFulfill;
+  uint24 private _attackingCooldown;
+  uint24 private _reattackingCooldown;
+  ISamWitchVRF private _samWitchVRF;
+  uint8 private _kA; // attacker K-factor
+  uint8 private _kD; // defender K-factor
+  uint24 private _lockFundsPeriod;
   // Clans are sorted as follows:
   // 1 - From lower MMR to higher MMR
   // 2 - If there are multiple clans with the same MMR, they are sorted by:
   //   2.1 - Whoever was there first gets a higher rank (higher index)
   //   2.2 - The attacker is always ranked higher than the defender whether they win or lose as they are placed in the array first
-  uint48[] private sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
+  uint48[] private _sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
 
   uint256 private constant NUM_WORDS = 3;
   uint256 private constant CALLBACK_GAS_LIMIT = 3_500_000;
@@ -162,59 +162,43 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   uint256 private constant NUM_PACKED_VAULTS = 2;
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), _playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint256 _clanId, uint256 _playerId) {
-    if (clans.getRank(_clanId, _playerId) < ClanRank.LEADER) {
-      revert NotLeader();
-    }
+  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 _playerId) {
+    require(_clans.getRank(clanId, _playerId) >= ClanRank.LEADER, NotLeader());
     _;
   }
 
-  modifier isClanMember(uint256 _clanId, uint256 _playerId) {
-    if (clans.getRank(_clanId, _playerId) == ClanRank.NONE) {
-      revert NotMemberOfClan();
-    }
+  modifier isClanMember(uint256 clanId, uint256 _playerId) {
+    require(_clans.getRank(clanId, _playerId) != ClanRank.NONE, NotMemberOfClan());
     _;
   }
 
   modifier onlyClans() {
-    if (_msgSender() != address(clans)) {
-      revert OnlyClans();
-    }
+    require(_msgSender() == address(_clans), OnlyClans());
     _;
   }
 
   modifier onlyTerritories() {
-    if (_msgSender() != address(territories)) {
-      revert OnlyTerritories();
-    }
+    require(_msgSender() == address(_territories), OnlyTerritories());
     _;
   }
 
   modifier isAdminAndBeta() {
-    if (!(adminAccess.isAdmin(_msgSender()) && isBeta)) {
-      revert NotAdminAndBeta();
-    }
+    require(_adminAccess.isAdmin(_msgSender()) && _isBeta, NotAdminAndBeta());
     _;
   }
 
   modifier onlyCombatantsHelper() {
-    if (_msgSender() != combatantsHelper) {
-      revert OnlyCombatantsHelper();
-    }
+    require(_msgSender() == _combatantsHelper, OnlyCombatantsHelper());
     _;
   }
 
   /// @dev Reverts if the caller is not the SamWitchVRF contract.
   modifier onlySamWitchVRF() {
-    if (_msgSender() != address(samWitchVRF)) {
-      revert CallerNotSamWitchVRF();
-    }
+    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
     _;
   }
 
@@ -224,71 +208,71 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   function initialize(
-    IPlayers _players,
-    IClans _clans,
-    IBrushToken _brush,
-    IBankFactory _bankFactory,
-    ItemNFT _itemNFT,
-    address _treasury,
-    address _dev,
-    address _oracle,
-    ISamWitchVRF _samWitchVRF,
-    VRFRequestInfo _vrfRequestInfo,
-    Skill[] calldata _comparableSkills,
-    uint16 _mmrAttackDistance,
-    uint24 _lockFundsPeriod,
-    uint8 _maxClanCombatants,
-    AdminAccess _adminAccess,
-    bool _isBeta
+    IPlayers players,
+    IClans clans,
+    IBrushToken brush,
+    IBankFactory bankFactory,
+    ItemNFT itemNFT,
+    address treasury,
+    address dev,
+    address oracle,
+    ISamWitchVRF samWitchVRF,
+    VRFRequestInfo vrfRequestInfo,
+    Skill[] calldata comparableSkills,
+    uint16 mmrAttackDistance,
+    uint24 lockFundsPeriod,
+    uint8 maxClanCombatants,
+    AdminAccess adminAccess,
+    bool isBeta
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    players = _players;
-    clans = _clans;
-    brush = _brush;
-    bankFactory = _bankFactory;
-    itemNFT = _itemNFT;
-    treasury = _treasury;
-    dev = _dev;
-    oracle = _oracle;
-    samWitchVRF = _samWitchVRF;
-    lockFundsPeriod = _lockFundsPeriod;
-    adminAccess = _adminAccess;
-    isBeta = _isBeta;
-    maxClanCombatants = _maxClanCombatants;
-    attackingCooldown = _isBeta ? 1 minutes + 30 seconds : 4 hours;
-    reattackingCooldown = _isBeta ? 6 minutes : 1 days;
-    vrfRequestInfo = _vrfRequestInfo;
-    combatantChangeCooldown = _isBeta ? 5 minutes : 3 days;
+    _players = players;
+    _clans = clans;
+    _brush = brush;
+    _bankFactory = bankFactory;
+    _itemNFT = itemNFT;
+    _treasury = treasury;
+    _dev = dev;
+    _oracle = oracle;
+    _samWitchVRF = samWitchVRF;
+    _lockFundsPeriod = lockFundsPeriod;
+    _adminAccess = adminAccess;
+    _isBeta = isBeta;
+    _maxClanCombatants = maxClanCombatants;
+    _attackingCooldown = isBeta ? 1 minutes + 30 seconds : 4 hours;
+    _reattackingCooldown = isBeta ? 6 minutes : 1 days;
+    _vrfRequestInfo = vrfRequestInfo;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
     _setExpectedGasLimitFulfill(1_500_000);
 
     setKValues(32, 32);
-    setComparableSkills(_comparableSkills);
-    setMMRAttackDistance(_mmrAttackDistance);
-    nextPendingAttackId = 1;
+    setComparableSkills(comparableSkills);
+    setMMRAttackDistance(mmrAttackDistance);
+    _nextPendingAttackId = 1;
   }
 
   function assignCombatants(
-    uint256 _clanId,
-    uint48[] calldata _playerIds,
-    uint256 _combatantCooldownTimestamp,
-    uint256 _leaderPlayerId
+    uint256 clanId,
+    uint48[] calldata playerIds,
+    uint256 combatantCooldownTimestamp,
+    uint256 leaderPlayerId
   ) external override onlyCombatantsHelper {
-    VaultClanInfo storage clanInfo = clanInfos[_clanId];
-    LockedBankVaultsLibrary.checkCanAssignCombatants(clanInfo, _playerIds, maxClanCombatants);
-    clanInfo.playerIds = _playerIds;
-    clanInfo.assignCombatantsCooldownTimestamp = uint40(block.timestamp + combatantChangeCooldown);
-    emit AssignCombatants(_clanId, _playerIds, _msgSender(), _leaderPlayerId, _combatantCooldownTimestamp);
+    VaultClanInfo storage clanInfo = _clanInfos[clanId];
+    LockedBankVaultsLibrary.checkCanAssignCombatants(clanInfo, playerIds, _maxClanCombatants);
+    clanInfo.playerIds = playerIds;
+    clanInfo.assignCombatantsCooldownTimestamp = uint40(block.timestamp + _combatantChangeCooldown);
+    emit AssignCombatants(clanId, playerIds, _msgSender(), leaderPlayerId, combatantCooldownTimestamp);
   }
 
   // Some vaults may no longer be attackable if they don't have any funds, so force the MMR arrays to be re-calculated.
-  function forceMMRUpdate(uint256[] calldata _clanIds) external {
+  function forceMMRUpdate(uint256[] calldata clanIds) external {
     uint256[] memory clanIdsToDelete = LockedBankVaultsLibrary.forceMMRUpdate(
-      sortedClansByMMR,
-      clans,
-      clanInfos,
-      _clanIds
+      _sortedClansByMMR,
+      _clans,
+      _clanInfos,
+      clanIds
     );
     if (clanIdsToDelete.length != 0) {
       emit ForceMMRUpdate(clanIdsToDelete);
@@ -296,65 +280,58 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   function getIdleClans() external view returns (uint256[] memory clanIds) {
-    return LockedBankVaultsLibrary.getIdleClans(sortedClansByMMR, clanInfos, clans);
+    return LockedBankVaultsLibrary.getIdleClans(_sortedClansByMMR, _clanInfos, _clans);
   }
 
   // This needs to call the oracle VRF on-demand and calls the callback
   function attackVaults(
-    uint256 _clanId,
-    uint256 _defendingClanId,
-    uint16 _itemTokenId,
-    uint256 _leaderPlayerId
-  ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
-    if (preventAttacks) {
-      revert AttacksPrevented();
-    }
-
+    uint256 clanId,
+    uint256 defendingClanId,
+    uint16 itemTokenId,
+    uint256 leaderPlayerId
+  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isAtLeastLeaderOfClan(clanId, leaderPlayerId) {
+    require(!_preventAttacks, AttacksPrevented());
     // Check they are paying enough
-    if (msg.value < getAttackCost()) {
-      revert NotEnoughFTM();
-    }
+    require(msg.value >= getAttackCost(), NotEnoughFTM());
 
-    (bool success, ) = oracle.call{value: msg.value}("");
-    if (!success) {
-      revert TransferFailed();
-    }
+    (bool success, ) = _oracle.call{value: msg.value}("");
+    require(success, TransferFailed());
 
     (bool isReattacking, bool isUsingSuperAttack, uint256 superAttackCooldownTimestamp) = LockedBankVaultsLibrary
       .checkCanAttackVaults(
-        _clanId,
-        _defendingClanId,
-        _itemTokenId,
+        clanId,
+        defendingClanId,
+        itemTokenId,
         MAX_LOCKED_VAULTS,
         NUM_PACKED_VAULTS,
-        itemNFT,
-        clanInfos,
-        lastClanBattles
+        _itemNFT,
+        _clanInfos,
+        _lastClanBattles
       );
-    if ((isReattacking || isUsingSuperAttack) && _itemTokenId != NONE) {
-      itemNFT.burn(_msgSender(), _itemTokenId, 1);
+    if ((isReattacking || isUsingSuperAttack) && itemTokenId != NONE) {
+      _itemNFT.burn(_msgSender(), itemTokenId, 1);
     }
 
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
-    LockedBankVaultsLibrary.checkWithinRange(sortedClansByMMR, _clanId, _defendingClanId, clans, mmrAttackDistance);
+    LockedBankVaultsLibrary.checkWithinRange(_sortedClansByMMR, clanId, defendingClanId, _clans, _mmrAttackDistance);
 
-    VaultClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = _clanInfos[clanId];
     clanInfo.currentlyAttacking = true;
 
-    uint64 _nextPendingAttackId = nextPendingAttackId++;
+    uint64 nextPendingAttackId = _nextPendingAttackId++;
 
-    uint40 attackingCooldownTimestamp = uint40(block.timestamp + attackingCooldown);
+    uint40 attackingCooldownTimestamp = uint40(block.timestamp + _attackingCooldown);
     clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
     if (isUsingSuperAttack) {
       clanInfo.superAttackCooldownTimestamp = uint40(superAttackCooldownTimestamp);
     }
 
     // Don't change the attacking timestamp if re-attacking
-    uint40 reattackingCooldownTimestamp = uint40(block.timestamp + reattackingCooldown);
-    uint256 lowerClanId = _clanId < _defendingClanId ? _clanId : _defendingClanId;
-    uint256 higherClanId = _clanId < _defendingClanId ? _defendingClanId : _clanId;
-    ClanBattleInfo storage battleInfo = lastClanBattles[lowerClanId][higherClanId];
-    if (lowerClanId == _clanId) {
+    uint40 reattackingCooldownTimestamp = uint40(block.timestamp + _reattackingCooldown);
+    uint256 lowerClanId = clanId < defendingClanId ? clanId : defendingClanId;
+    uint256 higherClanId = clanId < defendingClanId ? defendingClanId : clanId;
+    ClanBattleInfo storage battleInfo = _lastClanBattles[lowerClanId][higherClanId];
+    if (lowerClanId == clanId) {
       if (isReattacking) {
         reattackingCooldownTimestamp = battleInfo.lastClanIdAttackOtherClanIdCooldownTimestamp;
         ++battleInfo.numReattacks;
@@ -372,53 +349,47 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       }
     }
 
-    pendingAttacks[_nextPendingAttackId] = PendingAttack({
-      clanId: uint40(_clanId),
-      defendingClanId: uint40(_defendingClanId),
+    _pendingAttacks[nextPendingAttackId] = PendingAttack({
+      clanId: uint40(clanId),
+      defendingClanId: uint40(defendingClanId),
       attackInProgress: true,
       extraRollsAttacker: isUsingSuperAttack ? 1 : 0,
       extraRollsDefender: 0
     });
     bytes32 requestId = _requestRandomWords();
-    requestToPendingAttackIds[requestId] = _nextPendingAttackId;
+    _requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
     emit AttackVaults(
-      _clanId,
-      _defendingClanId,
+      clanId,
+      defendingClanId,
       _msgSender(),
-      _leaderPlayerId,
+      leaderPlayerId,
       uint256(requestId),
-      _nextPendingAttackId,
+      nextPendingAttackId,
       attackingCooldownTimestamp,
       reattackingCooldownTimestamp,
-      _itemTokenId
+      itemTokenId
     );
 
     if (isUsingSuperAttack) {
-      emit SuperAttackCooldown(_clanId, superAttackCooldownTimestamp);
+      emit SuperAttackCooldown(clanId, superAttackCooldownTimestamp);
     }
   }
 
   /// @notice Called by the SamWitchVRF oracle contract to fulfill the request
-  function fulfillRandomWords(bytes32 _requestId, uint256[] calldata _randomWords) external onlySamWitchVRF {
-    if (_randomWords.length != NUM_WORDS) {
-      revert LengthMismatch();
-    }
+  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+    require(randomWords.length == NUM_WORDS, LengthMismatch());
 
-    PendingAttack storage pendingAttack = pendingAttacks[requestToPendingAttackIds[_requestId]];
-    if (!pendingAttack.attackInProgress) {
-      revert RequestIdNotKnown();
-    }
+    PendingAttack storage pendingAttack = _pendingAttacks[_requestToPendingAttackIds[requestId]];
+    require(pendingAttack.attackInProgress, RequestIdNotKnown());
 
-    uint40 attackingClanId = pendingAttack.clanId;
-    uint48[] memory attackingPlayerIds = clanInfos[attackingClanId].playerIds;
-
-    uint256 defendingClanId = pendingAttack.defendingClanId;
-    uint48[] memory defendingPlayerIds = clanInfos[defendingClanId].playerIds;
+    (uint40 attackingClanId, uint256 defendingClanId) = (pendingAttack.clanId, pendingAttack.defendingClanId);
+    uint48[] memory attackingPlayerIds = _clanInfos[attackingClanId].playerIds;
+    uint48[] memory defendingPlayerIds = _clanInfos[defendingClanId].playerIds;
 
     Skill[] memory randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
     for (uint256 i; i < randomSkills.length; ++i) {
-      randomSkills[i] = comparableSkills[uint8(_randomWords[2] >> (i * 8)) % comparableSkills.length];
+      randomSkills[i] = _comparableSkills[uint8(randomWords[2] >> (i * 8)) % _comparableSkills.length];
     }
 
     (
@@ -427,41 +398,41 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       uint256[] memory defendingRolls,
       bool didAttackersWin
     ) = ClanBattleLibrary.doBattle(
-        address(players),
+        address(_players),
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        [_randomWords[0], _randomWords[1]],
+        [randomWords[0], randomWords[1]],
         pendingAttack.extraRollsAttacker,
         pendingAttack.extraRollsDefender
       );
 
     pendingAttack.attackInProgress = false;
-    clanInfos[attackingClanId].currentlyAttacking = false;
+    _clanInfos[attackingClanId].currentlyAttacking = false;
 
     uint256 losingClanId = didAttackersWin ? defendingClanId : attackingClanId;
     uint256 percentageToTake = didAttackersWin ? 10 : 5;
 
     // Go through all the defendingVaults of who ever lost and take a percentage from them
     uint256 totalWon;
-    uint256 vaultOffset = clanInfos[losingClanId].defendingVaultsOffset;
-    uint256 length = clanInfos[losingClanId].defendingVaults.length;
+    uint256 vaultOffset = _clanInfos[losingClanId].defendingVaultsOffset;
+    uint256 length = _clanInfos[losingClanId].defendingVaults.length;
     for (uint256 i = vaultOffset; i < length; ++i) {
-      Vault storage losersVault = clanInfos[losingClanId].defendingVaults[i];
+      Vault storage losersVault = _clanInfos[losingClanId].defendingVaults[i];
       totalWon += _stealFromVault(losersVault, losingClanId, percentageToTake);
     }
 
-    vrfRequestInfo.updateAverageGasPrice();
+    _vrfRequestInfo.updateAverageGasPrice();
 
     (int256 attackingMMRDiff, int256 defendingMMRDiff) = LockedBankVaultsLibrary.fulfillUpdateMMR(
-      Ka,
-      Kd,
-      sortedClansByMMR,
-      clans,
+      _kA,
+      _kD,
+      _sortedClansByMMR,
+      _clans,
       attackingClanId,
       defendingClanId,
       didAttackersWin,
-      clanInfos
+      _clanInfos
     );
 
     uint256 brushLost;
@@ -471,15 +442,15 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       uint256 amountToDao = (totalWon * _brushDevPercentage) / 100;
       uint256 brushBurnt = (totalWon * _brushBurntPercentage) / 100;
 
-      brush.transfer(treasury, amountToTreasure);
-      brush.transfer(dev, amountToDao);
-      brush.burn(brushBurnt);
+      _brush.transfer(_treasury, amountToTreasure);
+      _brush.transfer(_dev, amountToDao);
+      _brush.burn(brushBurnt);
 
       brushLost = totalWon;
     }
 
     emit BattleResult(
-      uint256(_requestId),
+      uint256(requestId),
       attackingPlayerIds,
       defendingPlayerIds,
       attackingRolls,
@@ -489,186 +460,186 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       didAttackersWin,
       attackingClanId,
       defendingClanId,
-      _randomWords,
+      randomWords,
       percentageToTake,
       brushLost
     );
 
-    emit UpdateMMR(uint256(_requestId), attackingMMRDiff, defendingMMRDiff);
+    emit UpdateMMR(uint256(requestId), attackingMMRDiff, defendingMMRDiff);
 
     if (didAttackersWin) {
       _lockFunds(attackingClanId, address(0), 0, totalWon);
     }
   }
 
-  function claimFunds(uint256 _clanId, uint256 _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+  function claimFunds(uint256 clanId, uint256 playerId) external isOwnerOfPlayerAndActive(playerId) {
     (uint256 total, uint256 numLocksClaimed) = LockedBankVaultsLibrary.claimFunds(
-      sortedClansByMMR,
-      clanInfos[_clanId],
-      _clanId
+      _sortedClansByMMR,
+      _clanInfos[clanId],
+      clanId
     );
-    emit ClaimFunds(_clanId, _msgSender(), _playerId, total, numLocksClaimed);
-    address bankAddress = _getBankAddress(_clanId);
-    IBank(bankAddress).depositToken(_msgSender(), _playerId, address(brush), total);
+    emit ClaimFunds(clanId, _msgSender(), playerId, total, numLocksClaimed);
+    address bankAddress = _getBankAddress(clanId);
+    IBank(bankAddress).depositToken(_msgSender(), playerId, address(_brush), total);
   }
 
   function blockAttacks(
-    uint256 _clanId,
-    uint16 _itemTokenId,
-    uint256 _playerId
-  ) external isOwnerOfPlayerAndActive(_playerId) isClanMember(_clanId, _playerId) {
-    uint256 blockAttacksTimestamp = LockedBankVaultsLibrary.blockAttacks(itemNFT, _itemTokenId, clanInfos[_clanId]);
+    uint256 clanId,
+    uint16 itemTokenId,
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) isClanMember(clanId, playerId) {
+    uint256 blockAttacksTimestamp = LockedBankVaultsLibrary.blockAttacks(_itemNFT, itemTokenId, _clanInfos[clanId]);
     // TODO: Add blockAttacksCooldownHours to a BlockingAttacks
-    emit BlockingAttacks(_clanId, _itemTokenId, _msgSender(), _playerId, blockAttacksTimestamp, block.timestamp);
+    emit BlockingAttacks(clanId, itemTokenId, _msgSender(), playerId, blockAttacksTimestamp, block.timestamp);
   }
 
-  function lockFunds(uint256 _clanId, address _from, uint256 _playerId, uint256 _amount) external onlyTerritories {
-    _lockFunds(_clanId, _from, _playerId, _amount);
-    VaultClanInfo storage clanInfo = clanInfos[_clanId];
+  function lockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount) external onlyTerritories {
+    _lockFunds(clanId, from, playerId, amount);
+    VaultClanInfo storage clanInfo = _clanInfos[clanId];
     if (!clanInfo.isInMMRArray) {
-      LockedBankVaultsLibrary.insertMMRArray(sortedClansByMMR, clans.getMMR(_clanId), uint32(_clanId));
+      LockedBankVaultsLibrary.insertMMRArray(_sortedClansByMMR, _clans.getMMR(clanId), uint32(clanId));
       clanInfo.isInMMRArray = true;
     }
-    if (_amount != 0 && !brush.transferFrom(_msgSender(), address(this), _amount)) {
-      revert TransferFailed();
-    }
+    require(amount == 0 || _brush.transferFrom(_msgSender(), address(this), amount), TransferFailed());
   }
 
-  function clanMemberLeft(uint256 _clanId, uint256 _playerId) external override onlyClans {
+  function clanMemberLeft(uint256 clanId, uint256 playerId) external override onlyClans {
     // Remove a player combatant if they are currently assigned in this clan
-    VaultClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = _clanInfos[clanId];
     if (clanInfo.playerIds.length != 0) {
-      uint256 searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, _playerId);
+      uint256 searchIndex = EstforLibrary.binarySearch(clanInfo.playerIds, playerId);
       if (searchIndex != type(uint256).max) {
         // Shift the whole array to delete the element
         for (uint256 i = searchIndex; i < clanInfo.playerIds.length - 1; ++i) {
           clanInfo.playerIds[i] = clanInfo.playerIds[i + 1];
         }
         clanInfo.playerIds.pop();
-        emit RemoveCombatant(_playerId, _clanId);
+        emit RemoveCombatant(playerId, clanId);
       }
     }
   }
 
   function _stealFromVault(
-    Vault storage _losersVault,
-    uint256 _clanId,
-    uint256 _percentageToTake
+    Vault storage losersVault,
+    uint256 clanId,
+    uint256 percentageToTake
   ) private returns (uint256 amountWon) {
-    if (_losersVault.timestamp > block.timestamp) {
-      uint256 amount = _losersVault.amount;
-      uint256 stealAmount = (amount * _percentageToTake) / 100;
-      _losersVault.amount = uint80(amount - stealAmount);
-      clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount);
+    if (losersVault.timestamp > block.timestamp) {
+      uint256 amount = losersVault.amount;
+      uint256 stealAmount = (amount * percentageToTake) / 100;
+      losersVault.amount = uint80(amount - stealAmount);
+      _clanInfos[clanId].totalBrushLocked -= uint96(stealAmount);
       amountWon += stealAmount;
     }
 
-    if (_losersVault.timestamp1 > block.timestamp) {
-      uint256 amount1 = _losersVault.amount1;
-      uint256 stealAmount1 = (amount1 * _percentageToTake) / 100;
-      _losersVault.amount1 = uint80(amount1 - stealAmount1);
-      clanInfos[_clanId].totalBrushLocked -= uint96(stealAmount1);
+    if (losersVault.timestamp1 > block.timestamp) {
+      uint256 amount1 = losersVault.amount1;
+      uint256 stealAmount1 = (amount1 * percentageToTake) / 100;
+      losersVault.amount1 = uint80(amount1 - stealAmount1);
+      _clanInfos[clanId].totalBrushLocked -= uint96(stealAmount1);
       amountWon += stealAmount1;
     }
   }
 
-  function _getBankAddress(uint256 _clanId) private returns (address bankAddress) {
-    bankAddress = address(clanInfos[_clanId].bank);
+  function _getBankAddress(uint256 clanId) private returns (address bankAddress) {
+    bankAddress = address(_clanInfos[clanId].bank);
     if (bankAddress == address(0)) {
-      bankAddress = bankFactory.bankAddress(_clanId);
-      brush.approve(bankAddress, type(uint256).max);
-      clanInfos[_clanId].bank = IBank(bankAddress);
+      bankAddress = _bankFactory.bankAddress(clanId);
+      _brush.approve(bankAddress, type(uint256).max);
+      _clanInfos[clanId].bank = IBank(bankAddress);
     }
   }
 
-  function _lockFunds(uint256 _clanId, address _from, uint256 _playerId, uint256 _amount) private {
-    if (_amount == 0) {
+  function _lockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount) private {
+    if (amount == 0) {
       return;
     }
-    VaultClanInfo storage clanInfo = clanInfos[_clanId];
+    VaultClanInfo storage clanInfo = _clanInfos[clanId];
     uint256 totalBrushLocked = clanInfo.totalBrushLocked;
-    clanInfo.totalBrushLocked = uint96(totalBrushLocked + _amount);
-    uint40 lockingTimestamp = uint40(block.timestamp + lockFundsPeriod);
+    clanInfo.totalBrushLocked = uint96(totalBrushLocked + amount);
+    uint40 lockingTimestamp = uint40(block.timestamp + _lockFundsPeriod);
     uint256 length = clanInfo.defendingVaults.length;
     if (length == 0 || (clanInfo.defendingVaults[length - 1].timestamp1 != 0)) {
       // Start a new one
       clanInfo.defendingVaults.push(
-        Vault({claimed: false, timestamp: lockingTimestamp, amount: uint80(_amount), timestamp1: 0, amount1: 0})
+        Vault({claimed: false, timestamp: lockingTimestamp, amount: uint80(amount), timestamp1: 0, amount1: 0})
       );
     } else {
       // Update existing storage slot
       clanInfo.defendingVaults[length - 1].timestamp1 = lockingTimestamp;
-      clanInfo.defendingVaults[length - 1].amount1 = uint80(_amount);
+      clanInfo.defendingVaults[length - 1].amount1 = uint80(amount);
     }
 
-    emit LockFunds(_clanId, _from, _playerId, _amount, lockingTimestamp);
+    emit LockFunds(clanId, from, playerId, amount, lockingTimestamp);
   }
 
   function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
+    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
   }
 
-  function _setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) private {
-    expectedGasLimitFulfill = _expectedGasLimitFulfill;
-    emit SetExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  function _setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) private {
+    _expectedGasLimitFulfill = expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
   function getAttackCost() public view returns (uint256) {
-    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = vrfRequestInfo.get();
-    return baseRequestCost + (movingAverageGasPrice * expectedGasLimitFulfill);
+    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
+    return baseRequestCost + (movingAverageGasPrice * _expectedGasLimitFulfill);
   }
 
-  function getClanInfo(uint256 _clanId) external view returns (VaultClanInfo memory) {
-    return clanInfos[_clanId];
+  function getClanInfo(uint256 clanId) external view returns (VaultClanInfo memory) {
+    return _clanInfos[clanId];
   }
 
-  function isCombatant(uint256 _clanId, uint256 _playerId) external view override returns (bool) {
-    uint48[] storage playerIds = clanInfos[_clanId].playerIds;
+  function isCombatant(uint256 clanId, uint256 playerId) external view override returns (bool) {
+    uint48[] storage playerIds = _clanInfos[clanId].playerIds;
     if (playerIds.length == 0) {
       return false;
     }
 
-    uint256 searchIndex = EstforLibrary.binarySearch(playerIds, _playerId);
+    uint256 searchIndex = EstforLibrary.binarySearch(playerIds, playerId);
     return searchIndex != type(uint256).max;
   }
 
   function getSortedClanIdsByMMR() external view returns (uint32[] memory) {
-    return LockedBankVaultsLibrary.getSortedClanIdsByMMR(sortedClansByMMR);
+    return LockedBankVaultsLibrary.getSortedClanIdsByMMR(_sortedClansByMMR);
   }
 
   function getSortedMMR() external view returns (uint16[] memory) {
-    return LockedBankVaultsLibrary.getSortedMMR(sortedClansByMMR);
+    return LockedBankVaultsLibrary.getSortedMMR(_sortedClansByMMR);
   }
 
-  function setComparableSkills(Skill[] calldata _skills) public onlyOwner {
-    for (uint256 i = 0; i < _skills.length; ++i) {
-      if (_skills[i] == Skill.NONE || _skills[i] == Skill.COMBAT) {
-        revert InvalidSkill(_skills[i]);
-      }
+  function getLastClanBattles(uint256 clanId, uint256 otherClanId) external view returns (ClanBattleInfo memory) {
+    return _lastClanBattles[clanId][otherClanId];
+  }
 
-      comparableSkills.push(_skills[i]);
+  function setComparableSkills(Skill[] calldata skills) public onlyOwner {
+    for (uint256 i = 0; i < skills.length; ++i) {
+      require(skills[i] != Skill.NONE && skills[i] != Skill.COMBAT, InvalidSkill(skills[i]));
+
+      _comparableSkills.push(skills[i]);
     }
-    emit SetComparableSkills(_skills);
+    emit SetComparableSkills(skills);
   }
 
-  function setKValues(uint8 _Ka, uint8 _Kd) public onlyOwner {
-    Ka = _Ka;
-    Kd = _Kd;
-    emit SetKValues(_Ka, _Kd);
+  function setKValues(uint8 kA, uint8 kD) public onlyOwner {
+    _kA = kA;
+    _kD = kD;
+    emit SetKValues(kA, kD);
   }
 
-  function initializeAddresses(ITerritories _territories, address _combatantsHelper) external onlyOwner {
-    territories = _territories;
-    combatantsHelper = _combatantsHelper;
+  function initializeAddresses(ITerritories territories, address combatantsHelper) external onlyOwner {
+    _territories = territories;
+    _combatantsHelper = combatantsHelper;
   }
 
-  function setMMRAttackDistance(uint16 _mmrAttackDistance) public onlyOwner {
-    mmrAttackDistance = _mmrAttackDistance;
-    emit SetMMRAttackDistance(_mmrAttackDistance);
+  function setMMRAttackDistance(uint16 mmrAttackDistance) public onlyOwner {
+    _mmrAttackDistance = mmrAttackDistance;
+    emit SetMMRAttackDistance(mmrAttackDistance);
   }
 
-  function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
-    _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
+    _setExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
   function setBrushDistributionPercentages(
@@ -685,27 +656,27 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   // TODO: Can delete if necessary
-  function setPreventAttacks(bool _preventAttacks) external onlyOwner {
-    preventAttacks = _preventAttacks;
+  function setPreventAttacks(bool __preventAttacks) external onlyOwner {
+    _preventAttacks = __preventAttacks;
   }
 
   // TODO Can delete after setting initial MMR
   function initializeMMR(uint256[] calldata _clanIds, uint16[] calldata _mmrs, bool _clear) external onlyOwner {
     // First clean up any in it
     if (_clear) {
-      delete sortedClansByMMR;
+      delete _sortedClansByMMR;
     }
-    LockedBankVaultsLibrary.initializeMMR(sortedClansByMMR, clans, clanInfos, _clanIds, _mmrs);
+    LockedBankVaultsLibrary.initializeMMR(_sortedClansByMMR, _clans, _clanInfos, _clanIds, _mmrs);
     emit SetMMRs(_clanIds, _mmrs);
   }
 
-  function clearCooldowns(uint256 _clanId, uint256[] calldata _otherClanIds) external isAdminAndBeta {
-    LockedBankVaultsLibrary.clearCooldowns(_clanId, _otherClanIds, clanInfos[_clanId], lastClanBattles);
+  function clearCooldowns(uint256 clanId, uint256[] calldata _otherClanIds) external isAdminAndBeta {
+    LockedBankVaultsLibrary.clearCooldowns(clanId, _otherClanIds, _clanInfos[clanId], _lastClanBattles);
   }
 
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint256 _requestId) external isAdminAndBeta {
-    pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
+    _pendingAttacks[_requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks

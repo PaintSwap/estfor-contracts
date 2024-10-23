@@ -734,22 +734,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint48[]",
-        "name": "_playerIds",
+        "name": "playerIds",
         "type": "uint48[]"
       },
       {
         "internalType": "uint256",
-        "name": "_combatantCooldownTimestamp",
+        "name": "combatantCooldownTimestamp",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_leaderPlayerId",
+        "name": "leaderPlayerId",
         "type": "uint256"
       }
     ],
@@ -762,22 +762,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_defendingClanId",
+        "name": "defendingClanId",
         "type": "uint256"
       },
       {
         "internalType": "uint16",
-        "name": "_itemTokenId",
+        "name": "itemTokenId",
         "type": "uint16"
       },
       {
         "internalType": "uint256",
-        "name": "_leaderPlayerId",
+        "name": "leaderPlayerId",
         "type": "uint256"
       }
     ],
@@ -790,17 +790,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint16",
-        "name": "_itemTokenId",
+        "name": "itemTokenId",
         "type": "uint16"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -813,12 +813,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -831,12 +831,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -849,7 +849,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
@@ -867,7 +867,7 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_clanIds",
+        "name": "clanIds",
         "type": "uint256[]"
       }
     ],
@@ -880,12 +880,12 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "_requestId",
+        "name": "requestId",
         "type": "bytes32"
       },
       {
         "internalType": "uint256[]",
-        "name": "_randomWords",
+        "name": "randomWords",
         "type": "uint256[]"
       }
     ],
@@ -911,7 +911,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       }
     ],
@@ -1029,6 +1029,52 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "otherClanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getLastClanBattles",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "lastClanIdAttackOtherClanIdCooldownTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numReattacks",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastOtherClanIdAttackClanIdCooldownTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "numReattacksOtherClan",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ClanBattleInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getSortedClanIdsByMMR",
     "outputs": [
@@ -1058,82 +1104,82 @@
     "inputs": [
       {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       },
       {
         "internalType": "contract IClans",
-        "name": "_clans",
+        "name": "clans",
         "type": "address"
       },
       {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
         "internalType": "contract IBankFactory",
-        "name": "_bankFactory",
+        "name": "bankFactory",
         "type": "address"
       },
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_treasury",
+        "name": "treasury",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_dev",
+        "name": "dev",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_oracle",
+        "name": "oracle",
         "type": "address"
       },
       {
         "internalType": "contract ISamWitchVRF",
-        "name": "_samWitchVRF",
+        "name": "samWitchVRF",
         "type": "address"
       },
       {
         "internalType": "contract VRFRequestInfo",
-        "name": "_vrfRequestInfo",
+        "name": "vrfRequestInfo",
         "type": "address"
       },
       {
         "internalType": "enum Skill[]",
-        "name": "_comparableSkills",
+        "name": "comparableSkills",
         "type": "uint8[]"
       },
       {
         "internalType": "uint16",
-        "name": "_mmrAttackDistance",
+        "name": "mmrAttackDistance",
         "type": "uint16"
       },
       {
         "internalType": "uint24",
-        "name": "_lockFundsPeriod",
+        "name": "lockFundsPeriod",
         "type": "uint24"
       },
       {
         "internalType": "uint8",
-        "name": "_maxClanCombatants",
+        "name": "maxClanCombatants",
         "type": "uint8"
       },
       {
         "internalType": "contract AdminAccess",
-        "name": "_adminAccess",
+        "name": "adminAccess",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "_isBeta",
+        "name": "isBeta",
         "type": "bool"
       }
     ],
@@ -1146,12 +1192,12 @@
     "inputs": [
       {
         "internalType": "contract ITerritories",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_combatantsHelper",
+        "name": "combatantsHelper",
         "type": "address"
       }
     ],
@@ -1187,12 +1233,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1215,57 +1261,18 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "otherClanId",
-        "type": "uint256"
-      }
-    ],
-    "name": "lastClanBattles",
-    "outputs": [
-      {
-        "internalType": "uint40",
-        "name": "lastClanIdAttackOtherClanIdCooldownTimestamp",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numReattacks",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint40",
-        "name": "lastOtherClanIdAttackClanIdCooldownTimestamp",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint8",
-        "name": "numReattacksOtherClan",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -1347,7 +1354,7 @@
     "inputs": [
       {
         "internalType": "enum Skill[]",
-        "name": "_skills",
+        "name": "skills",
         "type": "uint8[]"
       }
     ],
@@ -1360,7 +1367,7 @@
     "inputs": [
       {
         "internalType": "uint24",
-        "name": "_expectedGasLimitFulfill",
+        "name": "expectedGasLimitFulfill",
         "type": "uint24"
       }
     ],
@@ -1373,12 +1380,12 @@
     "inputs": [
       {
         "internalType": "uint8",
-        "name": "_Ka",
+        "name": "kA",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_Kd",
+        "name": "kD",
         "type": "uint8"
       }
     ],
@@ -1391,7 +1398,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_mmrAttackDistance",
+        "name": "mmrAttackDistance",
         "type": "uint16"
       }
     ],
@@ -1404,7 +1411,7 @@
     "inputs": [
       {
         "internalType": "bool",
-        "name": "_preventAttacks",
+        "name": "__preventAttacks",
         "type": "bool"
       }
     ],
