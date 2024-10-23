@@ -155,8 +155,6 @@ abstract contract PlayersBase {
   // The random chance where the odds are increased when there are dice roll overflows.
   // Don't set this above 1747 otherwise it can result in 100% chance for anything around that value
   uint256 internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1328;
-  uint256 internal constant MAX_LEVEL = 100; // Original max level
-  uint256 internal constant MAX_LEVEL_1 = 500; // TODO: Update later
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint256 internal _startSlot;
@@ -336,7 +334,6 @@ abstract contract PlayersBase {
     } else {
       newMaxLevelVersion = 0;
     }
-
     assembly ("memory-safe") {
       let val := sload(add(packedXP.slot, slotNum))
 

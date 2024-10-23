@@ -1674,11 +1674,10 @@ describe("Players", function () {
   });
 
   it("Check max level packed XP", async function () {
-    const {players, playerId, playersLibrary, alice} = await loadFixture(playersFixture);
+    const {players, playerId, alice} = await loadFixture(playersFixture);
 
     let packedXP = await players.packedXP(playerId);
-    const xp = 1109796; // First max level
-    expect(await playersLibrary.getLevel(xp)).to.eq(100); // exactly 100
+    const xp = await getXPFromLevel(130);
 
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, xp, false);
     packedXP = await players.packedXP(playerId);
@@ -1718,13 +1717,13 @@ describe("Players", function () {
     maxDataAsNum = Number(packedXP.packedDataIsMaxed2);
     const COOKING_OFFSET = 0;
     const FIREMAKING_OFFSET = 2;
-    const AGILITY_OFFSET = 4;
+    const FARMING_OFFSET = 4;
     const ALCHEMY_OFFSET = 6;
     const FLETCHING_OFFSET = 8;
     const FORGING_OFFSET = 10;
     expect((maxDataAsNum >> COOKING_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> FIREMAKING_OFFSET) & 0b11).to.eq(0);
-    expect((maxDataAsNum >> AGILITY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FARMING_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> ALCHEMY_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> FLETCHING_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(0);
@@ -1761,7 +1760,7 @@ describe("Players", function () {
     maxDataAsNum = Number(packedXP.packedDataIsMaxed2);
     expect((maxDataAsNum >> COOKING_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> FIREMAKING_OFFSET) & 0b11).to.eq(0);
-    expect((maxDataAsNum >> AGILITY_OFFSET) & 0b11).to.eq(0);
+    expect((maxDataAsNum >> FARMING_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> ALCHEMY_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> FLETCHING_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(1);

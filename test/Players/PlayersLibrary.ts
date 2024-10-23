@@ -15,8 +15,10 @@ describe("PlayersLibrary", function () {
     expect(await playersLibrary.getLevel(1035475)).to.eq(98); // 1 below 99
     expect(await playersLibrary.getLevel(1035476)).to.eq(99); // exactly 99
     expect(await playersLibrary.getLevel(1035477)).to.eq(99); // 1 above
-    expect(await playersLibrary.getLevel(1109796)).to.eq(100); // exactly 100
-    expect(await playersLibrary.getLevel(1209796)).to.eq(100); // Above 100
+    expect(await playersLibrary.getLevel(1109796)).to.eq(100); // exactly 100 (old max level)
+    expect(await playersLibrary.getLevel(8876090)).to.eq(129); // 1 below
+    expect(await playersLibrary.getLevel(8876091)).to.eq(130); // exactly 130 (max level)
+    expect(await playersLibrary.getLevel(9876092)).to.eq(130); // Above 101 (1 above 101)
   });
 
   it("getBoostedTime", async () => {
