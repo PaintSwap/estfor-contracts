@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
@@ -15,11 +14,6 @@ import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 import "../globals/all.sol";
 
 contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDelegateView {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
-  using UnsafeMath for uint40;
-  using UnsafeMath for uint24;
-  using UnsafeMath for uint16;
   using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
   using SkillLibrary for Skill;
@@ -67,19 +61,18 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint256[] memory queueIds,
       uint256 numPastRandomRewardInstancesToRemove
     ) = _claimableRandomRewards(playerId, emptyPendingQueuedActionProcessed);
-    U256 idsLength = ids.length.asU256();
+    uint256 idsLength = ids.length;
 
     pendingQueuedActionState.producedPastRandomRewards = new PastRandomRewardInfo[](
       actionQueue.length * MAX_RANDOM_REWARDS_PER_ACTION + ids.length
     );
     uint256 producedPastRandomRewardsLength;
 
-    for (U256 iter; iter < idsLength; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
+    for (uint256 iter; iter < idsLength; iter++) {
       pendingQueuedActionState.producedPastRandomRewards[producedPastRandomRewardsLength++] = PastRandomRewardInfo(
-        uint64(queueIds[i]),
-        uint16(ids[i]),
-        uint24(amounts[i])
+        uint64(queueIds[iter]),
+        uint16(ids[iter]),
+        uint24(amounts[iter])
       );
     }
 
@@ -96,16 +89,15 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     require(_playerNFT.balanceOf(owner, playerId) != 0, NotOwnerOfPlayer());
     uint256 previousTotalXP = player.totalXP;
     uint256 totalXPGained;
-    U256 bounds = actionQueue.length.asU256();
+    uint256 bounds = actionQueue.length;
     uint256 pendingQueuedActionStateLength;
     uint256 startTime = _players[playerId].currentActionStartTime;
     Skill firstRemainingActionSkill; // Might also be the non-actual skills Skill.COMBAT or Skill.TRAVELING
     uint256 numActionsSkipped;
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      QueuedAction storage queuedAction = actionQueue[i];
+    for (uint256 iter; iter < bounds; iter++) {
+      QueuedAction storage queuedAction = actionQueue[iter];
 
-      i -= numActionsSkipped;
+      uint256 i = iter - numActionsSkipped;
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionState
         .equipmentStates[i];
       PendingQueuedActionMetadata memory pendingQueuedActionMetadata = pendingQueuedActionState.actionMetadatas[i];
@@ -133,14 +125,14 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           0,
           remainingQueuedActionsLength
         );
-        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
-        ++numActionsSkipped;
+        remainingQueuedActionsLength++;
+        numActionsSkipped++;
         startTime += queuedAction.timespan;
         continue;
       }
 
       uint256 prevProcessedTime = queuedAction.prevProcessedTime;
-      uint256 veryStartTime = startTime.sub(prevProcessedTime);
+      uint256 veryStartTime = startTime - prevProcessedTime;
 
       bool isCombat = queuedAction.combatStyle.asCombatStyle().isCombat();
       ActionChoice memory actionChoice;
@@ -197,7 +189,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       );
 
       if (missingRequiredHandEquipment) {
-        if (i == 0) {
+        if (iter == 0) {
           // Clear the state and make sure the next queued action can finish
           _clearActionProcessed(currentActionProcessed);
         }
@@ -250,7 +242,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         if (numChoicesCompleted != 0) {
           choiceIds[choiceIdsLength] = queuedAction.choiceId;
           choiceAmounts[choiceIdsLength] = numChoicesCompleted;
-          choiceIdsLength = choiceIdsLength.inc();
+          choiceIdsLength++;
         }
 
         uint256 numActionsCompleted;
@@ -267,20 +259,19 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         if (numActionsCompleted != 0) {
           actionIds[actionIdsLength] = queuedAction.actionId;
           actionAmounts[actionIdsLength] = numActionsCompleted;
-          actionIdsLength = actionIdsLength.inc();
+          actionIdsLength++;
         }
 
         if (producedEquipment.itemTokenId != NONE) {
           pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = producedEquipment.itemTokenId;
           pendingQueuedActionEquipmentState.producedAmounts[producedLength] = producedEquipment.amount;
-          producedLength = producedLength.inc();
+          producedLength++;
         }
-        U256 consumedEquipmentLength = consumedEquipments.length.asU256();
-        for (U256 jter; jter < consumedEquipmentLength; jter = jter.inc()) {
-          uint256 j = jter.asUint256();
-          pendingQueuedActionEquipmentState.consumedItemTokenIds[consumedLength] = consumedEquipments[j].itemTokenId;
-          pendingQueuedActionEquipmentState.consumedAmounts[consumedLength] = consumedEquipments[j].amount;
-          consumedLength = consumedLength.inc();
+        uint256 consumedEquipmentLength = consumedEquipments.length;
+        for (uint256 jter; jter < consumedEquipmentLength; jter++) {
+          pendingQueuedActionEquipmentState.consumedItemTokenIds[consumedLength] = consumedEquipments[jter].itemTokenId;
+          pendingQueuedActionEquipmentState.consumedAmounts[consumedLength] = consumedEquipments[jter].amount;
+          consumedLength++;
         }
 
         if (died) {
@@ -342,7 +333,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
               refundTime = tempRefundTime;
             }
           }
-          xpElapsedTime = xpElapsedTime > refundTime ? xpElapsedTime.sub(refundTime) : 0;
+          xpElapsedTime = xpElapsedTime > refundTime ? xpElapsedTime - refundTime : 0;
         }
 
         uint256 numActionsCompleted;
@@ -362,7 +353,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         if (numActionsCompleted != 0) {
           actionIds[actionIdsLength] = queuedAction.actionId;
           actionAmounts[actionIdsLength] = numActionsCompleted;
-          actionIdsLength = actionIdsLength.inc();
+          actionIdsLength++;
         }
       }
 
@@ -454,25 +445,23 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
             );
 
           // Guaranteed rewards
-          U256 newIdsLength = newIds.length.asU256();
-          for (U256 jter; jter < newIdsLength; jter = jter.inc()) {
-            uint256 j = jter.asUint256();
-            pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = newIds[j];
-            pendingQueuedActionEquipmentState.producedAmounts[producedLength] = newAmounts[j];
-            producedLength = producedLength.inc();
+          uint256 newIdsLength = newIds.length;
+          for (uint256 jter; jter < newIdsLength; jter++) {
+            pendingQueuedActionEquipmentState.producedItemTokenIds[producedLength] = newIds[jter];
+            pendingQueuedActionEquipmentState.producedAmounts[producedLength] = newAmounts[jter];
+            producedLength++;
           }
 
           // Random rewards that can be claimed already from actions which ended in the previous 00:00
           // and processing is done afterwards and the oracle is called, so no pending dice rolls are needed
-          U256 newRandomIdsLength = newRandomIds.length.asU256();
-          for (U256 jter; jter < newRandomIdsLength; jter = jter.inc()) {
-            uint256 j = jter.asUint256();
+          uint256 newRandomIdsLength = newRandomIds.length;
+          for (uint256 jter; jter < newRandomIdsLength; jter++) {
             pendingQueuedActionState.producedPastRandomRewards[
               producedPastRandomRewardsLength++
             ] = PastRandomRewardInfo(
               uint64(queuedAction.queueId),
-              uint16(newRandomIds[j]),
-              uint24(newRandomAmounts[j])
+              uint16(newRandomIds[jter]),
+              uint24(newRandomAmounts[jter])
             );
           }
         }
@@ -489,9 +478,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           xpElapsedTime,
           remainingQueuedActionsLength
         );
-        remainingQueuedActionsLength = remainingQueuedActionsLength.inc();
+        remainingQueuedActionsLength++;
 
-        if (i == 0) {
+        if (iter == 0) {
           // Append it (or set it absolutely if unset)
           if (pointsAccrued != 0) {
             currentActionProcessed.skill1 = skill;
@@ -672,7 +661,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint16 monstersKilledFull = uint16((numSpawnedPerHour * (prevXPElapsedTime + xpElapsedTime)) / (SPAWN_MUL * 3600));
     uint8 successPercent = _getSuccessPercent(playerId, actionId, actionSkill, isCombat, pendingQueuedActionProcessed);
 
-    uint256 veryStartTime = startTime.sub(prevProcessedTime);
+    uint256 veryStartTime = startTime - prevProcessedTime;
     // Full
     uint256 length;
     (ids, amounts, length) = _getGuaranteedRewards(
@@ -740,11 +729,10 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256 xpElapsedTime
   ) private pure {
     if (xpElapsedTime != 0) {
-      U256 bounds = amounts.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint256 i = iter.asUint256();
+      uint256 bounds = amounts.length;
+      for (uint256 iter; iter < bounds; iter++) {
         // amounts[i] takes into account the whole elapsed time so additional boosted amount is a fraction of that.
-        amounts[i] += uint32((boostedTime * amounts[i] * boostedVal) / (xpElapsedTime * 100));
+        amounts[iter] += uint32((boostedTime * amounts[iter] * boostedVal) / (xpElapsedTime * 100));
       }
     }
   }
@@ -822,15 +810,14 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     )
   {
     PendingRandomReward[] storage pendingRandomRewards = _pendingRandomRewards[playerId];
-    U256 pendingRandomRewardsLength = pendingRandomRewards.length.asU256();
-    ids = new uint256[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-    amounts = new uint256[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
-    queueIds = new uint256[](pendingRandomRewardsLength.asUint256() * MAX_RANDOM_REWARDS_PER_ACTION);
+    uint256 pendingRandomRewardsLength = pendingRandomRewards.length;
+    ids = new uint256[](pendingRandomRewardsLength * MAX_RANDOM_REWARDS_PER_ACTION);
+    amounts = new uint256[](pendingRandomRewardsLength * MAX_RANDOM_REWARDS_PER_ACTION);
+    queueIds = new uint256[](pendingRandomRewardsLength * MAX_RANDOM_REWARDS_PER_ACTION);
 
     uint256 length;
-    for (U256 iter; iter < pendingRandomRewardsLength; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      PendingRandomReward storage pendingRandomReward = pendingRandomRewards[i];
+    for (uint256 iter; iter < pendingRandomRewardsLength; iter++) {
+      PendingRandomReward storage pendingRandomReward = pendingRandomRewards[iter];
       (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
         pendingRandomReward.actionId
       );
@@ -863,7 +850,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       );
 
       if (processedAny) {
-        numPastRandomRewardInstancesToRemove = numPastRandomRewardInstancesToRemove.inc();
+        numPastRandomRewardInstancesToRemove++;
       }
 
       if (randomIds.length != 0) {
@@ -965,13 +952,13 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       if (isCombat) {
         numRewards = (monstersKilled * rewardRate) / GUAR_MUL; // rate is per kill
       } else {
-        numRewards = (elapsedTime.mul(rewardRate).mul(successPercent)).div(3600 * GUAR_MUL * 100);
+        numRewards = (elapsedTime * rewardRate * successPercent) / (3600 * GUAR_MUL * 100);
       }
 
       if (numRewards != 0) {
         ids[length] = rewardTokenId;
         amounts[length] = numRewards;
-        length = length.inc();
+        length++;
       }
     }
   }

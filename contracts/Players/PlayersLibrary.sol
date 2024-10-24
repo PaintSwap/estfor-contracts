@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {IItemNFT} from "../interfaces/IItemNFT.sol";
 import {IWorld} from "../interfaces/IWorld.sol";
 
@@ -17,8 +16,6 @@ import {RATE_MUL, SPAWN_MUL, ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_S
 
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayersLibrary {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
   using CombatStyleLibrary for uint8;
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
@@ -31,22 +28,22 @@ library PlayersLibrary {
   uint256 constant HEALING_SCALE = 1_000_000;
 
   function _getLevel(uint256 xp) internal pure returns (uint16) {
-    U256 low;
-    U256 high = XP_BYTES.length.asU256().div(4);
+    uint256 low;
+    uint256 high = XP_BYTES.length / 4;
 
     while (low < high) {
-      U256 mid = (low + high).div(2);
+      uint256 mid = (low + high) / 2;
 
       // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
-      if (_getXP(mid.asUint256()) > xp) {
+      if (_getXP(mid) > xp) {
         high = mid;
       } else {
-        low = mid.inc();
+        low = mid + 1;
       }
     }
 
-    if (low.neq(0)) {
-      return low.asUint16();
+    if (low != 0) {
+      return uint16(low);
     } else {
       return 1;
     }
@@ -73,25 +70,22 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
   ) private pure returns (uint256 balance) {
     balance = originalBalance;
-    U256 bounds = pendingQueuedActionEquipmentStates.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
+    uint256 bounds = pendingQueuedActionEquipmentStates.length;
+    for (uint256 iter; iter < bounds; iter++) {
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionEquipmentStates[
-        i
+        iter
       ];
-      U256 jBounds = pendingQueuedActionEquipmentState.producedItemTokenIds.length.asU256();
-      for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
-        uint256 j = jIter.asUint256();
-        if (pendingQueuedActionEquipmentState.producedItemTokenIds[j] == itemId) {
-          balance += pendingQueuedActionEquipmentState.producedAmounts[j];
+      uint256 jBounds = pendingQueuedActionEquipmentState.producedItemTokenIds.length;
+      for (uint256 jIter; jIter < jBounds; jIter++) {
+        if (pendingQueuedActionEquipmentState.producedItemTokenIds[jIter] == itemId) {
+          balance += pendingQueuedActionEquipmentState.producedAmounts[jIter];
         }
       }
-      jBounds = pendingQueuedActionEquipmentState.consumedItemTokenIds.length.asU256();
-      for (U256 jIter; jIter < jBounds; jIter = jIter.inc()) {
-        uint256 j = jIter.asUint256();
-        if (pendingQueuedActionEquipmentState.consumedItemTokenIds[j] == itemId) {
-          if (balance >= pendingQueuedActionEquipmentState.consumedAmounts[j]) {
-            balance -= pendingQueuedActionEquipmentState.consumedAmounts[j];
+      jBounds = pendingQueuedActionEquipmentState.consumedItemTokenIds.length;
+      for (uint256 jIter; jIter < jBounds; jIter++) {
+        if (pendingQueuedActionEquipmentState.consumedItemTokenIds[jIter] == itemId) {
+          if (balance >= pendingQueuedActionEquipmentState.consumedAmounts[jIter]) {
+            balance -= pendingQueuedActionEquipmentState.consumedAmounts[jIter];
           } else {
             balance = 0;
           }
@@ -119,10 +113,9 @@ library PlayersLibrary {
   ) public view returns (uint256[] memory balances) {
     balances = IItemNFT(itemNFT).balanceOfs(from, itemIds);
 
-    U256 bounds = balances.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      balances[i] = _getRealBalance(balances[i], itemIds[i], pendingQueuedActionEquipmentStates);
+    uint256 bounds = balances.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      balances[iter] = _getRealBalance(balances[iter], itemIds[iter], pendingQueuedActionEquipmentStates);
     }
   }
 
@@ -767,9 +760,8 @@ library PlayersLibrary {
   ) private pure returns (bool matches) {
     // Check if they have the full equipment required
     if (itemTokenIds.length == 5) {
-      for (U256 iter; iter.lt(5); iter = iter.inc()) {
-        uint256 i = iter.asUint256();
-        if (itemTokenIds[i] != expectedItemTokenIds[i] || balances[i] == 0) {
+      for (uint256 iter; iter < 5; iter++) {
+        if (itemTokenIds[iter] != expectedItemTokenIds[iter] || balances[iter] == 0) {
           return false;
         }
       }
@@ -786,11 +778,10 @@ library PlayersLibrary {
     // Subtract previous rewards. If amount is zero after, replace with end and reduce the array size
     ids = newIds;
     amounts = newAmounts;
-    U256 prevNewIdsLength = prevNewIds.length.asU256();
-    for (U256 jter; jter < prevNewIdsLength; jter = jter.inc()) {
-      uint256 j = jter.asUint256();
-      uint16 prevNewId = uint16(prevNewIds[j]);
-      uint24 prevNewAmount = uint24(prevNewAmounts[j]);
+    uint256 prevNewIdsLength = prevNewIds.length;
+    for (uint256 jter; jter < prevNewIdsLength; jter++) {
+      uint16 prevNewId = uint16(prevNewIds[jter]);
+      uint24 prevNewAmount = uint24(prevNewAmounts[jter]);
       uint256 length = ids.length;
       for (uint256 k = 0; k < length; ++k) {
         if (ids[k] == prevNewId) {
@@ -898,12 +889,11 @@ library PlayersLibrary {
     );
     if (itemTokenIds.length != 0) {
       Item[] memory items = IItemNFT(itemNFT).getItems(itemTokenIds);
-      U256 iter = items.length.asU256();
-      while (iter.neq(0)) {
-        iter = iter.dec();
-        uint256 i = iter.asUint256();
-        if (balances[i] != 0) {
-          _updateCombatStatsFromItem(statsOut, items[i]);
+      uint256 iter = items.length;
+      while (iter != 0) {
+        iter--;
+        if (balances[iter] != 0) {
+          _updateCombatStatsFromItem(statsOut, items[iter]);
         }
       }
     }
@@ -1087,12 +1077,11 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
     ActionChoice calldata actionChoice
   ) external view returns (bool missingRequiredHandEquipment, CombatStats memory statsOut) {
-    U256 iter = handEquipmentTokenIds.length.asU256();
+    uint256 iter = handEquipmentTokenIds.length;
     statsOut = combatStats;
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint16 i = iter.asUint16();
-      uint16 handEquipmentTokenId = handEquipmentTokenIds[i];
+    while (iter != 0) {
+      iter--;
+      uint16 handEquipmentTokenId = handEquipmentTokenIds[iter];
       if (handEquipmentTokenId != NONE) {
         uint256 balance = getRealBalance(from, handEquipmentTokenId, itemNFT, pendingQueuedActionEquipmentStates);
         if (balance == 0) {

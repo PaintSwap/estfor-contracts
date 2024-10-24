@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 
@@ -18,12 +16,6 @@ import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import "../globals/all.sol";
 
 contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint16;
-  using UnsafeMath for uint32;
-  using UnsafeMath for uint56;
-  using UnsafeMath for uint64;
-  using UnsafeMath for uint256;
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
   using CombatStyleLibrary for uint8;
@@ -71,10 +63,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       // Keep remaining actions
       require(remainingQueuedActions.length + queuedActionInputs.length <= 3, TooManyActionsQueuedSomeAlreadyExist());
       player.actionQueue = remainingQueuedActions;
-      U256 j = remainingQueuedActions.length.asU256();
-      while (j.neq(0)) {
-        j = j.dec();
-        totalTimespan += remainingQueuedActions[j.asUint256()].timespan;
+      uint256 j = remainingQueuedActions.length;
+      while (j != 0) {
+        j--;
+        totalTimespan += remainingQueuedActions[j].timespan;
       }
     }
 
@@ -87,8 +79,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _clearCurrentActionProcessed(playerId);
     }
 
-    U256 queueId = _nextQueueId.asU256();
-    U256 queuedActionsLength = queuedActionInputs.length.asU256();
+    uint256 queueId = _nextQueueId;
+    uint256 queuedActionsLength = queuedActionInputs.length;
 
     if (remainingQueuedActions.length != 0 || queuedActionInputs.length != 0) {
       player.currentActionStartTime = uint40(block.timestamp);
@@ -107,12 +99,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     uint256 startTimeNewActions = block.timestamp - totalTimespan;
-    for (U256 iter; iter != queuedActionsLength; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-
-      if (totalTimespan.add(queuedActionInputs[i].timespan) > MAX_TIME_) {
+    for (uint256 iter; iter != queuedActionsLength; iter++) {
+      if (totalTimespan + queuedActionInputs[iter].timespan > MAX_TIME_) {
         // Must be the last one which will exceed the max time
-        require(iter == queuedActionsLength.dec(), ActionTimespanExceedsMaxTime());
+        require(iter == queuedActionsLength - 1, ActionTimespanExceedsMaxTime());
 
         uint256 remainder;
         // Allow to queue the excess for any running action up to 1 hour
@@ -121,22 +111,22 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         } else {
           remainder = queuedActionInputs[0].timespan % 1 hours;
         }
-        queuedActionInputs[i].timespan = uint24(MAX_TIME_.add(remainder).sub(totalTimespan));
+        queuedActionInputs[iter].timespan = uint24(MAX_TIME_ + remainder - totalTimespan);
       }
 
       (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) = _addToQueue(
         from,
         playerId,
-        queuedActionInputs[i],
-        queueId.asUint64(),
+        queuedActionInputs[iter],
+        uint64(queueId),
         uint40(startTimeNewActions)
       );
-      queuedActions[remainingQueuedActions.length.add(i)] = queuedAction;
-      _queuedActionsExtra[remainingQueuedActions.length.add(i)] = queuedActionExtra;
+      queuedActions[remainingQueuedActions.length + iter] = queuedAction;
+      _queuedActionsExtra[remainingQueuedActions.length + iter] = queuedActionExtra;
 
-      queueId = queueId.inc();
-      totalTimespan += queuedActionInputs[i].timespan;
-      startTimeNewActions += queuedActionInputs[i].timespan;
+      queueId++;
+      totalTimespan += queuedActionInputs[iter].timespan;
+      startTimeNewActions += queuedActionInputs[iter].timespan;
     }
 
     // Create an array from remainingAttire and queuedActions passed in
@@ -152,7 +142,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTime, queuedActionsExtra);
 
     assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
-    _nextQueueId = queueId.asUint56();
+    _nextQueueId = uint56(queueId);
 
     if (questId != 0) {
       _quests.activateQuest(from, playerId, questId);
@@ -430,37 +420,37 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     if (attire.head != NONE) {
       itemTokenIds[attireLength] = attire.head;
       expectedEquipPositions[attireLength] = EquipPosition.HEAD;
-      attireLength = attireLength.inc();
+      attireLength++;
     }
     if (attire.neck != NONE) {
       itemTokenIds[attireLength] = attire.neck;
       expectedEquipPositions[attireLength] = EquipPosition.NECK;
-      attireLength = attireLength.inc();
+      attireLength++;
     }
     if (attire.body != NONE) {
       itemTokenIds[attireLength] = attire.body;
       expectedEquipPositions[attireLength] = EquipPosition.BODY;
-      attireLength = attireLength.inc();
+      attireLength++;
     }
     if (attire.arms != NONE) {
       itemTokenIds[attireLength] = attire.arms;
       expectedEquipPositions[attireLength] = EquipPosition.ARMS;
-      attireLength = attireLength.inc();
+      attireLength++;
     }
     if (attire.legs != NONE) {
       itemTokenIds[attireLength] = attire.legs;
       expectedEquipPositions[attireLength] = EquipPosition.LEGS;
-      attireLength = attireLength.inc();
+      attireLength++;
     }
     if (attire.feet != NONE) {
       itemTokenIds[attireLength] = attire.feet;
       expectedEquipPositions[attireLength] = EquipPosition.FEET;
-      attireLength = attireLength.inc();
+      attireLength++;
     }
     if (attire.ring != NONE) {
       itemTokenIds[attireLength] = attire.ring;
       expectedEquipPositions[attireLength] = EquipPosition.RING;
-      attireLength = attireLength.inc();
+      attireLength++;
     }
 
     assembly ("memory-safe") {
@@ -469,10 +459,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     if (attireLength != 0) {
       EquipPosition[] memory equipPositions = _itemNFT.getEquipPositions(itemTokenIds);
-      U256 bounds = attireLength.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint256 i = iter.asUint256();
-        require(expectedEquipPositions[i] == equipPositions[i], InvalidEquipPosition());
+      for (uint256 iter; iter < attireLength; iter++) {
+        require(expectedEquipPositions[iter] == equipPositions[iter], InvalidEquipPosition());
       }
     }
   }
@@ -502,17 +490,15 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isItemFullModeOnly) = _itemNFT.getMinRequirements(
         itemTokenIds
       );
-      U256 iter = balances.length.asU256();
-
-      while (iter.neq(0)) {
-        iter = iter.dec();
-        uint256 i = iter.asUint256();
+      uint256 iter = balances.length;
+      while (iter != 0) {
+        iter--;
         require(
-          _getRealXP(skills[i], _playerXP[playerId], pendingQueuedActionProcessed, questState) >= minXPs[i],
+          _getRealXP(skills[iter], _playerXP[playerId], pendingQueuedActionProcessed, questState) >= minXPs[iter],
           AttireMinimumXPNotReached()
         );
-        require(balances[i] != 0, NoItemBalance(itemTokenIds[i]));
-        require(isPlayerUpgraded || !isItemFullModeOnly[i], PlayerNotUpgraded());
+        require(balances[iter] != 0, NoItemBalance(itemTokenIds[iter]));
+        require(isPlayerUpgraded || !isItemFullModeOnly[iter], PlayerNotUpgraded());
       }
     }
   }
@@ -529,13 +515,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory questState
   ) private view {
-    U256 iter = equippedItemTokenIds.length.asU256();
+    uint256 iter = equippedItemTokenIds.length;
     bool twoHanded;
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      bool isRightHand = i == 1;
-      uint16 equippedItemTokenId = equippedItemTokenIds[i];
+    while (iter != 0) {
+      iter--;
+      bool isRightHand = iter == 1;
+      uint16 equippedItemTokenId = equippedItemTokenIds[iter];
       if (equippedItemTokenId != NONE) {
         require(
           handItemTokenIdRangeMin == NONE ||
