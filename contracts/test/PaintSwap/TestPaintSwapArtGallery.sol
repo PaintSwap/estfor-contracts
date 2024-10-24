@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 interface IArtGallery {
-  function lock(address _painter, uint256 amount) external;
+  function lock(address painter, uint256 amount) external;
 }
 
 interface IBEP20 {
@@ -52,7 +52,7 @@ interface IBEP20 {
    *
    * This value changes when {approve} or {transferFrom} are called.
    */
-  function allowance(address _owner, address spender) external view returns (uint256);
+  function allowance(address owner, address spender) external view returns (uint256);
 
   /**
    * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -195,21 +195,21 @@ contract TestPaintSwapArtGallery is IArtGallery, Ownable {
     uint256 count;
   }
 
-  IBEP20 private immutable brush;
-  uint256 public immutable lockDuration;
+  IBEP20 private immutable _brush;
+  uint256 public immutable _lockDuration;
 
   mapping(address => Collection) private lockedUp;
 
-  constructor(address _brush, uint256 _lockDuration) {
-    brush = IBEP20(_brush);
-    lockDuration = _lockDuration;
+  constructor(address brush, uint256 lockDuration) {
+    _brush = IBEP20(brush);
+    _lockDuration = lockDuration;
   }
 
-  function lock(address _painter, uint256 _amount) external override onlyOwner {
-    require(_amount > 0);
-    Collection storage collection = lockedUp[_painter];
-    collection.queue[collection.count] = ArtEntry({amount: _amount, unlockTime: block.timestamp + lockDuration});
-    ++collection.count;
+  function lock(address painter, uint256 amount) external override onlyOwner {
+    require(amount > 0);
+    Collection storage collection = lockedUp[painter];
+    collection.queue[collection.count] = ArtEntry({amount: amount, unlockTime: block.timestamp + _lockDuration});
+    collection.count++;
   }
 
   function isUnlockable(uint256 _unlockTime) public view returns (bool) {
@@ -238,7 +238,7 @@ contract TestPaintSwapArtGallery is IArtGallery, Ownable {
   }
 
   function inspect(
-    address _painter
+    address painter
   )
     public
     view
@@ -251,7 +251,7 @@ contract TestPaintSwapArtGallery is IArtGallery, Ownable {
       uint256 nextUnlockAmount
     )
   {
-    Collection storage collection = lockedUp[_painter];
+    Collection storage collection = lockedUp[painter];
     for (uint256 i = collection.first; i < collection.count; ++i) {
       ArtEntry storage entry = collection.queue[i];
       if (isUnlockable(entry.unlockTime)) {
@@ -269,13 +269,13 @@ contract TestPaintSwapArtGallery is IArtGallery, Ownable {
   }
 
   // Safe brush transfer function, just in case if rounding error causes the gallery to not have enough BRUSHs.
-  function safeBrushTransfer(address _to, uint256 _amount) internal {
-    require(_amount > 0);
-    uint256 brushBal = brush.balanceOf(address(this));
-    if (_amount > brushBal) {
-      brush.transfer(_to, brushBal);
+  function safeBrushTransfer(address to, uint256 amount) internal {
+    require(amount > 0);
+    uint256 brushBal = _brush.balanceOf(address(this));
+    if (amount > brushBal) {
+      _brush.transfer(to, brushBal);
     } else {
-      brush.transfer(_to, _amount);
+      _brush.transfer(to, amount);
     }
   }
 }

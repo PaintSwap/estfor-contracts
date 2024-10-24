@@ -6,14 +6,14 @@ import {IBrushToken} from "../interfaces/IBrushToken.sol";
 
 contract MockTerritories is ITerritories {
   uint256 public addUnclaimedEmissionsCBCount;
-  IBrushToken brush;
+  IBrushToken _brush;
 
-  constructor(IBrushToken _brush) {
-    brush = _brush;
+  constructor(IBrushToken brush) {
+    _brush = brush;
   }
 
-  function addUnclaimedEmissions(uint256 _amount) external override {
-    brush.transferFrom(msg.sender, address(this), _amount);
+  function addUnclaimedEmissions(uint256 amount) external override {
+    _brush.transferFrom(msg.sender, address(this), amount);
     ++addUnclaimedEmissionsCBCount;
   }
 

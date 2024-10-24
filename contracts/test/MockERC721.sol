@@ -12,7 +12,7 @@ contract MockERC721 is ERC721 {
     return super.tokenURI(tokenId);
   }
 
-  function mint(address _to) external {
-    _safeMint(_to, ++currentId);
+  function mint(address to) external {
+    _safeMint(to, ++currentId);
   }
 }

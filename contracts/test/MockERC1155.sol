@@ -8,11 +8,11 @@ contract MockERC1155 is ERC1155 {
 
   uint256 currentId;
 
-  function mint(address _to) external {
-    _mint(_to, ++currentId, 1, "0x");
+  function mint(address to) external {
+    _mint(to, ++currentId, 1, "0x");
   }
 
-  function mintSpecific(address _to, uint256 _id, uint256 _amount) external {
-    _mint(_to, _id, _amount, "0x");
+  function mintSpecific(address to, uint256 id, uint256 amount) external {
+    _mint(to, id, amount, "0x");
   }
 }

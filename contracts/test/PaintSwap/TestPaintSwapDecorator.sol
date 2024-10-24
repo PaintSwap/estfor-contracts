@@ -861,9 +861,9 @@ contract BEP20 is Context, IBEP20, Ownable {
    * All three of these values are immutable: they can only be set once during
    * construction.
    */
-  constructor(string memory name, string memory symbol) {
-    _name = name;
-    _symbol = symbol;
+  constructor(string memory name_, string memory symbol_) {
+    _name = name_;
+    _symbol = symbol_;
     _decimals = 18;
   }
 
@@ -926,8 +926,8 @@ contract BEP20 is Context, IBEP20, Ownable {
   /**
    * @dev See {BEP20-allowance}.
    */
-  function allowance(address owner, address spender) public view override returns (uint256) {
-    return _allowances[owner][spender];
+  function allowance(address owner_, address spender) public view override returns (uint256) {
+    return _allowances[owner_][spender];
   }
 
   /**
@@ -1089,12 +1089,12 @@ contract BEP20 is Context, IBEP20, Ownable {
    * - `owner` cannot be the zero address.
    * - `spender` cannot be the zero address.
    */
-  function _approve(address owner, address spender, uint256 amount) internal {
-    require(owner != address(0), "BEP20: approve from the zero address");
+  function _approve(address owner_, address spender, uint256 amount) internal {
+    require(owner_ != address(0), "BEP20: approve from the zero address");
     require(spender != address(0), "BEP20: approve to the zero address");
 
-    _allowances[owner][spender] = amount;
-    emit Approval(owner, spender, amount);
+    _allowances[owner_][spender] = amount;
+    emit Approval(owner_, spender, amount);
   }
 
   /**

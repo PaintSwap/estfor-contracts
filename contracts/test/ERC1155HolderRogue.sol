@@ -32,24 +32,24 @@ contract ERC1155HolderRogue is ERC1155Holder {
   }
 
   function onERC1155Received(
-    address _operator,
-    address _from,
-    uint256 _id,
-    uint256 _value,
-    bytes memory _data
+    address operator,
+    address from,
+    uint256 id,
+    uint256 value,
+    bytes memory data
   ) public override returns (bytes4) {
     require(!revertOnReceive, NotAcceptingERC1155());
-    return super.onERC1155Received(_operator, _from, _id, _value, _data);
+    return super.onERC1155Received(operator, from, id, value, data);
   }
 
   function onERC1155BatchReceived(
-    address _operator,
-    address _from,
-    uint256[] memory _ids,
-    uint256[] memory _values,
-    bytes memory _data
+    address operator,
+    address from,
+    uint256[] memory ids,
+    uint256[] memory values,
+    bytes memory data
   ) public override returns (bytes4) {
     require(!revertOnReceive, NotAcceptingERC1155());
-    return super.onERC1155BatchReceived(_operator, _from, _ids, _values, _data);
+    return super.onERC1155BatchReceived(operator, from, ids, values, data);
   }
 }
