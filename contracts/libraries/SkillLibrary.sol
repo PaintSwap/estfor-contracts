@@ -4,20 +4,22 @@ pragma solidity ^0.8.28;
 import {Skill} from "../globals/misc.sol";
 
 library SkillLibrary {
+  error InvalidSkill();
   function asSkill(uint8 skill) internal pure returns (Skill) {
+    require(skill >= uint8(type(Skill).min) && skill <= uint8(type(Skill).max), InvalidSkill());
     return Skill(skill);
   }
 
   function isSkill(uint8 skill, Skill check) internal pure returns (bool) {
-    return isSkill(Skill(skill), check);
+    return isSkill(asSkill(skill), check);
   }
 
   function isNotSkill(uint8 skill, Skill check) internal pure returns (bool) {
-    return isNotSkill(Skill(skill), check);
+    return isNotSkill(asSkill(skill), check);
   }
 
   function isNone(uint8 skill) internal pure returns (bool) {
-    return isNone(Skill(skill));
+    return isNone(asSkill(skill));
   }
 
   function asUint8(Skill skill) internal pure returns (uint8) {

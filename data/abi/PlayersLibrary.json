@@ -6,6 +6,16 @@
   },
   {
     "inputs": [],
+    "name": "InvalidCombatStyle",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidXPSkill",
     "type": "error"
   },

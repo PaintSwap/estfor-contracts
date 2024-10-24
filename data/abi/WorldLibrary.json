@@ -36,6 +36,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "LengthMismatch",
     "type": "error"
   },

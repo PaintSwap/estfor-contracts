@@ -1151,6 +1151,7 @@ library PlayersLibrary {
     uint16[5] calldata expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
+    Skill skill = skillId.asSkill();
     bool isCombatSkill = queuedAction.combatStyle.isNotCombatStyle(CombatStyle.NONE);
     uint24 xpPerHour = IWorld(world).getXPPerHour(queuedAction.actionId, isCombatSkill ? NONE : queuedAction.choiceId);
     pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
@@ -1174,7 +1175,7 @@ library PlayersLibrary {
       pendingQueuedActionEquipmentStates
     );
     pointsAccruedExclBaseBoost = pointsAccrued;
-    pointsAccrued += _extraFromAvatar(player, skillId.asSkill(), xpElapsedTime, xpPerHour);
+    pointsAccrued += _extraFromAvatar(player, skill, xpElapsedTime, xpPerHour);
   }
 
   function _extraXPFromFullAttire(

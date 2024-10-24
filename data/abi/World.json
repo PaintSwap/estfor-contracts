@@ -123,6 +123,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "IsInitializing",
     "type": "error"
   },
