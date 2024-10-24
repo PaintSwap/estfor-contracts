@@ -9,14 +9,16 @@ async function main() {
   const shop = (await ethers.getContractAt("Shop", SHOP_ADDRESS)).connect(owner);
 
   const items = [
-    EstforConstants.ANNIV1_CHEST,
-    EstforConstants.ANNIV1_RING,
-    EstforConstants.ANNIV1_EGG_TIER1,
-    EstforConstants.ANNIV1_EGG_TIER2,
-    EstforConstants.ANNIV1_EGG_TIER3,
-    EstforConstants.ANNIV1_EGG_TIER4,
-    EstforConstants.ANNIV1_EGG_TIER5,
-    EstforConstants.ANNIV1_KEY,
+    EstforConstants.KRAGSTYR_EGG_TIER1,
+    EstforConstants.KRAGSTYR_EGG_TIER2,
+    EstforConstants.KRAGSTYR_EGG_TIER3,
+    EstforConstants.KRAGSTYR_EGG_TIER4,
+    EstforConstants.KRAGSTYR_EGG_TIER5,
+    EstforConstants.KEPHRI_AMULET,
+    EstforConstants.RING_OF_TUR,
+    EstforConstants.TRICK_CHEST2024,
+    EstforConstants.TREAT_CHEST2024,
+    EstforConstants.TRICK_OR_TREAT_KEY,
   ];
 
   await shop.addUnsellableItems(items);
