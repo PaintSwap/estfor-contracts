@@ -1634,7 +1634,7 @@
           }
         ],
         "internalType": "struct FullAttireBonusInput[]",
-        "name": "_fullAttireBonuses",
+        "name": "fullAttireBonuses",
         "type": "tuple[]"
       }
     ],
@@ -1671,7 +1671,7 @@
           }
         ],
         "internalType": "struct XPThresholdReward[]",
-        "name": "_xpThresholdRewards",
+        "name": "xpThresholdRewards",
         "type": "tuple[]"
       }
     ],
@@ -1684,7 +1684,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
@@ -1702,7 +1702,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
@@ -1717,7 +1717,7 @@
       },
       {
         "internalType": "bool",
-        "name": "_useExactETH",
+        "name": "useExactETH",
         "type": "bool"
       }
     ],
@@ -1743,7 +1743,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
@@ -1798,7 +1798,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -1835,7 +1835,7 @@
           }
         ],
         "internalType": "struct XPThresholdReward[]",
-        "name": "_xpThresholdRewards",
+        "name": "xpThresholdRewards",
         "type": "tuple[]"
       }
     ],
@@ -2005,7 +2005,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_owner",
+        "name": "owner_",
         "type": "address"
       }
     ],
@@ -2024,7 +2024,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       }
     ],
@@ -2175,7 +2175,7 @@
       },
       {
         "internalType": "enum Skill",
-        "name": "_skill",
+        "name": "skill",
         "type": "uint8"
       }
     ],
@@ -2320,7 +2320,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_owner",
+        "name": "owner_",
         "type": "address"
       },
       {
@@ -2790,7 +2790,7 @@
       },
       {
         "internalType": "enum Skill",
-        "name": "_skill",
+        "name": "skill",
         "type": "uint8"
       }
     ],
@@ -2991,17 +2991,17 @@
       },
       {
         "internalType": "string",
-        "name": "_name",
+        "name": "name",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_avatarName",
+        "name": "avatarName",
         "type": "string"
       },
       {
         "internalType": "string",
-        "name": "_avatarDescription",
+        "name": "avatarDescription",
         "type": "string"
       },
       {
@@ -3103,7 +3103,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
@@ -3146,7 +3146,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {

@@ -224,24 +224,24 @@ abstract contract PlayersBase {
   }
 
   function _getSkillFromChoiceOrStyle(
-    ActionChoice memory _choice,
-    CombatStyle _combatStyle,
-    uint16 _actionId
+    ActionChoice memory choice,
+    CombatStyle combatStyle,
+    uint16 actionId
   ) internal view returns (Skill skill) {
-    if (_combatStyle == CombatStyle.DEFENCE) {
+    if (combatStyle == CombatStyle.DEFENCE) {
       return Skill.DEFENCE;
     }
 
-    Skill choiceSkill = _choice.skill.asSkill();
+    Skill choiceSkill = choice.skill.asSkill();
     if (choiceSkill != Skill.NONE) {
       // If the skill is defence or health, then it's magic
-      if (_combatStyle == CombatStyle.ATTACK && (choiceSkill == Skill.DEFENCE || choiceSkill == Skill.HEALTH)) {
+      if (combatStyle == CombatStyle.ATTACK && (choiceSkill == Skill.DEFENCE || choiceSkill == Skill.HEALTH)) {
         skill = Skill.MAGIC;
       } else {
         skill = choiceSkill;
       }
     } else {
-      skill = _world.getSkill(_actionId);
+      skill = _world.getSkill(actionId);
     }
   }
 
@@ -249,14 +249,14 @@ abstract contract PlayersBase {
     return uint8(_players[playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 
-  function _getElapsedTime(uint256 _startTime, uint256 _endTime) internal view returns (uint256 elapsedTime) {
-    bool consumeAll = _endTime <= block.timestamp;
+  function _getElapsedTime(uint256 startTime, uint256 endTime) internal view returns (uint256 elapsedTime) {
+    bool consumeAll = endTime <= block.timestamp;
     if (consumeAll) {
       // Fully consume this skill
-      elapsedTime = _endTime - _startTime;
-    } else if (block.timestamp > _startTime) {
+      elapsedTime = endTime - startTime;
+    } else if (block.timestamp > startTime) {
       // partially consume
-      elapsedTime = block.timestamp - _startTime;
+      elapsedTime = block.timestamp - startTime;
     }
   }
 
@@ -293,20 +293,20 @@ abstract contract PlayersBase {
   }
 
   // This does not update player.totalXP!!
-  function _updateXP(address _from, uint256 playerId, Skill _skill, uint128 _pointsAccrued) internal {
+  function _updateXP(address from, uint256 playerId, Skill skill, uint128 pointsAccrued) internal {
     PackedXP storage packedXP = _playerXP[playerId];
-    uint256 oldPoints = PlayersLibrary.readXP(_skill, packedXP);
-    uint256 newPoints = oldPoints.add(_pointsAccrued);
+    uint256 oldPoints = PlayersLibrary.readXP(skill, packedXP);
+    uint256 newPoints = oldPoints.add(pointsAccrued);
 
     if (newPoints > type(uint32).max) {
       newPoints = type(uint32).max;
-      _pointsAccrued = uint32(newPoints - oldPoints);
+      pointsAccrued = uint32(newPoints - oldPoints);
     }
-    if (_pointsAccrued == 0) {
+    if (pointsAccrued == 0) {
       return;
     }
     uint256 offset = 2; // Accounts for NONE & COMBAT skills
-    uint256 skillOffsetted = uint8(_skill) - offset;
+    uint256 skillOffsetted = uint8(skill) - offset;
     uint256 slotNum = skillOffsetted / 6;
     uint256 relativePos = skillOffsetted % 6;
 
@@ -344,17 +344,17 @@ abstract contract PlayersBase {
       sstore(add(packedXP.slot, slotNum), val)
     }
 
-    emit AddXP(_from, playerId, _skill, _pointsAccrued);
+    emit AddXP(from, playerId, skill, pointsAccrued);
 
     uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
     // Update the player's level
     if (newLevel > oldLevel) {
-      emit LevelUp(_from, playerId, _skill, oldLevel, newLevel);
+      emit LevelUp(from, playerId, skill, oldLevel, newLevel);
     }
   }
 
   function _processActions(
-    address _from,
+    address from,
     uint256 playerId
   )
     internal
@@ -362,42 +362,38 @@ abstract contract PlayersBase {
   {
     bytes memory data = _delegatecall(
       _implProcessActions,
-      abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActions.selector, _from, playerId)
+      abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActions.selector, from, playerId)
     );
     return abi.decode(data, (QueuedAction[], PendingQueuedActionData));
   }
 
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function _pendingQueuedActionState(
-    address _owner,
+    address owner_,
     uint256 playerId
   ) internal view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, owner_, playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function _donate(address _from, uint256 playerId, uint256 _amount) internal {
+  function _donate(address from, uint256 playerId, uint256 amount) internal {
     _delegatecall(
       _implProcessActions,
-      abi.encodeWithSelector(IPlayersProcessActionsDelegate.donate.selector, _from, playerId, _amount)
+      abi.encodeWithSelector(IPlayersProcessActionsDelegate.donate.selector, from, playerId, amount)
     );
   }
 
   function _claimableXPThresholdRewards(
-    uint256 _oldTotalXP,
-    uint256 _newTotalXP
+    uint256 oldTotalXP,
+    uint256 newTotalXP
   ) internal view returns (uint256[] memory ids, uint256[] memory amounts) {
     // Call self
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(
-        IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector,
-        _oldTotalXP,
-        _newTotalXP
-      )
+      abi.encodeWithSelector(IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector, oldTotalXP, newTotalXP)
     );
     return abi.decode(data, (uint256[], uint256[]));
   }
@@ -411,22 +407,19 @@ abstract contract PlayersBase {
     require(slot == expectedStartSlotNumber, InvalidStartSlot());
   }
 
-  function _setPrevPlayerState(
-    Player storage _player,
-    PendingQueuedActionData memory _currentActionProcessed
-  ) internal {
-    _player.currentActionProcessedSkill1 = _currentActionProcessed.skill1;
-    _player.currentActionProcessedXPGained1 = _currentActionProcessed.xpGained1;
-    _player.currentActionProcessedSkill2 = _currentActionProcessed.skill2;
-    _player.currentActionProcessedXPGained2 = _currentActionProcessed.xpGained2;
-    _player.currentActionProcessedSkill3 = _currentActionProcessed.skill3;
-    _player.currentActionProcessedXPGained3 = _currentActionProcessed.xpGained3;
-    _player.currentActionProcessedFoodConsumed = _currentActionProcessed.foodConsumed;
-    _player.currentActionProcessedBaseInputItemsConsumedNum = _currentActionProcessed.baseInputItemsConsumedNum;
+  function _setPrevPlayerState(Player storage player, PendingQueuedActionData memory currentActionProcessed) internal {
+    player.currentActionProcessedSkill1 = currentActionProcessed.skill1;
+    player.currentActionProcessedXPGained1 = currentActionProcessed.xpGained1;
+    player.currentActionProcessedSkill2 = currentActionProcessed.skill2;
+    player.currentActionProcessedXPGained2 = currentActionProcessed.xpGained2;
+    player.currentActionProcessedSkill3 = currentActionProcessed.skill3;
+    player.currentActionProcessedXPGained3 = currentActionProcessed.xpGained3;
+    player.currentActionProcessedFoodConsumed = currentActionProcessed.foodConsumed;
+    player.currentActionProcessedBaseInputItemsConsumedNum = currentActionProcessed.baseInputItemsConsumedNum;
   }
 
   function _processClaimableRewards(
-    address _from,
+    address from,
     uint256 playerId,
     uint256[] memory itemTokenIds,
     uint256[] memory amounts,
@@ -451,14 +444,14 @@ abstract contract PlayersBase {
       }
     }
     if (itemTokenIds.length != 0) {
-      _itemNFT.mintBatch(_from, itemTokenIds, amounts);
+      _itemNFT.mintBatch(from, itemTokenIds, amounts);
     }
 
     if (numPastRandomRewardInstancesToRemove != 0 || itemTokenIds.length != 0) {
       // So this event can also be called when no dice rolls are used if the action (e.g thieving)
       // finished before 00:00 UTC and is called after the oracle is called
       emit PendingRandomRewardsClaimed(
-        _from,
+        from,
         playerId,
         numPastRandomRewardInstancesToRemove,
         itemTokenIds,
@@ -479,8 +472,8 @@ abstract contract PlayersBase {
     emit BoostFinished(playerId);
   }
 
-  function _hasPet(bytes1 _packed) internal pure returns (bool) {
-    return uint8(_packed >> HAS_PET_BIT) & 1 == 1;
+  function _hasPet(bytes1 packed) internal pure returns (bool) {
+    return uint8(packed >> HAS_PET_BIT) & 1 == 1;
   }
 
   function _delegatecall(address target, bytes memory data) internal returns (bytes memory returndata) {

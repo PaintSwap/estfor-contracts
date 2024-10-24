@@ -36,11 +36,11 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
   // === XP Threshold rewards ===
   function claimableXPThresholdRewardsImpl(
-    uint256 _oldTotalXP,
-    uint256 _newTotalXP
+    uint256 oldTotalXP,
+    uint256 newTotalXP
   ) external view returns (uint256[] memory itemTokenIds, uint256[] memory amounts) {
-    uint16 prevIndex = _findBaseXPThreshold(_oldTotalXP);
-    uint16 nextIndex = _findBaseXPThreshold(_newTotalXP);
+    uint16 prevIndex = _findBaseXPThreshold(oldTotalXP);
+    uint16 nextIndex = _findBaseXPThreshold(newTotalXP);
 
     uint256 diff = nextIndex - prevIndex;
     itemTokenIds = new uint256[](diff);
@@ -65,20 +65,20 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     }
   }
 
-  function _checkXPThresholdRewards(XPThresholdReward calldata _xpThresholdReward) private pure {
-    U256 bounds = _xpThresholdReward.rewards.length.asU256();
+  function _checkXPThresholdRewards(XPThresholdReward calldata xpThresholdReward) private pure {
+    U256 bounds = xpThresholdReward.rewards.length.asU256();
     for (U256 jIter; jIter < bounds; jIter = jIter.inc()) {
       uint256 j = jIter.asUint256();
-      require(_xpThresholdReward.rewards[j].itemTokenId != NONE, InvalidItemTokenId());
-      require(_xpThresholdReward.rewards[j].amount != 0, InvalidAmount());
+      require(xpThresholdReward.rewards[j].itemTokenId != NONE, InvalidItemTokenId());
+      require(xpThresholdReward.rewards[j].amount != 0, InvalidAmount());
     }
   }
 
-  function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external {
-    U256 iter = _xpThresholdRewards.length.asU256();
+  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external {
+    U256 iter = xpThresholdRewards.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
-      XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
+      XPThresholdReward calldata xpThresholdReward = xpThresholdRewards[iter.asUint256()];
 
       // Check that it is part of the hexBytes
       uint16 index = _findBaseXPThreshold(xpThresholdReward.xpThreshold);
@@ -93,11 +93,11 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     }
   }
 
-  function editXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external {
-    U256 iter = _xpThresholdRewards.length.asU256();
+  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external {
+    U256 iter = xpThresholdRewards.length.asU256();
     while (iter.neq(0)) {
       iter = iter.dec();
-      XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
+      XPThresholdReward calldata xpThresholdReward = xpThresholdRewards[iter.asUint256()];
       require(_xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0, XPThresholdDoesNotExist());
       _checkXPThresholdRewards(xpThresholdReward);
       _xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
@@ -129,21 +129,21 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     }
   }
 
-  function _getXPReward(uint256 _index) private pure returns (uint32) {
-    U256 index = _index.asU256().mul(4);
+  function _getXPReward(uint256 index) private pure returns (uint32) {
+    U256 key = index.asU256().mul(4);
     return
       uint32(
-        xpRewardBytes[index.asUint256()] |
-          (bytes4(xpRewardBytes[index.add(1).asUint256()]) >> 8) |
-          (bytes4(xpRewardBytes[index.add(2).asUint256()]) >> 16) |
-          (bytes4(xpRewardBytes[index.add(3).asUint256()]) >> 24)
+        xpRewardBytes[key.asUint256()] |
+          (bytes4(xpRewardBytes[key.add(1).asUint256()]) >> 8) |
+          (bytes4(xpRewardBytes[key.add(2).asUint256()]) >> 16) |
+          (bytes4(xpRewardBytes[key.add(3).asUint256()]) >> 24)
       );
   }
 
   // === End XP Threshold rewards ===
 
   function dailyRewardsViewImpl(
-    address _from,
+    address from,
     uint256 playerId
   ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, bytes32 dailyRewardMask) {
     uint256 streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
@@ -178,7 +178,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
         (uint256 itemTokenId, uint256 amount) = _world.getDailyReward(playerTier, playerId);
         // Can only get the daily reward on an account once per day regardless of how many heros claim
-        uint256 lastWalletTimestamp = _walletDailyInfo[_from].lastDailyRewardClaimedTimestamp;
+        uint256 lastWalletTimestamp = _walletDailyInfo[from].lastDailyRewardClaimedTimestamp;
         if (itemTokenId != NONE && lastWalletTimestamp < (block.timestamp / 1 days) * 1 days) {
           // Add clan member boost to daily reward (if applicable)
           uint256 clanTierMembership = _clans.getClanTierMembership(playerId);
@@ -216,115 +216,112 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     }
   }
 
-  function handleDailyRewards(address _from, uint256 playerId) external {
+  function handleDailyRewards(address from, uint256 playerId) external {
     (
       uint256[] memory rewardItemTokenIds,
       uint256[] memory rewardAmounts,
       bytes32 dailyRewardMask
-    ) = dailyRewardsViewImpl(_from, playerId);
+    ) = dailyRewardsViewImpl(from, playerId);
     if (uint256(dailyRewardMask) != 0) {
       _dailyRewardMasks[playerId] = dailyRewardMask;
     }
     if (rewardAmounts.length != 0) {
-      _itemNFT.mint(_from, rewardItemTokenIds[0], rewardAmounts[0]);
-      emit DailyReward(_from, playerId, rewardItemTokenIds[0], rewardAmounts[0]);
+      _itemNFT.mint(from, rewardItemTokenIds[0], rewardAmounts[0]);
+      emit DailyReward(from, playerId, rewardItemTokenIds[0], rewardAmounts[0]);
 
-      _walletDailyInfo[_from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
+      _walletDailyInfo[from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }
 
     if (rewardAmounts.length > 1) {
-      _itemNFT.mint(_from, rewardItemTokenIds[1], rewardAmounts[1]);
-      emit WeeklyReward(_from, playerId, rewardItemTokenIds[1], rewardAmounts[1]);
+      _itemNFT.mint(from, rewardItemTokenIds[1], rewardAmounts[1]);
+      emit WeeklyReward(from, playerId, rewardItemTokenIds[1], rewardAmounts[1]);
     }
   }
 
   function _getConsumablesEquipment(
     uint256 playerId,
-    uint256 _currentActionStartTime,
-    uint256 _xpElapsedTime,
-    ActionChoice calldata _actionChoice,
+    uint256 currentActionStartTime,
+    uint256 xpElapsedTime,
+    ActionChoice calldata actionChoice,
     uint16 regenerateId,
-    uint16 _foodConsumed,
-    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed,
+    uint16 foodConsumed,
+    PendingQueuedActionProcessed calldata pendingQueuedActionProcessed,
     uint16 baseInputItemsConsumedNum
   ) private view returns (Equipment[] memory consumedEquipment, Equipment memory producedEquipment) {
     consumedEquipment = new Equipment[](MAX_CONSUMED_PER_ACTION);
     uint256 consumedEquipmentLength;
-    if (regenerateId != NONE && _foodConsumed != 0) {
-      consumedEquipment[consumedEquipmentLength] = Equipment(regenerateId, _foodConsumed);
+    if (regenerateId != NONE && foodConsumed != 0) {
+      consumedEquipment[consumedEquipmentLength] = Equipment(regenerateId, foodConsumed);
       consumedEquipmentLength = consumedEquipmentLength.inc();
     }
 
     bool useSecondInputTokens = uint8(
-      _actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
+      actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
     ) &
       1 ==
       1;
 
     if (baseInputItemsConsumedNum != 0) {
-      if (_actionChoice.inputTokenId1 != NONE) {
+      if (actionChoice.inputTokenId1 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
-          _actionChoice.inputTokenId1,
-          baseInputItemsConsumedNum *
-            (useSecondInputTokens ? _actionChoice.newInputAmount1 : _actionChoice.inputAmount1)
+          actionChoice.inputTokenId1,
+          baseInputItemsConsumedNum * (useSecondInputTokens ? actionChoice.newInputAmount1 : actionChoice.inputAmount1)
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
-      if (_actionChoice.inputTokenId2 != NONE) {
+      if (actionChoice.inputTokenId2 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
-          _actionChoice.inputTokenId2,
-          baseInputItemsConsumedNum *
-            (useSecondInputTokens ? _actionChoice.newInputAmount2 : _actionChoice.inputAmount2)
+          actionChoice.inputTokenId2,
+          baseInputItemsConsumedNum * (useSecondInputTokens ? actionChoice.newInputAmount2 : actionChoice.inputAmount2)
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
-      if (_actionChoice.inputTokenId3 != NONE) {
+      if (actionChoice.inputTokenId3 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
-          _actionChoice.inputTokenId3,
-          baseInputItemsConsumedNum *
-            (useSecondInputTokens ? _actionChoice.newInputAmount3 : _actionChoice.inputAmount3)
+          actionChoice.inputTokenId3,
+          baseInputItemsConsumedNum * (useSecondInputTokens ? actionChoice.newInputAmount3 : actionChoice.inputAmount3)
         );
         consumedEquipmentLength = consumedEquipmentLength.inc();
       }
     }
 
-    if (_actionChoice.outputTokenId != 0) {
+    if (actionChoice.outputTokenId != 0) {
       uint8 successPercent = 100;
       // Some might be burnt when cooking for instance
-      if (_actionChoice.successPercent != 100) {
-        uint256 minLevel = PlayersLibrary.getLevel(_actionChoice.minXP);
+      if (actionChoice.successPercent != 100) {
+        uint256 minLevel = PlayersLibrary.getLevel(actionChoice.minXP);
         uint256 skillLevel = PlayersLibrary.getLevel(
           PlayersLibrary.getAbsoluteActionStartXP(
-            uint8(_actionChoice.skill),
-            _pendingQueuedActionProcessed,
+            uint8(actionChoice.skill),
+            pendingQueuedActionProcessed,
             _playerXP[playerId]
           )
         );
         uint256 extraBoost = skillLevel - minLevel;
 
-        successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, _actionChoice.successPercent + extraBoost));
+        successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, actionChoice.successPercent + extraBoost));
       }
 
       uint24 numProduced = uint24(
-        (uint256(baseInputItemsConsumedNum) * _actionChoice.outputAmount * successPercent) / 100
+        (uint256(baseInputItemsConsumedNum) * actionChoice.outputAmount * successPercent) / 100
       );
 
-      if (_xpElapsedTime != 0) {
+      if (xpElapsedTime != 0) {
         // Check for any gathering boosts
         PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
         uint256 boostedTime = PlayersLibrary.getBoostedTime(
-          _currentActionStartTime,
-          _xpElapsedTime,
+          currentActionStartTime,
+          xpElapsedTime,
           activeBoost.startTime,
           activeBoost.duration
         );
         if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-          numProduced += uint24((boostedTime * numProduced * activeBoost.value) / (_xpElapsedTime * 100));
+          numProduced += uint24((boostedTime * numProduced * activeBoost.value) / (xpElapsedTime * 100));
         }
       }
 
       if (numProduced != 0) {
-        producedEquipment = Equipment(_actionChoice.outputTokenId, numProduced);
+        producedEquipment = Equipment(actionChoice.outputTokenId, numProduced);
       }
     }
 
@@ -334,15 +331,15 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   function _processConsumablesView(
-    address _from,
+    address from,
     uint256 playerId,
     QueuedAction calldata _queuedAction,
-    uint256 _currentActionStartTime,
-    uint256 _elapsedTime,
-    CombatStats calldata _combatStats,
-    ActionChoice calldata _actionChoice,
+    uint256 currentActionStartTime,
+    uint256 elapsedTime,
+    CombatStats calldata combatStats,
+    ActionChoice calldata actionChoice,
     PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
-    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed
+    PendingQueuedActionProcessed calldata pendingQueuedActionProcessed
   )
     private
     view
@@ -365,14 +362,14 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       uint256 combatElapsedTime;
       (xpElapsedTime, combatElapsedTime, baseInputItemsConsumedNum, foodConsumed, died) = PlayersLibrary
         .getCombatAdjustedElapsedTimes(
-          _from,
+          from,
           address(_itemNFT),
           address(_world),
-          _elapsedTime,
-          _actionChoice,
+          elapsedTime,
+          actionChoice,
           _queuedAction.regenerateId,
           _queuedAction,
-          _combatStats,
+          combatStats,
           enemyCombatStats,
           _alphaCombat,
           _betaCombat,
@@ -381,22 +378,22 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         );
     } else {
       (xpElapsedTime, baseInputItemsConsumedNum) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
-        _from,
+        from,
         address(_itemNFT),
-        _elapsedTime,
-        _actionChoice,
+        elapsedTime,
+        actionChoice,
         _pendingQueuedActionEquipmentStates
       );
     }
 
     (consumedEquipment, producedEquipment) = _getConsumablesEquipment(
       playerId,
-      _currentActionStartTime,
+      currentActionStartTime,
       xpElapsedTime,
-      _actionChoice,
+      actionChoice,
       _queuedAction.regenerateId,
       foodConsumed,
-      _pendingQueuedActionProcessed,
+      pendingQueuedActionProcessed,
       baseInputItemsConsumedNum
     );
   }
@@ -410,7 +407,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256 elapsedTime,
     uint256 startTime,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates, // Memory as it is modified
-    PendingQueuedActionProcessed calldata _pendingQueuedActionProcessed
+    PendingQueuedActionProcessed calldata pendingQueuedActionProcessed
   )
     external
     view
@@ -441,7 +438,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         actionChoice,
         queuedAction.regenerateId,
         currentActionProcessedFoodConsumed,
-        _pendingQueuedActionProcessed,
+        pendingQueuedActionProcessed,
         currentActionProcessedBaseInputItemsConsumedNum
       );
 
@@ -468,9 +465,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         extendedPendingQueuedActionEquipmentState.consumedAmounts[0] = prevProducedEquipment.amount;
       }
 
-      Equipment[] memory __consumedEquipments;
+      Equipment[] memory processedConsumedEquipments;
       (
-        __consumedEquipments,
+        processedConsumedEquipments,
         producedEquipment,
         xpElapsedTime,
         died,
@@ -485,31 +482,31 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         combatStats,
         actionChoice,
         pendingQueuedActionEquipmentStates,
-        _pendingQueuedActionProcessed
+        pendingQueuedActionProcessed
       );
       delete extendedPendingQueuedActionEquipmentState;
 
       // Get the difference
-      consumedEquipments = new Equipment[](__consumedEquipments.length); // This should be greater than _consumedEquipments
+      consumedEquipments = new Equipment[](processedConsumedEquipments.length); // This should be greater than _consumedEquipments
       uint256 consumedEquipmentsLength;
-      for (uint256 j = 0; j < __consumedEquipments.length; ++j) {
+      for (uint256 j = 0; j < processedConsumedEquipments.length; ++j) {
         // Check if it exists in _consumedEquipments and if so, subtract the amount
         bool nonZero = true;
         for (uint256 k = 0; k < prevConsumedEquipments.length; ++k) {
-          if (__consumedEquipments[j].itemTokenId == prevConsumedEquipments[k].itemTokenId) {
-            if (__consumedEquipments[j].amount >= prevConsumedEquipments[k].amount) {
-              __consumedEquipments[j].amount = uint24(
-                __consumedEquipments[j].amount.sub(prevConsumedEquipments[k].amount)
+          if (processedConsumedEquipments[j].itemTokenId == prevConsumedEquipments[k].itemTokenId) {
+            if (processedConsumedEquipments[j].amount >= prevConsumedEquipments[k].amount) {
+              processedConsumedEquipments[j].amount = uint24(
+                processedConsumedEquipments[j].amount.sub(prevConsumedEquipments[k].amount)
               );
             } else {
-              __consumedEquipments[j].amount = 0;
+              processedConsumedEquipments[j].amount = 0;
             }
-            nonZero = __consumedEquipments[j].amount != 0;
+            nonZero = processedConsumedEquipments[j].amount != 0;
             break;
           }
         }
         if (nonZero) {
-          consumedEquipments[consumedEquipmentsLength++] = __consumedEquipments[j];
+          consumedEquipments[consumedEquipmentsLength++] = processedConsumedEquipments[j];
         }
       }
 
@@ -565,45 +562,45 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         combatStats,
         actionChoice,
         pendingQueuedActionEquipmentStates,
-        _pendingQueuedActionProcessed
+        pendingQueuedActionProcessed
       );
     }
   }
 
   function mintedPlayer(
-    address _from,
+    address from,
     uint256 playerId,
-    Skill[2] calldata _startSkills,
-    uint256[] calldata _startingItemTokenIds,
-    uint256[] calldata _startingAmounts
+    Skill[2] calldata startSkills,
+    uint256[] calldata startingItemTokenIds,
+    uint256[] calldata startingAmounts
   ) external {
     Player storage player = _players[playerId];
     player.totalXP = uint56(START_XP_);
 
-    U256 length = uint256(_startSkills[1] != Skill.NONE ? 2 : 1).asU256();
+    U256 length = uint256(startSkills[1] != Skill.NONE ? 2 : 1).asU256();
     uint32 xpEach = uint32(START_XP_ / length.asUint256());
 
     for (U256 iter; iter < length; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      Skill skill = _startSkills[i];
-      _updateXP(_from, playerId, skill, xpEach);
+      Skill skill = startSkills[i];
+      _updateXP(from, playerId, skill, xpEach);
     }
 
-    player.skillBoosted1 = _startSkills[0];
-    player.skillBoosted2 = _startSkills[1]; // Can be NONE
+    player.skillBoosted1 = startSkills[0];
+    player.skillBoosted2 = startSkills[1]; // Can be NONE
 
     // Mint starting equipment
-    _itemNFT.mintBatch(_from, _startingItemTokenIds, _startingAmounts);
+    _itemNFT.mintBatch(from, startingItemTokenIds, startingAmounts);
   }
 
-  function buyBrushQuest(address _to, uint256 playerId, uint256 questId, bool _useExactETH) external payable {
+  function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external payable {
     // This is a one off quest
     (uint256[] memory itemTokenIds /*uint256[] memory amounts*/, , Skill skillGained, uint32 xpGained) = _quests
       .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
     // Must update before the call to buyBrushQuest so the indexer can remove the in-progress XP update
     _updateXP(msg.sender, playerId, skillGained, xpGained);
 
-    bool success = _quests.buyBrushQuest{value: msg.value}(msg.sender, _to, playerId, questId, _useExactETH);
+    bool success = _quests.buyBrushQuest{value: msg.value}(msg.sender, to, playerId, questId, useExactETH);
     require(success, BuyBrushFailed());
     // Not handled currently
     require(itemTokenIds.length == 0, InvalidReward());
@@ -692,39 +689,39 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   function _setupRandomRewards(
-    ActionRewards memory _rewards
+    ActionRewards memory rewards
   ) private pure returns (RandomReward[] memory randomRewards) {
     randomRewards = new RandomReward[](4);
     uint256 randomRewardLength;
-    if (_rewards.randomRewardTokenId1 != 0) {
+    if (rewards.randomRewardTokenId1 != 0) {
       randomRewards[randomRewardLength] = RandomReward(
-        _rewards.randomRewardTokenId1,
-        _rewards.randomRewardChance1,
-        _rewards.randomRewardAmount1
+        rewards.randomRewardTokenId1,
+        rewards.randomRewardChance1,
+        rewards.randomRewardAmount1
       );
       randomRewardLength = randomRewardLength.inc();
     }
-    if (_rewards.randomRewardTokenId2 != 0) {
+    if (rewards.randomRewardTokenId2 != 0) {
       randomRewards[randomRewardLength] = RandomReward(
-        _rewards.randomRewardTokenId2,
-        _rewards.randomRewardChance2,
-        _rewards.randomRewardAmount2
+        rewards.randomRewardTokenId2,
+        rewards.randomRewardChance2,
+        rewards.randomRewardAmount2
       );
       randomRewardLength = randomRewardLength.inc();
     }
-    if (_rewards.randomRewardTokenId3 != 0) {
+    if (rewards.randomRewardTokenId3 != 0) {
       randomRewards[randomRewardLength] = RandomReward(
-        _rewards.randomRewardTokenId3,
-        _rewards.randomRewardChance3,
-        _rewards.randomRewardAmount3
+        rewards.randomRewardTokenId3,
+        rewards.randomRewardChance3,
+        rewards.randomRewardAmount3
       );
       randomRewardLength = randomRewardLength.inc();
     }
-    if (_rewards.randomRewardTokenId4 != 0) {
+    if (rewards.randomRewardTokenId4 != 0) {
       randomRewards[randomRewardLength] = RandomReward(
-        _rewards.randomRewardTokenId4,
-        _rewards.randomRewardChance4,
-        _rewards.randomRewardAmount4
+        rewards.randomRewardTokenId4,
+        rewards.randomRewardChance4,
+        rewards.randomRewardAmount4
       );
       randomRewardLength = randomRewardLength.inc();
     }
@@ -734,9 +731,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     }
   }
 
-  function _getSlice(bytes memory _b, uint256 _index) private pure returns (uint16) {
-    uint256 index = _index.mul(2);
-    return uint16(_b[index] | (bytes2(_b[index.inc()]) >> 8));
+  function _getSlice(bytes memory b, uint256 index) private pure returns (uint16) {
+    uint256 key = index.mul(2);
+    return uint16(b[key] | (bytes2(b[key.inc()]) >> 8));
   }
 
   function _randomRewardsLoop(
@@ -749,12 +746,12 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     RandomReward[] memory randomRewards,
     uint8 successPercent,
     uint8 fullAttireBonusRewardsPercent,
-    bytes memory _randomBytes
+    bytes memory randomBytes
   ) private pure returns (uint256 length) {
     U256 randomRewardsLength = randomRewards.length.asU256();
     for (U256 iter = start.asU256(); iter.lt(end); iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      uint256 operation = (uint256(_getSlice(_randomBytes, i)) * 100) / successPercent;
+      uint256 operation = (uint256(_getSlice(randomBytes, i)) * 100) / successPercent;
 
       // If there is above MAX_UNIQUE_TICKETS tickets we need to mint more if a ticket is hit unless it
       // is a rare item in which case we just increase the change that it can get get

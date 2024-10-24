@@ -592,8 +592,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   // Consumes all the actions in the queue up to this time.
   // Mints the boost vial if it hasn't been consumed at all yet, otherwise removese any active ones
   // Removes all the actions from the queue
-  function clearEverything(address from, uint256 playerId, bool _processTheActions) public {
-    if (_processTheActions) {
+  function clearEverything(address from, uint256 playerId, bool processTheActions) public {
+    if (processTheActions) {
       _processActions(from, playerId);
     }
     // Ensure player info is cleared

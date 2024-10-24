@@ -155,7 +155,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   // Callback after minting a player
   function mintedPlayer(
-    address _from,
+    address from,
     uint256 playerId,
     Skill[2] calldata _startSkills,
     bool _makeActive,
@@ -163,14 +163,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint256[] calldata _startingAmounts
   ) external override onlyPlayerNFT {
     if (_makeActive) {
-      _setActivePlayer(_from, playerId);
+      _setActivePlayer(from, playerId);
     }
 
     _delegatecall(
       _implMisc,
       abi.encodeWithSelector(
         IPlayersDelegate.mintedPlayer.selector,
-        _from,
+        from,
         playerId,
         _startSkills,
         _startingItemTokenIds,
@@ -188,14 +188,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   // This is a special type of quest.
   function buyBrushQuest(
-    address _to,
+    address to,
     uint256 playerId,
     uint256 questId,
-    bool _useExactETH
+    bool useExactETH
   ) external payable isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _delegatecall(
       _implMisc,
-      abi.encodeWithSelector(IPlayersDelegate.buyBrushQuest.selector, _to, playerId, questId, _useExactETH)
+      abi.encodeWithSelector(IPlayersDelegate.buyBrushQuest.selector, to, playerId, questId, useExactETH)
     );
   }
 
@@ -220,29 +220,29 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   /// @notice Called by the PlayerNFT contract before a player is transferred from an account
-  /// @param _from The owner of the player being transferred
+  /// @param from The owner of the player being transferred
   /// @param playerId The id of the player being transferred
-  function clearEverythingBeforeTokenTransfer(address _from, uint256 playerId) external override onlyPlayerNFT {
-    _clearEverything(_from, playerId, true);
+  function clearEverythingBeforeTokenTransfer(address from, uint256 playerId) external override onlyPlayerNFT {
+    _clearEverything(from, playerId, true);
     // If it was the active player, then clear it
-    uint256 existingActivePlayerId = _activePlayers[_from];
+    uint256 existingActivePlayerId = _activePlayers[from];
     if (existingActivePlayerId == playerId) {
-      delete _activePlayers[_from];
-      emit SetActivePlayer(_from, existingActivePlayerId, 0);
+      delete _activePlayers[from];
+      emit SetActivePlayer(from, existingActivePlayerId, 0);
     }
   }
 
   /// @notice Called by the PlayerNFT contract before a player is transferred to an account
-  /// @param _to The new owner of the player
+  /// @param to The new owner of the player
   /// @param playerId The id of the player being transferred
-  function beforeTokenTransferTo(address _to, uint256 playerId) external override onlyPlayerNFT {
+  function beforeTokenTransferTo(address to, uint256 playerId) external override onlyPlayerNFT {
     // Does this account have any boosts? If so, then set a lock on the player when trying to set it as active
     uint16[] memory boostItemTokenIds = new uint16[](4);
     boostItemTokenIds[0] = COMBAT_BOOST;
     boostItemTokenIds[1] = XP_BOOST;
     boostItemTokenIds[2] = GATHERING_BOOST;
     boostItemTokenIds[3] = SKILL_BOOST;
-    uint256[] memory balances = _itemNFT.balanceOfs(_to, boostItemTokenIds);
+    uint256[] memory balances = _itemNFT.balanceOfs(to, boostItemTokenIds);
     bool hasBoost;
     for (uint256 i; i < balances.length; ++i) {
       hasBoost = hasBoost || balances[i] != 0;
@@ -266,10 +266,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _clearEverything(from, playerId, !isEmergency);
   }
 
-  function _clearEverything(address _from, uint256 playerId, bool _processTheActions) private {
+  function _clearEverything(address from, uint256 playerId, bool _processTheActions) private {
     _delegatecall(
       _implQueueActions,
-      abi.encodeWithSelector(IPlayersDelegate.clearEverything.selector, _from, playerId, _processTheActions)
+      abi.encodeWithSelector(IPlayersDelegate.clearEverything.selector, from, playerId, _processTheActions)
     );
   }
 
@@ -304,25 +304,25 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function _setActivePlayer(address _from, uint256 playerId) private {
+  function _setActivePlayer(address from, uint256 playerId) private {
     require(block.timestamp >= _activeBoosts[playerId].cooldown, PlayerLocked());
 
-    uint256 existingActivePlayerId = _activePlayers[_from];
-    _activePlayers[_from] = playerId;
+    uint256 existingActivePlayerId = _activePlayers[from];
+    _activePlayers[from] = playerId;
     require(existingActivePlayerId != playerId, PlayerAlreadyActive());
 
     if (existingActivePlayerId != 0) {
-      _clearEverything(_from, existingActivePlayerId, true);
+      _clearEverything(from, existingActivePlayerId, true);
     }
-    emit SetActivePlayer(_from, existingActivePlayerId, playerId);
+    emit SetActivePlayer(from, existingActivePlayerId, playerId);
   }
 
   function setActivePlayer(uint256 playerId) external isOwnerOfPlayerMod(playerId) {
     _setActivePlayer(_msgSender(), playerId);
   }
 
-  function donate(uint256 playerId, uint256 _amount) external isOwnerOfPlayerOrEmpty(playerId) {
-    _donate(_msgSender(), playerId, _amount);
+  function donate(uint256 playerId, uint256 amount) external isOwnerOfPlayerOrEmpty(playerId) {
+    _donate(_msgSender(), playerId, amount);
   }
 
   function dailyClaimedRewards(uint256 playerId) external view returns (bool[7] memory claimed) {
@@ -353,8 +353,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (bool[], bytes[]));
   }
 
-  function isOwnerOfPlayerAndActive(address _from, uint256 playerId) public view override returns (bool) {
-    return _playerNFT.balanceOf(_from, playerId) == 1 && _activePlayers[_from] == playerId;
+  function isOwnerOfPlayerAndActive(address from, uint256 playerId) public view override returns (bool) {
+    return _playerNFT.balanceOf(from, playerId) == 1 && _activePlayers[from] == playerId;
   }
 
   function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory) {
@@ -367,18 +367,18 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   function getURI(
     uint256 playerId,
-    string calldata _name,
-    string calldata _avatarName,
-    string calldata _avatarDescription,
+    string calldata name,
+    string calldata avatarName,
+    string calldata avatarDescription,
     string calldata imageURI
   ) external view override returns (string memory) {
     bytes memory data = _staticcall(
       address(this),
       abi.encodeWithSelector(
         IPlayersMisc1DelegateView.uri.selector,
-        _name,
-        _avatarName,
-        _avatarDescription,
+        name,
+        avatarName,
+        avatarDescription,
         imageURI,
         playerId
       )
@@ -388,26 +388,26 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function getPendingQueuedActionState(
-    address _owner,
+    address owner_,
     uint256 playerId
   ) public view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, _owner, playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, owner_, playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function getActivePlayer(address _owner) external view override returns (uint256 playerId) {
-    return _activePlayers[_owner];
+  function getActivePlayer(address owner_) external view override returns (uint256 playerId) {
+    return _activePlayers[owner_];
   }
 
-  function getPlayerXP(uint256 playerId, Skill _skill) external view override returns (uint256) {
-    return PlayersLibrary.readXP(_skill, _playerXP[playerId]);
+  function getPlayerXP(uint256 playerId, Skill skill) external view override returns (uint256) {
+    return PlayersLibrary.readXP(skill, _playerXP[playerId]);
   }
 
-  function getLevel(uint256 playerId, Skill _skill) external view override returns (uint256) {
-    return PlayersLibrary._getLevel(PlayersLibrary.readXP(_skill, _playerXP[playerId]));
+  function getLevel(uint256 playerId, Skill skill) external view override returns (uint256) {
+    return PlayersLibrary._getLevel(PlayersLibrary.readXP(skill, _playerXP[playerId]));
   }
 
   function getTotalXP(uint256 playerId) external view override returns (uint256) {
@@ -427,8 +427,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return _activeBoosts[playerId];
   }
 
-  function getClanBoost(uint256 _clanId) external view returns (PlayerBoostInfo memory) {
-    return _clanBoosts[_clanId];
+  function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory) {
+    return _clanBoosts[clanId];
   }
 
   function getGlobalBoost() external view returns (PlayerBoostInfo memory) {
@@ -464,17 +464,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _alphaCombatHealing = alphaCombatHealing;
   }
 
-  function addXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
+  function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external onlyOwner {
     _delegatecall(
       _implMisc,
-      abi.encodeWithSelector(IPlayersDelegate.addXPThresholdRewards.selector, _xpThresholdRewards)
+      abi.encodeWithSelector(IPlayersDelegate.addXPThresholdRewards.selector, xpThresholdRewards)
     );
   }
 
-  function editXPThresholdRewards(XPThresholdReward[] calldata _xpThresholdRewards) external onlyOwner {
+  function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external onlyOwner {
     _delegatecall(
       _implMisc,
-      abi.encodeWithSelector(IPlayersDelegate.editXPThresholdRewards.selector, _xpThresholdRewards)
+      abi.encodeWithSelector(IPlayersDelegate.editXPThresholdRewards.selector, xpThresholdRewards)
     );
   }
 
@@ -487,10 +487,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     emit GamePaused(gamePaused);
   }
 
-  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external onlyOwner {
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external onlyOwner {
     _delegatecall(
       _implMisc1,
-      abi.encodeWithSelector(IPlayersDelegate.addFullAttireBonuses.selector, _fullAttireBonuses)
+      abi.encodeWithSelector(IPlayersDelegate.addFullAttireBonuses.selector, fullAttireBonuses)
     );
   }
 
