@@ -4,8 +4,6 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {Treasury} from "./Treasury.sol";
 
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
@@ -13,11 +11,6 @@ import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint40;
-  using UnsafeMath for uint80;
-  using UnsafeMath for uint256;
-
   event AddShopItems(ShopItem[] shopItems);
   event EditShopItems(ShopItem[] shopItems);
   event RemoveShopItems(uint16[] tokenId);
@@ -112,19 +105,18 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function liquidatePrices(uint16[] calldata tokenIds) external view returns (uint256[] memory prices) {
-    U256 iter = tokenIds.length.asU256();
-    if (iter.eq(0)) {
+    uint256 iter = tokenIds.length;
+    if (iter == 0) {
       return prices;
     }
 
     uint256 totalBrush = _treasury.totalClaimable(address(this));
     uint256 totalBrushForItem = totalBrush / (_itemNFT.totalSupply() - _numUnsellableItems);
 
-    prices = new uint256[](iter.asUint256());
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      prices[i] = _liquidatePrice(tokenIds[i], totalBrushForItem);
+    prices = new uint256[](iter);
+    while (iter != 0) {
+      iter--;
+      prices[iter] = _liquidatePrice(tokenIds[iter], totalBrushForItem);
     }
   }
 
@@ -141,18 +133,17 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
-    U256 iter = tokenIds.length.asU256();
-    require(iter.neq(0), LengthEmpty());
-    require(iter.eq(quantities.length), LengthMismatch());
+    uint256 iter = tokenIds.length;
+    require(iter != 0, LengthEmpty());
+    require(iter == quantities.length, LengthMismatch());
     uint256 brushCost;
-    uint256[] memory prices = new uint256[](iter.asUint256());
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      uint256 price = _shopItems[uint16(tokenIds[i])];
+    uint256[] memory prices = new uint256[](iter);
+    while (iter != 0) {
+      iter--;
+      uint256 price = _shopItems[uint16(tokenIds[iter])];
       require(price != 0, ItemCannotBeBought());
-      brushCost += price * quantities[i];
-      prices[i] = price;
+      brushCost += price * quantities[iter];
+      prices[iter] = price;
     }
 
     // Pay
@@ -173,21 +164,20 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
-    U256 iter = tokenIds.length.asU256();
-    require(iter.neq(0), LengthEmpty());
-    require(iter.eq(quantities.length), LengthMismatch());
-    U256 totalBrush;
-    uint256[] memory prices = new uint256[](iter.asUint256());
+    uint256 iter = tokenIds.length;
+    require(iter != 0, LengthEmpty());
+    require(iter == quantities.length, LengthMismatch());
+    uint256 totalBrush;
+    uint256[] memory prices = new uint256[](iter);
     do {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      U256 sellPrice = liquidatePrice(uint16(tokenIds[i])).asU256();
-      totalBrush = totalBrush + (sellPrice * quantities[i].asU256());
-      prices[i] = sellPrice.asUint256();
-      _sell(tokenIds[i], quantities[i], prices[i]);
-    } while (iter.neq(0));
-    require(totalBrush.gte(minExpectedBrush), MinExpectedBrushNotReached(totalBrush.asUint256(), minExpectedBrush));
-    _treasury.spend(msg.sender, totalBrush.asUint256());
+      iter--;
+      uint256 sellPrice = liquidatePrice(uint16(tokenIds[iter]));
+      totalBrush = totalBrush + (sellPrice * quantities[iter]);
+      prices[iter] = sellPrice;
+      _sell(tokenIds[iter], quantities[iter], prices[iter]);
+    } while (iter != 0);
+    require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
+    _treasury.spend(msg.sender, totalBrush);
     _itemNFT.burnBatch(msg.sender, tokenIds, quantities);
     emit SellBatch(msg.sender, tokenIds, quantities, prices);
   }
@@ -199,7 +189,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
     // A period of no selling allowed for a newly minted item
     require(
-      _itemNFT.getTimestampFirstMint(tokenId).add(_sellingCutoffDuration) <= block.timestamp,
+      _itemNFT.getTimestampFirstMint(tokenId) + _sellingCutoffDuration <= block.timestamp,
       SellingTooQuicklyAfterItemIntroduction()
     );
 
@@ -213,7 +203,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       allocationRemaining = uint80(
         _treasury.totalClaimable(address(this)) / (_itemNFT.totalSupply() - _numUnsellableItems)
       );
-      tokenInfo.checkpointTimestamp = uint40(block.timestamp.div(1 days).mul(1 days));
+      tokenInfo.checkpointTimestamp = uint40((block.timestamp / 1 days) * 1 days);
       tokenInfo.price = uint80(sellPrice);
       emit NewAllocation(uint16(tokenId), allocationRemaining);
     } else {
@@ -265,7 +255,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _hasNewDailyData(uint256 checkpointTimestamp) private view returns (bool) {
-    return (block.timestamp.div(1 days)).mul(1 days) >= checkpointTimestamp.add(1 days);
+    return (block.timestamp / 1 days) * 1 days >= checkpointTimestamp + 1 days;
   }
 
   function tokenInfos(uint16 tokenId) external view returns (TokenInfo memory tokenInfo) {
