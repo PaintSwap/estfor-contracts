@@ -69,12 +69,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     U256 bounds = _xpThresholdReward.rewards.length.asU256();
     for (U256 jIter; jIter < bounds; jIter = jIter.inc()) {
       uint256 j = jIter.asUint256();
-      if (_xpThresholdReward.rewards[j].itemTokenId == NONE) {
-        revert InvalidItemTokenId();
-      }
-      if (_xpThresholdReward.rewards[j].amount == 0) {
-        revert InvalidAmount();
-      }
+      require(_xpThresholdReward.rewards[j].itemTokenId != NONE, InvalidItemTokenId());
+      require(_xpThresholdReward.rewards[j].amount != 0, InvalidAmount());
     }
   }
 
@@ -87,13 +83,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       // Check that it is part of the hexBytes
       uint16 index = _findBaseXPThreshold(xpThresholdReward.xpThreshold);
       uint32 xpThreshold = _getXPReward(index);
-      if (xpThresholdReward.xpThreshold != xpThreshold) {
-        revert XPThresholdNotFound();
-      }
+      require(xpThresholdReward.xpThreshold == xpThreshold, XPThresholdNotFound());
 
-      if (_xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0) {
-        revert XPThresholdAlreadyExists();
-      }
+      require(_xpRewardThresholds[xpThresholdReward.xpThreshold].length == 0, XPThresholdAlreadyExists());
       _checkXPThresholdRewards(xpThresholdReward);
 
       _xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
@@ -106,9 +98,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     while (iter.neq(0)) {
       iter = iter.dec();
       XPThresholdReward calldata xpThresholdReward = _xpThresholdRewards[iter.asUint256()];
-      if (_xpRewardThresholds[xpThresholdReward.xpThreshold].length == 0) {
-        revert XPThresholdDoesNotExist();
-      }
+      require(_xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0, XPThresholdDoesNotExist());
       _checkXPThresholdRewards(xpThresholdReward);
       _xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
       emit AdminEditThresholdReward(xpThresholdReward);
@@ -614,14 +604,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     _updateXP(msg.sender, playerId, skillGained, xpGained);
 
     bool success = _quests.buyBrushQuest{value: msg.value}(msg.sender, _to, playerId, questId, _useExactETH);
-    if (!success) {
-      revert BuyBrushFailed();
-    } else {
-      if (itemTokenIds.length != 0) {
-        // Not handled currently
-        revert InvalidReward();
-      }
-    }
+    require(success, BuyBrushFailed());
+    // Not handled currently
+    require(itemTokenIds.length == 0, InvalidReward());
   }
 
   // Random rewards

@@ -27,9 +27,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   address private _instantVRFActions;
 
   modifier onlyInstantVRFActions() {
-    if (_instantVRFActions != _msgSender()) {
-      revert OnlyInstantVRFActions();
-    }
+    require(_instantVRFActions == _msgSender(), OnlyInstantVRFActions());
     _;
   }
 
@@ -123,25 +121,15 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   function _checkRandomRewards(InstantVRFRandomReward[] memory randomRewards) private pure {
     uint256 length = randomRewards.length;
     // Check random rewards are correct
-    if (length > 10) {
-      revert TooManyRandomRewards();
-    }
+    require(length <= 10, TooManyRandomRewards());
 
     for (uint256 i; i < length; ++i) {
-      if (randomRewards[i].itemTokenId == 0) {
-        revert RandomRewardSpecifiedWithoutTokenId();
-      }
-      if (randomRewards[i].chance == 0) {
-        revert RandomRewardSpecifiedWithoutChance();
-      }
-      if (randomRewards[i].amount == 0) {
-        revert RandomRewardSpecifiedWithoutAmount();
-      }
+      require(randomRewards[i].itemTokenId != 0, RandomRewardSpecifiedWithoutTokenId());
+      require(randomRewards[i].chance != 0, RandomRewardSpecifiedWithoutChance());
+      require(randomRewards[i].amount != 0, RandomRewardSpecifiedWithoutAmount());
 
       if (i != length - 1) {
-        if (randomRewards[i].chance <= randomRewards[i + 1].chance) {
-          revert RandomRewardChanceMustBeInOrder();
-        }
+        require(randomRewards[i].chance > randomRewards[i + 1].chance, RandomRewardChanceMustBeInOrder());
       }
     }
   }

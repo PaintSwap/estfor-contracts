@@ -70,41 +70,37 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   modifier onlyMinters() {
     address sender = _msgSender();
-    if (
-      sender != _players &&
-      sender != _shop &&
-      sender != _promotions &&
-      sender != _instantActions &&
-      sender != _instantVRFActions &&
-      sender != _passiveActions
-    ) {
-      revert NotMinter();
-    }
+    require(
+      sender == _players ||
+        sender == _shop ||
+        sender == _promotions ||
+        sender == _instantActions ||
+        sender == _instantVRFActions ||
+        sender == _passiveActions,
+      NotMinter()
+    );
     _;
   }
 
   modifier onlyBurners(address _from) {
     address sender = _msgSender();
-    if (
-      sender != _from &&
-      !isApprovedForAll(_from, sender) &&
-      sender != _players &&
-      sender != _shop &&
-      sender != _instantActions &&
-      sender != _instantVRFActions &&
-      sender != _territories &&
-      sender != _lockedBankVaults &&
-      sender != _passiveActions
-    ) {
-      revert NotBurner();
-    }
+    require(
+      sender == _from ||
+        isApprovedForAll(_from, sender) ||
+        sender == _players ||
+        sender == _shop ||
+        sender == _instantActions ||
+        sender == _instantVRFActions ||
+        sender == _territories ||
+        sender == _lockedBankVaults ||
+        sender == _passiveActions,
+      NotBurner()
+    );
     _;
   }
 
   modifier isAdminAndBeta() {
-    if (!(_adminAccess.isAdmin(_msgSender()) && _isBeta)) {
-      revert NotAdminAndBeta();
-    }
+    require(_adminAccess.isAdmin(_msgSender()) && _isBeta, NotAdminAndBeta());
     _;
   }
 
@@ -163,9 +159,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _premint(uint256 tokenId, uint256 _amount) private returns (uint256 numNewUniqueItems) {
-    if (tokenId >= type(uint16).max) {
-      revert IdTooHigh();
-    }
+    require(tokenId < type(uint16).max, IdTooHigh());
     uint256 existingBalance = _itemBalances[tokenId];
     if (existingBalance == 0) {
       // Brand new item
@@ -212,9 +206,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _getItem(uint16 tokenId) private view returns (Item storage) {
-    if (!exists(tokenId)) {
-      revert ItemDoesNotExist(tokenId);
-    }
+    require(exists(tokenId), ItemDoesNotExist(tokenId));
     return _items[tokenId];
   }
 
@@ -243,10 +235,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       }
     }
 
-    if (anyNonTransferable && (address(_bankFactory) == address(0) || !_bankFactory.getCreatedHere(_from))) {
-      // Check if this is from a bank, that's the only place it's allowed to withdraw non-transferable items
-      revert ItemNotTransferable();
-    }
+    // Check if this is from a bank, that's the only place it's allowed to withdraw non-transferable items
+    require(
+      !anyNonTransferable || (address(_bankFactory) != address(0) && _bankFactory.getCreatedHere(_from)),
+      ItemNotTransferable()
+    );
   }
 
   function _beforeTokenTransfer(
@@ -269,16 +262,12 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       _checkIsTransferable(_from, _ids);
     }
     if (_players == address(0)) {
-      if (block.chainid != 31337) {
-        revert InvalidChainId();
-      }
+      require(block.chainid == 31337, InvalidChainId());
     }
   }
 
   function _setItem(ItemInput calldata input) private returns (ItemOutput memory item) {
-    if (input.tokenId == 0) {
-      revert InvalidTokenId();
-    }
+    require(input.tokenId != 0, InvalidTokenId());
     ItemNFTLibrary.setItem(input, _items[input.tokenId]);
     _tokenURIs[input.tokenId] = input.metadataURI;
 
@@ -303,9 +292,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _editItem(ItemInput calldata inputItem) private returns (ItemOutput memory item) {
-    if (!exists(inputItem.tokenId)) {
-      revert ItemDoesNotExist(inputItem.tokenId);
-    }
+    require(exists(inputItem.tokenId), ItemDoesNotExist(inputItem.tokenId));
     EquipPosition oldPosition = _items[inputItem.tokenId].equipPosition;
     EquipPosition newPosition = inputItem.equipPosition;
 
@@ -314,16 +301,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       (oldPosition == EquipPosition.BOTH_HANDS && newPosition == EquipPosition.RIGHT_HAND);
 
     // Allowed to go from BOTH_HANDS to RIGHT_HAND or RIGHT_HAND to BOTH_HANDS
-    if (oldPosition != newPosition && oldPosition != EquipPosition.NONE && !isRightHandPositionSwapWithBothHands) {
-      revert EquipmentPositionShouldNotChange();
-    }
+    require(
+      oldPosition == newPosition || oldPosition == EquipPosition.NONE || isRightHandPositionSwapWithBothHands,
+      EquipmentPositionShouldNotChange()
+    );
     item = _setItem(inputItem);
   }
 
   function uri(uint256 tokenId) public view virtual override returns (string memory) {
-    if (!exists(tokenId)) {
-      revert ItemDoesNotExist(uint16(tokenId));
-    }
+    require(exists(tokenId), ItemDoesNotExist(uint16(tokenId)));
     return string(abi.encodePacked(_baseURI, _tokenURIs[tokenId]));
   }
 
@@ -390,9 +376,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function getEquipPosition(uint16 tokenId) public view returns (EquipPosition) {
-    if (!exists(tokenId)) {
-      revert ItemDoesNotExist(tokenId);
-    }
+    require(exists(tokenId), ItemDoesNotExist(uint16(tokenId)));
     return _items[tokenId].equipPosition;
   }
 
@@ -466,9 +450,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
-      if (exists(_inputItems[i].tokenId)) {
-        revert ItemAlreadyExists();
-      }
+      require(!exists(_inputItems[i].tokenId), ItemAlreadyExists());
       items[i] = _setItem(_inputItems[i]);
       tokenIds[i] = _inputItems[i].tokenId;
       names[i] = _inputItems[i].name;
@@ -495,9 +477,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // because it could mess up queued actions potentially
   function removeItems(uint16[] calldata _itemTokenIds) external onlyOwner {
     for (uint256 i = 0; i < _itemTokenIds.length; ++i) {
-      if (!exists(_itemTokenIds[i])) {
-        revert ItemDoesNotExist(_itemTokenIds[i]);
-      }
+      require(exists(_itemTokenIds[i]), ItemDoesNotExist(_itemTokenIds[i]));
       delete _items[_itemTokenIds[i]];
       delete _tokenURIs[_itemTokenIds[i]];
     }
@@ -545,9 +525,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function airdrop(address[] calldata _tos, uint256 tokenId, uint256[] calldata _amounts) external onlyOwner {
-    if (_tos.length != _amounts.length) {
-      revert LengthMismatch();
-    }
+    require(_tos.length == _amounts.length, LengthMismatch());
     for (uint256 i = 0; i < _tos.length; ++i) {
       _mintItem(_tos[i], tokenId, _amounts[i]);
     }

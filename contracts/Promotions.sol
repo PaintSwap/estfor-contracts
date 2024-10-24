@@ -265,19 +265,14 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
   function _checkPromotionMintStatus(PromotionMintStatus promotionMintStatus) private pure {
     if (promotionMintStatus != PromotionMintStatus.SUCCESS) {
-      if (promotionMintStatus == PromotionMintStatus.PROMOTION_ALREADY_CLAIMED) {
-        revert PromotionAlreadyClaimed();
-      } else if (promotionMintStatus == PromotionMintStatus.ORACLE_NOT_CALLED) {
-        revert OracleNotCalled();
-      } else if (promotionMintStatus == PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE) {
-        revert MintingOutsideAvailableDate();
-      } else if (promotionMintStatus == PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY) {
-        revert PlayerDoesNotQualify();
-      } else if (promotionMintStatus == PromotionMintStatus.PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS) {
-        revert PlayerNotHitEnoughClaims();
-      } else {
-        revert InvalidPromotion();
-      }
+      require(promotionMintStatus != PromotionMintStatus.PROMOTION_ALREADY_CLAIMED, PromotionAlreadyClaimed());
+      require(promotionMintStatus != PromotionMintStatus.ORACLE_NOT_CALLED, OracleNotCalled());
+      require(promotionMintStatus != PromotionMintStatus.MINTING_OUTSIDE_AVAILABLE_DATE, MintingOutsideAvailableDate());
+      require(promotionMintStatus != PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY, PlayerDoesNotQualify());
+      require(
+        promotionMintStatus != PromotionMintStatus.PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS,
+        PlayerNotHitEnoughClaims()
+      );
     }
   }
 

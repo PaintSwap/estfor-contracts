@@ -30,9 +30,7 @@ contract MockWrappedFantom {
   }
 
   function withdraw(uint256 wad) public {
-    if (balanceOf[msg.sender] < wad) {
-      revert InsufficientBalance();
-    }
+    require(balanceOf[msg.sender] >= wad, "InsufficientBalance");
     balanceOf[msg.sender] -= wad;
     payable(msg.sender).transfer(wad);
     emit Withdrawal(msg.sender, wad);
@@ -53,14 +51,10 @@ contract MockWrappedFantom {
   }
 
   function transferFrom(address src, address dst, uint256 wad) public returns (bool) {
-    if (balanceOf[src] < wad) {
-      revert InsufficientBalance();
-    }
+    require(balanceOf[src] >= wad, "InsufficientBalance");
 
     if (src != msg.sender && allowance[src][msg.sender] != type(uint256).max) {
-      if (allowance[src][msg.sender] < wad) {
-        revert InsufficientAllowance();
-      }
+      require(allowance[src][msg.sender] >= wad, "InsufficientAllowance");
       allowance[src][msg.sender] -= wad;
     }
 

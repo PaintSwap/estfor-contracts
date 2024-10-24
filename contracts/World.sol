@@ -140,13 +140,15 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   function requestRandomWords() external returns (uint256 requestId) {
     // Last one has not been fulfilled yet
-    if (_requestIds.length != 0 && _randomWords[_requestIds[_requestIds.length - 1]] == 0) {
-      revert RandomWordsCannotBeUpdatedYet();
-    }
+    require(
+      _requestIds.length == 0 || _randomWords[_requestIds[_requestIds.length - 1]] != 0,
+      RandomWordsCannotBeUpdatedYet()
+    );
     uint40 newLastRandomWordsUpdatedTime = _lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME;
-    if (newLastRandomWordsUpdatedTime > block.timestamp) {
-      revert CanOnlyRequestAfterTheNextCheckpoint(block.timestamp, newLastRandomWordsUpdatedTime);
-    }
+    require(
+      newLastRandomWordsUpdatedTime <= block.timestamp,
+      CanOnlyRequestAfterTheNextCheckpoint(block.timestamp, newLastRandomWordsUpdatedTime)
+    );
 
     requestId = uint256(_samWitchVRF.requestRandomWords(NUM_WORDS, _callbackGasLimit));
     _requestIds.push(requestId);
@@ -224,9 +226,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   function getRandomWord(uint256 timestamp) public view returns (uint256 randomWord) {
     randomWord = _getRandomWord(timestamp);
-    if (randomWord == 0) {
-      revert NoValidRandomWord();
-    }
+    require(randomWord != 0, NoValidRandomWord());
   }
 
   function getMultipleWords(uint256 timestamp) public view returns (uint256[4] memory words) {
@@ -346,12 +346,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function _addAction(Action calldata action) private {
-    if (action.info.isDynamic) {
-      revert DynamicActionsCannotBeAdded();
-    }
-    if (_actions[action.actionId].skill.asSkill() != Skill.NONE) {
-      revert ActionAlreadyExists(action.actionId);
-    }
+    require(!action.info.isDynamic, DynamicActionsCannotBeAdded());
+    require(_actions[action.actionId].skill.asSkill() == Skill.NONE, ActionAlreadyExists(action.actionId));
     _setAction(action);
   }
 
@@ -365,23 +361,15 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function _setAction(Action calldata action) private {
-    if (action.actionId == 0) {
-      revert ActionIdZeroNotAllowed();
-    }
-    if (action.info.handItemTokenIdRangeMin > action.info.handItemTokenIdRangeMax) {
-      revert MinCannotBeGreaterThanMax();
-    }
+    require(action.actionId != 0, ActionIdZeroNotAllowed());
+    require(action.info.handItemTokenIdRangeMin <= action.info.handItemTokenIdRangeMax, MinCannotBeGreaterThanMax());
 
     if (action.info.numSpawned != 0) {
       // Combat
-      if ((3600 * SPAWN_MUL) % action.info.numSpawned != 0) {
-        revert NotAFactorOf3600();
-      }
+      require((3600 * SPAWN_MUL) % action.info.numSpawned == 0, NotAFactorOf3600());
     } else if (action.guaranteedRewards.length != 0) {
       // Non-combat guaranteed rewards. Only care about the first one as it's used for correctly taking into account partial loots.
-      if ((3600 * GUAR_MUL) % action.guaranteedRewards[0].rate != 0) {
-        revert NotAFactorOf3600();
-      }
+      require((3600 * GUAR_MUL) % action.guaranteedRewards[0].rate == 0, NotAFactorOf3600());
     }
 
     _actions[action.actionId] = action.info;
@@ -397,9 +385,10 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     } else {
       bool actionHasGuaranteedRewards = action.guaranteedRewards.length != 0;
       bool actionHasRandomRewards = action.randomRewards.length != 0;
-      if (actionHasGuaranteedRewards && actionHasRandomRewards && action.info.actionChoiceRequired) {
-        revert NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards();
-      }
+      require(
+        !(actionHasGuaranteedRewards && actionHasRandomRewards && action.info.actionChoiceRequired),
+        NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards()
+      );
     }
   }
 
@@ -408,9 +397,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     uint16 actionChoiceId,
     ActionChoiceInput calldata actionChoiceInput
   ) private view {
-    if (actionChoiceId == 0) {
-      revert ActionChoiceIdZeroNotAllowed();
-    }
+    require(actionChoiceId != 0, ActionChoiceIdZeroNotAllowed());
     require(_actionChoices[actionId][actionChoiceId].skill.isNone(), ActionChoiceAlreadyExists());
     WorldLibrary.checkActionChoice(actionChoiceInput);
   }
@@ -420,9 +407,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     uint16 actionChoiceId,
     ActionChoiceInput calldata actionChoiceInput
   ) private view {
-    if (Skill(_actionChoices[actionId][actionChoiceId].skill) == Skill.NONE) {
-      revert ActionChoiceDoesNotExist();
-    }
+    require(Skill(_actionChoices[actionId][actionChoiceId].skill) != Skill.NONE, ActionChoiceDoesNotExist());
 
     WorldLibrary.checkActionChoice(actionChoiceInput);
   }
@@ -496,13 +481,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function _fulfillRandomWords(uint256 requestId, uint256[] memory fulfilledRandomWords) internal {
-    if (_randomWords[requestId] != 0) {
-      revert RequestAlreadyFulfilled();
-    }
-
-    if (fulfilledRandomWords.length != NUM_WORDS) {
-      revert LengthMismatch();
-    }
+    require(_randomWords[requestId] == 0, RequestAlreadyFulfilled());
+    require(fulfilledRandomWords.length == NUM_WORDS, LengthMismatch());
 
     uint256 _randomWord = fulfilledRandomWords[0];
     if (_randomWord == 0) {
@@ -537,9 +517,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   function editActions(Action[] calldata actionsToEdit) external onlyOwner {
     for (uint256 i = 0; i < actionsToEdit.length; ++i) {
-      if (_actions[actionsToEdit[i].actionId].skill.asSkill() == Skill.NONE) {
-        revert ActionDoesNotExist();
-      }
+      require(_actions[actionsToEdit[i].actionId].skill.asSkill() != Skill.NONE, ActionDoesNotExist());
       _setAction(actionsToEdit[i]);
     }
     emit EditActions(actionsToEdit);
@@ -553,13 +531,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     emit AddActionChoices(actionId, actionChoiceIds, actionChoicesToAdd);
 
     U256 actionChoiceLength = actionChoicesToAdd.length.asU256();
-    if (actionChoiceLength.neq(actionChoiceIds.length)) {
-      revert LengthMismatch();
-    }
-
-    if (actionChoiceIds.length == 0) {
-      revert NoActionChoices();
-    }
+    require(actionChoiceLength.eq(actionChoiceIds.length), LengthMismatch());
+    require(actionChoiceIds.length != 0, NoActionChoices());
 
     for (U256 iter; iter < actionChoiceLength; iter = iter.inc()) {
       uint16 i = iter.asUint16();
@@ -575,12 +548,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     uint16[][] calldata actionChoiceIds,
     ActionChoiceInput[][] calldata actionChoicesToAdd
   ) external onlyOwner {
-    if (actionIds.length != actionChoicesToAdd.length) {
-      revert LengthMismatch();
-    }
-    if (actionIds.length == 0) {
-      revert NoActionChoices();
-    }
+    require(actionIds.length == actionChoicesToAdd.length, LengthMismatch());
+    require(actionIds.length != 0, NoActionChoices());
 
     U256 _actionIdsLength = actionIds.length.asU256();
     for (U256 iter; iter < _actionIdsLength; iter = iter.inc()) {
@@ -595,12 +564,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     uint16[] calldata actionChoiceIds,
     ActionChoiceInput[] calldata actionChoicesToEdit
   ) external onlyOwner {
-    if (actionChoiceIds.length == 0) {
-      revert NoActionChoices();
-    }
-    if (actionChoiceIds.length != actionChoicesToEdit.length) {
-      revert LengthMismatch();
-    }
+    require(actionChoiceIds.length != 0, NoActionChoices());
+    require(actionChoiceIds.length == actionChoicesToEdit.length, LengthMismatch());
 
     U256 _actionIdsLength = actionChoiceIds.length.asU256();
     for (U256 iter; iter < _actionIdsLength; iter = iter.inc()) {
@@ -613,9 +578,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function removeActionChoices(uint16 actionId, uint16[] calldata actionChoiceIds) external onlyOwner {
-    if (actionChoiceIds.length == 0) {
-      revert NoActionChoices();
-    }
+    require(actionChoiceIds.length != 0, NoActionChoices());
 
     U256 _length = actionChoiceIds.length.asU256();
     for (U256 iter; iter < _length; iter = iter.inc()) {
@@ -630,39 +593,32 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function setDailyRewardPool(uint256 tier, Equipment[] calldata dailyRewards) external onlyOwner {
-    if (dailyRewards.length > 255) {
-      revert TooManyRewardsInPool();
-    }
+    require(dailyRewards.length <= 255, TooManyRewardsInPool());
     delete _dailyRewardPool[tier];
 
     for (uint256 i = 0; i < dailyRewards.length; ++i) {
       // Amount should be divisible by 10 to allow percentage increases to be applied (like clan bonuses)
-      if (dailyRewards[i].itemTokenId == 0 || dailyRewards[i].amount == 0 || dailyRewards[i].amount % 10 != 0) {
-        revert InvalidReward();
-      }
+      require(
+        dailyRewards[i].itemTokenId != 0 && dailyRewards[i].amount != 0 && dailyRewards[i].amount % 10 == 0,
+        InvalidReward()
+      );
       _dailyRewardPool[tier].push(dailyRewards[i]);
     }
   }
 
   function setWeeklyRewardPool(uint256 tier, Equipment[] calldata weeklyRewards) external onlyOwner {
-    if (weeklyRewards.length > 255) {
-      revert TooManyRewardsInPool();
-    }
+    require(weeklyRewards.length <= 255, TooManyRewardsInPool());
 
     delete _weeklyRewardPool[tier];
 
     for (uint256 i = 0; i < weeklyRewards.length; ++i) {
-      if (weeklyRewards[i].itemTokenId == NONE || weeklyRewards[i].amount == 0) {
-        revert InvalidReward();
-      }
+      require(weeklyRewards[i].itemTokenId != NONE && weeklyRewards[i].amount != 0, InvalidReward());
       _weeklyRewardPool[tier].push(weeklyRewards[i]);
     }
   }
 
   function setCallbackGasLimit(uint256 gasLimit) external onlyOwner {
-    if (gasLimit > 3_000_000) {
-      revert CallbackGasLimitTooHigh();
-    }
+    require(gasLimit <= 3_000_000, CallbackGasLimitTooHigh());
     _callbackGasLimit = uint24(gasLimit);
   }
 

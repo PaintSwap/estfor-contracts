@@ -360,13 +360,12 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint256 _clanId
   ) private {
     Item memory item = _itemNFT.getItem(_itemTokenId);
-    if (
-      item.equipPosition != EquipPosition.EXTRA_BOOST_VIAL &&
-      item.equipPosition != EquipPosition.GLOBAL_BOOST_VIAL &&
-      item.equipPosition != EquipPosition.CLAN_BOOST_VIAL
-    ) {
-      revert NotABoostVial();
-    }
+    require(
+      item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL ||
+        item.equipPosition == EquipPosition.GLOBAL_BOOST_VIAL ||
+        item.equipPosition == EquipPosition.CLAN_BOOST_VIAL,
+      NotABoostVial()
+    );
     if (_startTime < block.timestamp) {
       _startTime = uint40(block.timestamp);
     }
@@ -510,18 +509,12 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external {
-    if (!force && _players[playerId].actionQueue.length != 0) {
-      revert HasQueuedActions();
-    }
+    require(force || _players[playerId].actionQueue.length == 0, HasQueuedActions());
 
     // Make sure it isn't less XP
     uint256 oldXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
-    if (xp < oldXP) {
-      revert TestInvalidXP();
-    }
-    if (_playerNFT.balanceOf(from, playerId) == 0) {
-      revert NotOwnerOfPlayer();
-    }
+    require(xp >= oldXP, TestInvalidXP());
+    require(_playerNFT.balanceOf(from, playerId) != 0, NotOwnerOfPlayer());
     uint56 gainedXP = uint56(xp.sub(oldXP));
     _updateXP(from, playerId, skill, gainedXP);
     uint56 newTotalXP = uint56(_players[playerId].totalXP.add(gainedXP));

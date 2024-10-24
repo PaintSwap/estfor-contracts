@@ -25,9 +25,7 @@ library PromotionsLibrary {
     PromotionInfoInput calldata promotionInfoInput
   ) external {
     _checkAddingGenericPromotion(promotionInfoInput);
-    if (activePromotions[promotionInfoInput.promotion].promotion != Promotion.NONE) {
-      revert PromotionAlreadyAdded();
-    }
+    require(activePromotions[promotionInfoInput.promotion].promotion == Promotion.NONE, PromotionAlreadyAdded());
 
     if (promotionInfoInput.isMultiday) {
       _checkAddingMultidayMintPromotion(promotionInfoInput);
@@ -118,45 +116,42 @@ library PromotionsLibrary {
       );
     }
 
-    if (
-      promotionInfoInput.numRandomStreakBonusItemsToPick1 > promotionInfoInput.randomStreakBonusItemTokenIds1.length
-    ) {
-      revert PickingTooManyItems();
-    }
-    if (
-      promotionInfoInput.numRandomStreakBonusItemsToPick2 > promotionInfoInput.randomStreakBonusItemTokenIds2.length
-    ) {
-      revert PickingTooManyItems();
-    }
+    require(
+      promotionInfoInput.numRandomStreakBonusItemsToPick1 <= promotionInfoInput.randomStreakBonusItemTokenIds1.length,
+      PickingTooManyItems()
+    );
+    require(
+      promotionInfoInput.numRandomStreakBonusItemsToPick2 <= promotionInfoInput.randomStreakBonusItemTokenIds2.length,
+      PickingTooManyItems()
+    );
 
     // Check brush input is valid
-    if (promotionInfoInput.brushCostMissedDay % 1 ether != 0 || promotionInfoInput.brushCostMissedDay > 25 ether) {
-      revert InvalidBrushCost();
-    }
+    require(
+      promotionInfoInput.brushCostMissedDay % 1 ether == 0 && promotionInfoInput.brushCostMissedDay <= 25 ether,
+      InvalidBrushCost()
+    );
   }
 
   function _checkAddingSinglePromotion(PromotionInfoInput calldata promotionInfoInput) private pure {
     // Should not have any multi-day promotion specific fields set
-    if (
-      promotionInfoInput.numDaysHitNeededForStreakBonus != 0 ||
-      promotionInfoInput.numDaysClaimablePeriodStreakBonus != 0 ||
-      promotionInfoInput.numRandomStreakBonusItemsToPick1 != 0 ||
-      promotionInfoInput.randomStreakBonusItemTokenIds1.length != 0 ||
-      promotionInfoInput.randomStreakBonusAmounts1.length != 0 ||
-      promotionInfoInput.numRandomStreakBonusItemsToPick2 != 0 ||
-      promotionInfoInput.randomStreakBonusItemTokenIds2.length != 0 ||
-      promotionInfoInput.randomStreakBonusAmounts2.length != 0
-    ) {
-      revert MultidaySpecified();
-    }
+    require(
+      promotionInfoInput.numDaysHitNeededForStreakBonus == 0 &&
+        promotionInfoInput.numDaysClaimablePeriodStreakBonus == 0 &&
+        promotionInfoInput.numRandomStreakBonusItemsToPick1 == 0 &&
+        promotionInfoInput.randomStreakBonusItemTokenIds1.length == 0 &&
+        promotionInfoInput.randomStreakBonusAmounts1.length == 0 &&
+        promotionInfoInput.numRandomStreakBonusItemsToPick2 == 0 &&
+        promotionInfoInput.randomStreakBonusItemTokenIds2.length == 0 &&
+        promotionInfoInput.randomStreakBonusAmounts2.length == 0,
+      MultidaySpecified()
+    );
 
-    if (promotionInfoInput.randomItemTokenIds.length == 0) {
-      revert NoItemsToPickFrom();
-    }
+    require(promotionInfoInput.randomItemTokenIds.length != 0, NoItemsToPickFrom());
 
-    if (promotionInfoInput.numDailyRandomItemsToPick > promotionInfoInput.randomItemTokenIds.length) {
-      revert PickingTooManyItems();
-    }
+    require(
+      promotionInfoInput.numDailyRandomItemsToPick <= promotionInfoInput.randomItemTokenIds.length,
+      PickingTooManyItems()
+    );
   }
 
   function _packPromotionInfo(

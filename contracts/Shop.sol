@@ -131,9 +131,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   // Buy simple items and XP boosts using brush
   function buy(address to, uint16 tokenId, uint256 quantity) external {
     uint256 price = _shopItems[tokenId];
-    if (price == 0) {
-      revert ItemCannotBeBought();
-    }
+    require(price != 0, ItemCannotBeBought());
     uint256 brushCost = price * quantity;
     // Pay
     (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(brushCost);
@@ -144,21 +142,15 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
     U256 iter = tokenIds.length.asU256();
-    if (iter.eq(0)) {
-      revert LengthEmpty();
-    }
-    if (iter.neq(quantities.length)) {
-      revert LengthMismatch();
-    }
+    require(iter.neq(0), LengthEmpty());
+    require(iter.eq(quantities.length), LengthMismatch());
     uint256 brushCost;
     uint256[] memory prices = new uint256[](iter.asUint256());
     while (iter.neq(0)) {
       iter = iter.dec();
       uint256 i = iter.asUint256();
       uint256 price = _shopItems[uint16(tokenIds[i])];
-      if (price == 0) {
-        revert ItemCannotBeBought();
-      }
+      require(price != 0, ItemCannotBeBought());
       brushCost += price * quantities[i];
       prices[i] = price;
     }
@@ -174,9 +166,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint256 price = liquidatePrice(tokenId);
     uint256 totalBrush = price * quantity;
     _sell(tokenId, quantity, price);
-    if (totalBrush < minExpectedBrush) {
-      revert MinExpectedBrushNotReached(totalBrush, minExpectedBrush);
-    }
+    require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
     _treasury.spend(msg.sender, totalBrush);
     _itemNFT.burn(msg.sender, tokenId, quantity);
     emit Sell(msg.sender, tokenId, quantity, price);
@@ -184,12 +174,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
     U256 iter = tokenIds.length.asU256();
-    if (iter.eq(0)) {
-      revert LengthEmpty();
-    }
-    if (iter.neq(quantities.length)) {
-      revert LengthMismatch();
-    }
+    require(iter.neq(0), LengthEmpty());
+    require(iter.eq(quantities.length), LengthMismatch());
     U256 totalBrush;
     uint256[] memory prices = new uint256[](iter.asUint256());
     do {
@@ -200,9 +186,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       prices[i] = sellPrice.asUint256();
       _sell(tokenIds[i], quantities[i], prices[i]);
     } while (iter.neq(0));
-    if (totalBrush.lt(minExpectedBrush)) {
-      revert MinExpectedBrushNotReached(totalBrush.asUint256(), minExpectedBrush);
-    }
+    require(totalBrush.gte(minExpectedBrush), MinExpectedBrushNotReached(totalBrush.asUint256(), minExpectedBrush));
     _treasury.spend(msg.sender, totalBrush.asUint256());
     _itemNFT.burnBatch(msg.sender, tokenIds, quantities);
     emit SellBatch(msg.sender, tokenIds, quantities, prices);
@@ -211,20 +195,17 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   // Does not burn!
   function _sell(uint256 tokenId, uint256 quantity, uint256 sellPrice) private {
     uint256 price = _shopItems[tokenId];
-    if (price != 0 && price < sellPrice) {
-      revert LiquidatePriceIsHigherThanShop(tokenId);
-    }
+    require(price == 0 || price >= sellPrice, LiquidatePriceIsHigherThanShop(tokenId));
 
     // A period of no selling allowed for a newly minted item
-    if (_itemNFT.getTimestampFirstMint(tokenId).add(_sellingCutoffDuration) > block.timestamp) {
-      revert SellingTooQuicklyAfterItemIntroduction();
-    }
+    require(
+      _itemNFT.getTimestampFirstMint(tokenId).add(_sellingCutoffDuration) <= block.timestamp,
+      SellingTooQuicklyAfterItemIntroduction()
+    );
 
     // Check if tokenInfo checkpoint is older than 24 hours
     TokenInfo storage tokenInfo = _tokenInfos[tokenId];
-    if (tokenInfo.unsellable) {
-      revert ItemNotSellable(tokenId);
-    }
+    require(!tokenInfo.unsellable, ItemNotSellable(tokenId));
 
     uint256 allocationRemaining;
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
@@ -240,9 +221,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     uint256 totalSold = quantity * sellPrice;
-    if (allocationRemaining < totalSold) {
-      revert NotEnoughAllocationRemaining(tokenId, totalSold, allocationRemaining);
-    }
+    require(allocationRemaining >= totalSold, NotEnoughAllocationRemaining(tokenId, totalSold, allocationRemaining));
     tokenInfo.allocationRemaining = uint80(allocationRemaining - totalSold);
   }
 
@@ -279,15 +258,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function _addBuyableItem(ShopItem calldata buyableItem) private {
     // Check item exists
-    if (!_itemNFT.exists(buyableItem.tokenId)) {
-      revert ItemDoesNotExist();
-    }
-    if (_shopItems[buyableItem.tokenId] != 0) {
-      revert ShopItemAlreadyExists();
-    }
-    if (buyableItem.price == 0) {
-      revert PriceCannotBeZero();
-    }
+    require(_itemNFT.exists(buyableItem.tokenId), ItemDoesNotExist());
+    require(_shopItems[buyableItem.tokenId] == 0, ShopItemAlreadyExists());
+    require(buyableItem.price != 0, PriceCannotBeZero());
     _shopItems[buyableItem.tokenId] = buyableItem.price;
   }
 
@@ -312,9 +285,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function editItems(ShopItem[] calldata itemsToEdit) external onlyOwner {
     for (uint256 i; i < itemsToEdit.length; i++) {
-      if (_shopItems[itemsToEdit[i].tokenId] == 0) {
-        revert ShopItemDoesNotExist();
-      }
+      require(_shopItems[itemsToEdit[i].tokenId] != 0, ShopItemDoesNotExist());
       _shopItems[itemsToEdit[i].tokenId] = itemsToEdit[i].price;
     }
     emit EditShopItems(itemsToEdit);
@@ -323,9 +294,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   function removeItems(uint16[] calldata tokenIds) external onlyOwner {
     for (uint256 i; i < tokenIds.length; i++) {
       uint16 tokenId = tokenIds[i];
-      if (_shopItems[tokenId] == 0) {
-        revert ShopItemDoesNotExist();
-      }
+      require(_shopItems[tokenId] != 0, ShopItemDoesNotExist());
       delete _shopItems[tokenId];
     }
     emit RemoveShopItems(tokenIds);
@@ -333,12 +302,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function addUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
     for (uint256 i; i < itemTokenIds.length; i++) {
-      if (_tokenInfos[itemTokenIds[i]].unsellable) {
-        revert AlreadyUnsellable();
-      }
-      if (!_itemNFT.exists(itemTokenIds[i])) {
-        revert ItemDoesNotExist();
-      }
+      require(!_tokenInfos[itemTokenIds[i]].unsellable, AlreadyUnsellable());
+      require(_itemNFT.exists(itemTokenIds[i]), ItemDoesNotExist());
       _tokenInfos[itemTokenIds[i]].unsellable = true;
     }
     _numUnsellableItems += uint16(itemTokenIds.length);
@@ -347,9 +312,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function removeUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
     for (uint256 i; i < itemTokenIds.length; i++) {
-      if (!_tokenInfos[itemTokenIds[i]].unsellable) {
-        revert AlreadySellable();
-      }
+      require(_tokenInfos[itemTokenIds[i]].unsellable, AlreadySellable());
       _tokenInfos[itemTokenIds[i]].unsellable = false;
     }
     _numUnsellableItems -= uint16(itemTokenIds.length);

@@ -73,16 +73,12 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint16[3] private _clanBoostRewardItemTokenIds;
 
   modifier onlyPlayers() {
-    if (address(_players) != msg.sender) {
-      revert NotPlayers();
-    }
+    require(address(_players) == msg.sender, NotPlayers());
     _;
   }
 
   modifier onlyWorld() {
-    if (_world != msg.sender) {
-      revert OnlyWorld();
-    }
+    require(_world == msg.sender, OnlyWorld());
     _;
   }
 
@@ -138,16 +134,12 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     onlyPlayers
     returns (uint16 itemTokenId, uint16 globalItemTokenId, uint256 clanId, uint16 clanItemTokenId)
   {
-    if (!_brush.transferFrom(from, _shop, amount)) {
-      revert NotEnoughBrush();
-    }
+    require(_brush.transferFrom(from, _shop, amount), NotEnoughBrush());
 
     bool isRaffleDonation = false;
 
     uint256 flooredAmountWei = (amount / 1 ether) * 1 ether;
-    if (flooredAmountWei == 0) {
-      revert MinimumOneBrush();
-    }
+    require(flooredAmountWei != 0, MinimumOneBrush());
 
     if (playerId != 0) {
       bool hasEnoughForRaffle = (amount / 1 ether) >= _raffleEntryCost;
@@ -156,9 +148,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
       if (hasEnoughForRaffle && !hasEnteredAlready) {
         uint256 flooredTime = _lastOracleRandomWordTimestamp;
-        if (flooredTime != 0 && flooredTime < (block.timestamp / 1 days) * 1 days) {
-          revert OracleNotCalledYet();
-        }
+        require(flooredTime == 0 || flooredTime >= (block.timestamp / 1 days) * 1 days, OracleNotCalledYet());
 
         _raffleIdToPlayerId[lastLotteryId][++_lastRaffleId] = playerId;
 

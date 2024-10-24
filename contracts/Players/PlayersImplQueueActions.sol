@@ -59,9 +59,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         mstore(remainingQueuedActions, 0)
       }
 
-      if (_queuedActionInputs.length > 3) {
-        revert TooManyActionsQueued();
-      }
+      require(_queuedActionInputs.length <= 3, TooManyActionsQueued());
     } else {
       if (queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingQueuedActions.length > 1) {
         // Only want one
@@ -71,9 +69,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       }
 
       // Keep remaining actions
-      if (remainingQueuedActions.length + _queuedActionInputs.length > 3) {
-        revert TooManyActionsQueuedSomeAlreadyExist();
-      }
+      require(remainingQueuedActions.length + _queuedActionInputs.length <= 3, TooManyActionsQueuedSomeAlreadyExist());
       player.actionQueue = remainingQueuedActions;
       U256 j = remainingQueuedActions.length.asU256();
       while (j.neq(0)) {
@@ -116,9 +112,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       if (totalTimespan.add(_queuedActionInputs[i].timespan) > MAX_TIME_) {
         // Must be the last one which will exceed the max time
-        if (iter != queuedActionsLength.dec()) {
-          revert ActionTimespanExceedsMaxTime();
-        }
+        require(iter == queuedActionsLength.dec(), ActionTimespanExceedsMaxTime());
 
         uint256 remainder;
         // Allow to queue the excess for any running action up to 1 hour
@@ -175,12 +169,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _consumeBoost(address _from, uint256 playerId, uint16 _itemTokenId, uint40 _startTime) private {
     Item memory item = _itemNFT.getItem(_itemTokenId);
-    if (item.equipPosition != EquipPosition.BOOST_VIAL) {
-      revert NotABoostVial();
-    }
-    if (_startTime >= block.timestamp + 7 days) {
-      revert StartTimeTooFarInTheFuture();
-    }
+    require(item.equipPosition == EquipPosition.BOOST_VIAL, NotABoostVial());
+    require(_startTime < block.timestamp + 7 days, StartTimeTooFarInTheFuture());
     if (_startTime < block.timestamp) {
       _startTime = uint40(block.timestamp);
     }
@@ -221,27 +211,30 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QuestState memory _pendingQuestState
   ) public view returns (bool setAttire) {
     if (_queuedActionInput.attire.reserved1 != NONE) {
-      revert UnsupportedAttire();
+      require(false, UnsupportedAttire());
     }
     if (_queuedActionInput.regenerateId != NONE) {
-      if (_itemNFT.getItem(_queuedActionInput.regenerateId).equipPosition != EquipPosition.FOOD) {
-        revert UnsupportedRegenerateItem();
-      }
+      require(
+        _itemNFT.getItem(_queuedActionInput.regenerateId).equipPosition == EquipPosition.FOOD,
+        UnsupportedRegenerateItem()
+      );
     }
 
     uint16 actionId = _queuedActionInput.actionId;
     ActionInfo memory actionInfo = _world.getActionInfo(actionId);
-    if (!actionInfo.isAvailable) {
-      revert ActionNotAvailable();
-    }
+    require(actionInfo.isAvailable, ActionNotAvailable());
 
-    if (
-      actionInfo.minXP != 0 &&
-      _getRealXP(actionInfo.skill.asSkill(), _playerXP[playerId], _pendingQueuedActionProcessed, _pendingQuestState) <
-      actionInfo.minXP
-    ) {
-      revert ActionMinimumXPNotReached();
-    }
+    require(
+      actionInfo.minXP == 0 ||
+        _getRealXP(
+          actionInfo.skill.asSkill(),
+          _playerXP[playerId],
+          _pendingQueuedActionProcessed,
+          _pendingQuestState
+        ) >=
+        actionInfo.minXP,
+      ActionMinimumXPNotReached()
+    );
 
     bool isCombat = actionInfo.skill.asSkill().isCombat();
     bool isPlayerUpgraded = _isPlayerFullMode(playerId);
@@ -249,82 +242,62 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
     if (actionInfo.actionChoiceRequired) {
-      if (_queuedActionInput.choiceId == NONE) {
-        revert ActionChoiceIdRequired();
-      }
+      require(_queuedActionInput.choiceId != NONE, ActionChoiceIdRequired());
       actionChoice = _world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
 
-      if (
+      require(
         _getRealXP(
           actionChoice.skill.asSkill(),
           _playerXP[playerId],
           _pendingQueuedActionProcessed,
           _pendingQuestState
-        ) < actionChoice.minXP
-      ) {
-        revert ActionChoiceMinimumXPNotReached();
-      }
+        ) >= actionChoice.minXP,
+        ActionChoiceMinimumXPNotReached()
+      );
 
-      if (
-        actionChoice.minSkill2.asSkill() != Skill.NONE &&
-        _getRealXP(
-          actionChoice.minSkill2.asSkill(),
-          _playerXP[playerId],
-          _pendingQueuedActionProcessed,
-          _pendingQuestState
-        ) <
-        actionChoice.minXP2
-      ) {
-        revert ActionChoiceMinimumXPNotReached();
-      }
+      require(
+        actionChoice.minSkill2.asSkill() == Skill.NONE ||
+          _getRealXP(
+            actionChoice.minSkill2.asSkill(),
+            _playerXP[playerId],
+            _pendingQueuedActionProcessed,
+            _pendingQuestState
+          ) >=
+          actionChoice.minXP2,
+        ActionChoiceMinimumXPNotReached()
+      );
 
-      if (
-        actionChoice.minSkill3.asSkill() != Skill.NONE &&
-        _getRealXP(
-          actionChoice.minSkill3.asSkill(),
-          _playerXP[playerId],
-          _pendingQueuedActionProcessed,
-          _pendingQuestState
-        ) <
-        actionChoice.minXP3
-      ) {
-        revert ActionChoiceMinimumXPNotReached();
-      }
+      require(
+        actionChoice.minSkill3.asSkill() == Skill.NONE ||
+          _getRealXP(
+            actionChoice.minSkill3.asSkill(),
+            _playerXP[playerId],
+            _pendingQueuedActionProcessed,
+            _pendingQuestState
+          ) >=
+          actionChoice.minXP3,
+        ActionChoiceMinimumXPNotReached()
+      );
 
-      if (actionChoice.skill.asSkill() == Skill.NONE) {
-        revert InvalidSkill();
-      }
+      require(actionChoice.skill.asSkill() != Skill.NONE, InvalidSkill());
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
       if (actionInfo.skill.asSkill() == Skill.TRAVELING) {
-        if (_queuedActionInput.timespan != (RATE_MUL * 3600) / actionChoice.rate) {
-          revert InvalidTravellingTimespan();
-        }
+        require(_queuedActionInput.timespan == (RATE_MUL * 3600) / actionChoice.rate, InvalidTravellingTimespan());
       }
 
       bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
-      if (actionChoiceFullModeOnly && !isPlayerUpgraded) {
-        revert PlayerNotUpgraded();
-      }
+      require(!actionChoiceFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
     } else if (_queuedActionInput.choiceId != NONE) {
-      revert ActionChoiceIdNotRequired();
+      require(false, ActionChoiceIdNotRequired());
     }
 
-    if (actionInfo.isFullModeOnly && !isPlayerUpgraded) {
-      revert PlayerNotUpgraded();
-    }
+    require(!(actionInfo.isFullModeOnly && !isPlayerUpgraded), PlayerNotUpgraded());
 
-    if (_queuedActionInput.timespan == 0) {
-      revert EmptyTimespan();
-    }
+    require(_queuedActionInput.timespan != 0, EmptyTimespan());
 
-    {
-      // Check combatStyle is only selected if queuedAction is combat
-      bool combatStyleSelected = _queuedActionInput.combatStyle.isNotCombatStyle(CombatStyle.NONE);
-      if (isCombat != combatStyleSelected) {
-        revert InvalidCombatStyle();
-      }
-    }
+    // Check combatStyle is only selected if queuedAction is combat
+    require(isCombat == _queuedActionInput.combatStyle.isNotCombatStyle(CombatStyle.NONE), InvalidCombatStyle());
 
     Attire memory attire = _queuedActionInput.attire;
     if (
@@ -433,26 +406,20 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       (Skill skill, uint32 minXP, , bool isFoodFullModeOnly) = _itemNFT.getEquipPositionAndMinRequirement(
         _queuedActionInput.regenerateId
       );
-      if (_getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
-        revert ConsumableMinimumXPNotReached();
-      }
+      require(
+        _getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) >= minXP,
+        ConsumableMinimumXPNotReached()
+      );
       // TODO: Untested
-      if (isFoodFullModeOnly && !_isPlayerUpgraded) {
-        revert PlayerNotUpgraded();
-      }
+      require(!isFoodFullModeOnly || _isPlayerUpgraded, PlayerNotUpgraded());
     }
   }
 
   function _checkPet(address _from, bool _isPlayerUpgraded, uint256 _petId) private view {
     if (_petId != 0) {
       // All pets are upgrade only
-      if (!_isPlayerUpgraded) {
-        revert PlayerNotUpgraded();
-      }
-
-      if (_petNFT.balanceOf(_from, _petId) == 0) {
-        revert PetNotOwned();
-      }
+      require(_isPlayerUpgraded, PlayerNotUpgraded());
+      require(_petNFT.balanceOf(_from, _petId) != 0, PetNotOwned());
     }
   }
 
@@ -505,9 +472,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       U256 bounds = attireLength.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        if (expectedEquipPositions[i] != equipPositions[i]) {
-          revert InvalidEquipPosition();
-        }
+        require(expectedEquipPositions[i] == equipPositions[i], InvalidEquipPosition());
       }
     }
   }
@@ -542,15 +507,12 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       while (iter.neq(0)) {
         iter = iter.dec();
         uint256 i = iter.asUint256();
-        if (_getRealXP(skills[i], _playerXP[playerId], pendingQueuedActionProcessed, questState) < minXPs[i]) {
-          revert AttireMinimumXPNotReached();
-        }
-        if (balances[i] == 0) {
-          revert NoItemBalance(itemTokenIds[i]);
-        }
-        if (!isPlayerUpgraded && isItemFullModeOnly[i]) {
-          revert PlayerNotUpgraded();
-        }
+        require(
+          _getRealXP(skills[i], _playerXP[playerId], pendingQueuedActionProcessed, questState) >= minXPs[i],
+          AttireMinimumXPNotReached()
+        );
+        require(balances[i] != 0, NoItemBalance(itemTokenIds[i]));
+        require(isPlayerUpgraded || !isItemFullModeOnly[i], PlayerNotUpgraded());
       }
     }
   }
@@ -575,56 +537,49 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       bool isRightHand = i == 1;
       uint16 equippedItemTokenId = _equippedItemTokenIds[i];
       if (equippedItemTokenId != NONE) {
-        if (
-          _handItemTokenIdRangeMin != NONE &&
-          (equippedItemTokenId < _handItemTokenIdRangeMin || equippedItemTokenId > _handItemTokenIdRangeMax)
-        ) {
-          revert InvalidHandEquipment(equippedItemTokenId);
-        }
+        require(
+          _handItemTokenIdRangeMin == NONE ||
+            (equippedItemTokenId >= _handItemTokenIdRangeMin && equippedItemTokenId <= _handItemTokenIdRangeMax),
+          InvalidHandEquipment(equippedItemTokenId)
+        );
 
-        if (
-          _actionChoice.handItemTokenIdRangeMin != NONE &&
-          (equippedItemTokenId < _actionChoice.handItemTokenIdRangeMin ||
-            equippedItemTokenId > _actionChoice.handItemTokenIdRangeMax)
-        ) {
-          revert InvalidHandEquipment(equippedItemTokenId);
-        }
+        require(
+          _actionChoice.handItemTokenIdRangeMin == NONE ||
+            (equippedItemTokenId >= _actionChoice.handItemTokenIdRangeMin &&
+              equippedItemTokenId <= _actionChoice.handItemTokenIdRangeMax),
+          InvalidHandEquipment(equippedItemTokenId)
+        );
 
         uint256 balance = _itemNFT.balanceOf(_from, equippedItemTokenId);
-        if (balance == 0) {
-          revert NoItemBalance(equippedItemTokenId);
-        }
+        require(balance != 0, NoItemBalance(equippedItemTokenId));
+
         (Skill skill, uint32 minXP, EquipPosition equipPosition, bool isItemFullModeOnly) = _itemNFT
           .getEquipPositionAndMinRequirement(equippedItemTokenId);
-        if (_getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) < minXP) {
-          revert ItemMinimumXPNotReached();
-        }
-        if (isItemFullModeOnly && !_isPlayerUpgraded) {
-          revert PlayerNotUpgraded();
-        }
+        require(
+          _getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) >= minXP,
+          ItemMinimumXPNotReached()
+        );
+        require(!isItemFullModeOnly || _isPlayerUpgraded, PlayerNotUpgraded());
+
         if (isRightHand) {
-          if (equipPosition != EquipPosition.RIGHT_HAND && equipPosition != EquipPosition.BOTH_HANDS) {
-            revert IncorrectRightHandEquipment(equippedItemTokenId);
-          }
+          require(
+            equipPosition == EquipPosition.RIGHT_HAND || equipPosition == EquipPosition.BOTH_HANDS,
+            IncorrectRightHandEquipment(equippedItemTokenId)
+          );
           twoHanded = equipPosition == EquipPosition.BOTH_HANDS;
         } else {
           // left hand, if we've equipped a 2 handed weapon, we can't equip anything else
-          if (twoHanded) {
-            revert CannotEquipTwoHandedAndOtherEquipment();
-          }
-          if (equipPosition != EquipPosition.LEFT_HAND) {
-            revert IncorrectLeftHandEquipment(equippedItemTokenId);
-          }
+          require(!twoHanded, CannotEquipTwoHandedAndOtherEquipment());
+          require(equipPosition == EquipPosition.LEFT_HAND, IncorrectLeftHandEquipment(equippedItemTokenId));
         }
       } else {
         // Only combat actions can have no equipment unless the actionChoice specifies that it requires it
         // e.g smithing doesn't require anything equipped
-        if (
-          ((!_isCombat && _handItemTokenIdRangeMin != NONE) || _actionChoice.handItemTokenIdRangeMin != NONE) &&
-          isRightHand
-        ) {
-          revert IncorrectEquippedItem();
-        }
+        require(
+          !((!_isCombat && _handItemTokenIdRangeMin != NONE) || _actionChoice.handItemTokenIdRangeMin != NONE) ||
+            !isRightHand,
+          IncorrectEquippedItem()
+        );
       }
     }
   }

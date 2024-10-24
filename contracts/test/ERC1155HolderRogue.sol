@@ -20,12 +20,11 @@ contract ERC1155HolderRogue is ERC1155Holder {
   ) external payable {
     (bool success1, ) = players.call(abi.encodeWithSignature("setActivePlayer(uint256)", playerId));
 
+    require(success1, NotAcceptingERC1155());
     (bool success, bytes memory data) = instantVRFActions.call{value: msg.value}(
       abi.encodeWithSignature("doInstantVRFActions(uint256,uint16[],uint256[])", playerId, actionIds, actionAmounts)
     );
-    if (!success) {
-      revert DoInstantVRFActionsFailed(data);
-    }
+    require(success, DoInstantVRFActionsFailed(data));
   }
 
   function setRevertOnReceive(bool _revert) external {
@@ -39,9 +38,7 @@ contract ERC1155HolderRogue is ERC1155Holder {
     uint256 _value,
     bytes memory _data
   ) public override returns (bytes4) {
-    if (revertOnReceive) {
-      revert NotAcceptingERC1155();
-    }
+    require(!revertOnReceive, NotAcceptingERC1155());
     return super.onERC1155Received(_operator, _from, _id, _value, _data);
   }
 
@@ -52,9 +49,7 @@ contract ERC1155HolderRogue is ERC1155Holder {
     uint256[] memory _values,
     bytes memory _data
   ) public override returns (bytes4) {
-    if (revertOnReceive) {
-      revert NotAcceptingERC1155();
-    }
+    require(!revertOnReceive, NotAcceptingERC1155());
     return super.onERC1155BatchReceived(_operator, _from, _ids, _values, _data);
   }
 }

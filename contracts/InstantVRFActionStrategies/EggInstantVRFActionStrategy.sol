@@ -21,9 +21,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
   uint32[65535] private actions; // actionId => rewardBasePetIdMin | rewardBasePetIdMax
 
   modifier onlyInstantVRFActions() {
-    if (instantVRFActions != _msgSender()) {
-      revert OnlyInstantVRFActions();
-    }
+    require(instantVRFActions == _msgSender(), OnlyInstantVRFActions());
     _;
   }
 
@@ -45,9 +43,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
       (uint32(instantVRFAction.rewardBasePetIdMin) << 16) |
       instantVRFAction.rewardBasePetIdMax;
 
-    if (instantVRFAction.rewardBasePetIdMin > instantVRFAction.rewardBasePetIdMax) {
-      revert BasePetIdMinGreaterThanMax();
-    }
+    require(instantVRFAction.rewardBasePetIdMin <= instantVRFAction.rewardBasePetIdMax, BasePetIdMinGreaterThanMax());
   }
 
   function getRandomRewards(

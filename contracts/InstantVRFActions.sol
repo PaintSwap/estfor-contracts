@@ -334,9 +334,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _setAction(InstantVRFActionInput calldata _instantVRFActionInput) private {
-    if (_instantVRFActionInput.actionId == 0) {
-      revert ActionIdZeroNotAllowed();
-    }
+    require(_instantVRFActionInput.actionId != 0, ActionIdZeroNotAllowed());
     _checkInputs(_instantVRFActionInput);
     _actions[_instantVRFActionInput.actionId] = _packAction(_instantVRFActionInput);
 
@@ -389,41 +387,25 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint16[] calldata inputTokenIds = _actionInput.inputTokenIds;
     uint24[] calldata amounts = _actionInput.inputAmounts;
 
-    if (inputTokenIds.length > 3) {
-      revert TooManyInputItems();
-    }
-    if (inputTokenIds.length != amounts.length) {
-      revert LengthMismatch();
-    }
+    require(inputTokenIds.length <= 3, TooManyInputItems());
+    require(inputTokenIds.length == amounts.length, LengthMismatch());
 
     // Need at least 1 input
-    if (inputTokenIds.length == 0) {
-      revert IncorrectInputAmounts();
-    }
+    require(inputTokenIds.length != 0, IncorrectInputAmounts());
 
     for (uint256 i; i < inputTokenIds.length; ++i) {
-      if (inputTokenIds[i] == 0) {
-        revert InvalidInputTokenId();
-      }
-      if (amounts[i] == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
+      require(inputTokenIds[i] != 0, InvalidInputTokenId());
+      require(amounts[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != inputTokenIds.length - 1) {
-        if (amounts[i] > amounts[i + 1]) {
-          revert InputAmountsMustBeInOrder();
-        }
+        require(amounts[i] <= amounts[i + 1], InputAmountsMustBeInOrder());
         for (uint256 j; j < inputTokenIds.length; ++j) {
-          if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
-            revert InputItemNoDuplicates();
-          }
+          require(j == i || inputTokenIds[i] != inputTokenIds[j], InputItemNoDuplicates());
         }
       }
     }
 
-    if (_strategies[_actionInput.actionType] == address(0)) {
-      revert InvalidStrategy();
-    }
+    require(_strategies[_actionInput.actionType] != address(0), InvalidStrategy());
   }
 
   function requestCost(uint256 actionAmounts) public view returns (uint256) {
@@ -435,17 +417,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     InstantVRFActionType[] calldata _instantVRFActionTypes,
     address[] calldata strategies
   ) public onlyOwner {
-    if (_instantVRFActionTypes.length != strategies.length) {
-      revert LengthMismatch();
-    }
+    require(_instantVRFActionTypes.length == strategies.length, LengthMismatch());
     for (uint256 i; i < _instantVRFActionTypes.length; ++i) {
-      if (_instantVRFActionTypes[i] == InstantVRFActionType.NONE || strategies[i] == address(0)) {
-        revert InvalidStrategy();
-      }
-
-      if (_strategies[_instantVRFActionTypes[i]] != address(0)) {
-        revert StrategyAlreadyExists();
-      }
+      require(_instantVRFActionTypes[i] != InstantVRFActionType.NONE && strategies[i] != address(0), InvalidStrategy());
+      require(_strategies[_instantVRFActionTypes[i]] == address(0), StrategyAlreadyExists());
 
       _strategies[_instantVRFActionTypes[i]] = strategies[i];
     }
@@ -455,9 +430,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   function addActions(InstantVRFActionInput[] calldata instantVRFActionInputs) external onlyOwner {
     for (uint256 i; i < instantVRFActionInputs.length; ++i) {
       InstantVRFActionInput calldata instantVRFActionInput = instantVRFActionInputs[i];
-      if (_actionExists(instantVRFActionInput)) {
-        revert ActionAlreadyExists();
-      }
+      require(!_actionExists(instantVRFActionInput), ActionAlreadyExists());
       _setAction(instantVRFActionInput);
     }
     emit AddInstantVRFActions(instantVRFActionInputs);
@@ -466,9 +439,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   function editActions(InstantVRFActionInput[] calldata instantVRFActionInputs) external onlyOwner {
     for (uint256 i = 0; i < instantVRFActionInputs.length; ++i) {
       InstantVRFActionInput calldata instantVRFActionInput = instantVRFActionInputs[i];
-      if (!_actionExists(instantVRFActionInput)) {
-        revert ActionDoesNotExist();
-      }
+      require(_actionExists(instantVRFActionInput), ActionDoesNotExist());
       _setAction(instantVRFActionInput);
     }
     emit EditInstantVRFActions(instantVRFActionInputs);
@@ -476,9 +447,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
   function removeActions(uint16[] calldata instantVRFActionIds) external onlyOwner {
     for (uint256 i = 0; i < instantVRFActionIds.length; ++i) {
-      if (_actions[instantVRFActionIds[i]].inputTokenId1 == NONE) {
-        revert ActionDoesNotExist();
-      }
+      require(_actions[instantVRFActionIds[i]].inputTokenId1 != NONE, ActionDoesNotExist());
       delete _actions[instantVRFActionIds[i]];
     }
     emit RemoveInstantVRFActions(instantVRFActionIds);

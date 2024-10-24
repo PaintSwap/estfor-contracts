@@ -93,9 +93,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256 choiceIdsLength;
 
     address from = owner;
-    if (_playerNFT.balanceOf(owner, playerId) == 0) {
-      revert NotOwnerOfPlayer();
-    }
+    require(_playerNFT.balanceOf(owner, playerId) != 0, NotOwnerOfPlayer());
     uint256 previousTotalXP = player.totalXP;
     uint256 totalXPGained;
     U256 bounds = actionQueue.length.asU256();

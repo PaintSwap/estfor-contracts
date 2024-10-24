@@ -107,16 +107,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   uint256 public constant NUM_BASE_AVATARS = 8;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
-    if (balanceOf(_msgSender(), playerId) != 1) {
-      revert NotOwnerOfPlayer();
-    }
+    require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
     _;
   }
 
   modifier onlyPlayers() {
-    if (_msgSender() != address(_players)) {
-      revert NotPlayers();
-    }
+    require(_msgSender() == address(_players), NotPlayers());
     _;
   }
 
@@ -179,9 +175,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function burn(address from, uint256 playerId) external {
-    if (from != _msgSender() && !isApprovedForAll(from, _msgSender())) {
-      revert ERC1155BurnForbidden();
-    }
+    require(from == _msgSender() || isApprovedForAll(from, _msgSender()), ERC1155BurnForbidden());
     _burn(from, playerId, 1);
   }
 
@@ -255,24 +249,15 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   ) private returns (string memory trimmedName, bool nameChanged) {
     // Trimmed name cannot be empty
     trimmedName = EstforLibrary.trim(playerName);
-    if (bytes(trimmedName).length < 3) {
-      revert NameTooShort();
-    }
-    if (bytes(trimmedName).length > 20) {
-      revert NameTooLong();
-    }
-
-    if (!EstforLibrary.containsValidNameCharacters(trimmedName)) {
-      revert NameInvalidCharacters();
-    }
+    require(bytes(trimmedName).length >= 3, NameTooShort());
+    require(bytes(trimmedName).length <= 20, NameTooLong());
+    require(EstforLibrary.containsValidNameCharacters(trimmedName), NameInvalidCharacters());
 
     string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
     string memory oldName = EstforLibrary.toLower(_names[playerId]);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      if (_lowercaseNames[trimmedAndLowercaseName]) {
-        revert NameAlreadyExists();
-      }
+      require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
       }
@@ -282,9 +267,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function _checkMintingAvatar(uint256 avatarId) private view {
-    if (bytes(_avatars[avatarId].description).length == 0 || avatarId > NUM_BASE_AVATARS) {
-      revert BaseAvatarNotExists();
-    }
+    require(bytes(_avatars[avatarId].description).length != 0 && avatarId <= NUM_BASE_AVATARS, BaseAvatarNotExists());
   }
 
   function _checkSocials(string calldata discord, string calldata twitter, string calldata telegram) private pure {
@@ -332,9 +315,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function uri(uint256 playerId) public view virtual override returns (string memory) {
-    if (!exists(playerId)) {
-      revert ERC1155Metadata_URIQueryForNonexistentToken();
-    }
+    require(exists(playerId), ERC1155Metadata_URIQueryForNonexistentToken());
     AvatarInfo storage avatarInfo = _avatars[_playerInfos[playerId].avatarId];
     string memory imageURI = string(abi.encodePacked(_imageBaseUri, avatarInfo.imageURI));
     return _players.getURI(playerId, _names[playerId], avatarInfo.name, avatarInfo.description, imageURI);

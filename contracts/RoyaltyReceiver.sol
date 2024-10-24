@@ -64,9 +64,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
 
   function distributeBrush() external {
     uint256 balance = _brush.balanceOf(address(this));
-    if (balance < MIN_BRUSH_TO_DISTRIBUTE) {
-      revert BrushTooLowToDistribute();
-    }
+    require(balance >= MIN_BRUSH_TO_DISTRIBUTE, BrushTooLowToDistribute());
     _territories.addUnclaimedEmissions(balance);
   }
 

@@ -38,36 +38,26 @@ library WorldLibrary {
     uint16[] calldata inputTokenIds = actionChoiceInput.inputTokenIds;
     uint24[] calldata amounts = actionChoiceInput.inputAmounts;
 
-    if (inputTokenIds.length > 3) {
-      revert TooManyInputItems();
-    }
-    if (inputTokenIds.length != amounts.length) {
-      revert LengthMismatch();
-    }
+    require(inputTokenIds.length <= 3, TooManyInputItems());
+    require(inputTokenIds.length == amounts.length, LengthMismatch());
 
-    if (actionChoiceInput.outputTokenId != NONE && actionChoiceInput.outputAmount == 0) {
-      revert OutputAmountCannotBeZero();
-    }
-    if (actionChoiceInput.outputTokenId == NONE && actionChoiceInput.outputAmount != 0) {
-      revert OutputTokenIdCannotBeEmpty();
-    }
+    require(
+      !(actionChoiceInput.outputTokenId != NONE && actionChoiceInput.outputAmount == 0),
+      OutputAmountCannotBeZero()
+    );
+    require(
+      !(actionChoiceInput.outputTokenId == NONE && actionChoiceInput.outputAmount != 0),
+      OutputTokenIdCannotBeEmpty()
+    );
 
     for (uint256 i; i < inputTokenIds.length; ++i) {
-      if (inputTokenIds[i] == 0) {
-        revert InvalidInputTokenId();
-      }
-      if (amounts[i] == 0) {
-        revert InputSpecifiedWithoutAmount();
-      }
+      require(inputTokenIds[i] != 0, InvalidInputTokenId());
+      require(amounts[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != inputTokenIds.length - 1) {
-        if (amounts[i] > amounts[i + 1]) {
-          revert InputAmountsMustBeInOrder();
-        }
+        require(amounts[i] <= amounts[i + 1], InputAmountsMustBeInOrder());
         for (uint256 j; j < inputTokenIds.length; ++j) {
-          if (j != i && inputTokenIds[i] == inputTokenIds[j]) {
-            revert InputItemNoDuplicates();
-          }
+          require(j == i || inputTokenIds[i] != inputTokenIds[j], InputItemNoDuplicates());
         }
       }
     }
@@ -77,40 +67,25 @@ library WorldLibrary {
     uint32[] calldata minXPs = actionChoiceInput.minXPs;
 
     // First minSkill must be the same as the action choice skill
-    if (minSkills.length != 0 && minSkills[0] != actionChoiceInput.skill) {
-      revert FirstMinSkillMustBeActionChoiceSkill();
-    }
-
-    if (minSkills.length > 3) {
-      revert TooManyMinSkills();
-    }
-    if (minSkills.length != minXPs.length) {
-      revert LengthMismatch();
-    }
+    require(minSkills.length == 0 || minSkills[0] == actionChoiceInput.skill, FirstMinSkillMustBeActionChoiceSkill());
+    require(minSkills.length <= 3, TooManyMinSkills());
+    require(minSkills.length == minXPs.length, LengthMismatch());
 
     for (uint256 i; i < minSkills.length; ++i) {
-      if (minSkills[i].isNone()) {
-        revert InvalidSkill();
-      }
+      require(!minSkills[i].isNone(), InvalidSkill());
       // Can only be 0 if it's the first one and there is more than one
-      if (minXPs[i] == 0 && (i != 0 || minSkills.length == 1)) {
-        revert InputSpecifiedWithoutAmount();
-      }
+      require(!(minXPs[i] == 0 && (i != 0 || minSkills.length == 1)), InputSpecifiedWithoutAmount());
 
       if (i != minSkills.length - 1) {
         for (uint256 j; j < minSkills.length; ++j) {
-          if (j != i && minSkills[i] == minSkills[j]) {
-            revert MinimumSkillsNoDuplicates();
-          }
+          require(j == i || minSkills[i] != minSkills[j], MinimumSkillsNoDuplicates());
         }
       }
     }
 
     if (actionChoiceInput.rate != 0) {
       // Check that it is a factor of 3600
-      if ((3600 * RATE_MUL) % actionChoiceInput.rate != 0) {
-        revert NotAFactorOf3600();
-      }
+      require((3600 * RATE_MUL) % actionChoiceInput.rate == 0, NotAFactorOf3600());
     }
   }
 
@@ -126,9 +101,10 @@ library WorldLibrary {
     if (guaranteedRewardsLength > 1) {
       actionRewards.guaranteedRewardTokenId2 = guaranteedRewards[1].itemTokenId;
       actionRewards.guaranteedRewardRate2 = guaranteedRewards[1].rate;
-      if (actionRewards.guaranteedRewardTokenId1 == actionRewards.guaranteedRewardTokenId2) {
-        revert GuaranteedRewardsNoDuplicates();
-      }
+      require(
+        actionRewards.guaranteedRewardTokenId1 != actionRewards.guaranteedRewardTokenId2,
+        GuaranteedRewardsNoDuplicates()
+      );
     }
     if (guaranteedRewardsLength > 2) {
       actionRewards.guaranteedRewardTokenId3 = guaranteedRewards[2].itemTokenId;
@@ -137,14 +113,13 @@ library WorldLibrary {
       U256 _bounds = guaranteedRewardsLength.dec().asU256();
       for (U256 iter; iter < _bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        if (guaranteedRewards[i].itemTokenId == guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId) {
-          revert GuaranteedRewardsNoDuplicates();
-        }
+        require(
+          guaranteedRewards[i].itemTokenId != guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId,
+          GuaranteedRewardsNoDuplicates()
+        );
       }
     }
-    if (guaranteedRewardsLength > 3) {
-      revert TooManyGuaranteedRewards();
-    }
+    require(guaranteedRewardsLength <= 3, TooManyGuaranteedRewards());
   }
 
   // Random rewards have most common one first
@@ -160,48 +135,49 @@ library WorldLibrary {
       actionReward.randomRewardChance2 = randomRewards[1].chance;
       actionReward.randomRewardAmount2 = randomRewards[1].amount;
 
-      if (actionReward.randomRewardChance2 > actionReward.randomRewardChance1) {
-        revert RandomRewardsMustBeInOrder(randomRewards[0].chance, randomRewards[1].chance);
-      }
-      if (actionReward.randomRewardTokenId1 == actionReward.randomRewardTokenId2) {
-        revert RandomRewardNoDuplicates();
-      }
+      require(
+        actionReward.randomRewardChance2 <= actionReward.randomRewardChance1,
+        RandomRewardsMustBeInOrder(randomRewards[0].chance, randomRewards[1].chance)
+      );
+      require(actionReward.randomRewardTokenId1 != actionReward.randomRewardTokenId2, RandomRewardNoDuplicates());
     }
     if (randomRewardsLength > 2) {
       actionReward.randomRewardTokenId3 = randomRewards[2].itemTokenId;
       actionReward.randomRewardChance3 = randomRewards[2].chance;
       actionReward.randomRewardAmount3 = randomRewards[2].amount;
 
-      if (actionReward.randomRewardChance3 > actionReward.randomRewardChance2) {
-        revert RandomRewardsMustBeInOrder(randomRewards[1].chance, randomRewards[2].chance);
-      }
+      require(
+        actionReward.randomRewardChance3 <= actionReward.randomRewardChance2,
+        RandomRewardsMustBeInOrder(randomRewards[1].chance, randomRewards[2].chance)
+      );
 
       U256 _bounds = randomRewardsLength.dec().asU256();
       for (U256 iter; iter < _bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        if (randomRewards[i].itemTokenId == randomRewards[randomRewardsLength.dec()].itemTokenId) {
-          revert RandomRewardNoDuplicates();
-        }
+        require(
+          randomRewards[i].itemTokenId != randomRewards[randomRewardsLength.dec()].itemTokenId,
+          RandomRewardNoDuplicates()
+        );
       }
     }
     if (randomRewards.length > 3) {
       actionReward.randomRewardTokenId4 = randomRewards[3].itemTokenId;
       actionReward.randomRewardChance4 = randomRewards[3].chance;
       actionReward.randomRewardAmount4 = randomRewards[3].amount;
-      if (actionReward.randomRewardChance4 > actionReward.randomRewardChance3) {
-        revert RandomRewardsMustBeInOrder(randomRewards[2].chance, randomRewards[3].chance);
-      }
+      require(
+        actionReward.randomRewardChance4 <= actionReward.randomRewardChance3,
+        RandomRewardsMustBeInOrder(randomRewards[2].chance, randomRewards[3].chance)
+      );
       U256 _bounds = randomRewards.length.dec().asU256();
       for (U256 iter; iter < _bounds; iter = iter.inc()) {
         uint256 i = iter.asUint256();
-        if (randomRewards[i].itemTokenId == randomRewards[randomRewards.length - 1].itemTokenId) {
-          revert RandomRewardNoDuplicates();
-        }
+        require(
+          randomRewards[i].itemTokenId != randomRewards[randomRewards.length - 1].itemTokenId,
+          RandomRewardNoDuplicates()
+        );
       }
     }
 
-    if (randomRewards.length > 4) {
-      revert TooManyRandomRewards();
-    }
+    require(randomRewards.length <= 4, TooManyRandomRewards());
   }
 }

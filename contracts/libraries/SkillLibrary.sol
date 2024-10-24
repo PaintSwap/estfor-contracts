@@ -16,6 +16,10 @@ library SkillLibrary {
     return isNotSkill(Skill(skill), check);
   }
 
+  function isNone(uint8 skill) internal pure returns (bool) {
+    return isNone(Skill(skill));
+  }
+
   function asUint8(Skill skill) internal pure returns (uint8) {
     return uint8(skill);
   }

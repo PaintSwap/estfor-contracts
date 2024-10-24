@@ -36,37 +36,27 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   error PlayerLocked();
 
   modifier isOwnerOfPlayerAndActiveMod(uint256 playerId) {
-    if (!isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+    require(isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
   modifier isOwnerOfPlayerMod(uint256 playerId) {
-    if (_playerNFT.balanceOf(_msgSender(), playerId) != 1) {
-      revert NotOwnerOfPlayer();
-    }
+    require(_playerNFT.balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
     _;
   }
 
   modifier isOwnerOfPlayerOrEmpty(uint256 playerId) {
-    if (playerId != 0 && _playerNFT.balanceOf(_msgSender(), playerId) != 1) {
-      revert NotOwnerOfPlayer();
-    }
+    require(playerId == 0 || _playerNFT.balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
     _;
   }
 
   modifier isBetaMod() {
-    if (!_isBeta) {
-      revert NotBeta();
-    }
+    require(_isBeta, NotBeta());
     _;
   }
 
   modifier gameNotPaused() {
-    if (_gamePaused) {
-      revert GameIsPaused();
-    }
+    require(!_gamePaused, GameIsPaused());
     _;
   }
 
@@ -191,9 +181,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   // Callback after upgrading a player
   function upgradePlayer(uint256 playerId) external override onlyPlayerNFT {
-    if (_isPlayerFullMode(playerId)) {
-      revert AlreadyUpgraded();
-    }
+    require(!_isPlayerFullMode(playerId), AlreadyUpgraded());
 
     _players[playerId].packedData = _players[playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
   }
@@ -317,15 +305,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _setActivePlayer(address _from, uint256 playerId) private {
-    if (block.timestamp < _activeBoosts[playerId].cooldown) {
-      revert PlayerLocked();
-    }
+    require(block.timestamp >= _activeBoosts[playerId].cooldown, PlayerLocked());
 
     uint256 existingActivePlayerId = _activePlayers[_from];
     _activePlayers[_from] = playerId;
-    if (existingActivePlayerId == playerId) {
-      revert PlayerAlreadyActive();
-    }
+    require(existingActivePlayerId != playerId, PlayerAlreadyActive());
 
     if (existingActivePlayerId != 0) {
       _clearEverything(_from, existingActivePlayerId, true);

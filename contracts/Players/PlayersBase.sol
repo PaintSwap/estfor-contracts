@@ -209,23 +209,17 @@ abstract contract PlayersBase {
   PetNFT internal _petNFT;
 
   modifier onlyPlayerNFT() {
-    if (msg.sender != address(_playerNFT)) {
-      revert NotPlayerNFT();
-    }
+    require(msg.sender == address(_playerNFT), NotPlayerNFT());
     _;
   }
 
   modifier onlyItemNFT() {
-    if (msg.sender != address(_itemNFT)) {
-      revert NotItemNFT();
-    }
+    require(msg.sender == address(_itemNFT), NotItemNFT());
     _;
   }
 
   modifier isAdminAndBeta() {
-    if (!(_adminAccess.isAdmin(msg.sender) && _isBeta)) {
-      revert NotAdminAndBeta();
-    }
+    require(_adminAccess.isAdmin(msg.sender) && _isBeta, NotAdminAndBeta());
     _;
   }
 
@@ -414,9 +408,7 @@ abstract contract PlayersBase {
     assembly ("memory-safe") {
       slot := _startSlot.slot
     }
-    if (slot != expectedStartSlotNumber) {
-      revert InvalidStartSlot();
-    }
+    require(slot == expectedStartSlotNumber, InvalidStartSlot());
   }
 
   function _setPrevPlayerState(

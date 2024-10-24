@@ -54,9 +54,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     address implMisc1,
     bool isBeta
   ) external {
-    if (address(this) == _this) {
-      revert CannotCallInitializerOnImplementation();
-    }
+    require(address(this) != _this, CannotCallInitializerOnImplementation());
 
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;
@@ -204,9 +202,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       uint256 i = iter.asUint256();
       FullAttireBonusInput calldata fullAttireBonus = _fullAttireBonuses[i];
 
-      if (fullAttireBonus.skill == Skill.NONE) {
-        revert InvalidSkill();
-      }
+      require(fullAttireBonus.skill != Skill.NONE, InvalidSkill());
       EquipPosition[5] memory expectedEquipPositions = [
         EquipPosition.HEAD,
         EquipPosition.BODY,
@@ -217,12 +213,11 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       U256 jbounds = expectedEquipPositions.length.asU256();
       for (U256 jter; jter < jbounds; jter = jter.inc()) {
         uint256 j = jter.asUint256();
-        if (fullAttireBonus.itemTokenIds[j] == NONE) {
-          revert InvalidItemTokenId();
-        }
-        if (_itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[j]) != expectedEquipPositions[j]) {
-          revert InvalidEquipPosition();
-        }
+        require(fullAttireBonus.itemTokenIds[j] != NONE, InvalidItemTokenId());
+        require(
+          _itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[j]) == expectedEquipPositions[j],
+          InvalidEquipPosition()
+        );
       }
 
       _fullAttireBonus[fullAttireBonus.skill] = FullAttireBonus(

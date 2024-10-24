@@ -83,23 +83,17 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   address private _buyPath2;
 
   modifier onlyWorld() {
-    if (_msgSender() != _world) {
-      revert NotWorld();
-    }
+    require(_msgSender() == _world, NotWorld());
     _;
   }
 
   modifier onlyPlayers() {
-    if (_msgSender() != address(_players)) {
-      revert NotPlayers();
-    }
+    require(_msgSender() == address(_players), NotPlayers());
     _;
   }
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
-    if (!_players.isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
@@ -129,41 +123,33 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function activateQuest(address from, uint256 playerId, uint256 questId) external onlyPlayers {
-    if (questId == 0) {
-      revert InvalidQuestId();
-    }
-    if (!_questExists(questId)) {
-      revert QuestDoesntExist();
-    }
-    if (_questsCompleted[playerId].get(questId)) {
-      revert QuestCompletedAlready();
-    }
+    require(questId != 0, InvalidQuestId());
+    require(_questExists(questId), QuestDoesntExist());
+    require(!_questsCompleted[playerId].get(questId), QuestCompletedAlready());
 
     Quest storage quest = _allFixedQuests[questId];
     if (quest.dependentQuestId != 0) {
-      if (!_questsCompleted[playerId].get(quest.dependentQuestId)) {
-        revert DependentQuestNotCompleted(quest.dependentQuestId);
-      }
+      require(
+        _questsCompleted[playerId].get(quest.dependentQuestId),
+        DependentQuestNotCompleted(quest.dependentQuestId)
+      );
     }
 
-    if (_isQuestPackedDataFullMode(quest.packedData) && !_players.isPlayerUpgraded(playerId)) {
-      revert CannotStartFullModeQuest();
-    }
+    require(
+      !_isQuestPackedDataFullMode(quest.packedData) || _players.isPlayerUpgraded(playerId),
+      CannotStartFullModeQuest()
+    );
 
     for (uint256 i = 0; i < _minimumRequirements[questId].length; ++i) {
       MinimumRequirement storage minimumRequirement = _minimumRequirements[questId][i];
       if (minimumRequirement.skill != Skill.NONE) {
         uint256 xp = _players.getPlayerXP(playerId, minimumRequirement.skill);
-        if (xp < minimumRequirement.xp) {
-          revert InvalidMinimumRequirement();
-        }
+        require(xp >= minimumRequirement.xp, InvalidMinimumRequirement());
       }
     }
 
     uint256 existingActiveQuestId = _activeQuests[playerId].questId;
-    if (existingActiveQuestId == questId) {
-      revert ActivatingQuestAlreadyActivated();
-    }
+    require(existingActiveQuestId != questId, ActivatingQuestAlreadyActivated());
 
     if (existingActiveQuestId != 0) {
       // Another quest was activated
@@ -187,9 +173,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   function deactivateQuest(uint256 playerId) external onlyPlayers {
     PlayerQuest storage playerQuest = _activeQuests[playerId];
     uint256 questId = playerQuest.questId;
-    if (questId == 0) {
-      revert NoActiveQuest();
-    }
+    require(questId != 0, NoActiveQuest());
 
     // Move it to in progress
     _inProgressFixedQuests[playerId][_activeQuests[playerId].questId] = _activeQuests[playerId];
@@ -234,16 +218,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     bool useExactETH
   ) external payable onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = _activeQuests[playerId];
-    if (playerQuest.questId != QUEST_PURSE_STRINGS) {
-      revert InvalidActiveQuest();
-    }
+    require(playerQuest.questId == QUEST_PURSE_STRINGS, InvalidActiveQuest());
     uint256[] memory amounts = buyBrush(to, minimumBrushBack, useExactETH);
     if (amounts[0] != 0) {
       // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
       (success, ) = from.call{value: msg.value - amounts[0]}("");
-      if (!success) {
-        revert RefundFailed();
-      }
+      require(success, RefundFailed());
     }
     _questCompleted(from, playerId, playerQuest.questId);
     success = true;
@@ -626,9 +606,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     QuestInput[] calldata quests,
     MinimumRequirement[3][] calldata minimumRequirements
   ) external onlyOwner {
-    if (quests.length != minimumRequirements.length) {
-      revert LengthMismatch();
-    }
+    require(quests.length == minimumRequirements.length, LengthMismatch());
 
     U256 bounds = quests.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {

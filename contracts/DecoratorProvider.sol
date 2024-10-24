@@ -39,9 +39,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   uint256 public constant MIN_HARVEST_INTERVAL = 3 hours + 45 minutes;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
-    if (_playerNFT.balanceOf(_msgSender(), playerId) == 0) {
-      revert NotOwnerOfPlayer();
-    }
+    require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
     _;
   }
 
@@ -73,34 +71,24 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
 
   function deposit() external {
     uint256 balance = _lpToken.balanceOf(_msgSender());
-    if (balance == 0) {
-      revert ZeroBalance();
-    }
-    if (!_lpToken.transferFrom(_msgSender(), address(this), balance)) {
-      revert TransferFailed();
-    }
+    require(balance != 0, ZeroBalance());
+    require(_lpToken.transferFrom(_msgSender(), address(this), balance), TransferFailed());
     _decorator.deposit(_pid, balance);
     emit Deposit(balance);
   }
 
   function harvest(uint256 playerId) external isOwnerOfPlayer(playerId) {
     // Max harvest once every few hours
-    if (block.timestamp < _nextHarvestAllowedTimestamp) {
-      revert HarvestingTooSoon();
-    }
+    require(block.timestamp >= _nextHarvestAllowedTimestamp, HarvestingTooSoon());
 
     // Can not go above 600 unclaimed harvests
-    if (_numUnclaimedHarvests > MAX_UNCLAIMED_HARVESTS) {
-      revert HarvestingTooMuch();
-    }
+    require(_numUnclaimedHarvests <= MAX_UNCLAIMED_HARVESTS, HarvestingTooMuch());
 
     _nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
     ++_numUnclaimedHarvests;
     _decorator.updatePool(_pid);
     uint256 fullBrushAmount = pendingBrushInclArtGallery();
-    if (fullBrushAmount == 0) {
-      revert ZeroBalance();
-    }
+    require(fullBrushAmount != 0, ZeroBalance());
     _decorator.deposit(_pid, 0); // get rewards
     _territories.addUnclaimedEmissions(fullBrushAmount);
     emit Harvest(_msgSender(), playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
@@ -112,9 +100,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
 
   function unlockFromArtGallery() external {
     (, , uint256 unlockableCount, uint256 unlockableAmount, , ) = _artGallery.inspect(address(this));
-    if (unlockableAmount == 0) {
-      revert ZeroBalance();
-    }
+    require(unlockableAmount != 0, ZeroBalance());
 
     _artGallery.unlock();
     _numUnclaimedHarvests -= uint16(unlockableCount);
@@ -129,9 +115,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
 
   function setPID(uint256 pid) public onlyOwner {
     (address lpToken, , , ) = _decorator.poolInfo(pid);
-    if (lpToken == address(0)) {
-      revert InvalidPool();
-    }
+    require(lpToken != address(0), InvalidPool());
 
     _lpToken = IERC20(lpToken);
     _pid = uint16(pid);
