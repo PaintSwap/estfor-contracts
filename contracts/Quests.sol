@@ -9,15 +9,12 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IRouterV2} from "./interfaces/IRouterV2.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
 contract Quests is UUPSUpgradeable, OwnableUpgradeable {
-  using UnsafeMath for uint256;
-  using UnsafeMath for U256;
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;
 
@@ -189,10 +186,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     uint256[] memory questsCompleted
   ) external onlyPlayers {
     if (questsCompleted.length != 0) {
-      U256 bounds = questsCompleted.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint256 i = iter.asUint256();
-        uint256 questId = questsCompleted[i];
+      uint256 bounds = questsCompleted.length;
+      for (uint256 iter; iter < bounds; iter++) {
+        uint256 questId = questsCompleted[iter];
         _questCompleted(from, playerId, questId);
       }
     } else if (activeQuestInfo.length != 0) {
@@ -236,7 +232,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   ) public payable returns (uint256[] memory amounts) {
     require(msg.value != 0, InvalidFTMAmount());
 
-    uint256 deadline = block.timestamp.add(10 minutes);
+    uint256 deadline = block.timestamp + 10 minutes;
     // Buy brush and send it back to the user
     address[] memory buyPath = new address[](2);
     buyPath[0] = _buyPath1;
@@ -260,7 +256,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   function sellBrush(address to, uint256 brushAmount, uint256 minFTM, bool useExactETH) external {
     require(brushAmount != 0, InvalidBrushAmount());
 
-    uint256 deadline = block.timestamp.add(10 minutes);
+    uint256 deadline = block.timestamp + 10 minutes;
     // Sell brush and send ftm back to the user
     address[] memory sellPath = new address[](2);
     sellPath[0] = _buyPath2;
@@ -327,12 +323,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
         bool questCompleted
       ) = _processQuestView(actionIds, actionAmounts, choiceIds, choiceAmounts, questCompletionInfo, burnedAmountOwned);
 
-      U256 bounds = itemTokenIds_.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint256 i = iter.asUint256();
-        itemTokenIds[itemTokenIdsLength] = itemTokenIds_[i];
-        amounts[itemTokenIdsLength] = amounts_[i];
-        itemTokenIdsLength = itemTokenIdsLength.inc();
+      uint256 bounds = itemTokenIds_.length;
+      for (uint256 iter; iter < bounds; iter++) {
+        itemTokenIds[itemTokenIdsLength] = itemTokenIds_[iter];
+        amounts[itemTokenIdsLength] = amounts_[iter];
+        itemTokenIdsLength++;
       }
 
       if (questCompleted) {
@@ -422,14 +417,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     )
   {
     Quest storage quest = _allFixedQuests[playerQuest.questId];
-    U256 bounds = actionIds.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      if (quest.actionId1 == actionIds[i]) {
+    uint256 bounds = actionIds.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      if (quest.actionId1 == actionIds[iter]) {
         uint256 remainingAmount = quest.actionNum1 > playerQuest.actionCompletedNum1
           ? quest.actionNum1 - playerQuest.actionCompletedNum1
           : 0;
-        uint256 amount = Math.min(remainingAmount, actionAmounts[i]);
+        uint256 amount = Math.min(remainingAmount, actionAmounts[iter]);
         if (quest.burnItemTokenId != NONE) {
           amount = Math.min(burnedAmountOwned, amount);
           burnedAmountOwned -= amount;
@@ -449,14 +443,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
       }
     }
 
-    bounds = choiceIds.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      if (quest.actionChoiceId == choiceIds[i]) {
+    bounds = choiceIds.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      if (quest.actionChoiceId == choiceIds[iter]) {
         uint256 remainingAmount = quest.actionChoiceNum > playerQuest.actionChoiceCompletedNum
           ? quest.actionChoiceNum - playerQuest.actionChoiceCompletedNum
           : 0;
-        uint256 amount = Math.min(remainingAmount, choiceAmounts[i]);
+        uint256 amount = Math.min(remainingAmount, choiceAmounts[iter]);
         if (quest.burnItemTokenId != NONE) {
           amount = Math.min(burnedAmountOwned, amount);
           burnedAmountOwned -= amount;
@@ -530,10 +523,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     _checkQuest(quest);
 
     bool anyMinimumRequirement;
-    U256 bounds = minimumRequirements.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      if (minimumRequirements[i].skill != Skill.NONE) {
+    uint256 bounds = minimumRequirements.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      if (minimumRequirements[iter].skill != Skill.NONE) {
         anyMinimumRequirement = true;
         break;
       }
@@ -608,10 +600,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   ) external onlyOwner {
     require(quests.length == minimumRequirements.length, LengthMismatch());
 
-    U256 bounds = quests.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      _addQuest(quests[i], minimumRequirements[i]);
+    uint256 bounds = quests.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      _addQuest(quests[iter], minimumRequirements[iter]);
     }
     _numTotalQuests += uint16(quests.length);
     emit AddQuests(quests, minimumRequirements);

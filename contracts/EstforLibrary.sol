@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {IPlayers} from "./interfaces/IPlayers.sol";
 
 // solhint-disable-next-line no-global-import
@@ -10,9 +8,6 @@ import "./globals/all.sol";
 
 // This file contains methods for interacting with generic functions like trimming strings, lowercase etc.
 library EstforLibrary {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
-
   function isWhitespace(bytes1 _char) internal pure returns (bool) {
     return
       _char == 0x20 || // Space
@@ -82,11 +77,10 @@ library EstforLibrary {
   function containsValidNameCharacters(string calldata name) external pure returns (bool) {
     bytes memory b = bytes(name);
     bool lastCharIsWhitespace;
-    U256 iter = b.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      bytes1 char = b[i];
+    uint256 iter = b.length;
+    while (iter != 0) {
+      iter--;
+      bytes1 char = b[iter];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -104,11 +98,10 @@ library EstforLibrary {
 
   function containsValidDiscordCharacters(string calldata discord) external pure returns (bool) {
     bytes memory discordBytes = bytes(discord);
-    U256 iter = discordBytes.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      bytes1 char = discordBytes[i];
+    uint256 iter = discordBytes.length;
+    while (iter != 0) {
+      iter--;
+      bytes1 char = discordBytes[iter];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -123,11 +116,10 @@ library EstforLibrary {
 
   function containsValidTelegramCharacters(string calldata telegram) external pure returns (bool) {
     bytes memory telegramBytes = bytes(telegram);
-    U256 iter = telegramBytes.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      bytes1 char = telegramBytes[i];
+    uint256 iter = telegramBytes.length;
+    while (iter != 0) {
+      iter--;
+      bytes1 char = telegramBytes[iter];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -143,11 +135,10 @@ library EstforLibrary {
 
   function containsValidTwitterCharacters(string calldata twitter) external pure returns (bool) {
     bytes memory twitterBytes = bytes(twitter);
-    U256 iter = twitterBytes.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      bytes1 char = twitterBytes[i];
+    uint256 iter = twitterBytes.length;
+    while (iter != 0) {
+      iter--;
+      bytes1 char = twitterBytes[iter];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -162,11 +153,10 @@ library EstforLibrary {
 
   function containsBaselineSocialNameCharacters(string calldata socialMediaName) external pure returns (bool) {
     bytes memory socialMediaNameBytes = bytes(socialMediaName);
-    U256 iter = socialMediaNameBytes.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      bytes1 char = socialMediaNameBytes[i];
+    uint256 iter = socialMediaNameBytes.length;
+    while (iter != 0) {
+      iter--;
+      bytes1 char = socialMediaNameBytes[iter];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -184,13 +174,12 @@ library EstforLibrary {
 
   function toLower(string memory str) internal pure returns (string memory) {
     bytes memory lowerStr = abi.encodePacked(str);
-    U256 iter = lowerStr.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      if ((uint8(lowerStr[i]) >= 65) && (uint8(lowerStr[i]) <= 90)) {
+    uint256 iter = lowerStr.length;
+    while (iter != 0) {
+      iter--;
+      if ((uint8(lowerStr[iter]) >= 65) && (uint8(lowerStr[iter]) <= 90)) {
         // So we add 32 to make it lowercase
-        lowerStr[i] = bytes1(uint8(lowerStr[i]) + 32);
+        lowerStr[iter] = bytes1(uint8(lowerStr[iter]) + 32);
       }
     }
     return string(lowerStr);
