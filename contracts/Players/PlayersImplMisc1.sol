@@ -5,8 +5,6 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
@@ -27,9 +25,6 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   using Strings for uint32;
   using Strings for uint256;
   using Strings for bytes32;
-
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
 
   address immutable _this;
 
@@ -197,10 +192,9 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external {
-    U256 bounds = fullAttireBonuses.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      FullAttireBonusInput calldata fullAttireBonus = fullAttireBonuses[i];
+    uint256 bounds = fullAttireBonuses.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      FullAttireBonusInput calldata fullAttireBonus = fullAttireBonuses[iter];
 
       require(fullAttireBonus.skill != Skill.NONE, InvalidSkill());
       EquipPosition[5] memory expectedEquipPositions = [
@@ -210,12 +204,11 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
         EquipPosition.LEGS,
         EquipPosition.FEET
       ];
-      U256 jbounds = expectedEquipPositions.length.asU256();
-      for (U256 jter; jter < jbounds; jter = jter.inc()) {
-        uint256 j = jter.asUint256();
-        require(fullAttireBonus.itemTokenIds[j] != NONE, InvalidItemTokenId());
+      uint256 jbounds = expectedEquipPositions.length;
+      for (uint256 jter; jter < jbounds; jter++) {
+        require(fullAttireBonus.itemTokenIds[jter] != NONE, InvalidItemTokenId());
         require(
-          _itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[j]) == expectedEquipPositions[j],
+          _itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[jter]) == expectedEquipPositions[jter],
           InvalidEquipPosition()
         );
       }

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
@@ -18,8 +17,6 @@ import "../interfaces/IPlayersDelegates.sol";
 import "../globals/all.sol";
 
 abstract contract PlayersBase {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
   using SkillLibrary for uint8;
 
   event ClearAll(address from, uint256 playerId);
@@ -296,7 +293,7 @@ abstract contract PlayersBase {
   function _updateXP(address from, uint256 playerId, Skill skill, uint128 pointsAccrued) internal {
     PackedXP storage packedXP = _playerXP[playerId];
     uint256 oldPoints = PlayersLibrary.readXP(skill, packedXP);
-    uint256 newPoints = oldPoints.add(pointsAccrued);
+    uint256 newPoints = oldPoints + pointsAccrued;
 
     if (newPoints > type(uint32).max) {
       newPoints = type(uint32).max;
@@ -431,14 +428,13 @@ abstract contract PlayersBase {
         delete _pendingRandomRewards[playerId];
       } else {
         // Shift the remaining rewards to the front of the array
-        U256 bounds = _pendingRandomRewards[playerId].length.asU256().sub(numPastRandomRewardInstancesToRemove);
-        for (U256 iter; iter < bounds; iter = iter.inc()) {
-          uint256 i = iter.asUint256();
-          _pendingRandomRewards[playerId][i] = _pendingRandomRewards[playerId][
-            i + numPastRandomRewardInstancesToRemove
+        uint256 bounds = _pendingRandomRewards[playerId].length - numPastRandomRewardInstancesToRemove;
+        for (uint256 iter; iter < bounds; iter++) {
+          _pendingRandomRewards[playerId][iter] = _pendingRandomRewards[playerId][
+            iter + numPastRandomRewardInstancesToRemove
           ];
         }
-        for (U256 iter = numPastRandomRewardInstancesToRemove.asU256(); iter.neq(0); iter = iter.dec()) {
+        for (uint256 iter = numPastRandomRewardInstancesToRemove; iter != 0; iter--) {
           _pendingRandomRewards[playerId].pop();
         }
       }

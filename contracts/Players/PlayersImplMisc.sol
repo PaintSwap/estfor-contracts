@@ -3,8 +3,6 @@ pragma solidity ^0.8.28;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
@@ -19,14 +17,6 @@ import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPla
 import "../globals/all.sol";
 
 contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, IPlayersMiscDelegateView {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint8;
-  using UnsafeMath for uint16;
-  using UnsafeMath for uint24;
-  using UnsafeMath for uint32;
-  using UnsafeMath for uint40;
-  using UnsafeMath for uint128;
-  using UnsafeMath for uint256;
   using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
 
@@ -45,17 +35,15 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256 diff = nextIndex - prevIndex;
     itemTokenIds = new uint256[](diff);
     amounts = new uint256[](diff);
-    U256 length;
-    for (U256 iter; iter.lt(diff); iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      uint32 xpThreshold = _getXPReward(prevIndex.inc().add(i));
+    uint256 length;
+    for (uint256 iter; iter < diff; iter++) {
+      uint32 xpThreshold = _getXPReward(prevIndex + 1 + iter);
       Equipment[] memory items = _xpRewardThresholds[xpThreshold];
       if (items.length != 0) {
         // TODO: Currently assumes there is only 1 item per threshold
-        uint256 l = length.asUint256();
-        itemTokenIds[l] = items[0].itemTokenId;
-        amounts[l] = items[0].amount;
-        length = length.inc();
+        itemTokenIds[length] = items[0].itemTokenId;
+        amounts[length] = items[0].amount;
+        length++;
       }
     }
 
@@ -66,19 +54,17 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   function _checkXPThresholdRewards(XPThresholdReward calldata xpThresholdReward) private pure {
-    U256 bounds = xpThresholdReward.rewards.length.asU256();
-    for (U256 jIter; jIter < bounds; jIter = jIter.inc()) {
-      uint256 j = jIter.asUint256();
-      require(xpThresholdReward.rewards[j].itemTokenId != NONE, InvalidItemTokenId());
-      require(xpThresholdReward.rewards[j].amount != 0, InvalidAmount());
+    for (uint256 iter; iter < xpThresholdReward.rewards.length; iter++) {
+      require(xpThresholdReward.rewards[iter].itemTokenId != NONE, InvalidItemTokenId());
+      require(xpThresholdReward.rewards[iter].amount != 0, InvalidAmount());
     }
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external {
-    U256 iter = xpThresholdRewards.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      XPThresholdReward calldata xpThresholdReward = xpThresholdRewards[iter.asUint256()];
+    uint256 iter = xpThresholdRewards.length;
+    while (iter != 0) {
+      iter--;
+      XPThresholdReward calldata xpThresholdReward = xpThresholdRewards[iter];
 
       // Check that it is part of the hexBytes
       uint16 index = _findBaseXPThreshold(xpThresholdReward.xpThreshold);
@@ -94,10 +80,10 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   function editXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external {
-    U256 iter = xpThresholdRewards.length.asU256();
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      XPThresholdReward calldata xpThresholdReward = xpThresholdRewards[iter.asUint256()];
+    uint256 iter = xpThresholdRewards.length;
+    while (iter != 0) {
+      iter--;
+      XPThresholdReward calldata xpThresholdReward = xpThresholdRewards[iter];
       require(_xpRewardThresholds[xpThresholdReward.xpThreshold].length != 0, XPThresholdDoesNotExist());
       _checkXPThresholdRewards(xpThresholdReward);
       _xpRewardThresholds[xpThresholdReward.xpThreshold] = xpThresholdReward.rewards;
@@ -107,36 +93,36 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
   // Index not level, add one after (check for > max)
   function _findBaseXPThreshold(uint256 xp) private pure returns (uint16) {
-    U256 low;
-    U256 high = xpRewardBytes.length.asU256().div(4);
+    uint256 low;
+    uint256 high = xpRewardBytes.length / 4;
 
     while (low < high) {
-      U256 mid = (low + high).div(2);
+      uint256 mid = (low + high) / 2;
 
       // Note that mid will always be strictly less than high (i.e. it will be a valid array index)
       // Math.average rounds down (it does integer division with truncation).
-      if (_getXPReward(mid.asUint256()) > xp) {
+      if (_getXPReward(mid) > xp) {
         high = mid;
       } else {
-        low = mid.inc();
+        low = mid + 1;
       }
     }
 
-    if (low.neq(0)) {
-      return low.dec().asUint16();
+    if (low != 0) {
+      return uint16(low - 1);
     } else {
       return 0;
     }
   }
 
   function _getXPReward(uint256 index) private pure returns (uint32) {
-    U256 key = index.asU256().mul(4);
+    uint256 key = index * 4;
     return
       uint32(
-        xpRewardBytes[key.asUint256()] |
-          (bytes4(xpRewardBytes[key.add(1).asUint256()]) >> 8) |
-          (bytes4(xpRewardBytes[key.add(2).asUint256()]) >> 16) |
-          (bytes4(xpRewardBytes[key.add(3).asUint256()]) >> 24)
+        xpRewardBytes[key] |
+          (bytes4(xpRewardBytes[key + 1]) >> 8) |
+          (bytes4(xpRewardBytes[key + 2]) >> 16) |
+          (bytes4(xpRewardBytes[key + 3]) >> 24)
       );
   }
 
@@ -146,17 +132,17 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     address from,
     uint256 playerId
   ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, bytes32 dailyRewardMask) {
-    uint256 streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
+    uint256 streakStart = (((block.timestamp - 4 days) / 1 weeks) * 1 weeks) + 4 days;
     bool hasRandomWordLastSunday = _world.lastRandomWordsUpdatedTime() >= streakStart;
     if (hasRandomWordLastSunday) {
-      uint256 streakStartIndex = streakStart.div(1 weeks);
+      uint256 streakStartIndex = streakStart / 1 weeks;
       bytes32 mask = _dailyRewardMasks[playerId];
       uint16 lastRewardStartIndex = uint16(uint256(mask));
       if (lastRewardStartIndex < streakStartIndex) {
         mask = bytes32(streakStartIndex); // Reset the mask
       }
 
-      uint256 maskIndex = ((block.timestamp.div(1 days)).mul(1 days).sub(streakStart)).div(1 days);
+      uint256 maskIndex = (((block.timestamp / 1 days) * 1 days) - streakStart) / 1 days;
 
       // Claim daily/weekly reward
       if (mask[maskIndex] == 0 && _dailyRewardsEnabled) {
@@ -202,17 +188,16 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   function dailyClaimedRewardsImpl(uint256 playerId) external view returns (bool[7] memory claimed) {
-    uint256 streakStart = ((block.timestamp.sub(4 days)).div(1 weeks)).mul(1 weeks).add(4 days);
-    uint256 streakStartIndex = streakStart.div(1 weeks);
+    uint256 streakStart = ((((block.timestamp - 4 days) / 1 weeks)) * 1 weeks) + 4 days;
+    uint256 streakStartIndex = streakStart / 1 weeks;
     bytes32 mask = _dailyRewardMasks[playerId];
     uint16 lastRewardStartIndex = uint16(uint256(mask));
     if (lastRewardStartIndex < streakStartIndex) {
       mask = bytes32(streakStartIndex);
     }
 
-    for (U256 iter; iter.lt(7); iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      claimed[i] = mask[i] != 0;
+    for (uint256 iter; iter < 7; iter++) {
+      claimed[iter] = mask[iter] != 0;
     }
   }
 
@@ -252,7 +237,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256 consumedEquipmentLength;
     if (regenerateId != NONE && foodConsumed != 0) {
       consumedEquipment[consumedEquipmentLength] = Equipment(regenerateId, foodConsumed);
-      consumedEquipmentLength = consumedEquipmentLength.inc();
+      consumedEquipmentLength++;
     }
 
     bool useSecondInputTokens = uint8(
@@ -267,21 +252,21 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           actionChoice.inputTokenId1,
           baseInputItemsConsumedNum * (useSecondInputTokens ? actionChoice.newInputAmount1 : actionChoice.inputAmount1)
         );
-        consumedEquipmentLength = consumedEquipmentLength.inc();
+        consumedEquipmentLength++;
       }
       if (actionChoice.inputTokenId2 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           actionChoice.inputTokenId2,
           baseInputItemsConsumedNum * (useSecondInputTokens ? actionChoice.newInputAmount2 : actionChoice.inputAmount2)
         );
-        consumedEquipmentLength = consumedEquipmentLength.inc();
+        consumedEquipmentLength++;
       }
       if (actionChoice.inputTokenId3 != NONE) {
         consumedEquipment[consumedEquipmentLength] = Equipment(
           actionChoice.inputTokenId3,
           baseInputItemsConsumedNum * (useSecondInputTokens ? actionChoice.newInputAmount3 : actionChoice.inputAmount3)
         );
-        consumedEquipmentLength = consumedEquipmentLength.inc();
+        consumedEquipmentLength++;
       }
     }
 
@@ -422,7 +407,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   {
     // Processed
     uint256 prevProcessedTime = queuedAction.prevProcessedTime;
-    uint256 veryStartTime = startTime.sub(prevProcessedTime);
+    uint256 veryStartTime = startTime - prevProcessedTime;
     uint256 prevXPElapsedTime = queuedAction.prevProcessedXPTime;
 
     // Total used
@@ -496,7 +481,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           if (processedConsumedEquipments[j].itemTokenId == prevConsumedEquipments[k].itemTokenId) {
             if (processedConsumedEquipments[j].amount >= prevConsumedEquipments[k].amount) {
               processedConsumedEquipments[j].amount = uint24(
-                processedConsumedEquipments[j].amount.sub(prevConsumedEquipments[k].amount)
+                processedConsumedEquipments[j].amount - prevConsumedEquipments[k].amount
               );
             } else {
               processedConsumedEquipments[j].amount = 0;
@@ -516,7 +501,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
       // Do the same for outputEquipment, check if it exists and subtract amount
       if (producedEquipment.amount >= prevProducedEquipment.amount) {
-        producedEquipment.amount = uint24(producedEquipment.amount.sub(prevProducedEquipment.amount));
+        producedEquipment.amount = uint24(producedEquipment.amount - prevProducedEquipment.amount);
       } else {
         producedEquipment.amount = 0;
       }
@@ -526,21 +511,19 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
       if (xpElapsedTime >= prevXPElapsedTime) {
         // Maybe died
-        xpElapsedTime = xpElapsedTime.sub(prevXPElapsedTime);
+        xpElapsedTime = xpElapsedTime - prevXPElapsedTime;
       } else {
         xpElapsedTime = 0;
       }
       // These are scrolls/arrows, doesn't affect melee
       if (baseInputItemsConsumedNum >= currentActionProcessedBaseInputItemsConsumedNum) {
-        baseInputItemsConsumedNum = uint16(
-          baseInputItemsConsumedNum.sub(currentActionProcessedBaseInputItemsConsumedNum)
-        );
+        baseInputItemsConsumedNum = uint16(baseInputItemsConsumedNum - currentActionProcessedBaseInputItemsConsumedNum);
       } else {
         baseInputItemsConsumedNum = 0;
       }
 
       if (foodConsumed >= currentActionProcessedFoodConsumed) {
-        foodConsumed = uint16(foodConsumed.sub(currentActionProcessedFoodConsumed));
+        foodConsumed = uint16(foodConsumed - currentActionProcessedFoodConsumed);
       } else {
         // Could be lower if combat equation or items change later
         foodConsumed = 0;
@@ -577,12 +560,11 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     Player storage player = _players[playerId];
     player.totalXP = uint56(START_XP_);
 
-    U256 length = uint256(startSkills[1] != Skill.NONE ? 2 : 1).asU256();
-    uint32 xpEach = uint32(START_XP_ / length.asUint256());
+    uint256 length = uint256(startSkills[1] != Skill.NONE ? 2 : 1);
+    uint32 xpEach = uint32(START_XP_ / length);
 
-    for (U256 iter; iter < length; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      Skill skill = startSkills[i];
+    for (uint256 iter; iter < length; iter++) {
+      Skill skill = startSkills[iter];
       _updateXP(from, playerId, skill, xpEach);
     }
 
@@ -634,20 +616,19 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         uint16[] memory extraChancesExcess = new uint16[](MAX_RANDOM_REWARDS_PER_ACTION);
         uint256[] memory mintMultipliers = new uint256[](MAX_RANDOM_REWARDS_PER_ACTION);
         uint256[] memory mintMultipliersExcess = new uint256[](MAX_RANDOM_REWARDS_PER_ACTION);
-        U256 randomRewardsLength = randomRewards.length.asU256();
-        for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
-          uint256 j = iterJ.asUint256();
-          RandomReward memory randomReward = randomRewards[j];
-          mintMultipliers[j] = 1;
-          mintMultipliersExcess[j] = 1;
+        uint256 randomRewardsLength = randomRewards.length;
+        for (uint256 jter; jter < randomRewardsLength; jter++) {
+          RandomReward memory randomReward = randomRewards[jter];
+          mintMultipliers[jter] = 1;
+          mintMultipliersExcess[jter] = 1;
           if (numTickets > MAX_UNIQUE_TICKETS) {
             if (randomReward.chance <= RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_) {
               // Rare item, increase chance if there aren't enough unique tickets
-              extraChances[j] = uint16(randomReward.chance * multiplier);
-              extraChancesExcess[j] = uint16(randomReward.chance * (multiplier + 1));
+              extraChances[jter] = uint16(randomReward.chance * multiplier);
+              extraChancesExcess[jter] = uint16(randomReward.chance * (multiplier + 1));
             } else {
-              mintMultipliers[j] = multiplier;
-              mintMultipliersExcess[j] = multiplier + 1;
+              mintMultipliers[jter] = multiplier;
+              mintMultipliersExcess[jter] = multiplier + 1;
             }
           }
         }
@@ -699,7 +680,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         rewards.randomRewardChance1,
         rewards.randomRewardAmount1
       );
-      randomRewardLength = randomRewardLength.inc();
+      randomRewardLength++;
     }
     if (rewards.randomRewardTokenId2 != 0) {
       randomRewards[randomRewardLength] = RandomReward(
@@ -707,7 +688,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         rewards.randomRewardChance2,
         rewards.randomRewardAmount2
       );
-      randomRewardLength = randomRewardLength.inc();
+      randomRewardLength++;
     }
     if (rewards.randomRewardTokenId3 != 0) {
       randomRewards[randomRewardLength] = RandomReward(
@@ -715,7 +696,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         rewards.randomRewardChance3,
         rewards.randomRewardAmount3
       );
-      randomRewardLength = randomRewardLength.inc();
+      randomRewardLength++;
     }
     if (rewards.randomRewardTokenId4 != 0) {
       randomRewards[randomRewardLength] = RandomReward(
@@ -723,7 +704,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         rewards.randomRewardChance4,
         rewards.randomRewardAmount4
       );
-      randomRewardLength = randomRewardLength.inc();
+      randomRewardLength++;
     }
 
     assembly ("memory-safe") {
@@ -732,8 +713,8 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   }
 
   function _getSlice(bytes memory b, uint256 index) private pure returns (uint16) {
-    uint256 key = index.mul(2);
-    return uint16(b[key] | (bytes2(b[key.inc()]) >> 8));
+    uint256 key = index * 2;
+    return uint16(b[key] | (bytes2(b[key + 1]) >> 8));
   }
 
   function _randomRewardsLoop(
@@ -748,10 +729,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint8 fullAttireBonusRewardsPercent,
     bytes memory randomBytes
   ) private pure returns (uint256 length) {
-    U256 randomRewardsLength = randomRewards.length.asU256();
-    for (U256 iter = start.asU256(); iter.lt(end); iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      uint256 operation = (uint256(_getSlice(randomBytes, i)) * 100) / successPercent;
+    uint256 randomRewardsLength = randomRewards.length;
+    for (uint256 iter = start; iter < end; iter++) {
+      uint256 operation = (uint256(_getSlice(randomBytes, iter)) * 100) / successPercent;
 
       // If there is above MAX_UNIQUE_TICKETS tickets we need to mint more if a ticket is hit unless it
       // is a rare item in which case we just increase the change that it can get get
@@ -767,12 +747,11 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       }
       uint16 rand = uint16(Math.min(type(uint16).max, operation));
 
-      for (U256 iterJ; iterJ < randomRewardsLength; iterJ = iterJ.inc()) {
-        uint256 j = iterJ.asUint256();
-        RandomReward memory randomReward = randomRewards[j];
+      for (uint256 jter; jter < randomRewardsLength; jter++) {
+        RandomReward memory randomReward = randomRewards[jter];
 
         uint16 updatedRand = rand;
-        uint16 extraChance = extraChances[j];
+        uint16 extraChance = extraChances[jter];
         if (updatedRand > extraChance) {
           updatedRand -= extraChance;
         } else {
@@ -780,9 +759,9 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         }
         if (updatedRand <= randomReward.chance) {
           // This random reward's chance was hit, so add it to the hits
-          ids[j] = randomReward.itemTokenId;
-          amounts[j] += randomReward.amount * mintMultipliers[j];
-          length = Math.max(length, j + 1);
+          ids[jter] = randomReward.itemTokenId;
+          amounts[jter] += randomReward.amount * mintMultipliers[jter];
+          length = Math.max(length, jter + 1);
         } else {
           // A common one isn't found so a rarer one won't be.
           break;

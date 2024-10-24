@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
@@ -13,15 +11,6 @@ import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import "../globals/all.sol";
 
 contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint8;
-  using UnsafeMath for uint16;
-  using UnsafeMath for uint24;
-  using UnsafeMath for uint32;
-  using UnsafeMath for uint40;
-  using UnsafeMath for uint56;
-  using UnsafeMath for uint128;
-  using UnsafeMath for uint256;
   using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
 
@@ -132,7 +121,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
       if (actionMetadata.xpElapsedTime != 0 && hasRandomRewards) {
         uint24 sentinelElapsedTime = actionMetadata.elapsedTime;
-        bool hasRandomWord = _world.hasRandomWord(startTime.add(sentinelElapsedTime));
+        bool hasRandomWord = _world.hasRandomWord(startTime + sentinelElapsedTime);
         if (hasRandomWord && isCombat) {
           // The elapsed time needs to be updated if the random words are known as other dynamic things
           // like changing food/scroll consumption can be used to modify the random reward outputs.
@@ -167,7 +156,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       if (actionMetadata.xpGained != 0) {
         {
           uint256 previousTotalXP = player.totalXP;
-          uint256 newTotalXP = previousTotalXP.add(actionMetadata.xpGained);
+          uint256 newTotalXP = previousTotalXP + actionMetadata.xpGained;
           player.totalXP = uint56(newTotalXP);
         }
 
@@ -256,7 +245,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       questXpGained += questState.xpGainedSkills[j];
     }
     if (questXpGained != 0) {
-      player.totalXP = uint56(player.totalXP.add(questXpGained));
+      player.totalXP = uint56(player.totalXP + questXpGained);
     }
 
     // Daily/weekly rewards
@@ -300,13 +289,13 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
   function _clearPlayerBoostsIfExpired(uint256 playerId) private {
     PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
-    if (playerBoost.itemTokenId != NONE && playerBoost.startTime.add(playerBoost.duration) <= block.timestamp) {
+    if (playerBoost.itemTokenId != NONE && playerBoost.startTime + playerBoost.duration <= block.timestamp) {
       _clearPlayerMainBoost(playerId);
     }
 
     if (
       playerBoost.extraOrLastItemTokenId != NONE &&
-      playerBoost.extraOrLastStartTime.add(playerBoost.extraOrLastDuration) <= block.timestamp
+      playerBoost.extraOrLastStartTime + playerBoost.extraOrLastDuration <= block.timestamp
     ) {
       delete playerBoost.extraOrLastValue;
       delete playerBoost.extraOrLastStartTime;
@@ -511,9 +500,9 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint256 oldXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
     require(xp >= oldXP, TestInvalidXP());
     require(_playerNFT.balanceOf(from, playerId) != 0, NotOwnerOfPlayer());
-    uint56 gainedXP = uint56(xp.sub(oldXP));
+    uint56 gainedXP = uint56(xp - oldXP);
     _updateXP(from, playerId, skill, gainedXP);
-    uint56 newTotalXP = uint56(_players[playerId].totalXP.add(gainedXP));
+    uint56 newTotalXP = uint56(_players[playerId].totalXP + gainedXP);
     _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
     _players[playerId].totalXP = newTotalXP;
   }

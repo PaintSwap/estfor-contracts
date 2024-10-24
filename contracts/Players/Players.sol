@@ -5,8 +5,6 @@ import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol"
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "../ozUpgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PetNFT} from "../PetNFT.sol";
@@ -24,8 +22,6 @@ import {IPlayersDelegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView,
 import "../globals/all.sol";
 
 contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
-  using UnsafeMath for U256;
-
   event GamePaused(bool gamePaused);
   event LockPlayer(uint256 playerId, uint256 cooldownTimestamp);
   event UnlockPlayer(uint256 playerId);
