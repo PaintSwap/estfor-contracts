@@ -28,9 +28,7 @@ contract BrushNonTransferrable is ERC20Upgradeable, UUPSUpgradeable, OwnableUpgr
   }
 
   function _update(address from, address to, uint256 amount) internal override {
-    if (from != address(0) && from != owner() && to != owner()) {
-      revert TransferFailed();
-    }
+    require(from == address(0) || from == owner() || to == owner(), TransferFailed());
     super._update(from, to, amount);
   }
 

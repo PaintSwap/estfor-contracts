@@ -134,59 +134,48 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint80 nftType; // e.g erc721 or erc1155
   }
 
-  IBrushToken private brush;
-  IPlayers private players;
-  IBankFactory public bankFactory;
-  IERC1155 private playerNFT;
-  uint80 public nextClanId;
-  uint16 private initialMMR;
-  address private pool;
-  uint80 public editNameCost;
-  address private dev;
-  mapping(uint256 clanId => Clan clan) public clans;
-  mapping(uint256 playerId => PlayerInfo) public playerInfo;
-  mapping(uint256 id => Tier tier) public tiers;
-  mapping(string name => bool exists) public lowercaseNames;
-  mapping(uint256 clanId => uint40 timestampLeft) public ownerlessClanTimestamps; // timestamp
-  address private paintswapMarketplaceWhitelist;
-  IClanMemberLeftCB private territories;
-  IClanMemberLeftCB private lockedBankVaults;
+  IBrushToken private _brush;
+  IPlayers private _players;
+  IBankFactory private _bankFactory;
+  IERC1155 private _playerNFT;
+  uint80 private _nextClanId;
+  uint16 private _initialMMR;
+  address private _pool;
+  uint80 private _editNameCost;
+  address private _dev;
+  mapping(uint256 clanId => Clan clan) private _clans;
+  mapping(uint256 playerId => PlayerInfo) private _playerInfo;
+  mapping(uint256 id => Tier tier) private _tiers;
+  mapping(string name => bool exists) private _lowercaseNames;
+  mapping(uint256 clanId => uint40 timestampLeft) private _ownerlessClanTimestamps; // timestamp
+  address private _paintswapMarketplaceWhitelist;
+  IClanMemberLeftCB private _territories;
+  IClanMemberLeftCB private _lockedBankVaults;
 
-  modifier isOwnerOfPlayer(uint256 _playerId) {
-    if (playerNFT.balanceOf(_msgSender(), _playerId) == 0) {
-      revert NotOwnerOfPlayer();
-    }
+  modifier isOwnerOfPlayer(uint256 playerId) {
+    require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
     _;
   }
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    if (!players.isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
-      revert NotOwnerOfPlayerAndActive();
-    }
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
-  modifier isMinimumRank(uint256 _clanId, uint256 _playerId, ClanRank _rank) {
-    PlayerInfo storage player = playerInfo[_playerId];
-    if (player.clanId != _clanId) {
-      revert NotMemberOfClan();
-    } else if (playerInfo[_playerId].rank < _rank) {
-      revert RankNotHighEnough();
-    }
+  modifier isMinimumRank(uint256 clanId, uint256 playerId, ClanRank _rank) {
+    PlayerInfo storage player = _playerInfo[playerId];
+    require(player.clanId == clanId, NotMemberOfClan());
+    require(_playerInfo[playerId].rank >= _rank, RankNotHighEnough());
     _;
   }
 
-  modifier isMemberOfClan(uint256 _clanId, uint256 _playerId) {
-    if (playerInfo[_playerId].clanId != _clanId) {
-      revert NotMemberOfClan();
-    }
+  modifier isMemberOfClan(uint256 clanId, uint256 playerId) {
+    require(_playerInfo[playerId].clanId == clanId, NotMemberOfClan());
     _;
   }
 
   modifier onlyMMRSetter() {
-    if (_msgSender() != address(lockedBankVaults)) {
-      revert NotMMRSetter();
-    }
+    require(_msgSender() == address(_lockedBankVaults), NotMMRSetter());
     _;
   }
 
@@ -196,797 +185,733 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function initialize(
-    IBrushToken _brush,
-    IERC1155 _playerNFT,
-    address _pool,
-    address _dev,
-    uint80 _editNameCost,
-    address _paintswapMarketplaceWhitelist,
-    uint16 _initialMMR
+    IBrushToken brush,
+    IERC1155 playerNFT,
+    address pool,
+    address dev,
+    uint80 editNameCost,
+    address paintswapMarketplaceWhitelist,
+    uint16 initialMMR
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    brush = _brush;
-    playerNFT = _playerNFT;
-    pool = _pool;
-    dev = _dev;
-    nextClanId = 1;
-    editNameCost = _editNameCost;
-    paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
-    emit EditNameCost(_editNameCost);
-    setInitialMMR(_initialMMR);
+    _brush = brush;
+    _playerNFT = playerNFT;
+    _pool = pool;
+    _dev = dev;
+    _nextClanId = 1;
+    _editNameCost = editNameCost;
+    _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
+    emit EditNameCost(editNameCost);
+    setInitialMMR(initialMMR);
   }
 
   function createClan(
-    uint256 _playerId,
-    string calldata _name,
-    string calldata _discord,
-    string calldata _telegram,
-    string calldata _twitter,
-    uint16 _imageId,
-    uint8 _tierId
-  ) external isOwnerOfPlayerAndActive(_playerId) {
-    PlayerInfo storage player = playerInfo[_playerId];
-    if (isMemberOfAnyClan(_playerId)) {
-      revert AlreadyInClan();
-    }
+    uint256 playerId,
+    string calldata name,
+    string calldata discord,
+    string calldata telegram,
+    string calldata twitter,
+    uint16 imageId,
+    uint8 tierId
+  ) external isOwnerOfPlayerAndActive(playerId) {
+    PlayerInfo storage player = _playerInfo[playerId];
+    require(!isMemberOfAnyClan(playerId), AlreadyInClan());
 
-    Tier storage tier = tiers[_tierId];
-    _checkTierExists(_tierId);
-    _checkClanImage(_imageId, tier.maxImageId);
+    Tier storage tier = _tiers[tierId];
+    _checkTierExists(tierId);
+    _checkClanImage(imageId, tier.maxImageId);
 
-    uint256 clanId = nextClanId;
-    nextClanId = uint80(nextClanId.inc());
-    Clan storage clan = clans[clanId];
-    clan.owner = uint80(_playerId);
-    clan.tierId = _tierId;
-    clan.imageId = _imageId;
+    uint256 clanId = _nextClanId;
+    _nextClanId = uint80(_nextClanId.inc());
+    Clan storage clan = _clans[clanId];
+    clan.owner = uint80(playerId);
+    clan.tierId = tierId;
+    clan.imageId = imageId;
     clan.memberCount = 1;
     clan.createdTimestamp = uint40(block.timestamp);
-    clan.mmr = initialMMR;
+    clan.mmr = _initialMMR;
 
     player.clanId = uint32(clanId);
     player.rank = ClanRank.OWNER;
     if (player.requestedClanId != 0) {
-      removeJoinRequest(player.requestedClanId, _playerId);
+      removeJoinRequest(player.requestedClanId, playerId);
     }
 
-    (string memory trimmedName, ) = _setName(clanId, _name);
-    _checkSocials(_discord, _telegram, _twitter);
-    string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram, _twitter);
-    emit ClanCreated(clanId, _playerId, clanInfo, _imageId, _tierId);
+    (string memory trimmedName, ) = _setName(clanId, name);
+    _checkSocials(discord, telegram, twitter);
+    string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
+    emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId);
     _pay(tier.price);
 
-    bankFactory.createBank(_msgSender(), clanId);
+    _bankFactory.createBank(_msgSender(), clanId);
   }
 
   function editClan(
-    uint256 _clanId,
-    string calldata _name,
-    string calldata _discord,
-    string calldata _telegram,
-    string calldata _twitter,
-    uint256 _imageId,
-    uint256 _playerId
-  ) external isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.LEADER) {
-    Clan storage clan = clans[_clanId];
-    Tier storage tier = tiers[clan.tierId];
-    _checkClanImage(_imageId, tier.maxImageId);
-    (string memory trimmedName, bool nameChanged) = _setName(_clanId, _name);
+    uint256 clanId,
+    string calldata name,
+    string calldata discord,
+    string calldata telegram,
+    string calldata twitter,
+    uint256 imageId,
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
+    Clan storage clan = _clans[clanId];
+    Tier storage tier = _tiers[clan.tierId];
+    _checkClanImage(imageId, tier.maxImageId);
+    (string memory trimmedName, bool nameChanged) = _setName(clanId, name);
     if (nameChanged) {
-      _pay(editNameCost);
+      _pay(_editNameCost);
     }
 
-    _checkSocials(_discord, _telegram, _twitter);
-    string[] memory clanInfo = _createClanInfo(trimmedName, _discord, _telegram, _twitter);
-    emit ClanEdited(_clanId, _playerId, clanInfo, _imageId);
+    _checkSocials(discord, telegram, twitter);
+    string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
+    emit ClanEdited(clanId, playerId, clanInfo, imageId);
   }
 
-  function deleteInvitesAsPlayer(uint256[] calldata _clanIds, uint256 _playerId) external isOwnerOfPlayer(_playerId) {
-    if (_clanIds.length == 0) {
-      revert NoInvitesToDelete();
-    }
+  function deleteInvitesAsPlayer(uint256[] calldata clanIds, uint256 playerId) external isOwnerOfPlayer(playerId) {
+    require(clanIds.length != 0, NoInvitesToDelete());
 
-    for (uint256 i = 0; i < _clanIds.length; ++i) {
-      uint256 clanId = _clanIds[i];
-      if (!clans[clanId].inviteRequests[_playerId]) {
-        revert InviteDoesNotExist();
-      }
-      delete clans[clanId].inviteRequests[_playerId];
+    for (uint256 i = 0; i < clanIds.length; ++i) {
+      uint256 clanId = clanIds[i];
+      require(_clans[clanId].inviteRequests[playerId], InviteDoesNotExist());
+      delete _clans[clanId].inviteRequests[playerId];
     }
-    emit InvitesDeletedByPlayer(_clanIds, _playerId);
+    emit InvitesDeletedByPlayer(clanIds, playerId);
   }
 
   function deleteInvitesAsClan(
-    uint256 _clanId,
+    uint256 clanId,
     uint256[] calldata _invitedPlayerIds,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
-    Clan storage clan = clans[_clanId];
-    if (_invitedPlayerIds.length == 0) {
-      revert NoInvitesToDelete();
-    }
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+    Clan storage clan = _clans[clanId];
+    require(_invitedPlayerIds.length != 0, NoInvitesToDelete());
 
     for (uint256 i = 0; i < _invitedPlayerIds.length; ++i) {
       uint256 invitedPlayerId = _invitedPlayerIds[i];
-      if (!clan.inviteRequests[invitedPlayerId]) {
-        revert InviteDoesNotExist();
-      }
+      require(clan.inviteRequests[invitedPlayerId], InviteDoesNotExist());
       clan.inviteRequests[invitedPlayerId] = false;
     }
 
-    emit InvitesDeletedByClan(_clanId, _invitedPlayerIds, _playerId);
+    emit InvitesDeletedByClan(clanId, _invitedPlayerIds, playerId);
   }
 
   function inviteMember(
-    uint256 _clanId,
-    uint256 _member,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
-    Clan storage clan = clans[_clanId];
-    Tier storage tier = tiers[clan.tierId];
-    if (clan.memberCount >= tier.maxMemberCapacity) {
-      revert ClanIsFull();
-    }
+    uint256 clanId,
+    uint256 member,
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+    Clan storage clan = _clans[clanId];
+    Tier storage tier = _tiers[clan.tierId];
+    require(clan.memberCount < tier.maxMemberCapacity, ClanIsFull());
 
-    _inviteMember(_clanId, _member);
+    _inviteMember(clanId, member);
 
-    emit InviteSent(_clanId, _member, _playerId);
+    emit InviteSent(clanId, member, playerId);
   }
 
   function inviteMembers(
-    uint256 _clanId,
+    uint256 clanId,
     uint256[] calldata _memberPlayerIds,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
-    Clan storage clan = clans[_clanId];
-    Tier storage tier = tiers[clan.tierId];
-    if (clan.memberCount + _memberPlayerIds.length > tier.maxMemberCapacity) {
-      revert ClanIsFull();
-    }
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+    Clan storage clan = _clans[clanId];
+    Tier storage tier = _tiers[clan.tierId];
+    require(clan.memberCount + _memberPlayerIds.length <= tier.maxMemberCapacity, ClanIsFull());
 
     for (uint256 i = 0; i < _memberPlayerIds.length; ++i) {
-      _inviteMember(_clanId, _memberPlayerIds[i]);
+      _inviteMember(clanId, _memberPlayerIds[i]);
     }
-    emit InvitesSent(_clanId, _memberPlayerIds, _playerId);
+    emit InvitesSent(clanId, _memberPlayerIds, playerId);
   }
 
-  function _acceptInvite(uint256 _clanId, uint256 _playerId, uint256 _gateKeepTokenId) private {
-    Clan storage clan = clans[_clanId];
-    PlayerInfo storage player = playerInfo[_playerId];
+  function _acceptInvite(uint256 clanId, uint256 playerId, uint256 gateKeepTokenId) private {
+    Clan storage clan = _clans[clanId];
+    PlayerInfo storage player = _playerInfo[playerId];
 
-    if (!clan.inviteRequests[_playerId]) {
-      revert InviteDoesNotExist();
-    }
+    require(clan.inviteRequests[playerId], InviteDoesNotExist());
+    require(!isMemberOfAnyClan(playerId), AlreadyInClan());
 
-    if (isMemberOfAnyClan(_playerId)) {
-      revert AlreadyInClan();
-    }
+    _checkGateKeeping(clanId, gateKeepTokenId);
 
-    _checkGateKeeping(_clanId, _gateKeepTokenId);
+    Tier storage tier = _tiers[clan.tierId];
+    require(clan.memberCount < tier.maxMemberCapacity, ClanIsFull());
 
-    Tier storage tier = tiers[clan.tierId];
-    if (clan.memberCount >= tier.maxMemberCapacity) {
-      revert ClanIsFull();
-    }
-
-    clan.inviteRequests[_playerId] = false;
+    clan.inviteRequests[playerId] = false;
     clan.memberCount = uint16(clan.memberCount.inc());
 
-    player.clanId = uint32(_clanId);
+    player.clanId = uint32(clanId);
     player.rank = ClanRank.COMMONER;
     player.requestedClanId = 0;
 
-    emit InviteAccepted(_clanId, _playerId);
+    emit InviteAccepted(clanId, playerId);
   }
 
   function acceptInvite(
-    uint256 _clanId,
-    uint256 _playerId,
-    uint256 _gateKeepTokenId
-  ) external isOwnerOfPlayerAndActive(_playerId) {
-    _acceptInvite(_clanId, _playerId, _gateKeepTokenId);
+    uint256 clanId,
+    uint256 playerId,
+    uint256 gateKeepTokenId
+  ) external isOwnerOfPlayerAndActive(playerId) {
+    _acceptInvite(clanId, playerId, gateKeepTokenId);
   }
 
   function requestToJoin(
-    uint256 _clanId,
-    uint256 _playerId,
+    uint256 clanId,
+    uint256 playerId,
     uint256 _gateKeepTokenId
-  ) external isOwnerOfPlayerAndActive(_playerId) {
-    _requestToJoin(_clanId, _playerId, _gateKeepTokenId);
+  ) external isOwnerOfPlayerAndActive(playerId) {
+    _requestToJoin(clanId, playerId, _gateKeepTokenId);
   }
 
-  function removeJoinRequest(uint256 _clanId, uint256 _playerId) public isOwnerOfPlayer(_playerId) {
-    playerInfo[_playerId].requestedClanId = 0;
-    emit JoinRequestRemoved(_clanId, _playerId);
+  function removeJoinRequest(uint256 clanId, uint256 playerId) public isOwnerOfPlayer(playerId) {
+    _playerInfo[playerId].requestedClanId = 0;
+    emit JoinRequestRemoved(clanId, playerId);
   }
 
   function removeJoinRequestsAsClan(
-    uint256 _clanId,
-    uint256[] calldata _joinRequestPlayerIds,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
-    if (_joinRequestPlayerIds.length == 0) {
-      revert NoJoinRequestsToDelete();
-    }
+    uint256 clanId,
+    uint256[] calldata joinRequestPlayerIds,
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+    require(joinRequestPlayerIds.length != 0, NoJoinRequestsToDelete());
 
-    for (uint256 i = 0; i < _joinRequestPlayerIds.length; ++i) {
-      uint256 joinRequestPlayerId = _joinRequestPlayerIds[i];
-      PlayerInfo storage player = playerInfo[joinRequestPlayerId];
-      if (player.requestedClanId != _clanId) {
-        revert NoJoinRequest();
-      }
+    for (uint256 i = 0; i < joinRequestPlayerIds.length; ++i) {
+      uint256 joinRequestPlayerId = joinRequestPlayerIds[i];
+      PlayerInfo storage player = _playerInfo[joinRequestPlayerId];
+      require(player.requestedClanId == clanId, NoJoinRequest());
       player.requestedClanId = 0;
     }
 
-    emit JoinRequestsRemovedByClan(_clanId, _joinRequestPlayerIds, _playerId);
+    emit JoinRequestsRemovedByClan(clanId, joinRequestPlayerIds, playerId);
   }
 
   function acceptJoinRequest(
-    uint256 _clanId,
-    uint256 _newMemberPlayedId,
-    uint256 _playerId
-  ) public isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
-    Clan storage clan = clans[_clanId];
-    Tier storage tier = tiers[clan.tierId];
-    if (clan.memberCount >= tier.maxMemberCapacity) {
-      revert ClanIsFull();
-    }
+    uint256 clanId,
+    uint256 newMemberPlayedId,
+    uint256 playerId
+  ) public isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+    Clan storage clan = _clans[clanId];
+    Tier storage tier = _tiers[clan.tierId];
+    require(clan.memberCount < tier.maxMemberCapacity, ClanIsFull());
 
-    _acceptJoinRequest(_clanId, _newMemberPlayedId);
+    _acceptJoinRequest(clanId, newMemberPlayedId);
 
-    emit JoinRequestAccepted(_clanId, _newMemberPlayedId, _playerId);
+    emit JoinRequestAccepted(clanId, newMemberPlayedId, playerId);
   }
 
   function acceptJoinRequests(
-    uint256 _clanId,
-    uint256[] calldata _newMemberPlayedIds,
-    uint256 _playerId
-  ) public isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
-    Clan storage clan = clans[_clanId];
-    Tier storage tier = tiers[clan.tierId];
-    if (clan.memberCount + _newMemberPlayedIds.length > tier.maxMemberCapacity) {
-      revert ClanIsFull();
+    uint256 clanId,
+    uint256[] calldata newMemberPlayedIds,
+    uint256 playerId
+  ) public isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+    Clan storage clan = _clans[clanId];
+    Tier storage tier = _tiers[clan.tierId];
+    require(clan.memberCount + newMemberPlayedIds.length <= tier.maxMemberCapacity, ClanIsFull());
+
+    for (uint256 i = 0; i < newMemberPlayedIds.length; ++i) {
+      _acceptJoinRequest(clanId, newMemberPlayedIds[i]);
     }
 
-    for (uint256 i = 0; i < _newMemberPlayedIds.length; ++i) {
-      _acceptJoinRequest(_clanId, _newMemberPlayedIds[i]);
-    }
-
-    emit JoinRequestsAccepted(_clanId, _newMemberPlayedIds, _playerId);
+    emit JoinRequestsAccepted(clanId, newMemberPlayedIds, playerId);
   }
 
   function changeRank(
-    uint256 _clanId,
-    uint256 _memberId,
-    ClanRank _rank,
-    uint256 _playerId
-  ) public isOwnerOfPlayer(_playerId) isMemberOfClan(_clanId, _memberId) {
-    ClanRank currentMemberRank = playerInfo[_memberId].rank;
-    ClanRank callerRank = playerInfo[_playerId].rank;
-    bool changingSelf = _memberId == _playerId;
+    uint256 clanId,
+    uint256 memberId,
+    ClanRank rank,
+    uint256 playerId
+  ) public isOwnerOfPlayer(playerId) isMemberOfClan(clanId, memberId) {
+    ClanRank currentMemberRank = _playerInfo[memberId].rank;
+    ClanRank callerRank = _playerInfo[playerId].rank;
+    bool changingSelf = memberId == playerId;
 
-    if (callerRank <= _rank) {
-      revert ChangingRankEqualOrHigherThanSelf();
-    }
+    require(callerRank > rank, ChangingRankEqualOrHigherThanSelf());
 
     // Cannot change Rank of someone higher or equal yourself
     if (changingSelf) {
-      if (callerRank < currentMemberRank) {
-        revert ChangingRankOfPlayerHigherThanSelf();
-      }
+      require(callerRank >= currentMemberRank, ChangingRankOfPlayerHigherThanSelf());
     } else {
-      if (callerRank <= currentMemberRank) {
-        revert ChangingRankOfPlayerEqualOrHigherThanSelf();
-      }
+      require(callerRank > currentMemberRank, ChangingRankOfPlayerEqualOrHigherThanSelf());
     }
 
-    if (currentMemberRank == _rank) {
-      revert CannotSetSameRank();
-    }
+    require(currentMemberRank != rank, CannotSetSameRank());
 
-    bool isDemoting = currentMemberRank > _rank;
+    bool isDemoting = currentMemberRank > rank;
     if (isDemoting) {
       // Are they leaving?
-      if (_rank == ClanRank.NONE) {
-        _removeFromClan(_clanId, _memberId, _playerId);
+      if (rank == ClanRank.NONE) {
+        _removeFromClan(clanId, memberId, playerId);
       } else {
         // If owner is leaving their post then we need to update the owned state
         if (currentMemberRank == ClanRank.OWNER) {
-          _ownerCleared(_clanId);
+          _ownerCleared(clanId);
         }
-        _updateRank(_clanId, _memberId, _rank, _playerId);
+        _updateRank(clanId, memberId, rank, playerId);
       }
     } else {
       // Promoting
-      _updateRank(_clanId, _memberId, _rank, _playerId);
+      _updateRank(clanId, memberId, rank, playerId);
     }
   }
 
   function changeRanks(
-    uint256 _clanId,
-    uint256[] calldata _memberIds,
-    ClanRank[] calldata _ranks,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) {
-    for (uint256 i = 0; i < _memberIds.length; ++i) {
-      changeRank(_clanId, _memberIds[i], _ranks[i], _playerId);
+    uint256 clanId,
+    uint256[] calldata memberIds,
+    ClanRank[] calldata ranks,
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) {
+    for (uint256 i = 0; i < memberIds.length; ++i) {
+      changeRank(clanId, memberIds[i], ranks[i], playerId);
     }
   }
 
   function renounceOwnershipTo(
-    uint256 _clanId,
-    uint256 _newOwner,
-    ClanRank _newRank
-  ) external isOwnerOfPlayer(clans[_clanId].owner) isMemberOfClan(_clanId, _newOwner) {
-    Clan storage clan = clans[_clanId];
+    uint256 clanId,
+    uint256 newOwner,
+    ClanRank newRank
+  ) external isOwnerOfPlayer(_clans[clanId].owner) isMemberOfClan(clanId, newOwner) {
+    Clan storage clan = _clans[clanId];
     uint256 oldOwnerId = clan.owner;
 
-    if (_newOwner == oldOwnerId) {
-      revert CannotRenounceToSelf();
-    }
+    require(newOwner != oldOwnerId, CannotRenounceToSelf());
 
-    if (_newRank != ClanRank.NONE) {
-      if (_newRank >= ClanRank.OWNER) {
-        revert RankMustBeLowerRenounce();
-      }
+    if (newRank != ClanRank.NONE) {
+      require(newRank < ClanRank.OWNER, RankMustBeLowerRenounce());
       // Change old owner to new rank
-      _updateRank(_clanId, oldOwnerId, _newRank, oldOwnerId);
+      _updateRank(clanId, oldOwnerId, newRank, oldOwnerId);
     } else {
-      _removeFromClan(_clanId, oldOwnerId, oldOwnerId);
+      _removeFromClan(clanId, oldOwnerId, oldOwnerId);
     }
-    _claimOwnership(_clanId, _newOwner);
+    _claimOwnership(clanId, newOwner);
   }
 
   // Can claim a clan if there is no owner
   function claimOwnership(
-    uint256 _clanId,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) isMemberOfClan(_clanId, _playerId) {
-    Clan storage clan = clans[_clanId];
-    if (clan.owner != 0) {
-      revert OwnerExists();
-    }
+    uint256 clanId,
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) isMemberOfClan(clanId, playerId) {
+    Clan storage clan = _clans[clanId];
+    require(clan.owner == 0, OwnerExists());
 
-    _claimOwnership(_clanId, _playerId);
+    _claimOwnership(clanId, playerId);
   }
 
   function setJoinRequestsEnabled(
-    uint256 _clanId,
-    bool _joinRequestsEnabled,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.SCOUT) {
-    Clan storage clan = clans[_clanId];
-    clan.disableJoinRequests = !_joinRequestsEnabled;
-    emit JoinRequestsEnabled(_clanId, _joinRequestsEnabled, _playerId);
+    uint256 clanId,
+    bool joinRequestsEnabled,
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
+    Clan storage clan = _clans[clanId];
+    clan.disableJoinRequests = !joinRequestsEnabled;
+    emit JoinRequestsEnabled(clanId, joinRequestsEnabled, playerId);
   }
 
-  function upgradeClan(uint256 _clanId, uint256 _playerId, uint8 _newTierId) public isOwnerOfPlayer(_playerId) {
-    _upgradeClan(_clanId, _playerId, _newTierId);
+  function upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) public isOwnerOfPlayer(playerId) {
+    _upgradeClan(clanId, playerId, newTierId);
   }
 
   function pinMessage(
-    uint256 _clanId,
+    uint256 clanId,
     string calldata _message,
-    uint256 _playerId
-  ) external isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.LEADER) {
-    if (bytes(_message).length > 200) {
-      revert MessageTooLong();
-    }
-    emit PinMessage(_clanId, _message, _playerId);
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
+    require(bytes(_message).length <= 200, MessageTooLong());
+    emit PinMessage(clanId, _message, playerId);
   }
 
-  function setMMR(uint256 _clanId, uint16 _mmr) external onlyMMRSetter {
-    clans[_clanId].mmr = _mmr;
+  function setMMR(uint256 clanId, uint16 mmr) external onlyMMRSetter {
+    _clans[clanId].mmr = mmr;
   }
 
-  function getClanNameOfPlayer(uint256 _playerId) external view returns (string memory) {
-    uint256 clanId = playerInfo[_playerId].clanId;
-    return clans[clanId].name;
+  function getClanNameOfPlayer(uint256 playerId) external view returns (string memory) {
+    uint256 clanId = _playerInfo[playerId].clanId;
+    return _clans[clanId].name;
   }
 
-  function canWithdraw(uint256 _clanId, uint256 _playerId) external view override returns (bool) {
-    return playerInfo[_playerId].clanId == _clanId && playerInfo[_playerId].rank >= ClanRank.TREASURER;
+  function canWithdraw(uint256 clanId, uint256 playerId) external view override returns (bool) {
+    return _playerInfo[playerId].clanId == clanId && _playerInfo[playerId].rank >= ClanRank.TREASURER;
   }
 
-  function isClanMember(uint256 _clanId, uint256 _playerId) external view returns (bool) {
-    return playerInfo[_playerId].clanId == _clanId;
+  function isClanMember(uint256 clanId, uint256 playerId) external view returns (bool) {
+    return _playerInfo[playerId].clanId == clanId;
   }
 
-  function isMemberOfAnyClan(uint256 _playerId) public view returns (bool) {
-    return playerInfo[_playerId].clanId != 0;
+  function isMemberOfAnyClan(uint256 playerId) public view returns (bool) {
+    return _playerInfo[playerId].clanId != 0;
   }
 
-  function getClanTierMembership(uint256 _playerId) external view returns (uint8) {
-    return clans[playerInfo[_playerId].clanId].tierId;
+  function getClanTierMembership(uint256 playerId) external view returns (uint8) {
+    return _clans[_playerInfo[playerId].clanId].tierId;
   }
 
-  function getClanId(uint256 _playerId) external view returns (uint256) {
-    return playerInfo[_playerId].clanId;
+  function getClanId(uint256 playerId) external view returns (uint256) {
+    return _playerInfo[playerId].clanId;
   }
 
-  function getMMR(uint256 _clanId) external view returns (uint16 mmr) {
-    mmr = clans[_clanId].mmr;
+  function getMMR(uint256 clanId) external view returns (uint16 mmr) {
+    mmr = _clans[clanId].mmr;
   }
 
-  function hasInviteRequest(uint256 _clanId, uint256 _playerId) external view returns (bool) {
-    return clans[_clanId].inviteRequests[_playerId];
+  function hasInviteRequest(uint256 clanId, uint256 playerId) external view returns (bool) {
+    return _clans[clanId].inviteRequests[playerId];
   }
 
-  function maxBankCapacity(uint256 _clanId) external view override returns (uint16) {
-    Tier storage tier = tiers[clans[_clanId].tierId];
+  function maxBankCapacity(uint256 clanId) external view override returns (uint16) {
+    Tier storage tier = _tiers[_clans[clanId].tierId];
     return tier.maxBankCapacity;
   }
 
-  function maxMemberCapacity(uint256 _clanId) external view override returns (uint16) {
-    Tier storage tier = tiers[clans[_clanId].tierId];
+  function maxMemberCapacity(uint256 clanId) external view override returns (uint16) {
+    Tier storage tier = _tiers[_clans[clanId].tierId];
     return tier.maxMemberCapacity;
   }
 
-  function getRank(uint256 _clanId, uint256 _playerId) external view returns (ClanRank rank) {
-    if (playerInfo[_playerId].clanId == _clanId) {
-      return playerInfo[_playerId].rank;
+  function getRank(uint256 clanId, uint256 playerId) external view returns (ClanRank rank) {
+    if (_playerInfo[playerId].clanId == clanId) {
+      return _playerInfo[playerId].rank;
     }
     return ClanRank.NONE;
   }
 
-  function _checkClanImage(uint256 _imageId, uint256 _maxImageId) private pure {
-    if (_imageId == 0 || _imageId > _maxImageId) {
-      revert InvalidImageId();
-    }
+  function getEditNameCost() external view returns (uint80) {
+    return _editNameCost;
+  }
+
+  function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
+    return _playerInfo[playerId];
+  }
+
+  function getLowercaseNames(string calldata name) external view returns (bool) {
+    return _lowercaseNames[name];
+  }
+
+  function getTier(uint256 tierId) external view returns (Tier memory) {
+    return _tiers[tierId];
+  }
+
+  function getClan(
+    uint256 clanId
+  )
+    external
+    view
+    returns (
+      uint80 owner,
+      uint16 imageId,
+      uint16 memberCount,
+      uint40 createdTimestamp,
+      uint8 tierId,
+      bool disableJoinRequests,
+      uint16 mmr,
+      string memory name,
+      NFTInfo[] memory gateKeptNFTs
+    )
+  {
+    Clan storage clan = _clans[clanId];
+    return (
+      clan.owner,
+      clan.imageId,
+      clan.memberCount,
+      clan.createdTimestamp,
+      clan.tierId,
+      clan.disableJoinRequests,
+      clan.mmr,
+      clan.name,
+      clan.gateKeptNFTs
+    );
+  }
+
+  function _checkClanImage(uint256 imageId, uint256 maxImageId) private pure {
+    require(imageId != 0 && imageId <= maxImageId, InvalidImageId());
   }
 
   function _setName(
-    uint256 _clanId,
-    string calldata _name
+    uint256 clanId,
+    string calldata name
   ) private returns (string memory trimmedName, bool nameChanged) {
     // Trimmed name cannot be empty
-    trimmedName = EstforLibrary.trim(_name);
-    if (bytes(trimmedName).length < 3) {
-      revert NameTooShort();
-    }
-    if (bytes(trimmedName).length > 20) {
-      revert NameTooLong();
-    }
-
-    if (!EstforLibrary.containsValidNameCharacters(trimmedName)) {
-      revert NameInvalidCharacters();
-    }
+    trimmedName = EstforLibrary.trim(name);
+    require(bytes(trimmedName).length >= 3, NameTooShort());
+    require(bytes(trimmedName).length <= 20, NameTooLong());
+    require(EstforLibrary.containsValidNameCharacters(trimmedName), NameInvalidCharacters());
 
     string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
-    string memory oldName = EstforLibrary.toLower(clans[_clanId].name);
+    string memory oldName = EstforLibrary.toLower(_clans[clanId].name);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      if (lowercaseNames[trimmedAndLowercaseName]) {
-        revert NameAlreadyExists();
-      }
+      require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
-        delete lowercaseNames[oldName];
+        delete _lowercaseNames[oldName];
       }
-      lowercaseNames[trimmedAndLowercaseName] = true;
-      clans[_clanId].name = trimmedName;
+      _lowercaseNames[trimmedAndLowercaseName] = true;
+      _clans[clanId].name = trimmedName;
     }
   }
 
-  function _checkSocials(string calldata _discord, string calldata _telegram, string calldata _twitter) private pure {
-    uint256 discordLength = bytes(_discord).length;
-    if (discordLength > 25) {
-      revert DiscordTooLong();
-    }
+  function _checkSocials(string calldata discord, string calldata telegram, string calldata twitter) private pure {
+    uint256 discordLength = bytes(discord).length;
+    require(discordLength <= 25, DiscordTooLong());
+    require(discordLength == 0 || discordLength >= 4, DiscordTooShort());
+    require(EstforLibrary.containsBaselineSocialNameCharacters(discord), DiscordInvalidCharacters());
 
-    if (discordLength != 0 && discordLength < 4) {
-      revert DiscordTooShort();
-    }
+    uint256 telegramLength = bytes(telegram).length;
+    require(telegramLength <= 25, TelegramTooLong());
+    require(EstforLibrary.containsBaselineSocialNameCharacters(telegram), TelegramInvalidCharacters());
 
-    if (!EstforLibrary.containsBaselineSocialNameCharacters(_discord)) {
-      revert DiscordInvalidCharacters();
-    }
-
-    uint256 telegramLength = bytes(_telegram).length;
-    if (telegramLength > 25) {
-      revert TelegramTooLong();
-    }
-
-    if (!EstforLibrary.containsBaselineSocialNameCharacters(_telegram)) {
-      revert TelegramInvalidCharacters();
-    }
-
-    uint256 twitterLength = bytes(_twitter).length;
-    if (twitterLength > 25) {
-      revert TwitterTooLong();
-    }
-
-    if (!EstforLibrary.containsBaselineSocialNameCharacters(_twitter)) {
-      revert TwitterInvalidCharacters();
-    }
+    uint256 twitterLength = bytes(twitter).length;
+    require(twitterLength <= 25, TwitterTooLong());
+    require(EstforLibrary.containsBaselineSocialNameCharacters(twitter), TwitterInvalidCharacters());
   }
 
   function _createClanInfo(
-    string memory _trimmedName,
-    string calldata _discord,
-    string calldata _telegram,
-    string calldata _twitter
+    string memory trimmedName,
+    string calldata discord,
+    string calldata telegram,
+    string calldata twitter
   ) private pure returns (string[] memory clanInfo) {
     clanInfo = new string[](4);
-    clanInfo[0] = _trimmedName;
-    clanInfo[1] = _discord;
-    clanInfo[2] = _telegram;
-    clanInfo[3] = _twitter;
+    clanInfo[0] = trimmedName;
+    clanInfo[1] = discord;
+    clanInfo[2] = telegram;
+    clanInfo[3] = twitter;
   }
 
-  function _checkGateKeeping(uint256 _clanId, uint256 _gateKeepTokenId) private view {
-    NFTInfo[] memory nftInfo = clans[_clanId].gateKeptNFTs;
+  function _checkGateKeeping(uint256 clanId, uint256 gateKeepTokenId) private view {
+    NFTInfo[] memory nftInfo = _clans[clanId].gateKeptNFTs;
     bool foundNFT;
     if (nftInfo.length != 0) {
       // Check the player owns one of these NFTs
       for (uint256 i = 0; i < nftInfo.length; ++i) {
         if (nftInfo[i].nftType == 1155) {
-          foundNFT = foundNFT || IERC1155(nftInfo[i].nft).balanceOf(_msgSender(), _gateKeepTokenId) != 0;
+          foundNFT = foundNFT || IERC1155(nftInfo[i].nft).balanceOf(_msgSender(), gateKeepTokenId) != 0;
         } else if (nftInfo[i].nftType == 721) {
-          foundNFT = foundNFT || IERC721(nftInfo[i].nft).ownerOf(_gateKeepTokenId) == _msgSender();
+          foundNFT = foundNFT || IERC721(nftInfo[i].nft).ownerOf(gateKeepTokenId) == _msgSender();
         }
       }
 
-      if (!foundNFT) {
-        revert NoGateKeptNFTFound();
-      }
+      require(foundNFT, NoGateKeptNFTFound());
     }
   }
 
-  function _ownerCleared(uint256 _clanId) private {
-    uint256 oldOwnerId = clans[_clanId].owner;
-    clans[_clanId].owner = 0;
-    ownerlessClanTimestamps[_clanId] = uint40(block.timestamp);
-    emit ClanOwnerLeft(_clanId, oldOwnerId);
+  function _ownerCleared(uint256 clanId) private {
+    uint256 oldOwnerId = _clans[clanId].owner;
+    _clans[clanId].owner = 0;
+    _ownerlessClanTimestamps[clanId] = uint40(block.timestamp);
+    emit ClanOwnerLeft(clanId, oldOwnerId);
   }
 
-  function _updateRank(uint256 _clanId, uint256 _memberId, ClanRank _rank, uint256 _playerId) private {
-    PlayerInfo storage player = playerInfo[_memberId];
-    player.rank = _rank;
-    emit PlayerRankUpdated(_clanId, _memberId, _rank, _playerId);
+  function _updateRank(uint256 clanId, uint256 memberId, ClanRank rank, uint256 playerId) private {
+    PlayerInfo storage player = _playerInfo[memberId];
+    player.rank = rank;
+    emit PlayerRankUpdated(clanId, memberId, rank, playerId);
   }
 
-  function _destroyClan(uint256 _clanId) private {
-    if (clans[_clanId].memberCount != 0) {
-      // Defensive check
-      revert ClanDestroyFailedHasMembers();
-    }
-    lowercaseNames[EstforLibrary.toLower(clans[_clanId].name)] = false; // Name can be used again
-    delete clans[_clanId]; // Delete the clan
-    emit ClanDestroyed(_clanId);
+  function _destroyClan(uint256 clanId) private {
+    // Defensive check
+    require(_clans[clanId].memberCount == 0, ClanDestroyFailedHasMembers());
+    _lowercaseNames[EstforLibrary.toLower(_clans[clanId].name)] = false; // Name can be used again
+    delete _clans[clanId]; // Delete the clan
+    emit ClanDestroyed(clanId);
   }
 
-  function _removeFromClan(uint256 _clanId, uint256 _playerId, uint256 _removingPlayerId) private {
-    Clan storage clan = clans[_clanId];
+  function _removeFromClan(uint256 clanId, uint256 playerId, uint256 _removingPlayerId) private {
+    Clan storage clan = _clans[clanId];
 
-    if (clan.owner == _playerId) {
-      _ownerCleared(_clanId);
+    if (clan.owner == playerId) {
+      _ownerCleared(clanId);
     }
 
     --clan.memberCount;
     if (clan.memberCount == 0) {
-      _destroyClan(_clanId);
+      _destroyClan(clanId);
     } else {
-      emit MemberLeft(_clanId, _playerId, _removingPlayerId);
+      emit MemberLeft(clanId, playerId, _removingPlayerId);
     }
-    PlayerInfo storage player = playerInfo[_playerId];
+    PlayerInfo storage player = _playerInfo[playerId];
     player.clanId = 0;
     player.rank = ClanRank.NONE;
 
-    territories.clanMemberLeft(_clanId, _playerId);
-    lockedBankVaults.clanMemberLeft(_clanId, _playerId);
+    _territories.clanMemberLeft(clanId, playerId);
+    _lockedBankVaults.clanMemberLeft(clanId, playerId);
   }
 
-  function _claimOwnership(uint256 _clanId, uint256 _playerId) private {
-    Clan storage clan = clans[_clanId];
-    clan.owner = uint80(_playerId);
-    delete ownerlessClanTimestamps[_clanId];
-    playerInfo[_playerId].rank = ClanRank.OWNER;
-    emit ClanOwnershipTransferred(_clanId, _playerId);
+  function _claimOwnership(uint256 clanId, uint256 playerId) private {
+    Clan storage clan = _clans[clanId];
+    clan.owner = uint80(playerId);
+    delete _ownerlessClanTimestamps[clanId];
+    _playerInfo[playerId].rank = ClanRank.OWNER;
+    emit ClanOwnershipTransferred(clanId, playerId);
   }
 
-  function _pay(uint256 _brushCost) private {
+  function _pay(uint256 brushCost) private {
     // Pay
-    brush.transferFrom(_msgSender(), address(this), _brushCost);
-    uint256 quarterCost = _brushCost / 4;
+    _brush.transferFrom(_msgSender(), address(this), brushCost);
+    uint256 quarterCost = brushCost / 4;
     // Send half to the pool (currently shop)
-    brush.transfer(pool, _brushCost - quarterCost * 2);
+    _brush.transfer(_pool, brushCost - quarterCost * 2);
     // Send 1 quarter to the dev address
-    brush.transfer(dev, quarterCost);
+    _brush.transfer(_dev, quarterCost);
     // Burn 1 quarter
-    brush.burn(quarterCost);
+    _brush.burn(quarterCost);
   }
 
-  function _upgradeClan(uint256 _clanId, uint256 _playerId, uint8 _newTierId) private {
-    Tier storage oldTier = tiers[clans[_clanId].tierId];
-    if (oldTier.id == 0) {
-      revert ClanDoesNotExist();
-    }
+  function _upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) private {
+    Tier storage oldTier = _tiers[_clans[clanId].tierId];
+    require(oldTier.id != 0, ClanDoesNotExist());
+    require(newTierId > oldTier.id, CannotDowngradeTier());
 
-    if (_newTierId <= oldTier.id) {
-      revert CannotDowngradeTier();
-    }
+    _checkTierExists(newTierId);
 
-    _checkTierExists(_newTierId);
-
-    Tier storage newTier = tiers[_newTierId];
+    Tier storage newTier = _tiers[newTierId];
     uint256 priceDifference = newTier.price - oldTier.price;
     _pay(priceDifference);
 
-    clans[_clanId].tierId = _newTierId; // Increase the tier
-    emit ClanUpgraded(_clanId, _playerId, _newTierId);
+    _clans[clanId].tierId = newTierId; // Increase the tier
+    emit ClanUpgraded(clanId, playerId, newTierId);
   }
 
-  function _setTier(Tier calldata _tier) private {
-    uint256 tierId = _tier.id;
+  function _setTier(Tier calldata tier) private {
+    uint256 tierId = tier.id;
     // TODO: Some other checks
 
     // Price should be higher than the one prior
     if (tierId > 1) {
-      if (_tier.price < tiers[tierId - 1].price) {
-        revert PriceTooLow();
-      }
-      if (_tier.maxMemberCapacity < tiers[tierId - 1].maxMemberCapacity) {
-        revert MemberCapacityTooLow();
-      }
-      if (_tier.maxBankCapacity < tiers[tierId - 1].maxBankCapacity) {
-        revert BankCapacityTooLow();
-      }
-      if (_tier.maxImageId < tiers[tierId - 1].maxImageId) {
-        revert ImageIdTooLow();
-      }
+      require(tier.price >= _tiers[tierId - 1].price, PriceTooLow());
+      require(tier.maxMemberCapacity >= _tiers[tierId - 1].maxMemberCapacity, MemberCapacityTooLow());
+      require(tier.maxBankCapacity >= _tiers[tierId - 1].maxBankCapacity, BankCapacityTooLow());
+      require(tier.maxImageId >= _tiers[tierId - 1].maxImageId, ImageIdTooLow());
     }
-    tiers[tierId] = _tier;
+    _tiers[tierId] = tier;
   }
 
-  function _checkTierExists(uint256 _tierId) private view {
-    Tier storage tier = tiers[_tierId];
-    if (tier.id == 0) {
-      revert TierDoesNotExist();
-    }
+  function _checkTierExists(uint256 tierId) private view {
+    Tier storage tier = _tiers[tierId];
+    require(tier.id != 0, TierDoesNotExist());
   }
 
-  function _inviteMember(uint256 _clanId, uint256 _member) private {
-    Clan storage clan = clans[_clanId];
-    if (clan.inviteRequests[_member]) {
-      revert AlreadySentInvite();
-    }
+  function _inviteMember(uint256 clanId, uint256 member) private {
+    Clan storage clan = _clans[clanId];
+    require(!clan.inviteRequests[member], AlreadySentInvite());
 
-    clan.inviteRequests[_member] = true;
+    clan.inviteRequests[member] = true;
   }
 
-  function _requestToJoin(uint256 _clanId, uint256 _playerId, uint256 _gateKeepTokenId) private {
-    Clan storage clan = clans[_clanId];
-    if (clan.createdTimestamp == 0) {
-      revert ClanDoesNotExist();
-    }
+  function _requestToJoin(uint256 clanId, uint256 playerId, uint256 gateKeepTokenId) private {
+    Clan storage clan = _clans[clanId];
+    require(clan.createdTimestamp != 0, ClanDoesNotExist());
+    require(!clan.disableJoinRequests, JoinRequestsDisabled());
 
-    if (clan.disableJoinRequests) {
-      revert JoinRequestsDisabled();
-    }
+    _checkGateKeeping(clanId, gateKeepTokenId);
 
-    _checkGateKeeping(_clanId, _gateKeepTokenId);
+    PlayerInfo storage player = _playerInfo[playerId];
 
-    PlayerInfo storage player = playerInfo[_playerId];
-
-    if (isMemberOfAnyClan(_playerId)) {
-      revert AlreadyInClan();
-    }
+    require(!isMemberOfAnyClan(playerId), AlreadyInClan());
 
     uint256 playerRequestedClanId = player.requestedClanId;
     if (playerRequestedClanId != 0) {
-      if (playerRequestedClanId == _clanId) {
-        revert AlreadySentJoinRequest();
-      }
-      emit JoinRequestRemoved(playerRequestedClanId, _playerId);
+      require(playerRequestedClanId != clanId, AlreadySentJoinRequest());
+      emit JoinRequestRemoved(playerRequestedClanId, playerId);
     }
 
-    player.requestedClanId = uint32(_clanId);
+    player.requestedClanId = uint32(clanId);
 
-    emit JoinRequestSent(_clanId, _playerId);
+    emit JoinRequestSent(clanId, playerId);
   }
 
-  function _acceptJoinRequest(uint256 _clanId, uint256 _newMemberPlayedId) private {
-    Clan storage clan = clans[_clanId];
-    clan.inviteRequests[_newMemberPlayedId] = false;
+  function _acceptJoinRequest(uint256 clanId, uint256 newMemberPlayedId) private {
+    Clan storage clan = _clans[clanId];
+    clan.inviteRequests[newMemberPlayedId] = false;
     clan.memberCount = uint16(clan.memberCount.inc());
 
-    PlayerInfo storage player = playerInfo[_newMemberPlayedId];
-    if (player.requestedClanId != _clanId) {
-      revert NoJoinRequest();
-    }
-    player.clanId = uint32(_clanId);
+    PlayerInfo storage player = _playerInfo[newMemberPlayedId];
+    require(player.requestedClanId == clanId, NoJoinRequest());
+    player.clanId = uint32(clanId);
     player.requestedClanId = 0;
     player.rank = ClanRank.COMMONER;
   }
 
-  function addTiers(Tier[] calldata _tiers) external onlyOwner {
-    U256 bounds = _tiers.length.asU256();
+  function addTiers(Tier[] calldata tiers) external onlyOwner {
+    U256 bounds = tiers.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      if (tiers[_tiers[i].id].id != 0 || _tiers[i].id == 0) {
-        revert TierAlreadyExists();
-      }
-      _setTier(_tiers[i]);
+      require(tiers[i].id != 0 && _tiers[tiers[i].id].id == 0, TierAlreadyExists());
+      _setTier(tiers[i]);
     }
-    emit AddTiers(_tiers);
+    emit AddTiers(tiers);
   }
 
-  function editTiers(Tier[] calldata _tiers) external onlyOwner {
-    U256 bounds = _tiers.length.asU256();
+  function editTiers(Tier[] calldata tiers) external onlyOwner {
+    U256 bounds = tiers.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      _checkTierExists(_tiers[i].id);
-      _setTier(_tiers[i]);
+      _checkTierExists(tiers[i].id);
+      _setTier(tiers[i]);
     }
-    emit EditTiers(_tiers);
+    emit EditTiers(tiers);
   }
 
   function gateKeep(
-    uint256 _clanId,
-    NFTInfo[] calldata _nftInfos,
-    uint256 _playerId
-  ) external isOwnerOfPlayerAndActive(_playerId) isMinimumRank(_clanId, _playerId, ClanRank.LEADER) {
-    if (_nftInfos.length > 5) {
-      revert TooManyNFTs();
-    }
+    uint256 clanId,
+    NFTInfo[] calldata nftInfos,
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
+    require(nftInfos.length <= 5, TooManyNFTs());
 
-    address[] memory nfts = new address[](_nftInfos.length);
-    for (uint256 i; i < _nftInfos.length; ++i) {
+    address[] memory nfts = new address[](nftInfos.length);
+    for (uint256 i; i < nftInfos.length; ++i) {
       // This must be whitelisted by the PaintSwapMarketplace marketplace
-      address nft = _nftInfos[i].nft;
-      if (!IMarketplaceWhitelist(paintswapMarketplaceWhitelist).isWhitelisted(nft)) {
-        revert NFTNotWhitelistedOnMarketplace();
-      }
+      address nft = nftInfos[i].nft;
+      require(
+        IMarketplaceWhitelist(_paintswapMarketplaceWhitelist).isWhitelisted(nft),
+        NFTNotWhitelistedOnMarketplace()
+      );
       // Must be a supported NFT standard
-      uint256 nftType = _nftInfos[i].nftType;
-      if (nftType != 721 && nftType != 1155) {
-        revert UnsupportedNFTType();
-      }
+      uint256 nftType = nftInfos[i].nftType;
 
       // Checks supportsInterface is correct
-      if (nftType == 721 && !IERC721(nft).supportsInterface(type(IERC721).interfaceId)) {
-        revert InvalidNFTType();
-      }
-      if (nftType == 1155 && !IERC1155(nft).supportsInterface(type(IERC1155).interfaceId)) {
-        revert InvalidNFTType();
+      if (nftType == 721) {
+        require(IERC721(nft).supportsInterface(type(IERC721).interfaceId), InvalidNFTType());
+      } else if (nftType == 1155) {
+        require(IERC1155(nft).supportsInterface(type(IERC1155).interfaceId), InvalidNFTType());
+      } else {
+        revert UnsupportedNFTType();
       }
 
       nfts[i] = nft;
     }
 
-    clans[_clanId].gateKeptNFTs = _nftInfos;
-    emit GateKeepNFTs(_clanId, nfts, _playerId);
+    _clans[clanId].gateKeptNFTs = nftInfos;
+    emit GateKeepNFTs(clanId, nfts, playerId);
   }
 
-  function setBankFactory(IBankFactory _bankFactory) external onlyOwner {
-    bankFactory = _bankFactory;
+  function setBankFactory(IBankFactory bankFactory) external onlyOwner {
+    _bankFactory = bankFactory;
   }
 
-  function setPlayers(IPlayers _players) external onlyOwner {
-    players = _players;
+  function setPlayers(IPlayers players) external onlyOwner {
+    _players = players;
   }
 
-  function setEditNameCost(uint72 _editNameCost) external onlyOwner {
-    editNameCost = _editNameCost;
-    emit EditNameCost(_editNameCost);
+  function setEditNameCost(uint72 editNameCost) external onlyOwner {
+    _editNameCost = editNameCost;
+    emit EditNameCost(editNameCost);
   }
 
-  function setPaintSwapMarketplaceWhitelist(address _paintswapMarketplaceWhitelist) external onlyOwner {
-    paintswapMarketplaceWhitelist = _paintswapMarketplaceWhitelist;
+  function setPaintSwapMarketplaceWhitelist(address paintswapMarketplaceWhitelist) external onlyOwner {
+    _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
   }
 
   function setTerritoriesAndLockedBankVaults(
-    IClanMemberLeftCB _territories,
-    IClanMemberLeftCB _lockedBankVaults
+    IClanMemberLeftCB territories,
+    IClanMemberLeftCB lockedBankVaults
   ) external onlyOwner {
-    territories = _territories;
-    lockedBankVaults = _lockedBankVaults;
+    _territories = territories;
+    _lockedBankVaults = lockedBankVaults;
   }
 
-  function setInitialMMR(uint16 _mmr) public onlyOwner {
-    initialMMR = _mmr;
-    emit SetInitialMMR(_mmr);
+  function setInitialMMR(uint16 mmr) public onlyOwner {
+    _initialMMR = mmr;
+    emit SetInitialMMR(mmr);
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -3,42 +3,42 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       },
       {
         "internalType": "uint48[]",
-        "name": "_clanMembersA",
+        "name": "clanMembersA",
         "type": "uint48[]"
       },
       {
         "internalType": "uint48[]",
-        "name": "_clanMembersB",
+        "name": "clanMembersB",
         "type": "uint48[]"
       },
       {
         "internalType": "uint8[]",
-        "name": "_skills",
+        "name": "skillIds",
         "type": "uint8[]"
       },
       {
         "internalType": "uint256",
-        "name": "_randomWordA",
+        "name": "randomWordA",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_randomWordB",
+        "name": "randomWordB",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_extraRollsA",
+        "name": "extraRollsA",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_extraRollsB",
+        "name": "extraRollsB",
         "type": "uint256"
       }
     ],
@@ -72,12 +72,12 @@
     "inputs": [
       {
         "internalType": "uint48[]",
-        "name": "_array",
+        "name": "array",
         "type": "uint48[]"
       },
       {
         "internalType": "uint256",
-        "name": "_randomNumber",
+        "name": "randomNumber",
         "type": "uint256"
       }
     ],
@@ -85,7 +85,7 @@
     "outputs": [
       {
         "internalType": "uint48[]",
-        "name": "",
+        "name": "output",
         "type": "uint48[]"
       }
     ],

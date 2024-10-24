@@ -15,7 +15,7 @@ describe("Clans", function () {
       const {clans, playerId, clanId, imageId, tierId, tier, clanName, initialMMR} = await loadFixture(clanFixture);
 
       // Check that the clan is created with the correct values
-      const clan = await clans.clans(clanId);
+      const clan = await clans.getClan(clanId);
       expect(clan.owner).to.eq(playerId);
       expect(clan.memberCount).to.eq(1);
       expect(clan.imageId).to.eq(imageId);
@@ -32,7 +32,7 @@ describe("Clans", function () {
       expect(clan.createdTimestamp).to.eq(timestamp);
 
       // Check that the player is created with the correct values
-      const player = await clans.playerInfo(playerId);
+      const player = await clans.getPlayerInfo(playerId);
       expect(player.clanId).to.eq(clanId);
       expect(player.requestedClanId).to.eq(0);
     });
@@ -163,7 +163,7 @@ describe("Clans", function () {
         clans.connect(bob).requestToJoin(clanId + 1, bobPlayerId, NO_GATE_KEEPING_TOKEN_ID)
       ).to.be.revertedWithCustomError(clans, "ClanDoesNotExist");
       await clans.connect(bob).requestToJoin(clanId, bobPlayerId, NO_GATE_KEEPING_TOKEN_ID);
-      let newPlayer = await clans.playerInfo(bobPlayerId);
+      let newPlayer = await clans.getPlayerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(clanId);
 
@@ -174,7 +174,7 @@ describe("Clans", function () {
         .withArgs(clanId, bobPlayerId);
 
       // Check that the player is created with the correct values
-      newPlayer = await clans.playerInfo(bobPlayerId);
+      newPlayer = await clans.getPlayerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId + 1);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
@@ -197,7 +197,7 @@ describe("Clans", function () {
       expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.false;
       expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
 
-      const newPlayer = await clans.playerInfo(bobPlayerId);
+      const newPlayer = await clans.getPlayerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
@@ -232,7 +232,7 @@ describe("Clans", function () {
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
 
       await clans.connect(alice).changeRank(clanId, playerId, ClanRank.COMMONER, playerId);
-      const player = await clans.playerInfo(playerId);
+      const player = await clans.getPlayerInfo(playerId);
       expect(player.rank).to.eq(ClanRank.COMMONER);
       await expect(clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId)).to.be.revertedWithCustomError(
         clans,
@@ -340,13 +340,13 @@ describe("Clans", function () {
       const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, "charlie", true);
       await clans.connect(charlie).requestToJoin(clanId, charliePlayerId, NO_GATE_KEEPING_TOKEN_ID);
 
-      let playerInfo = await clans.playerInfo(bobPlayerId);
+      let playerInfo = await clans.getPlayerInfo(bobPlayerId);
       expect(playerInfo.requestedClanId).to.eq(clanId);
       await clans.connect(bob).removeJoinRequest(clanId, bobPlayerId);
-      playerInfo = await clans.playerInfo(bobPlayerId);
+      playerInfo = await clans.getPlayerInfo(bobPlayerId);
       expect(playerInfo.requestedClanId).to.eq(0);
       // Charlie should be unchanged
-      playerInfo = await clans.playerInfo(charliePlayerId);
+      playerInfo = await clans.getPlayerInfo(charliePlayerId);
       expect(playerInfo.requestedClanId).to.eq(clanId);
     });
 
@@ -361,9 +361,9 @@ describe("Clans", function () {
       const devPlayerId = await createPlayer(playerNFT, avatarId, dev, "dev", true);
       await clans.connect(dev).requestToJoin(clanId, devPlayerId, NO_GATE_KEEPING_TOKEN_ID);
 
-      expect((await clans.playerInfo(bobPlayerId)).requestedClanId).to.eq(clanId);
-      expect((await clans.playerInfo(charliePlayerId)).requestedClanId).to.eq(clanId);
-      expect((await clans.playerInfo(devPlayerId)).requestedClanId).to.eq(clanId);
+      expect((await clans.getPlayerInfo(bobPlayerId)).requestedClanId).to.eq(clanId);
+      expect((await clans.getPlayerInfo(charliePlayerId)).requestedClanId).to.eq(clanId);
+      expect((await clans.getPlayerInfo(devPlayerId)).requestedClanId).to.eq(clanId);
 
       // Trying to remove duplicate
       await expect(
@@ -384,11 +384,11 @@ describe("Clans", function () {
         clans.connect(alice).removeJoinRequestsAsClan(clanId, [bobPlayerId], playerId)
       ).to.be.revertedWithCustomError(clans, "RankNotHighEnough");
 
-      let playerInfo = await clans.playerInfo(bobPlayerId);
+      let playerInfo = await clans.getPlayerInfo(bobPlayerId);
       expect(playerInfo.requestedClanId).to.eq(clanId); // bob should be unchanged
-      playerInfo = await clans.playerInfo(charliePlayerId);
+      playerInfo = await clans.getPlayerInfo(charliePlayerId);
       expect(playerInfo.requestedClanId).to.eq(0);
-      playerInfo = await clans.playerInfo(devPlayerId);
+      playerInfo = await clans.getPlayerInfo(devPlayerId);
       expect(playerInfo.requestedClanId).to.eq(0);
     });
 
@@ -438,7 +438,7 @@ describe("Clans", function () {
       expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.true;
       expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
 
-      const newPlayer = await clans.playerInfo(bobPlayerId);
+      const newPlayer = await clans.getPlayerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
@@ -461,7 +461,7 @@ describe("Clans", function () {
       expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.true;
       expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
 
-      const newPlayer = await clans.playerInfo(bobPlayerId);
+      const newPlayer = await clans.getPlayerInfo(bobPlayerId);
       expect(newPlayer.clanId).to.eq(clanId);
       expect(newPlayer.requestedClanId).to.eq(0);
 
@@ -520,7 +520,7 @@ describe("Clans", function () {
       expect(await clans.canWithdraw(clanId, devPlayerId)).to.be.false;
       expect(await clans.isClanMember(clanId, devPlayerId)).to.be.false;
 
-      const newPlayer = await clans.playerInfo(devPlayerId);
+      const newPlayer = await clans.getPlayerInfo(devPlayerId);
       expect(newPlayer.clanId).to.eq(0);
       expect(newPlayer.requestedClanId).to.eq(0);
     });
@@ -530,7 +530,7 @@ describe("Clans", function () {
     const {clans, playerId, alice, owner, bob, charlie, clanId, tierId, playerNFT, avatarId} = await loadFixture(
       clanFixture
     );
-    const maxMemberCapacity = (await clans.tiers(tierId)).maxMemberCapacity;
+    const maxMemberCapacity = (await clans.getTier(tierId)).maxMemberCapacity;
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
     await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId); // Invite now as it won't be possible later when full
@@ -586,10 +586,10 @@ describe("Clans", function () {
       .connect(alice)
       .changeRanks(clanId, [bobPlayerId, charliePlayerId], [ClanRank.SCOUT, ClanRank.TREASURER], playerId);
 
-    const bobPlayerInfo = await clans.playerInfo(bobPlayerId);
+    const bobPlayerInfo = await clans.getPlayerInfo(bobPlayerId);
     expect(bobPlayerInfo.rank).to.eq(ClanRank.SCOUT);
 
-    const charliePlayerInfo = await clans.playerInfo(charliePlayerId);
+    const charliePlayerInfo = await clans.getPlayerInfo(charliePlayerId);
     expect(charliePlayerInfo.rank).to.eq(ClanRank.TREASURER);
   });
 
@@ -615,7 +615,7 @@ describe("Clans", function () {
     await expect(clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId))
       .to.emit(clans, "ClanOwnerLeft")
       .withArgs(clanId, playerId);
-    let clan = await clans.connect(alice).clans(clanId);
+    let clan = await clans.connect(alice).getClan(clanId);
     await expect(clan.owner).to.eq(0);
     await expect(clan.memberCount).to.eq(1);
 
@@ -626,7 +626,7 @@ describe("Clans", function () {
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId, NO_GATE_KEEPING_TOKEN_ID);
     await clans.connect(bob).claimOwnership(clanId, bobPlayerId);
 
-    clan = await clans.connect(alice).clans(clanId);
+    clan = await clans.connect(alice).getClan(clanId);
     await expect(clan.owner).to.eq(bobPlayerId);
     await expect(clan.memberCount).to.eq(2);
   });
@@ -668,7 +668,7 @@ describe("Clans", function () {
       await brush.connect(bob).approve(await clans.getAddress(), 1000);
       const tierId = 2;
       await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, tierId);
-      expect(await brush.balanceOf(bob.address)).to.eq(1000n - (await clans.tiers(tierId)).price);
+      expect(await brush.balanceOf(bob.address)).to.eq(1000n - (await clans.getTier(tierId)).price);
     });
 
     it("Anyone can upgrade", async function () {
@@ -679,7 +679,7 @@ describe("Clans", function () {
         "ERC20InsufficientAllowance"
       );
       const tierId = 2;
-      const brushAmount = (await clans.tiers(tierId)).price;
+      const brushAmount = (await clans.getTier(tierId)).price;
       await brush.mint(alice.address, brushAmount - 1n);
       await brush.connect(alice).approve(await clans.getAddress(), brushAmount);
       await expect(clans.connect(alice).upgradeClan(clanId, playerId, tierId)).to.be.revertedWithCustomError(
@@ -688,7 +688,7 @@ describe("Clans", function () {
       );
       await brush.mint(alice.address, 1);
       await clans.connect(alice).upgradeClan(clanId, playerId, tierId);
-      const clan = await clans.clans(clanId);
+      const clan = await clans.getClan(clanId);
       expect(clan.tierId).to.eq(2);
       expect(await brush.balanceOf(alice.address)).to.eq(0);
     });
@@ -741,19 +741,19 @@ describe("Clans", function () {
       await brush.mint(bob.address, 1000);
       await brush.connect(bob).approve(await clans.getAddress(), 1000);
       await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, tierId);
-      expect(await brush.balanceOf(bob.address)).to.eq(1000n - (await clans.tiers(tierId)).price);
+      expect(await brush.balanceOf(bob.address)).to.eq(1000n - (await clans.getTier(tierId)).price);
     });
 
     it("Pay the difference for incremental upgrades", async function () {
       const {clans, clanId, alice, playerId, brush} = await loadFixture(upgradedClansFixture);
 
-      const brushAmount = (await clans.tiers(3)).price;
+      const brushAmount = (await clans.getTier(3)).price;
       await brush.mint(alice.address, brushAmount);
       const beforeBalance = await brush.balanceOf(alice.address);
       await brush.connect(alice).approve(await clans.getAddress(), brushAmount);
 
       await clans.connect(alice).upgradeClan(clanId, playerId, 2);
-      expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance - (await clans.tiers(2)).price);
+      expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance - (await clans.getTier(2)).price);
       await clans.connect(alice).upgradeClan(clanId, playerId, 3);
       expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance - brushAmount);
     });
@@ -762,7 +762,7 @@ describe("Clans", function () {
       const {clans, clanId, playerNFT, avatarId, bob, brush} = await loadFixture(upgradedClansFixture);
 
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-      const brushAmount = (await clans.tiers(4)).price;
+      const brushAmount = (await clans.getTier(4)).price;
       expect(brushAmount).to.eq(0);
       await brush.mint(bob.address, 1000);
       await brush.connect(bob).approve(await clans.getAddress(), 1000);
@@ -818,8 +818,8 @@ describe("Clans", function () {
     tiers.pop();
     await clans.editTiers(tiers);
 
-    const tier1 = await clans.tiers(1);
-    const tier2 = await clans.tiers(2);
+    const tier1 = await clans.getTier(1);
+    const tier2 = await clans.getTier(2);
 
     expect(tier1.maxMemberCapacity).to.eq(tiers[0].maxMemberCapacity);
     expect(tier1.maxBankCapacity).to.eq(tiers[0].maxBankCapacity);
@@ -869,16 +869,16 @@ describe("Clans", function () {
         await brush.connect(alice).approve(await clans.getAddress(), brushAmount);
 
         await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, twitter, imageId, playerId);
-        expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.false;
-        expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
+        expect(await clans.getLowercaseNames(clanName.toLowerCase())).to.be.false;
+        expect(await clans.getLowercaseNames(anotherName.toLowerCase())).to.be.true;
 
         await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, twitter, imageId, playerId); // Use same name, should not fail unless both the same
         await clans.connect(alice).editClan(clanId, clanName, discord, telegram, twitter, imageId, playerId);
-        expect(await clans.lowercaseNames(clanName.toLowerCase())).to.be.true;
-        expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.false;
+        expect(await clans.getLowercaseNames(clanName.toLowerCase())).to.be.true;
+        expect(await clans.getLowercaseNames(anotherName.toLowerCase())).to.be.false;
         await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, twitter, imageId, playerId);
         await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, twitter, imageId + 1, playerId);
-        expect(await clans.lowercaseNames(anotherName.toLowerCase())).to.be.true;
+        expect(await clans.getLowercaseNames(anotherName.toLowerCase())).to.be.true;
       });
 
       it("Edit clan image", async () => {
@@ -919,7 +919,7 @@ describe("Clans", function () {
         expect(await clans.canWithdraw(clanId, bobPlayerId)).to.be.false;
         expect(await clans.isClanMember(clanId, bobPlayerId)).to.be.true;
 
-        const newPlayer = await clans.playerInfo(bobPlayerId);
+        const newPlayer = await clans.getPlayerInfo(bobPlayerId);
         expect(newPlayer.clanId).to.eq(clanId);
         expect(newPlayer.requestedClanId).to.eq(0);
       });
@@ -1141,12 +1141,12 @@ describe("Clans", function () {
         await clans.connect(alice).renounceOwnershipTo(clanId, bobPlayerId, ClanRank.COMMONER);
 
         // Leader should now be a commoner
-        const oldLeaderPlayerInfo = await clans.playerInfo(playerId);
+        const oldLeaderPlayerInfo = await clans.getPlayerInfo(playerId);
         expect(oldLeaderPlayerInfo.rank).to.eq(ClanRank.COMMONER);
         expect(oldLeaderPlayerInfo.clanId).to.eq(clanId);
 
         // Check owner transferred to bob and other clan details
-        const clan = await clans.connect(alice).clans(clanId);
+        const clan = await clans.connect(alice).getClan(clanId);
         await expect(clan.owner).to.eq(bobPlayerId);
         await expect(clan.memberCount).to.eq(2);
 

@@ -1042,17 +1042,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_gateKeepTokenId",
+        "name": "gateKeepTokenId",
         "type": "uint256"
       }
     ],
@@ -1065,17 +1065,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_newMemberPlayedId",
+        "name": "newMemberPlayedId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1088,17 +1088,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256[]",
-        "name": "_newMemberPlayedIds",
+        "name": "newMemberPlayedIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1143,7 +1143,7 @@
           }
         ],
         "internalType": "struct Clans.Tier[]",
-        "name": "_tiers",
+        "name": "tiers",
         "type": "tuple[]"
       }
     ],
@@ -1153,28 +1153,15 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "bankFactory",
-    "outputs": [
-      {
-        "internalType": "contract IBankFactory",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1193,22 +1180,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_memberId",
+        "name": "memberId",
         "type": "uint256"
       },
       {
         "internalType": "enum ClanRank",
-        "name": "_rank",
+        "name": "rank",
         "type": "uint8"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1221,22 +1208,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256[]",
-        "name": "_memberIds",
+        "name": "memberIds",
         "type": "uint256[]"
       },
       {
         "internalType": "enum ClanRank[]",
-        "name": "_ranks",
+        "name": "ranks",
         "type": "uint8[]"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1249,12 +1236,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1267,11 +1254,218 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "discord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "telegram",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "uint16",
+        "name": "imageId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "tierId",
+        "type": "uint8"
+      }
+    ],
+    "name": "createClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_invitedPlayerIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteInvitesAsClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "clanIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteInvitesAsPlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "discord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "telegram",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "imageId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "editClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxMemberCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxBankCapacity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "maxImageId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "minimumAge",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          }
+        ],
+        "internalType": "struct Clans.Tier[]",
+        "name": "tiers",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editTiers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint80",
+            "name": "nftType",
+            "type": "uint80"
+          }
+        ],
+        "internalType": "struct Clans.NFTInfo[]",
+        "name": "nftInfos",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "gateKeep",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "clanId",
         "type": "uint256"
       }
     ],
-    "name": "clans",
+    "name": "getClan",
     "outputs": [
       {
         "internalType": "uint80",
@@ -1312,6 +1506,23 @@
         "internalType": "string",
         "name": "name",
         "type": "string"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint80",
+            "name": "nftType",
+            "type": "uint80"
+          }
+        ],
+        "internalType": "struct Clans.NFTInfo[]",
+        "name": "gateKeptNFTs",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
@@ -1321,132 +1532,62 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
-      },
+      }
+    ],
+    "name": "getClanId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getClanNameOfPlayer",
+    "outputs": [
       {
         "internalType": "string",
-        "name": "_name",
+        "name": "",
         "type": "string"
-      },
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
-        "internalType": "string",
-        "name": "_discord",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_telegram",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_twitter",
-        "type": "string"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_imageId",
-        "type": "uint16"
-      },
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getClanTierMembership",
+    "outputs": [
       {
         "internalType": "uint8",
-        "name": "_tierId",
+        "name": "",
         "type": "uint8"
       }
     ],
-    "name": "createClan",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_invitedPlayerIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "deleteInvitesAsClan",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "_clanIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "deleteInvitesAsPlayer",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_discord",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_telegram",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_twitter",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_imageId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "editClan",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "editNameCost",
+    "name": "getEditNameCost",
     "outputs": [
       {
         "internalType": "uint80",
@@ -1459,6 +1600,112 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "getLowercaseNames",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMMR",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "mmr",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPlayerInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "clanId",
+            "type": "uint32"
+          },
+          {
+            "internalType": "enum ClanRank",
+            "name": "rank",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "requestedClanId",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct Clans.PlayerInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRank",
+    "outputs": [
+      {
+        "internalType": "enum ClanRank",
+        "name": "rank",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTier",
+    "outputs": [
       {
         "components": [
           {
@@ -1492,65 +1739,9 @@
             "type": "uint80"
           }
         ],
-        "internalType": "struct Clans.Tier[]",
-        "name": "_tiers",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "editTiers",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "nft",
-            "type": "address"
-          },
-          {
-            "internalType": "uint80",
-            "name": "nftType",
-            "type": "uint80"
-          }
-        ],
-        "internalType": "struct Clans.NFTInfo[]",
-        "name": "_nftInfos",
-        "type": "tuple[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "gateKeep",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getClanId",
-    "outputs": [
-      {
-        "internalType": "uint256",
+        "internalType": "struct Clans.Tier",
         "name": "",
-        "type": "uint256"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1560,93 +1751,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getClanNameOfPlayer",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getClanTierMembership",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getMMR",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "mmr",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getRank",
-    "outputs": [
-      {
-        "internalType": "enum ClanRank",
-        "name": "rank",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1665,37 +1775,37 @@
     "inputs": [
       {
         "internalType": "contract IBrushToken",
-        "name": "_brush",
+        "name": "brush",
         "type": "address"
       },
       {
         "internalType": "contract IERC1155",
-        "name": "_playerNFT",
+        "name": "playerNFT",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_pool",
+        "name": "pool",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_dev",
+        "name": "dev",
         "type": "address"
       },
       {
         "internalType": "uint80",
-        "name": "_editNameCost",
+        "name": "editNameCost",
         "type": "uint80"
       },
       {
         "internalType": "address",
-        "name": "_paintswapMarketplaceWhitelist",
+        "name": "paintswapMarketplaceWhitelist",
         "type": "address"
       },
       {
         "internalType": "uint16",
-        "name": "_initialMMR",
+        "name": "initialMMR",
         "type": "uint16"
       }
     ],
@@ -1708,17 +1818,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_member",
+        "name": "member",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1731,7 +1841,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
@@ -1741,7 +1851,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1754,12 +1864,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1778,7 +1888,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1796,27 +1906,8 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      }
-    ],
-    "name": "lowercaseNames",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "exists",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       }
     ],
@@ -1835,7 +1926,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       }
     ],
@@ -1845,19 +1936,6 @@
         "internalType": "uint16",
         "name": "",
         "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nextClanId",
-    "outputs": [
-      {
-        "internalType": "uint80",
-        "name": "",
-        "type": "uint80"
       }
     ],
     "stateMutability": "view",
@@ -1882,25 +1960,6 @@
         "internalType": "uint256",
         "name": "clanId",
         "type": "uint256"
-      }
-    ],
-    "name": "ownerlessClanTimestamps",
-    "outputs": [
-      {
-        "internalType": "uint40",
-        "name": "timestampLeft",
-        "type": "uint40"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
       },
       {
         "internalType": "string",
@@ -1909,42 +1968,13 @@
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
     "name": "pinMessage",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "playerInfo",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "clanId",
-        "type": "uint32"
-      },
-      {
-        "internalType": "enum ClanRank",
-        "name": "rank",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint32",
-        "name": "requestedClanId",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1964,12 +1994,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -1982,17 +2012,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256[]",
-        "name": "_joinRequestPlayerIds",
+        "name": "joinRequestPlayerIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2012,17 +2042,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_newOwner",
+        "name": "newOwner",
         "type": "uint256"
       },
       {
         "internalType": "enum ClanRank",
-        "name": "_newRank",
+        "name": "newRank",
         "type": "uint8"
       }
     ],
@@ -2035,12 +2065,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
@@ -2058,7 +2088,7 @@
     "inputs": [
       {
         "internalType": "contract IBankFactory",
-        "name": "_bankFactory",
+        "name": "bankFactory",
         "type": "address"
       }
     ],
@@ -2071,7 +2101,7 @@
     "inputs": [
       {
         "internalType": "uint72",
-        "name": "_editNameCost",
+        "name": "editNameCost",
         "type": "uint72"
       }
     ],
@@ -2084,7 +2114,7 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_mmr",
+        "name": "mmr",
         "type": "uint16"
       }
     ],
@@ -2097,17 +2127,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "bool",
-        "name": "_joinRequestsEnabled",
+        "name": "joinRequestsEnabled",
         "type": "bool"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
@@ -2120,12 +2150,12 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint16",
-        "name": "_mmr",
+        "name": "mmr",
         "type": "uint16"
       }
     ],
@@ -2138,7 +2168,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_paintswapMarketplaceWhitelist",
+        "name": "paintswapMarketplaceWhitelist",
         "type": "address"
       }
     ],
@@ -2151,7 +2181,7 @@
     "inputs": [
       {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       }
     ],
@@ -2164,62 +2194,18 @@
     "inputs": [
       {
         "internalType": "contract IClanMemberLeftCB",
-        "name": "_territories",
+        "name": "territories",
         "type": "address"
       },
       {
         "internalType": "contract IClanMemberLeftCB",
-        "name": "_lockedBankVaults",
+        "name": "lockedBankVaults",
         "type": "address"
       }
     ],
     "name": "setTerritoriesAndLockedBankVaults",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "tiers",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "id",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint16",
-        "name": "maxMemberCapacity",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "maxBankCapacity",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint24",
-        "name": "maxImageId",
-        "type": "uint24"
-      },
-      {
-        "internalType": "uint40",
-        "name": "minimumAge",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint80",
-        "name": "price",
-        "type": "uint80"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -2239,17 +2225,17 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_playerId",
+        "name": "playerId",
         "type": "uint256"
       },
       {
         "internalType": "uint8",
-        "name": "_newTierId",
+        "name": "newTierId",
         "type": "uint8"
       }
     ],

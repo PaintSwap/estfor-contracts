@@ -28,7 +28,7 @@ export async function clanFixture() {
   const imageId = 2;
   const tierId = 1;
 
-  const tier = await clans.tiers(tierId);
+  const tier = await clans.getTier(tierId);
 
   // Figure out what the address would be
   const bankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
@@ -47,7 +47,7 @@ export async function clanFixture() {
   const attackingCooldown = isBeta ? 1.5 * 60 : 4 * 3600;
   const reattackingCooldown = isBeta ? 3 * 60 : 24 * 3600;
   const combatantChangeCooldown = isBeta ? 5 * 60 : 3 * 86400;
-  const editNameCost = await clans.editNameCost();
+  const editNameCost = await clans.getEditNameCost();
   return {
     ...fixture,
     clans,
