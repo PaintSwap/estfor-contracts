@@ -4,8 +4,6 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {ITerritories} from "./interfaces/ITerritories.sol";
 
@@ -19,8 +17,6 @@ interface Router {
 }
 
 contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
-  using UnsafeMath for uint256;
-
   uint256 public constant MIN_BRUSH_TO_DISTRIBUTE = 100 ether;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -84,7 +80,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   receive() external payable {
-    uint256 deadline = block.timestamp.add(DEADLINE_DURATION);
+    uint256 deadline = block.timestamp + DEADLINE_DURATION;
 
     uint256 third = msg.value / 3;
     (bool success, ) = _dev.call{value: third}("");

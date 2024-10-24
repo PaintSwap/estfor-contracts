@@ -8,7 +8,6 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
@@ -25,10 +24,6 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // into the pet struct and avoid updating multiple to/from balances using
 // ERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
 contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSinglePerToken, IERC2981 {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
-  using UnsafeMath for uint40;
-
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,

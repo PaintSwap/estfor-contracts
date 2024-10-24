@@ -6,8 +6,6 @@ import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
@@ -18,9 +16,6 @@ import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
-
   event NewPlayer(
     uint256 playerId,
     uint256 avatarId,
@@ -292,25 +287,24 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     if (from == address(0) || amounts.length == 0 || from == to) {
       return;
     }
-    U256 iter = ids.length.asU256();
-    U256 burned;
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      uint256 playerId = ids[i];
+    uint256 iter = ids.length;
+    uint32 burned;
+    while (iter != 0) {
+      iter--;
+      uint256 playerId = ids[iter];
       _players.clearEverythingBeforeTokenTransfer(from, playerId);
       if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
         // Burning
         string memory oldName = EstforLibrary.toLower(_names[playerId]);
         delete _lowercaseNames[oldName];
-        burned = burned.inc();
+        burned++;
       } else if (from != address(0)) {
         // Not minting
         _players.beforeTokenTransferTo(to, playerId);
       }
     }
-    if (burned.neq(0)) {
-      _numBurned += burned.asUint32();
+    if (burned != 0) {
+      _numBurned += burned;
     }
   }
 
@@ -339,12 +333,11 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
   function balanceOfs(address account, uint16[] memory ids) external view returns (uint256[] memory batchBalances) {
-    U256 iter = ids.length.asU256();
-    batchBalances = new uint256[](iter.asUint256());
-    while (iter.neq(0)) {
-      iter = iter.dec();
-      uint256 i = iter.asUint256();
-      batchBalances[i] = balanceOf(account, ids[i]);
+    uint256 iter = ids.length;
+    batchBalances = new uint256[](iter);
+    while (iter != 0) {
+      iter--;
+      batchBalances[iter] = balanceOf(account, ids[iter]);
     }
   }
 
