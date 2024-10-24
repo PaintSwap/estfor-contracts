@@ -83,21 +83,21 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   address private _buyPath2;
 
   modifier onlyWorld() {
-    if (msg.sender != _world) {
+    if (_msgSender() != _world) {
       revert NotWorld();
     }
     _;
   }
 
   modifier onlyPlayers() {
-    if (msg.sender != address(_players)) {
+    if (_msgSender() != address(_players)) {
       revert NotPlayers();
     }
     _;
   }
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
-    if (!_players.isOwnerOfPlayerAndActive(msg.sender, playerId)) {
+    if (!_players.isOwnerOfPlayerAndActive(_msgSender(), playerId)) {
       revert NotOwnerOfPlayerAndActive();
     }
     _;
@@ -268,9 +268,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     } else {
       uint256 amountOut = minimumBrushExpected;
       amounts = _router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, to, deadline);
-      if (amounts[0] != 0 && msg.sender != address(_players)) {
+      if (amounts[0] != 0 && _msgSender() != address(_players)) {
         // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
-        (bool success, ) = msg.sender.call{value: msg.value - amounts[0]}("");
+        (bool success, ) = _msgSender().call{value: msg.value - amounts[0]}("");
         require(success, RefundFailed());
       }
     }
@@ -286,7 +286,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     sellPath[0] = _buyPath2;
     sellPath[1] = _buyPath1;
 
-    IERC20(_buyPath2).transferFrom(msg.sender, address(this), brushAmount);
+    IERC20(_buyPath2).transferFrom(_msgSender(), address(this), brushAmount);
 
     if (useExactETH) {
       uint256 amountOut = minFTM;
