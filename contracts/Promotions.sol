@@ -387,7 +387,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       return PromotionMintStatus.PROMOTION_ALREADY_CLAIMED;
     }
 
-    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.getPlayersAddress()).totalXP(playerId)) {
+    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.getPlayersAddress()).getTotalXP(playerId)) {
       return PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY;
     }
     return PromotionMintStatus.SUCCESS;
@@ -411,7 +411,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       return PromotionMintStatus.PROMOTION_ALREADY_CLAIMED;
     }
 
-    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.getPlayersAddress()).totalXP(playerId)) {
+    if (promotionInfo.minTotalXP > IPlayers(_itemNFT.getPlayersAddress()).getTotalXP(playerId)) {
       return PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY;
     }
     return PromotionMintStatus.SUCCESS;
@@ -425,7 +425,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   ) private view returns (uint256 itemTokenId, uint256 amount, PromotionMintStatus promotionMintStatus) {
     // No items specified to choose from so pick a random daily item from the tier above
     promotionMintStatus = oldStatus;
-    uint256 totalXP = IPlayers(_itemNFT.getPlayersAddress()).totalXP(playerId);
+    uint256 totalXP = IPlayers(_itemNFT.getPlayersAddress()).getTotalXP(playerId);
     uint256 playerTier;
 
     // Work out the tier

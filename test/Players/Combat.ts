@@ -326,7 +326,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds[0]).to.eq(EstforConstants.COOKED_MINNUS);
       expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(255);
@@ -385,14 +385,14 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(14);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Haven't killed any yet
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(0); // Already used the necessary food
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(7200 + 7200 / 3); // Killed 1
     });
@@ -443,14 +443,14 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(5);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Haven't killed any yet
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [time]);
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
       expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(5);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(0); // Killed none
@@ -769,7 +769,7 @@ describe("Combat Actions", function () {
 
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250);
 
-      let player = await players.players(playerId);
+      let player = await players.getPlayers(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
       expect(player.currentActionProcessedXPGained1).to.eq(1145);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
@@ -938,7 +938,7 @@ describe("Combat Actions", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(1145n + 250n);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(381n + 250n);
 
-      let player = await players.players(playerId);
+      let player = await players.getPlayers(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
       expect(player.currentActionProcessedXPGained1).to.eq(1145 + 250);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
@@ -1029,14 +1029,14 @@ describe("Combat Actions", function () {
       await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.DEFENCE, 250, true);
       await ethers.provider.send("evm_increaseTime", [240]);
       await ethers.provider.send("evm_mine", []);
-      expect((await players.activeBoost(playerId)).boostType).to.not.eq(0);
-      expect((await players.activeBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
+      expect((await players.getActiveBoost(playerId)).boostType).to.not.eq(0);
+      expect((await players.getActiveBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
       await expect(players.connect(alice).clearEverything(playerId)).to.not.be.reverted;
       expect((await players.getActionQueue(playerId)).length).to.eq(0);
       // Active boost should be removed
-      expect((await players.activeBoost(playerId)).boostType).to.eq(0);
+      expect((await players.getActiveBoost(playerId)).boostType).to.eq(0);
       // Should not remove the extra boost though
-      expect((await players.activeBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
+      expect((await players.getActiveBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
     });
 
     it("Check random rewards", async function () {
@@ -1048,7 +1048,7 @@ describe("Combat Actions", function () {
 
       const time = 3600;
       await timeTravel(time);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(time + time / 3);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numSpawned / SPAWN_MUL);
@@ -1084,7 +1084,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
 
       // Should get rolls
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numSpawned / SPAWN_MUL);
       await players.connect(alice).processActions(playerId);
@@ -1094,7 +1094,7 @@ describe("Combat Actions", function () {
 
       await expect(world.requestRandomWords()).to.be.reverted;
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.numPastRandomRewardInstancesToRemove).to.be.gt(0);
     });
 
@@ -1107,7 +1107,7 @@ describe("Combat Actions", function () {
 
       const time = 3600;
       await timeTravel(time);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(time + time / 3);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numSpawned / SPAWN_MUL);
@@ -1121,7 +1121,7 @@ describe("Combat Actions", function () {
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
 
@@ -1155,7 +1155,7 @@ describe("Combat Actions", function () {
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
 
@@ -1855,7 +1855,7 @@ describe("Combat Actions", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       // Confirm you aren't dead
       expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
     });
@@ -1893,7 +1893,7 @@ describe("Combat Actions", function () {
       const xpGained = BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1));
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
 
-      let player = await players.players(playerId);
+      let player = await players.getPlayers(playerId);
       expect(player.currentActionStartTime).to.eq(NOW + 1);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
       expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
@@ -1909,7 +1909,7 @@ describe("Combat Actions", function () {
       const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
       NOW = NOW1;
       await players.connect(alice).processActions(playerId);
-      player = await players.players(playerId);
+      player = await players.getPlayers(playerId);
       expect(player.currentActionStartTime).to.eq(NOW + 1);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
       expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
@@ -1929,7 +1929,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      player = await players.players(playerId);
+      player = await players.getPlayers(playerId);
       expect(player.currentActionStartTime).to.eq(0);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
       expect(player.currentActionProcessedXPGained1).to.eq(0);
@@ -1969,10 +1969,10 @@ describe("Combat Actions", function () {
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.processedData.currentAction.foodConsumed).to.eq(1);
       await itemNFT.connect(alice).burn(alice.address, EstforConstants.SHADOW_SCROLL, 2);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.processedData.currentAction.foodConsumed).to.eq(9); // Don't kill them all but in combat for the whole time
 
       await players.connect(alice).processActions(playerId);
@@ -2248,7 +2248,7 @@ describe("Combat Actions", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       // Confirm you are dead
       expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
       await players.connect(alice).processActions(playerId);
@@ -2289,7 +2289,7 @@ describe("Combat Actions", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [180]); // respawn every 360s
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       // Confirm you are dead
       expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
       expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts.length).to.be.eq(2);
@@ -2297,7 +2297,7 @@ describe("Combat Actions", function () {
       const consumedAmount = pendingQueuedActionState.equipmentStates[0].consumedAmounts[0];
       await ethers.provider.send("evm_increaseTime", [1800]); // respawn every 360s
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       // No more should be consumed with more time
       expect(consumedAmount).to.eq(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]);
 
@@ -2384,7 +2384,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
 
       // Confirm you are dead
       expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
@@ -2966,7 +2966,7 @@ describe("Combat Actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
     expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(queuedAction.actionId);
     expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
@@ -2986,7 +2986,7 @@ describe("Combat Actions", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
@@ -3087,7 +3087,7 @@ describe("Combat Actions", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [30]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.false;
     expect(pendingQueuedActionState.equipmentStates[0].consumedItemTokenIds.length).to.eq(1);
     const consumedFood = Number(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]);
@@ -3095,12 +3095,12 @@ describe("Combat Actions", function () {
 
     await players.connect(alice).processActions(playerId);
 
-    const actuallyConsumed = Number((await players.players(playerId)).currentActionProcessedFoodConsumed);
+    const actuallyConsumed = Number((await players.getPlayers(playerId)).currentActionProcessedFoodConsumed);
     expect(actuallyConsumed).to.be.oneOf([consumedFood, consumedFood + 1, consumedFood + 2]);
 
     await ethers.provider.send("evm_increaseTime", [3600 * 24]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
     expect(pendingQueuedActionState.equipmentStates[0].consumedAmounts[0]).to.eq(foodNum - actuallyConsumed);
 
@@ -3194,7 +3194,7 @@ describe("Combat Actions", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].died).to.be.true;
     expect(pendingQueuedActionState.actionMetadatas[0].actionId).to.eq(queuedAction.actionId);
     expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);

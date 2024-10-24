@@ -147,7 +147,7 @@ describe("Boosts", function () {
       await ethers.provider.send("evm_increaseTime", [86400]); // boost has expired
       await ethers.provider.send("evm_mine", []);
 
-      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(queuedAction.timespan);
 
       await players.connect(alice).processActions(playerId);
@@ -195,7 +195,7 @@ describe("Boosts", function () {
         .startActions(playerId, [queuedActionFinishAfterBoost], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired inside action
       await ethers.provider.send("evm_mine", []);
-      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.be.oneOf([
         BigInt(
           queuedActionFinishAfterBoost.timespan + Math.floor((queuedActionFinishAfterBoost.timespan * boostValue) / 100)
@@ -290,7 +290,7 @@ describe("Boosts", function () {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -342,7 +342,7 @@ describe("Boosts", function () {
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -394,7 +394,7 @@ describe("Boosts", function () {
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(
       queuedAction.timespan + (boostDuration * boostValue) / 100
     );
@@ -455,7 +455,7 @@ describe("Boosts", function () {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -520,7 +520,7 @@ describe("Boosts", function () {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -630,7 +630,7 @@ describe("Boosts", function () {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -756,7 +756,7 @@ describe("Boosts", function () {
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     const meleeXP = queuedAction.timespan + (boostDuration * boostValue) / 100;
     const healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -870,7 +870,7 @@ describe("Boosts", function () {
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration / 2 + 1]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     let meleeXP = boostDuration / 2 + ((boostDuration / 2) * boostValue) / 100;
 
     let healthXP = Math.floor(meleeXP / 3);
@@ -901,7 +901,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + 1]);
     await ethers.provider.send("evm_mine", []);
 
-    const clanBoost = await players.clanBoost(clanId);
+    const clanBoost = await players.getClanBoost(clanId);
     expect(clanBoost.startTime).to.eq(NOW1);
     expect(clanBoost.duration).to.eq(boostDuration);
     expect(clanBoost.value).to.eq(boostValue);
@@ -914,7 +914,7 @@ describe("Boosts", function () {
     expect(clanBoost.extraOrLastItemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
     expect(clanBoost.extraOrLastBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
 
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     meleeXP = boostDuration + (boostDuration * boostValue) / 100;
     healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -928,7 +928,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + boostDuration + 1]);
     await ethers.provider.send("evm_mine", []);
 
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     meleeXP = Math.floor(boostDuration + boostDuration + ((boostDuration + extraBoostedTime) * 1.5 * boostValue) / 100);
     healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -1025,7 +1025,7 @@ describe("Boosts", function () {
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration / 2 + 1]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     let meleeXP = boostDuration / 2 + ((boostDuration / 2) * boostValue) / 100;
     let healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -1046,7 +1046,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + boostDuration + 1]);
     await ethers.provider.send("evm_mine", []);
 
-    const globalBoost = await players.globalBoost();
+    const globalBoost = await players.getGlobalBoost();
     expect(globalBoost.startTime).to.eq(NOW1);
     expect(globalBoost.duration).to.eq(boostDuration);
     expect(globalBoost.value).to.eq(nonCombatBoostValue);
@@ -1060,7 +1060,7 @@ describe("Boosts", function () {
     expect(globalBoost.extraOrLastBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
 
     // This global boost has no effect because it is a non-combat boost.
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     meleeXP = Math.floor(boostDuration + boostDuration + ((boostDuration / 2 + extraBoostedTime) * boostValue) / 100); // No extra
     healthXP = Math.floor(meleeXP / 3);
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
@@ -1079,7 +1079,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + boostDuration + boostDuration + 1]);
     await ethers.provider.send("evm_mine", []);
 
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     meleeXP =
       Math.floor(
         boostDuration +
@@ -1290,7 +1290,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     const foodCooked =
       (successPercent / 100) *
       ((queuedAction.timespan * rate) / (3600 * RATE_MUL) +

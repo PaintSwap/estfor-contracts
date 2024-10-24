@@ -387,7 +387,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
-  function pendingQueuedActionState(
+  function getPendingQueuedActionState(
     address _owner,
     uint256 playerId
   ) public view returns (PendingQueuedActionState memory) {
@@ -406,32 +406,32 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return PlayersLibrary.readXP(_skill, _playerXP[playerId]);
   }
 
-  function level(uint256 playerId, Skill _skill) external view override returns (uint256) {
+  function getLevel(uint256 playerId, Skill _skill) external view override returns (uint256) {
     return PlayersLibrary._getLevel(PlayersLibrary.readXP(_skill, _playerXP[playerId]));
   }
 
-  function totalXP(uint256 playerId) external view override returns (uint256) {
+  function getTotalXP(uint256 playerId) external view override returns (uint256) {
     return _players[playerId].totalXP;
   }
 
-  function packedXP(uint256 playerId) external view returns (PackedXP memory) {
+  function getPackedXP(uint256 playerId) external view returns (PackedXP memory) {
     return _playerXP[playerId];
   }
 
-  function players(uint256 playerId) external view returns (Player memory) {
+  function getPlayers(uint256 playerId) external view returns (Player memory) {
     return _players[playerId];
   }
 
   // Only used by a test, could remove and replace with getStorageAt like another test uses
-  function activeBoost(uint256 playerId) external view override returns (PlayerBoostInfo memory) {
+  function getActiveBoost(uint256 playerId) external view override returns (PlayerBoostInfo memory) {
     return _activeBoosts[playerId];
   }
 
-  function clanBoost(uint256 _clanId) external view returns (PlayerBoostInfo memory) {
+  function getClanBoost(uint256 _clanId) external view returns (PlayerBoostInfo memory) {
     return _clanBoosts[_clanId];
   }
 
-  function globalBoost() external view returns (PlayerBoostInfo memory) {
+  function getGlobalBoost() external view returns (PlayerBoostInfo memory) {
     return _globalBoost;
   }
 

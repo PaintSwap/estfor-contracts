@@ -42,13 +42,13 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [50]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
       await players.connect(alice).processActions(playerId);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
       await ethers.provider.send("evm_increaseTime", [450]);
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
       expect(pendingQueuedActionState.xpRewardItemTokenIds.length).is.eq(1);
       expect(pendingQueuedActionState.xpRewardItemTokenIds[0]).is.eq(EstforConstants.BRONZE_BAR);
@@ -116,7 +116,7 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [1600]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.xpRewardItemTokenIds.length).is.eq(2);
       expect(pendingQueuedActionState.xpRewardAmounts.length).is.eq(2);
 
@@ -169,7 +169,7 @@ describe("Rewards", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
       await ethers.provider.send("evm_increaseTime", [450]);
       await ethers.provider.send("evm_mine", []);
-      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.xpRewardItemTokenIds.length).is.eq(1);
       expect(pendingQueuedActionState.xpRewardItemTokenIds[0]).is.eq(EstforConstants.BRONZE_BAR);
       expect(pendingQueuedActionState.xpRewardAmounts[0]).is.eq(10);
@@ -226,13 +226,13 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [50]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
       await players.connect(alice).processActions(playerId);
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(0);
       await ethers.provider.send("evm_increaseTime", [450]);
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
       expect(pendingQueuedActionState.xpRewardItemTokenIds.length).is.eq(1);
       expect(pendingQueuedActionState.xpRewardItemTokenIds[0]).is.eq(EstforConstants.BRONZE_BAR);
@@ -320,7 +320,9 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       // Check the last day of the week
-      const pendingQueuedActionState = await players.connect(alice).pendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players
+        .connect(alice)
+        .getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.dailyRewardItemTokenIds.length).to.eq(1);
       expect(pendingQueuedActionState.dailyRewardItemTokenIds[0]).to.eq(sundayReward.itemTokenId);
 
@@ -761,14 +763,14 @@ describe("Rewards", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [1810]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
     // Get no guaranteed loot until an hour has passed
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
     await ethers.provider.send("evm_increaseTime", [1790]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.ENCHANTED_LOG);
@@ -777,7 +779,7 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await requestAndFulfillRandomWords(world, mockVRF);
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).is.eq(EstforConstants.ENCHANTED_LOG);
@@ -839,7 +841,7 @@ describe("Rewards", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [1810]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
 
     // Loot, everything should work as if the loot was never done
@@ -847,13 +849,13 @@ describe("Rewards", function () {
 
     await ethers.provider.send("evm_increaseTime", [1790]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(1);
     await ethers.provider.send("evm_increaseTime", [86400]);
     await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
     await requestAndFulfillRandomWords(world, mockVRF);
-    pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].rolls).is.eq(0);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).is.eq(EstforConstants.ENCHANTED_LOG);
@@ -938,7 +940,7 @@ describe("Rewards", function () {
         {
           const actionQueue = await players.getActionQueue(playerId);
           expect(actionQueue.length).to.eq(1);
-          endTime = (await players.players(playerId)).currentActionStartTime + actionQueue[0].timespan;
+          endTime = (await players.getPlayers(playerId)).currentActionStartTime + actionQueue[0].timespan;
         }
 
         expect(await world.hasRandomWord(endTime)).to.be.false;
@@ -949,7 +951,7 @@ describe("Rewards", function () {
 
         expect((await players.getPendingRandomRewards(playerId)).length).to.eq(1);
 
-        let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+        let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
         expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
         await requestAndFulfillRandomWords(world, mockVRF);
@@ -958,7 +960,7 @@ describe("Rewards", function () {
 
         expect(await world.hasRandomWord(endTime)).to.be.true;
 
-        pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+        pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
 
         if (pendingQueuedActionState.producedPastRandomRewards.length != 0) {
           expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
@@ -1071,7 +1073,7 @@ describe("Rewards", function () {
           const actionQueue = await players.getActionQueue(playerId);
           expect(actionQueue.length).to.eq(2);
           endTime =
-            (await players.players(playerId)).currentActionStartTime +
+            (await players.getPlayers(playerId)).currentActionStartTime +
             actionQueue[0].timespan +
             actionQueue[1].timespan;
         }
@@ -1086,14 +1088,14 @@ describe("Rewards", function () {
 
         expect((await players.getPendingRandomRewards(playerId)).length).to.eq(2);
 
-        let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+        let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
         expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
         await requestAndFulfillRandomWords(world, mockVRF);
 
         expect(await world.hasRandomWord(endTime)).to.be.true;
 
-        pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+        pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
         if (pendingQueuedActionState.producedPastRandomRewards.length != 0) {
           expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.greaterThan(0).and.be.lessThan(9);
           let found = false;
@@ -1189,23 +1191,23 @@ describe("Rewards", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 1]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(1); // Should have a roll
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [3600 * 2]);
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(2); // Should have a roll
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [3600 * 1]);
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(1); // Should have a roll
       await players.connect(alice).processActions(playerId);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
       expect(pendingQueuedActionState.numPastRandomRewardInstancesToRemove).to.eq(3);
     });
@@ -1290,7 +1292,7 @@ describe("Rewards", function () {
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
 
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(3);
       // Should have rolls for each of these
@@ -1301,7 +1303,7 @@ describe("Rewards", function () {
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.BRONZE_ARROW);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(firstThievingNumHours);
@@ -1397,7 +1399,7 @@ describe("Rewards", function () {
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
 
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(3);
       // Should have rolls for each of these
@@ -1408,7 +1410,7 @@ describe("Rewards", function () {
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
@@ -1416,7 +1418,7 @@ describe("Rewards", function () {
       await requestAndFulfillRandomWords(world, mockVRF);
 
       // Now combat works
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
 
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.POISON);
@@ -1512,7 +1514,7 @@ describe("Rewards", function () {
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.BRONZE_ARROW);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(firstThievingNumHours);
@@ -1525,7 +1527,7 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.POISON);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(numSpawned / SPAWN_MUL);
@@ -1617,7 +1619,7 @@ describe("Rewards", function () {
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 23 + 1]); // Have not passed 00:00 yet
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(3);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(19);
       expect(pendingQueuedActionState.actionMetadatas[1].rolls).to.eq(numSpawned / SPAWN_MUL);
@@ -1630,17 +1632,17 @@ describe("Rewards", function () {
         "CanOnlyRequestAfterTheNextCheckpoint"
       );
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [3600]); // Have now passed 3600
       await ethers.provider.send("evm_mine", []);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.BRONZE_ARROW);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(firstThievingNumHours);
@@ -1736,7 +1738,7 @@ describe("Rewards", function () {
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
 
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(3);
       // Should have rolls for each of these
@@ -1747,7 +1749,7 @@ describe("Rewards", function () {
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.POISON);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(
@@ -1844,7 +1846,7 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [3600 * 24]); // Go another hour past the 24
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(2);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq((combatNumHours * numSpawned) / SPAWN_MUL);
       expect(pendingQueuedActionState.actionMetadatas[1].rolls).to.eq(thievingNumHours);
@@ -1853,7 +1855,7 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [3600 * 48]); // Go another hour past the 24
       await ethers.provider.send("evm_mine", []);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(secondThievingNumHours);
 
@@ -1861,7 +1863,7 @@ describe("Rewards", function () {
       await requestAndFulfillRandomWords(world, mockVRF);
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(3);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(
         (combatNumHours * numSpawned) / SPAWN_MUL
@@ -1946,7 +1948,7 @@ describe("Rewards", function () {
         .startActions(playerId, [queuedActionCombat, queuedActionThieving], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
 
       expect(pendingQueuedActionState.actionMetadatas.length).to.eq(2);
       // Should have rolls for each of these
@@ -1956,7 +1958,7 @@ describe("Rewards", function () {
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(EstforConstants.POISON);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(
@@ -2044,7 +2046,7 @@ describe("Rewards", function () {
       await timeTravel24Hours();
 
       await requestAndFulfillRandomWords(world, mockVRF);
-      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
     });
 
@@ -2099,7 +2101,7 @@ describe("Rewards", function () {
 
       await ethers.provider.send("evm_increaseTime", [3600 + 60]); // 1 hour 1 minute
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(1); // Should have a roll
       await players.connect(alice).processActions(playerId); // Continues the action
@@ -2108,7 +2110,7 @@ describe("Rewards", function () {
       expect(pendingRandomRewards[0].xpElapsedTime).to.eq(3600);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // Finished
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numHours - 1);
       await players.connect(alice).processActions(playerId); // Finishes the action
       pendingRandomRewards = await players.getPendingRandomRewards(playerId);
@@ -2313,12 +2315,12 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.be.gt(0);
@@ -2329,7 +2331,7 @@ describe("Rewards", function () {
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.be.gt(0);
@@ -2338,20 +2340,20 @@ describe("Rewards", function () {
 
       await players.connect(alice).processActions(playerId);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
       // Increment again but it should still not produce anything
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(BRONZE_ARROW);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].amount).to.eq(numHours * (numSpawned / SPAWN_MUL));
@@ -2484,12 +2486,12 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.eq(0);
 
@@ -2499,7 +2501,7 @@ describe("Rewards", function () {
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       expect(pendingQueuedActionState.producedPastRandomRewards[0].itemTokenId).to.eq(BRONZE_ARROW);
 
@@ -2630,12 +2632,12 @@ describe("Rewards", function () {
 
       await timeTravel24Hours();
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.be.eq(0);
 
@@ -2647,7 +2649,7 @@ describe("Rewards", function () {
 
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.eq(0);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
 
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
       await players.connect(alice).processActions(playerId);
@@ -2769,12 +2771,12 @@ describe("Rewards", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await timeTravel24Hours();
 
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
 
       await requestAndFulfillRandomWords(world, mockVRF);
 
-      pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(0);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
@@ -2844,7 +2846,7 @@ describe("Rewards", function () {
     await ethers.provider.send("evm_mine", []);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(0);
 
-    let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).is.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.gt(0);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.LOG);

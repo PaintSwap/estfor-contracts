@@ -112,7 +112,7 @@ describe("Players", function () {
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
     expect(await players.getPlayerXP(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP / 2n);
     expect(await players.getPlayerXP(newPlayerId, Skill.HEALTH)).to.eq(START_XP / 2n);
-    expect((await players.players(newPlayerId)).totalXP).to.eq(START_XP);
+    expect((await players.getPlayers(newPlayerId)).totalXP).to.eq(START_XP);
   });
 
   it("Skill points", async function () {
@@ -124,7 +124,7 @@ describe("Players", function () {
     await players.connect(alice).processActions(playerId);
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(360);
     expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(10); // Should be rounded down
-    expect((await players.players(playerId)).totalXP).to.eq(START_XP + 360n);
+    expect((await players.getPlayers(playerId)).totalXP).to.eq(START_XP + 360n);
   });
 
   it("Skill points (many)", async function () {
@@ -842,7 +842,7 @@ describe("Players", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
 
-      const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       const expectedOutputNum = Math.floor((queuedAction.timespan * rate * outputAmount) / (3600 * RATE_MUL));
       expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(expectedOutputNum);
 
@@ -1102,7 +1102,7 @@ describe("Players", function () {
 
   describe("Missing required equipment right hand equipment", async function () {
     async function expectRemovedCurrentAction(players: Players, playerId: bigint, now: number) {
-      const player = await players.players(playerId);
+      const player = await players.getPlayers(playerId);
       expect(player.currentActionStartTime).to.eq(now);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
       expect(player.currentActionProcessedXPGained1).to.eq(0);
@@ -1309,7 +1309,7 @@ describe("Players", function () {
         queuedAction.timespan + queuedActionFiremaking.timespan + queuedActionFishing.timespan
       ]);
       await ethers.provider.send("evm_mine", []);
-      let pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+      let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(2);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.LOG);
       expect(pendingQueuedActionState.equipmentStates[1].producedItemTokenIds[0]).to.eq(EstforConstants.RAW_MINNUS);
@@ -1328,7 +1328,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_mine", []);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players.connect(alice).processActions(playerId);
-    const player = await players.players(playerId);
+    const player = await players.getPlayers(playerId);
     expect(player.currentActionStartTime).to.eq(NOW + 1);
     expect(player.currentActionProcessedSkill1).to.eq(Skill.WOODCUTTING);
     expect(player.currentActionProcessedXPGained1).to.eq((queuedAction.timespan * 10) / rate);
@@ -1459,10 +1459,10 @@ describe("Players", function () {
         EstforTypes.ActionQueueStatus.NONE
       );
 
-    expect((await players.activeBoost(playerId)).boostType).to.not.eq(0);
+    expect((await players.getActiveBoost(playerId)).boostType).to.not.eq(0);
     await playerNFT.connect(alice).safeTransferFrom(alice.address, owner.address, playerId, 1, "0x");
     // Active boost should be removed
-    expect((await players.activeBoost(playerId)).boostType).to.eq(0);
+    expect((await players.getActiveBoost(playerId)).boostType).to.eq(0);
   });
 
   it("Game paused", async function () {
@@ -1539,7 +1539,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP;
@@ -1566,7 +1566,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.05));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP / 2n;
@@ -1599,7 +1599,7 @@ describe("Players", function () {
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     // Upgrade player, should have a 20% boost now
     await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.2));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP;
@@ -1632,7 +1632,7 @@ describe("Players", function () {
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     // Upgrade player, should have a 20% boost now
     await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan * 1.1));
     await players.connect(alice).processActions(playerId);
     const startXP = START_XP / 2n;
@@ -1676,15 +1676,15 @@ describe("Players", function () {
   it("Check max level packed XP", async function () {
     const {players, playerId, alice} = await loadFixture(playersFixture);
 
-    let packedXP = await players.packedXP(playerId);
+    let packedXP = await players.getPackedXP(playerId);
     const xp = await getXPFromLevel(130);
 
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, xp, false);
-    packedXP = await players.packedXP(playerId);
+    packedXP = await players.getPackedXP(playerId);
     let maxDataAsNum = Number(packedXP.packedDataIsMaxed);
 
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MAGIC, xp, false);
-    packedXP = await players.packedXP(playerId);
+    packedXP = await players.getPackedXP(playerId);
 
     maxDataAsNum = Number(packedXP.packedDataIsMaxed);
     const MELEE_OFFSET = 0;
@@ -1729,10 +1729,10 @@ describe("Players", function () {
     expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(0);
 
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.CRAFTING, xp - 1, false); // 1 below max
-    packedXP = await players.packedXP(playerId);
+    packedXP = await players.getPackedXP(playerId);
     expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(0);
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.CRAFTING, xp, false); // Now max
-    packedXP = await players.packedXP(playerId);
+    packedXP = await players.getPackedXP(playerId);
     expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(1);
 
     // Set a few more and check the rest
@@ -1740,7 +1740,7 @@ describe("Players", function () {
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.WOODCUTTING, xp, false);
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FORGING, xp, false);
 
-    packedXP = await players.packedXP(playerId);
+    packedXP = await players.getPackedXP(playerId);
     maxDataAsNum = Number(packedXP.packedDataIsMaxed);
     expect((maxDataAsNum >> MELEE_OFFSET) & 0b11).to.eq(1);
     expect((maxDataAsNum >> RANGED_OFFSET) & 0b11).to.eq(0);
@@ -2322,10 +2322,10 @@ describe("Players", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    const pendingQueuedActionState = await players.pendingQueuedActionState(alice.address, playerId);
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
     expect(pendingQueuedActionState.worldLocation).to.eq(1);
     await players.connect(alice).processActions(playerId);
-    expect((await players.players(playerId)).packedData).to.eq("0x01");
+    expect((await players.getPlayers(playerId)).packedData).to.eq("0x01");
     // Should earn agility xp
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
 

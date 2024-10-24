@@ -154,7 +154,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
 
         // Do not override this boost if you have one that started at this timestamp already (i.e winning lottery boost)
         // Note: Ideally this would be set inside Players but contract size issues....
-        if (_players.activeBoost(playerId).extraOrLastStartTime != uint40(block.timestamp)) {
+        if (_players.getActiveBoost(playerId).extraOrLastStartTime != uint40(block.timestamp)) {
           itemTokenId = _donationRewardItemTokenId;
         }
         _playersEntered[lastLotteryId].set(playerId);

@@ -36,9 +36,9 @@ interface IPlayers {
 
   function getPlayerXP(uint256 playerId, Skill skill) external view returns (uint256 xp);
 
-  function level(uint256 playerId, Skill skill) external view returns (uint256 level);
+  function getLevel(uint256 playerId, Skill skill) external view returns (uint256 getLevel);
 
-  function totalXP(uint256 playerId) external view returns (uint256 xp);
+  function getTotalXP(uint256 playerId) external view returns (uint256 xp);
 
-  function activeBoost(uint256 playerId) external view returns (PlayerBoostInfo memory);
+  function getActiveBoost(uint256 playerId) external view returns (PlayerBoostInfo memory);
 }

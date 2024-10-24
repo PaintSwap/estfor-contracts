@@ -190,7 +190,7 @@ async function main() {
 */
   //  await players.connect(player).testModifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, true);
 
-  const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
+  const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
   console.log(pendingQueuedActionState);
 }
 

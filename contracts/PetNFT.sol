@@ -218,7 +218,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     Skill skillEnhancement1 = _basePetMetadatas[pet.baseId].skillEnhancement1;
     uint256 skillMinLevel1 = _basePetMetadatas[pet.baseId].skillMinLevel1;
     require(
-      IPlayers(_players).level(playerId, skillEnhancement1) >= skillMinLevel1,
+      IPlayers(_players).getLevel(playerId, skillEnhancement1) >= skillMinLevel1,
       LevelNotHighEnough(skillEnhancement1, skillMinLevel1)
     );
 
@@ -226,7 +226,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     if (skillEnhancement2 != Skill.NONE) {
       uint256 skillMinLevel2 = _basePetMetadatas[pet.baseId].skillMinLevel2;
       require(
-        IPlayers(_players).level(playerId, skillEnhancement2) >= skillMinLevel2,
+        IPlayers(_players).getLevel(playerId, skillEnhancement2) >= skillMinLevel2,
         LevelNotHighEnough(skillEnhancement2, skillMinLevel2)
       );
     }

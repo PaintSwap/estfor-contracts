@@ -1611,82 +1611,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "activeBoost",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint40",
-            "name": "startTime",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint24",
-            "name": "duration",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "value",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "itemTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "enum BoostType",
-            "name": "boostType",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint40",
-            "name": "extraOrLastStartTime",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint24",
-            "name": "extraOrLastDuration",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "extraOrLastValue",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "extraOrLastItemTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "enum BoostType",
-            "name": "extraOrLastBoostType",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint40",
-            "name": "cooldown",
-            "type": "uint40"
-          }
-        ],
-        "internalType": "struct PlayerBoostInfo",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "components": [
           {
             "internalType": "enum Skill",
@@ -1800,82 +1724,6 @@
     "name": "buyBrushQuest",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_clanId",
-        "type": "uint256"
-      }
-    ],
-    "name": "clanBoost",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint40",
-            "name": "startTime",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint24",
-            "name": "duration",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "value",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "itemTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "enum BoostType",
-            "name": "boostType",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint40",
-            "name": "extraOrLastStartTime",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint24",
-            "name": "extraOrLastDuration",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "extraOrLastValue",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "extraOrLastItemTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "enum BoostType",
-            "name": "extraOrLastBoostType",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint40",
-            "name": "cooldown",
-            "type": "uint40"
-          }
-        ],
-        "internalType": "struct PlayerBoostInfo",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -2080,154 +1928,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "name": "getActivePlayer",
-    "outputs": [
-      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getPendingRandomRewards",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint16",
-            "name": "actionId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint40",
-            "name": "startTime",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint24",
-            "name": "xpElapsedTime",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint64",
-            "name": "queueId",
-            "type": "uint64"
-          },
-          {
-            "internalType": "uint16",
-            "name": "boostItemTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "elapsedTime",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint24",
-            "name": "sentinelElapsedTime",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint40",
-            "name": "boostStartTime",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint8",
-            "name": "fullAttireBonusRewardsPercent",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct PendingRandomReward[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "_skill",
-        "type": "uint8"
-      }
-    ],
-    "name": "getPlayerXP",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_avatarName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_avatarDescription",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "imageURI",
-        "type": "string"
-      }
-    ],
-    "name": "getURI",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "globalBoost",
+    "name": "getActiveBoost",
     "outputs": [
       {
         "components": [
@@ -2298,100 +2004,17 @@
   {
     "inputs": [
       {
-        "internalType": "contract ItemNFT",
-        "name": "itemNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "contract PlayerNFT",
-        "name": "playerNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "contract PetNFT",
-        "name": "petNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "contract World",
-        "name": "world",
-        "type": "address"
-      },
-      {
-        "internalType": "contract AdminAccess",
-        "name": "adminAccess",
-        "type": "address"
-      },
-      {
-        "internalType": "contract Quests",
-        "name": "quests",
-        "type": "address"
-      },
-      {
-        "internalType": "contract Clans",
-        "name": "clans",
-        "type": "address"
-      },
-      {
-        "internalType": "contract WishingWell",
-        "name": "wishingWell",
-        "type": "address"
-      },
-      {
         "internalType": "address",
-        "name": "implQueueActions",
+        "name": "_owner",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "implProcessActions",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "implRewards",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "implMisc",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "implMisc1",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isBeta",
-        "type": "bool"
       }
     ],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_from",
-        "type": "address"
-      },
+    "name": "getActivePlayer",
+    "outputs": [
       {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
-      }
-    ],
-    "name": "isOwnerOfPlayerAndActive",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -2401,16 +2024,143 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "playerId",
+        "name": "_clanId",
         "type": "uint256"
       }
     ],
-    "name": "isPlayerUpgraded",
+    "name": "getClanBoost",
     "outputs": [
       {
-        "internalType": "bool",
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "extraOrLastStartTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "extraOrLastDuration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "extraOrLastValue",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "extraOrLastItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "extraOrLastBoostType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "cooldown",
+            "type": "uint40"
+          }
+        ],
+        "internalType": "struct PlayerBoostInfo",
         "name": "",
-        "type": "bool"
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getGlobalBoost",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "extraOrLastStartTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "extraOrLastDuration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "extraOrLastValue",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "extraOrLastItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "extraOrLastBoostType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "cooldown",
+            "type": "uint40"
+          }
+        ],
+        "internalType": "struct PlayerBoostInfo",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -2429,7 +2179,7 @@
         "type": "uint8"
       }
     ],
-    "name": "level",
+    "name": "getLevel",
     "outputs": [
       {
         "internalType": "uint256",
@@ -2443,63 +2193,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Skill[2]",
-        "name": "_startSkills",
-        "type": "uint8[2]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_makeActive",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_startingItemTokenIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_startingAmounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "mintedPlayer",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
       }
     ],
-    "name": "packedXP",
+    "name": "getPackedXP",
     "outputs": [
       {
         "components": [
@@ -2620,19 +2319,6 @@
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "gamePaused",
-        "type": "bool"
-      }
-    ],
-    "name": "pauseGame",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "_owner",
         "type": "address"
@@ -2643,7 +2329,7 @@
         "type": "uint256"
       }
     ],
-    "name": "pendingQueuedActionState",
+    "name": "getPendingQueuedActionState",
     "outputs": [
       {
         "components": [
@@ -3037,7 +2723,97 @@
         "type": "uint256"
       }
     ],
-    "name": "players",
+    "name": "getPendingRandomRewards",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpElapsedTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint64",
+            "name": "queueId",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint16",
+            "name": "boostItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "elapsedTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "sentinelElapsedTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "boostStartTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "fullAttireBonusRewardsPercent",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct PendingRandomReward[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "_skill",
+        "type": "uint8"
+      }
+    ],
+    "name": "getPlayerXP",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPlayers",
     "outputs": [
       {
         "components": [
@@ -3185,6 +2961,249 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTotalXP",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_avatarName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_avatarDescription",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "imageURI",
+        "type": "string"
+      }
+    ],
+    "name": "getURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ItemNFT",
+        "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract PlayerNFT",
+        "name": "playerNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract PetNFT",
+        "name": "petNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract World",
+        "name": "world",
+        "type": "address"
+      },
+      {
+        "internalType": "contract AdminAccess",
+        "name": "adminAccess",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Quests",
+        "name": "quests",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Clans",
+        "name": "clans",
+        "type": "address"
+      },
+      {
+        "internalType": "contract WishingWell",
+        "name": "wishingWell",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "implQueueActions",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "implProcessActions",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "implRewards",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "implMisc",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "implMisc1",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "isBeta",
+        "type": "bool"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isOwnerOfPlayerAndActive",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isPlayerUpgraded",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum Skill[2]",
+        "name": "_startSkills",
+        "type": "uint8[2]"
+      },
+      {
+        "internalType": "bool",
+        "name": "_makeActive",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_startingItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_startingAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "mintedPlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "gamePaused",
+        "type": "bool"
+      }
+    ],
+    "name": "pauseGame",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -3567,25 +3586,6 @@
     "name": "testModifyXP",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "totalXP",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

@@ -373,31 +373,31 @@ describe("WishingWell", function () {
       .and.to.emit(wishingWell, "DonateToClan")
       .withArgs(alice.address, playerId, raffleEntryCost, clanId);
 
-    expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
-    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
+    expect((await players.getActiveBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.getClanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost * 2n, EstforConstants.CLAN_BOOSTER_3)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
-    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_2);
+    expect((await players.getActiveBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.getClanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_2);
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost * 3n, EstforConstants.CLAN_BOOSTER)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.activeBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
-    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_3);
+    expect((await players.getActiveBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.getClanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER_3);
 
     await expect(players.connect(alice).donate(playerId, raffleEntryCost * 7n + parseEther("1")))
       .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost * 10n, EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.clanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
+    expect((await players.getClanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);
 
     expect(parseEther((await wishingWell.getClanDonationInfo(clanId)).totalDonated.toString())).to.eq(
       raffleEntryCost * 10n + parseEther("1")
@@ -564,7 +564,7 @@ describe("WishingWell", function () {
     );
 
     // Should have the implicit boost
-    const activeBoost = await players.activeBoost(playerId);
+    const activeBoost = await players.getActiveBoost(playerId);
     expect(activeBoost.extraOrLastBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
     expect(activeBoost.extraOrLastValue).to.eq(5);
   });
@@ -608,7 +608,7 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(2);
 
     // Should have the lucky boost not luck of the draw boost
-    const activeBoost = await players.activeBoost(playerId);
+    const activeBoost = await players.getActiveBoost(playerId);
     expect(activeBoost.extraOrLastItemTokenId).to.eq(EstforConstants.LUCKY_POTION);
   });
 

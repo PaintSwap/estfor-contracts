@@ -291,17 +291,17 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   function _checkMinLevelRequirements(uint256 playerId, uint256 actionId) private view {
     PassiveAction storage action = _actions[actionId];
     require(
-      action.minSkill1 == Skill.NONE || _players.level(playerId, action.minSkill1) >= action.minLevel1,
+      action.minSkill1 == Skill.NONE || _players.getLevel(playerId, action.minSkill1) >= action.minLevel1,
       MinimumLevelNotReached(action.minSkill1, action.minLevel1)
     );
 
     require(
-      action.minSkill2 == Skill.NONE || _players.level(playerId, action.minSkill2) >= action.minLevel2,
+      action.minSkill2 == Skill.NONE || _players.getLevel(playerId, action.minSkill2) >= action.minLevel2,
       MinimumLevelNotReached(action.minSkill2, action.minLevel2)
     );
 
     require(
-      action.minSkill3 == Skill.NONE || _players.level(playerId, action.minSkill3) >= action.minLevel3,
+      action.minSkill3 == Skill.NONE || _players.getLevel(playerId, action.minSkill3) >= action.minLevel3,
       MinimumLevelNotReached(action.minSkill3, action.minLevel3)
     );
   }
