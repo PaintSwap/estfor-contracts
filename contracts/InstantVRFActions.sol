@@ -414,17 +414,17 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function addStrategies(
-    InstantVRFActionType[] calldata _instantVRFActionTypes,
+    InstantVRFActionType[] calldata instantVRFActionTypes,
     address[] calldata strategies
   ) public onlyOwner {
-    require(_instantVRFActionTypes.length == strategies.length, LengthMismatch());
-    for (uint256 i; i < _instantVRFActionTypes.length; ++i) {
-      require(_instantVRFActionTypes[i] != InstantVRFActionType.NONE && strategies[i] != address(0), InvalidStrategy());
-      require(_strategies[_instantVRFActionTypes[i]] == address(0), StrategyAlreadyExists());
+    require(instantVRFActionTypes.length == strategies.length, LengthMismatch());
+    for (uint256 i; i < instantVRFActionTypes.length; ++i) {
+      require(instantVRFActionTypes[i] != InstantVRFActionType.NONE && strategies[i] != address(0), InvalidStrategy());
+      require(_strategies[instantVRFActionTypes[i]] == address(0), StrategyAlreadyExists());
 
-      _strategies[_instantVRFActionTypes[i]] = strategies[i];
+      _strategies[instantVRFActionTypes[i]] = strategies[i];
     }
-    emit AddStrategies(_instantVRFActionTypes, strategies);
+    emit AddStrategies(instantVRFActionTypes, strategies);
   }
 
   function addActions(InstantVRFActionInput[] calldata instantVRFActionInputs) external onlyOwner {

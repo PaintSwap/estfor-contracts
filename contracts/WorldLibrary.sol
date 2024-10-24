@@ -118,31 +118,31 @@ library WorldLibrary {
   }
 
   // Random rewards have most common one first
-  function setActionRandomRewards(RandomReward[] calldata randomRewards, ActionRewards storage actionReward) external {
+  function setActionRandomRewards(RandomReward[] calldata randomRewards, ActionRewards storage actionRewards) external {
     uint256 randomRewardsLength = randomRewards.length;
     if (randomRewardsLength != 0) {
-      actionReward.randomRewardTokenId1 = randomRewards[0].itemTokenId;
-      actionReward.randomRewardChance1 = randomRewards[0].chance;
-      actionReward.randomRewardAmount1 = randomRewards[0].amount;
+      actionRewards.randomRewardTokenId1 = randomRewards[0].itemTokenId;
+      actionRewards.randomRewardChance1 = randomRewards[0].chance;
+      actionRewards.randomRewardAmount1 = randomRewards[0].amount;
     }
     if (randomRewardsLength > 1) {
-      actionReward.randomRewardTokenId2 = randomRewards[1].itemTokenId;
-      actionReward.randomRewardChance2 = randomRewards[1].chance;
-      actionReward.randomRewardAmount2 = randomRewards[1].amount;
+      actionRewards.randomRewardTokenId2 = randomRewards[1].itemTokenId;
+      actionRewards.randomRewardChance2 = randomRewards[1].chance;
+      actionRewards.randomRewardAmount2 = randomRewards[1].amount;
 
       require(
-        actionReward.randomRewardChance2 <= actionReward.randomRewardChance1,
+        actionRewards.randomRewardChance2 <= actionRewards.randomRewardChance1,
         RandomRewardsMustBeInOrder(randomRewards[0].chance, randomRewards[1].chance)
       );
-      require(actionReward.randomRewardTokenId1 != actionReward.randomRewardTokenId2, RandomRewardNoDuplicates());
+      require(actionRewards.randomRewardTokenId1 != actionRewards.randomRewardTokenId2, RandomRewardNoDuplicates());
     }
     if (randomRewardsLength > 2) {
-      actionReward.randomRewardTokenId3 = randomRewards[2].itemTokenId;
-      actionReward.randomRewardChance3 = randomRewards[2].chance;
-      actionReward.randomRewardAmount3 = randomRewards[2].amount;
+      actionRewards.randomRewardTokenId3 = randomRewards[2].itemTokenId;
+      actionRewards.randomRewardChance3 = randomRewards[2].chance;
+      actionRewards.randomRewardAmount3 = randomRewards[2].amount;
 
       require(
-        actionReward.randomRewardChance3 <= actionReward.randomRewardChance2,
+        actionRewards.randomRewardChance3 <= actionRewards.randomRewardChance2,
         RandomRewardsMustBeInOrder(randomRewards[1].chance, randomRewards[2].chance)
       );
 
@@ -155,11 +155,11 @@ library WorldLibrary {
       }
     }
     if (randomRewards.length > 3) {
-      actionReward.randomRewardTokenId4 = randomRewards[3].itemTokenId;
-      actionReward.randomRewardChance4 = randomRewards[3].chance;
-      actionReward.randomRewardAmount4 = randomRewards[3].amount;
+      actionRewards.randomRewardTokenId4 = randomRewards[3].itemTokenId;
+      actionRewards.randomRewardChance4 = randomRewards[3].chance;
+      actionRewards.randomRewardAmount4 = randomRewards[3].amount;
       require(
-        actionReward.randomRewardChance4 <= actionReward.randomRewardChance3,
+        actionRewards.randomRewardChance4 <= actionRewards.randomRewardChance3,
         RandomRewardsMustBeInOrder(randomRewards[2].chance, randomRewards[3].chance)
       );
       uint256 _bounds = randomRewards.length - 1;
