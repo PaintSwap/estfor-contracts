@@ -40,6 +40,24 @@ export const fulfillRandomWords = async (
   return mockVRF.fulfill(requestId, contract, {gasPrice});
 };
 
+export const requestAndFulfillRandomWordsSeeded = async (world: World, mockVRF: MockVRF, seed: bigint) => {
+  const tx = await world.requestRandomWords();
+  let requestId = await getRequestId(tx, world);
+  expect(requestId).to.not.eq(null);
+  expect(requestId).to.not.eq(0);
+  return fulfillRandomWordsSeeded(requestId as number, world, mockVRF, seed, 0n);
+};
+
+export const fulfillRandomWordsSeeded = async (
+  requestId: number | bigint,
+  contract: BaseContract,
+  mockVRF: MockVRF,
+  seed: bigint,
+  gasPrice = 0n
+): Promise<ContractTransactionResponse> => {
+  return mockVRF.fulfillSeeded(requestId, contract, seed, {gasPrice});
+};
+
 export const bronzeHelmetStats: EstforTypes.CombatStats = {
   melee: 1,
   magic: 0,

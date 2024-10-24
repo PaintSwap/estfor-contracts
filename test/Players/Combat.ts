@@ -13,6 +13,7 @@ import {
   NO_DONATION_AMOUNT,
   RATE_MUL,
   requestAndFulfillRandomWords,
+  requestAndFulfillRandomWordsSeeded,
   SPAWN_MUL,
   START_XP
 } from "../utils";
@@ -1054,8 +1055,8 @@ describe("Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq(numSpawned / SPAWN_MUL);
       await players.connect(alice).processActions(playerId);
       await timeTravel24Hours();
-      await requestAndFulfillRandomWords(world, mockVRF);
-      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, 200_000_000n);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, 300_000_000n);
       await players.connect(alice).processActions(playerId);
 
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON))

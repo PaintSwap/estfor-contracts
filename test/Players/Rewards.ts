@@ -10,8 +10,8 @@ import {
   GUAR_MUL,
   MAX_UNIQUE_TICKETS,
   requestAndFulfillRandomWords,
-  SPAWN_MUL,
-  timeTravel
+  requestAndFulfillRandomWordsSeeded,
+  SPAWN_MUL
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting} from "./utils";
@@ -2645,7 +2645,7 @@ describe("Rewards", function () {
 
       await timeTravel24Hours();
 
-      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, 10000000n);
 
       expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.eq(0);
 
