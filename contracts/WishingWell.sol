@@ -58,7 +58,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint40 private _totalDonated; // In BRUSH ether (no wei decimals)
   uint40 private _lastGlobalThreshold; // In BRUSH ether (no wei decimals)
   uint16 private _nextGlobalRewardItemTokenId;
-  uint16 public _nextLotteryWinnerRewardItemTokenId;
+  uint16 private _nextLotteryWinnerRewardItemTokenId;
   /// @custom:oz-renamed-from instantConsume
   bool private _nextLotteryWinnerRewardInstantConsume;
   uint16 private _lastLotteryId;

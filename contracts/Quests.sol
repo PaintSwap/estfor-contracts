@@ -69,7 +69,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint256 playerId => PlayerQuest playerQuest) private _activeQuests;
   mapping(uint256 playerId => PlayerQuest playerQuest) private _inProgressRandomQuests;
   mapping(uint256 playerId => mapping(uint256 queueId => PlayerQuest quest)) private _inProgressFixedQuests; // Only puts it here if changing active quest for something else
-  mapping(uint256 questId => MinimumRequirement[3]) _minimumRequirements; // Not checked yet
+  mapping(uint256 questId => MinimumRequirement[3]) private _minimumRequirements; // Not checked yet
   BitMaps.BitMap private _questIsRandom;
   mapping(uint256 playerId => PlayerQuestInfo) private _playerInfo;
   Quest[] private _randomQuests;

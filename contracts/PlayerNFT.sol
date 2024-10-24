@@ -91,9 +91,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   uint72 private _editNameCost; // Max is 4700 BRUSH
   address private _dev;
   uint72 private _upgradePlayerCost; // Max is 4700 BRUSH
-  uint8 _brushBurntPercentage;
-  uint8 _brushTreasuryPercentage;
-  uint8 _brushDevPercentage;
+  uint8 private _brushBurntPercentage;
+  uint8 private _brushTreasuryPercentage;
+  uint8 private _brushDevPercentage;
   bytes32 private _merkleRoot; // Unused now (was for alpha/beta whitelisting)
   bool private _isBeta; // Not need to pack this
   mapping(address whitelistedUser => uint256 amount) private _numMintedFromWhitelist; // Unused now

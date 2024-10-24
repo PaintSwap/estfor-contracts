@@ -119,7 +119,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   IPlayers private _players;
   ItemNFT private _itemNFT;
   World private _world;
-  uint80 _lastQueueId;
+  uint80 private _lastQueueId;
   mapping(uint256 actionId => PassiveAction action) private _actions;
   mapping(uint256 actionId => ActionRewards) private _actionRewards;
   mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private _activePassiveActions;

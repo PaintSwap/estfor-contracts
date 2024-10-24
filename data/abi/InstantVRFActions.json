@@ -574,7 +574,7 @@
     "inputs": [
       {
         "internalType": "enum InstantVRFActionType[]",
-        "name": "_instantVRFActionTypes",
+        "name": "instantVRFActionTypes",
         "type": "uint8[]"
       },
       {
