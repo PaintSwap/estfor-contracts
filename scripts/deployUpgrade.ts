@@ -196,9 +196,6 @@ async function main() {
   if (newPromotionsLibrary) {
     promotionsLibrary = await PromotionsLibrary.deploy();
     await promotionsLibrary.deployed();
-    if (network.chainId == 250) {
-      await verifyContracts([promotionsLibrary.address]);
-    }
   } else {
     promotionsLibrary = await PromotionsLibrary.attach(PROMOTIONS_LIBRARY_ADDRESS);
   }
@@ -214,6 +211,7 @@ async function main() {
     kind: "uups",
     timeout,
     unsafeAllow: ["external-library-linking"],
+    unsafeSkipStorageCheck: true,
   });
   await promotions.deployed();
   console.log(`promotions = "${promotions.address.toLowerCase()}"`);
@@ -382,6 +380,7 @@ async function main() {
     await verifyContracts([adminAccess.address]);
     await verifyContracts([wishingWell.address]);
     await verifyContracts([promotions.address]);
+    await verifyContracts([promotionsLibrary.address]);
     await verifyContracts([instantActions.address]);
     await verifyContracts([vrfRequestInfo.address]);
     await verifyContracts([instantVRFActions.address]);

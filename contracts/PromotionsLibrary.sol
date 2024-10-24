@@ -66,12 +66,12 @@ library PromotionsLibrary {
       revert StartTimeMustBeHigherEndTime();
     }
 
-    if (_promotionInfoInput.numDailyRandomItemsToPick == 0) {
+    if (_promotionInfoInput.numDailyRandomItemsToPick == 0 && _promotionInfoInput.guaranteedItemTokenIds.length == 0) {
       revert NoNumItemsToPick();
     }
 
-    if (_promotionInfoInput.numDailyRandomItemsToPick != 1) {
-      // TODO: Special handling for now, only allowing 1 item to be picked
+    if (_promotionInfoInput.guaranteedItemTokenIds.length == 0 && _promotionInfoInput.numDailyRandomItemsToPick != 1) {
+      // TODO: Special handling for now, only allowing 1 random item to be picked
       revert InvalidPromotion();
     }
 

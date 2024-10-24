@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol"
 
 import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
-import {IItemNFT} from "./interfaces/IItemNFT.sol";
+import {ItemNFT} from "./ItemNFT.sol";
 
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable {
@@ -49,6 +49,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint128 price;
   }
 
+  address private constant BLACK_HOLE = 0x8bc76F10a3cD0bCd57101950cfA8fD88c06DFfdB;
   uint public constant SELLING_CUTOFF_DURATION = 2 days;
 
   struct TokenInfo {
@@ -61,7 +62,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint tokenId => TokenInfo) public tokenInfos;
 
   IBrushToken public brush;
-  IItemNFT public itemNFT;
+  ItemNFT public itemNFT;
   uint16 private numUnsellableItems;
   uint24 public minItemQuantityBeforeSellsAllowed;
   address public dev;
@@ -164,7 +165,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       revert MinExpectedBrushNotReached(totalBrush, _minExpectedBrush);
     }
     brush.transfer(msg.sender, totalBrush);
-    itemNFT.burn(msg.sender, _tokenId, _quantity);
+    itemNFT.safeTransferFrom(msg.sender, BLACK_HOLE, _tokenId, _quantity, "");
     emit Sell(msg.sender, _tokenId, _quantity, price);
   }
 
@@ -190,7 +191,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       revert MinExpectedBrushNotReached(totalBrush.asUint256(), _minExpectedBrush);
     }
     brush.transfer(msg.sender, totalBrush.asUint256());
-    itemNFT.burnBatch(msg.sender, _tokenIds, _quantities);
+    itemNFT.safeBatchTransferFrom(msg.sender, BLACK_HOLE, _tokenIds, _quantities, "");
     emit SellBatch(msg.sender, _tokenIds, _quantities, prices);
   }
 
@@ -329,7 +330,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     emit RemoveUnsellableItems(itemTokenIds);
   }
 
-  function setItemNFT(IItemNFT _itemNFT) external onlyOwner {
+  function setItemNFT(ItemNFT _itemNFT) external onlyOwner {
     itemNFT = _itemNFT;
   }
 

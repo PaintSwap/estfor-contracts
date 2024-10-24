@@ -48,7 +48,7 @@ async function main() {
   await tx.wait();
   console.log("edit first one"); */
 
-  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
+  /*  const startTime = 1701417600; // Fri dec 1st 08:00 UTC
   const numDays = 22;
   await promotions.connect(owner).editPromotion({
     promotion: Promotion.XMAS_2023,
@@ -69,7 +69,7 @@ async function main() {
     numDaysHitNeededForStreakBonus: 20,
     numRandomStreakBonusItemsToPick1: 1,
     numRandomStreakBonusItemsToPick2: 0,
-    randomStreakBonusItemTokenIds1: [EstforConstants.SECRET_EGG_3, EstforConstants.SECRET_EGG_4],
+    randomStreakBonusItemTokenIds1: [EstforConstants.SECRET_EGG_3_TIER1, EstforConstants.SECRET_EGG_4_TIER1],
     randomStreakBonusAmounts1: [1, 1],
     randomStreakBonusItemTokenIds2: [],
     randomStreakBonusAmounts2: [],
@@ -77,6 +77,39 @@ async function main() {
     guaranteedStreakBonusAmounts: [],
     guaranteedItemTokenIds: [],
     guaranteedAmounts: [],
+    randomItemTokenIds: [],
+    randomAmounts: [],
+  }); */
+
+  const startTime = 1729513530; // Mon Oct 21th 12:25:30 UTC
+  const numDays = 2;
+  await promotions.connect(owner).editPromotion({
+    promotion: Promotion.HALLOWEEN_2024,
+    startTime,
+    endTime: startTime + 24 * 3600 * numDays,
+    minTotalXP: 0,
+    numDailyRandomItemsToPick: 0,
+    isMultiday: true,
+    brushCostMissedDay: "0",
+    brushCost: "0",
+    redeemCodeLength: 0,
+    adminOnly: false,
+    promotionTiedToUser: false,
+    promotionTiedToPlayer: true,
+    promotionMustOwnPlayer: true,
+    evolvedHeroOnly: true,
+    numDaysClaimablePeriodStreakBonus: 0,
+    numDaysHitNeededForStreakBonus: 0,
+    numRandomStreakBonusItemsToPick1: 0,
+    numRandomStreakBonusItemsToPick2: 0,
+    randomStreakBonusItemTokenIds1: [],
+    randomStreakBonusAmounts1: [],
+    randomStreakBonusItemTokenIds2: [],
+    randomStreakBonusAmounts2: [],
+    guaranteedStreakBonusItemTokenIds: [],
+    guaranteedStreakBonusAmounts: [],
+    guaranteedItemTokenIds: [EstforConstants.COIN],
+    guaranteedAmounts: [5],
     randomItemTokenIds: [],
     randomAmounts: [],
   });

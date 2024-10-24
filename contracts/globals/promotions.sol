@@ -6,8 +6,8 @@ enum Promotion {
   STARTER,
   HALLOWEEN_2023,
   XMAS_2023,
-  HOLIDAY3, // Just have placeholders for now
-  HOLIDAY4,
+  HALLOWEEN_2024,
+  HOLIDAY4, // Just have placeholders for now
   HOLIDAY5,
   HOLIDAY6,
   HOLIDAY7,
@@ -83,6 +83,7 @@ struct PromotionInfo {
   uint8 numDaysClaimablePeriodStreakBonus; // If there is a streak bonus, how many days to claim it after the promotion ends. If no final day bonus, set to 0
   uint8 numRandomStreakBonusItemsToPick1; // Number of items to pick for the streak bonus
   uint8 numRandomStreakBonusItemsToPick2; // Number of random items to pick for the streak bonus
+  // Misc
   uint16[] randomStreakBonusItemTokenIds1;
   uint32[] randomStreakBonusAmounts1;
   uint16[] randomStreakBonusItemTokenIds2; // Not used yet

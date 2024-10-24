@@ -10,7 +10,10 @@ async function main() {
 
   const world = (await ethers.getContractAt("World", WORLD_ADDRESS)).connect(owner) as World;
 
-  const actionIds = new Set([EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW]);
+  const actionIds = new Set([
+    EstforConstants.ACTION_COMBAT_NIGHTMARE_GROG_TOAD,
+    EstforConstants.ACTION_COMBAT_NIGHTMARE_UFFINCH,
+  ]);
   const actions = allActions.filter((action) => actionIds.has(action.actionId));
 
   if (actions.length !== actionIds.size) {

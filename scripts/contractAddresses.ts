@@ -52,17 +52,17 @@ if (!isBeta) {
   estforLibrary = "0x804a530f41ecf0c40cd4e312a72e033c78a2c1fa";
   playerNFT = "0xb809ed839c691d465e2ec45e1bcb5e5aded50fb9";
   promotions = "0x7d1c598266Dd6Bb0Ed7a76161c11e5073D8A71A4";
-  promotionsLibrary = "0x5494e6a699e8e59e9a6ec3031ab96e35f2476c95";
+  promotionsLibrary = "0x8b7e1bd3fe31d926209adfdbdc9d48a74e5666f5";
   quests = "0x17c59f0d2d4f80FD0F906Df53a28272736c7b455";
   clans = "0x334caa8907bdf49470f7b085380c25431ef96f6d";
   wishingWell = "0x0a8d80ce4855666b7d7121d75f2a49aac434a918";
   bank = "0xe183a43881eac74808c55bdb2a073929602af4db"; // beacon
-  playersLibrary = "0xfd0145ef3585176345cf8f2c63e025049f689073";
-  playersImplQueueActions = "0x0776fd8b445e272b718db2db13f500d4d31b5de6";
-  playersImplProcessActions = "0xb041035dbb95eac6011c5ef3cdd8a355fcb68700";
-  playersImplRewards = "0x139bb2ac01597c7b4e6157aba6a4b3db1620014d";
-  playersImplMisc = "0xf2136389a8e829da6a399b58ad56999d99e7cef7";
-  playersImplMisc1 = "0x971703455f101d1d81d71e82a9ba895446c1183f";
+  playersLibrary = "0xf01bc981a79f38b74a9b3953ee5aa6c95d9eded7";
+  playersImplQueueActions = "0x05b9958e6f209d9d0594d34f0ac44d1f9bf128d6";
+  playersImplProcessActions = "0x61da56557859597fa6bf693b7f149bc3934ac497";
+  playersImplRewards = "0x8eae3948ff44ddce15223902b396f373692a422e";
+  playersImplMisc = "0xd5aba67d0469fd553c9c5fb6b3534b98db3e1558";
+  playersImplMisc1 = "0xc55b5e713ee31a641e090d1e550bf4fcfe0b6ba4";
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
@@ -79,7 +79,7 @@ if (!isBeta) {
   oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
-  petNFTLibrary = "0x5a134487df2d8e216e34bf9407bd63cd80e76957";
+  petNFTLibrary = "0x517792d5cbb33cd337a2ef1bc6290ad964ea434e";
   petNFT = "0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3";
   passiveActions = "0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4";
 } else {
@@ -93,17 +93,17 @@ if (!isBeta) {
   estforLibrary = "0xAD4Fe5A1d43F986659F548Cc899dCD4045FA9974";
   playerNFT = "0xde70e49756322afdf7714d3aca963abcb4547b8d";
   promotions = "0xf28cab48e29be56fcc68574b5c147b780c35647c";
-  promotionsLibrary = "0x684c6e254df63b9d5a28b29b7e4d0850d158f9f9";
+  promotionsLibrary = "0x13af205b631928f0ccb582cf6c5cae4d92470d2a";
   quests = "0x96948a6df3a64cc2eb0a1825fccd26f0c93bfce9";
   clans = "0xd35410f526db135f09bb8e2bb066c8a63135d812";
   wishingWell = "0xdd1131f57e5e416622fa2b61d4108822e8cc38dc";
   bank = "0x73d1b1420deaeb6474b8aafb1d8229d392d1a04e";
-  playersLibrary = "0xa603b1b306032218032716e326d40ba37dd38c7d";
-  playersImplQueueActions = "0x14c8bd1269d27df96c6c3cb9d6d77db8c7e0c3c2";
-  playersImplProcessActions = "0x6e05be301a2c3b0ab3dff1cb3b2146d1bae95cb7";
-  playersImplRewards = "0x406837789a65cbe484d972fd6505b6e958078de2";
-  playersImplMisc = "0xd4c808f05134923d90c2d88052b561e984ab0fdd";
-  playersImplMisc1 = "0x8bf03010110f8b5bb60e3c2d189899d1fbf66245";
+  playersLibrary = "0xf54e3b0964f79b175c1117e0deff53ecdfcc1cc6";
+  playersImplQueueActions = "0x16b6c67f7cf04d26ea94695b299fb3cb9cc06a93";
+  playersImplProcessActions = "0x0d87d2dfaad816849c0e26aa65cacaf0ff1644bb";
+  playersImplRewards = "0xd61a2941696b4b4e688cd29e3712bed34248820f";
+  playersImplMisc = "0x6ed6f113a1d1e812f5d4cb88b3d5ed886a04eee3";
+  playersImplMisc1 = "0xd44f5989bd7a8a9613d0ae5fff6e696e186c535c";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
@@ -121,7 +121,7 @@ if (!isBeta) {
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
-  petNFTLibrary = "0x04a11e4afd667ca55b10d834a7367c4bed107750";
+  petNFTLibrary = "0x1445660336c1b0bcb2b484e86a56297f1da6575d";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
   passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
 }
