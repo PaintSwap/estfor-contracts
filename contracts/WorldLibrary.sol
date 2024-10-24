@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
 // solhint-disable-next-line no-global-import
@@ -10,8 +8,6 @@ import "./globals/all.sol";
 
 // This file contains methods for interacting with the World, used to decrease implementation deployment bytecode code.
 library WorldLibrary {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
   using SkillLibrary for uint8;
 
   error InputSpecifiedWithoutAmount();
@@ -110,11 +106,10 @@ library WorldLibrary {
       actionRewards.guaranteedRewardTokenId3 = guaranteedRewards[2].itemTokenId;
       actionRewards.guaranteedRewardRate3 = guaranteedRewards[2].rate;
 
-      U256 _bounds = guaranteedRewardsLength.dec().asU256();
-      for (U256 iter; iter < _bounds; iter = iter.inc()) {
-        uint256 i = iter.asUint256();
+      uint256 _bounds = guaranteedRewardsLength - 1;
+      for (uint256 i; i < _bounds; i++) {
         require(
-          guaranteedRewards[i].itemTokenId != guaranteedRewards[guaranteedRewardsLength.dec()].itemTokenId,
+          guaranteedRewards[i].itemTokenId != guaranteedRewards[guaranteedRewardsLength - 1].itemTokenId,
           GuaranteedRewardsNoDuplicates()
         );
       }
@@ -151,11 +146,10 @@ library WorldLibrary {
         RandomRewardsMustBeInOrder(randomRewards[1].chance, randomRewards[2].chance)
       );
 
-      U256 _bounds = randomRewardsLength.dec().asU256();
-      for (U256 iter; iter < _bounds; iter = iter.inc()) {
-        uint256 i = iter.asUint256();
+      uint256 _bounds = randomRewardsLength - 1;
+      for (uint256 i; i < _bounds; i++) {
         require(
-          randomRewards[i].itemTokenId != randomRewards[randomRewardsLength.dec()].itemTokenId,
+          randomRewards[i].itemTokenId != randomRewards[randomRewardsLength - 1].itemTokenId,
           RandomRewardNoDuplicates()
         );
       }
@@ -168,9 +162,8 @@ library WorldLibrary {
         actionReward.randomRewardChance4 <= actionReward.randomRewardChance3,
         RandomRewardsMustBeInOrder(randomRewards[2].chance, randomRewards[3].chance)
       );
-      U256 _bounds = randomRewards.length.dec().asU256();
-      for (U256 iter; iter < _bounds; iter = iter.inc()) {
-        uint256 i = iter.asUint256();
+      uint256 _bounds = randomRewards.length - 1;
+      for (uint256 i; i < _bounds; i++) {
         require(
           randomRewards[i].itemTokenId != randomRewards[randomRewards.length - 1].itemTokenId,
           RandomRewardNoDuplicates()

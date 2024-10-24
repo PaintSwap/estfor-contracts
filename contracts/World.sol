@@ -4,8 +4,6 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {WorldLibrary} from "./WorldLibrary.sol";
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
@@ -16,8 +14,6 @@ import {IWorld} from "./interfaces/IWorld.sol";
 import "./globals/all.sol";
 
 contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint256;
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
@@ -109,8 +105,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     _samWitchVRF = ISamWitchVRF(vrf);
 
     // Initialize a few days worth of random words so that we have enough data to fetch the first day
-    for (U256 iter; iter.lt(NUM_DAYS_RANDOM_WORDS_INITIALIZED); iter = iter.inc()) {
-      uint256 i = iter.asUint256();
+    for (uint256 i; i < NUM_DAYS_RANDOM_WORDS_INITIALIZED; i++) {
       uint256 requestId = 200 + i;
       _requestIds.push(requestId);
       emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);
@@ -230,8 +225,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function getMultipleWords(uint256 timestamp) public view returns (uint256[4] memory words) {
-    for (U256 iter; iter.lt(4); iter = iter.inc()) {
-      uint256 i = iter.asUint256();
+    for (uint256 i; i < 4; i++) {
       words[i] = getRandomWord(timestamp - (i * 1 days));
     }
   }
@@ -329,8 +323,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     } else if (numTickets <= MAX_UNIQUE_TICKETS) {
       // 4 * 32 bytes
       uint256[4] memory multipleWords = getMultipleWords(endTimestamp);
-      for (U256 iter; iter.lt(4); iter = iter.inc()) {
-        uint256 i = iter.asUint256();
+      for (uint256 i; i < 4; i++) {
         multipleWords[i] = uint256(
           _getRandomComponent(bytes32(multipleWords[i]), startTimestamp, endTimestamp, playerId)
         );
@@ -506,11 +499,10 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function addActions(Action[] calldata actionsToAdd) external onlyOwner {
-    U256 _iter = actionsToAdd.length.asU256();
-    while (_iter.neq(0)) {
-      _iter = _iter.dec();
-      uint16 i = _iter.asUint16();
-      _addAction(actionsToAdd[i]);
+    uint16 iter = uint16(actionsToAdd.length);
+    while (iter != 0) {
+      iter--;
+      _addAction(actionsToAdd[iter]);
     }
     emit AddActions(actionsToAdd);
   }
@@ -530,15 +522,14 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   ) public onlyOwner {
     emit AddActionChoices(actionId, actionChoiceIds, actionChoicesToAdd);
 
-    U256 actionChoiceLength = actionChoicesToAdd.length.asU256();
-    require(actionChoiceLength.eq(actionChoiceIds.length), LengthMismatch());
+    uint256 actionChoiceLength = actionChoicesToAdd.length;
+    require(actionChoiceLength == actionChoiceIds.length, LengthMismatch());
     require(actionChoiceIds.length != 0, NoActionChoices());
 
-    for (U256 iter; iter < actionChoiceLength; iter = iter.inc()) {
-      uint16 i = iter.asUint16();
-      _addActionChoice(actionId, actionChoiceIds[i], actionChoicesToAdd[i]);
+    for (uint16 iter; iter < actionChoiceLength; iter++) {
+      _addActionChoice(actionId, actionChoiceIds[iter], actionChoicesToAdd[iter]);
       // TODO: Could set the first storage slot only in cases where appropriate (same as editing)
-      _actionChoices[actionId][actionChoiceIds[i]] = _packActionChoice(actionChoicesToAdd[i]);
+      _actionChoices[actionId][actionChoiceIds[iter]] = _packActionChoice(actionChoicesToAdd[iter]);
     }
   }
 
@@ -551,9 +542,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     require(actionIds.length == actionChoicesToAdd.length, LengthMismatch());
     require(actionIds.length != 0, NoActionChoices());
 
-    U256 _actionIdsLength = actionIds.length.asU256();
-    for (U256 iter; iter < _actionIdsLength; iter = iter.inc()) {
-      uint16 i = iter.asUint16();
+    uint16 _actionIdsLength = uint16(actionIds.length);
+    for (uint16 i; i < _actionIdsLength; i++) {
       uint16 actionId = actionIds[i];
       addActionChoices(actionId, actionChoiceIds[i], actionChoicesToAdd[i]);
     }
@@ -567,11 +557,10 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     require(actionChoiceIds.length != 0, NoActionChoices());
     require(actionChoiceIds.length == actionChoicesToEdit.length, LengthMismatch());
 
-    U256 _actionIdsLength = actionChoiceIds.length.asU256();
-    for (U256 iter; iter < _actionIdsLength; iter = iter.inc()) {
-      uint16 i = iter.asUint16();
-      _editActionChoice(actionId, actionChoiceIds[i], actionChoicesToEdit[i]);
-      _actionChoices[actionId][actionChoiceIds[i]] = _packActionChoice(actionChoicesToEdit[i]);
+    uint256 _actionIdsLength = actionChoiceIds.length;
+    for (uint16 iter; iter < _actionIdsLength; iter++) {
+      _editActionChoice(actionId, actionChoiceIds[iter], actionChoicesToEdit[iter]);
+      _actionChoices[actionId][actionChoiceIds[iter]] = _packActionChoice(actionChoicesToEdit[iter]);
     }
 
     emit EditActionChoices(actionId, actionChoiceIds, actionChoicesToEdit);
@@ -580,10 +569,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   function removeActionChoices(uint16 actionId, uint16[] calldata actionChoiceIds) external onlyOwner {
     require(actionChoiceIds.length != 0, NoActionChoices());
 
-    U256 _length = actionChoiceIds.length.asU256();
-    for (U256 iter; iter < _length; iter = iter.inc()) {
-      uint16 i = iter.asUint16();
-      delete _actionChoices[actionId][actionChoiceIds[i]];
+    uint256 length = actionChoiceIds.length;
+    for (uint16 iter; iter < length; iter++) {
+      delete _actionChoices[actionId][actionChoiceIds[iter]];
     }
     emit RemoveActionChoices(actionId, actionChoiceIds);
   }
