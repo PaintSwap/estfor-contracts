@@ -7,8 +7,6 @@ import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {IClans} from "../interfaces/IClans.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -16,10 +14,6 @@ import {BankRegistry} from "./BankRegistry.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 
 contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint16;
-  using UnsafeMath for uint256;
-
   event DepositItems(address from, uint256 playerId, uint256[] ids, uint256[] values);
   event DepositItem(address from, uint256 playerId, uint256 id, uint256 value);
   event WithdrawItems(address from, address to, uint256 playerId, uint256[] ids, uint256[] values);
@@ -110,9 +104,9 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
     uint256[] calldata values
   ) external isOwnerOfPlayer(playerId) {
     uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
-    U256 bounds = ids.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      _receivedItemUpdateUniqueItems(ids[iter.asUint256()], maxCapacity);
+    uint256 bounds = ids.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
     }
     _bankRegistry.getItemNFT().safeBatchTransferFrom(_msgSender(), address(this), ids, values, "");
     emit DepositItems(_msgSender(), playerId, ids, values);
@@ -132,11 +126,11 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
     itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
 
     // Update uniqueItemCount after withdrawing items
-    U256 bounds = ids.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 id = ids[iter.asUint256()];
+    uint256 bounds = ids.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      uint256 id = ids[iter];
       if (_uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
-        _uniqueItemCount = uint16(_uniqueItemCount.dec());
+        _uniqueItemCount--;
         _uniqueItems[id] = false;
       }
     }
@@ -152,13 +146,13 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
 
     // Update uniqueItemCount after withdrawing items
     for (uint256 i; i < nftsInfo.length; ++i) {
-      U256 bounds = nftsInfo.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint256[] calldata ids = nftsInfo[iter.asUint256()].tokenIds;
+      uint256 bounds = nftsInfo.length;
+      for (uint256 iter; iter < bounds; iter++) {
+        uint256[] calldata ids = nftsInfo[iter].tokenIds;
         for (uint256 j; j < ids.length; ++j) {
           uint256 id = ids[j];
           if (_uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
-            _uniqueItemCount = uint16(_uniqueItemCount.dec());
+            _uniqueItemCount--;
             _uniqueItems[id] = false;
           }
         }
@@ -195,9 +189,9 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
     // Only care about itemNFTs sent from outside the bank here
     if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
       uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
-      U256 bounds = ids.length.asU256();
-      for (U256 iter; iter < bounds; iter = iter.inc()) {
-        _receivedItemUpdateUniqueItems(ids[iter.asUint256()], maxCapacity);
+      uint256 bounds = ids.length;
+      for (uint256 iter; iter < bounds; iter++) {
+        _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
       }
       uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
       emit DepositItems(from, activePlayerId, ids, values);
@@ -283,7 +277,7 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
   function _receivedItemUpdateUniqueItems(uint256 id, uint256 maxCapacity) private {
     if (!_uniqueItems[id]) {
       require(_uniqueItemCount < maxCapacity, MaxBankCapacityReached());
-      _uniqueItemCount = uint16(_uniqueItemCount.inc());
+      _uniqueItemCount++;
       _uniqueItems[id] = true;
     }
   }

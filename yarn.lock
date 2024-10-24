@@ -2,11 +2,6 @@
 # yarn lockfile v1
 
 
-"@0xdoublesharp/unsafe-math@0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@0xdoublesharp/unsafe-math/-/unsafe-math-0.0.16.tgz#a9fa3c8c2d3bbae952f5ab70f4a88d9be1c49583"
-  integrity sha512-Q1Io6BCQNdbcZEa5H5U+jzdhG2v44U4njSqqOH2xCK3WGMZ18wmvdBqP6k2vIWssFUaKw3wCx4l/WDprkYQV8w==
-
 "@adraffy/ens-normalize@1.10.0":
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.10.0.tgz#d2a39395c587e092d77cbbc80acf956a54f38bf7"

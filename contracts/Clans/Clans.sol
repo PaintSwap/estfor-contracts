@@ -7,8 +7,6 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
 
-import {UnsafeMath, U256} from "@0xdoublesharp/unsafe-math/contracts/UnsafeMath.sol";
-
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
@@ -20,11 +18,6 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 import {ClanRank} from "../globals/clans.sol";
 
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
-  using UnsafeMath for U256;
-  using UnsafeMath for uint16;
-  using UnsafeMath for uint80;
-  using UnsafeMath for uint256;
-
   event ClanCreated(uint256 clanId, uint256 playerId, string[] clanInfo, uint256 imageId, uint256 tierId);
   event SetClanRank(uint256 clanId, uint256 playerId, ClanRank clan);
   event InviteSent(uint256 clanId, uint256 playerId, uint256 fromPlayerId);
@@ -223,7 +216,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _checkClanImage(imageId, tier.maxImageId);
 
     uint256 clanId = _nextClanId;
-    _nextClanId = uint80(_nextClanId.inc());
+    _nextClanId++;
     Clan storage clan = _clans[clanId];
     clan.owner = uint80(playerId);
     clan.tierId = tierId;
@@ -339,7 +332,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     require(clan.memberCount < tier.maxMemberCapacity, ClanIsFull());
 
     clan.inviteRequests[playerId] = false;
-    clan.memberCount = uint16(clan.memberCount.inc());
+    clan.memberCount++;
 
     player.clanId = uint32(clanId);
     player.rank = ClanRank.COMMONER;
@@ -821,7 +814,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function _acceptJoinRequest(uint256 clanId, uint256 newMemberPlayedId) private {
     Clan storage clan = _clans[clanId];
     clan.inviteRequests[newMemberPlayedId] = false;
-    clan.memberCount = uint16(clan.memberCount.inc());
+    clan.memberCount++;
 
     PlayerInfo storage player = _playerInfo[newMemberPlayedId];
     require(player.requestedClanId == clanId, NoJoinRequest());
@@ -831,21 +824,19 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function addTiers(Tier[] calldata tiers) external onlyOwner {
-    U256 bounds = tiers.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      require(tiers[i].id != 0 && _tiers[tiers[i].id].id == 0, TierAlreadyExists());
-      _setTier(tiers[i]);
+    uint256 bounds = tiers.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      require(tiers[iter].id != 0 && _tiers[tiers[iter].id].id == 0, TierAlreadyExists());
+      _setTier(tiers[iter]);
     }
     emit AddTiers(tiers);
   }
 
   function editTiers(Tier[] calldata tiers) external onlyOwner {
-    U256 bounds = tiers.length.asU256();
-    for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 i = iter.asUint256();
-      _checkTierExists(tiers[i].id);
-      _setTier(tiers[i]);
+    uint256 bounds = tiers.length;
+    for (uint256 iter; iter < bounds; iter++) {
+      _checkTierExists(tiers[iter].id);
+      _setTier(tiers[iter]);
     }
     emit EditTiers(tiers);
   }
