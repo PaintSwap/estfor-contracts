@@ -169,7 +169,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   uint16 private _totalEmissionPercentage; // Multiplied by PERCENTAGE_EMISSION_MUL
   IBrushToken private _brush;
 
-  Skill[] private comparableSkills;
+  Skill[] private _comparableSkills;
 
   address private _combatantsHelper;
   uint8 private _maxClanCombatants;
@@ -231,8 +231,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     address oracle,
     ISamWitchVRF samWitchVRF,
     VRFRequestInfo vrfRequestInfo,
-    Skill[] calldata _comparableSkills,
-    uint8 _maxClanCombatants,
+    Skill[] calldata comparableSkills,
+    uint8 maxClanCombatants,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -254,9 +254,9 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
 
     setExpectedGasLimitFulfill(1_500_000);
 
-    setComparableSkills(_comparableSkills);
+    setComparableSkills(comparableSkills);
 
-    setMaxClanCombatants(_maxClanCombatants);
+    setMaxClanCombatants(maxClanCombatants);
 
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
@@ -363,7 +363,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
 
       randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
       for (uint256 i; i < randomSkills.length; ++i) {
-        randomSkills[i] = comparableSkills[uint8(randomWords[2] >> (i * 8)) % comparableSkills.length];
+        randomSkills[i] = _comparableSkills[uint8(randomWords[2] >> (i * 8)) % _comparableSkills.length];
       }
 
       (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary.doBattle(
@@ -630,7 +630,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     for (uint256 i = 0; i < skills.length; ++i) {
       require(skills[i] != Skill.NONE && skills[i] != Skill.COMBAT, InvalidSkill(skills[i]));
 
-      comparableSkills.push(skills[i]);
+      _comparableSkills.push(skills[i]);
     }
     emit SetComparableSkills(skills);
   }

@@ -80,10 +80,10 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
 
   // Show all the player stats, return metadata json
   function uri(
-    string calldata _playerName,
-    string calldata _avatarName,
-    string calldata _avatarDescription,
-    string calldata _imageURI,
+    string calldata playerName,
+    string calldata avatarName,
+    string calldata avatarDescription,
+    string calldata imageURI,
     uint256 playerId
   ) external view returns (string memory) {
     PackedXP storage packedXP = _playerXP[playerId];
@@ -106,7 +106,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
 
     string memory attributes = string(
       abi.encodePacked(
-        _getTraitStringJSON("Avatar", _avatarName),
+        _getTraitStringJSON("Avatar", avatarName),
         ",",
         _getTraitStringJSON("Clan", _clans.getClanNameOfPlayer(playerId)),
         ",",
@@ -157,7 +157,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
       )
     );
 
-    bytes memory fullName = abi.encodePacked(_playerName, " (", overallLevel.toString(), ")");
+    bytes memory fullName = abi.encodePacked(playerName, " (", overallLevel.toString(), ")");
     bytes memory externalURL = abi.encodePacked(
       "https://",
       _isBeta ? "beta." : "",
@@ -170,11 +170,11 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
         '{"name":"',
         fullName,
         '","description":"',
-        _avatarDescription,
+        avatarDescription,
         '","attributes":[',
         attributes,
         '],"image":"',
-        _imageURI,
+        imageURI,
         '", "external_url":"',
         externalURL,
         '"}'
@@ -184,23 +184,23 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     return string(abi.encodePacked("data:application/json;base64,", json));
   }
 
-  function _getTraitStringJSON(string memory _traitType, string memory _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), '"', _value, '"}');
+  function _getTraitStringJSON(string memory traitType, string memory value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(traitType), '"', value, '"}');
   }
 
-  function _getTraitNumberJSON(string memory _traitType, uint32 _value) private pure returns (bytes memory) {
-    return abi.encodePacked(_getTraitTypeJSON(_traitType), _value.toString(), "}");
+  function _getTraitNumberJSON(string memory traitType, uint32 value) private pure returns (bytes memory) {
+    return abi.encodePacked(_getTraitTypeJSON(traitType), value.toString(), "}");
   }
 
-  function _getTraitTypeJSON(string memory _traitType) private pure returns (bytes memory) {
-    return abi.encodePacked('{"trait_type":"', _traitType, '","value":');
+  function _getTraitTypeJSON(string memory traitType) private pure returns (bytes memory) {
+    return abi.encodePacked('{"trait_type":"', traitType, '","value":');
   }
 
-  function addFullAttireBonuses(FullAttireBonusInput[] calldata _fullAttireBonuses) external {
-    U256 bounds = _fullAttireBonuses.length.asU256();
+  function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external {
+    U256 bounds = fullAttireBonuses.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
       uint256 i = iter.asUint256();
-      FullAttireBonusInput calldata fullAttireBonus = _fullAttireBonuses[i];
+      FullAttireBonusInput calldata fullAttireBonus = fullAttireBonuses[i];
 
       require(fullAttireBonus.skill != Skill.NONE, InvalidSkill());
       EquipPosition[5] memory expectedEquipPositions = [

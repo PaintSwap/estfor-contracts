@@ -66,19 +66,19 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function processActions(
-    address _from,
+    address from,
     uint256 playerId
   )
     public
     returns (QueuedAction[] memory remainingQueuedActions, PendingQueuedActionData memory currentActionProcessed)
   {
     Player storage player = _players[playerId];
-    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(_from, playerId);
+    PendingQueuedActionState memory pendingQueuedActionState = _pendingQueuedActionState(from, playerId);
     if (player.actionQueue.length == 0) {
       // No actions remaining
       PendingQueuedActionProcessed memory emptyPendingQueuedActionProcessed;
       _processActionsFinished(
-        _from,
+        from,
         playerId,
         emptyPendingQueuedActionProcessed,
         pendingQueuedActionState.lotteryWinner
@@ -96,9 +96,9 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       PendingQueuedActionMetadata memory actionMetadata = pendingQueuedActionState.actionMetadatas[i];
 
       if (equipmentState.consumedItemTokenIds.length != 0) {
-        _itemNFT.burnBatch(_from, equipmentState.consumedItemTokenIds, equipmentState.consumedAmounts);
+        _itemNFT.burnBatch(from, equipmentState.consumedItemTokenIds, equipmentState.consumedAmounts);
         emit Consumes(
-          _from,
+          from,
           playerId,
           actionMetadata.queueId,
           equipmentState.consumedItemTokenIds,
@@ -106,9 +106,9 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         );
       }
       if (equipmentState.producedItemTokenIds.length != 0) {
-        _itemNFT.mintBatch(_from, equipmentState.producedItemTokenIds, equipmentState.producedAmounts);
+        _itemNFT.mintBatch(from, equipmentState.producedItemTokenIds, equipmentState.producedAmounts);
         emit Rewards(
-          _from,
+          from,
           playerId,
           actionMetadata.queueId,
           equipmentState.producedItemTokenIds,
@@ -144,7 +144,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
         if (!hasRandomWord) {
           _addPendingRandomReward(
-            _from,
+            from,
             playerId,
             actionMetadata.actionId,
             actionMetadata.queueId,
@@ -161,7 +161,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       }
 
       if (actionMetadata.died) {
-        emit Died(_from, playerId, actionMetadata.queueId);
+        emit Died(from, playerId, actionMetadata.queueId);
       }
       // XP gained
       if (actionMetadata.xpGained != 0) {
@@ -178,7 +178,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
           if (xpGained <= actionMetadata.xpGained) {
             // Map this to the current action
             _updateXP(
-              _from,
+              from,
               playerId,
               pendingQueuedActionProcessed.skills[j],
               pendingQueuedActionProcessed.xpGainedSkills[j]
@@ -191,22 +191,18 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       }
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
-        emit ActionFinished(_from, playerId, actionMetadata.queueId);
+        emit ActionFinished(from, playerId, actionMetadata.queueId);
       } else {
-        emit ActionPartiallyFinished(_from, playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
+        emit ActionPartiallyFinished(from, playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
       }
       startTime += actionMetadata.elapsedTime;
     }
 
     // XP rewards
     if (pendingQueuedActionState.xpRewardItemTokenIds.length != 0) {
-      _itemNFT.mintBatch(
-        _from,
-        pendingQueuedActionState.xpRewardItemTokenIds,
-        pendingQueuedActionState.xpRewardAmounts
-      );
+      _itemNFT.mintBatch(from, pendingQueuedActionState.xpRewardItemTokenIds, pendingQueuedActionState.xpRewardAmounts);
       emit ClaimedXPThresholdRewards(
-        _from,
+        from,
         playerId,
         pendingQueuedActionState.xpRewardItemTokenIds,
         pendingQueuedActionState.xpRewardAmounts
@@ -225,7 +221,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       queueIds[j] = producedPastRandomRewards[j].queueId;
     }
     _processClaimableRewards(
-      _from,
+      from,
       playerId,
       itemTokenIds,
       amounts,
@@ -235,16 +231,16 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
     // Quests
     QuestState memory questState = pendingQueuedActionState.quests;
-    _quests.processQuests(_from, playerId, questState.activeQuestInfo, questState.questsCompleted);
+    _quests.processQuests(from, playerId, questState.activeQuestInfo, questState.questsCompleted);
     if (questState.consumedItemTokenIds.length != 0 || questState.rewardItemTokenIds.length != 0) {
       if (questState.consumedItemTokenIds.length != 0) {
-        _itemNFT.burnBatch(_from, questState.consumedItemTokenIds, questState.consumedAmounts);
+        _itemNFT.burnBatch(from, questState.consumedItemTokenIds, questState.consumedAmounts);
       }
       if (questState.rewardItemTokenIds.length != 0) {
-        _itemNFT.mintBatch(_from, questState.rewardItemTokenIds, questState.rewardAmounts);
+        _itemNFT.mintBatch(from, questState.rewardItemTokenIds, questState.rewardAmounts);
       }
       emit QuestRewardConsumes(
-        _from,
+        from,
         playerId,
         questState.rewardItemTokenIds,
         questState.rewardAmounts,
@@ -256,7 +252,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Any quest XP gains
     uint256 questXpGained;
     for (uint256 j; j < questState.skills.length; ++j) {
-      _updateXP(_from, playerId, questState.skills[j], questState.xpGainedSkills[j]);
+      _updateXP(from, playerId, questState.skills[j], questState.xpGainedSkills[j]);
       questXpGained += questState.xpGainedSkills[j];
     }
     if (questXpGained != 0) {
@@ -266,12 +262,12 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Daily/weekly rewards
     if (pendingQueuedActionState.dailyRewardItemTokenIds.length != 0) {
       _itemNFT.mintBatch(
-        _from,
+        from,
         pendingQueuedActionState.dailyRewardItemTokenIds,
         pendingQueuedActionState.dailyRewardAmounts
       );
       emit DailyReward(
-        _from,
+        from,
         playerId,
         pendingQueuedActionState.dailyRewardItemTokenIds[0],
         pendingQueuedActionState.dailyRewardAmounts[0]
@@ -279,7 +275,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
       if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
         emit WeeklyReward(
-          _from,
+          from,
           playerId,
           pendingQueuedActionState.dailyRewardItemTokenIds[1],
           pendingQueuedActionState.dailyRewardAmounts[1]
@@ -291,7 +287,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       }
     }
 
-    _handleLotteryWinnings(_from, playerId, pendingQueuedActionState.lotteryWinner);
+    _handleLotteryWinnings(from, playerId, pendingQueuedActionState.lotteryWinner);
 
     _clearPlayerBoostsIfExpired(playerId);
 
@@ -322,99 +318,99 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function donate(address _from, uint256 playerId, uint256 _amount) external {
+  function donate(address from, uint256 playerId, uint256 amount) external {
     (uint16 extraItemTokenId, uint16 globalItemTokenId, uint256 clanId, uint16 clanItemTokenId) = _wishingWell.donate(
-      _from,
+      from,
       playerId,
-      _amount
+      amount
     );
     if (extraItemTokenId != NONE) {
-      _instantConsumeSpecialBoost(_from, playerId, extraItemTokenId, uint40(block.timestamp), clanId);
+      _instantConsumeSpecialBoost(from, playerId, extraItemTokenId, uint40(block.timestamp), clanId);
     }
     if (clanItemTokenId != NONE) {
-      _instantConsumeSpecialBoost(_from, playerId, clanItemTokenId, uint40(block.timestamp), clanId);
+      _instantConsumeSpecialBoost(from, playerId, clanItemTokenId, uint40(block.timestamp), clanId);
     }
     if (globalItemTokenId != NONE) {
-      _instantConsumeSpecialBoost(_from, playerId, globalItemTokenId, uint40(block.timestamp), clanId);
+      _instantConsumeSpecialBoost(from, playerId, globalItemTokenId, uint40(block.timestamp), clanId);
     }
   }
 
   // Is there a current boost ongoing when this one will be overriden? If so set extraOrLast* up to the current time so that it can be used
   // to give the player the remaining boost time for any queued actions on-going at this time.
-  function _setLastBoostIfAppropriate(PlayerBoostInfo storage _boost) private {
-    if (block.timestamp < _boost.startTime + _boost.duration) {
-      _boost.extraOrLastStartTime = _boost.startTime;
-      _boost.extraOrLastDuration = uint24(block.timestamp - _boost.startTime); // duration from start to current time
-      _boost.extraOrLastValue = _boost.value;
-      _boost.extraOrLastBoostType = _boost.boostType;
-      _boost.extraOrLastItemTokenId = _boost.itemTokenId;
+  function _setLastBoostIfAppropriate(PlayerBoostInfo storage boost) private {
+    if (block.timestamp < boost.startTime + boost.duration) {
+      boost.extraOrLastStartTime = boost.startTime;
+      boost.extraOrLastDuration = uint24(block.timestamp - boost.startTime); // duration from start to current time
+      boost.extraOrLastValue = boost.value;
+      boost.extraOrLastBoostType = boost.boostType;
+      boost.extraOrLastItemTokenId = boost.itemTokenId;
     }
   }
 
   // There is no need to burn anything because it is implicitly minted/burned in the same transaction
   function _instantConsumeSpecialBoost(
-    address _from,
+    address from,
     uint256 playerId,
-    uint16 _itemTokenId,
-    uint40 _startTime,
-    uint256 _clanId
+    uint16 itemTokenId,
+    uint40 startTime,
+    uint256 clanId
   ) private {
-    Item memory item = _itemNFT.getItem(_itemTokenId);
+    Item memory item = _itemNFT.getItem(itemTokenId);
     require(
       item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL ||
         item.equipPosition == EquipPosition.GLOBAL_BOOST_VIAL ||
         item.equipPosition == EquipPosition.CLAN_BOOST_VIAL,
       NotABoostVial()
     );
-    if (_startTime < block.timestamp) {
-      _startTime = uint40(block.timestamp);
+    if (startTime < block.timestamp) {
+      startTime = uint40(block.timestamp);
     }
 
     BoostInfo memory boostInfo = BoostInfo({
-      startTime: _startTime,
+      startTime: startTime,
       duration: item.boostDuration,
       value: item.boostValue,
       boostType: item.boostType,
-      itemTokenId: _itemTokenId
+      itemTokenId: itemTokenId
     });
 
     if (item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL) {
       PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
-      playerBoost.extraOrLastStartTime = _startTime;
+      playerBoost.extraOrLastStartTime = startTime;
       playerBoost.extraOrLastDuration = item.boostDuration;
       playerBoost.extraOrLastValue = item.boostValue;
       playerBoost.extraOrLastBoostType = item.boostType;
-      playerBoost.extraOrLastItemTokenId = _itemTokenId;
-      emit ConsumeExtraBoostVial(_from, playerId, boostInfo);
+      playerBoost.extraOrLastItemTokenId = itemTokenId;
+      emit ConsumeExtraBoostVial(from, playerId, boostInfo);
     } else if (item.equipPosition == EquipPosition.GLOBAL_BOOST_VIAL) {
       _setLastBoostIfAppropriate(_globalBoost); // Must be set before making any changes
-      _globalBoost.startTime = _startTime;
+      _globalBoost.startTime = startTime;
       _globalBoost.duration = item.boostDuration;
       _globalBoost.value = item.boostValue;
       _globalBoost.boostType = item.boostType;
-      _globalBoost.itemTokenId = _itemTokenId;
-      emit ConsumeGlobalBoostVial(_from, playerId, boostInfo);
+      _globalBoost.itemTokenId = itemTokenId;
+      emit ConsumeGlobalBoostVial(from, playerId, boostInfo);
     } else {
-      PlayerBoostInfo storage clanBoost = _clanBoosts[_clanId];
+      PlayerBoostInfo storage clanBoost = _clanBoosts[clanId];
       _setLastBoostIfAppropriate(clanBoost); // Must be set before making any changes
-      clanBoost.startTime = _startTime;
+      clanBoost.startTime = startTime;
       clanBoost.duration = item.boostDuration;
       clanBoost.value = item.boostValue;
       clanBoost.boostType = item.boostType;
-      clanBoost.itemTokenId = _itemTokenId;
-      emit ConsumeClanBoostVial(_from, playerId, _clanId, boostInfo);
+      clanBoost.itemTokenId = itemTokenId;
+      emit ConsumeClanBoostVial(from, playerId, clanId, boostInfo);
     }
   }
 
   function _processActionsFinished(
-    address _from,
+    address from,
     uint256 playerId,
     PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
-    LotteryWinnerInfo memory _lotteryWinner
+    LotteryWinnerInfo memory lotteryWinner
   ) private {
-    _claimRandomRewards(_from, playerId, _pendingQueuedActionProcessed);
-    _handleDailyRewards(_from, playerId);
-    _handleLotteryWinnings(_from, playerId, _lotteryWinner);
+    _claimRandomRewards(from, playerId, _pendingQueuedActionProcessed);
+    _handleDailyRewards(from, playerId);
+    _handleLotteryWinnings(from, playerId, lotteryWinner);
     _clearPlayerBoostsIfExpired(playerId);
   }
 
@@ -446,7 +442,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     Attire storage attire,
     Skill skill,
     uint256 rolls,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   ) private {
     PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     BoostType boostType;
@@ -472,7 +468,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       from,
       attire,
       address(_itemNFT),
-      _pendingQueuedActionEquipmentStates,
+      pendingQueuedActionEquipmentStates,
       bonusRewardsPercent,
       _fullAttireBonus[skill].itemTokenIds
     );
@@ -496,15 +492,15 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
   }
 
   function _claimTotalXPThresholdRewards(
-    address _from,
+    address from,
     uint256 playerId,
-    uint256 _oldTotalXP,
-    uint256 _newTotalXP
+    uint256 oldTotalXP,
+    uint256 newTotalXP
   ) private {
-    (uint256[] memory itemTokenIds, uint256[] memory amounts) = _claimableXPThresholdRewards(_oldTotalXP, _newTotalXP);
+    (uint256[] memory itemTokenIds, uint256[] memory amounts) = _claimableXPThresholdRewards(oldTotalXP, newTotalXP);
     if (itemTokenIds.length != 0) {
-      _itemNFT.mintBatch(_from, itemTokenIds, amounts);
-      emit ClaimedXPThresholdRewards(_from, playerId, itemTokenIds, amounts);
+      _itemNFT.mintBatch(from, itemTokenIds, amounts);
+      emit ClaimedXPThresholdRewards(from, playerId, itemTokenIds, amounts);
     }
   }
 
@@ -522,15 +518,15 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _players[playerId].totalXP = newTotalXP;
   }
 
-  function _handleDailyRewards(address _from, uint256 playerId) private {
-    _delegatecall(_implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.handleDailyRewards.selector, _from, playerId));
+  function _handleDailyRewards(address from, uint256 playerId) private {
+    _delegatecall(_implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.handleDailyRewards.selector, from, playerId));
   }
 
-  function _handleLotteryWinnings(address _from, uint256 playerId, LotteryWinnerInfo memory _lotteryWinner) private {
+  function _handleLotteryWinnings(address from, uint256 playerId, LotteryWinnerInfo memory lotteryWinner) private {
     // Check for lottery winners, TODO: currently just uses instant extra boost consumptions
-    if (_lotteryWinner.itemTokenId != 0) {
-      _wishingWell.claimedLotteryWinnings(_lotteryWinner.lotteryId);
-      _instantConsumeSpecialBoost(_from, playerId, _lotteryWinner.itemTokenId, uint40(block.timestamp), 0);
+    if (lotteryWinner.itemTokenId != 0) {
+      _wishingWell.claimedLotteryWinnings(lotteryWinner.lotteryId);
+      _instantConsumeSpecialBoost(from, playerId, lotteryWinner.itemTokenId, uint40(block.timestamp), 0);
     }
   }
 }

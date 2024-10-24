@@ -1307,12 +1307,12 @@
       },
       {
         "internalType": "enum Skill[]",
-        "name": "_comparableSkills",
+        "name": "comparableSkills",
         "type": "uint8[]"
       },
       {
         "internalType": "uint8",
-        "name": "_maxClanCombatants",
+        "name": "maxClanCombatants",
         "type": "uint8"
       },
       {
