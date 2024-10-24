@@ -411,9 +411,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     if (actionChoiceId == 0) {
       revert ActionChoiceIdZeroNotAllowed();
     }
-    if (Skill(_actionChoices[actionId][actionChoiceId].skill) != Skill.NONE) {
-      revert ActionChoiceAlreadyExists();
-    }
+    require(_actionChoices[actionId][actionChoiceId].skill.isNone(), ActionChoiceAlreadyExists());
     WorldLibrary.checkActionChoice(actionChoiceInput);
   }
 

@@ -89,7 +89,7 @@ library WorldLibrary {
     }
 
     for (uint256 i; i < minSkills.length; ++i) {
-      if (minSkills[i].isSkill(Skill.NONE)) {
+      if (minSkills[i].isNone()) {
         revert InvalidSkill();
       }
       // Can only be 0 if it's the first one and there is more than one
