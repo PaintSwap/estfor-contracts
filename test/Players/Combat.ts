@@ -1120,7 +1120,7 @@ describe("Combat Actions", function () {
       expect(await itemNFT.balanceOf(alice.address, EstforConstants.POISON)).to.eq(0);
 
       await timeTravel24Hours();
-      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, 100_000_000_000n);
 
       pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);
