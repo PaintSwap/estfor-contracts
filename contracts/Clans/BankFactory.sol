@@ -16,17 +16,15 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   error OnlyClans();
   error BankAlreadyCreated();
 
-  mapping(uint256 clanId => address bank) public bankAddress;
+  mapping(uint256 clanId => address bank) private _bankAddress;
   // Keeps track of which vault addresses have been created here
-  mapping(address => bool) public createdHere;
+  mapping(address => bool) private _createdHere;
   /// @custom:oz-renamed-from bankUpgradeableProxy
-  address public bankBeacon;
-  address public bankRegistry;
+  address private _bankBeacon;
+  address private _bankRegistry;
 
   modifier onlyClans() {
-    if (address(BankRegistry(bankRegistry).clans()) != _msgSender()) {
-      revert OnlyClans();
-    }
+    require(address(BankRegistry(_bankRegistry).getClans()) == _msgSender(), OnlyClans());
     _;
   }
 
@@ -35,25 +33,31 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     _disableInitializers();
   }
 
-  function initialize(address _bankRegistry, address _bankBeacon) external initializer {
+  function initialize(address bankRegistry, address bankBeacon) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
-    bankRegistry = _bankRegistry;
-    bankBeacon = _bankBeacon;
+    _bankRegistry = bankRegistry;
+    _bankBeacon = bankBeacon;
   }
 
-  function createBank(address _from, uint256 _clanId) external onlyClans returns (address) {
-    if (bankAddress[_clanId] != address(0)) {
-      revert BankAlreadyCreated();
-    }
+  function getBankAddress(uint256 clanId) external view override returns (address) {
+    return _bankAddress[clanId];
+  }
+
+  function getCreatedHere(address bank) external view override returns (bool) {
+    return _createdHere[bank];
+  }
+
+  function createBank(address from, uint256 clanId) external onlyClans returns (address) {
+    require(_bankAddress[clanId] == address(0), BankAlreadyCreated());
 
     // Create new Bank contract with EIP 1167 beacon proxy
     address proxy = address(
-      new BeaconProxy(bankBeacon, abi.encodeWithSelector(IBank.initialize.selector, _clanId, bankRegistry))
+      new BeaconProxy(_bankBeacon, abi.encodeWithSelector(IBank.initialize.selector, clanId, _bankRegistry))
     );
-    createdHere[proxy] = true;
-    bankAddress[_clanId] = proxy;
-    emit BankContractCreated(_from, _clanId, proxy);
+    _createdHere[proxy] = true;
+    _bankAddress[clanId] = proxy;
+    emit BankContractCreated(from, clanId, proxy);
     return proxy;
   }
 

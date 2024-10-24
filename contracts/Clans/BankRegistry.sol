@@ -10,36 +10,56 @@ import {IPlayers} from "../interfaces/IPlayers.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
-  address public bankImpl; // Keep this same as it's used by the deleted BankProxy which is used by some old banks
-  ItemNFT public itemNFT;
-  IERC1155 public playerNFT;
-  IClans public clans;
-  IPlayers public players;
-  address public lockedBankVaults;
+  address private _bankImpl; // Keep this same as it's used by the deleted BankProxy which is used by some old banks
+  ItemNFT private _itemNFT;
+  IERC1155 private _playerNFT;
+  IClans private _clans;
+  IPlayers private _players;
+  address private _lockedBankVaults;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(ItemNFT _itemNFT, IERC1155 _playerNFT, IClans _clans, IPlayers _players) external initializer {
+  function initialize(ItemNFT itemNFT, IERC1155 playerNFT, IClans clans, IPlayers players) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init();
 
-    itemNFT = _itemNFT;
-    playerNFT = _playerNFT;
-    clans = _clans;
-    players = _players;
+    _itemNFT = itemNFT;
+    _playerNFT = playerNFT;
+    _clans = clans;
+    _players = players;
+  }
+
+  function getClans() external view returns (IClans) {
+    return _clans;
+  }
+
+  function getPlayers() external view returns (IPlayers) {
+    return _players;
+  }
+
+  function getPlayerNFT() external view returns (IERC1155) {
+    return _playerNFT;
+  }
+
+  function getItemNFT() external view returns (ItemNFT) {
+    return _itemNFT;
+  }
+
+  function getLockedBankVaults() external view returns (address) {
+    return _lockedBankVaults;
   }
 
   // This is only to allow upgrading the bank implementation of old beta clans created.
   // In the first week which did not use the beacon proxy setup, used the now deleted BankProxy.sol
-  function setBankImpl(address _bankImpl) external onlyOwner {
-    bankImpl = _bankImpl;
+  function setBankImpl(address bankImpl) external onlyOwner {
+    _bankImpl = bankImpl;
   }
 
-  function setLockedBankVaults(address _lockedBankVaults) external onlyOwner {
-    lockedBankVaults = _lockedBankVaults;
+  function setLockedBankVaults(address lockedBankVaults) external onlyOwner {
+    _lockedBankVaults = lockedBankVaults;
   }
 
   // solhint-disable-next-line no-empty-blocks

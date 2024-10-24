@@ -67,14 +67,14 @@ describe("Bank", function () {
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
     await itemNFT.connect(alice).setApprovalForAll(clanBankAddress, true);
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
-    expect(await bankFactory.createdHere(clanBankAddress)).to.be.true;
-    expect(await bankFactory.bankAddress(clanId)).to.eq(clanBankAddress);
+    expect(await bankFactory.getCreatedHere(clanBankAddress)).to.be.true;
+    expect(await bankFactory.getBankAddress(clanId)).to.eq(clanBankAddress);
 
     await expect(bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "DepositItems")
       .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
 
-    expect(await bank.uniqueItemCount()).to.eq(1);
+    expect(await bank.getUniqueItemCount()).to.eq(1);
 
     await expect(
       itemNFT.connect(alice).safeTransferFrom(alice.address, clanBankAddress, EstforConstants.BRONZE_SHIELD, 1, "0x")
@@ -82,7 +82,7 @@ describe("Bank", function () {
       .to.emit(bank, "DepositItem")
       .withArgs(alice.address, playerId, EstforConstants.BRONZE_SHIELD, 1);
 
-    expect(await bank.uniqueItemCount()).to.eq(1); // Still just 1 as it's the same
+    expect(await bank.getUniqueItemCount()).to.eq(1); // Still just 1 as it's the same
     await expect(
       itemNFT
         .connect(alice)
@@ -96,7 +96,7 @@ describe("Bank", function () {
     )
       .to.emit(bank, "DepositItems")
       .withArgs(alice.address, playerId, [EstforConstants.SAPPHIRE_AMULET, EstforConstants.BRONZE_ARROW], [5, 10]);
-    expect(await bank.uniqueItemCount()).to.eq(3);
+    expect(await bank.getUniqueItemCount()).to.eq(3);
 
     // Have now reached the max
     await expect(
@@ -131,7 +131,7 @@ describe("Bank", function () {
 
     await clans.connect(alice).upgradeClan(clanId, playerId, 2);
     await bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_HELMET], [1]);
-    expect(await bank.uniqueItemCount()).to.eq(4);
+    expect(await bank.getUniqueItemCount()).to.eq(4);
 
     // Check only treasurers can withdraw
     const balanceBefore = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD);

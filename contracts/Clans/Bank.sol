@@ -60,23 +60,19 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
   uint8 private constant NOT_ENTERED = 1;
   uint8 private constant ENTERED = 2;
 
-  uint32 public clanId;
-  BankRegistry public bankRegistry;
-  uint16 public uniqueItemCount;
-  uint8 private reentrantStatus;
-  mapping(uint256 itemTokenId => bool hasAny) public uniqueItems;
+  uint32 private _clanId;
+  BankRegistry private _bankRegistry;
+  uint16 private _uniqueItemCount;
+  uint8 private _reentrantStatus;
+  mapping(uint256 itemTokenId => bool hasAny) private _uniqueItems;
 
-  modifier isOwnerOfPlayer(uint256 _playerId) {
-    if (bankRegistry.playerNFT().balanceOf(_msgSender(), _playerId) != 1) {
-      revert NotOwnerOfPlayer();
-    }
+  modifier isOwnerOfPlayer(uint256 playerId) {
+    require(_bankRegistry.getPlayerNFT().balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
     _;
   }
 
-  modifier canWithdraw(uint256 _playerId) {
-    if (!bankRegistry.clans().canWithdraw(clanId, _playerId)) {
-      revert NotClanAdmin();
-    }
+  modifier canWithdraw(uint256 playerId) {
+    require(_bankRegistry.getClans().canWithdraw(_clanId, playerId), NotClanAdmin());
     _;
   }
 
@@ -89,14 +85,12 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
    */
   modifier nonReentrant() {
     // On the first call to nonReentrant, _status will be NOT_ENTERED
-    if (reentrantStatus == ENTERED) {
-      revert ReentrancyGuardReentrantCall();
-    }
-    reentrantStatus = ENTERED;
+    require(_reentrantStatus != ENTERED, ReentrancyGuardReentrantCall());
+    _reentrantStatus = ENTERED;
     _;
     // By storing the original value once again, a refund is triggered (see
     // https://eips.ethereum.org/EIPS/eip-2200)
-    reentrantStatus = NOT_ENTERED;
+    _reentrantStatus = NOT_ENTERED;
   }
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -104,227 +98,200 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(uint256 _clanId, address _bankRegistry) external override initializer {
-    clanId = uint32(_clanId);
-    bankRegistry = BankRegistry(_bankRegistry);
-    reentrantStatus = NOT_ENTERED;
+  function initialize(uint256 clanId, address bankRegistry) external override initializer {
+    _clanId = uint32(clanId);
+    _bankRegistry = BankRegistry(bankRegistry);
+    _reentrantStatus = NOT_ENTERED;
   }
 
   function depositItems(
-    uint256 _playerId,
-    uint256[] calldata _ids,
-    uint256[] calldata _values
-  ) external isOwnerOfPlayer(_playerId) {
-    uint256 maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
-    U256 bounds = _ids.length.asU256();
+    uint256 playerId,
+    uint256[] calldata ids,
+    uint256[] calldata values
+  ) external isOwnerOfPlayer(playerId) {
+    uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+    U256 bounds = ids.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      _receivedItemUpdateUniqueItems(_ids[iter.asUint256()], maxCapacity);
+      _receivedItemUpdateUniqueItems(ids[iter.asUint256()], maxCapacity);
     }
-    bankRegistry.itemNFT().safeBatchTransferFrom(_msgSender(), address(this), _ids, _values, "");
-    emit DepositItems(_msgSender(), _playerId, _ids, _values);
+    _bankRegistry.getItemNFT().safeBatchTransferFrom(_msgSender(), address(this), ids, values, "");
+    emit DepositItems(_msgSender(), playerId, ids, values);
+  }
+
+  function getUniqueItemCount() external view returns (uint16) {
+    return _uniqueItemCount;
   }
 
   function withdrawItems(
-    address _to,
-    uint256 _playerId,
-    uint256[] calldata _ids,
-    uint256[] calldata _amounts
-  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) nonReentrant {
-    ItemNFT itemNFT = bankRegistry.itemNFT();
-    itemNFT.safeBatchTransferFrom(address(this), _to, _ids, _amounts, "");
+    address to,
+    uint256 playerId,
+    uint256[] calldata ids,
+    uint256[] calldata amounts
+  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) nonReentrant {
+    ItemNFT itemNFT = _bankRegistry.getItemNFT();
+    itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
 
     // Update uniqueItemCount after withdrawing items
-    U256 bounds = _ids.length.asU256();
+    U256 bounds = ids.length.asU256();
     for (U256 iter; iter < bounds; iter = iter.inc()) {
-      uint256 id = _ids[iter.asUint256()];
-      if (uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
-        uniqueItemCount = uint16(uniqueItemCount.dec());
-        uniqueItems[id] = false;
+      uint256 id = ids[iter.asUint256()];
+      if (_uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
+        _uniqueItemCount = uint16(_uniqueItemCount.dec());
+        _uniqueItems[id] = false;
       }
     }
-    emit WithdrawItems(_msgSender(), _to, _playerId, _ids, _amounts);
+    emit WithdrawItems(_msgSender(), to, playerId, ids, amounts);
   }
 
   function withdrawItemsBulk(
-    BulkTransferInfo[] calldata _nftsInfo,
-    uint256 _playerId
-  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) nonReentrant {
-    ItemNFT itemNFT = bankRegistry.itemNFT();
-    itemNFT.safeBulkTransfer(_nftsInfo);
+    BulkTransferInfo[] calldata nftsInfo,
+    uint256 playerId
+  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) nonReentrant {
+    ItemNFT itemNFT = _bankRegistry.getItemNFT();
+    itemNFT.safeBulkTransfer(nftsInfo);
 
     // Update uniqueItemCount after withdrawing items
-    for (uint256 i; i < _nftsInfo.length; ++i) {
-      U256 bounds = _nftsInfo.length.asU256();
+    for (uint256 i; i < nftsInfo.length; ++i) {
+      U256 bounds = nftsInfo.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
-        uint256[] calldata ids = _nftsInfo[iter.asUint256()].tokenIds;
+        uint256[] calldata ids = nftsInfo[iter.asUint256()].tokenIds;
         for (uint256 j; j < ids.length; ++j) {
           uint256 id = ids[j];
-          if (uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
-            uniqueItemCount = uint16(uniqueItemCount.dec());
-            uniqueItems[id] = false;
+          if (_uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
+            _uniqueItemCount = uint16(_uniqueItemCount.dec());
+            _uniqueItems[id] = false;
           }
         }
       }
     }
 
-    emit WithdrawItemsBulk(_msgSender(), _nftsInfo, _playerId);
+    emit WithdrawItemsBulk(_msgSender(), nftsInfo, playerId);
   }
 
   function onERC1155Received(
-    address _operator,
-    address _from,
-    uint256 _id,
-    uint256 _value,
-    bytes memory _data
+    address operator,
+    address from,
+    uint256 id,
+    uint256 value,
+    bytes memory data
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
-    if (_msgSender() == address(bankRegistry.itemNFT()) && _operator != address(this)) {
-      uint256 maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
-      _receivedItemUpdateUniqueItems(_id, maxCapacity);
-      uint256 activePlayerId = bankRegistry.players().getActivePlayer(_from);
-      emit DepositItem(_from, activePlayerId, _id, _value);
+    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
+      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+      _receivedItemUpdateUniqueItems(id, maxCapacity);
+      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
+      emit DepositItem(from, activePlayerId, id, value);
     }
-    return super.onERC1155Received(_operator, _from, _id, _value, _data);
+    return super.onERC1155Received(operator, from, id, value, data);
   }
 
   function onERC1155BatchReceived(
-    address _operator,
-    address _from,
-    uint256[] memory _ids,
-    uint256[] memory _values,
-    bytes memory _data
+    address operator,
+    address from,
+    uint256[] memory ids,
+    uint256[] memory values,
+    bytes memory data
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
-    if (_msgSender() == address(bankRegistry.itemNFT()) && _operator != address(this)) {
-      uint256 maxCapacity = bankRegistry.clans().maxBankCapacity(clanId);
-      U256 bounds = _ids.length.asU256();
+    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
+      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+      U256 bounds = ids.length.asU256();
       for (U256 iter; iter < bounds; iter = iter.inc()) {
-        _receivedItemUpdateUniqueItems(_ids[iter.asUint256()], maxCapacity);
+        _receivedItemUpdateUniqueItems(ids[iter.asUint256()], maxCapacity);
       }
-      uint256 activePlayerId = bankRegistry.players().getActivePlayer(_from);
-      emit DepositItems(_from, activePlayerId, _ids, _values);
+      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
+      emit DepositItems(from, activePlayerId, ids, values);
     }
-    return super.onERC1155BatchReceived(_operator, _from, _ids, _values, _data);
+    return super.onERC1155BatchReceived(operator, from, ids, values, data);
   }
 
-  function depositFTM(uint256 _playerId) external payable isOwnerOfPlayer(_playerId) {
+  function depositFTM(uint256 playerId) external payable isOwnerOfPlayer(playerId) {
     if (msg.value != 0) {
-      emit DepositFTM(_msgSender(), _playerId, msg.value);
+      emit DepositFTM(_msgSender(), playerId, msg.value);
     }
   }
 
   // Untested
   function withdrawFTM(
-    address _to,
-    uint256 _playerId,
-    uint256 _amount
-  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
-    (bool success, ) = _msgSender().call{value: _amount}("");
-    if (!success) {
-      revert WithdrawFailed();
-    }
-    emit WithdrawFTM(_msgSender(), _to, _playerId, _amount);
+    address to,
+    uint256 playerId,
+    uint256 amount
+  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
+    (bool success, ) = _msgSender().call{value: amount}("");
+    require(success, WithdrawFailed());
+    emit WithdrawFTM(_msgSender(), to, playerId, amount);
   }
 
-  function depositToken(address _from, uint256 _playerId, address _token, uint256 _amount) external {
-    if (_from != _msgSender() && _msgSender() != address(bankRegistry.lockedBankVaults())) {
-      revert NotOwnerOfPlayer();
-    }
+  function depositToken(address from, uint256 playerId, address token, uint256 amount) external {
+    require(from == _msgSender() || _msgSender() == address(_bankRegistry.getLockedBankVaults()), NotOwnerOfPlayer());
+    require(_bankRegistry.getPlayerNFT().balanceOf(from, playerId) == 1, NotOwnerOfPlayer());
 
-    if (bankRegistry.playerNFT().balanceOf(_from, _playerId) != 1) {
-      revert NotOwnerOfPlayer();
-    }
+    bool success = IERC20(token).transferFrom(_msgSender(), address(this), amount);
+    require(success, DepositFailed());
 
-    bool success = IERC20(_token).transferFrom(_msgSender(), address(this), _amount);
-    if (!success) {
-      revert DepositFailed();
-    }
-
-    emit DepositToken(_from, _playerId, _token, _amount);
+    emit DepositToken(from, playerId, token, amount);
   }
 
   function withdrawToken(
-    uint256 _playerId,
-    address _to,
-    uint256 _toPlayerId,
-    address _token,
-    uint256 _amount
-  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
-    if (bankRegistry.playerNFT().balanceOf(_to, _toPlayerId) != 1) {
-      revert ToIsNotOwnerOfPlayer();
-    }
-    bool success = IERC20(_token).transfer(_to, _amount);
-    if (!success) {
-      revert WithdrawFailed();
-    }
-    emit WithdrawToken(_msgSender(), _playerId, _to, _toPlayerId, _token, _amount);
+    uint256 playerId,
+    address to,
+    uint256 toPlayerId,
+    address token,
+    uint256 amount
+  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
+    require(_bankRegistry.getPlayerNFT().balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
+    bool success = IERC20(token).transfer(to, amount);
+    require(success, WithdrawFailed());
+    emit WithdrawToken(_msgSender(), playerId, to, toPlayerId, token, amount);
   }
 
   function withdrawTokenToMany(
-    uint256 _playerId,
-    address[] calldata _tos,
-    uint256[] calldata _toPlayerIds,
-    address _token,
+    uint256 playerId,
+    address[] calldata tos,
+    uint256[] calldata toPlayerIds,
+    address token,
     uint256[] calldata _amounts
-  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
-    if (_toPlayerIds.length != _amounts.length) {
-      revert LengthMismatch();
+  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
+    require(toPlayerIds.length == _amounts.length, LengthMismatch());
+    require(toPlayerIds.length == tos.length, LengthMismatch());
+
+    for (uint256 i = 0; i < toPlayerIds.length; ++i) {
+      require(_bankRegistry.getPlayerNFT().balanceOf(tos[i], toPlayerIds[i]) == 1, ToIsNotOwnerOfPlayer());
+      bool success = IERC20(token).transfer(tos[i], _amounts[i]);
+      require(success, WithdrawFailed());
     }
 
-    if (_toPlayerIds.length != _tos.length) {
-      revert LengthMismatch();
-    }
-
-    for (uint256 i = 0; i < _toPlayerIds.length; ++i) {
-      if (bankRegistry.playerNFT().balanceOf(_tos[i], _toPlayerIds[i]) != 1) {
-        revert ToIsNotOwnerOfPlayer();
-      }
-      bool success = IERC20(_token).transfer(_tos[i], _amounts[i]);
-      if (!success) {
-        revert WithdrawFailed();
-      }
-    }
-
-    emit WithdrawTokens(_msgSender(), _playerId, _tos, _toPlayerIds, _token, _amounts);
+    emit WithdrawTokens(_msgSender(), playerId, tos, toPlayerIds, token, _amounts);
   }
 
   function withdrawNFT(
-    uint256 _playerId,
-    address _to,
-    uint256 _toPlayerId,
-    address _nft,
-    uint256 _tokenId,
-    uint256 _amount
-  ) external isOwnerOfPlayer(_playerId) canWithdraw(_playerId) {
-    if (_nft == address(bankRegistry.itemNFT())) {
-      revert UseWithdrawItemsForNFT();
-    }
-    if (bankRegistry.playerNFT().balanceOf(_to, _toPlayerId) != 1) {
-      revert ToIsNotOwnerOfPlayer();
-    }
+    uint256 playerId,
+    address to,
+    uint256 toPlayerId,
+    address nft,
+    uint256 tokenId,
+    uint256 amount
+  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
+    require(nft != address(_bankRegistry.getItemNFT()), UseWithdrawItemsForNFT());
+    require(_bankRegistry.getPlayerNFT().balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
+    require(IERC165(nft).supportsInterface(type(IERC1155).interfaceId), NFTTypeNotSupported());
 
-    if (!IERC165(_nft).supportsInterface(type(IERC1155).interfaceId)) {
-      revert NFTTypeNotSupported();
-    }
-
-    IERC1155(_nft).safeTransferFrom(address(this), _to, _tokenId, _amount, "");
-    emit WithdrawNFT(_msgSender(), _playerId, _to, _toPlayerId, _nft, _tokenId, _amount);
+    IERC1155(nft).safeTransferFrom(address(this), to, tokenId, amount, "");
+    emit WithdrawNFT(_msgSender(), playerId, to, toPlayerId, nft, tokenId, amount);
   }
 
-  function _receivedItemUpdateUniqueItems(uint256 _id, uint256 _maxCapacity) private {
-    if (!uniqueItems[_id]) {
-      if (uniqueItemCount >= _maxCapacity) {
-        revert MaxBankCapacityReached();
-      }
-      uniqueItemCount = uint16(uniqueItemCount.inc());
-      uniqueItems[_id] = true;
+  function _receivedItemUpdateUniqueItems(uint256 id, uint256 maxCapacity) private {
+    if (!_uniqueItems[id]) {
+      require(_uniqueItemCount < maxCapacity, MaxBankCapacityReached());
+      _uniqueItemCount = uint16(_uniqueItemCount.inc());
+      _uniqueItems[id] = true;
     }
   }
 
   // Untested
   receive() external payable {
     // Accept FTM
-    uint256 activePlayerId = bankRegistry.players().getActivePlayer(_msgSender());
+    uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(_msgSender());
     emit DepositFTM(_msgSender(), activePlayerId, msg.value);
   }
 }

@@ -194,58 +194,13 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "clanId",
-        "type": "uint256"
-      }
-    ],
-    "name": "bankAddress",
-    "outputs": [
-      {
         "internalType": "address",
-        "name": "bank",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "bankBeacon",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "bankRegistry",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_clanId",
+        "name": "clanId",
         "type": "uint256"
       }
     ],
@@ -263,12 +218,31 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBankAddress",
+    "outputs": [
+      {
         "internalType": "address",
         "name": "",
         "type": "address"
       }
     ],
-    "name": "createdHere",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "bank",
+        "type": "address"
+      }
+    ],
+    "name": "getCreatedHere",
     "outputs": [
       {
         "internalType": "bool",
@@ -283,12 +257,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_bankRegistry",
+        "name": "bankRegistry",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_bankBeacon",
+        "name": "bankBeacon",
         "type": "address"
       }
     ],

@@ -158,7 +158,33 @@
   },
   {
     "inputs": [],
-    "name": "bankImpl",
+    "name": "getClans",
+    "outputs": [
+      {
+        "internalType": "contract IClans",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getItemNFT",
+    "outputs": [
+      {
+        "internalType": "contract ItemNFT",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getLockedBankVaults",
     "outputs": [
       {
         "internalType": "address",
@@ -171,10 +197,23 @@
   },
   {
     "inputs": [],
-    "name": "clans",
+    "name": "getPlayerNFT",
     "outputs": [
       {
-        "internalType": "contract IClans",
+        "internalType": "contract IERC1155",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPlayers",
+    "outputs": [
+      {
+        "internalType": "contract IPlayers",
         "name": "",
         "type": "address"
       }
@@ -186,22 +225,22 @@
     "inputs": [
       {
         "internalType": "contract ItemNFT",
-        "name": "_itemNFT",
+        "name": "itemNFT",
         "type": "address"
       },
       {
         "internalType": "contract IERC1155",
-        "name": "_playerNFT",
+        "name": "playerNFT",
         "type": "address"
       },
       {
         "internalType": "contract IClans",
-        "name": "_clans",
+        "name": "clans",
         "type": "address"
       },
       {
         "internalType": "contract IPlayers",
-        "name": "_players",
+        "name": "players",
         "type": "address"
       }
     ],
@@ -212,62 +251,10 @@
   },
   {
     "inputs": [],
-    "name": "itemNFT",
-    "outputs": [
-      {
-        "internalType": "contract ItemNFT",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lockedBankVaults",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "playerNFT",
-    "outputs": [
-      {
-        "internalType": "contract IERC1155",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "players",
-    "outputs": [
-      {
-        "internalType": "contract IPlayers",
         "name": "",
         "type": "address"
       }
@@ -299,7 +286,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_bankImpl",
+        "name": "bankImpl",
         "type": "address"
       }
     ],
@@ -312,7 +299,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_lockedBankVaults",
+        "name": "lockedBankVaults",
         "type": "address"
       }
     ],

@@ -243,7 +243,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       }
     }
 
-    if (anyNonTransferable && (address(_bankFactory) == address(0) || !_bankFactory.createdHere(_from))) {
+    if (anyNonTransferable && (address(_bankFactory) == address(0) || !_bankFactory.getCreatedHere(_from))) {
       // Check if this is from a bank, that's the only place it's allowed to withdraw non-transferable items
       revert ItemNotTransferable();
     }

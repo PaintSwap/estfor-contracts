@@ -544,7 +544,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   function _getBankAddress(uint256 clanId) private returns (address bankAddress) {
     bankAddress = address(_clanInfos[clanId].bank);
     if (bankAddress == address(0)) {
-      bankAddress = _bankFactory.bankAddress(clanId);
+      bankAddress = _bankFactory.getBankAddress(clanId);
       _brush.approve(bankAddress, type(uint256).max);
       _clanInfos[clanId].bank = IBank(bankAddress);
     }
