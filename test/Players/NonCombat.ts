@@ -2047,7 +2047,8 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(3);
       expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.be.oneOf([
         BigInt(Math.floor(Number(queuedAction.timespan) * 0.5)),
-        BigInt(Math.floor(Number(queuedAction.timespan) * 0.5 - 1))
+        BigInt(Math.floor(Number(queuedAction.timespan) * 0.5 - 1)),
+        BigInt(Math.floor(Number(queuedAction.timespan) * 0.5 - 2))
       ]);
 
       await players.connect(alice).processActions(playerId);

@@ -1,5 +1,20 @@
 [
   {
+    "inputs": [],
+    "name": "NotEnoughRandomWords",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyAttackers",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyDefenders",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -18,18 +33,13 @@
       },
       {
         "internalType": "uint8[]",
-        "name": "skillIds",
+        "name": "skills",
         "type": "uint8[]"
       },
       {
-        "internalType": "uint256",
-        "name": "randomWordA",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "randomWordB",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "randomWords",
+        "type": "uint256[]"
       },
       {
         "internalType": "uint256",
@@ -42,7 +52,7 @@
         "type": "uint256"
       }
     ],
-    "name": "doBattleLib",
+    "name": "doBattle",
     "outputs": [
       {
         "internalType": "uint8[]",
@@ -50,14 +60,14 @@
         "type": "uint8[]"
       },
       {
-        "internalType": "uint48[]",
-        "name": "shuffledClanMembersA",
-        "type": "uint48[]"
+        "internalType": "uint256[]",
+        "name": "rollsA",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint48[]",
-        "name": "shuffledClanMembersB",
-        "type": "uint48[]"
+        "internalType": "uint256[]",
+        "name": "rollsB",
+        "type": "uint256[]"
       },
       {
         "internalType": "bool",

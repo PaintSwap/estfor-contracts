@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {PlayersLibrary} from "../../typechain-types";
+import {MAX_LEVEL} from "./utils";
 
 describe("PlayersLibrary", function () {
   async function deployContracts() {
@@ -16,9 +17,9 @@ describe("PlayersLibrary", function () {
     expect(await playersLibrary.getLevel(1035476)).to.eq(99); // exactly 99
     expect(await playersLibrary.getLevel(1035477)).to.eq(99); // 1 above
     expect(await playersLibrary.getLevel(1109796)).to.eq(100); // exactly 100 (old max level)
-    expect(await playersLibrary.getLevel(8876090)).to.eq(129); // 1 below
-    expect(await playersLibrary.getLevel(8876091)).to.eq(130); // exactly 130 (max level)
-    expect(await playersLibrary.getLevel(9876092)).to.eq(130); // Above 101 (1 above 101)
+    expect(await playersLibrary.getLevel(12552231)).to.eq(MAX_LEVEL - 1); // 1 below
+    expect(await playersLibrary.getLevel(12552232)).to.eq(MAX_LEVEL); // exactly 135 (max level)
+    expect(await playersLibrary.getLevel(12552233)).to.eq(MAX_LEVEL); // 1 above
   });
 
   it("getBoostedTime", async () => {

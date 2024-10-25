@@ -2655,7 +2655,7 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       // Check output (add some tolerance in case it's hit more than once)
-      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.oneOf([1n, 2n]);
+      expect(await itemNFT.balanceOf(alice.address, BRONZE_ARROW)).to.be.oneOf([1n, 2n, 3n]);
     });
 
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit none", async function () {

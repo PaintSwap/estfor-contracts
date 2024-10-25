@@ -388,10 +388,12 @@ export const playersFixture = async function () {
   const lockedFundsPeriod = 7 * 86400; // 7 days
   const maxClanCombatantsTerritories = 20;
   const maxClanComabtantsLockedBankVaults = 20;
+  const maxLockedVaults = 100;
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
-      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress()
+      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+      ClanBattleLibrary: await clanBattleLibrary.getAddress()
     }
   });
   const lockedBankVaults = (await upgrades.deployProxy(
@@ -411,6 +413,7 @@ export const playersFixture = async function () {
       mmrAttackDistance,
       lockedFundsPeriod,
       maxClanComabtantsLockedBankVaults,
+      maxLockedVaults,
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -605,6 +608,7 @@ export const playersFixture = async function () {
     lockedBankVaultsLibrary,
     lockedFundsPeriod,
     initialMMR,
+    maxLockedVaults,
     sellingCutoffDuration,
     maxInstantVRFActionAmount
   };

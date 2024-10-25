@@ -11,6 +11,10 @@ import {IPlayers} from "../interfaces/IPlayers.sol";
 import "../globals/all.sol";
 
 library ClanBattleLibrary {
+  error TooManyAttackers();
+  error TooManyDefenders();
+  error NotEnoughRandomWords();
+
   function shuffleArray(uint48[] memory array, uint256 randomNumber) public pure returns (uint48[] memory output) {
     for (uint256 i; i < array.length; ++i) {
       uint256 n = i + (randomNumber % (array.length - i));
@@ -23,73 +27,47 @@ library ClanBattleLibrary {
     return array;
   }
 
-  function doBattleLib(
+  function doBattle(
     address players,
     uint48[] memory clanMembersA,
     uint48[] memory clanMembersB,
-    uint8[] memory skillIds,
-    uint256 randomWordA,
-    uint256 randomWordB,
+    uint8[] memory skills,
+    uint256[] memory randomWords, // 0 is for shuffling attacker, 1 & 2 for the dice rolls, 3 is for shuffling the defenders, 4 & 5 for the dice rolls
     uint256 extraRollsA,
     uint256 extraRollsB
   )
     external
     view
-    returns (
-      uint8[] memory battleResults,
-      uint48[] memory shuffledClanMembersA,
-      uint48[] memory shuffledClanMembersB,
-      bool didAWin
-    )
+    returns (uint8[] memory battleResults, uint256[] memory rollsA, uint256[] memory rollsB, bool didAWin)
   {
-    Skill[] memory skills = new Skill[](skillIds.length);
-    for (uint256 i; i < skillIds.length; ++i) {
-      skills[i] = Skill(skillIds[i]);
-    }
-
-    BattleResultEnum[] memory battleResultsEnum;
-    uint256[] memory rollsA;
-    uint256[] memory rollsB;
-    (battleResultsEnum, rollsA, rollsB, didAWin) = doBattle(
-      players,
-      clanMembersA,
-      clanMembersB,
-      skills,
-      [randomWordA, randomWordB],
-      extraRollsA,
-      extraRollsB
-    );
-
-    battleResults = new uint8[](battleResultsEnum.length);
-    for (uint256 i; i < battleResultsEnum.length; ++i) {
-      battleResults[i] = uint8(battleResultsEnum[i]);
-    }
-
-    shuffledClanMembersA = clanMembersA;
-    shuffledClanMembersB = clanMembersB;
+    return _doBattle(players, clanMembersA, clanMembersB, skills, randomWords, extraRollsA, extraRollsB);
   }
 
-  function doBattle(
+  function _doBattle(
     address players,
     uint48[] memory clanMembersA, // [In/Out] gets shuffled
     uint48[] memory clanMembersB, // [In/Out] gets shuffled
-    Skill[] memory skills,
-    uint256[2] memory randomWords,
+    uint8[] memory skills,
+    uint256[] memory randomWords,
     uint256 extraRollsA,
     uint256 extraRollsB
   )
     internal
     view
-    returns (BattleResultEnum[] memory battleResults, uint256[] memory rollsA, uint256[] memory rollsB, bool didAWin)
+    returns (uint8[] memory battleResults, uint256[] memory rollsA, uint256[] memory rollsB, bool didAWin)
   {
+    require(clanMembersA.length <= 32, TooManyAttackers());
+    require(clanMembersB.length <= 32, TooManyDefenders());
+    require(randomWords.length >= 6, NotEnoughRandomWords());
+
     shuffleArray(clanMembersA, randomWords[0]);
-    shuffleArray(clanMembersB, randomWords[1]);
+    shuffleArray(clanMembersB, randomWords[3]);
 
     uint256 baseClanMembersCount = clanMembersA.length > clanMembersB.length
       ? clanMembersB.length
       : clanMembersA.length;
 
-    battleResults = new BattleResultEnum[](Math.max(clanMembersA.length, clanMembersB.length));
+    battleResults = new uint8[](Math.max(clanMembersA.length, clanMembersB.length));
     rollsA = new uint256[](Math.max(clanMembersA.length, clanMembersB.length));
     rollsB = new uint256[](Math.max(clanMembersA.length, clanMembersB.length));
 
@@ -102,38 +80,61 @@ library ClanBattleLibrary {
           rollsA[i] = clanMembersA[i] == 0 ? 0 : 1;
           rollsB[i] = clanMembersB[i] == 0 ? 0 : 1;
         } else {
-          {
-            uint256 levelA = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersA[i], skills[i]));
-            uint256 levelB = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersB[i], skills[i]));
-            if (levelA > 20 * 6 || levelB > 20 * 6) {
-              assert(false); // Unsupported
-            }
+          uint256 levelA = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersA[i], Skill(skills[i])));
+          uint256 levelB = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersB[i], Skill(skills[i])));
+          if (levelA > 20 * 12 || levelB > 20 * 12) {
+            assert(false); // Unsupported
+          }
 
+          // Get two consecutive bytes for each player's rolls
+          bytes2 bytesA;
+          bytes2 bytesB;
+
+          // Handle up to 32 players:
+          // Players 0-15 from randomWords[1]
+          // Players 16-31 from randomWords[2]
+          if (i < 16) {
+            // Shift right to get the bytes we want and mask to get 2 bytes
+            // For i=0, we want bytes 31,30
+            // For i=1, we want bytes 29,28
+            // etc.
+            bytesA = bytes2(uint16(randomWords[1] >> (i * 16)));
+            bytesB = bytes2(uint16(randomWords[4] >> (i * 16)));
+          } else {
+            // For players 16-31, use the second word of each pair
+            uint j = i - 16;
+            bytesA = bytes2(uint16(randomWords[2] >> (j * 16)));
+            bytesB = bytes2(uint16(randomWords[5] >> (j * 16)));
+          }
+
+          {
             uint256 numRollsA = (levelA / 20) +
               (IPlayers(players).isPlayerUpgraded(clanMembersA[i]) ? 2 : 1) +
               extraRollsA;
+
+            // Check how many bits are set based on the number of rolls
+            for (uint256 j; j < numRollsA; ++j) {
+              rollsA[i] += uint16(bytesA >> j) & 1;
+            }
+          }
+          {
             uint256 numRollsB = (levelB / 20) +
               (IPlayers(players).isPlayerUpgraded(clanMembersB[i]) ? 2 : 1) +
               extraRollsB;
-            bytes1 byteA = bytes32(randomWords[0])[31 - i];
-            // Check how many bits are set based on the number of rolls
-            for (uint256 j; j < numRollsA; ++j) {
-              rollsA[i] += uint8(byteA >> j) & 1;
-            }
-            bytes1 byteB = bytes32(randomWords[1])[31 - i];
+
             for (uint256 j; j < numRollsB; ++j) {
-              rollsB[i] += uint8(byteB >> j) & 1;
+              rollsB[i] += uint16(bytesB >> j) & 1;
             }
           }
         }
         if (rollsA[i] > rollsB[i]) {
           ++numWinnersA;
-          battleResults[i] = BattleResultEnum.WIN;
+          battleResults[i] = uint8(BattleResultEnum.WIN);
         } else if (rollsB[i] > rollsA[i]) {
           ++numWinnersB;
-          battleResults[i] = BattleResultEnum.LOSE;
+          battleResults[i] = uint8(BattleResultEnum.LOSE);
         } else {
-          battleResults[i] = BattleResultEnum.DRAW;
+          battleResults[i] = uint8(BattleResultEnum.DRAW);
         }
       }
     }
@@ -141,12 +142,12 @@ library ClanBattleLibrary {
     if (clanMembersB.length > clanMembersA.length) {
       numWinnersB += clanMembersB.length - clanMembersA.length;
       for (uint256 i = baseClanMembersCount; i < clanMembersB.length; ++i) {
-        battleResults[i] = BattleResultEnum.LOSE;
+        battleResults[i] = uint8(BattleResultEnum.LOSE);
       }
     } else if (clanMembersA.length > clanMembersB.length) {
       numWinnersA += clanMembersA.length - clanMembersB.length;
       for (uint256 i = baseClanMembersCount; i < clanMembersA.length; ++i) {
-        battleResults[i] = BattleResultEnum.WIN;
+        battleResults[i] = uint8(BattleResultEnum.WIN);
       }
     }
 

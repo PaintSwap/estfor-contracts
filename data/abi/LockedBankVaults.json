@@ -327,13 +327,13 @@
       },
       {
         "indexed": false,
-        "internalType": "enum BattleResultEnum[]",
+        "internalType": "uint8[]",
         "name": "battleResults",
         "type": "uint8[]"
       },
       {
         "indexed": false,
-        "internalType": "enum Skill[]",
+        "internalType": "uint8[]",
         "name": "randomSkills",
         "type": "uint8[]"
       },
@@ -671,6 +671,19 @@
       }
     ],
     "name": "SetMMRs",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxLockedVaults",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMaxLockedVaults",
     "type": "event"
   },
   {
@@ -1173,6 +1186,11 @@
         "type": "uint8"
       },
       {
+        "internalType": "uint8",
+        "name": "maxLockedVaults",
+        "type": "uint8"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "adminAccess",
         "type": "address"
@@ -1403,6 +1421,19 @@
       }
     ],
     "name": "setMMRAttackDistance",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "maxLockedVaults",
+        "type": "uint8"
+      }
+    ],
+    "name": "setMaxLockedVaults",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

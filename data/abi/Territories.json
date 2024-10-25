@@ -188,6 +188,11 @@
   },
   {
     "inputs": [],
+    "name": "NotEnoughRandomWords",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -228,7 +233,17 @@
   },
   {
     "inputs": [],
+    "name": "TooManyAttackers",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "TooManyCombatants",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyDefenders",
     "type": "error"
   },
   {
@@ -406,13 +421,13 @@
       },
       {
         "indexed": false,
-        "internalType": "enum BattleResultEnum[]",
+        "internalType": "uint8[]",
         "name": "battleResults",
         "type": "uint8[]"
       },
       {
         "indexed": false,
-        "internalType": "enum Skill[]",
+        "internalType": "uint8[]",
         "name": "randomSkills",
         "type": "uint8[]"
       },

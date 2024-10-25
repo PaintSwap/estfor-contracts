@@ -75,8 +75,8 @@ abstract contract PlayersBase {
   event ActionPartiallyFinished(address from, uint256 playerId, uint256 queueId, uint256 elapsedTime);
   event ActionAborted(address from, uint256 playerId, uint256 queueId);
   event ClaimedXPThresholdRewards(address from, uint256 playerId, uint256[] itemTokenIds, uint256[] amounts);
-  event LevelUp(address from, uint256 playerId, Skill skill, uint32 oldLevel, uint32 newLevel);
-  event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint8 bonusXPPercent, uint8 bonusRewardsPercent);
+  event LevelUp(address from, uint256 playerId, Skill skill, uint256 oldLevel, uint256 newLevel);
+  event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint256 bonusXPPercent, uint256 bonusRewardsPercent);
 
   struct FullAttireBonus {
     uint8 bonusXPPercent; // 3 = 3%
@@ -313,7 +313,6 @@ abstract contract PlayersBase {
     uint256 actualBitIndex = packedDataIsMaxedBitStart + relativePos * bitsPerSkill;
 
     uint16 newLevel = PlayersLibrary.getLevel(newPoints);
-
     // Determine the new max level version for this skill based on newLevel
     uint256 newMaxLevelVersion;
     /*if (newLevel == MAX_LEVEL_1) { // Not used yet
@@ -325,8 +324,12 @@ abstract contract PlayersBase {
     } else {
       newMaxLevelVersion = 0;
     }
+
+    uint256 oldMaxLevelVersion;
     assembly ("memory-safe") {
       let val := sload(add(packedXP.slot, slotNum))
+
+      oldMaxLevelVersion := and(shr(actualBitIndex, val), 0x3)
 
       // Clear the 5 bytes containing the old xp
       val := and(val, not(shl(mul(relativePos, 40), 0xffffffffff)))
@@ -340,10 +343,18 @@ abstract contract PlayersBase {
 
       sstore(add(packedXP.slot, slotNum), val)
     }
-
     emit AddXP(from, playerId, skill, pointsAccrued);
 
-    uint16 oldLevel = PlayersLibrary.getLevel(oldPoints);
+    uint256 oldLevel = PlayersLibrary.getLevel(oldPoints);
+    if (oldMaxLevelVersion != newMaxLevelVersion && oldLevel == newLevel) {
+      assert(false); // This should never happen yet
+      // This user already has exceeded the new max level, so we want to properly upgrade them from the real old level (Untested)
+      if (newMaxLevelVersion == 2) {
+        oldLevel = MAX_LEVEL;
+      } else if (newMaxLevelVersion == 3) {
+        oldLevel = MAX_LEVEL_1;
+      }
+    }
     // Update the player's level
     if (newLevel > oldLevel) {
       emit LevelUp(from, playerId, skill, oldLevel, newLevel);

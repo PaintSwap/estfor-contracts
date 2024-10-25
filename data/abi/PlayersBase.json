@@ -401,15 +401,15 @@
       },
       {
         "indexed": false,
-        "internalType": "uint8",
+        "internalType": "uint256",
         "name": "bonusXPPercent",
-        "type": "uint8"
+        "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "uint8",
+        "internalType": "uint256",
         "name": "bonusRewardsPercent",
-        "type": "uint8"
+        "type": "uint256"
       }
     ],
     "name": "AddFullAttireBonus",
@@ -969,15 +969,15 @@
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "oldLevel",
-        "type": "uint32"
+        "type": "uint256"
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "newLevel",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "name": "LevelUp",

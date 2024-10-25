@@ -30,9 +30,10 @@ let instantVRFActions;
 let vrfRequestInfo;
 let genericInstantVRFActionStrategy;
 let eggInstantVRFActionStrategy;
-let territories;
+let clanBattleLibrary;
 let lockedBankVaults;
 let lockedBankVaultsLibrary;
+let territories;
 let decoratorProvider;
 let combatantsHelper;
 let oracle;
@@ -73,6 +74,7 @@ if (!isBeta) {
   vrfRequestInfo = "0x8c3dcf7b09ea620b265d9daab237f29f485f725b";
   genericInstantVRFActionStrategy = "0x6270b82049724ff6d7a78b71f2273bba03bfcdfc";
   eggInstantVRFActionStrategy = "0x7797fd3904fc399184d2a549dff025210d62e645";
+  clanBattleLibrary = "";
   lockedBankVaults = "0x65e944795d00cc287bdace77d57571fc4deff3e0";
   lockedBankVaultsLibrary = "0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8";
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
@@ -109,13 +111,13 @@ if (!isBeta) {
   playersImplMisc1 = "0x8bf03010110f8b5bb60e3c2d189899d1fbf66245";
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
-  //  const bankProxy = "0xe1998e9bad94716ecf81f3a3bead5fed3fb023cb";  // Only used for old beta clans
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
   instantVRFActions = "0xbbcc13d2359ad6f2c02e172de46097a1c534ef89";
   vrfRequestInfo = "0x9bcf94e6c067c575dd6a748e45330b4ae4dc0483";
   genericInstantVRFActionStrategy = "0xc4c92d3987cc0bad3219e696653eb87eddda78c6";
   eggInstantVRFActionStrategy = "0x941369948CC8a4b5b8eFb1F688Eddfe26A736039";
+  clanBattleLibrary = "";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   lockedBankVaultsLibrary = "0x4361e1825cf5c910d1589600df613322e0e704b0";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
@@ -163,6 +165,7 @@ export const VRF_REQUEST_INFO_ADDRESS = vrfRequestInfo;
 export const GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = genericInstantVRFActionStrategy;
 export const EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = eggInstantVRFActionStrategy;
 
+export const CLAN_BATTLE_LIBRARY_ADDRESS = clanBattleLibrary;
 export const LOCKED_BANK_VAULTS_ADDRESS = lockedBankVaults;
 export const LOCKED_BANK_VAULTS_LIBRARY_ADDRESS = lockedBankVaultsLibrary;
 export const TERRITORIES_ADDRESS = territories;

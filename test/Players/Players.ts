@@ -12,11 +12,13 @@ import {
   NO_DONATION_AMOUNT,
   RATE_MUL,
   SPAWN_MUL,
-  START_XP
+  START_XP,
+  timeTravel24Hours
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
   getXPFromLevel,
+  MAX_LEVEL,
   setupBasicCooking,
   setupBasicFiremaking,
   setupBasicFishing,
@@ -1339,7 +1341,7 @@ describe("Players", function () {
   });
 
   it("Maxing out XP", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, world, playersLibrary, alice} = await loadFixture(playersFixture);
     const rate = 100 * GUAR_MUL; // per hour
     const tx = await world.addActions([
       {
@@ -1392,14 +1394,18 @@ describe("Players", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.ORICHALCUM_AXE, 1);
 
-    // 16MM is the maximum xp per hour that can be gained, so need to loop it many time to go over
+    // 16MM is the maximum xp per hour that can be gained, so need to loop it many times to go over
     for (let i = 0; i < 25; ++i) {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     }
-    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(Math.pow(2, 32) - 1);
+    const xp = await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING);
+    expect(xp).to.eq(Math.pow(2, 32) - 1);
+
+    await players.connect(alice).processActions(playerId);
+
+    expect(await playersLibrary.getLevel(xp)).to.eq(MAX_LEVEL);
   });
 
   it("Set active player to existing", async function () {
@@ -1677,7 +1683,7 @@ describe("Players", function () {
     const {players, playerId, alice} = await loadFixture(playersFixture);
 
     let packedXP = await players.getPackedXP(playerId);
-    const xp = await getXPFromLevel(130);
+    const xp = await getXPFromLevel(MAX_LEVEL); // First Max level
 
     await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.MELEE, xp, false);
     packedXP = await players.getPackedXP(playerId);
@@ -2327,13 +2333,13 @@ describe("Players", function () {
     await players.connect(alice).processActions(playerId);
     expect((await players.getPlayers(playerId)).packedData).to.eq("0x01");
     // Should earn agility xp
-    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(queuedAction.timespan); // TODO: Change this and the other one to AGILITY when it's added
 
     // Trying to travel from 0 to 1 should do nothing and earn no xp. Should be allowed to queue but it does nothing
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.AGILITY)).to.eq(queuedAction.timespan);
+    expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(queuedAction.timespan);
 
     // Can process an action that is intended for area 1 only
     const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);

@@ -52,12 +52,6 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
     return _lockedBankVaults;
   }
 
-  // This is only to allow upgrading the bank implementation of old beta clans created.
-  // In the first week which did not use the beacon proxy setup, used the now deleted BankProxy.sol
-  function setBankImpl(address bankImpl) external onlyOwner {
-    _bankImpl = bankImpl;
-  }
-
   function setLockedBankVaults(address lockedBankVaults) external onlyOwner {
     _lockedBankVaults = lockedBankVaults;
   }

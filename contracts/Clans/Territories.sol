@@ -46,8 +46,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint48[] defendingPlayerIds,
     uint256[] attackingRolls,
     uint256[] defendingRolls,
-    BattleResultEnum[] battleResults,
-    Skill[] randomSkills,
+    uint8[] battleResults, // BattleResultEnum[]
+    uint8[] randomSkills, // Skill[]
     bool didAttackersWin,
     uint256 attackingClanId,
     uint256 defendingClanId,
@@ -146,7 +146,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     address from;
   }
 
-  uint256 private constant NUM_WORDS = 3;
+  uint256 private constant NUM_WORDS = 7;
   uint256 private constant CALLBACK_GAS_LIMIT = 3_000_000;
   uint256 public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint256 public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
@@ -352,26 +352,26 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     // If the defenders happened to apply a block attacks item before the attack was fulfilled, then the attack is cancelled
     uint48[] memory attackingPlayerIds;
     uint48[] memory defendingPlayerIds;
-    BattleResultEnum[] memory battleResults;
+    uint8[] memory battleResults;
     uint256[] memory attackingRolls;
     uint256[] memory defendingRolls;
-    Skill[] memory randomSkills;
+    uint8[] memory randomSkills;
     bool didAttackersWin;
     if (_clanInfos[defendingClanId].blockAttacksTimestamp <= block.timestamp) {
       attackingPlayerIds = _clanInfos[attackingClanId].playerIds;
       defendingPlayerIds = _clanInfos[defendingClanId].playerIds;
 
-      randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
+      randomSkills = new uint8[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
       for (uint256 i; i < randomSkills.length; ++i) {
-        randomSkills[i] = _comparableSkills[uint8(randomWords[2] >> (i * 8)) % _comparableSkills.length];
+        randomSkills[i] = uint8(_comparableSkills[uint8(randomWords[6] >> (i * 8)) % _comparableSkills.length]);
       }
 
-      (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary.doBattle(
+      (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary._doBattle(
         _players,
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        [randomWords[0], randomWords[1]],
+        randomWords,
         0,
         0
       );

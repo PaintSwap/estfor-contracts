@@ -1,5 +1,7 @@
 import {ethers, upgrades} from "hardhat";
 import {
+  ClanBattleLibrary,
+  ClanBattleLibrary__factory,
   EstforLibrary,
   LockedBankVaultsLibrary,
   PetNFTLibrary,
@@ -37,7 +39,8 @@ import {
   PASSIVE_ACTIONS_ADDRESS,
   PET_NFT_LIBRARY_ADDRESS,
   LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
-  TREASURY_ADDRESS
+  TREASURY_ADDRESS,
+  CLAN_BATTLE_LIBRARY_ADDRESS
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -304,6 +307,17 @@ async function main() {
   await vrfRequestInfo.waitForDeployment();
   console.log(`vrfRequestInfo = "${(await vrfRequestInfo.getAddress()).toLowerCase()}"`);
 
+  // ClanBattleLibrary
+  const newClanBattleLibrary = false;
+  const ClanBattleLibrary = await ethers.getContractFactory("ClanBattleLibrary");
+  let clanBattleLibrary: ClanBattleLibrary;
+  if (newClanBattleLibrary) {
+    clanBattleLibrary = await ClanBattleLibrary.deploy();
+  } else {
+    clanBattleLibrary = (await ClanBattleLibrary.attach(CLAN_BATTLE_LIBRARY_ADDRESS)) as ClanBattleLibrary;
+  }
+  console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
+
   // LockedBankVaults
   const newLockedBankVaultsLibrary = false;
   const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
@@ -321,7 +335,8 @@ async function main() {
     await ethers.getContractFactory("LockedBankVaults", {
       libraries: {
         EstforLibrary: await estforLibrary.getAddress(),
-        LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress()
+        LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+        ClanBattleLibrary: await clanBattleLibrary.getAddress()
       }
     })
   ).connect(owner);
@@ -403,6 +418,7 @@ async function main() {
     await verifyContracts([await eggInstantVRFActionStrategy.getAddress()]);
     await verifyContracts([await petNFT.getAddress()]);
     await verifyContracts([await petNFTLibrary.getAddress()]);
+    await verifyContracts([await clanBattleLibrary.getAddress()]);
     await verifyContracts([await lockedBankVaults.getAddress()]);
     await verifyContracts([await lockedBankVaultsLibrary.getAddress()]);
     await verifyContracts([await combatantsHelper.getAddress()]);

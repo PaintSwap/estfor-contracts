@@ -14,24 +14,24 @@ import {allItems} from "../../scripts/data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers";
 
-const lockFundsForClan = async (
-  lockedBankVaults: LockedBankVaults,
-  clanId: number,
-  brush: MockBrushToken,
-  alice: SignerWithAddress,
-  playerId: bigint,
-  amount: number,
-  territories: Territories,
-  combatantsHelper: BaseContract
-) => {
-  await brush.mint(alice.address, amount);
-  await brush.connect(alice).approve(await lockedBankVaults.getAddress(), amount);
-  await lockedBankVaults.initializeAddresses(alice.address, await combatantsHelper.getAddress()); // Set it to alice so we can lock funds
-  await lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, amount);
-  await lockedBankVaults.initializeAddresses(await territories.getAddress(), await combatantsHelper.getAddress()); // Set it back after locking funds
-};
-
 describe("LockedBankVaults", function () {
+  const lockFundsForClan = async (
+    lockedBankVaults: LockedBankVaults,
+    clanId: number,
+    brush: MockBrushToken,
+    alice: SignerWithAddress,
+    playerId: bigint,
+    amount: number,
+    territories: Territories,
+    combatantsHelper: BaseContract
+  ) => {
+    await brush.mint(alice.address, amount);
+    await brush.connect(alice).approve(await lockedBankVaults.getAddress(), amount);
+    await lockedBankVaults.initializeAddresses(alice.address, await combatantsHelper.getAddress()); // Set it to alice so we can lock funds
+    await lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, amount);
+    await lockedBankVaults.initializeAddresses(await territories.getAddress(), await combatantsHelper.getAddress()); // Set it back after locking funds
+  };
+
   it("Lock funds", async () => {
     const {lockedBankVaults, clanId, playerId, alice, brush, combatantsHelper} = await loadFixture(clanFixture);
 
@@ -671,10 +671,10 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       mockVRF,
-      MAX_LOCKED_VAULTS
+      maxLockedVaults
     } = await loadFixture(clanFixture);
 
-    for (let i = 0; i < MAX_LOCKED_VAULTS - 1; ++i) {
+    for (let i = 0; i < maxLockedVaults - 1; ++i) {
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
     }
 
@@ -727,10 +727,10 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       mockVRF,
-      MAX_LOCKED_VAULTS
+      maxLockedVaults
     } = await loadFixture(clanFixture);
 
-    for (let i = 0; i < MAX_LOCKED_VAULTS; ++i) {
+    for (let i = 0; i < maxLockedVaults; ++i) {
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
     }
 

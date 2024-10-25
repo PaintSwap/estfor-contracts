@@ -830,7 +830,7 @@ export const setupTravelling = async function (world: World, rate = RATE_MUL / 8
     [
       {
         ...defaultActionChoice,
-        skill: EstforTypes.Skill.AGILITY,
+        skill: EstforTypes.Skill.FARMING, // TODO: Change to AGILITY later
         xpPerHour: 0,
         inputTokenIds: [EstforConstants.NONE],
         inputAmounts: [from], // World location start
@@ -915,3 +915,5 @@ export function checkPendingQueuedActionState(
 export const getXPFromLevel = (level: number) => {
   return EstforConstants.levelXp[level - 1];
 };
+
+export const MAX_LEVEL = 135;

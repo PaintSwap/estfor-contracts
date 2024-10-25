@@ -286,19 +286,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "bankImpl",
-        "type": "address"
-      }
-    ],
-    "name": "setBankImpl",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "lockedBankVaults",
         "type": "address"
       }

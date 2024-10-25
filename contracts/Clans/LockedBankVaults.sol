@@ -47,8 +47,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint48[] defendingPlayerIds,
     uint256[] attackingRolls,
     uint256[] defendingRolls,
-    BattleResultEnum[] battleResults,
-    Skill[] randomSkills,
+    uint8[] battleResults, // BattleResultEnum
+    uint8[] randomSkills, // Skill
     bool didAttackersWin,
     uint256 attackingClanId,
     uint256 defendingClanId,
@@ -68,6 +68,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   event ClaimFunds(uint256 clanId, address from, uint256 playerId, uint256 amount, uint256 numLocksClaimed);
   event LockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount, uint256 lockingTimestamp);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
+  event SetMaxLockedVaults(uint256 maxLockedVaults);
   event BlockingAttacks(
     uint256 clanId,
     uint256 itemTokenId,
@@ -79,7 +80,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   event SuperAttackCooldown(uint256 clanId, uint256 cooldownTimestamp);
   event SetMMRAttackDistance(uint256 mmrAttackDistance);
   event ForceMMRUpdate(uint256[] clanIdsToDelete);
-  event UpdateMMR(uint256 requestId, int attackingMMRDiff, int defendingMMRDiff);
+  event UpdateMMR(uint256 requestId, int256 attackingMMRDiff, int256 defendingMMRDiff);
   event SetMMRs(uint256[] clanIds, uint16[] mmrs);
   event SetKValues(uint256 Ka, uint256 Kd);
   event SetBrushDistributionPercentages(
@@ -115,6 +116,10 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint8 extraRollsDefender;
   }
 
+  uint256 private constant NUM_WORDS = 7;
+  uint256 private constant CALLBACK_GAS_LIMIT = 3_500_000;
+  uint256 private constant NUM_PACKED_VAULTS = 2;
+
   Skill[] private _comparableSkills;
   uint64 private _nextPendingAttackId;
   bool private _preventAttacks;
@@ -145,6 +150,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   uint24 private _expectedGasLimitFulfill;
   uint24 private _attackingCooldown;
   uint24 private _reattackingCooldown;
+  uint8 private _maxLockedVaults;
   ISamWitchVRF private _samWitchVRF;
   uint8 private _kA; // attacker K-factor
   uint8 private _kD; // defender K-factor
@@ -155,11 +161,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   //   2.1 - Whoever was there first gets a higher rank (higher index)
   //   2.2 - The attacker is always ranked higher than the defender whether they win or lose as they are placed in the array first
   uint48[] private _sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
-
-  uint256 private constant NUM_WORDS = 3;
-  uint256 private constant CALLBACK_GAS_LIMIT = 3_500_000;
-  uint256 private constant MAX_LOCKED_VAULTS = 100; // TODO: Update this
-  uint256 private constant NUM_PACKED_VAULTS = 2;
 
   modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), _playerId), NotOwnerOfPlayerAndActive());
@@ -222,6 +223,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint16 mmrAttackDistance,
     uint24 lockFundsPeriod,
     uint8 maxClanCombatants,
+    uint8 maxLockedVaults,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -245,11 +247,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _vrfRequestInfo = vrfRequestInfo;
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
-    _setExpectedGasLimitFulfill(1_500_000);
-
+    setExpectedGasLimitFulfill(1_500_000);
     setKValues(32, 32);
     setComparableSkills(comparableSkills);
     setMMRAttackDistance(mmrAttackDistance);
+    setMaxLockedVaults(maxLockedVaults);
     _nextPendingAttackId = 1;
   }
 
@@ -302,7 +304,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
         clanId,
         defendingClanId,
         itemTokenId,
-        MAX_LOCKED_VAULTS,
+        _maxLockedVaults,
         NUM_PACKED_VAULTS,
         _itemNFT,
         _clanInfos,
@@ -387,13 +389,13 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint48[] memory attackingPlayerIds = _clanInfos[attackingClanId].playerIds;
     uint48[] memory defendingPlayerIds = _clanInfos[defendingClanId].playerIds;
 
-    Skill[] memory randomSkills = new Skill[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
+    uint8[] memory randomSkills = new uint8[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
     for (uint256 i; i < randomSkills.length; ++i) {
-      randomSkills[i] = _comparableSkills[uint8(randomWords[2] >> (i * 8)) % _comparableSkills.length];
+      randomSkills[i] = uint8(_comparableSkills[uint8(randomWords[6] >> (i * 8)) % _comparableSkills.length]);
     }
 
     (
-      BattleResultEnum[] memory battleResults,
+      uint8[] memory battleResults,
       uint256[] memory attackingRolls,
       uint256[] memory defendingRolls,
       bool didAttackersWin
@@ -402,7 +404,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
         attackingPlayerIds,
         defendingPlayerIds,
         randomSkills,
-        [randomWords[0], randomWords[1]],
+        randomWords,
         pendingAttack.extraRollsAttacker,
         pendingAttack.extraRollsDefender
       );
@@ -577,11 +579,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
   }
 
-  function _setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) private {
-    _expectedGasLimitFulfill = expectedGasLimitFulfill;
-    emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
-  }
-
   function getAttackCost() public view returns (uint256) {
     (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
     return baseRequestCost + (movingAverageGasPrice * _expectedGasLimitFulfill);
@@ -638,8 +635,14 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     emit SetMMRAttackDistance(mmrAttackDistance);
   }
 
+  function setMaxLockedVaults(uint8 maxLockedVaults) public onlyOwner {
+    _maxLockedVaults = maxLockedVaults;
+    emit SetMaxLockedVaults(maxLockedVaults);
+  }
+
   function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
-    _setExpectedGasLimitFulfill(expectedGasLimitFulfill);
+    _expectedGasLimitFulfill = expectedGasLimitFulfill;
+    emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
   }
 
   function setBrushDistributionPercentages(

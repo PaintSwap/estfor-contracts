@@ -29,7 +29,8 @@ import {
   Treasury,
   Territories,
   CombatantsHelper,
-  LockedBankVaults
+  LockedBankVaults,
+  ClanBattleLibrary
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -86,7 +87,7 @@ import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills, allMinimumMMRs} from "./data/territories";
 import {allInstantVRFActions} from "./data/instantVRFActions";
-import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
+import {ClanBattle, InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
 import {parseEther} from "ethers";
 
@@ -598,15 +599,20 @@ async function main() {
   )) as unknown as EggInstantVRFActionStrategy;
   await eggInstantVRFActionStrategy.waitForDeployment();
 
+  const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
+  console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
+
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
 
   const lockedFundsPeriod = (isBeta ? 1 : 7) * 86400; // 7 days
   const maxClanComabtantsLockedBankVaults = 20;
+  const maxLockedVaults = 100;
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
-      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress()
+      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+      ClanBattleLibrary: await clanBattleLibrary.getAddress()
     }
   });
   const lockedBankVaults = (await upgrades.deployProxy(
@@ -626,6 +632,7 @@ async function main() {
       mmrAttackDistance,
       lockedFundsPeriod,
       maxClanComabtantsLockedBankVaults,
+      maxLockedVaults,
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -734,6 +741,7 @@ async function main() {
         await instantVRFActions.getAddress(),
         await lockedBankVaults.getAddress(),
         await territories.getAddress(),
+        await clanBattleLibrary.getAddress(),
         await decoratorProvider.getAddress(),
         await combatantsHelper.getAddress(),
         await vrfRequestInfo.getAddress(),
