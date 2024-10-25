@@ -72,13 +72,13 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, lowestRunsConfig],
     overrides: {
-      "contracts/Clans/Clans.sol": mediumRunsConfig,
+      "contracts/Clans/Clans.sol": lowRunsConfig,
       "contracts/Clans/LockedBankVaults.sol": lowRunsConfig,
       "contracts/Clans/Territories.sol": mediumRunsConfig,
       "contracts/Players/Players.sol": lowRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
-      "contracts/Players/PlayersImplQueueActions.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplQueueActions.sol": lowRunsConfig,
       "contracts/Players/PlayersImplRewards.sol": lowRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
       "contracts/World.sol": lowRunsConfig,
