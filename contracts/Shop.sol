@@ -100,7 +100,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function liquidatePrice(uint16 tokenId) public view returns (uint80 price) {
     uint256 totalBrush = _treasury.totalClaimable(address(this));
-    uint256 totalBrushForItem = totalBrush / (_itemNFT.totalSupply() - _numUnsellableItems);
+    uint256 totalSupply = _itemNFT.totalSupply();
+    uint256 numItems = (_numUnsellableItems >= totalSupply) ? 1 : totalSupply - _numUnsellableItems;
+    uint256 totalBrushForItem = totalBrush / numItems;
     return _liquidatePrice(tokenId, totalBrushForItem);
   }
 
@@ -199,10 +201,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
     uint256 allocationRemaining;
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
+      uint256 totalSupply = _itemNFT.totalSupply();
+      uint256 numItems = (_numUnsellableItems >= totalSupply) ? 1 : totalSupply - _numUnsellableItems;
+      uint256 totalClaimableForItem = _treasury.totalClaimable(address(this)) / numItems;
+
       // New day, reset max allocation can be sold
-      allocationRemaining = uint80(
-        _treasury.totalClaimable(address(this)) / (_itemNFT.totalSupply() - _numUnsellableItems)
-      );
+      allocationRemaining = uint80(totalClaimableForItem / numItems);
       tokenInfo.checkpointTimestamp = uint40((block.timestamp / 1 days) * 1 days);
       tokenInfo.price = uint80(sellPrice);
       emit NewAllocation(uint16(tokenId), allocationRemaining);
