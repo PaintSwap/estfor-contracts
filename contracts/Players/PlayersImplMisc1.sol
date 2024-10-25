@@ -26,51 +26,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   using Strings for uint256;
   using Strings for bytes32;
 
-  address immutable _this;
-
   constructor() {
     _checkStartSlot();
-    _this = address(this);
-  }
-
-  function initialize(
-    ItemNFT itemNFT,
-    PlayerNFT playerNFT,
-    PetNFT petNFT,
-    World world,
-    AdminAccess adminAccess,
-    Quests quests,
-    Clans clans,
-    WishingWell wishingWell,
-    address implQueueActions,
-    address implProcessActions,
-    address implRewards,
-    address implMisc,
-    address implMisc1,
-    bool isBeta
-  ) external {
-    require(address(this) != _this, CannotCallInitializerOnImplementation());
-
-    _itemNFT = itemNFT;
-    _playerNFT = playerNFT;
-    _petNFT = petNFT;
-    _world = world;
-    _adminAccess = adminAccess;
-    _quests = quests;
-    _clans = clans;
-    _wishingWell = wishingWell;
-    _implQueueActions = implQueueActions;
-    _implProcessActions = implProcessActions;
-    _implRewards = implRewards;
-    _implMisc = implMisc;
-    _implMisc1 = implMisc1;
-    _isBeta = isBeta;
-
-    _nextQueueId = 1;
-    _alphaCombat = 1;
-    _betaCombat = 1;
-    _alphaCombatHealing = 8;
-    emit SetCombatParams(1, 1, 8);
   }
 
   // Show all the player stats, return metadata json

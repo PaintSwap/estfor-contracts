@@ -157,8 +157,9 @@ export const addTestData = async (
   }
 
   gasLimit = await players.processActions.estimateGas(playerId);
+  console.log("Gas limit", gasLimit.toString());
   tx = await players.processActions(playerId, {
-    gasLimit: gasLimit + 300000n
+    gasLimit: gasLimit + 600000n
   });
   await tx.wait();
   console.log("Process actions (melee combat)");
@@ -224,19 +225,13 @@ export const addTestData = async (
   }
 
   // Create a clan
-  await brush.approve(clans, parseEther("1000"));
+  tx = await brush.approve(clans, parseEther("1000"));
+  await tx.wait();
+  console.log("Approve brush for clan creation");
 
   const imageId = 2;
   const tierId = 1;
-  tx = await clans.createClan(
-    playerId,
-    "Sam test clan",
-    "G4ZgtP52JK",
-    "fantomfoundation",
-    "fantomFDN",
-    imageId,
-    tierId
-  );
+  tx = await clans.createClan(playerId, "Sam test clan", "G4ZgtP52JK", "soniclabs", "0xSonicLabs", imageId, tierId);
   await tx.wait();
   console.log("Create clan");
 

@@ -26,7 +26,7 @@ const defaultConfig: SolcUserConfig = {
         yul: true
       }
     },
-    viaIR: true, // Change to false when running coverage
+    viaIR: true,
     outputSelection: {
       "*": {
         "*": ["storageLayout"]

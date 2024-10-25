@@ -87,7 +87,7 @@ import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
 import {allTerritories, allBattleSkills, allMinimumMMRs} from "./data/territories";
 import {allInstantVRFActions} from "./data/instantVRFActions";
-import {ClanBattle, InstantVRFActionType} from "@paintswap/estfor-definitions/types";
+import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
 import {parseEther} from "ethers";
 
@@ -95,7 +95,6 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Deploying contracts with the account: ${owner.address} on chain: ${await getChainId(owner)}`);
   const network = await ethers.provider.getNetwork();
-
   let brush: MockBrushToken;
   let wftm: MockWrappedFantom;
   let oracleAddress: string;
@@ -116,7 +115,8 @@ async function main() {
     const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
-      await brush.mint(owner.address, parseEther("1000"));
+      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
+      await brush.mint(owner.address, parseEther("10000000"));
       console.log("Minted brush");
       wftm = await MockWrappedFantom.deploy();
       console.log("Minted WFTM");
@@ -133,9 +133,10 @@ async function main() {
     } else if (network.chainId == 4002n) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
+      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.waitForDeployment();
 
-      tx = await brush.mint(owner.address, parseEther("1000"));
+      tx = await brush.mint(owner.address, parseEther("10000000"));
       console.log("Minted brush");
       await tx.wait();
       wftm = (await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621")) as MockWrappedFantom;
@@ -154,9 +155,10 @@ async function main() {
     } else if (network.chainId == 64165n) {
       // Sonic testnet. Later this should have a bridged version of brush, and it's own VRF not deployed each time
       brush = await MockBrushToken.deploy();
+      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.waitForDeployment();
 
-      tx = await brush.mint(owner.address, parseEther("1000"));
+      tx = await brush.mint(owner.address, parseEther("10000000"));
       console.log("Minted brush");
       await tx.wait();
       wftm = (await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621")) as MockWrappedFantom;
@@ -572,7 +574,10 @@ async function main() {
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
   const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
     kind: "uups",
-    timeout
+    timeout,
+    txOverrides: {
+      ...(!isDevNetwork(network) ? {gasLimit: 400000} : {})
+    }
   })) as unknown as VRFRequestInfo;
   await vrfRequestInfo.waitForDeployment();
   console.log(`vrfRequestInfo = "${(await vrfRequestInfo.getAddress()).toLowerCase()}"`);
@@ -714,7 +719,9 @@ async function main() {
     }
   )) as unknown as CombatantsHelper;
   await combatantsHelper.waitForDeployment();
+  console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
+  /* TODO: Enable again later. It needs a masterchef set up
   const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
   const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
     await paintSwapDecorator.getAddress(),
@@ -726,7 +733,7 @@ async function main() {
     pid
   ]);
   await decoratorProvider.waitForDeployment();
-  console.log(`decoratorProvider = "${(await decoratorProvider.getAddress()).toLowerCase()}"`);
+  console.log(`decoratorProvider = "${(await decoratorProvider.getAddress()).toLowerCase()}"`); */
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250n) {
@@ -763,7 +770,7 @@ async function main() {
         await lockedBankVaults.getAddress(),
         await territories.getAddress(),
         await clanBattleLibrary.getAddress(),
-        await decoratorProvider.getAddress(),
+        //        await decoratorProvider.getAddress(),
         await combatantsHelper.getAddress(),
         await vrfRequestInfo.getAddress(),
         await treasury.getAddress()
@@ -940,9 +947,9 @@ async function main() {
   const genericCombatActionId = EstforConstants.NONE;
 
   tx = await world.addBulkActionChoices(
-    [fireMakingActionId, smithingActionId, cookingActionId, craftingActionId],
-    [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking, allActionChoiceIdsCrafting],
-    [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking, allActionChoicesCrafting]
+    [fireMakingActionId, smithingActionId, cookingActionId],
+    [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking],
+    [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking]
   );
 
   await tx.wait();
@@ -950,13 +957,23 @@ async function main() {
 
   // Add new ones here for gas reasons
   tx = await world.addBulkActionChoices(
-    [fletchingActionId, alchemyActionId, forgingActionId],
-    [allActionChoiceIdsFletching, allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
-    [allActionChoicesFletching, allActionChoicesAlchemy, allActionChoicesForging]
+    [craftingActionId, fletchingActionId],
+    [allActionChoiceIdsCrafting, allActionChoiceIdsFletching],
+    [allActionChoicesCrafting, allActionChoicesFletching]
   );
 
   await tx.wait();
   console.log("Add action choices2");
+
+  // Add new ones here for gas reasons
+  tx = await world.addBulkActionChoices(
+    [alchemyActionId, forgingActionId],
+    [allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
+    [allActionChoicesAlchemy, allActionChoicesForging]
+  );
+
+  await tx.wait();
+  console.log("Add action choices3");
 
   tx = await world.addBulkActionChoices(
     [genericCombatActionId, genericCombatActionId, genericCombatActionId],
@@ -1036,14 +1053,40 @@ async function main() {
     EstforConstants.ANNIV1_EGG_TIER3,
     EstforConstants.ANNIV1_EGG_TIER4,
     EstforConstants.ANNIV1_EGG_TIER5,
-    EstforConstants.ANNIV1_KEY
+    EstforConstants.ANNIV1_KEY,
+    EstforConstants.SECRET_EGG_1_TIER1,
+    EstforConstants.SECRET_EGG_1_TIER2,
+    EstforConstants.SECRET_EGG_1_TIER3,
+    EstforConstants.SECRET_EGG_1_TIER4,
+    EstforConstants.SECRET_EGG_1_TIER5,
+    EstforConstants.SECRET_EGG_2_TIER1,
+    EstforConstants.SECRET_EGG_2_TIER2,
+    EstforConstants.SECRET_EGG_2_TIER3,
+    EstforConstants.SECRET_EGG_2_TIER4,
+    EstforConstants.SECRET_EGG_2_TIER5,
+    EstforConstants.SECRET_EGG_3_TIER1,
+    EstforConstants.SECRET_EGG_3_TIER2,
+    EstforConstants.SECRET_EGG_3_TIER3,
+    EstforConstants.SECRET_EGG_3_TIER4,
+    EstforConstants.SECRET_EGG_3_TIER5,
+    EstforConstants.SECRET_EGG_4_TIER1,
+    EstforConstants.SECRET_EGG_4_TIER2,
+    EstforConstants.SECRET_EGG_4_TIER3,
+    EstforConstants.SECRET_EGG_4_TIER4,
+    EstforConstants.SECRET_EGG_4_TIER5
   ];
 
   // Only works if not trying to sell anything
-  //  await shop.addUnsellableItems(items);
+  await shop.addUnsellableItems(items);
 
   // Add test data for the game
   if (isBeta) {
+    await adminAccess.addAdmins([
+      "0xb4dda75e5dee0a9e999152c3b72816fc1004d1dd",
+      "0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC",
+      "0xa801864d0D24686B15682261aa05D4e1e6e5BD94"
+    ]);
+
     await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory, minItemQuantityBeforeSellsAllowed);
   }
 }

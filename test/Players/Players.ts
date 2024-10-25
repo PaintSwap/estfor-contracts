@@ -1647,29 +1647,6 @@ describe("Players", function () {
     );
   });
 
-  it("Revert if trying to initialize QueueActionImpl", async function () {
-    const {playersImplMisc1} = await loadFixture(playersFixture);
-
-    await expect(
-      playersImplMisc1.initialize(
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        ZeroAddress,
-        false
-      )
-    ).to.be.revertedWithCustomError(playersImplMisc1, "CannotCallInitializerOnImplementation");
-  });
-
   it("testModifyXP should revert if there are actions queued", async function () {
     const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);

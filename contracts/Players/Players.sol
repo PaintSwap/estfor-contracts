@@ -82,26 +82,26 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     __UUPSUpgradeable_init();
     __ReentrancyGuard_init();
 
-    _delegatecall(
-      implMisc1,
-      abi.encodeWithSelector(
-        IPlayersDelegate.initialize.selector,
-        itemNFT,
-        playerNFT,
-        petNFT,
-        world,
-        adminAccess,
-        quests,
-        clans,
-        wishingWell,
-        implQueueActions,
-        implProcessActions,
-        implRewards,
-        implMisc,
-        implMisc1,
-        isBeta
-      )
-    );
+    _itemNFT = itemNFT;
+    _playerNFT = playerNFT;
+    _petNFT = petNFT;
+    _world = world;
+    _adminAccess = adminAccess;
+    _quests = quests;
+    _clans = clans;
+    _wishingWell = wishingWell;
+    _implQueueActions = implQueueActions;
+    _implProcessActions = implProcessActions;
+    _implRewards = implRewards;
+    _implMisc = implMisc;
+    _implMisc1 = implMisc1;
+    _isBeta = isBeta;
+
+    _nextQueueId = 1;
+    _alphaCombat = 1;
+    _betaCombat = 1;
+    _alphaCombatHealing = 8;
+    emit SetCombatParams(1, 1, 8);
   }
 
   /// @notice Start actions for a player

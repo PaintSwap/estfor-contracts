@@ -44,23 +44,6 @@ interface IPlayersDelegate {
   function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external;
 
   function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external;
-
-  function initialize(
-    ItemNFT itemNFT,
-    PlayerNFT playerNFT,
-    PetNFT petNFT,
-    World world,
-    AdminAccess adminAccess,
-    Quests quests,
-    Clans clans,
-    WishingWell wishingWell,
-    address implQueueActions,
-    address implProcessActions,
-    address implRewards,
-    address implMisc,
-    address implMisc1,
-    bool isBeta
-  ) external;
 }
 
 interface IPlayersMiscDelegate {
