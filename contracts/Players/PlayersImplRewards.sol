@@ -134,7 +134,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint256 prevProcessedTime = queuedAction.prevProcessedTime;
       uint256 veryStartTime = startTime - prevProcessedTime;
 
-      bool isCombat = queuedAction.combatStyle.asCombatStyle().isCombat();
+      bool isCombat = queuedAction.combatStyle._isCombatStyle();
       ActionChoice memory actionChoice;
       if (queuedAction.choiceId != 0) {
         actionChoice = _world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
@@ -246,7 +246,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         }
 
         uint256 numActionsCompleted;
-        if (actionSkill.isCombat()) {
+        if (actionSkill._isSkillCombat()) {
           // Want monsters killed
           uint256 prevActionsCompleted = uint16((numSpawnedPerHour * prevXPElapsedTime) / (3600 * SPAWN_MUL));
           numActionsCompleted =
@@ -360,7 +360,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint256 pointsAccruedExclBaseBoost;
       uint256 prevPointsAccrued;
       uint256 prevPointsAccruedExclBaseBoost;
-      CombatStyle combatStyle = queuedAction.combatStyle.asCombatStyle();
+      CombatStyle combatStyle = queuedAction.combatStyle._asCombatStyle();
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, combatStyle, queuedAction.actionId);
       (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
         from,
@@ -390,7 +390,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
       uint32 xpGained = pointsAccrued;
       uint32 healthPointsGained;
-      if (pointsAccruedExclBaseBoost != 0 && combatStyle.isCombat()) {
+      if (pointsAccruedExclBaseBoost != 0 && combatStyle._isCombatStyle()) {
         healthPointsGained = _getHealthPointsFromCombat(
           playerId,
           pointsAccruedExclBaseBoost + prevPointsAccruedExclBaseBoost
@@ -402,7 +402,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         xpGained += healthPointsGained;
       }
 
-      bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && combatStyle.isCombat();
+      bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && combatStyle._isCombatStyle();
 
       if (pointsAccrued != 0) {
         pendingQueuedActionProcessed.skills[pendingQueuedActionProcessedLength] = skill;
@@ -578,7 +578,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           currentActionProcessed.xpGained1 += xpGainedSkill;
         } else if (currentActionProcessed.skill2 == questSkill) {
           currentActionProcessed.xpGained2 += xpGainedSkill;
-        } else if (firstRemainingActionSkill.isCombat() && questSkill == Skill.DEFENCE) {
+        } else if (firstRemainingActionSkill._isSkillCombat() && questSkill._isSkill(Skill.DEFENCE)) {
           // Special case for combat where you are training attack
           currentActionProcessed.skill3 = questSkill;
           currentActionProcessed.xpGained3 += xpGainedSkill;
@@ -656,7 +656,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
       actionId
     );
-    bool isCombat = actionSkill.isCombat();
+    bool isCombat = actionSkill._isSkillCombat();
 
     uint16 monstersKilledFull = uint16((numSpawnedPerHour * (prevXPElapsedTime + xpElapsedTime)) / (SPAWN_MUL * 3600));
     uint8 successPercent = _getSuccessPercent(playerId, actionId, actionSkill, isCombat, pendingQueuedActionProcessed);
@@ -697,7 +697,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     }
 
     // Any random rewards unlocked. Exclude any that have dynamic components (combat and crafting etc)
-    if (!actionSkill.isCombat() && actionRewards.randomRewardTokenId1 != NONE) {
+    if (!actionSkill._isSkillCombat() && actionRewards.randomRewardTokenId1 != NONE) {
       (randomIds, randomAmounts, ) = _getRandomRewards(
         playerId,
         startTime,
@@ -821,7 +821,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
         pendingRandomReward.actionId
       );
-      bool isCombat = actionSkill.isCombat();
+      bool isCombat = actionSkill._isSkillCombat();
       uint16 monstersKilled = uint16(
         uint256(numSpawnedPerHour * pendingRandomReward.xpElapsedTime) / (SPAWN_MUL * 3600)
       );

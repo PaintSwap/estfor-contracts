@@ -954,9 +954,9 @@ describe("Rewards", function () {
         let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
         expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWordsSeeded(world, mockVRF, 400_000_000_000n);
         await timeTravel24Hours();
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWordsSeeded(world, mockVRF, 400_000_000_000n);
 
         expect(await world.hasRandomWord(endTime)).to.be.true;
 

@@ -4,32 +4,28 @@ pragma solidity ^0.8.28;
 import {CombatStyle} from "../globals/misc.sol";
 
 library CombatStyleLibrary {
-  error InvalidCombatStyle();
-  function asCombatStyle(uint8 combatStyle) internal pure returns (CombatStyle) {
+  error InvalidCombatStyleId(uint8 combatStyleId);
+  function _asCombatStyle(uint8 combatStyleId) internal pure returns (CombatStyle) {
     require(
-      combatStyle >= uint8(type(CombatStyle).min) && combatStyle <= uint8(type(CombatStyle).max),
-      InvalidCombatStyle()
+      combatStyleId >= uint8(type(CombatStyle).min) && combatStyleId <= uint8(type(CombatStyle).max),
+      InvalidCombatStyleId(combatStyleId)
     );
-    return CombatStyle(combatStyle);
+    return CombatStyle(combatStyleId);
   }
 
-  function isCombatStyle(uint8 combatStyle, CombatStyle check) internal pure returns (bool) {
-    return isCombatStyle(asCombatStyle(combatStyle), check);
+  function _isCombatStyle(uint8 combatStyleId) internal pure returns (bool) {
+    return _isCombatStyle(_asCombatStyle(combatStyleId));
   }
 
-  function isNotCombatStyle(uint8 combatStyle, CombatStyle check) internal pure returns (bool) {
-    return isNotCombatStyle(asCombatStyle(combatStyle), check);
+  function _isCombatStyle(uint8 combatStyleId, CombatStyle check) internal pure returns (bool) {
+    return _isCombatStyle(_asCombatStyle(combatStyleId), check);
   }
 
-  function isCombatStyle(CombatStyle combatStyle, CombatStyle check) internal pure returns (bool) {
+  function _isCombatStyle(CombatStyle combatStyle) internal pure returns (bool) {
+    return combatStyle != CombatStyle.NONE;
+  }
+
+  function _isCombatStyle(CombatStyle combatStyle, CombatStyle check) internal pure returns (bool) {
     return combatStyle == check;
-  }
-
-  function isNotCombatStyle(CombatStyle combatStyle, CombatStyle check) internal pure returns (bool) {
-    return combatStyle != check;
-  }
-
-  function isCombat(CombatStyle combatStyle) internal pure returns (bool) {
-    return isNotCombatStyle(combatStyle, CombatStyle.NONE);
   }
 }

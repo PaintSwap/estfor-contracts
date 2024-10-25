@@ -339,7 +339,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   {
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    bool isCombat = _queuedAction.combatStyle.asCombatStyle().isCombat();
+    bool isCombat = _queuedAction.combatStyle._isCombatStyle();
     if (isCombat) {
       // Fetch the requirements for it
       CombatStats memory enemyCombatStats = _world.getCombatStats(_queuedAction.actionId);

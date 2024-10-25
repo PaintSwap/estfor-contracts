@@ -1,7 +1,13 @@
 [
   {
-    "inputs": [],
-    "name": "InvalidCombatStyle",
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "combatStyleId",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidCombatStyleId",
     "type": "error"
   }
 ]

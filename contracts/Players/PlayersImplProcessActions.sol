@@ -109,8 +109,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
       ActionChoice memory actionChoice;
       QueuedAction storage queuedAction = _players[playerId].actionQueue[i];
-      CombatStyle combatStyle = queuedAction.combatStyle.asCombatStyle();
-      bool isCombat = queuedAction.combatStyle.asCombatStyle().isCombat();
+      CombatStyle combatStyle = queuedAction.combatStyle._asCombatStyle();
+      bool isCombat = queuedAction.combatStyle._isCombatStyle();
       if (queuedAction.choiceId != 0) {
         // Includes combat
         actionChoice = _world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);

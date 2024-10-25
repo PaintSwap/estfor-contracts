@@ -217,7 +217,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     require(
       actionInfo.minXP == 0 ||
         _getRealXP(
-          actionInfo.skill.asSkill(),
+          actionInfo.skill._asSkill(),
           _playerXP[playerId],
           _pendingQueuedActionProcessed,
           _pendingQuestState
@@ -226,7 +226,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       ActionMinimumXPNotReached()
     );
 
-    bool isCombat = actionInfo.skill.asSkill().isCombat();
+    bool isCombat = actionInfo.skill._isSkillCombat();
     bool isPlayerUpgraded = _isPlayerFullMode(playerId);
 
     // Check the actionChoice is valid
@@ -237,7 +237,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       require(
         _getRealXP(
-          actionChoice.skill.asSkill(),
+          actionChoice.skill._asSkill(),
           _playerXP[playerId],
           _pendingQueuedActionProcessed,
           _pendingQuestState
@@ -246,9 +246,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       );
 
       require(
-        actionChoice.minSkill2.asSkill() == Skill.NONE ||
+        actionChoice.minSkill2._asSkill() == Skill.NONE ||
           _getRealXP(
-            actionChoice.minSkill2.asSkill(),
+            actionChoice.minSkill2._asSkill(),
             _playerXP[playerId],
             _pendingQueuedActionProcessed,
             _pendingQuestState
@@ -258,9 +258,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       );
 
       require(
-        actionChoice.minSkill3.asSkill() == Skill.NONE ||
+        actionChoice.minSkill3._asSkill() == Skill.NONE ||
           _getRealXP(
-            actionChoice.minSkill3.asSkill(),
+            actionChoice.minSkill3._asSkill(),
             _playerXP[playerId],
             _pendingQueuedActionProcessed,
             _pendingQuestState
@@ -269,10 +269,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         ActionChoiceMinimumXPNotReached()
       );
 
-      require(actionChoice.skill.asSkill() != Skill.NONE, InvalidSkill());
+      require(actionChoice.skill._asSkill() != Skill.NONE, InvalidSkill());
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
-      if (actionInfo.skill.asSkill() == Skill.TRAVELING) {
+      if (actionInfo.skill._asSkill() == Skill.TRAVELING) {
         require(_queuedActionInput.timespan == (RATE_MUL * 3600) / actionChoice.rate, InvalidTravellingTimespan());
       }
 
@@ -287,7 +287,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     require(_queuedActionInput.timespan != 0, EmptyTimespan());
 
     // Check combatStyle is only selected if queuedAction is combat
-    require(isCombat == _queuedActionInput.combatStyle.isNotCombatStyle(CombatStyle.NONE), InvalidCombatStyle());
+    require(isCombat == _queuedActionInput.combatStyle._isCombatStyle(), InvalidCombatStyle());
 
     Attire memory attire = _queuedActionInput.attire;
     if (

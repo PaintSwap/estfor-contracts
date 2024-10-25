@@ -68,7 +68,7 @@ library WorldLibrary {
     require(minSkills.length == minXPs.length, LengthMismatch());
 
     for (uint256 i; i < minSkills.length; ++i) {
-      require(!minSkills[i].isNone(), InvalidSkill());
+      require(!minSkills[i]._isSkillNone(), InvalidSkill());
       // Can only be 0 if it's the first one and there is more than one
       require(!(minXPs[i] == 0 && (i != 0 || minSkills.length == 1)), InputSpecifiedWithoutAmount());
 

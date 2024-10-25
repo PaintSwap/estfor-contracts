@@ -1,7 +1,13 @@
 [
   {
-    "inputs": [],
-    "name": "InvalidSkill",
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "skill",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidSkillId",
     "type": "error"
   }
 ]

@@ -240,19 +240,19 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _checkMinXPRequirements(uint256 playerId, InstantAction storage instantAction) private view {
-    Skill minSkill1 = instantAction.minSkill1.asSkill();
+    Skill minSkill1 = instantAction.minSkill1._asSkill();
     require(
       minSkill1 == Skill.NONE || _players.getPlayerXP(playerId, minSkill1) >= instantAction.minXP1,
       MinimumXPNotReached(minSkill1, instantAction.minXP1)
     );
 
-    Skill minSkill2 = instantAction.minSkill2.asSkill();
+    Skill minSkill2 = instantAction.minSkill2._asSkill();
     require(
       minSkill2 == Skill.NONE || _players.getPlayerXP(playerId, minSkill2) >= instantAction.minXP2,
       MinimumXPNotReached(minSkill2, instantAction.minXP2)
     );
 
-    Skill minSkill3 = instantAction.minSkill3.asSkill();
+    Skill minSkill3 = instantAction.minSkill3._asSkill();
     require(
       minSkill3 == Skill.NONE || _players.getPlayerXP(playerId, minSkill3) >= instantAction.minXP3,
       MinimumXPNotReached(minSkill3, instantAction.minXP3)
@@ -275,11 +275,11 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   ) private pure returns (InstantAction memory instantAction) {
     bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     instantAction = InstantAction({
-      minSkill1: actionInput.minSkills.length != 0 ? actionInput.minSkills[0] : Skill.NONE.asUint8(),
+      minSkill1: actionInput.minSkills.length != 0 ? actionInput.minSkills[0] : Skill.NONE._asUint8(),
       minXP1: actionInput.minXPs.length != 0 ? actionInput.minXPs[0] : 0,
-      minSkill2: actionInput.minSkills.length > 1 ? actionInput.minSkills[1] : Skill.NONE.asUint8(),
+      minSkill2: actionInput.minSkills.length > 1 ? actionInput.minSkills[1] : Skill.NONE._asUint8(),
       minXP2: actionInput.minXPs.length > 1 ? actionInput.minXPs[1] : 0,
-      minSkill3: actionInput.minSkills.length > 2 ? actionInput.minSkills[2] : Skill.NONE.asUint8(),
+      minSkill3: actionInput.minSkills.length > 2 ? actionInput.minSkills[2] : Skill.NONE._asUint8(),
       minXP3: actionInput.minXPs.length > 2 ? actionInput.minXPs[2] : 0,
       inputTokenId1: actionInput.inputTokenIds.length != 0 ? actionInput.inputTokenIds[0] : NONE,
       inputAmount1: actionInput.inputAmounts.length != 0 ? actionInput.inputAmounts[0] : 0,
@@ -341,7 +341,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     require(minSkills.length <= 3, TooManyMinSkills());
     require(minSkills.length == minXPs.length, LengthMismatch());
     for (uint256 i; i < minSkills.length; ++i) {
-      require(minSkills[i].isNotSkill(Skill.NONE), InvalidSkill());
+      require(!minSkills[i]._isSkillNone(), InvalidSkill());
       require(minXPs[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != minSkills.length - 1) {

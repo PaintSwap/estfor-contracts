@@ -229,7 +229,7 @@ abstract contract PlayersBase {
       return Skill.DEFENCE;
     }
 
-    Skill choiceSkill = choice.skill.asSkill();
+    Skill choiceSkill = choice.skill._asSkill();
     if (choiceSkill != Skill.NONE) {
       // If the skill is defence or health, then it's magic
       if (combatStyle == CombatStyle.ATTACK && (choiceSkill == Skill.DEFENCE || choiceSkill == Skill.HEALTH)) {

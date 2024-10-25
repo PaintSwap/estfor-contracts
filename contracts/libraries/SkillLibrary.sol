@@ -4,41 +4,46 @@ pragma solidity ^0.8.28;
 import {Skill} from "../globals/misc.sol";
 
 library SkillLibrary {
-  error InvalidSkill();
-  function asSkill(uint8 skill) internal pure returns (Skill) {
-    require(skill >= uint8(type(Skill).min) && skill <= uint8(type(Skill).max), InvalidSkill());
+  error InvalidSkillId(uint8 skill);
+
+  function _asSkill(uint8 skill) internal pure returns (Skill) {
+    require(skill >= uint8(type(Skill).min) && skill <= uint8(type(Skill).max), InvalidSkillId(skill));
     return Skill(skill);
   }
 
-  function isSkill(uint8 skill, Skill check) internal pure returns (bool) {
-    return isSkill(asSkill(skill), check);
+  function _isSkill(uint8 skill) internal pure returns (bool) {
+    return _isSkill(_asSkill(skill));
   }
 
-  function isNotSkill(uint8 skill, Skill check) internal pure returns (bool) {
-    return isNotSkill(asSkill(skill), check);
+  function _isSkill(uint8 skill, Skill check) internal pure returns (bool) {
+    return _isSkill(_asSkill(skill), check);
   }
 
-  function isNone(uint8 skill) internal pure returns (bool) {
-    return isNone(asSkill(skill));
+  function _isSkillCombat(uint8 skill) internal pure returns (bool) {
+    return _isSkillCombat(_asSkill(skill));
   }
 
-  function asUint8(Skill skill) internal pure returns (uint8) {
+  function _isSkillNone(uint8 skill) internal pure returns (bool) {
+    return _isSkillNone(_asSkill(skill));
+  }
+
+  function _asUint8(Skill skill) internal pure returns (uint8) {
     return uint8(skill);
   }
 
-  function isSkill(Skill skill, Skill check) internal pure returns (bool) {
+  function _isSkill(Skill skill) internal pure returns (bool) {
+    return !_isSkill(skill, Skill.NONE);
+  }
+
+  function _isSkill(Skill skill, Skill check) internal pure returns (bool) {
     return skill == check;
   }
 
-  function isNotSkill(Skill skill, Skill check) internal pure returns (bool) {
-    return skill != check;
+  function _isSkillCombat(Skill skill) internal pure returns (bool) {
+    return _isSkill(skill, Skill.COMBAT);
   }
 
-  function isCombat(Skill skill) internal pure returns (bool) {
-    return isSkill(skill, Skill.COMBAT);
-  }
-
-  function isNone(Skill skill) internal pure returns (bool) {
-    return isSkill(skill, Skill.NONE);
+  function _isSkillNone(Skill skill) internal pure returns (bool) {
+    return _isSkill(skill, Skill.NONE);
   }
 }

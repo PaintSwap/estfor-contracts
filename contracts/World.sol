@@ -231,7 +231,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function getSkill(uint256 actionId) external view returns (Skill) {
-    return _actions[actionId].skill.asSkill();
+    return _actions[actionId].skill._asSkill();
   }
 
   function getActionRewards(uint256 actionId) external view returns (ActionRewards memory) {
@@ -304,7 +304,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   ) external view returns (ActionRewards memory, Skill skill, uint256 numSpanwed, uint8 worldLocation) {
     return (
       _actionRewards[actionId],
-      _actions[actionId].skill.asSkill(),
+      _actions[actionId].skill._asSkill(),
       _actions[actionId].numSpawned,
       _actions[actionId].worldLocation
     );
@@ -340,7 +340,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   function _addAction(Action calldata action) private {
     require(!action.info.isDynamic, DynamicActionsCannotBeAdded());
-    require(_actions[action.actionId].skill.asSkill() == Skill.NONE, ActionAlreadyExists(action.actionId));
+    require(_actions[action.actionId].skill._asSkill() == Skill.NONE, ActionAlreadyExists(action.actionId));
     _setAction(action);
   }
 
@@ -373,7 +373,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     WorldLibrary.setActionGuaranteedRewards(action.guaranteedRewards, _actionReward);
     WorldLibrary.setActionRandomRewards(action.randomRewards, _actionReward);
 
-    if (action.info.skill.asSkill().isCombat()) {
+    if (action.info.skill._isSkillCombat()) {
       _actionCombatStats[action.actionId] = action.combatStats;
     } else {
       bool actionHasGuaranteedRewards = action.guaranteedRewards.length != 0;
@@ -391,7 +391,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     ActionChoiceInput calldata actionChoiceInput
   ) private view {
     require(actionChoiceId != 0, ActionChoiceIdZeroNotAllowed());
-    require(_actionChoices[actionId][actionChoiceId].skill.isNone(), ActionChoiceAlreadyExists());
+    require(_actionChoices[actionId][actionChoiceId].skill._isSkillNone(), ActionChoiceAlreadyExists());
     WorldLibrary.checkActionChoice(actionChoiceInput);
   }
 
@@ -457,9 +457,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
       packedData: _packedData,
       reserved: bytes1(uint8(0)),
       // Second storage slot
-      minSkill2: actionChoiceInput.minSkills.length > 1 ? actionChoiceInput.minSkills[1] : Skill.NONE.asUint8(),
+      minSkill2: actionChoiceInput.minSkills.length > 1 ? actionChoiceInput.minSkills[1] : Skill.NONE._asUint8(),
       minXP2: actionChoiceInput.minXPs.length > 1 ? actionChoiceInput.minXPs[1] : 0,
-      minSkill3: actionChoiceInput.minSkills.length > 2 ? actionChoiceInput.minSkills[2] : Skill.NONE.asUint8(),
+      minSkill3: actionChoiceInput.minSkills.length > 2 ? actionChoiceInput.minSkills[2] : Skill.NONE._asUint8(),
       minXP3: actionChoiceInput.minXPs.length > 2 ? actionChoiceInput.minXPs[2] : 0,
       newInputAmount1: actionChoiceInput.inputAmounts.length != 0 && _anyInputExceedsStandardAmount
         ? actionChoiceInput.inputAmounts[0]
@@ -509,7 +509,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   function editActions(Action[] calldata actionsToEdit) external onlyOwner {
     for (uint256 i = 0; i < actionsToEdit.length; ++i) {
-      require(_actions[actionsToEdit[i].actionId].skill.asSkill() != Skill.NONE, ActionDoesNotExist());
+      require(_actions[actionsToEdit[i].actionId].skill._asSkill() != Skill.NONE, ActionDoesNotExist());
       _setAction(actionsToEdit[i]);
     }
     emit EditActions(actionsToEdit);

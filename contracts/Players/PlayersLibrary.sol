@@ -281,7 +281,7 @@ library PlayersLibrary {
     uint8 betaCombat,
     uint256 elapsedTime
   ) private pure returns (uint32 dmgDealt) {
-    Skill skill = actionChoice.skill.asSkill();
+    Skill skill = actionChoice.skill._asSkill();
     if (skill == Skill.MELEE) {
       dmgDealt = dmg(combatStats.melee, enemyCombatStats.meleeDefence, alphaCombat, betaCombat, elapsedTime);
     } else if (skill == Skill.RANGED) {
@@ -374,7 +374,7 @@ library PlayersLibrary {
     );
 
     uint256 combatTimePerKill = _getTimeToKill(
-      actionChoice.skill.asSkill(),
+      actionChoice.skill._asSkill(),
       combatStats,
       enemyCombatStats,
       alphaCombat,
@@ -803,8 +803,8 @@ library PlayersLibrary {
   }
 
   function readXP(Skill skill, PackedXP storage packedXP) internal view returns (uint256) {
-    require(!skill.isCombat() && skill != Skill.TRAVELING, InvalidXPSkill());
-    if (skill == Skill.NONE) {
+    require(!skill._isSkillCombat() && !skill._isSkill(Skill.TRAVELING), InvalidXPSkill());
+    if (skill._isSkillNone()) {
       return 0;
     }
     uint256 offset = 2; // Accounts for NONE & COMBAT skills
@@ -847,7 +847,7 @@ library PlayersLibrary {
     uint8 skillId,
     int16 skillDiff
   ) external pure returns (CombatStats memory statsOut) {
-    return _updateCombatStatsFromSkill(combatStats, skillId.asSkill(), skillDiff);
+    return _updateCombatStatsFromSkill(combatStats, skillId._asSkill(), skillDiff);
   }
 
   function _updateCombatStatsFromSkill(
@@ -910,7 +910,7 @@ library PlayersLibrary {
     uint8 skillPercentageEnhancement2
   ) external pure returns (CombatStats memory statsOut) {
     statsOut = combatStats2;
-    Skill skill1 = skillEnhancement1.asSkill();
+    Skill skill1 = skillEnhancement1._asSkill();
     if (skill1 == Skill.HEALTH) {
       statsOut.health += int16(skillFixedEnhancement1 + (uint16(statsOut.health) * skillPercentageEnhancement1) / 100);
     } else if (skill1 == Skill.MELEE) {
@@ -933,7 +933,7 @@ library PlayersLibrary {
       revert SkillForPetNotHandledYet();
     }
 
-    Skill skill2 = skillEnhancement2.asSkill();
+    Skill skill2 = skillEnhancement2._asSkill();
     if (skill2 != Skill.NONE) {
       if (skill2 == Skill.DEFENCE) {
         statsOut.meleeDefence += int16(
@@ -1039,7 +1039,7 @@ library PlayersLibrary {
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed,
     PackedXP storage packedXP
   ) public view returns (uint256) {
-    return _getAbsoluteActionStartXP(skillId.asSkill(), pendingQueuedActionProcessed, packedXP);
+    return _getAbsoluteActionStartXP(skillId._asSkill(), pendingQueuedActionProcessed, packedXP);
   }
 
   // Subtract any existing xp gained from the first in-progress actions and add the new xp gained
@@ -1109,7 +1109,7 @@ library PlayersLibrary {
   }
 
   function getBonusAvatarXPPercent(Player storage player, uint8 skillId) public view returns (uint8 bonusPercent) {
-    return _getBonusAvatarXPPercent(player, skillId.asSkill());
+    return _getBonusAvatarXPPercent(player, skillId._asSkill());
   }
 
   function _getBonusAvatarXPPercent(Player storage player, Skill skill) internal view returns (uint8 bonusPercent) {
@@ -1151,8 +1151,8 @@ library PlayersLibrary {
     uint16[5] calldata expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
-    Skill skill = skillId.asSkill();
-    bool isCombatSkill = queuedAction.combatStyle.isNotCombatStyle(CombatStyle.NONE);
+    Skill skill = skillId._asSkill();
+    bool isCombatSkill = queuedAction.combatStyle._isCombatStyle();
     uint24 xpPerHour = IWorld(world).getXPPerHour(queuedAction.actionId, isCombatSkill ? NONE : queuedAction.choiceId);
     pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
     // Normal Player specific boosts
@@ -1222,7 +1222,7 @@ library PlayersLibrary {
 
       uint256 minLevel = _getLevel(minXP);
       uint256 skillLevel = _getLevel(
-        _getAbsoluteActionStartXP(actionSkillId.asSkill(), pendingQueuedActionProcessed, packedXP)
+        _getAbsoluteActionStartXP(actionSkillId._asSkill(), pendingQueuedActionProcessed, packedXP)
       );
       uint256 extraBoost = skillLevel - minLevel;
 
