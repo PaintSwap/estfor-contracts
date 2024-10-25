@@ -151,6 +151,27 @@ async function main() {
         router,
         wftm
       ));
+    } else if (network.chainId == 64165n) {
+      // Sonic testnet. Later this should have a bridged version of brush, and it's own VRF not deployed each time
+      brush = await MockBrushToken.deploy();
+      await brush.waitForDeployment();
+
+      tx = await brush.mint(owner.address, parseEther("1000"));
+      console.log("Minted brush");
+      await tx.wait();
+      wftm = (await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621")) as MockWrappedFantom;
+      oracleAddress = "0x3d2341ADb2D31f1c5530cDC622016af293177AE0";
+      vrf = await MockVRF.deploy();
+      await vrf.waitForDeployment();
+
+      console.log(`mockVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
+      router = (await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883")) as MockRouter;
+      console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
+        brush,
+        router,
+        wftm
+      ));
     } else if (network.chainId == 250n) {
       // Fantom mainnet
       brush = (await MockBrushToken.attach(BRUSH_ADDRESS)) as MockBrushToken;

@@ -18,7 +18,7 @@ import {SolcUserConfig} from "hardhat/types";
 const defaultConfig: SolcUserConfig = {
   version: "0.8.28",
   settings: {
-    evmVersion: "shanghai",
+    evmVersion: "paris",
     optimizer: {
       enabled: true,
       runs: 9999999,
@@ -103,8 +103,7 @@ const config: HardhatUserConfig = {
     },
     sonic_testnet: {
       url: process.env.SONIC_TESTNET_RPC,
-      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("150", "gwei"))
+      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string]
     },
     fantom: {
       url: process.env.FANTOM_RPC,
