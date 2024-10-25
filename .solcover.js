@@ -1,5 +1,7 @@
 module.exports = {
   optimizer: true,
   configureYulOptimizer: true,
-  measureStatementCoverage: true
+  measureStatementCoverage: true,
+  files: ["contracts"],
+  skipFiles: ["test"]
 };
