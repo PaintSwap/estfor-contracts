@@ -122,8 +122,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _;
   }
 
-  modifier onlyBurners(address _from) {
-    require(_msgSender() == _from || isApprovedForAll(_from, _msgSender()), NotBurner());
+  modifier onlyBurners(address from) {
+    require(_msgSender() == from || isApprovedForAll(from, _msgSender()), NotBurner());
     _;
   }
 
@@ -132,8 +132,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _;
   }
 
-  modifier isOwnerOfPet(uint256 _petId) {
-    require(_pets[_petId].owner == _msgSender(), NotOwnerOfPet());
+  modifier isOwnerOfPet(uint256 petId) {
+    require(_pets[petId].owner == _msgSender(), NotOwnerOfPet());
     _;
   }
 
@@ -274,7 +274,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     _burn(from, tokenId, 1);
   }
 
-  function _createPet(uint256 _petId, uint256 _basePetId, uint16 _randomWord) private returns (Pet memory pet) {
+  function _createPet(uint256 petId, uint256 _basePetId, uint16 randomWord) private returns (Pet memory pet) {
     require(_basePetMetadatas[_basePetId].skillEnhancement1 != Skill.NONE, PetDoesNotExist());
 
     // Fixed enhancement for skill 1
@@ -283,7 +283,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     uint256 skillFixedEnhancement1 = skillFixedMin1;
     if (skillFixedMax1 != skillFixedMin1) {
       skillFixedEnhancement1 =
-        ((_randomWord >> 8) %
+        ((randomWord >> 8) %
           (((skillFixedMax1 - skillFixedMin1 + 1) / _basePetMetadatas[_basePetId].skillFixedIncrement1))) +
         skillFixedMin1;
     }
@@ -294,7 +294,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     uint256 skillPercentageEnhancement1 = skillPercentageMin1;
     if (skillPercentageMax1 != skillPercentageMin1) {
       skillPercentageEnhancement1 =
-        (_randomWord %
+        (randomWord %
           (
             ((skillPercentageMax1 - skillPercentageMin1 + 1) / _basePetMetadatas[_basePetId].skillPercentageIncrement1)
           )) +
@@ -306,7 +306,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     uint256 skillFixedEnhancement2;
     uint256 skillPercentageEnhancement2;
     if (skillEnhancement2 != Skill.NONE) {
-      uint256 otherRandomWord = uint256(keccak256(abi.encodePacked(_randomWord)));
+      uint256 otherRandomWord = uint256(keccak256(abi.encodePacked(randomWord)));
       // Fixed enhancement
       uint256 skillFixedMin2 = _basePetMetadatas[_basePetId].skillFixedMin2;
       uint256 skillFixedMax2 = _basePetMetadatas[_basePetId].skillFixedMax2;
@@ -347,21 +347,21 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       uint24(_basePetId)
     );
 
-    _pets[_petId] = pet;
+    _pets[petId] = pet;
   }
 
   function _setName(
-    uint256 _petId,
-    string memory _name
+    uint256 petId,
+    string memory petName
   ) private returns (string memory trimmedName, string memory trimmedAndLowercaseName, bool nameChanged) {
     // Trimmed name cannot be empty
-    trimmedName = EstforLibrary.trim(_name);
+    trimmedName = EstforLibrary.trim(petName);
     require(bytes(trimmedName).length >= 3, NameTooShort());
     require(bytes(trimmedName).length <= 15, NameTooLong());
     require(EstforLibrary.containsValidNameCharacters(trimmedName), NameInvalidCharacters());
 
     trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
-    string memory oldName = EstforLibrary.toLower(PetNFTLibrary._getPetName(_petId, _names[_petId]));
+    string memory oldName = EstforLibrary.toLower(PetNFTLibrary._getPetName(petId, _names[petId]));
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
@@ -369,38 +369,42 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
         delete _lowercaseNames[oldName];
       }
       _lowercaseNames[trimmedAndLowercaseName] = true;
-      _names[_petId] = trimmedName;
+      _names[petId] = trimmedName;
     }
   }
 
-  function _pay(uint256 _brushCost) private {
-    if (_brushCost == 0) {
+  function _pay(uint256 brushCost) private {
+    if (brushCost == 0) {
       return;
     }
 
-    _brush.transferFrom(_msgSender(), _treasury, (_brushCost * _brushTreasuryPercentage) / 100);
+    address[] memory recipients = new address[](2);
+    uint256[] memory amounts = new uint256[](2);
+    recipients[0] = _treasury;
+    amounts[0] = (brushCost * _brushTreasuryPercentage) / 100;
 
-    if (_brushDevPercentage != 0) {
-      _brush.transferFrom(_msgSender(), _dev, (_brushCost * _brushDevPercentage) / 100);
-    }
+    recipients[1] = _dev;
+    amounts[1] = (brushCost * _brushDevPercentage) / 100;
+
+    _brush.transferFromBulk(_msgSender(), recipients, amounts);
 
     if (_brushBurntPercentage != 0) {
-      _brush.burnFrom(_msgSender(), (_brushCost * _brushBurntPercentage) / 100);
+      _brush.burnFrom(_msgSender(), (brushCost * _brushBurntPercentage) / 100);
     }
   }
 
-  function _updateOwner(uint256 _id, address _from, address _to) internal override {
-    if (_to == address(0)) {
+  function _updateOwner(uint256 id, address from, address to) internal override {
+    if (to == address(0)) {
       // Burnt
-      delete _pets[_id];
+      delete _pets[id];
     } else {
       // Cannot transfer anniversary pets
       require(
-        _from == address(0) || _basePetMetadatas[_pets[_id].baseId].skin != PetSkin.ANNIV1,
-        CannotTransferThisPet(_id)
+        from == address(0) || _basePetMetadatas[_pets[id].baseId].skin != PetSkin.ANNIV1,
+        CannotTransferThisPet(id)
       );
-      _pets[_id].owner = _to;
-      _pets[_id].lastAssignmentTimestamp = uint40(block.timestamp);
+      _pets[id].owner = to;
+      _pets[id].lastAssignmentTimestamp = uint40(block.timestamp);
     }
   }
 

@@ -740,12 +740,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     // Pay
     _brush.transferFrom(_msgSender(), address(this), brushCost);
     uint256 quarterCost = brushCost / 4;
-    // Send half to the pool (currently shop)
-    _brush.transfer(_pool, brushCost - quarterCost * 2);
-    // Send 1 quarter to the dev address
-    _brush.transfer(_dev, quarterCost);
     // Burn 1 quarter
     _brush.burn(quarterCost);
+    // Send half to the pool (currently shop)
+    _brush.transfer(_pool, quarterCost * 2);
+    // Send 1 quarter to the dev address
+    _brush.transfer(_dev, brushCost - quarterCost * 3);
   }
 
   function _upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) private {
