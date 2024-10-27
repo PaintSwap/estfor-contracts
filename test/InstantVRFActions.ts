@@ -376,7 +376,7 @@ describe("Instant VRF actions", function () {
       };
       await expect(instantVRFActions.connect(alice).addActions([instantVRFActionInput])).to.be.revertedWithCustomError(
         instantVRFActions,
-        "CallerIsNotOwner"
+        "OwnableUnauthorizedAccount"
       );
       await instantVRFActions.addActions([instantVRFActionInput]);
     });
@@ -391,7 +391,7 @@ describe("Instant VRF actions", function () {
         await instantVRFActions.addActions([instantVRFActionInput]);
         await expect(
           instantVRFActions.connect(alice).editActions([instantVRFActionInput])
-        ).to.be.revertedWithCustomError(instantVRFActions, "CallerIsNotOwner");
+        ).to.be.revertedWithCustomError(instantVRFActions, "OwnableUnauthorizedAccount");
         await instantVRFActions.editActions([instantVRFActionInput]);
       });
 
@@ -432,7 +432,7 @@ describe("Instant VRF actions", function () {
         await instantVRFActions.addActions([instantVRFActionInput]);
         await expect(instantVRFActions.connect(alice).removeActions([1])).to.be.revertedWithCustomError(
           instantVRFActions,
-          "CallerIsNotOwner"
+          "OwnableUnauthorizedAccount"
         );
       });
 
@@ -782,7 +782,7 @@ describe("Instant VRF actions", function () {
           instantVRFActions
             .connect(alice)
             .addStrategies([InstantVRFActionType.FORGING], [await genericInstantVRFActionStrategy.getAddress()])
-        ).to.be.revertedWithCustomError(instantVRFActions, "CallerIsNotOwner");
+        ).to.be.revertedWithCustomError(instantVRFActions, "OwnableUnauthorizedAccount");
 
         await expect(
           instantVRFActions.addStrategies(

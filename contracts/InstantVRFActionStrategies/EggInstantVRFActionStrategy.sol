@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {IInstantVRFActionStrategy} from "./interfaces/IInstantVRFActionStrategy.sol";
 import {Skill} from "../globals/players.sol";
@@ -32,7 +32,7 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
 
   function initialize(address _instantVRFActions) external initializer {
     __UUPSUpgradeable_init();
-    __Ownable_init();
+    __Ownable_init(_msgSender());
 
     instantVRFActions = _instantVRFActions;
   }

@@ -1476,7 +1476,10 @@ describe("Players", function () {
 
     // Do not allow processing an action while game is paused
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
-    await expect(players.connect(alice).pauseGame(true)).to.be.revertedWithCustomError(players, "CallerIsNotOwner");
+    await expect(players.connect(alice).pauseGame(true)).to.be.revertedWithCustomError(
+      players,
+      "OwnableUnauthorizedAccount"
+    );
     await players.pauseGame(true);
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)

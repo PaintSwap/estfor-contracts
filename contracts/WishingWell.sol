@@ -3,8 +3,8 @@ pragma solidity ^0.8.28;
 
 import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 
-import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
@@ -98,7 +98,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     uint256 clanThresholdIncrement
   ) external initializer {
     __UUPSUpgradeable_init();
-    __Ownable_init();
+    __Ownable_init(_msgSender());
 
     _brush = brush;
     _playerNFT = playerNFT;

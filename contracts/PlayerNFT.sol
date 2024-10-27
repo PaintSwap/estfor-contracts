@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ERC1155Upgradeable} from "./ozUpgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
+import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
@@ -128,7 +128,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   ) external initializer {
     __ERC1155_init("");
     __UUPSUpgradeable_init();
-    __Ownable_init();
+    __Ownable_init(_msgSender());
 
     _brush = brush;
     _nextPlayerId = 1;
@@ -277,36 +277,29 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     require(EstforLibrary.containsBaselineSocialNameCharacters(telegram), TelegramInvalidCharacters());
   }
 
-  function _beforeTokenTransfer(
-    address /*operator*/,
-    address from,
-    address to,
-    uint256[] memory ids,
-    uint256[] memory amounts,
-    bytes memory /*data*/
-  ) internal virtual override {
-    if (from == address(0) || amounts.length == 0 || from == to) {
-      return;
-    }
-    uint256 iter = ids.length;
-    uint32 burned;
-    while (iter != 0) {
-      iter--;
-      uint256 playerId = ids[iter];
-      _players.clearEverythingBeforeTokenTransfer(from, playerId);
-      if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
-        // Burning
-        string memory oldName = EstforLibrary.toLower(_names[playerId]);
-        delete _lowercaseNames[oldName];
-        burned++;
-      } else if (from != address(0)) {
-        // Not minting
-        _players.beforeTokenTransferTo(to, playerId);
+  function _update(address from, address to, uint256[] memory ids, uint256[] memory amounts) internal virtual override {
+    if (from != address(0) && amounts.length != 0 && from != to) {
+      uint256 iter = ids.length;
+      uint32 burned;
+      while (iter != 0) {
+        iter--;
+        uint256 playerId = ids[iter];
+        _players.clearEverythingBeforeTokenTransfer(from, playerId);
+        if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
+          // Burning
+          string memory oldName = EstforLibrary.toLower(_names[playerId]);
+          delete _lowercaseNames[oldName];
+          burned++;
+        } else if (from != address(0)) {
+          // Not minting
+          _players.beforeTokenTransferTo(to, playerId);
+        }
+      }
+      if (burned != 0) {
+        _numBurned += burned;
       }
     }
-    if (burned != 0) {
-      _numBurned += burned;
-    }
+    super._update(from, to, ids, amounts);
   }
 
   function uri(uint256 playerId) public view virtual override returns (string memory) {

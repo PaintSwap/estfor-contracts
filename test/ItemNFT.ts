@@ -305,7 +305,7 @@ describe("ItemNFT", function () {
 
     await expect(
       itemNFT.connect(alice).airdrop([alice.getAddress()], EstforConstants.BRONZE_AXE, [3])
-    ).to.be.revertedWithCustomError(itemNFT, "CallerIsNotOwner");
+    ).to.be.revertedWithCustomError(itemNFT, "OwnableUnauthorizedAccount");
   });
 
   it("IsApprovedForAll override", async function () {
@@ -316,7 +316,7 @@ describe("ItemNFT", function () {
       itemNFT
         .connect(alice)
         .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
-    ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferFromNotApproved");
+    ).to.be.revertedWithCustomError(itemNFT, "ERC1155MissingApprovalForAll");
 
     await itemNFT.initializeAddresses(alice, alice, alice, alice, alice, alice, alice, alice, alice, alice);
     await expect(

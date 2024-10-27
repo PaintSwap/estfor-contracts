@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ERC1155Upgradeable} from "./ozUpgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
+import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
@@ -114,7 +115,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   ) external initializer {
     __ERC1155_init("");
     __UUPSUpgradeable_init();
-    __Ownable_init();
+    __Ownable_init(_msgSender());
 
     _world = world;
     _shop = shop;
@@ -234,28 +235,19 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     );
   }
 
-  function _beforeTokenTransfer(
-    address /*_operator*/,
-    address _from,
-    address _to,
-    uint256[] memory _ids,
-    uint256[] memory _amounts,
-    bytes memory /*_data*/
-  ) internal virtual override {
-    if (_from == address(0) || _amounts.length == 0 || _from == _to) {
-      // When minting or self sending, then no further processing is required
-      return;
+  function _update(address from, address to, uint256[] memory ids, uint256[] memory amounts) internal virtual override {
+    if (from != address(0) && amounts.length != 0 && from != to) {
+      bool isBurnt = to == address(0) || to == 0x000000000000000000000000000000000000dEaD;
+      if (isBurnt) {
+        _removeAnyBurntFromTotal(ids, amounts);
+      } else {
+        _checkIsTransferable(from, ids);
+      }
+      if (_players == address(0)) {
+        require(block.chainid == 31337, InvalidChainId());
+      }
     }
-
-    bool isBurnt = _to == address(0) || _to == 0x000000000000000000000000000000000000dEaD;
-    if (isBurnt) {
-      _removeAnyBurntFromTotal(_ids, _amounts);
-    } else {
-      _checkIsTransferable(_from, _ids);
-    }
-    if (_players == address(0)) {
-      require(block.chainid == 31337, InvalidChainId());
-    }
+    super._update(from, to, ids, amounts);
   }
 
   function _setItem(ItemInput calldata input) private returns (ItemOutput memory item) {

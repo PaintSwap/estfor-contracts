@@ -103,16 +103,15 @@ describe("Bank", function () {
       bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_HELMET], [1])
     ).to.be.revertedWithCustomError(bank, "MaxBankCapacityReached");
 
-    // Reverting inside the on received function can't catch that revert message so check for the generic one
     await expect(
       itemNFT.connect(alice).safeTransferFrom(alice.address, clanBankAddress, EstforConstants.BRONZE_HELMET, 1, "0x")
-    ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferToNonERC1155Receiver");
+    ).to.be.revertedWithCustomError(bank, "MaxBankCapacityReached");
 
     await expect(
       itemNFT
         .connect(alice)
         .safeBatchTransferFrom(alice.address, clanBankAddress, [EstforConstants.BRONZE_HELMET], [1], "0x")
-    ).to.be.revertedWithCustomError(itemNFT, "ERC1155TransferToNonERC1155Receiver");
+    ).to.be.revertedWithCustomError(bank, "MaxBankCapacityReached");
 
     // Check same item can be deposited
     await bank.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_SHIELD], [1]);

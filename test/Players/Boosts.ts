@@ -242,7 +242,7 @@ describe("Boosts", function () {
         );
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
-      const slot = 253;
+      const slot = 2;
       const encoding = abiCoder.encode(["uint256", "uint256"], [playerId, slot]);
       const hash = keccak256(encoding);
       let boostInfoStorage = await getStorageAt(await players.getAddress(), hash);

@@ -5,28 +5,19 @@
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "AddressIsNotContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "AlreadyInitialized",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "name": "AddressEmptyCode",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "BaseAvatarNotExists",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "BeaconImplementationIsNotAContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CallerIsNotOwner",
     "type": "error"
   },
   {
@@ -45,13 +36,89 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "needed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
     "name": "ERC1155InsufficientBalance",
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ERC1155LengthMismatch",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "approver",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidApprover",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "idsLength",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "valuesLength",
+        "type": "uint256"
+      }
+    ],
+    "name": "ERC1155InvalidArrayLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidOperator",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "receiver",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidReceiver",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidSender",
     "type": "error"
   },
   {
@@ -60,68 +127,45 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ERC1155MintToZeroAddress",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155MissingApprovalForAll",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1967InvalidImplementation",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "ERC1155ReceiverRejectedTokens",
+    "name": "ERC1967NonPayable",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "ERC1155SettingApprovalStatusForSelf",
+    "name": "FailedCall",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "ERC1155TransferFromNotApproved",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155TransferToNonERC1155Receiver",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155TransferToZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155ZeroAddressNotValidOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC115BurnAmountExceedsBalance",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC115BurnFromZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "FunctionMustBeCalledThroughActiveProxy",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "FunctionMustBeCalledThroughDelegateCall",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "FunctionMustNotBeCalledThroughDelegateCall",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "IsInitializing",
+    "name": "InvalidInitialization",
     "type": "error"
   },
   {
@@ -156,31 +200,6 @@
   },
   {
     "inputs": [],
-    "name": "NewAdminIsZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewBeaconIsNotAContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewImplementationIsNotAContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewImplementationNotUUPS",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewOwnerIsZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotInWhitelist",
     "type": "error"
   },
@@ -197,6 +216,28 @@
   {
     "inputs": [],
     "name": "NotPlayers",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
     "type": "error"
   },
   {
@@ -226,27 +267,19 @@
   },
   {
     "inputs": [],
-    "name": "UnsupportedProxiableUUID",
+    "name": "UUPSUnauthorizedCallContext",
     "type": "error"
   },
   {
-    "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "previousAdmin",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "newAdmin",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "slot",
+        "type": "bytes32"
       }
     ],
-    "name": "AdminChanged",
-    "type": "event"
+    "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
   },
   {
     "anonymous": false,
@@ -271,19 +304,6 @@
       }
     ],
     "name": "ApprovalForAll",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "beacon",
-        "type": "address"
-      }
-    ],
-    "name": "BeaconUpgraded",
     "type": "event"
   },
   {
@@ -359,9 +379,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint8",
+        "internalType": "uint64",
         "name": "version",
-        "type": "uint8"
+        "type": "uint64"
       }
     ],
     "name": "Initialized",
@@ -665,6 +685,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -1095,7 +1128,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "amounts",
+        "name": "values",
         "type": "uint256[]"
       },
       {
@@ -1128,7 +1161,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "value",
         "type": "uint256"
       },
       {
@@ -1348,19 +1381,6 @@
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newImplementation",
-        "type": "address"
-      }
-    ],
-    "name": "upgradeTo",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

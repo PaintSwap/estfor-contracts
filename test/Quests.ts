@@ -108,7 +108,7 @@ describe("Quests", function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await expect(
         quests.connect(alice).addQuests([firemakingQuest], [defaultMinRequirements])
-      ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
+      ).to.be.revertedWithCustomError(quests, "OwnableUnauthorizedAccount");
     });
   });
 
@@ -136,7 +136,7 @@ describe("Quests", function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await expect(
         quests.connect(alice).addQuests([firemakingQuest], [defaultMinRequirements])
-      ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
+      ).to.be.revertedWithCustomError(quests, "OwnableUnauthorizedAccount");
     });
   });
 
@@ -151,7 +151,10 @@ describe("Quests", function () {
     it("Should fail to remove a quest for non-owner", async function () {
       const {alice, quests, firemakingQuest} = await loadFixture(questsFixture);
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
-      await expect(quests.connect(alice).removeQuest(1)).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
+      await expect(quests.connect(alice).removeQuest(1)).to.be.revertedWithCustomError(
+        quests,
+        "OwnableUnauthorizedAccount"
+      );
     });
 
     it("Should fail to remove a non-existing quest", async function () {
@@ -175,7 +178,7 @@ describe("Quests", function () {
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
       await expect(
         quests.connect(alice).editQuests([firemakingQuest], [defaultMinRequirements])
-      ).to.be.revertedWithCustomError(quests, "CallerIsNotOwner");
+      ).to.be.revertedWithCustomError(quests, "OwnableUnauthorizedAccount");
     });
 
     it("Should fail to edit a non-existing quest", async function () {

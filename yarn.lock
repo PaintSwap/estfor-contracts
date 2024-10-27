@@ -936,15 +936,13 @@
   dependencies:
     solhint "^5.0.2"
 
-"@openzeppelin/contracts-upgradeable@^5.1.0":
+"@openzeppelin/contracts-upgradeable@https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts-upgradeable/contracts?v5.1-memory-safe":
   version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-5.1.0.tgz#4d37648b7402929c53e2ff6e45749ecff91eb2b6"
-  integrity sha512-AIElwP5Ck+cslNE+Hkemf5SxjJoF4wBvvjxc27Rp+9jaPs/CLIaUBMYe1FNzhdiN0cYuwGRmYaRHmmntuiju4Q==
+  resolved "https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts-upgradeable/contracts?v5.1-memory-safe#1364383360937e920005af4c8788de8bcba56144"
 
-"@openzeppelin/contracts@^5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.0.2.tgz#b1d03075e49290d06570b2fd42154d76c2a5d210"
-  integrity sha512-ytPc6eLGcHHnapAZ9S+5qsdomhjo6QBHTDRRBFfTxXIpsicMhVPouPgmUPebZZZGX7vt9USA+Z+0M0dSVtSUEA==
+"@openzeppelin/contracts@https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts/contracts?v5.1-memory-safe":
+  version "5.1.0"
+  resolved "https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts/contracts?v5.1-memory-safe#e735e1131a932319ff61747ff90acbc7019c68e4"
 
 "@openzeppelin/defender-sdk-base-client@^1.14.4", "@openzeppelin/defender-sdk-base-client@^1.15.0":
   version "1.15.0"
