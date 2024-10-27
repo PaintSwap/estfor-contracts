@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UUPSUpgradeable} from "../ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "../ozUpgradeable/access/OwnableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "../ozUpgradeable/security/ReentrancyGuardUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import {World} from "../World.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -78,7 +78,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address implMisc1,
     bool isBeta
   ) external initializer {
-    __Ownable_init();
+    __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
     __ReentrancyGuard_init();
 

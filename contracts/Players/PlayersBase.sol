@@ -407,7 +407,7 @@ abstract contract PlayersBase {
   }
 
   function _checkStartSlot() internal pure {
-    uint256 expectedStartSlotNumber = 251; // From the various slot arrays expected in the base classes
+    uint256 expectedStartSlotNumber = 0; // From the various slot arrays expected in the base classes
     uint256 slot;
     assembly ("memory-safe") {
       slot := _startSlot.slot

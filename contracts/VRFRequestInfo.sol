@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 /// @notice This contract is used to store the gas price required to maintain VRF oracle balance used for VRF callbacks
 contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
@@ -31,7 +31,7 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
 
   function initialize() external initializer {
     __UUPSUpgradeable_init();
-    __Ownable_init();
+    __Ownable_init(_msgSender());
 
     setBaseAttackCost(0.01 ether);
     _updateMovingAverageGasPrice(uint64(tx.gasprice));

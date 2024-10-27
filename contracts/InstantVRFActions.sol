@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {UUPSUpgradeable} from "./ozUpgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "./ozUpgradeable/access/OwnableUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 import {IInstantVRFActionStrategy} from "./InstantVRFActionStrategies/interfaces/IInstantVRFActionStrategy.sol";
@@ -130,7 +130,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint8 maxActionAmount
   ) external initializer {
     __UUPSUpgradeable_init();
-    __Ownable_init();
+    __Ownable_init(_msgSender());
     _players = players;
     _itemNFT = itemNFT;
     _petNFT = petNFT;

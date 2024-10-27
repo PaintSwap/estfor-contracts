@@ -6,10 +6,11 @@ pragma solidity ^0.8.28;
 import "@openzeppelin/contracts/interfaces/IERC1155.sol";
 import "@openzeppelin/contracts/interfaces/IERC1155Receiver.sol";
 import "@openzeppelin/contracts/interfaces/IERC1155MetadataURI.sol";
-import "../../utils/AddressUpgradeable.sol";
-import "../../utils/ContextUpgradeable.sol";
-import "../../proxy/utils/Initializable.sol";
-import "../../utils/introspection/ERC165Upgradeable.sol";
+
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
 /**
  * @dev Implementation of the basic standard multi-token.
@@ -18,9 +19,13 @@ import "../../utils/introspection/ERC165Upgradeable.sol";
  *
  * _Available since v3.1._
  */
-contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradeable, IERC1155, IERC1155MetadataURI {
-  using AddressUpgradeable for address;
-
+contract ERC1155UpgradeableSinglePerToken is
+  Initializable,
+  ContextUpgradeable,
+  ERC165Upgradeable,
+  IERC1155,
+  IERC1155MetadataURI
+{
   error ERC1155TransferToNonERC1155Receiver();
   error ERC1155ReceiverRejectedTokens();
   error ERC1155SettingApprovalStatusForSelf();
@@ -32,15 +37,18 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
   error ERC1155InsufficientBalance();
   error ERC1155TransferFromNotApproved();
   error ERC1155ZeroAddressNotValidOwner();
+  error ERC1155MintingMoreThanOneSameNFT();
 
   // Mapping from token ID to account balances
-  mapping(uint256 => mapping(address => uint256)) private _balances;
+  mapping(uint256 tokenId => address owner) private _owner; // This is just the default, can be overriden
 
   // Mapping from account to operator approvals
   mapping(address => mapping(address => bool)) private _operatorApprovals;
 
   // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
   string private _uri;
+
+  uint40 internal _totalSupplyAll;
 
   /**
    * @dev See {_setURI}.
@@ -51,6 +59,19 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
 
   function __ERC1155_init_unchained(string memory uri_) internal onlyInitializing {
     _setURI(uri_);
+  }
+
+  function totalSupply(uint256 _tokenId) public view returns (uint256) {
+    return _exists(_tokenId) ? 1 : 0;
+  }
+
+  function totalSupply() external view returns (uint256) {
+    return _totalSupplyAll;
+  }
+
+  // Override this function if updateOwner is overriden
+  function _exists(uint256 _tokenId) internal view virtual returns (bool) {
+    return _owner[_tokenId] != address(0);
   }
 
   /**
@@ -90,7 +111,7 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
     if (account == address(0)) {
       revert ERC1155ZeroAddressNotValidOwner();
     }
-    return _balances[id][account];
+    return getOwner(id) == account ? 1 : 0;
   }
 
   /**
@@ -186,14 +207,13 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
 
     _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-    uint256 fromBalance = _balances[id][from];
+    uint256 fromBalance = getOwner(id) == from ? 1 : 0;
     if (fromBalance < amount) {
       revert ERC1155InsufficientBalance();
     }
-    unchecked {
-      _balances[id][from] = fromBalance - amount;
+    if (from != to) {
+      _updateOwner(id, from, to);
     }
-    _balances[id][to] += amount;
 
     emit TransferSingle(operator, from, to, id, amount);
 
@@ -234,14 +254,20 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
       uint256 id = ids[i];
       uint256 amount = amounts[i];
 
-      uint256 fromBalance = _balances[id][from];
+      uint256 fromBalance = getOwner(id) == from ? 1 : 0;
       if (fromBalance < amount) {
         revert ERC1155InsufficientBalance();
       }
-      unchecked {
-        _balances[id][from] = fromBalance - amount;
+      if (from != to) {
+        _updateOwner(id, from, to);
       }
-      _balances[id][to] += amount;
+    }
+
+    bool isBurnt = to == address(0);
+    if (isBurnt) {
+      unchecked {
+        _totalSupplyAll = uint40(_totalSupplyAll - ids.length);
+      }
     }
 
     emit TransferBatch(operator, from, to, ids, amounts);
@@ -290,13 +316,21 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
       revert ERC1155MintToZeroAddress();
     }
 
+    if (amount > 1 || totalSupply(id) != 0) {
+      revert ERC1155MintingMoreThanOneSameNFT();
+    }
+
     address operator = _msgSender();
     uint256[] memory ids = _asSingletonArray(id);
     uint256[] memory amounts = _asSingletonArray(amount);
 
     _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
-    _balances[id][to] += amount;
+    unchecked {
+      ++_totalSupplyAll;
+    }
+    _updateOwner(id, address(0), to);
+
     emit TransferSingle(operator, address(0), to, id, amount);
 
     _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
@@ -327,8 +361,16 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
 
     _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
-    for (uint256 i = 0; i < ids.length; i++) {
-      _balances[ids[i]][to] += amounts[i];
+    for (uint256 i = 0; i < ids.length; ++i) {
+      if (amounts[i] > 1 || totalSupply(ids[i]) != 0) {
+        revert ERC1155MintingMoreThanOneSameNFT();
+      }
+
+      _updateOwner(ids[i], address(0), to);
+    }
+
+    unchecked {
+      _totalSupplyAll += uint40(ids.length);
     }
 
     emit TransferBatch(operator, address(0), to, ids, amounts);
@@ -357,15 +399,16 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
     uint256[] memory ids = _asSingletonArray(id);
     uint256[] memory amounts = _asSingletonArray(amount);
 
-    _beforeTokenTransfer(operator, from, address(0), ids, amounts, "");
+    _beforeTokenTransfer(operator, from, address(0), ids, amounts, ""); // This will handle burns
 
-    uint256 fromBalance = _balances[id][from];
+    uint256 fromBalance = getOwner(id) == from ? 1 : 0;
     if (fromBalance < amount) {
       revert ERC115BurnAmountExceedsBalance();
     }
     unchecked {
-      _balances[id][from] = fromBalance - amount;
+      --_totalSupplyAll;
     }
+    _updateOwner(id, from, address(0));
 
     emit TransferSingle(operator, from, address(0), id, amount);
 
@@ -397,13 +440,16 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
       uint256 id = ids[i];
       uint256 amount = amounts[i];
 
-      uint256 fromBalance = _balances[id][from];
+      uint256 fromBalance = getOwner(id) == from ? 1 : 0;
       if (fromBalance < amount) {
         revert ERC115BurnAmountExceedsBalance();
       }
-      unchecked {
-        _balances[id][from] = fromBalance - amount;
-      }
+
+      _updateOwner(id, from, address(0));
+    }
+
+    unchecked {
+      _totalSupplyAll -= uint40(ids.length);
     }
 
     emit TransferBatch(operator, from, address(0), ids, amounts);
@@ -490,7 +536,7 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
     uint256 amount,
     bytes memory data
   ) private {
-    if (to.isContract()) {
+    if (to.code.length != 0) {
       try IERC1155Receiver(to).onERC1155Received(operator, from, id, amount, data) returns (bytes4 response) {
         if (response != IERC1155Receiver.onERC1155Received.selector) {
           revert ERC1155ReceiverRejectedTokens();
@@ -511,7 +557,7 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
     uint256[] memory amounts,
     bytes memory data
   ) private {
-    if (to.isContract()) {
+    if (to.code.length != 0) {
       try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (bytes4 response) {
         if (response != IERC1155Receiver.onERC1155BatchReceived.selector) {
           revert ERC1155ReceiverRejectedTokens();
@@ -532,9 +578,13 @@ contract ERC1155Upgradeable is Initializable, ContextUpgradeable, ERC165Upgradea
   }
 
   /**
-   * @dev This empty reserved space is put in place to allow future versions to add new
-   * variables without shifting down storage in the inheritance chain.
-   * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+   * Override this function to return the owner of the token if you have a better packed implementation
    */
-  uint256[47] private __gap;
+  function getOwner(uint256 id) public view virtual returns (address) {
+    return _owner[id];
+  }
+
+  function _updateOwner(uint256 id, address /*from*/, address to) internal virtual {
+    _owner[id] = to;
+  }
 }

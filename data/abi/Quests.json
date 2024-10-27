@@ -10,23 +10,14 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "AddressIsNotContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "AlreadyInitialized",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "BeaconImplementationIsNotAContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CallerIsNotOwner",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "name": "AddressEmptyCode",
     "type": "error"
   },
   {
@@ -51,18 +42,24 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "FunctionMustBeCalledThroughActiveProxy",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1967InvalidImplementation",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "FunctionMustBeCalledThroughDelegateCall",
+    "name": "ERC1967NonPayable",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "FunctionMustNotBeCalledThroughDelegateCall",
+    "name": "FailedCall",
     "type": "error"
   },
   {
@@ -97,6 +94,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidMinimumRequirement",
     "type": "error"
   },
@@ -117,37 +119,7 @@
   },
   {
     "inputs": [],
-    "name": "IsInitializing",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "LengthMismatch",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewAdminIsZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewBeaconIsNotAContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewImplementationIsNotAContract",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewImplementationNotUUPS",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewOwnerIsZeroAddress",
     "type": "error"
   },
   {
@@ -181,6 +153,28 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "QuestCompletedAlready",
     "type": "error"
@@ -202,7 +196,18 @@
   },
   {
     "inputs": [],
-    "name": "UnsupportedProxiableUUID",
+    "name": "UUPSUnauthorizedCallContext",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "slot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "UUPSUnsupportedProxiableUUID",
     "type": "error"
   },
   {
@@ -358,38 +363,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "previousAdmin",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "newAdmin",
-        "type": "address"
-      }
-    ],
-    "name": "AdminChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "beacon",
-        "type": "address"
-      }
-    ],
-    "name": "BeaconUpgraded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
@@ -532,9 +505,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint8",
+        "internalType": "uint64",
         "name": "version",
-        "type": "uint8"
+        "type": "uint64"
       }
     ],
     "name": "Initialized",
@@ -660,6 +633,19 @@
     ],
     "name": "Upgraded",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -1552,19 +1538,6 @@
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newImplementation",
-        "type": "address"
-      }
-    ],
-    "name": "upgradeTo",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
