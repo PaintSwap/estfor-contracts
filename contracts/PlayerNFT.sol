@@ -277,28 +277,28 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   }
 
   function _update(address from, address to, uint256[] memory ids, uint256[] memory amounts) internal virtual override {
-    if (from == address(0) || amounts.length == 0 || from == to) {
-      return;
-    }
-    uint256 iter = ids.length;
-    uint32 burned;
-    while (iter != 0) {
-      iter--;
-      uint256 playerId = ids[iter];
-      _players.clearEverythingBeforeTokenTransfer(from, playerId);
-      if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
-        // Burning
-        string memory oldName = EstforLibrary.toLower(_names[playerId]);
-        delete _lowercaseNames[oldName];
-        burned++;
-      } else if (from != address(0)) {
-        // Not minting
-        _players.beforeTokenTransferTo(to, playerId);
+    if (from != address(0) && amounts.length != 0 && from != to) {
+      uint256 iter = ids.length;
+      uint32 burned;
+      while (iter != 0) {
+        iter--;
+        uint256 playerId = ids[iter];
+        _players.clearEverythingBeforeTokenTransfer(from, playerId);
+        if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
+          // Burning
+          string memory oldName = EstforLibrary.toLower(_names[playerId]);
+          delete _lowercaseNames[oldName];
+          burned++;
+        } else if (from != address(0)) {
+          // Not minting
+          _players.beforeTokenTransferTo(to, playerId);
+        }
+      }
+      if (burned != 0) {
+        _numBurned += burned;
       }
     }
-    if (burned != 0) {
-      _numBurned += burned;
-    }
+    super._update(from, to, ids, amounts);
   }
 
   function uri(uint256 playerId) public view virtual override returns (string memory) {

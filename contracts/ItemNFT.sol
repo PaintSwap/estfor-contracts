@@ -235,26 +235,19 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     );
   }
 
-  function _update(
-    address _from,
-    address _to,
-    uint256[] memory _ids,
-    uint256[] memory _amounts
-  ) internal virtual override {
-    if (_from == address(0) || _amounts.length == 0 || _from == _to) {
-      // When minting or self sending, then no further processing is required
-      return;
+  function _update(address from, address to, uint256[] memory ids, uint256[] memory amounts) internal virtual override {
+    if (from != address(0) && amounts.length != 0 && from != to) {
+      bool isBurnt = to == address(0) || to == 0x000000000000000000000000000000000000dEaD;
+      if (isBurnt) {
+        _removeAnyBurntFromTotal(ids, amounts);
+      } else {
+        _checkIsTransferable(from, ids);
+      }
+      if (_players == address(0)) {
+        require(block.chainid == 31337, InvalidChainId());
+      }
     }
-
-    bool isBurnt = _to == address(0) || _to == 0x000000000000000000000000000000000000dEaD;
-    if (isBurnt) {
-      _removeAnyBurntFromTotal(_ids, _amounts);
-    } else {
-      _checkIsTransferable(_from, _ids);
-    }
-    if (_players == address(0)) {
-      require(block.chainid == 31337, InvalidChainId());
-    }
+    super._update(from, to, ids, amounts);
   }
 
   function _setItem(ItemInput calldata input) private returns (ItemOutput memory item) {
