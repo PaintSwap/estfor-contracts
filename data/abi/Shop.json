@@ -435,7 +435,7 @@
       {
         "indexed": false,
         "internalType": "uint16[]",
-        "name": "tokenId",
+        "name": "tokenIds",
         "type": "uint16[]"
       }
     ],

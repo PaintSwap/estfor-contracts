@@ -679,6 +679,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "maxClanCombatants",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMaxClanCombatants",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "maxLockedVaults",
         "type": "uint256"
       }
@@ -1421,6 +1434,19 @@
       }
     ],
     "name": "setMMRAttackDistance",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "maxClanCombatants",
+        "type": "uint8"
+      }
+    ],
+    "name": "setMaxClanCombatants",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

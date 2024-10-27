@@ -9,7 +9,8 @@ import {
   GUAR_MUL,
   NO_DONATION_AMOUNT,
   RATE_MUL,
-  requestAndFulfillRandomWords
+  requestAndFulfillRandomWords,
+  requestAndFulfillRandomWordsSeeded
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
@@ -1610,9 +1611,10 @@ describe("Non-Combat Actions", function () {
       await timeTravel(3600);
       await players.connect(alice).processActions(playerId);
       await timeTravel24Hours();
-      await requestAndFulfillRandomWords(world, mockVRF);
-      await requestAndFulfillRandomWords(world, mockVRF);
-      await requestAndFulfillRandomWords(world, mockVRF);
+      const seed = 100_000_000_000_000n;
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, seed);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, seed);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, seed);
 
       await players.connect(alice).processActions(playerId);
 

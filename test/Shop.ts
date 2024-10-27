@@ -6,6 +6,7 @@ import {ethers, upgrades} from "hardhat";
 import {AdminAccess, ItemNFT, RoyaltyReceiver, Shop, Treasury, World} from "../typechain-types";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
 import {Block, parseEther, ZeroAddress} from "ethers";
+import {timeTravel, timeTravel24Hours} from "./utils";
 
 describe("Shop", function () {
   const deployContracts = async function () {
@@ -487,8 +488,7 @@ describe("Shop", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
     await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 1000);
-    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel(sellingCutoffDuration);
 
     // Give the contract some brush to assign to the items
     const totalBrush = parseEther("1");
@@ -530,8 +530,7 @@ describe("Shop", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
     await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 1000);
-    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel(sellingCutoffDuration);
 
     // Give the contract some brush to assign to the items
     const totalBrush = parseEther("1");
@@ -544,8 +543,7 @@ describe("Shop", function () {
     tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
     expect(tokenAllocation.allocationRemaining).to.eq(parseEther("0.5") - parseEther("0.5") / 1000n);
     expect(tokenAllocation.checkpointTimestamp).to.eq(Math.floor(NOW / 86400) * 86400);
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel24Hours();
     await shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, 0);
     const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
     tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD); // Empty
@@ -558,8 +556,7 @@ describe("Shop", function () {
 
     await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 2000);
     await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 2000);
-    await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel(sellingCutoffDuration);
 
     // Give the contract some brush to assign to the items
     const totalBrush = parseEther("1");
@@ -573,8 +570,7 @@ describe("Shop", function () {
     liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
     expect(liquidatePrice).to.be.eq(parseEther("0.5") / 2000n);
     // Now changes in a new day
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel24Hours();
     liquidatePrice = await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD);
     const newPrice = "291777851901267";
     expect(liquidatePrice).to.be.eq(newPrice);
@@ -621,7 +617,7 @@ describe("Shop", function () {
     });
 
     it("Cannot remove an item which is already sellable", async function () {
-      const {itemNFT, shop} = await loadFixture(deployContracts);
+      const {shop} = await loadFixture(deployContracts);
       await expect(shop.removeUnsellableItems([EstforConstants.BRONZE_SHIELD])).to.be.revertedWithCustomError(
         shop,
         "AlreadySellable"

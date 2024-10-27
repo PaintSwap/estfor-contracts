@@ -9,7 +9,7 @@ import {
   MockBrushToken,
   MockPaintSwapMarketplaceWhitelist,
   MockRouter,
-  MockWrappedFantom,
+  WrappedNative,
   PassiveActions,
   PlayerNFT,
   Players,
@@ -96,7 +96,7 @@ async function main() {
   console.log(`Deploying contracts with the account: ${owner.address} on chain: ${await getChainId(owner)}`);
   const network = await ethers.provider.getNetwork();
   let brush: MockBrushToken;
-  let wftm: MockWrappedFantom;
+  let wftm: WrappedNative;
   let oracleAddress: string;
   let vrf: MockVRF;
   let router: MockRouter;
@@ -107,7 +107,7 @@ async function main() {
   let pid = 0;
   {
     const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
+    const WrappedNative = await ethers.getContractFactory("WrappedNative");
     const MockVRF = await ethers.getContractFactory("MockVRF");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
@@ -118,7 +118,7 @@ async function main() {
       console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.mint(owner.address, parseEther("10000000"));
       console.log("Minted brush");
-      wftm = await MockWrappedFantom.deploy();
+      wftm = await WrappedNative.deploy();
       console.log("Minted WFTM");
       oracleAddress = owner.address;
       vrf = await MockVRF.deploy();
@@ -139,7 +139,7 @@ async function main() {
       tx = await brush.mint(owner.address, parseEther("10000000"));
       console.log("Minted brush");
       await tx.wait();
-      wftm = (await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621")) as MockWrappedFantom;
+      wftm = (await WrappedNative.attach("0x6C3cCeB0BC228C3EbEa02c4703A805e58d0458Df")) as WrappedNative;
       oracleAddress = "0x3d2341ADb2D31f1c5530cDC622016af293177AE0";
       vrf = await MockVRF.deploy();
       await vrf.waitForDeployment();
@@ -161,7 +161,11 @@ async function main() {
       tx = await brush.mint(owner.address, parseEther("10000000"));
       console.log("Minted brush");
       await tx.wait();
-      wftm = (await MockWrappedFantom.attach("0xf1277d1ed8ad466beddf92ef448a132661956621")) as MockWrappedFantom;
+      tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100"));
+      console.log("Send brush to account");
+      await tx.wait();
+
+      wftm = (await WrappedNative.attach("0xf1277d1ed8ad466beddf92ef448a132661956621")) as WrappedNative;
       oracleAddress = "0x3d2341ADb2D31f1c5530cDC622016af293177AE0";
       vrf = await MockVRF.deploy();
       await vrf.waitForDeployment();
@@ -177,7 +181,7 @@ async function main() {
     } else if (network.chainId == 250n) {
       // Fantom mainnet
       brush = (await MockBrushToken.attach(BRUSH_ADDRESS)) as MockBrushToken;
-      wftm = (await MockWrappedFantom.attach(WFTM_ADDRESS)) as MockWrappedFantom;
+      wftm = (await WrappedNative.attach(WFTM_ADDRESS)) as WrappedNative;
       oracleAddress = ORACLE_ADDRESS;
       vrf = (await MockVRF.attach(SAMWITCH_VRF_ADDRESS)) as MockVRF;
       router = (await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d")) as MockRouter;

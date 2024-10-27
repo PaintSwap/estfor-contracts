@@ -620,6 +620,12 @@
         "internalType": "uint256",
         "name": "newAvatarId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushCost",
+        "type": "uint256"
       }
     ],
     "name": "UpgradePlayerAvatar",

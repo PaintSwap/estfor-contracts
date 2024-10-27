@@ -361,8 +361,8 @@ export const playersFixture = async function () {
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
-  const MockWrappedFantom = await ethers.getContractFactory("MockWrappedFantom");
-  const wftm = await MockWrappedFantom.deploy();
+  const WrappedNative = await ethers.getContractFactory("WrappedNative");
+  const wftm = await WrappedNative.deploy();
 
   const artGalleryLockPeriod = 3600;
   const artGallery = await ethers.deployContract("TestPaintSwapArtGallery", [

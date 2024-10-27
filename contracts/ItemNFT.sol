@@ -33,7 +33,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAdminAndBeta();
   error LengthMismatch();
 
-  World private _world; // Used by the promotions contract....
+  World private _world;
   bool private _isBeta;
   string private _baseURI;
 
@@ -43,7 +43,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   address private _players;
   address private _shop;
-  uint16 private _totalSupplyAll_;
+  uint16 private _totalSupplyAll;
 
   // Royalties
   address private _royaltyReceiver;
@@ -167,7 +167,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function _mintItem(address _to, uint256 tokenId, uint256 _amount) internal {
     uint256 newlyMintedItems = _premint(tokenId, _amount);
     if (newlyMintedItems != 0) {
-      _totalSupplyAll_++;
+      ++_totalSupplyAll;
     }
     _mint(_to, uint256(tokenId), _amount, "");
   }
@@ -179,7 +179,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       numNewItems = numNewItems + _premint(tokenIds[iter], _amounts[iter]);
     }
     if (numNewItems != 0) {
-      _totalSupplyAll_ = _totalSupplyAll_ + uint16(numNewItems);
+      _totalSupplyAll += uint16(numNewItems);
     }
     _mintBatch(_to, tokenIds, _amounts, "");
   }
@@ -208,10 +208,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function _removeAnyBurntFromTotal(uint256[] memory _ids, uint256[] memory _amounts) private {
     uint256 iter = _ids.length;
     while (iter != 0) {
-      iter--;
+      --iter;
       uint256 newBalance = _itemBalances[_ids[iter]] - _amounts[iter];
       if (newBalance == 0) {
-        _totalSupplyAll_--;
+        --_totalSupplyAll;
       }
       _itemBalances[_ids[iter]] = newBalance;
     }
@@ -314,7 +314,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function totalSupply() external view override returns (uint256) {
-    return _totalSupplyAll_;
+    return _totalSupplyAll;
   }
 
   function getItem(uint16 tokenId) external view override returns (Item memory) {

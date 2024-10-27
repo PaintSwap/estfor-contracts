@@ -4,7 +4,7 @@ import {
   MockBrushToken,
   MockPaintSwapMarketplaceWhitelist,
   MockRouter,
-  MockWrappedFantom,
+  WrappedNative,
   PlayerNFT,
   PlayersImplMisc,
   PlayersImplMisc1,
@@ -125,7 +125,7 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
 export const deployMockPaintSwapContracts = async (
   brush: MockBrushToken,
   router: MockRouter,
-  wftm: MockWrappedFantom
+  wftm: WrappedNative
 ): Promise<{
   paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   paintSwapDecorator: TestPaintSwapDecorator;

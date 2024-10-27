@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MockWrappedFantom {
+contract WrappedNative {
   event Approval(address indexed src, address indexed guy, uint256 wad);
   event Transfer(address indexed src, address indexed dst, uint256 wad);
   event Deposit(address indexed dst, uint256 wad);
@@ -13,8 +13,8 @@ contract MockWrappedFantom {
   error InsufficientBalance();
   error InsufficientAllowance();
 
-  string public name = "Wrapped Ftm";
-  string public symbol = "WFTM";
+  string public name = "Wrapped S";
+  string public symbol = "WS";
   uint8 public decimals = 18;
 
   mapping(address owner => uint256 balance) public balanceOf;

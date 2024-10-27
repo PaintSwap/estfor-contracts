@@ -252,15 +252,12 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _adminAccess = adminAccess;
     _isBeta = isBeta;
 
-    setExpectedGasLimitFulfill(1_500_000);
-
-    setComparableSkills(comparableSkills);
-
-    setMaxClanCombatants(maxClanCombatants);
-
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
+    setExpectedGasLimitFulfill(1_500_000);
+    setComparableSkills(comparableSkills);
+    setMaxClanCombatants(maxClanCombatants);
     addTerritories(territories);
   }
 

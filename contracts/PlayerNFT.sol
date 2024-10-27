@@ -40,7 +40,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   event EditNameCost(uint256 newCost);
   event UpgradePlayerCost(uint256 newCost);
   event SetAvatars(uint256[] avatarIds, AvatarInfo[] avatarInfos);
-  event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId);
+  event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId, uint256 brushCost);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
@@ -174,11 +174,12 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     _burn(from, playerId, 1);
   }
 
-  function _upgradePlayer(uint256 playerId, uint24 _newAvatarId) private {
-    _playerInfos[playerId].avatarId = _newAvatarId;
+  function _upgradePlayer(uint256 playerId, uint24 newAvatarId) private {
+    _playerInfos[playerId].avatarId = newAvatarId;
     _players.upgradePlayer(playerId);
-    _pay(_upgradePlayerCost);
-    emit UpgradePlayerAvatar(playerId, _newAvatarId);
+    uint256 brushCost = _upgradePlayerCost;
+    _pay(brushCost);
+    emit UpgradePlayerAvatar(playerId, newAvatarId, brushCost);
   }
 
   function editPlayer(

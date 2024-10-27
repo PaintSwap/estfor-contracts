@@ -69,6 +69,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   event LockFunds(uint256 clanId, address from, uint256 playerId, uint256 amount, uint256 lockingTimestamp);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
   event SetMaxLockedVaults(uint256 maxLockedVaults);
+  event SetMaxClanCombatants(uint256 maxClanCombatants);
   event BlockingAttacks(
     uint256 clanId,
     uint256 itemTokenId,
@@ -162,18 +163,18 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   //   2.2 - The attacker is always ranked higher than the defender whether they win or lose as they are placed in the array first
   uint48[] private _sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
 
-  modifier isOwnerOfPlayerAndActive(uint256 _playerId) {
-    require(_players.isOwnerOfPlayerAndActive(_msgSender(), _playerId), NotOwnerOfPlayerAndActive());
+  modifier isOwnerOfPlayerAndActive(uint256 playerId) {
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 _playerId) {
-    require(_clans.getRank(clanId, _playerId) >= ClanRank.LEADER, NotLeader());
+  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 playerId) {
+    require(_clans.getRank(clanId, playerId) >= ClanRank.LEADER, NotLeader());
     _;
   }
 
-  modifier isClanMember(uint256 clanId, uint256 _playerId) {
-    require(_clans.getRank(clanId, _playerId) != ClanRank.NONE, NotMemberOfClan());
+  modifier isClanMember(uint256 clanId, uint256 playerId) {
+    require(_clans.getRank(clanId, playerId) != ClanRank.NONE, NotMemberOfClan());
     _;
   }
 
@@ -241,7 +242,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _lockFundsPeriod = lockFundsPeriod;
     _adminAccess = adminAccess;
     _isBeta = isBeta;
-    _maxClanCombatants = maxClanCombatants;
     _attackingCooldown = isBeta ? 1 minutes + 30 seconds : 4 hours;
     _reattackingCooldown = isBeta ? 6 minutes : 1 days;
     _vrfRequestInfo = vrfRequestInfo;
@@ -249,6 +249,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
     setExpectedGasLimitFulfill(1_500_000);
     setKValues(32, 32);
+    setMaxClanCombatants(maxClanCombatants);
     setComparableSkills(comparableSkills);
     setMMRAttackDistance(mmrAttackDistance);
     setMaxLockedVaults(maxLockedVaults);
@@ -656,6 +657,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+  }
+
+  function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
+    _maxClanCombatants = maxClanCombatants;
+    emit SetMaxClanCombatants(maxClanCombatants);
   }
 
   // TODO: Can delete if necessary

@@ -165,7 +165,7 @@ describe("PlayerNFT", function () {
       .to.emit(playerNFT, "EditPlayer")
       .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
-      .withArgs(playerId, 10001);
+      .withArgs(playerId, 10001, upgradePlayerBrushPrice);
 
     expect(await brush.balanceOf(alice.address)).to.eq(brushAmount - (editNameBrushPrice + upgradePlayerBrushPrice));
 
@@ -214,7 +214,7 @@ describe("PlayerNFT", function () {
       .to.emit(playerNFT, "NewPlayer")
       .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, 0, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
-      .withArgs(playerId, 10001);
+      .withArgs(playerId, 10001, upgradePlayerBrushPrice);
 
     expect(await brush.balanceOf(alice.address)).to.eq(0);
 
