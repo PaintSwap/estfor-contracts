@@ -159,7 +159,7 @@ describe("Promotions", function () {
       // Only owner can edit
       await expect(promotions.connect(alice).editPromotion(editedPromotion)).to.be.revertedWithCustomError(
         promotions,
-        "CallerIsNotOwner"
+        "OwnableUnauthorizedAccount"
       );
 
       await expect(promotions.editPromotion(editedPromotion)).to.emit(promotions, "EditPromotion");
@@ -176,7 +176,7 @@ describe("Promotions", function () {
       // Only owner can remove
       await expect(promotions.connect(alice).removePromotion(promotion.promotion)).to.be.revertedWithCustomError(
         promotions,
-        "CallerIsNotOwner"
+        "OwnableUnauthorizedAccount"
       );
 
       await expect(promotions.removePromotion(promotion.promotion)).to.emit(promotions, "RemovePromotion");

@@ -268,7 +268,7 @@ describe("Instant actions", function () {
       };
       await expect(instantActions.connect(alice).addActions([instantActionInput])).to.be.revertedWithCustomError(
         instantActions,
-        "CallerIsNotOwner"
+        "OwnableUnauthorizedAccount"
       );
       await instantActions.addActions([instantActionInput]);
     });
@@ -285,7 +285,7 @@ describe("Instant actions", function () {
         await instantActions.addActions([instantActionInput]);
         await expect(instantActions.connect(alice).editActions([instantActionInput])).to.be.revertedWithCustomError(
           instantActions,
-          "CallerIsNotOwner"
+          "OwnableUnauthorizedAccount"
         );
         await instantActions.editActions([instantActionInput]);
       });
@@ -324,7 +324,7 @@ describe("Instant actions", function () {
         await instantActions.addActions([instantActionInput]);
         await expect(instantActions.connect(alice).removeActions([actionType], [1])).to.be.revertedWithCustomError(
           instantActions,
-          "CallerIsNotOwner"
+          "OwnableUnauthorizedAccount"
         );
       });
 

@@ -155,7 +155,7 @@ describe("Passive actions", function () {
     await passiveActions.addActions([passiveActionInput]);
     await expect(passiveActions.connect(alice).editActions([passiveActionInput])).to.be.revertedWithCustomError(
       passiveActions,
-      "CallerIsNotOwner"
+      "OwnableUnauthorizedAccount"
     );
     await passiveActions.editActions([passiveActionInput]);
   });
@@ -167,7 +167,7 @@ describe("Passive actions", function () {
     await passiveActions.addActions([passiveActionInput]);
     await expect(passiveActions.connect(alice).editActions([passiveActionInput])).to.be.revertedWithCustomError(
       passiveActions,
-      "CallerIsNotOwner"
+      "OwnableUnauthorizedAccount"
     );
     await passiveActions.editActions([passiveActionInput]);
   });
