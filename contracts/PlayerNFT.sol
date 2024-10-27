@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import {SamWitchERC1155UpgradeableSinglePerToken} from "./SamWitchERC1155UpgradeableSinglePerToken.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
@@ -15,7 +15,7 @@ import {AdminAccess} from "./AdminAccess.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
+contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
   event NewPlayer(
     uint256 playerId,
     uint256 avatarId,
@@ -126,7 +126,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     string calldata imageBaseUri,
     bool isBeta
   ) external initializer {
-    __ERC1155_init("");
+    __SamWitchERC1155UpgradeableSinglePerToken_init("");
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
@@ -319,10 +319,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return _playerInfos[tokenId].avatarId != 0;
   }
 
-  function totalSupply(uint256 tokenId) external view returns (uint256) {
-    return exists(tokenId) ? 1 : 0;
-  }
-
   /**
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
@@ -343,7 +339,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     return (_royaltyReceiver, amount);
   }
 
-  function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view override(IERC165, SamWitchERC1155UpgradeableSinglePerToken) returns (bool) {
     return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
   }
 
@@ -353,10 +351,6 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
 
   function symbol() external view returns (string memory) {
     return string(abi.encodePacked("EK_P", _isBeta ? "B" : ""));
-  }
-
-  function totalSupply() external view returns (uint256) {
-    return _nextPlayerId - _numBurned - 1;
   }
 
   function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
