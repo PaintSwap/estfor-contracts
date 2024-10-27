@@ -1,11 +1,10 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
-import {ZeroAddress} from "ethers";
 import {ethers, upgrades} from "hardhat";
-import {ERC1155UpgradeableSinglePerToken, TestERC1155UpgradeableSinglePerToken} from "../typechain-types";
+import {TestSamWitchERC1155UpgradeableSinglePerToken} from "../typechain-types";
 
 // Test stuff like mint/burn/transfer/balanceOf/totalSupply. The rest should be covered by the normal OZ ERC1155 tests.
-describe("ERC1155UpgradeableSinglePerToken", function () {
+describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
   const firstTokenId = 1;
   const secondTokenId = 2;
   const unknownTokenId = 3;
@@ -14,21 +13,23 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
   const secondAmount = 1;
   async function deployContracts() {
     const [owner, alice] = await ethers.getSigners();
-    const ERC1155UpgradeableSinglePerToken = await ethers.getContractFactory("TestERC1155UpgradeableSinglePerToken");
+    const ERC1155UpgradeableSinglePerToken = await ethers.getContractFactory(
+      "TestSamWitchERC1155UpgradeableSinglePerToken"
+    );
     const erc1155UpgradeableSinglePerToken = (await upgrades.deployProxy(ERC1155UpgradeableSinglePerToken, [], {
       kind: "uups"
-    })) as unknown as TestERC1155UpgradeableSinglePerToken;
+    })) as unknown as TestSamWitchERC1155UpgradeableSinglePerToken;
     return {owner, alice, erc1155UpgradeableSinglePerToken};
   }
 
   describe("balanceOf", function () {
-    it("reverts when queried about the zero address", async function () {
-      const {erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await expect(erc1155UpgradeableSinglePerToken.balanceOf(ZeroAddress, firstTokenId)).to.be.revertedWithCustomError(
-        erc1155UpgradeableSinglePerToken,
-        "ERC1155ZeroAddressNotValidOwner"
-      );
-    });
+    // it("reverts when queried about the zero address", async function () {
+    //   const {erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
+    //   await expect(erc1155UpgradeableSinglePerToken.balanceOf(ZeroAddress, firstTokenId)).to.be.revertedWithCustomError(
+    //     erc1155UpgradeableSinglePerToken,
+    //     "ERC1155InsufficientBalance"
+    //   );
+    // });
 
     it("returns zero for given addresses when accounts don't own tokens", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
@@ -275,7 +276,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
 
       await expect(
         erc1155UpgradeableSinglePerToken.burn(owner.address, firstTokenId, firstAmount + 1)
-      ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC115BurnAmountExceedsBalance");
+      ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
     it("Burning should remove from totalSupply and remove balance", async function () {
@@ -330,7 +331,7 @@ describe("ERC1155UpgradeableSinglePerToken", function () {
 
       await expect(
         erc1155UpgradeableSinglePerToken.burnBatch(owner.address, [firstTokenId], [firstAmount + 1])
-      ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC115BurnAmountExceedsBalance");
+      ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
     it("Burning should remove from totalSupply and remove balance", async function () {

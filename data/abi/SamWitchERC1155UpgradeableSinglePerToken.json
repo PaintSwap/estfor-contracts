@@ -1,17 +1,88 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "needed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
     "name": "ERC1155InsufficientBalance",
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ERC1155LengthMismatch",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "approver",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidApprover",
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ERC1155MintToZeroAddress",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "idsLength",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "valuesLength",
+        "type": "uint256"
+      }
+    ],
+    "name": "ERC1155InvalidArrayLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidOperator",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "receiver",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidReceiver",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155InvalidSender",
     "type": "error"
   },
   {
@@ -20,43 +91,19 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ERC1155ReceiverRejectedTokens",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155SettingApprovalStatusForSelf",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155TransferFromNotApproved",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155TransferToNonERC1155Receiver",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155TransferToZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC1155ZeroAddressNotValidOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC115BurnAmountExceedsBalance",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ERC115BurnFromZeroAddress",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1155MissingApprovalForAll",
     "type": "error"
   },
   {
@@ -251,25 +298,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "getOwner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -294,6 +322,25 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "ownerOf",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "from",
         "type": "address"
@@ -310,7 +357,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "amounts",
+        "name": "values",
         "type": "uint256[]"
       },
       {
@@ -343,7 +390,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "value",
         "type": "uint256"
       },
       {
@@ -411,7 +458,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tokenId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ERC1155UpgradeableSinglePerToken} from "./ERC1155UpgradeableSinglePerToken.sol";
+import {SamWitchERC1155UpgradeableSinglePerToken} from "./SamWitchERC1155UpgradeableSinglePerToken.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
@@ -22,8 +22,8 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // The NFT contract contains data related to the pets and who owns them.
 // It does not use the standard OZ _balances for tracking, instead it packs the owner
 // into the pet struct and avoid updating multiple to/from balances using
-// ERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
-contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSinglePerToken, IERC2981 {
+// SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
+contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IERC2981 {
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
@@ -157,7 +157,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
-    __ERC1155_init("");
+    __SamWitchERC1155UpgradeableSinglePerToken_init("");
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
@@ -212,7 +212,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   ) external onlyPlayersOrAdminAndBeta {
     // If pet is already assigned then don't change timestamp
     Pet storage pet = _pets[petId];
-    require(getOwner(petId) == from, PlayerDoesNotOwnPet());
+    require(ownerOf(petId) == from, PlayerDoesNotOwnPet());
 
     // Check skill minimum levels are met
     Skill skillEnhancement1 = _basePetMetadatas[pet.baseId].skillEnhancement1;
@@ -509,7 +509,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     return _pets[tokenId];
   }
 
-  function getOwner(uint256 tokenId) public view override returns (address) {
+  function ownerOf(uint256 tokenId) public view override returns (address) {
     return _pets[tokenId].owner;
   }
 
@@ -532,7 +532,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
 
   function supportsInterface(
     bytes4 interfaceId
-  ) public view override(IERC165, ERC1155UpgradeableSinglePerToken) returns (bool) {
+  ) public view override(IERC165, SamWitchERC1155UpgradeableSinglePerToken) returns (bool) {
     return interfaceId == type(IERC2981).interfaceId || super.supportsInterface(interfaceId);
   }
 
