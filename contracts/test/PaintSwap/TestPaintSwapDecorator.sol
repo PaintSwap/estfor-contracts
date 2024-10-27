@@ -313,11 +313,6 @@ interface IPancakePair {
 
   function initialize(address, address) external;
 }
-
-interface IArtGallery {
-  function lock(address _painter, uint256 amount) external;
-}
-
 interface IPancakeRouter01 {
   function factory() external view returns (address);
 
@@ -1355,9 +1350,6 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
   // BRUSH tokens created per second.
   uint256 public brushPerSecond;
 
-  // An art gallery where the fruits of your labour are put (50% of the rewards) ready for admiration. Can be collected in 3 months time.
-  IArtGallery public artGallery;
-
   // The router
   IPancakeRouter02 public router;
 
@@ -1390,16 +1382,8 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
   event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
   event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
 
-  constructor(
-    BrushToken _brush,
-    IArtGallery _artGallery,
-    IPancakeRouter02 _router,
-    address _wftm,
-    uint256 _brushPerSecond,
-    uint256 _startTime
-  ) {
+  constructor(BrushToken _brush, IPancakeRouter02 _router, address _wftm, uint256 _brushPerSecond, uint256 _startTime) {
     brush = _brush;
-    artGallery = _artGallery;
     router = _router;
     brushPerSecond = _brushPerSecond;
     startTime = _startTime;
@@ -1456,8 +1440,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     return _to - _from;
   }
 
-  // View function to see pending BRUSHs on frontend. Locked up rewards are excluded, so this is really / 2 the amount
-  // they are entitled too.
+  // View function to see pending BRUSH on frontend
   function pendingBrush(uint256 _pid, address _user) external view returns (uint256) {
     PoolInfo storage pool = poolInfo_[_pid];
     UserInfo storage user = userInfo[_pid][_user];
@@ -1468,7 +1451,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
       uint256 brushReward = multiplier.mul(brushPerSecond).mul(pool.allocPoint).div(totalAllocPoint);
       accBrushPerShare = accBrushPerShare.add(brushReward.mul(1e12).div(lpSupply));
     }
-    return (user.amount.mul(accBrushPerShare).div(1e12).sub(user.rewardDebt)) / 2;
+    return (user.amount.mul(accBrushPerShare).div(1e12).sub(user.rewardDebt));
   }
 
   // Update reward variables for all pools. Be careful of gas spending!
@@ -1499,14 +1482,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
 
   function distributePendingRewards(uint256 _pending) private {
     if (_pending > 0) {
-      // Half of this is staked.
-      uint256 halfPending = _pending / 2;
-      if (_pending > 1) {
-        artGallery.lock(msg.sender, halfPending);
-        safeBrushTransfer(address(artGallery), halfPending);
-      }
-
-      safeBrushTransfer(msg.sender, _pending - halfPending);
+      safeBrushTransfer(msg.sender, _pending);
     }
   }
 

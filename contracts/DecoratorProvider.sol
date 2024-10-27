@@ -9,13 +9,11 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {ITerritories} from "./interfaces/ITerritories.sol";
 import {IPaintSwapDecorator} from "./interfaces/IPaintSwapDecorator.sol";
-import {IPaintSwapArtGallery} from "./interfaces/IPaintSwapArtGallery.sol";
 
 contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   event Deposit(uint256 amount);
   event Harvest(address from, uint256 playerId, uint256 amount, uint256 nextHarvestAllowedTimestamp);
   event SetPID(uint256 pid);
-  event UnlockFromArtGallery(uint256 amount);
 
   error InvalidPool();
   error ZeroBalance();
@@ -25,17 +23,14 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   error NotOwnerOfPlayer();
 
   IPaintSwapDecorator private _decorator;
-  IPaintSwapArtGallery private _artGallery;
   ITerritories private _territories;
   IBrushToken private _brush;
   address private _dev;
   IERC1155 private _playerNFT;
   uint16 private _pid;
   uint40 private _nextHarvestAllowedTimestamp;
-  uint16 private _numUnclaimedHarvests;
   IERC20 private _lpToken;
 
-  uint256 public constant MAX_UNCLAIMED_HARVESTS = 600;
   uint256 public constant MIN_HARVEST_INTERVAL = 3 hours + 45 minutes;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
@@ -50,7 +45,6 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
 
   function initialize(
     IPaintSwapDecorator decorator,
-    IPaintSwapArtGallery artGallery,
     ITerritories territories,
     IBrushToken brush,
     IERC1155 playerNFT,
@@ -62,7 +56,6 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     _territories = territories;
     _playerNFT = playerNFT;
     _brush = brush;
-    _artGallery = artGallery;
     _decorator = decorator;
     _dev = dev;
     _brush.approve(address(territories), type(uint256).max);
@@ -81,36 +74,17 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
     // Max harvest once every few hours
     require(block.timestamp >= _nextHarvestAllowedTimestamp, HarvestingTooSoon());
 
-    // Can not go above 600 unclaimed harvests
-    require(_numUnclaimedHarvests <= MAX_UNCLAIMED_HARVESTS, HarvestingTooMuch());
-
     _nextHarvestAllowedTimestamp = uint40(block.timestamp + MIN_HARVEST_INTERVAL);
-    ++_numUnclaimedHarvests;
     _decorator.updatePool(_pid);
-    uint256 fullBrushAmount = pendingBrushInclArtGallery();
+    uint256 fullBrushAmount = pendingBrush();
     require(fullBrushAmount != 0, ZeroBalance());
     _decorator.deposit(_pid, 0); // get rewards
     _territories.addUnclaimedEmissions(fullBrushAmount);
     emit Harvest(_msgSender(), playerId, fullBrushAmount, uint40(block.timestamp + MIN_HARVEST_INTERVAL));
   }
 
-  function inspectUnlockableAmount() external view returns (uint256 unlockableAmount) {
-    (, , , unlockableAmount, , ) = _artGallery.inspect(address(this));
-  }
-
-  function unlockFromArtGallery() external {
-    (, , uint256 unlockableCount, uint256 unlockableAmount, , ) = _artGallery.inspect(address(this));
-    require(unlockableAmount != 0, ZeroBalance());
-
-    _artGallery.unlock();
-    _numUnclaimedHarvests -= uint16(unlockableCount);
-    // Dev address gets the funds because it is using it to offset art gallery rewards currently
-    _brush.transfer(_dev, unlockableAmount);
-    emit UnlockFromArtGallery(unlockableAmount);
-  }
-
-  function pendingBrushInclArtGallery() public view returns (uint256) {
-    return _decorator.pendingBrush(_pid, address(this)) * 2;
+  function pendingBrush() public view returns (uint256) {
+    return _decorator.pendingBrush(_pid, address(this));
   }
 
   function setPID(uint256 pid) public onlyOwner {

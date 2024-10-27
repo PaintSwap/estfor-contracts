@@ -364,24 +364,16 @@ export const playersFixture = async function () {
   const WrappedNative = await ethers.getContractFactory("WrappedNative");
   const wftm = await WrappedNative.deploy();
 
-  const artGalleryLockPeriod = 3600;
-  const artGallery = await ethers.deployContract("TestPaintSwapArtGallery", [
-    await brush.getAddress(),
-    artGalleryLockPeriod
-  ]);
   const brushPerSecond = parseEther("2");
   const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
   const decorator = await ethers.deployContract("TestPaintSwapDecorator", [
     await brush.getAddress(),
-    await artGallery.getAddress(),
     await router.getAddress(),
     await wftm.getAddress(),
     brushPerSecond,
     NOW
   ]);
-
-  await artGallery.transferOwnership(await decorator.getAddress());
 
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   const mmrAttackDistance = 4;
@@ -590,8 +582,6 @@ export const playersFixture = async function () {
     playersLibrary,
     instantActions,
     clanBattleLibrary,
-    artGallery,
-    artGalleryLockPeriod,
     decorator,
     brushPerSecond,
     mmrAttackDistance,

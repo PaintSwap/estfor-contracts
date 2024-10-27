@@ -16,7 +16,6 @@ import {
   Promotions,
   Quests,
   Shop,
-  TestPaintSwapArtGallery,
   TestPaintSwapDecorator,
   World,
   InstantVRFActions,
@@ -102,7 +101,6 @@ async function main() {
   let router: MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   let paintSwapDecorator: TestPaintSwapDecorator;
-  let paintSwapArtGallery: TestPaintSwapArtGallery;
   let tx;
   let pid = 0;
   {
@@ -111,7 +109,6 @@ async function main() {
     const MockVRF = await ethers.getContractFactory("MockVRF");
     const MockRouter = await ethers.getContractFactory("MockRouter");
     const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
-    const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
     const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
@@ -125,11 +122,7 @@ async function main() {
       console.log(`mockVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
-      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
-        brush,
-        router,
-        wftm
-      ));
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
     } else if (network.chainId == 4002n) {
       // Fantom testnet
       brush = await MockBrushToken.deploy();
@@ -147,11 +140,7 @@ async function main() {
       console.log(`mockVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
       router = (await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883")) as MockRouter;
       console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
-      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
-        brush,
-        router,
-        wftm
-      ));
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
     } else if (network.chainId == 64165n) {
       // Sonic testnet. Later this should have a bridged version of brush, and it's own VRF not deployed each time
       brush = await MockBrushToken.deploy();
@@ -173,11 +162,7 @@ async function main() {
       console.log(`mockVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
       router = (await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883")) as MockRouter;
       console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
-      ({paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery} = await deployMockPaintSwapContracts(
-        brush,
-        router,
-        wftm
-      ));
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
     } else if (network.chainId == 250n) {
       // Fantom mainnet
       brush = (await MockBrushToken.attach(BRUSH_ADDRESS)) as MockBrushToken;
@@ -188,9 +173,6 @@ async function main() {
       paintSwapMarketplaceWhitelist = (await MockPaintSwapMarketplaceWhitelist.attach(
         "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
       )) as MockPaintSwapMarketplaceWhitelist;
-      paintSwapArtGallery = (await TestPaintSwapArtGallery.attach(
-        "0x9076C96e01F6F13e1eC4832354dF970d245e124F"
-      )) as TestPaintSwapArtGallery;
       paintSwapDecorator = (await TestPaintSwapDecorator.attach(DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
       pid = 22;
     } else {
@@ -729,7 +711,6 @@ async function main() {
   const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
   const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
     await paintSwapDecorator.getAddress(),
-    await paintSwapArtGallery.getAddress(),
     await territories.getAddress(),
     await brush.getAddress(),
     await playerNFT.getAddress(),

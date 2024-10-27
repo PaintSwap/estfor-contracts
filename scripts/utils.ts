@@ -11,7 +11,6 @@ import {
   PlayersImplProcessActions,
   PlayersImplQueueActions,
   PlayersImplRewards,
-  TestPaintSwapArtGallery,
   TestPaintSwapDecorator,
   World
 } from "../typechain-types";
@@ -129,24 +128,17 @@ export const deployMockPaintSwapContracts = async (
 ): Promise<{
   paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   paintSwapDecorator: TestPaintSwapDecorator;
-  paintSwapArtGallery: TestPaintSwapArtGallery;
 }> => {
   const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
-  const TestPaintSwapArtGallery = await ethers.getContractFactory("TestPaintSwapArtGallery");
   const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
 
   const paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
 
   console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
-  const artGalleryLockPeriod = 3600;
   const brushPerSecond = parseEther("2");
-  const paintSwapArtGallery = await TestPaintSwapArtGallery.deploy(await brush.getAddress(), artGalleryLockPeriod);
-
-  console.log(`paintSwapArtGallery = "${(await paintSwapArtGallery.getAddress()).toLowerCase()}"`);
   const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
   const paintSwapDecorator = await TestPaintSwapDecorator.deploy(
     await brush.getAddress(),
-    await paintSwapArtGallery.getAddress(),
     await router.getAddress(),
     await wftm.getAddress(),
     brushPerSecond,
@@ -156,9 +148,8 @@ export const deployMockPaintSwapContracts = async (
   console.log(`paintSwapDecorator = "${(await paintSwapDecorator.getAddress()).toLowerCase()}"`);
   const lp = await ethers.deployContract("MockBrushToken");
   await paintSwapDecorator.add("2000", await lp.getAddress(), true);
-  await paintSwapArtGallery.transferOwnership(await paintSwapDecorator.getAddress());
 
-  return {paintSwapMarketplaceWhitelist, paintSwapDecorator, paintSwapArtGallery};
+  return {paintSwapMarketplaceWhitelist, paintSwapDecorator};
 };
 
 export const isBeta = process.env.IS_BETA == "true";

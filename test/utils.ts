@@ -106,7 +106,8 @@ export const timeTravel24Hours = async () => {
   return timeTravel(86400);
 };
 
-export const timeTravel = async (seconds: number) => {
+export const timeTravel = async (seconds: number | bigint) => {
+  seconds = Number(seconds);
   await ethers.provider.send("evm_increaseTime", [seconds]);
   await ethers.provider.send("evm_mine", []);
 };
