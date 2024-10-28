@@ -74,7 +74,7 @@ describe("PlayerNFT", function () {
     const {playerNFT, players, alice, brush, upgradePlayerBrushPrice} = await loadFixture(deployContracts);
     const brushAmount = upgradePlayerBrushPrice;
     await brush.connect(alice).approve(playerNFT, brushAmount);
-    await brush.mint(alice.address, brushAmount);
+    await brush.mint(alice, brushAmount);
 
     const discord = "";
     const twitter = "1231231";
@@ -92,7 +92,7 @@ describe("PlayerNFT", function () {
       telegram,
       true
     );
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
+    expect(await brush.balanceOf(alice)).to.eq(0);
 
     // Check upgraded flag
     const player = await players.getPlayers(newPlayerId);
@@ -110,7 +110,7 @@ describe("PlayerNFT", function () {
     await expect(
       playerNFT.connect(alice).editPlayer(playerId, name, discord, twitter, telegram, false)
     ).to.be.revertedWithCustomError(brush, "ERC20InsufficientBalance");
-    await brush.mint(alice.address, editNameBrushPrice * 3n);
+    await brush.mint(alice, editNameBrushPrice * 3n);
 
     await expect(playerNFT.editPlayer(playerId, name, discord, twitter, telegram, false)).to.be.revertedWithCustomError(
       playerNFT,
@@ -138,15 +138,15 @@ describe("PlayerNFT", function () {
     const telegram = "";
     await expect(playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, false))
       .to.emit(playerNFT, "EditPlayer")
-      .withArgs(playerId, alice.address, origName, 0, discord, twitter, telegram, false);
+      .withArgs(playerId, alice, origName, 0, discord, twitter, telegram, false);
 
     // Name changed should be true if name changed
     await brush.connect(alice).approve(playerNFT, editNameBrushPrice);
-    await brush.mint(alice.address, editNameBrushPrice);
+    await brush.mint(alice, editNameBrushPrice);
     const newName = "New name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, false))
       .to.emit(playerNFT, "EditPlayer")
-      .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, false);
+      .withArgs(playerId, alice, newName, editNameBrushPrice, discord, twitter, telegram, false);
   });
 
   it("Editing upgrade player should cost brush", async function () {
@@ -158,7 +158,7 @@ describe("PlayerNFT", function () {
 
     const brushAmount = editNameBrushPrice + upgradePlayerBrushPrice * 2n;
     await brush.connect(alice).approve(playerNFT, brushAmount);
-    await brush.mint(alice.address, brushAmount);
+    await brush.mint(alice, brushAmount);
 
     const newName = "new name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
@@ -204,17 +204,17 @@ describe("PlayerNFT", function () {
 
     const brushAmount = upgradePlayerBrushPrice;
     await brush.connect(alice).approve(playerNFT, brushAmount);
-    await brush.mint(alice.address, brushAmount);
+    await brush.mint(alice, brushAmount);
 
     const upgrade = true;
     const playerId = prevPlayerId + 1n;
     await expect(playerNFT.connect(alice).mint(1, "name", discord, twitter, telegram, upgrade, true))
       .to.emit(playerNFT, "NewPlayer")
-      .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, true)
+      .withArgs(playerId, 1, "name", alice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001, upgradePlayerBrushPrice);
 
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
+    expect(await brush.balanceOf(alice)).to.eq(0);
 
     // 25% goes to the dev address, 25% burned & 50% goes to the treasury for player upgrades & editing name.
     expect(await brush.balanceOf(dev)).to.eq(upgradePlayerBrushPrice / 4n);
@@ -461,7 +461,7 @@ describe("PlayerNFT", function () {
   it("Check starting items", async function () {
     const {itemNFT, alice} = await loadFixture(deployContracts);
 
-    const balances = await itemNFT.balanceOfs(alice.address, [
+    const balances = await itemNFT.balanceOfs(alice, [
       EstforConstants.BRONZE_SWORD,
       EstforConstants.BRONZE_AXE,
       EstforConstants.MAGIC_FIRE_STARTER,
@@ -481,9 +481,9 @@ describe("PlayerNFT", function () {
     expect(await playerNFT["totalSupply()"]()).to.be.eq(2);
     expect(await playerNFT["totalSupply(uint256)"](1)).to.be.eq(1);
     expect(await playerNFT["totalSupply(uint256)"](2)).to.be.eq(1);
-    await playerNFT.connect(alice).burn(alice.address, 1);
+    await playerNFT.connect(alice).burn(alice, 1);
     expect(await playerNFT["totalSupply()"]()).to.be.eq(1);
-    await playerNFT.burn(owner.address, 2);
+    await playerNFT.burn(owner, 2);
     expect(await playerNFT["totalSupply()"]()).to.be.eq(0);
   });
 });

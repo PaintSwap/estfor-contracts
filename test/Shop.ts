@@ -237,14 +237,14 @@ describe("Shop", function () {
 
     const quantityBought = 2;
     // Hasn't approved brush yet
-    await expect(shop.connect(alice).buy(alice.address, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
+    await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
 
-    await brush.mint(alice.address, 1000);
+    await brush.mint(alice, 1000);
     await brush.connect(alice).approve(shop, 1000);
-    await expect(shop.connect(alice).buy(alice.address, EstforConstants.BRONZE_SHIELD, quantityBought))
+    await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought))
       .to.emit(shop, "Buy")
-      .withArgs(alice.address, alice.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
+      .withArgs(alice, alice, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
   });
 
   it("Buy batch", async function () {
@@ -252,23 +252,15 @@ describe("Shop", function () {
     await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
     await shop.addBuyableItems([{tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200}]);
 
-    await brush.mint(alice.address, 900);
+    await brush.mint(alice, 900);
     await brush.connect(alice).approve(shop, 900);
     await expect(
-      shop
-        .connect(alice)
-        .buyBatch(alice.address, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2])
+      shop.connect(alice).buyBatch(alice, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2])
     )
       .to.emit(shop, "BuyBatch")
-      .withArgs(
-        alice.address,
-        alice.address,
-        [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
-        [1, 2],
-        [500, 200]
-      );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_SHIELD)).to.eq(1);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.SAPPHIRE_AMULET)).to.eq(2);
+      .withArgs(alice, alice, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2], [500, 200]);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_SHIELD)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.SAPPHIRE_AMULET)).to.eq(2);
   });
 
   it("Gift", async function () {
@@ -279,11 +271,11 @@ describe("Shop", function () {
     // Hasn't approved brush yet
     await expect(shop.connect(alice).buy(bob.address, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
 
-    await brush.mint(alice.address, 1000);
+    await brush.mint(alice, 1000);
     await brush.connect(alice).approve(shop, 1000);
     await expect(shop.connect(alice).buy(bob.address, EstforConstants.BRONZE_SHIELD, quantityBought))
       .to.emit(shop, "Buy")
-      .withArgs(alice.address, bob.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
+      .withArgs(alice, bob.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
     expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
   });
 
@@ -292,7 +284,7 @@ describe("Shop", function () {
     await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
     await shop.addBuyableItems([{tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200}]);
 
-    await brush.mint(alice.address, 900);
+    await brush.mint(alice, 900);
     await brush.connect(alice).approve(shop, 900);
     await expect(
       shop
@@ -301,7 +293,7 @@ describe("Shop", function () {
     )
       .to.emit(shop, "BuyBatch")
       .withArgs(
-        alice.address,
+        alice,
         bob.address,
         [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
         [1, 2],
@@ -315,8 +307,8 @@ describe("Shop", function () {
     const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} =
       await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
-    await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, minItemQuantityBeforeSellsAllowed);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
+    await itemNFT.testMint(alice, EstforConstants.SAPPHIRE_AMULET, minItemQuantityBeforeSellsAllowed);
     expect(await itemNFT["totalSupply()"]()).to.eq(2);
 
     expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.eq(0);
@@ -338,15 +330,15 @@ describe("Shop", function () {
     await ethers.provider.send("evm_mine", []);
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, priceShield))
       .to.emit(shop, "Sell")
-      .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, 1, priceShield)
+      .withArgs(alice, EstforConstants.BRONZE_SHIELD, 1, priceShield)
       .and.to.emit(itemNFT, "TransferSingle")
-      .withArgs(await shop.getAddress(), alice.address, ZeroAddress, EstforConstants.BRONZE_SHIELD, 1);
+      .withArgs(await shop.getAddress(), alice, ZeroAddress, EstforConstants.BRONZE_SHIELD, 1);
 
     // Item should get burnt, and they should get the amount of brush expected.
     expect(await itemNFT.getItemBalance(EstforConstants.BRONZE_SHIELD)).to.eq(
       minItemQuantityBeforeSellsAllowed * 2n - 1n
     );
-    expect(await brush.balanceOf(alice.address)).to.eq(priceShield);
+    expect(await brush.balanceOf(alice)).to.eq(priceShield);
   });
 
   it("Sell Batch", async function () {
@@ -354,7 +346,7 @@ describe("Shop", function () {
       await loadFixture(deployContracts);
 
     await itemNFT.testMints(
-      alice.address,
+      alice,
       [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
       [minItemQuantityBeforeSellsAllowed * 2n, minItemQuantityBeforeSellsAllowed]
     );
@@ -377,7 +369,7 @@ describe("Shop", function () {
     )
       .to.emit(shop, "SellBatch")
       .withArgs(
-        alice.address,
+        alice,
         [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
         [1, 2],
         [priceShield, priceSapphireAmulet]
@@ -385,7 +377,7 @@ describe("Shop", function () {
       .and.to.emit(itemNFT, "TransferBatch")
       .withArgs(
         await shop.getAddress(),
-        alice.address,
+        alice,
 
         ZeroAddress,
         [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
@@ -396,7 +388,7 @@ describe("Shop", function () {
       minItemQuantityBeforeSellsAllowed * 2n - 1n
     );
     expect(await itemNFT.getItemBalance(EstforConstants.SAPPHIRE_AMULET)).to.eq(minItemQuantityBeforeSellsAllowed - 2n);
-    expect(await brush.balanceOf(alice.address)).to.eq(expectedTotal);
+    expect(await brush.balanceOf(alice)).to.eq(expectedTotal);
   });
 
   it("Sell Slippage", async function () {
@@ -404,7 +396,7 @@ describe("Shop", function () {
       await loadFixture(deployContracts);
 
     await itemNFT.testMints(
-      alice.address,
+      alice,
       [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET],
       [minItemQuantityBeforeSellsAllowed * 2n, minItemQuantityBeforeSellsAllowed]
     );
@@ -436,14 +428,14 @@ describe("Shop", function () {
       .connect(alice)
       .sellBatch([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2], minExpected);
 
-    expect(await brush.balanceOf(alice.address)).to.greaterThan(minExpected);
+    expect(await brush.balanceOf(alice)).to.greaterThan(minExpected);
   });
 
   it("Can't sell for more than you can buy in shop", async function () {
     const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} =
       await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
     expect(await itemNFT["totalSupply()"]()).to.eq(1);
 
     await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 1}]);
@@ -471,7 +463,7 @@ describe("Shop", function () {
       deployContracts
     );
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
 
     // Give the contract some brush to assign to the items
     const totalBrush = parseEther("1");
@@ -486,8 +478,8 @@ describe("Shop", function () {
     const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} =
       await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
-    await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 1000);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, 1000);
+    await itemNFT.testMint(alice, EstforConstants.BARRAGE_SCROLL, 1000);
     await timeTravel(sellingCutoffDuration);
 
     // Give the contract some brush to assign to the items
@@ -519,7 +511,7 @@ describe("Shop", function () {
     expect(tokenAllocation.allocationRemaining).to.eq(allocationRemaining); // Remains unchanged
 
     // Mint some, should fail to sell any as allocation is used up
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed);
     await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 3, 0))
       .to.be.revertedWithCustomError(shop, "NotEnoughAllocationRemaining")
       .withArgs(EstforConstants.BRONZE_SHIELD, tokenPrice * 3n, allocationRemaining);
@@ -528,8 +520,8 @@ describe("Shop", function () {
   it("Allocation resets after 00:00 UTC", async function () {
     const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
-    await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 1000);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, 1000);
+    await itemNFT.testMint(alice, EstforConstants.BARRAGE_SCROLL, 1000);
     await timeTravel(sellingCutoffDuration);
 
     // Give the contract some brush to assign to the items
@@ -554,8 +546,8 @@ describe("Shop", function () {
   it("Price should be constant through the day", async function () {
     const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 2000);
-    await itemNFT.testMint(alice.address, EstforConstants.BARRAGE_SCROLL, 2000);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, 2000);
+    await itemNFT.testMint(alice, EstforConstants.BARRAGE_SCROLL, 2000);
     await timeTravel(sellingCutoffDuration);
 
     // Give the contract some brush to assign to the items
@@ -628,8 +620,8 @@ describe("Shop", function () {
       const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} =
         await loadFixture(deployContracts);
 
-      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
-      await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, minItemQuantityBeforeSellsAllowed);
+      await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
+      await itemNFT.testMint(alice, EstforConstants.SAPPHIRE_AMULET, minItemQuantityBeforeSellsAllowed);
 
       // Give the contract some brush to assign to the items
       const totalBrush = minItemQuantityBeforeSellsAllowed * 20n;
@@ -647,8 +639,8 @@ describe("Shop", function () {
       const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} =
         await loadFixture(deployContracts);
 
-      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
-      await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, minItemQuantityBeforeSellsAllowed);
+      await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed * 2n);
+      await itemNFT.testMint(alice, EstforConstants.SAPPHIRE_AMULET, minItemQuantityBeforeSellsAllowed);
 
       // Give the contract some brush to assign to the items
       const totalBrush = minItemQuantityBeforeSellsAllowed * 20n;
@@ -679,8 +671,8 @@ describe("Shop", function () {
     it("Should not affect the total allocation for selling", async function () {
       const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration} = await loadFixture(deployContracts);
 
-      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, 1000);
-      await itemNFT.testMint(alice.address, EstforConstants.SAPPHIRE_AMULET, 1000);
+      await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, 1000);
+      await itemNFT.testMint(alice, EstforConstants.SAPPHIRE_AMULET, 1000);
       await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
       await ethers.provider.send("evm_mine", []);
 
@@ -710,8 +702,8 @@ describe("Shop", function () {
       ]);
 
       // 2 exist in the world
-      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed);
-      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, minItemQuantityBeforeSellsAllowed);
+      await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed);
+      await itemNFT.testMint(alice, EstforConstants.BRONZE_SWORD, minItemQuantityBeforeSellsAllowed);
       await timeTravel(sellingCutoffDuration);
 
       // Give the contract some brush to assign to the items

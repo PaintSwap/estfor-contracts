@@ -44,17 +44,17 @@ describe("RoyaltyReceiver", function () {
   it("Check recipients", async function () {
     const {royaltyReceiver, alice, brush, pool, dev} = await loadFixture(deployContracts);
 
-    const beforeBalance = await ethers.provider.getBalance(dev.address);
+    const beforeBalance = await ethers.provider.getBalance(dev);
     await alice.sendTransaction({
       to: await royaltyReceiver.getAddress(),
       value: 100
     });
 
     // 1/3 to dao
-    expect(await ethers.provider.getBalance(dev.address)).to.equal(beforeBalance + 33n);
+    expect(await ethers.provider.getBalance(dev)).to.equal(beforeBalance + 33n);
 
     // 2/3 buys brush and sends to pool
-    expect(await brush.balanceOf(pool.address)).to.equal(6);
+    expect(await brush.balanceOf(pool)).to.equal(6);
   });
 
   it("Distribute brush", async function () {

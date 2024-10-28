@@ -61,15 +61,16 @@ describe("Promotions", function () {
 
       const redeemCode = "1111111111111111";
       await expect(
-        promotions.connect(bob).mintStarterPromotionalPack(alice.address, playerId, redeemCode)
+        promotions.connect(bob).mintStarterPromotionalPack(alice, playerId, redeemCode)
       ).to.be.revertedWithCustomError(promotions, "NotPromotionalAdmin");
     });
 
     it("Starter promotional invalid mint redeem code", async function () {
       const {promotions, alice, playerId} = await loadFixture(playersFixture);
-      await expect(
-        promotions.mintStarterPromotionalPack(alice.address, playerId, "11231")
-      ).to.be.revertedWithCustomError(promotions, "InvalidRedeemCode");
+      await expect(promotions.mintStarterPromotionalPack(alice, playerId, "11231")).to.be.revertedWithCustomError(
+        promotions,
+        "InvalidRedeemCode"
+      );
     });
 
     it("Must own the player", async function () {
@@ -77,9 +78,10 @@ describe("Promotions", function () {
 
       const redeemCode = "1111111111111111";
 
-      await expect(
-        promotions.mintStarterPromotionalPack(owner.address, playerId, redeemCode)
-      ).to.be.revertedWithCustomError(promotions, "NotOwnerOfPlayer");
+      await expect(promotions.mintStarterPromotionalPack(owner, playerId, redeemCode)).to.be.revertedWithCustomError(
+        promotions,
+        "NotOwnerOfPlayer"
+      );
     });
 
     it("Starter promotion mints", async function () {
@@ -87,12 +89,13 @@ describe("Promotions", function () {
 
       const redeemCode = "1111111111111111";
 
-      await promotions.mintStarterPromotionalPack(alice.address, playerId, redeemCode);
-      await expect(
-        promotions.mintStarterPromotionalPack(alice.address, playerId, redeemCode)
-      ).to.be.revertedWithCustomError(promotions, "PromotionAlreadyClaimed");
+      await promotions.mintStarterPromotionalPack(alice, playerId, redeemCode);
+      await expect(promotions.mintStarterPromotionalPack(alice, playerId, redeemCode)).to.be.revertedWithCustomError(
+        promotions,
+        "PromotionAlreadyClaimed"
+      );
 
-      const balances = await itemNFT.balanceOfs(alice.address, [
+      const balances = await itemNFT.balanceOfs(alice, [
         EstforConstants.XP_BOOST,
         EstforConstants.SKILL_BOOST,
         EstforConstants.COOKED_FEOLA,
@@ -197,7 +200,7 @@ describe("Promotions", function () {
       ).to.be.revertedWithCustomError(promotions, "PlayerNotEvolved");
 
       // Evolve player
-      await brush.mint(alice.address, upgradePlayerBrushPrice);
+      await brush.mint(alice, upgradePlayerBrushPrice);
       await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
       const discord = "";
       const twitter = "";
@@ -259,7 +262,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
 
-        const balances = await itemNFT.balanceOfs(alice.address, [
+        const balances = await itemNFT.balanceOfs(alice, [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3
@@ -320,7 +323,7 @@ describe("Promotions", function () {
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "PlayerDoesNotQualify");
 
-        await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, 100000, false);
+        await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, 100000, false);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
       });
 
@@ -429,7 +432,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
 
         await brush.connect(alice).approve(promotions, parseEther("20"));
-        await brush.mint(alice.address, parseEther("20"));
+        await brush.mint(alice, parseEther("20"));
 
         // Miss a day
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
@@ -439,9 +442,9 @@ describe("Promotions", function () {
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
         expect(mintView.daysToSet[0]).to.eq(1);
 
-        expect(await brush.balanceOf(alice.address)).to.eq(parseEther("20"));
+        expect(await brush.balanceOf(alice)).to.eq(parseEther("20"));
         await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0]);
-        expect(await brush.balanceOf(alice.address)).to.eq(parseEther("10"));
+        expect(await brush.balanceOf(alice)).to.eq(parseEther("10"));
       });
 
       it("Pay for multiple missed days", async function () {
@@ -457,7 +460,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
 
         await brush.connect(alice).approve(promotions, parseEther("10") * 2n);
-        await brush.mint(alice.address, parseEther("10") * 2n);
+        await brush.mint(alice, parseEther("10") * 2n);
 
         // Miss a couple days
         await timeTravel(3600 * 24 * 3);
@@ -469,7 +472,7 @@ describe("Promotions", function () {
         expect(mintView.daysToSet[0]).to.eq(3);
 
         await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 2]);
-        expect(await brush.balanceOf(alice.address)).to.eq(0);
+        expect(await brush.balanceOf(alice)).to.eq(0);
 
         expect(await promotions.getMultidayPlayerPromotionsCompleted(playerId, promotion.promotion, 0)).to.eq(0xff);
         expect(await promotions.getMultidayPlayerPromotionsCompleted(playerId, promotion.promotion, 1)).to.eq(0);
@@ -489,7 +492,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
 
         await brush.connect(alice).approve(promotions, parseEther("10") * 10n);
-        await brush.mint(alice.address, parseEther("10") * 10n);
+        await brush.mint(alice, parseEther("10") * 10n);
 
         await world.setDailyRewardPool(2, [
           {itemTokenId: EstforConstants.IRON_ARROW, amount: 10},
@@ -515,8 +518,8 @@ describe("Promotions", function () {
         await promotions.connect(alice).mintPromotion(playerId, promotion.promotion);
         await promotions.connect(alice).payMissedPromotionDays(playerId, promotion.promotion, [0, 1, 2, 3, 4, 5, 6, 7]);
 
-        expect(await itemNFT.balanceOf(alice.address, EstforConstants.IRON_ARROW)).to.be.gt(0);
-        expect(await itemNFT.balanceOf(alice.address, EstforConstants.ADAMANTINE_ARROW)).to.be.gt(0);
+        expect(await itemNFT.balanceOf(alice, EstforConstants.IRON_ARROW)).to.be.gt(0);
+        expect(await itemNFT.balanceOf(alice, EstforConstants.ADAMANTINE_ARROW)).to.be.gt(0);
       });
 
       it("Check payees", async function () {
@@ -536,7 +539,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
 
         await brush.connect(alice).approve(promotions, promotion.brushCostMissedDay);
-        await brush.mint(alice.address, promotion.brushCostMissedDay);
+        await brush.mint(alice, promotion.brushCostMissedDay);
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
         expect(mintView.daysToSet[0]).to.eq(0);
@@ -558,7 +561,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
 
         await brush.connect(alice).approve(promotions, parseEther("20"));
-        await brush.mint(alice.address, parseEther("20"));
+        await brush.mint(alice, parseEther("20"));
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
         expect(mintView.daysToSet[0]).to.eq(0);
@@ -587,7 +590,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
 
         await brush.connect(alice).approve(promotions, promotion.brushCostMissedDay);
-        await brush.mint(alice.address, promotion.brushCostMissedDay);
+        await brush.mint(alice, promotion.brushCostMissedDay);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24 * 2]);
         await ethers.provider.send("evm_mine", []);
@@ -611,7 +614,7 @@ describe("Promotions", function () {
         await promotions.addPromotion(promotion);
 
         await brush.connect(alice).approve(promotions, promotion.brushCostMissedDay);
-        await brush.mint(alice.address, promotion.brushCostMissedDay);
+        await brush.mint(alice, promotion.brushCostMissedDay);
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
         expect(mintView.daysToSet[0]).to.eq(0);
@@ -642,73 +645,43 @@ describe("Promotions", function () {
       await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.IRON_ARROW)).to.eq(10);
+      expect(await itemNFT.balanceOf(alice, EstforConstants.IRON_ARROW)).to.eq(10);
 
-      await players.testModifyXP(
-        alice.address,
-        playerId,
-        EstforTypes.Skill.FIREMAKING,
-        TIER_2_DAILY_REWARD_START_XP,
-        false
-      );
+      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_2_DAILY_REWARD_START_XP, false);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.MITHRIL_ARROW)).to.eq(10);
+      expect(await itemNFT.balanceOf(alice, EstforConstants.MITHRIL_ARROW)).to.eq(10);
 
-      await players.testModifyXP(
-        alice.address,
-        playerId,
-        EstforTypes.Skill.FIREMAKING,
-        TIER_3_DAILY_REWARD_START_XP,
-        false
-      );
+      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_3_DAILY_REWARD_START_XP, false);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.ADAMANTINE_ARROW)).to.eq(10);
+      expect(await itemNFT.balanceOf(alice, EstforConstants.ADAMANTINE_ARROW)).to.eq(10);
 
-      await players.testModifyXP(
-        alice.address,
-        playerId,
-        EstforTypes.Skill.FIREMAKING,
-        TIER_4_DAILY_REWARD_START_XP,
-        false
-      );
+      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_4_DAILY_REWARD_START_XP, false);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(10);
+      expect(await itemNFT.balanceOf(alice, EstforConstants.RUNITE_ARROW)).to.eq(10);
 
-      await players.testModifyXP(
-        alice.address,
-        playerId,
-        EstforTypes.Skill.FIREMAKING,
-        TIER_5_DAILY_REWARD_START_XP,
-        false
-      );
+      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_5_DAILY_REWARD_START_XP, false);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(20);
+      expect(await itemNFT.balanceOf(alice, EstforConstants.RUNITE_ARROW)).to.eq(20);
 
-      await players.testModifyXP(
-        alice.address,
-        playerId,
-        EstforTypes.Skill.FIREMAKING,
-        TIER_6_DAILY_REWARD_START_XP,
-        false
-      );
+      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_6_DAILY_REWARD_START_XP, false);
       // Just get more of runite for now
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUNITE_ARROW)).to.eq(30);
+      expect(await itemNFT.balanceOf(alice, EstforConstants.RUNITE_ARROW)).to.eq(30);
     });
 
     it("Minting before start date not allowed", async function () {
@@ -747,7 +720,7 @@ describe("Promotions", function () {
         promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "PlayerDoesNotQualify");
 
-      await players.testModifyXP(alice.address, playerId, EstforTypes.Skill.FIREMAKING, 100000, false);
+      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, 100000, false);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
     });
 
@@ -1004,7 +977,7 @@ describe("Promotions", function () {
         ).to.be.revertedWithCustomError(promotions, "OracleNotCalled");
         await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(10);
+        expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(10);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await ethers.provider.send("evm_mine", []);
@@ -1025,7 +998,7 @@ describe("Promotions", function () {
         await ethers.provider.send("evm_mine", []);
         await requestAndFulfillRandomWords(world, mockVRF);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-        const balances = await itemNFT.balanceOfs(alice.address, [
+        const balances = await itemNFT.balanceOfs(alice, [
           EstforConstants.HALLOWEEN_BONUS_1,
           EstforConstants.HALLOWEEN_BONUS_2,
           EstforConstants.HALLOWEEN_BONUS_3
@@ -1146,7 +1119,7 @@ describe("Promotions", function () {
         // Now claim it
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
         expect(await promotions.hasCompletedPromotion(playerId, Promotion.XMAS_2023)).to.eq(true);
-        expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(1n);
+        expect(await itemNFT.balanceOf(alice, itemTokenId)).to.eq(1n);
       });
 
       it("Brush cost to enter promotion", async function () {
@@ -1162,7 +1135,7 @@ describe("Promotions", function () {
           promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
         ).to.be.revertedWithCustomError(brush, "ERC20InsufficientBalance");
 
-        await brush.mint(alice.address, parseEther("1"));
+        await brush.mint(alice, parseEther("1"));
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
         expect(await brush.balanceOf(alice)).to.eq(0);

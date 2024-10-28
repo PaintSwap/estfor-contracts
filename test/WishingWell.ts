@@ -19,7 +19,7 @@ describe("WishingWell", function () {
     await requestAndFulfillRandomWords(world, mockVRF);
 
     const totalBrush = parseEther("100000");
-    await brush.mint(alice.address, totalBrush);
+    await brush.mint(alice, totalBrush);
     await brush.connect(alice).approve(wishingWell, totalBrush);
 
     const boostDuration = 3600;
@@ -113,7 +113,7 @@ describe("WishingWell", function () {
 
   it("Only Players contract can call donate", async function () {
     const {wishingWell, alice} = await loadFixture(deployContracts);
-    await expect(wishingWell.connect(alice).donate(alice.address, 0, 100)).to.be.revertedWithCustomError(
+    await expect(wishingWell.connect(alice).donate(alice, 0, 100)).to.be.revertedWithCustomError(
       wishingWell,
       "NotPlayers"
     );
@@ -191,7 +191,7 @@ describe("WishingWell", function () {
   it("Decimals of brush do not count", async function () {
     const {wishingWell, players, alice, playerId, clans, brush} = await loadFixture(deployContracts);
 
-    const beforeBalance = await brush.balanceOf(alice.address);
+    const beforeBalance = await brush.balanceOf(alice);
 
     const clanId = 1;
     await clans.addTiers([
@@ -218,7 +218,7 @@ describe("WishingWell", function () {
       .withArgs(alice.address, playerId, parseEther("1"), clanId);
 
     // But it takes 1.1 brush from you
-    expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance - parseEther("1.1"));
+    expect(await brush.balanceOf(alice)).to.eq(beforeBalance - parseEther("1.1"));
 
     expect(await wishingWell.getTotalDonated()).to.eq(parseEther("1"));
     expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(parseEther("1"));

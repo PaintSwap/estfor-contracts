@@ -113,7 +113,7 @@ async function main() {
     if (isDevNetwork(network)) {
       brush = await MockBrushToken.deploy();
       console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
-      await brush.mint(owner.address, parseEther("10000000"));
+      await brush.mint(owner, parseEther("10000000"));
       console.log("Minted brush");
       wftm = await WrappedNative.deploy();
       console.log("Minted WFTM");
@@ -129,7 +129,7 @@ async function main() {
       console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.waitForDeployment();
 
-      tx = await brush.mint(owner.address, parseEther("10000000"));
+      tx = await brush.mint(owner, parseEther("10000000"));
       console.log("Minted brush");
       await tx.wait();
       wftm = (await WrappedNative.attach("0x6C3cCeB0BC228C3EbEa02c4703A805e58d0458Df")) as WrappedNative;
@@ -147,7 +147,7 @@ async function main() {
       console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.waitForDeployment();
 
-      tx = await brush.mint(owner.address, parseEther("10000000"));
+      tx = await brush.mint(owner, parseEther("10000000"));
       console.log("Minted brush");
       await tx.wait();
       tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100"));

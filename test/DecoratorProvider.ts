@@ -35,20 +35,20 @@ describe("DecoratorProvider", function () {
     const {decorator, decoratorProvider, owner, lp} = await loadFixture(deployContracts);
 
     const amount = 100;
-    await lp.mint(owner.address, amount);
+    await lp.mint(owner, amount);
     await lp.approve(decoratorProvider, amount);
     // Takes it all
     await decoratorProvider.deposit();
     expect(await lp.balanceOf(decoratorProvider)).to.eq(0);
     expect(await lp.balanceOf(decorator)).to.eq(amount);
-    expect(await lp.balanceOf(owner.address)).to.eq(0);
+    expect(await lp.balanceOf(owner)).to.eq(0);
   });
 
   it("Harvest rewards", async function () {
     const {mockTerritories, decoratorProvider, owner, lp, alice, playerId} = await loadFixture(deployContracts);
 
     const amount = 100;
-    await lp.mint(owner.address, amount);
+    await lp.mint(owner, amount);
     await lp.approve(decoratorProvider, amount * 2);
     await decoratorProvider.deposit();
 

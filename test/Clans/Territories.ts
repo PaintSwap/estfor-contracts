@@ -30,7 +30,7 @@ describe("Territories", function () {
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
-    expect(await brush.balanceOf(alice.address)).to.eq(0);
+    expect(await brush.balanceOf(alice)).to.eq(0);
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
@@ -133,7 +133,7 @@ describe("Territories", function () {
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
@@ -191,7 +191,7 @@ describe("Territories", function () {
 
     // Make the defending players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(alice.address, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
@@ -254,8 +254,8 @@ describe("Territories", function () {
 
     // The other clan will have 3 players, so if you only have 1 defender you will you lose by default
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(alice.address, playerId, allBattleSkills[i], getXPFromLevel(100), true);
-      await players.testModifyXP(owner.address, ownerPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.testModifyXP(owner, ownerPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     // Create a clan of 3 players
@@ -748,7 +748,7 @@ describe("Territories", function () {
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(bob.address, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
     await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
@@ -862,7 +862,7 @@ describe("Territories", function () {
         inputItem.tokenId == EstforConstants.MIRROR_SHIELD || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD
     );
     await itemNFT.addItems(items);
-    await itemNFT.testMints(alice.address, [EstforConstants.MIRROR_SHIELD, EstforConstants.PROTECTION_SHIELD], [2, 1]);
+    await itemNFT.testMints(alice, [EstforConstants.MIRROR_SHIELD, EstforConstants.PROTECTION_SHIELD], [2, 1]);
 
     // Wrong item
     await expect(
@@ -880,13 +880,13 @@ describe("Territories", function () {
       .withArgs(
         clanId,
         itemTokenId,
-        alice.address,
+        alice,
         playerId,
         blockAttacksTimestamp,
         blockAttacksTimestamp + mirrorShield.boostValue * 3600
       );
 
-    expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice, itemTokenId)).to.eq(1);
 
     await expect(
       territories
@@ -937,7 +937,7 @@ describe("Territories", function () {
         .connect(bob)
         .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()})
     ).to.not.be.reverted;
-    expect(await itemNFT.balanceOf(alice.address, itemTokenId)).to.eq(0);
+    expect(await itemNFT.balanceOf(alice, itemTokenId)).to.eq(0);
   });
 
   it("Must have at least minimum MMR to attack a territory", async () => {

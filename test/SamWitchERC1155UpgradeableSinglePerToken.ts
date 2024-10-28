@@ -33,19 +33,19 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
 
     it("returns zero for given addresses when accounts don't own tokens", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, secondTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, unknownTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, secondTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, unknownTokenId)).to.eq(0);
     });
 
     it("returns the amount of tokens owned by the given addresses when accounts own some tokens", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, 1, "0x");
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, 1, "0x");
 
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(firstAmount);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, secondTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, unknownTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(firstAmount);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, secondTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, unknownTokenId)).to.eq(0);
     });
   });
 
@@ -53,7 +53,7 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
     it("returns zeros for each account when they own no tokens", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       const result = await erc1155UpgradeableSinglePerToken.balanceOfBatch(
-        [owner.address, alice.address, owner.address],
+        [owner, alice, owner],
         [firstTokenId, secondTokenId, unknownTokenId]
       );
       expect(result).to.be.an("array");
@@ -62,11 +62,11 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
 
     it("when accounts own some tokens return correctly", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
-      await erc1155UpgradeableSinglePerToken.mint(alice.address, secondTokenId, secondAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(alice, secondTokenId, secondAmount, "0x");
 
       const result = await erc1155UpgradeableSinglePerToken.balanceOfBatch(
-        [alice.address, owner.address, owner.address],
+        [alice, owner, owner],
         [secondTokenId, firstTokenId, unknownTokenId]
       );
       expect(result).to.be.an("array");
@@ -75,11 +75,11 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
 
     it("returns multiple times the balance of the same address when asked", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
-      await erc1155UpgradeableSinglePerToken.mint(alice.address, secondTokenId, secondAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(alice, secondTokenId, secondAmount, "0x");
 
       const result = await erc1155UpgradeableSinglePerToken.balanceOfBatch(
-        [alice.address, alice.address, owner.address],
+        [alice, alice, owner],
         [secondTokenId, secondTokenId, firstTokenId]
       );
 
@@ -92,43 +92,31 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
   describe("safeTransferFrom", function () {
     it("reverts when transferring more than balance", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
       await expect(
-        erc1155UpgradeableSinglePerToken.safeTransferFrom(
-          owner.address,
-          alice.address,
-          firstTokenId,
-          firstAmount + 1,
-          "0x"
-        )
+        erc1155UpgradeableSinglePerToken.safeTransferFrom(owner, alice, firstTokenId, firstAmount + 1, "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
     it("Transfer correct amount should work", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
-      await erc1155UpgradeableSinglePerToken.safeTransferFrom(
-        owner.address,
-        alice.address,
-        firstTokenId,
-        firstAmount,
-        "0x"
-      );
+      await erc1155UpgradeableSinglePerToken.safeTransferFrom(owner, alice, firstTokenId, firstAmount, "0x");
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, firstTokenId)).to.eq(1);
       // Transfer again
       await erc1155UpgradeableSinglePerToken
         .connect(alice)
-        .safeTransferFrom(alice.address, owner.address, firstTokenId, firstAmount, "0x");
+        .safeTransferFrom(alice, owner, firstTokenId, firstAmount, "0x");
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, firstTokenId)).to.eq(0);
     });
   });
 
@@ -136,65 +124,53 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
     it("reverts when transferring more than balance", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mintBatch(
-        owner.address,
+        owner,
         [firstTokenId, secondTokenId],
         [firstAmount, secondAmount],
         "0x"
       );
       await expect(
-        erc1155UpgradeableSinglePerToken.safeBatchTransferFrom(
-          owner.address,
-          alice.address,
-          [firstTokenId],
-          [firstAmount + 1],
-          "0x"
-        )
+        erc1155UpgradeableSinglePerToken.safeBatchTransferFrom(owner, alice, [firstTokenId], [firstAmount + 1], "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
     it("Transfer correct amount should work", async function () {
       const {owner, alice, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mintBatch(
-        owner.address,
+        owner,
         [firstTokenId, secondTokenId],
         [firstAmount, secondAmount],
         "0x"
       );
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(1);
       await erc1155UpgradeableSinglePerToken.safeBatchTransferFrom(
-        owner.address,
-        alice.address,
+        owner,
+        alice,
         [firstTokenId, secondTokenId],
         [firstAmount, secondAmount],
         "0x"
       );
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(2);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, firstTokenId)).to.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, secondTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, secondTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, secondTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, secondTokenId)).to.eq(1);
 
       // Transfer again
       await erc1155UpgradeableSinglePerToken
         .connect(alice)
-        .safeBatchTransferFrom(
-          alice.address,
-          owner.address,
-          [firstTokenId, secondTokenId],
-          [firstAmount, secondAmount],
-          "0x"
-        );
+        .safeBatchTransferFrom(alice, owner, [firstTokenId, secondTokenId], [firstAmount, secondAmount], "0x");
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(2);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, firstTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, secondTokenId)).to.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice.address, secondTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, secondTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(alice, secondTokenId)).to.eq(0);
     });
   });
 
@@ -202,32 +178,32 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
     it("reverts when minting more than 1 at once", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await expect(
-        erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount + 1, "0x")
+        erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount + 1, "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 
     it("reverts when minting more than 1 during separate mints", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
       await expect(
-        erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x")
+        erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 
     it("Minting should add to totalSupply correctly", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(1);
 
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, secondTokenId, secondAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, secondTokenId, secondAmount, "0x");
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(2);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, secondTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, secondTokenId)).to.eq(1);
     });
   });
 
@@ -236,7 +212,7 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await expect(
         erc1155UpgradeableSinglePerToken.mintBatch(
-          owner.address,
+          owner,
           [firstTokenId, secondTokenId],
           [firstAmount, secondAmount + 1],
           "0x"
@@ -246,57 +222,57 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
 
     it("reverts when minting more than 1 during separate mints", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x");
+      await erc1155UpgradeableSinglePerToken.mintBatch(owner, [firstTokenId], [firstAmount], "0x");
       await expect(
-        erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x")
+        erc1155UpgradeableSinglePerToken.mintBatch(owner, [firstTokenId], [firstAmount], "0x")
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155MintingMoreThanOneSameNFT");
     });
 
     it("Minting should add to totalSupply correctly", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [firstTokenId], [firstAmount], "0x");
+      await erc1155UpgradeableSinglePerToken.mintBatch(owner, [firstTokenId], [firstAmount], "0x");
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(1);
 
-      await erc1155UpgradeableSinglePerToken.mintBatch(owner.address, [secondTokenId], [secondAmount], "0x");
+      await erc1155UpgradeableSinglePerToken.mintBatch(owner, [secondTokenId], [secondAmount], "0x");
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(2);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](secondTokenId)).to.be.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, secondTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, secondTokenId)).to.eq(1);
     });
   });
 
   describe("burn", function () {
     it("reverts when burning more than balance", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
       await expect(
-        erc1155UpgradeableSinglePerToken.burn(owner.address, firstTokenId, firstAmount + 1)
+        erc1155UpgradeableSinglePerToken.burn(owner, firstTokenId, firstAmount + 1)
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
     it("Burning should remove from totalSupply and remove balance", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
-      await erc1155UpgradeableSinglePerToken.burn(owner.address, firstTokenId, firstAmount);
+      await erc1155UpgradeableSinglePerToken.burn(owner, firstTokenId, firstAmount);
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(0);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, secondTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, secondTokenId)).to.eq(0);
     });
 
     it("Burning with dead address should also remove from totalSupply and remove balance", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
       await erc1155UpgradeableSinglePerToken.safeTransferFrom(
-        owner.address,
+        owner,
         "0x000000000000000000000000000000000000dEaD",
         firstTokenId,
         firstAmount,
@@ -305,44 +281,44 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(firstAmount);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(firstAmount);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
     });
 
     it("Reminting after burning should work fine", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
-      await erc1155UpgradeableSinglePerToken.burn(owner.address, firstTokenId, firstAmount);
+      await erc1155UpgradeableSinglePerToken.burn(owner, firstTokenId, firstAmount);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(0);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
 
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(1);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(1);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(1);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(1);
     });
   });
 
   describe("burnBatch", function () {
     it("reverts when burning more than balance", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
       await expect(
-        erc1155UpgradeableSinglePerToken.burnBatch(owner.address, [firstTokenId], [firstAmount + 1])
+        erc1155UpgradeableSinglePerToken.burnBatch(owner, [firstTokenId], [firstAmount + 1])
       ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
     });
 
     it("Burning should remove from totalSupply and remove balance", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
-      await erc1155UpgradeableSinglePerToken.mint(owner.address, firstTokenId, firstAmount, "0x");
+      await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
-      await erc1155UpgradeableSinglePerToken.burnBatch(owner.address, [firstTokenId], [firstAmount]);
+      await erc1155UpgradeableSinglePerToken.burnBatch(owner, [firstTokenId], [firstAmount]);
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(0);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(0);
-      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner.address, firstTokenId)).to.eq(0);
+      expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, firstTokenId)).to.eq(0);
     });
   });
 });

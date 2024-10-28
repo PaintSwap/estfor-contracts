@@ -35,12 +35,12 @@ async function main() {
   const vaultAttackCost = await lockedBankVaults.getAttackCost();
 
   let tx = await itemNFT.testMints(
-    alice.address,
+    alice,
     [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD],
     [2, 2, 2]
   );
   tx = await itemNFT.testMints(
-    owner.address,
+    owner,
     [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD],
     [2, 2, 2]
   );

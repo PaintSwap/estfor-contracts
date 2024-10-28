@@ -12,7 +12,7 @@ async function main() {
   const brushNonTransferrable = await upgrades.deployProxy(BrushNonTransferrable);
   console.log(`Deployed brushNonTransferrable: `, await brushNonTransferrable.getAddress());
 
-  let tx = await brushNonTransferrable.mint(owner.address, 10000);
+  let tx = await brushNonTransferrable.mint(owner, 10000);
   await tx.wait();
   console.log("Minted le fake brush");
 
@@ -35,10 +35,10 @@ async function main() {
   console.log("Transferred wftm to pair");
 
   const IUniswapV2Pair = await ethers.getContractAt("IUniswapV2Pair", pair);
-  tx = await IUniswapV2Pair.mint(owner.address);
+  tx = await IUniswapV2Pair.mint(owner);
   await tx.wait();
   console.log("Minted LP tokens");
-  const balance = IUniswapV2Pair.balanceOf(owner.address);
+  const balance = IUniswapV2Pair.balanceOf(owner);
   console.log("BalanceOf", await balance);
 
   await verifyContracts([await brushNonTransferrable.getAddress()]);

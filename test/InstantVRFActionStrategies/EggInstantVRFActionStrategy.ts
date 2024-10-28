@@ -39,7 +39,7 @@ describe("EggInstantVRFActionStrategy", function () {
   it("Set actions", async function () {
     const {eggInstantVRFActionStrategy, alice} = await loadFixture(playersFixture);
 
-    await eggInstantVRFActionStrategy.setInstantVRFActions(alice.address);
+    await eggInstantVRFActionStrategy.setInstantVRFActions(alice);
     const actionId = 1;
     const instantVRFActionInput = {...defaultInstantVRFActionInput};
     await eggInstantVRFActionStrategy.connect(alice).setAction(instantVRFActionInput);
@@ -72,7 +72,7 @@ describe("EggInstantVRFActionStrategy", function () {
   it("Setting max < min should revert", async function () {
     const {eggInstantVRFActionStrategy, alice} = await loadFixture(playersFixture);
 
-    await eggInstantVRFActionStrategy.setInstantVRFActions(alice.address);
+    await eggInstantVRFActionStrategy.setInstantVRFActions(alice);
     const instantVRFActionInput = {
       ...defaultInstantVRFActionInput,
       data: abiCoder.encode(
@@ -88,7 +88,7 @@ describe("EggInstantVRFActionStrategy", function () {
   it("Multiple action amount", async function () {
     const {eggInstantVRFActionStrategy, alice} = await loadFixture(playersFixture);
 
-    await eggInstantVRFActionStrategy.setInstantVRFActions(alice.address);
+    await eggInstantVRFActionStrategy.setInstantVRFActions(alice);
     const actionId = 1;
     const instantVRFActionInput = {...defaultInstantVRFActionInput};
     await eggInstantVRFActionStrategy.connect(alice).setAction(instantVRFActionInput);

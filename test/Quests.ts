@@ -229,7 +229,7 @@ describe("Quests", function () {
       await quests.editQuests([quest], [defaultMinRequirements]);
       await ethers.provider.send("evm_increaseTime", [1800]); // Finish
       await ethers.provider.send("evm_mine", []);
-      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       expect(pendingQueuedActionState.quests.questsCompleted.length).is.eq(1);
 
       await expect(players.connect(alice).processActions(playerId)).to.not.be.reverted;
@@ -246,7 +246,7 @@ describe("Quests", function () {
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
       await quests.addQuests([quest], [defaultMinRequirements]);
       await expect(
-        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 10})
+        players.connect(alice).buyBrushQuest(alice, playerId, 0, true, {value: 10})
       ).to.be.revertedWithCustomError(quests, "InvalidActiveQuest");
     });
 
@@ -257,7 +257,7 @@ describe("Quests", function () {
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
       await expect(
-        players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 0})
+        players.connect(alice).buyBrushQuest(alice, playerId, 0, true, {value: 0})
       ).to.be.revertedWithCustomError(quests, "InvalidFTMAmount");
     });
 
@@ -269,9 +269,9 @@ describe("Quests", function () {
       expect(questId).to.not.eq(0);
       await players.connect(alice).activateQuest(playerId, questId);
       expect((await quests.activeQuests(playerId)).questId).to.be.eq(questId);
-      const balanceBefore = await brush.balanceOf(alice.address);
-      await players.connect(alice).buyBrushQuest(alice.address, playerId, 0, true, {value: 10});
-      const balanceAfter = await brush.balanceOf(alice.address);
+      const balanceBefore = await brush.balanceOf(alice);
+      await players.connect(alice).buyBrushQuest(alice, playerId, 0, true, {value: 10});
+      const balanceAfter = await brush.balanceOf(alice);
       expect(balanceBefore + 1n).to.eq(balanceAfter);
 
       // Check it's completed and no longer considered active
@@ -295,7 +295,7 @@ describe("Quests", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
-      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+      const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       expect(pendingQueuedActionState.quests.questsCompleted.length).is.eq(0);
     });
   });
@@ -320,12 +320,12 @@ describe("Quests", function () {
         "InvalidMinimumRequirement"
       );
 
-      await players.connect(alice).testModifyXP(alice.address, playerId, Skill.HEALTH, 2999, true);
+      await players.connect(alice).testModifyXP(alice, playerId, Skill.HEALTH, 2999, true);
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
         "InvalidMinimumRequirement"
       );
-      await players.connect(alice).testModifyXP(alice.address, playerId, Skill.HEALTH, 3000, true);
+      await players.connect(alice).testModifyXP(alice, playerId, Skill.HEALTH, 3000, true);
       await players.connect(alice).activateQuest(playerId, questId);
     });
   });
@@ -357,10 +357,10 @@ describe("Quests", function () {
 
     // Check it's completed
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+    expect(await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS)).to.eq(
       Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum)
     );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
+    expect(await itemNFT.balanceOf(alice, EstforConstants.RAW_MINNUS)).to.eq(
       1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
     );
   });
@@ -387,8 +387,8 @@ describe("Quests", function () {
     await players.connect(alice).activateQuest(playerId, questId);
     // Process immediately
     const initialMintNum = 10;
-    await itemNFT.connect(alice).testMints(alice.address, [COOKED_MINNUS], [initialMintNum]);
-    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    await itemNFT.connect(alice).testMints(alice, [COOKED_MINNUS], [initialMintNum]);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(0);
     await players.connect(alice).processActions(playerId);
@@ -396,13 +396,13 @@ describe("Quests", function () {
     // Should not be completed, but the cooked items can be burned
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
 
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(10);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(1000);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS)).to.eq(10);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.RAW_MINNUS)).to.eq(1000);
 
     // rate is 100 an hour. So 1 would be done in 36 seconds
     await ethers.provider.send("evm_increaseTime", [36]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(COOKED_MINNUS);
@@ -410,7 +410,7 @@ describe("Quests", function () {
     // Finish it
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(
       pendingQueuedActionState.quests.rewardAmounts.length
@@ -423,10 +423,10 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.consumedAmounts[0]).to.eq(5);
     await players.connect(alice).processActions(playerId);
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(
+    expect(await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS)).to.eq(
       Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL) - quest.actionChoiceNum) + initialMintNum
     );
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)).to.eq(
+    expect(await itemNFT.balanceOf(alice, EstforConstants.RAW_MINNUS)).to.eq(
       1000 - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
     );
   });
@@ -522,7 +522,7 @@ describe("Quests", function () {
     // rate is 100 an hour. So 1 would be done in 36 seconds
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedActionMelee.timespan]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     // Check died in the second one
     expect(pendingQueuedActionState.equipmentStates.length).to.eq(2);
     expect(pendingQueuedActionState.actionMetadatas.length).to.eq(2);
@@ -598,14 +598,14 @@ describe("Quests", function () {
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await ethers.provider.send("evm_increaseTime", [(quest1.actionNum1 / 2) * 3600]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.quests.activeQuestInfo.length).to.eq(1);
     expect(pendingQueuedActionState.quests.activeQuestInfo[0].actionCompletedNum1).to.eq(quest1.actionNum1 / 2);
     await players.connect(alice).processActions(playerId);
     await ethers.provider.send("evm_increaseTime", [(quest1.actionNum1 / 2) * 3600]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(2);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(
       pendingQueuedActionState.quests.rewardAmounts.length
@@ -620,8 +620,8 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(quest1.skillXPGained);
     await players.connect(alice).processActions(playerId);
     expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.RUBY)).to.eq(1);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.EMERALD)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.RUBY)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.EMERALD)).to.eq(1);
   });
 
   it("Monsters killed", async function () {
@@ -647,7 +647,7 @@ describe("Quests", function () {
     const time = (3600 * SPAWN_MUL) / numSpawned;
     await ethers.provider.send("evm_increaseTime", [time]);
     await ethers.provider.send("evm_mine", []);
-    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(1); // Burn 1 of them
     expect(pendingQueuedActionState.quests.consumedItemTokenIds[0]).to.eq(EstforConstants.BRONZE_ARROW);
@@ -656,12 +656,12 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.activeQuestInfo[0].actionCompletedNum1).to.eq(1);
 
     await players.connect(alice).processActions(playerId);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(0); // All are burned
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(0); // All are burned
 
     // Kill the rest
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts.length).to.eq(1);
     expect(pendingQueuedActionState.equipmentStates[0].producedAmounts[0]).to.eq(9);
@@ -677,7 +677,7 @@ describe("Quests", function () {
     expect(pendingQueuedActionState.quests.skills[0]).to.eq(quest1.skillReward);
     expect(pendingQueuedActionState.quests.xpGainedSkills[0]).to.eq(quest1.skillXPGained);
     await players.connect(alice).processActions(playerId);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW)).to.eq(
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(
       (rate * numSpawned) / (10 * SPAWN_MUL) - 5
     );
   });
@@ -705,11 +705,7 @@ describe("Quests", function () {
 
     await itemNFT
       .connect(alice)
-      .burn(
-        alice.address,
-        EstforConstants.RAW_MINNUS,
-        await itemNFT.balanceOf(alice.address, EstforConstants.RAW_MINNUS)
-      );
+      .burn(alice, EstforConstants.RAW_MINNUS, await itemNFT.balanceOf(alice, EstforConstants.RAW_MINNUS));
 
     await players
       .connect(alice)
@@ -782,7 +778,7 @@ describe("Quests", function () {
     await ethers.provider.send("evm_increaseTime", [1]);
     await ethers.provider.send("evm_mine", []);
 
-    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
 
     const timeNeeded = ((rate / RATE_MUL) * 3600) / firemakingQuest.actionChoiceNum;
@@ -790,12 +786,12 @@ describe("Quests", function () {
     // Set time to just before, should still not have quest rewards
     await ethers.provider.send("evm_increaseTime", [timeNeeded - 3]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
     // Amount burnt should be over
     await ethers.provider.send("evm_increaseTime", [3]);
     await ethers.provider.send("evm_mine", []);
-    pendingQueuedActionState = await players.getPendingQueuedActionState(alice.address, playerId);
+    pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(1);
     expect(pendingQueuedActionState.quests.rewardAmounts[0]).to.eq(firemakingQuest.rewardAmount1);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds[0]).to.eq(firemakingQuest.rewardItemTokenId1);
@@ -804,9 +800,7 @@ describe("Quests", function () {
 
     await players.connect(alice).processActions(playerId);
 
-    expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-      firemakingQuest.rewardAmount1
-    );
+    expect(await itemNFT.balanceOf(alice, firemakingQuest.rewardItemTokenId1)).to.eq(firemakingQuest.rewardAmount1);
     expect(firemakingQuest.rewardAmount1).to.be.gt(0); // sanity check
   });
 
@@ -844,7 +838,7 @@ describe("Quests", function () {
     const cookingXP = await players.getPlayerXP(playerId, Skill.COOKING);
     expect(await players.getPlayerXP(playerId, Skill.WOODCUTTING)).to.eq(10000);
     expect((await players.getPlayers(playerId)).totalXP).to.eq(START_XP + cookingXP + 10000n);
-    expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_BAR)).to.eq(3);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_BAR)).to.eq(3);
   });
 
   describe("Activate a quest", function () {
@@ -893,9 +887,7 @@ describe("Quests", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
 
-      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-        firemakingQuest.rewardAmount1
-      );
+      expect(await itemNFT.balanceOf(alice, firemakingQuest.rewardItemTokenId1)).to.eq(firemakingQuest.rewardAmount1);
 
       // Check it's completed
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
@@ -925,11 +917,11 @@ describe("Quests", function () {
       // Deactivate it, should auto process
       await players.connect(alice).deactivateQuest(playerId);
 
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.LOG)).to.eq(
         5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL)) + 1
       );
 
-      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice, firemakingQuest.rewardItemTokenId1)).to.eq(0);
 
       // Check it's not completed
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
@@ -940,14 +932,12 @@ describe("Quests", function () {
       await ethers.provider.send("evm_increaseTime", [10]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.LOG)).to.eq(
         5000 - Math.floor((rate * 3600) / (timeNeeded * RATE_MUL))
       );
 
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
-      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-        firemakingQuest.rewardAmount1
-      );
+      expect(await itemNFT.balanceOf(alice, firemakingQuest.rewardItemTokenId1)).to.eq(firemakingQuest.rewardAmount1);
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
     });
 
@@ -979,11 +969,11 @@ describe("Quests", function () {
       // Activate another quest should auto process current quest
       const anotherQuestId = firemakingQuestLog.questId;
       await players.connect(alice).activateQuest(playerId, anotherQuestId);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.LOG)).to.eq(
         5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL)) + 1
       );
 
-      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(0);
+      expect(await itemNFT.balanceOf(alice, firemakingQuest.rewardItemTokenId1)).to.eq(0);
 
       // Check it's not completed
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
@@ -993,21 +983,19 @@ describe("Quests", function () {
       await ethers.provider.send("evm_mine", []);
       // Activate the other quest and finish it
       await players.connect(alice).activateQuest(playerId, questId);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.LOG)).to.eq(
         5000 - Math.floor((rate * 3600) / ((timeNeeded - 10) * RATE_MUL))
       );
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.false;
       await ethers.provider.send("evm_increaseTime", [36]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.LOG)).to.eq(
         5000 - Math.floor((rate * 3600) / (timeNeeded * RATE_MUL)) - 1
       );
 
       expect(await quests.isQuestCompleted(playerId, questId)).to.be.true;
-      expect(await itemNFT.balanceOf(alice.address, firemakingQuest.rewardItemTokenId1)).to.eq(
-        firemakingQuest.rewardAmount1
-      );
+      expect(await itemNFT.balanceOf(alice, firemakingQuest.rewardItemTokenId1)).to.eq(firemakingQuest.rewardAmount1);
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
     });
 
@@ -1041,7 +1029,7 @@ describe("Quests", function () {
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await itemNFT.testMints(
-        alice.address,
+        alice,
         [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
         [1000, 1000, 1000]
       );
@@ -1067,7 +1055,7 @@ describe("Quests", function () {
       const telegram = "";
 
       await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
-      await brush.mint(alice.address, upgradePlayerBrushPrice);
+      await brush.mint(alice, upgradePlayerBrushPrice);
 
       await playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, true);
       await players.connect(alice).activateQuest(playerId, questId);
