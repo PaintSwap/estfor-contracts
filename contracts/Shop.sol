@@ -9,8 +9,6 @@ import {Treasury} from "./Treasury.sol";
 import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
-import "hardhat/console.sol";
-
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   event AddShopItems(ShopItem[] shopItems);
@@ -102,9 +100,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function liquidatePrice(uint16 tokenId) public view returns (uint80 price) {
     uint256 totalBrush = _treasury.totalClaimable(address(this));
-    uint256 totalSupply = _itemNFT.totalSupply();
-    uint256 numItems = (_numUnsellableItems >= totalSupply) ? 1 : totalSupply - _numUnsellableItems;
-    uint256 totalBrushForItem = totalBrush / numItems;
+    uint256 totalBrushForItem = totalBrush / _getNumItems();
     return _liquidatePrice(tokenId, totalBrushForItem);
   }
 
@@ -203,8 +199,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
     uint256 allocationRemaining;
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
-      uint256 totalSupply = _itemNFT.totalSupply();
-      uint256 numItems = (_numUnsellableItems >= totalSupply) ? 1 : totalSupply - _numUnsellableItems;
+      uint256 numItems = _getNumItems();
       // New day, reset max allocation can be sold
       allocationRemaining = _treasury.totalClaimable(address(this)) / numItems;
       tokenInfo.checkpointTimestamp = uint40((block.timestamp / 1 days) * 1 days);
@@ -247,6 +242,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     accounts[0] = address(0);
     accounts[1] = address(_treasury);
     accounts[2] = _dev;
+  }
+
+  function _getNumItems() private view returns (uint256) {
+    uint256 totalSupply = _itemNFT.totalSupply();
+    return (_numUnsellableItems >= totalSupply) ? totalSupply : totalSupply - _numUnsellableItems;
   }
 
   function _addBuyableItem(ShopItem calldata buyableItem) private {

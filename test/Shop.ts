@@ -697,5 +697,40 @@ describe("Shop", function () {
       tokenAllocation = await shop.tokenInfos(EstforConstants.BRONZE_SHIELD);
       expect(tokenAllocation.allocationRemaining).to.eq(parseEther("1") - parseEther("1") / 1000n);
     });
+
+    it("Unsellable greater than total supply should revert", async function () {
+      const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} =
+        await loadFixture(deployContracts);
+
+      // 3 unsellable items
+      await shop.addUnsellableItems([
+        EstforConstants.BRONZE_SWORD,
+        EstforConstants.RAW_MINNUS,
+        EstforConstants.SAPPHIRE_AMULET
+      ]);
+
+      // 2 exist in the world
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SHIELD, minItemQuantityBeforeSellsAllowed);
+      await itemNFT.testMint(alice.address, EstforConstants.BRONZE_SWORD, minItemQuantityBeforeSellsAllowed);
+      await timeTravel(sellingCutoffDuration);
+
+      // Give the contract some brush to assign to the items
+      const totalBrush = parseEther("1");
+      await brush.mint(treasury, totalBrush);
+
+      expect(await itemNFT["totalSupply()"]()).to.eq(2);
+
+      const numItems = 2n;
+      const splitBrush = totalBrush / numItems;
+      const priceShield = splitBrush / minItemQuantityBeforeSellsAllowed;
+      expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.eq(priceShield);
+
+      // Sell
+      await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, priceShield))
+        .to.emit(shop, "Sell")
+        .withArgs(alice.address, EstforConstants.BRONZE_SHIELD, 1, priceShield)
+        .to.emit(shop, "NewAllocation")
+        .withArgs(EstforConstants.BRONZE_SHIELD, totalBrush / numItems);
+    });
   });
 });

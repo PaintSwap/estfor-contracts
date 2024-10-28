@@ -2829,6 +2829,16 @@
             "type": "uint24"
           },
           {
+            "internalType": "enum Skill",
+            "name": "currentActionProcessedSkill3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
+            "name": "currentActionProcessedXPGained3",
+            "type": "uint24"
+          },
+          {
             "internalType": "uint16",
             "name": "currentActionProcessedFoodConsumed",
             "type": "uint16"
@@ -2852,16 +2862,6 @@
             "internalType": "uint56",
             "name": "totalXP",
             "type": "uint56"
-          },
-          {
-            "internalType": "enum Skill",
-            "name": "currentActionProcessedSkill3",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint24",
-            "name": "currentActionProcessedXPGained3",
-            "type": "uint24"
           },
           {
             "internalType": "bytes1",
