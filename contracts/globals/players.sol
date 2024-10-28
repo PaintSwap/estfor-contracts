@@ -43,13 +43,13 @@ struct Player {
   uint24 currentActionProcessedXPGained1; // The amount of XP that the queued action has already gained
   Skill currentActionProcessedSkill2;
   uint24 currentActionProcessedXPGained2;
-  uint16 currentActionProcessedFoodConsumed;
-  uint16 currentActionProcessedBaseInputItemsConsumedNum; // e.g scrolls, crafting materials etc
-  Skill skillBoosted1; // The skill that is boosted
-  Skill skillBoosted2; // The second skill that is boosted
-  uint56 totalXP;
   Skill currentActionProcessedSkill3;
   uint24 currentActionProcessedXPGained3;
+  uint16 currentActionProcessedFoodConsumed;
+  uint16 currentActionProcessedBaseInputItemsConsumedNum; // e.g scrolls, crafting materials etc
+  Skill skillBoosted1; // The first skill that is boosted
+  Skill skillBoosted2; // The second skill that is boosted (if applicable)
+  uint56 totalXP;
   bytes1 packedData; // Contains worldLocation in first 6 bits (0 is the main starting world), and full mode unlocked in the upper most bit
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
