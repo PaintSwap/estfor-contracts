@@ -226,6 +226,22 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "bits",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "SafeCastOverflowedUintDowncast",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "TooManyAttackers",
     "type": "error"
@@ -1087,14 +1103,19 @@
       {
         "components": [
           {
-            "internalType": "uint40",
-            "name": "clanId",
-            "type": "uint40"
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
           },
           {
             "internalType": "uint16",
             "name": "territoryId",
             "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "clanId",
+            "type": "uint32"
           },
           {
             "internalType": "bool",
@@ -1105,11 +1126,6 @@
             "internalType": "uint40",
             "name": "leaderPlayerId",
             "type": "uint40"
-          },
-          {
-            "internalType": "address",
-            "name": "from",
-            "type": "address"
           }
         ],
         "internalType": "struct Territories.PendingAttack",

@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {IBrushToken} from "../interfaces/IBrushToken.sol";
@@ -27,6 +28,8 @@ import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
 contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClanMemberLeftCB {
+  using SafeCast for uint256;
+
   event AddTerritories(TerritoryInput[] territories);
   event EditTerritories(TerritoryInput[] territories);
   event RemoveTerritories(uint256[] territoryIds);
@@ -139,11 +142,11 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   }
 
   struct PendingAttack {
-    uint40 clanId;
+    address from;
     uint16 territoryId;
+    uint32 clanId; // Reduced from uint40 to make this fit in a storage c
     bool attackInProgress;
     uint40 leaderPlayerId;
-    address from;
   }
 
   uint256 private constant NUM_WORDS = 7;
@@ -298,7 +301,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     clanInfo.currentlyAttacking = true;
 
     _pendingAttacks[nextPendingAttackId] = PendingAttack({
-      clanId: uint40(clanId),
+      clanId: clanId.toUint32(),
       territoryId: uint16(territoryId),
       attackInProgress: true,
       leaderPlayerId: uint40(leaderPlayerId),
@@ -437,15 +440,15 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
       NotATerritoryDefenceItem()
     );
 
+    ClanInfo storage clanInfo = _clanInfos[clanId];
     require(
-      (_clanInfos[clanId].blockAttacksTimestamp + uint256(_clanInfos[clanId].blockAttacksCooldownHours) * 3600) <=
-        block.timestamp,
+      (clanInfo.blockAttacksTimestamp + uint256(clanInfo.blockAttacksCooldownHours) * 3600) <= block.timestamp,
       BlockAttacksCooldown()
     );
 
     uint256 blockAttacksTimestamp = block.timestamp + item.boostDuration;
-    _clanInfos[clanId].blockAttacksTimestamp = uint40(blockAttacksTimestamp);
-    _clanInfos[clanId].blockAttacksCooldownHours = uint8(item.boostValue);
+    clanInfo.blockAttacksTimestamp = uint40(blockAttacksTimestamp);
+    clanInfo.blockAttacksCooldownHours = uint8(item.boostValue);
 
     _itemNFT.burn(_msgSender(), itemTokenId, 1);
 

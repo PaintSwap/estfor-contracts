@@ -70,9 +70,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
     for (uint256 iter; iter < idsLength; iter++) {
       pendingQueuedActionState.producedPastRandomRewards[producedPastRandomRewardsLength++] = PastRandomRewardInfo(
-        uint64(queueIds[iter]),
         uint16(ids[iter]),
-        uint24(amounts[iter])
+        uint24(amounts[iter]),
+        uint64(queueIds[iter])
       );
     }
 
@@ -459,9 +459,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
             pendingQueuedActionState.producedPastRandomRewards[
               producedPastRandomRewardsLength++
             ] = PastRandomRewardInfo(
-              uint64(queuedAction.queueId),
               uint16(newRandomIds[jter]),
-              uint24(newRandomAmounts[jter])
+              uint24(newRandomAmounts[jter]),
+              uint64(queuedAction.queueId)
             );
           }
         }

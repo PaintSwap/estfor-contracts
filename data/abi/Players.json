@@ -2458,11 +2458,6 @@
           {
             "components": [
               {
-                "internalType": "uint64",
-                "name": "queueId",
-                "type": "uint64"
-              },
-              {
                 "internalType": "uint16",
                 "name": "itemTokenId",
                 "type": "uint16"
@@ -2471,6 +2466,11 @@
                 "internalType": "uint24",
                 "name": "amount",
                 "type": "uint24"
+              },
+              {
+                "internalType": "uint64",
+                "name": "queueId",
+                "type": "uint64"
               }
             ],
             "internalType": "struct PastRandomRewardInfo[]",
@@ -2729,11 +2729,6 @@
             "type": "uint24"
           },
           {
-            "internalType": "uint64",
-            "name": "queueId",
-            "type": "uint64"
-          },
-          {
             "internalType": "uint16",
             "name": "boostItemTokenId",
             "type": "uint16"
@@ -2744,19 +2739,24 @@
             "type": "uint24"
           },
           {
-            "internalType": "uint24",
-            "name": "sentinelElapsedTime",
-            "type": "uint24"
-          },
-          {
             "internalType": "uint40",
             "name": "boostStartTime",
             "type": "uint40"
           },
           {
+            "internalType": "uint24",
+            "name": "sentinelElapsedTime",
+            "type": "uint24"
+          },
+          {
             "internalType": "uint8",
             "name": "fullAttireBonusRewardsPercent",
             "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "queueId",
+            "type": "uint64"
           }
         ],
         "internalType": "struct PendingRandomReward[]",

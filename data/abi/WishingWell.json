@@ -482,16 +482,6 @@
             "type": "uint40"
           },
           {
-            "internalType": "uint40",
-            "name": "numDonationsToday",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint40",
-            "name": "lastDonationTimestamp",
-            "type": "uint40"
-          },
-          {
             "internalType": "uint16",
             "name": "nextReward",
             "type": "uint16"

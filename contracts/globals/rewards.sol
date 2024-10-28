@@ -18,13 +18,13 @@ struct PendingRandomReward {
   uint16 actionId;
   uint40 startTime;
   uint24 xpElapsedTime;
-  uint64 queueId;
   uint16 boostItemTokenId;
   uint24 elapsedTime;
-  uint24 sentinelElapsedTime;
   uint40 boostStartTime; // When the boost was started
+  uint24 sentinelElapsedTime;
   // Full equipment at the time this was generated
   uint8 fullAttireBonusRewardsPercent;
+  uint64 queueId; // TODO: Could reduce this if more stuff is needed
 }
 
 struct ActionRewards {
@@ -47,7 +47,7 @@ struct ActionRewards {
   uint16 randomRewardTokenId4;
   uint16 randomRewardChance4;
   uint8 randomRewardAmount4;
-  // No more room!
+  // No more room in this storage slot!
 }
 
 struct XPThresholdReward {

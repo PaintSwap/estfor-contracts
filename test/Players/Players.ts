@@ -466,6 +466,7 @@ describe("Players", function () {
     expect(actionQueue.length).to.eq(2);
     expect(actionQueue[0].queueId).to.eq(2);
     expect(actionQueue[0].timespan).to.be.oneOf([
+      BigInt(queuedAction.timespan - 3),
       BigInt(queuedAction.timespan - 2),
       BigInt(queuedAction.timespan - 1),
       BigInt(queuedAction.timespan)

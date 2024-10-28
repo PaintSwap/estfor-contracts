@@ -37,8 +37,6 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   struct ClanInfo {
     uint40 totalDonated;
     uint40 lastThreshold;
-    uint40 numDonationsToday; // (Unused)
-    uint40 lastDonationTimestamp; // (Unused)
     uint16 nextReward;
   }
 

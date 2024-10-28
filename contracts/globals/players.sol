@@ -209,9 +209,9 @@ struct AvatarInfo {
 }
 
 struct PastRandomRewardInfo {
-  uint64 queueId;
   uint16 itemTokenId;
   uint24 amount;
+  uint64 queueId;
 }
 
 struct PendingQueuedActionEquipmentState {
