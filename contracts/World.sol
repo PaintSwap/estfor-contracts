@@ -50,7 +50,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   uint32 public constant NUM_WORDS = 1;
   uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
-  uint32 private constant MIN_DYNAMIC_ACTION_UPDATE_TIME = 1 days;
   uint32 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
 
   // Past request ids
@@ -105,7 +104,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     _samWitchVRF = ISamWitchVRF(vrf);
 
     // Initialize a few days worth of random words so that we have enough data to fetch the first day
-    for (uint256 i; i < NUM_DAYS_RANDOM_WORDS_INITIALIZED; i++) {
+    for (uint256 i; i < NUM_DAYS_RANDOM_WORDS_INITIALIZED; ++i) {
       uint256 requestId = 200 + i;
       _requestIds.push(requestId);
       emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);

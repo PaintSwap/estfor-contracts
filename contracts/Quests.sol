@@ -62,19 +62,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
 
   address private _world;
   IPlayers private _players;
-  uint40 private _randomQuestId;
   uint16 private _numTotalQuests;
   mapping(uint256 questId => Quest quest) private _allFixedQuests;
   mapping(uint256 playerId => BitMaps.BitMap) private _questsCompleted;
   mapping(uint256 playerId => PlayerQuest playerQuest) private _activeQuests;
-  mapping(uint256 playerId => PlayerQuest playerQuest) private _inProgressRandomQuests;
   mapping(uint256 playerId => mapping(uint256 queueId => PlayerQuest quest)) private _inProgressFixedQuests; // Only puts it here if changing active quest for something else
-  mapping(uint256 questId => MinimumRequirement[3]) private _minimumRequirements; // Not checked yet
-  BitMaps.BitMap private _questIsRandom;
+  mapping(uint256 questId => MinimumRequirement[3]) private _minimumRequirements;
   mapping(uint256 playerId => PlayerQuestInfo) private _playerInfo;
-  Quest[] private _randomQuests;
-  Quest private _previousRandomQuest; // Allow people to complete it if they didn't process it in the current day
-  Quest private _randomQuest; // Same for everyone
   IRouterV2 private _router;
   address private _buyPath1; // For buying brush
   address private _buyPath2;

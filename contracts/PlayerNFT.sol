@@ -96,7 +96,6 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   uint8 private _brushDevPercentage;
   bytes32 private _merkleRoot; // Unused now (was for alpha/beta whitelisting)
   bool private _isBeta; // Not need to pack this
-  mapping(address whitelistedUser => uint256 amount) private _numMintedFromWhitelist; // Unused now
   AdminAccess private _adminAccess; // Unused but is set
   uint32 private _numBurned;
   uint256 public constant NUM_BASE_AVATARS = 8;
