@@ -222,6 +222,7 @@ async function main() {
   const maxActionAmount = 64;
   const minItemQuantityBeforeSellsAllowed = 500n;
   const sellingCutoffDuration = 48 * 3600; // 48 hours
+  const startPlayerId = 200_000; // TODO: Can update
 
   // Create the world
   const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
@@ -346,6 +347,7 @@ async function main() {
       editNameBrushPrice,
       upgradePlayerBrushPrice,
       heroImageBaseUri,
+      startPlayerId,
       isBeta
     ],
     {

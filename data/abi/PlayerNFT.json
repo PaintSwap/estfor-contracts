@@ -439,12 +439,6 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "paid",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
         "internalType": "bool",
         "name": "upgrade",
         "type": "bool"
@@ -536,6 +530,19 @@
       }
     ],
     "name": "SetBrushDistributionPercentages",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "initialLevel",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetInitialLevel",
     "type": "event"
   },
   {
@@ -962,6 +969,11 @@
         "type": "string"
       },
       {
+        "internalType": "uint48",
+        "name": "startPlayerId",
+        "type": "uint48"
+      },
+      {
         "internalType": "bool",
         "name": "isBeta",
         "type": "bool"
@@ -1302,6 +1314,19 @@
       }
     ],
     "name": "setImageBaseUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "initialLevel",
+        "type": "uint8"
+      }
+    ],
+    "name": "setInitialLevel",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

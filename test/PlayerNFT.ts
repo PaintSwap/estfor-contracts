@@ -212,7 +212,7 @@ describe("PlayerNFT", function () {
     const playerId = prevPlayerId + 1n;
     await expect(playerNFT.connect(alice).mint(1, "name", discord, twitter, telegram, upgrade, true))
       .to.emit(playerNFT, "NewPlayer")
-      .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, 0, true)
+      .withArgs(playerId, 1, "name", alice.address, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001, upgradePlayerBrushPrice);
 
@@ -324,6 +324,7 @@ describe("PlayerNFT", function () {
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
+    const startPlayerId = 1;
     const isBeta = false;
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
       libraries: {EstforLibrary: await estforLibrary.getAddress()}
@@ -341,6 +342,7 @@ describe("PlayerNFT", function () {
         editNameBrushPrice,
         upgradePlayerBrushPrice,
         imageBaseUri,
+        startPlayerId,
         isBeta
       ],
       {
@@ -425,6 +427,7 @@ describe("PlayerNFT", function () {
     expect(await playerNFT.name()).to.be.eq("Estfor Players (Beta)");
     expect(await playerNFT.symbol()).to.be.eq("EK_PB");
 
+    const startPlayerId = 1;
     const isBeta = false;
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -444,6 +447,7 @@ describe("PlayerNFT", function () {
         editNameBrushPrice,
         upgradePlayerBrushPrice,
         imageBaseUri,
+        startPlayerId,
         isBeta
       ],
       {

@@ -127,6 +127,8 @@ export const playersFixture = async function () {
   )) as unknown as ItemNFT;
 
   await shop.setItemNFT(itemNFT);
+
+  const startPlayerId = 1;
   // Create NFT contract which contains all the players
   const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
@@ -145,6 +147,7 @@ export const playersFixture = async function () {
       editNameBrushPrice,
       upgradePlayerBrushPrice,
       imageBaseUri,
+      startPlayerId,
       isBeta
     ],
     {

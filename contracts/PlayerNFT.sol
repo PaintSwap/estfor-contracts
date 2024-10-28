@@ -24,7 +24,6 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     string discord,
     string twitter,
     string telegram,
-    uint256 paid,
     bool upgrade
   );
   event EditPlayer(
@@ -46,6 +45,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
+  event SetInitialLevel(uint256 initialLevel);
 
   error NotOwnerOfPlayer();
   error NotPlayers();
@@ -73,19 +73,12 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   }
 
   uint256 constant EVOLVED_OFFSET = 10000;
-
-  uint256 private _nextPlayerId;
-
-  mapping(uint256 avatarId => AvatarInfo avatarInfo) private _avatars;
-  string private _imageBaseUri;
-  mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
-  mapping(uint256 playerId => string name) private _names;
-  mapping(string name => bool exists) private _lowercaseNames;
+  uint256 public constant NUM_BASE_AVATARS = 8;
 
   IBrushToken private _brush;
   IPlayers private _players;
+  uint48 private _nextPlayerId;
   address private _treasury;
-
   address private _royaltyReceiver;
   uint8 private _royaltyFee; // base 1000, highest is 25.5
   uint72 private _editNameCost; // Max is 4700 BRUSH
@@ -98,7 +91,12 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   bool private _isBeta; // Not need to pack this
   AdminAccess private _adminAccess; // Unused but is set
   uint32 private _numBurned;
-  uint256 public constant NUM_BASE_AVATARS = 8;
+
+  mapping(uint256 avatarId => AvatarInfo avatarInfo) private _avatars;
+  string private _imageBaseUri;
+  mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
+  mapping(uint256 playerId => string name) private _names;
+  mapping(string name => bool exists) private _lowercaseNames;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -123,6 +121,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint72 editNameCost,
     uint72 upgradePlayerCost,
     string calldata imageBaseUri,
+    uint48 startPlayerId,
     bool isBeta
   ) external initializer {
     __SamWitchERC1155UpgradeableSinglePerToken_init("");
@@ -130,7 +129,8 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     __Ownable_init(_msgSender());
 
     _brush = brush;
-    _nextPlayerId = 1;
+    _nextPlayerId = startPlayerId;
+    setInitialLevel(16);
     _imageBaseUri = imageBaseUri;
     _treasury = treasury;
     _dev = dev;
@@ -155,7 +155,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint256 playerId = _nextPlayerId++;
     (string memory trimmedName, ) = _setName(playerId, heroName);
     _checkSocials(discord, twitter, telegram);
-    emit NewPlayer(playerId, avatarId, trimmedName, from, discord, twitter, telegram, 0, upgrade);
+    emit NewPlayer(playerId, avatarId, trimmedName, from, discord, twitter, telegram, upgrade);
     _checkMintingAvatar(avatarId);
     _playerInfos[playerId].originalAvatarId = uint24(avatarId);
     _mint(from, playerId, 1, "");
@@ -388,6 +388,10 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   function setUpgradeCost(uint72 upgradePlayerCost) public onlyOwner {
     _upgradePlayerCost = upgradePlayerCost;
     emit UpgradePlayerCost(upgradePlayerCost);
+  }
+
+  function setInitialLevel(uint8 initialLevel) public onlyOwner {
+    emit SetInitialLevel(initialLevel);
   }
 
   function setBrushDistributionPercentages(

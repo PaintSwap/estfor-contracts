@@ -18,7 +18,7 @@
     "@openzeppelin/contracts": "https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts/contracts?v5.1-memory-safe",
     "@openzeppelin/contracts-upgradeable": "https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts-upgradeable/contracts?v5.1-memory-safe",
     "@openzeppelin/hardhat-upgrades": "^3.5.0",
-    "@paintswap/estfor-definitions": "^2.0.5",
+    "@paintswap/estfor-definitions": "^2.0.9",
     "@solidity-parser/parser": "^0.18.0",
     "@typechain/ethers-v6": "^0.5.0",
     "@typechain/hardhat": "^9.1.0",
