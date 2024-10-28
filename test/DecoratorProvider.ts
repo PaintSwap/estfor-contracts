@@ -12,7 +12,7 @@ describe("DecoratorProvider", function () {
 
     // Add an lp token
     const lp = await ethers.deployContract("MockBrushToken");
-    await decorator.add("2000", await lp.getAddress(), true);
+    await decorator.add("2000", lp, true);
 
     // Mock territories
     const mockTerritories = await ethers.deployContract("MockTerritories", [await brush.getAddress()]);
@@ -62,34 +62,34 @@ describe("DecoratorProvider", function () {
 
     // Add an lp token
     const lp = await ethers.deployContract("MockBrushToken");
-    await decorator.add("2000", await lp.getAddress(), true);
+    await decorator.add("2000", lp, true);
 
     // Deposit
     const amount = 100;
-    await lp.mint(owner.address, amount);
-    await lp.approve(await decoratorProvider.getAddress(), amount * 2);
+    await lp.mint(owner, amount);
+    await lp.approve(decoratorProvider, amount * 2);
     await expect(decoratorProvider.deposit()).to.be.revertedWithCustomError(decoratorProvider, "ZeroBalance");
     await decoratorProvider.setPID(1);
     await decoratorProvider.deposit();
 
-    expect(await lp.balanceOf(await decoratorProvider.getAddress())).to.eq(0);
-    expect(await lp.balanceOf(await decorator.getAddress())).to.eq(amount);
-    expect(await lp.balanceOf(owner.address)).to.eq(0);
+    expect(await lp.balanceOf(decoratorProvider)).to.eq(0);
+    expect(await lp.balanceOf(decorator)).to.eq(amount);
+    expect(await lp.balanceOf(owner)).to.eq(0);
   });
 
   it("Cannot re-harvest too quickly", async function () {
     const {decoratorProvider, brush, brushPerSecond, owner, lp, alice, playerId} = await loadFixture(deployContracts);
 
     const amount = 100;
-    await lp.mint(owner.address, amount);
-    await lp.approve(await decoratorProvider.getAddress(), amount);
+    await lp.mint(owner, amount);
+    await lp.approve(decoratorProvider, amount);
     await decoratorProvider.deposit();
 
     await timeTravel(1);
 
     // Will fail until we need it double the rewards
     const minInterval = await decoratorProvider.MIN_HARVEST_INTERVAL();
-    await brush.mint(await decoratorProvider.getAddress(), brushPerSecond * (minInterval + 10n));
+    await brush.mint(decoratorProvider, brushPerSecond * (minInterval + 10n));
     await decoratorProvider.connect(alice).harvest(playerId);
 
     await timeTravel(1);
@@ -107,7 +107,7 @@ describe("DecoratorProvider", function () {
     const {decoratorProvider, brushPerSecond, owner, lp} = await loadFixture(deployContracts);
 
     const amount = 100;
-    await lp.mint(owner.address, amount);
+    await lp.mint(owner, amount);
     await lp.approve(decoratorProvider, amount);
     await decoratorProvider.deposit();
 

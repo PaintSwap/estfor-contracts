@@ -684,7 +684,7 @@ describe("Passive actions", function () {
     ).to.be.revertedWithCustomError(passiveActions, "PlayerNotUpgraded");
     // Upgrade player
     await brush.mint(alice.address, upgradePlayerBrushPrice);
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0)).to.not.be

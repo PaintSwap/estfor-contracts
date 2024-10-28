@@ -331,7 +331,7 @@ describe("PetNFT", function () {
       const {petNFT, playerId, brush, editNameBrushPrice, owner, alice} = await loadFixture(deployContracts);
 
       const name = "My pet name is1";
-      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
+      await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
 
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
@@ -368,7 +368,7 @@ describe("PetNFT", function () {
     it("Changing from previous name should relinquish it", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
+      await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
@@ -383,7 +383,7 @@ describe("PetNFT", function () {
     it("Editing name without actually changing it should revert", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
+      await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
@@ -400,7 +400,7 @@ describe("PetNFT", function () {
     it("Max 15 charactes for the name", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
+      await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
@@ -419,7 +419,7 @@ describe("PetNFT", function () {
       // Check "Pet " is not allowed, doesn't matter about case. "PET " should also not be allowed
       const {petNFT, playerId, brush, editNameBrushPrice, owner, alice} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
+      await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
@@ -441,7 +441,7 @@ describe("PetNFT", function () {
     it("Check brush payment goes to expected addresses", async function () {
       const {petNFT, playerId, brush, editNameBrushPrice, alice, dev, territories} = await loadFixture(deployContracts);
 
-      await brush.connect(alice).approve(await petNFT.getAddress(), editNameBrushPrice * 3n);
+      await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
       await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);

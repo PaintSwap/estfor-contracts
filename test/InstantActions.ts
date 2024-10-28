@@ -487,7 +487,7 @@ describe("Instant actions", function () {
       ).to.be.revertedWithCustomError(instantActions, "PlayerNotUpgraded");
       // Upgrade player
       await brush.mint(alice.address, upgradePlayerBrushPrice);
-      await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+      await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
       await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
       await expect(

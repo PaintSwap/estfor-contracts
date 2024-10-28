@@ -2,7 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {playersFixture} from "./Players/PlayersFixture";
-import {requestAndFulfillRandomWords} from "./utils";
+import {requestAndFulfillRandomWords, timeTravel, timeTravel24Hours, timeTravelToNextCheckpoint} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
@@ -15,16 +15,12 @@ describe("WishingWell", function () {
     const {alice, wishingWell, brush, itemNFT, world, mockVRF} = baseFixture;
 
     // Make sure it passes the next checkpoint so there are no issues running
-    const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
-    const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
-    const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
-    await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravelToNextCheckpoint();
     await requestAndFulfillRandomWords(world, mockVRF);
 
     const totalBrush = parseEther("100000");
     await brush.mint(alice.address, totalBrush);
-    await brush.connect(alice).approve(await wishingWell.getAddress(), totalBrush);
+    await brush.connect(alice).approve(wishingWell, totalBrush);
 
     const boostDuration = 3600;
     await itemNFT.addItems([
@@ -126,16 +122,16 @@ describe("WishingWell", function () {
   it("Donate without using a player", async function () {
     const {shop, players, brush, alice, totalBrush} = await loadFixture(deployContracts);
     await players.connect(alice).donate(0, parseEther("1"));
-    expect(await brush.balanceOf(alice.address)).to.eq(totalBrush - parseEther("1"));
-    expect(await brush.balanceOf(await shop.getAddress())).to.eq(parseEther("1"));
+    expect(await brush.balanceOf(alice)).to.eq(totalBrush - parseEther("1"));
+    expect(await brush.balanceOf(shop)).to.eq(parseEther("1"));
   });
 
   it("Donate with player", async function () {
     const {shop, players, brush, alice, totalBrush, playerId} = await loadFixture(deployContracts);
     const amount = parseEther("1");
     await players.connect(alice).donate(playerId, amount);
-    expect(await brush.balanceOf(alice.address)).to.eq(totalBrush - amount);
-    expect(await brush.balanceOf(await shop.getAddress())).to.eq(amount);
+    expect(await brush.balanceOf(alice)).to.eq(totalBrush - amount);
+    expect(await brush.balanceOf(shop)).to.eq(amount);
 
     await expect(players.connect(alice).donate(playerId + 1n, amount)).to.be.revertedWithCustomError(
       players,
@@ -362,7 +358,7 @@ describe("WishingWell", function () {
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     await brush.mint(bob.address, totalBrush);
-    await brush.connect(bob).approve(await wishingWell.getAddress(), totalBrush);
+    await brush.connect(bob).approve(wishingWell, totalBrush);
 
     await wishingWell.setClanDonationThresholdIncrement(raffleEntryCost);
 
@@ -427,10 +423,9 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(await wishingWell.getAddress(), totalBrush);
+    await brush.connect(owner).approve(wishingWell, totalBrush);
     for (let i = 0; i < 3; ++i) {
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser" + i, false);
       await players.connect(owner).donate(newPlayerId, raffleEntryCost);
@@ -502,10 +497,9 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(await wishingWell.getAddress(), totalBrush);
+    await brush.connect(owner).approve(wishingWell, totalBrush);
     for (let i = 0; i < 2; ++i) {
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await ethers.provider.send("evm_mine", []);
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).donate(playerId, raffleEntryCost);
     }

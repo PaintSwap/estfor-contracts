@@ -120,7 +120,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
       const actionAmount = 1;
       await instantVRFActions
@@ -129,9 +129,7 @@ describe("Instant VRF actions", function () {
           value: await instantVRFActions.requestCost(actionAmount)
         });
 
-      expect(
-        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW])
-      ).to.deep.eq([2, 1, 0]);
+      expect(await itemNFT.balanceOfs(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW])).to.deep.eq([2, 1, 0]);
     });
 
     it("Cannot use greater than maxActionAmount for a single action", async function () {
@@ -153,11 +151,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
-      await itemNFT.testMints(
-        await alice.getAddress(),
-        [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        [1000, 1000, 1000]
-      );
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [1000, 1000, 1000]);
 
       const actionAmount = maxInstantVRFActionAmount + 1n;
       await expect(
@@ -196,11 +190,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
-      await itemNFT.testMints(
-        await alice.getAddress(),
-        [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        [1000, 1000, 1000]
-      );
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [1000, 1000, 1000]);
 
       const actionAmount = maxInstantVRFActionAmount - 2n;
       let actionAmount1 = 3;
@@ -247,7 +237,7 @@ describe("Instant VRF actions", function () {
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
 
       await itemNFT.testMints(
-        await alice.getAddress(),
+        alice,
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
         [6, 6, 6, 6, 6, 6]
       );
@@ -273,15 +263,11 @@ describe("Instant VRF actions", function () {
           [2, 4, 6, 4, 5, 6]
         );
 
-      expect(
-        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW])
-      ).to.deep.eq([4, 2, 0]);
+      expect(await itemNFT.balanceOfs(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW])).to.deep.eq([4, 2, 0]);
 
       await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
 
-      expect(await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR])).to.deep.eq([
-        2, 1, 0
-      ]);
+      expect(await itemNFT.balanceOfs(alice, [BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR])).to.deep.eq([2, 1, 0]);
     });
 
     it("Not paying the request cost", async function () {
@@ -294,7 +280,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
       const actionAmount = 1;
       await expect(
@@ -327,7 +313,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
       const actionAmount = 1;
       await expect(
@@ -339,8 +325,8 @@ describe("Instant VRF actions", function () {
       ).to.be.revertedWithCustomError(instantVRFActions, "PlayerNotUpgraded");
 
       const brushAmount = (editNameBrushPrice + upgradePlayerBrushPrice) * 2n;
-      await brush.connect(alice).approve(await playerNFT.getAddress(), brushAmount);
-      await brush.mint(await alice.getAddress(), brushAmount);
+      await brush.connect(alice).approve(playerNFT, brushAmount);
+      await brush.mint(alice, brushAmount);
 
       const upgrade = true;
       await expect(playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", upgrade));
@@ -487,7 +473,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -499,9 +485,9 @@ describe("Instant VRF actions", function () {
       const requestId = 1;
       await fulfillRandomWords(requestId, instantVRFActions, mockVRF);
 
-      expect(
-        await itemNFT.balanceOfs(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])
-      ).to.deep.eq([4, 2, 0, 4]);
+      expect(await itemNFT.balanceOfs(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, RUNITE_ARROW])).to.deep.eq([
+        4, 2, 0, 4
+      ]);
     });
 
     it("CompletedInstantVRFActions event should be emitted with correct produced item output", async function () {
@@ -512,7 +498,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -536,7 +522,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [12, 12, 12]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [12, 12, 12]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -575,7 +561,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -607,7 +593,7 @@ describe("Instant VRF actions", function () {
       const erc1155HolderRogue = (await ethers.deployContract("ERC1155HolderRogue")) as ERC1155HolderRogue;
       await playerNFT
         .connect(alice)
-        .safeTransferFrom(await alice.getAddress(), await erc1155HolderRogue.getAddress(), playerId, 1, "0x00");
+        .safeTransferFrom(alice, await erc1155HolderRogue.getAddress(), playerId, 1, "0x00");
       await itemNFT.testMints(
         await erc1155HolderRogue.getAddress(),
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
@@ -683,7 +669,7 @@ describe("Instant VRF actions", function () {
       };
       await instantVRFActions.addActions([instantVRFActionInput]);
 
-      await itemNFT.testMint(await alice.getAddress(), BRONZE_ARROW, 2);
+      await itemNFT.testMint(alice, BRONZE_ARROW, 2);
       const actionAmount = 2;
       await expect(
         instantVRFActions.connect(alice).doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [2], {
@@ -691,8 +677,8 @@ describe("Instant VRF actions", function () {
         })
       ).to.be.revertedWithCustomError(instantVRFActions, "PlayerNotUpgraded");
       // Upgrade player
-      await brush.mint(await alice.getAddress(), upgradePlayerBrushPrice);
-      await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+      await brush.mint(alice, upgradePlayerBrushPrice);
+      await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
       const upgrade = true;
       await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", upgrade);
 
@@ -831,7 +817,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(await alice.getAddress(), [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions.setAvailable([instantVRFActionInput.actionId], false);
@@ -1001,7 +987,7 @@ describe("Instant VRF actions", function () {
       // Add it twice, just to get this tested
       await instantVRFActions.addActions([instantVRFActionInput, {...instantVRFActionInput, actionId: 2}]);
 
-      await itemNFT.testMint(await alice.getAddress(), BRONZE_ARROW, 1000000);
+      await itemNFT.testMint(alice, BRONZE_ARROW, 1000000);
 
       const actionAmount1 = maxInstantVRFActionAmount / 2n;
       const actionAmount2 = maxInstantVRFActionAmount / 2n - 1n;

@@ -20,7 +20,7 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
 
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -34,7 +34,7 @@ describe("ClanBattleLibrary", function () {
     randomWordBs = [0, 0, 0];
 
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -48,7 +48,7 @@ describe("ClanBattleLibrary", function () {
     randomWordBs = [0, 1, 0];
 
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -76,7 +76,7 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(owner.address, playerId + 1n, skills[0], getXPFromLevel(20), true);
     const clanMembersB = [playerId + 1n];
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -86,12 +86,12 @@ describe("ClanBattleLibrary", function () {
     );
     expect(res.didAWin).to.be.false;
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     const upgrade = true;
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", upgrade);
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -118,7 +118,7 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(owner.address, playerId + 1n, skills[0], getXPFromLevel(20), true);
     const clanMembersB = [playerId + 1n];
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -131,7 +131,7 @@ describe("ClanBattleLibrary", function () {
     extraRollsA = 1;
 
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -154,7 +154,7 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -169,7 +169,7 @@ describe("ClanBattleLibrary", function () {
     clanMembersA = [];
     clanMembersB = [playerId];
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -194,7 +194,7 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
     await players.testModifyXP(alice.address, playerId, skills[0], 1000, true);
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -208,7 +208,7 @@ describe("ClanBattleLibrary", function () {
     clanMembersA = [0n];
     clanMembersB = [playerId];
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -233,7 +233,7 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(alice.address, playerId, skills[0], getXPFromLevel(20), true); // Get 2 rolls each
 
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -250,7 +250,7 @@ describe("ClanBattleLibrary", function () {
 
     clanMembersA = [playerId, newPlayerId];
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -266,7 +266,7 @@ describe("ClanBattleLibrary", function () {
     clanMembersA = [playerId, playerId];
     clanMembersB = [playerId, newPlayerId];
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -292,7 +292,7 @@ describe("ClanBattleLibrary", function () {
     const extraRollsA = 0;
     const extraRollsB = 0;
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -307,7 +307,7 @@ describe("ClanBattleLibrary", function () {
     await players.testModifyXP(alice.address, playerId, Skill.FISHING, getXPFromLevel(20), true); // Get 3 rolls
 
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -337,7 +337,7 @@ describe("ClanBattleLibrary", function () {
       const randomWordAs = [0, i, 0];
       const randomWordBs = [0, 1, 0];
       const res = await clanBattleLibrary.doBattle(
-        await players.getAddress(),
+        players,
         clanMembersA,
         clanMembersB,
         skills,
@@ -385,7 +385,7 @@ describe("ClanBattleLibrary", function () {
 
     // Initial result
     const initialWinner = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -399,7 +399,7 @@ describe("ClanBattleLibrary", function () {
       const randomWordAs = [0, i, 0];
       const randomWordBs = [0, 1, 0];
       const winner = await clanBattleLibrary.doBattle(
-        await players.getAddress(),
+        players,
         clanMembersA,
         clanMembersB,
         skills,
@@ -588,7 +588,7 @@ describe("ClanBattleLibrary", function () {
     const extraRollsA = 0;
     const extraRollsB = 0;
     let res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -603,7 +603,7 @@ describe("ClanBattleLibrary", function () {
     randomWordAs = [1, 5, 0]; // Add some shuffling to attackers
     randomWordBs = [0, 5, 0];
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,
@@ -618,7 +618,7 @@ describe("ClanBattleLibrary", function () {
     randomWordAs = [0, 5, 0];
     randomWordBs = [1, 5, 0]; // Add some shuffling to defenders
     res = await clanBattleLibrary.doBattle(
-      await players.getAddress(),
+      players,
       clanMembersA,
       clanMembersB,
       skills,

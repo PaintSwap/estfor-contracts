@@ -5,7 +5,7 @@ import {WFTM_ADDRESS} from "./contractAddresses";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(
-    `Deploying non transferrable brush with the account: ${owner.address} on chain id ${await getChainId(owner)}`,
+    `Deploying non transferrable brush with the account: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
   const BrushNonTransferrable = await ethers.getContractFactory("BrushNonTransferrable");
@@ -19,10 +19,10 @@ async function main() {
   const uniswapFactory = "0x152ee697f2e276fa89e96742e9bb9ab1f2e61be3";
   const IUniswapV2Factory = await ethers.getContractAt("IUniswapV2Factory", uniswapFactory);
 
-  tx = await IUniswapV2Factory.createPair(await brushNonTransferrable.getAddress(), WFTM_ADDRESS);
+  tx = await IUniswapV2Factory.createPair(brushNonTransferrable, WFTM_ADDRESS);
   await tx.wait(3);
   console.log("Created pair");
-  const pair = await IUniswapV2Factory.getPair(await brushNonTransferrable.getAddress(), WFTM_ADDRESS);
+  const pair = await IUniswapV2Factory.getPair(brushNonTransferrable, WFTM_ADDRESS);
   console.log("Pair", pair);
 
   tx = await brushNonTransferrable.transfer(pair, 10000);

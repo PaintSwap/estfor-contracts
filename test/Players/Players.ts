@@ -1604,7 +1604,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     // Upgrade player, should have a 20% boost now
     await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
@@ -1637,7 +1637,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     // Upgrade player, should have a 20% boost now
     await playerNFT.connect(alice).editPlayer(playerId, "New name", "", "", "", true);
@@ -1894,7 +1894,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
 
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
@@ -1927,7 +1927,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
 
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
@@ -1954,7 +1954,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
 
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
@@ -1995,7 +1995,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2057,7 +2057,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2098,7 +2098,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2142,7 +2142,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2234,7 +2234,7 @@ describe("Players", function () {
       [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE, EstforConstants.SAPPHIRE],
       [startingBalance, startingBalance, startingBalance]
     );
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 

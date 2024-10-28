@@ -664,11 +664,11 @@ describe("Clans", function () {
       );
 
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-      await brush.mint(bob.address, 1000);
-      await brush.connect(bob).approve(await clans.getAddress(), 1000);
+      await brush.mint(bob, 1000);
+      await brush.connect(bob).approve(clans, 1000);
       const tierId = 2;
       await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, tierId);
-      expect(await brush.balanceOf(bob.address)).to.eq(1000n - (await clans.getTier(tierId)).price);
+      expect(await brush.balanceOf(bob)).to.eq(1000n - (await clans.getTier(tierId)).price);
     });
 
     it("Anyone can upgrade", async function () {
@@ -680,17 +680,17 @@ describe("Clans", function () {
       );
       const tierId = 2;
       const brushAmount = (await clans.getTier(tierId)).price;
-      await brush.mint(alice.address, brushAmount - 1n);
-      await brush.connect(alice).approve(await clans.getAddress(), brushAmount);
+      await brush.mint(alice, brushAmount - 1n);
+      await brush.connect(alice).approve(await clans, brushAmount);
       await expect(clans.connect(alice).upgradeClan(clanId, playerId, tierId)).to.be.revertedWithCustomError(
         brush,
         "ERC20InsufficientBalance"
       );
-      await brush.mint(alice.address, 1);
+      await brush.mint(alice, 1);
       await clans.connect(alice).upgradeClan(clanId, playerId, tierId);
       const clan = await clans.getClan(clanId);
       expect(clan.tierId).to.eq(2);
-      expect(await brush.balanceOf(alice.address)).to.eq(0);
+      expect(await brush.balanceOf(alice)).to.eq(0);
     });
 
     it("Pay for tier 1 if it has a cost", async () => {
@@ -710,12 +710,12 @@ describe("Clans", function () {
       ];
       await clans.editTiers(tiers);
 
-      await brush.mint(alice.address, price);
-      await brush.connect(alice).approve(await clans.getAddress(), price);
+      await brush.mint(alice, price);
+      await brush.connect(alice).approve(clans, price);
       await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
       // Check creating a tier 1 clan that has a cost correctly takes the brush
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, imageId, tierId);
-      await expect(await brush.balanceOf(alice.address)).to.eq(0);
+      await expect(await brush.balanceOf(alice)).to.eq(0);
     });
 
     it("Check costs are expected when creating a higher tier clan when tier 1 has a cost", async () => {
@@ -738,24 +738,24 @@ describe("Clans", function () {
 
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
       const tierId = 2;
-      await brush.mint(bob.address, 1000);
-      await brush.connect(bob).approve(await clans.getAddress(), 1000);
+      await brush.mint(bob, 1000);
+      await brush.connect(bob).approve(clans, 1000);
       await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, tierId);
-      expect(await brush.balanceOf(bob.address)).to.eq(1000n - (await clans.getTier(tierId)).price);
+      expect(await brush.balanceOf(bob)).to.eq(1000n - (await clans.getTier(tierId)).price);
     });
 
     it("Pay the difference for incremental upgrades", async function () {
       const {clans, clanId, alice, playerId, brush} = await loadFixture(upgradedClansFixture);
 
       const brushAmount = (await clans.getTier(3)).price;
-      await brush.mint(alice.address, brushAmount);
-      const beforeBalance = await brush.balanceOf(alice.address);
-      await brush.connect(alice).approve(await clans.getAddress(), brushAmount);
+      await brush.mint(alice, brushAmount);
+      const beforeBalance = await brush.balanceOf(alice);
+      await brush.connect(alice).approve(clans, brushAmount);
 
       await clans.connect(alice).upgradeClan(clanId, playerId, 2);
-      expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance - (await clans.getTier(2)).price);
+      expect(await brush.balanceOf(alice)).to.eq(beforeBalance - (await clans.getTier(2)).price);
       await clans.connect(alice).upgradeClan(clanId, playerId, 3);
-      expect(await brush.balanceOf(alice.address)).to.eq(beforeBalance - brushAmount);
+      expect(await brush.balanceOf(alice)).to.eq(beforeBalance - brushAmount);
     });
 
     it("Cannot upgrade to a tier that doesn't exist", async function () {
@@ -764,8 +764,8 @@ describe("Clans", function () {
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
       const brushAmount = (await clans.getTier(4)).price;
       expect(brushAmount).to.eq(0);
-      await brush.mint(bob.address, 1000);
-      await brush.connect(bob).approve(await clans.getAddress(), 1000);
+      await brush.mint(bob, 1000);
+      await brush.connect(bob).approve(clans, 1000);
 
       await expect(clans.connect(bob).upgradeClan(clanId, bobPlayerId, 4)).to.be.revertedWithCustomError(
         clans,
@@ -776,8 +776,8 @@ describe("Clans", function () {
     it("Cannot downgrade a clan", async function () {
       const {clans, clanId, playerId, alice, brush} = await loadFixture(upgradedClansFixture);
 
-      await brush.mint(alice.address, 1000);
-      await brush.connect(alice).approve(await clans.getAddress(), 1000);
+      await brush.mint(alice, 1000);
+      await brush.connect(alice).approve(clans, 1000);
       await clans.connect(alice).upgradeClan(clanId, playerId, 2);
       await expect(clans.connect(alice).upgradeClan(clanId, playerId, 1)).to.be.revertedWithCustomError(
         clans,
@@ -865,8 +865,8 @@ describe("Clans", function () {
           .to.be.revertedWith;
         // Needs brush and approval
         const brushAmount = editNameCost * 5n;
-        await brush.mint(alice.address, brushAmount);
-        await brush.connect(alice).approve(await clans.getAddress(), brushAmount);
+        await brush.mint(alice, brushAmount);
+        await brush.connect(alice).approve(clans, brushAmount);
 
         await clans.connect(alice).editClan(clanId, anotherName, discord, telegram, twitter, imageId, playerId);
         expect(await clans.getLowercaseNames(clanName.toLowerCase())).to.be.false;

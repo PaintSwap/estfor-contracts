@@ -198,7 +198,7 @@ describe("Promotions", function () {
 
       // Evolve player
       await brush.mint(alice.address, upgradePlayerBrushPrice);
-      await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+      await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
       const discord = "";
       const twitter = "";
       const telegram = "";
@@ -353,17 +353,17 @@ describe("Promotions", function () {
         promotion = {...promotion, brushCost: parseEther("1")};
         await promotions.addPromotion(promotion);
         await requestAndFulfillRandomWords(world, mockVRF);
-        await brush.connect(alice).approve(await promotions.getAddress(), parseEther("1"));
+        await brush.connect(alice).approve(promotions, parseEther("1"));
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(brush, "ERC20InsufficientBalance");
 
-        await brush.mint(alice.address, parseEther("1"));
+        await brush.mint(alice, parseEther("1"));
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
 
-        expect(await brush.balanceOf(alice.address)).to.eq(0);
-        expect(await brush.balanceOf(await treasury.getAddress())).to.eq(parseEther("0.5"));
-        expect(await brush.balanceOf(dev.address)).to.eq(parseEther("0.25"));
+        expect(await brush.balanceOf(alice)).to.eq(0);
+        expect(await brush.balanceOf(treasury)).to.eq(parseEther("0.5"));
+        expect(await brush.balanceOf(dev)).to.eq(parseEther("0.25"));
       });
     });
   });
@@ -428,7 +428,7 @@ describe("Promotions", function () {
 
         await promotions.addPromotion(promotion);
 
-        await brush.connect(alice).approve(await promotions.getAddress(), parseEther("20"));
+        await brush.connect(alice).approve(promotions, parseEther("20"));
         await brush.mint(alice.address, parseEther("20"));
 
         // Miss a day
@@ -456,7 +456,7 @@ describe("Promotions", function () {
         };
         await promotions.addPromotion(promotion);
 
-        await brush.connect(alice).approve(await promotions.getAddress(), parseEther("10") * 2n);
+        await brush.connect(alice).approve(promotions, parseEther("10") * 2n);
         await brush.mint(alice.address, parseEther("10") * 2n);
 
         // Miss a couple days
@@ -488,7 +488,7 @@ describe("Promotions", function () {
         };
         await promotions.addPromotion(promotion);
 
-        await brush.connect(alice).approve(await promotions.getAddress(), parseEther("10") * 10n);
+        await brush.connect(alice).approve(promotions, parseEther("10") * 10n);
         await brush.mint(alice.address, parseEther("10") * 10n);
 
         await world.setDailyRewardPool(2, [
@@ -535,7 +535,7 @@ describe("Promotions", function () {
         };
         await promotions.addPromotion(promotion);
 
-        await brush.connect(alice).approve(await promotions.getAddress(), promotion.brushCostMissedDay);
+        await brush.connect(alice).approve(promotions, promotion.brushCostMissedDay);
         await brush.mint(alice.address, promotion.brushCostMissedDay);
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
@@ -557,7 +557,7 @@ describe("Promotions", function () {
         };
         await promotions.addPromotion(promotion);
 
-        await brush.connect(alice).approve(await promotions.getAddress(), parseEther("20"));
+        await brush.connect(alice).approve(promotions, parseEther("20"));
         await brush.mint(alice.address, parseEther("20"));
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
@@ -586,7 +586,7 @@ describe("Promotions", function () {
         };
         await promotions.addPromotion(promotion);
 
-        await brush.connect(alice).approve(await promotions.getAddress(), promotion.brushCostMissedDay);
+        await brush.connect(alice).approve(promotions, promotion.brushCostMissedDay);
         await brush.mint(alice.address, promotion.brushCostMissedDay);
 
         await ethers.provider.send("evm_increaseTime", [3600 * 24 * 2]);
@@ -610,7 +610,7 @@ describe("Promotions", function () {
         };
         await promotions.addPromotion(promotion);
 
-        await brush.connect(alice).approve(await promotions.getAddress(), promotion.brushCostMissedDay);
+        await brush.connect(alice).approve(promotions, promotion.brushCostMissedDay);
         await brush.mint(alice.address, promotion.brushCostMissedDay);
 
         const mintView = await promotions.mintPromotionViewNow(playerId, promotion.promotion);
@@ -1156,7 +1156,7 @@ describe("Promotions", function () {
         promotion = {...promotion, brushCost: parseEther("1")};
 
         await promotions.addPromotion(promotion);
-        await brush.connect(alice).approve(await promotions.getAddress(), parseEther("1"));
+        await brush.connect(alice).approve(promotions, parseEther("1"));
 
         await expect(
           promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
@@ -1165,9 +1165,9 @@ describe("Promotions", function () {
         await brush.mint(alice.address, parseEther("1"));
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
 
-        expect(await brush.balanceOf(alice.address)).to.eq(0);
-        expect(await brush.balanceOf(await treasury.getAddress())).to.eq(parseEther("0.5"));
-        expect(await brush.balanceOf(dev.address)).to.eq(parseEther("0.25"));
+        expect(await brush.balanceOf(alice)).to.eq(0);
+        expect(await brush.balanceOf(treasury)).to.eq(parseEther("0.5"));
+        expect(await brush.balanceOf(dev)).to.eq(parseEther("0.25"));
       });
     });
   });

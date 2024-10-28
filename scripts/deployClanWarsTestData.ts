@@ -45,12 +45,10 @@ async function main() {
   const pid = 22;
   const playerId = 1;
 
-  const pendingBrush = await decorator.pendingBrush(pid, await decoratorProvider.getAddress());
+  const pendingBrush = await decorator.pendingBrush(pid, decoratorProvider);
   console.log("Pending", pendingBrush);
 
-  let tx = await brush
-    .connect(owner)
-    .transfer(await decoratorProvider.getAddress(), (pendingBrush + pendingBrush) / 2n);
+  let tx = await brush.connect(owner).transfer(decoratorProvider, (pendingBrush + pendingBrush) / 2n);
   await tx.wait();
   console.log("Transferred brush");
 
@@ -59,18 +57,16 @@ async function main() {
   console.log("Harvest");
 
   // Lock some brush in a vault
-  tx = await lockedBankVaults.connect(owner).initializeAddresses(owner.address, await combatantsHelper.getAddress());
+  tx = await lockedBankVaults.connect(owner).initializeAddresses(owner.address, combatantsHelper);
   await tx.wait();
   console.log("set territories");
-  tx = await brush.connect(owner).approve(await lockedBankVaults.getAddress(), parseEther("100"));
+  tx = await brush.connect(owner).approve(lockedBankVaults, parseEther("100"));
   await tx.wait();
   console.log("Approve");
   tx = await lockedBankVaults.connect(owner).lockFunds(1, owner.address, 1, parseEther("100"));
   await tx.wait();
   console.log("LockFunds");
-  tx = await lockedBankVaults
-    .connect(owner)
-    .initializeAddresses(await territories.getAddress(), await combatantsHelper.getAddress());
+  tx = await lockedBankVaults.connect(owner).initializeAddresses(territories, combatantsHelper);
   await tx.wait();
   console.log("SetTerritories");
 

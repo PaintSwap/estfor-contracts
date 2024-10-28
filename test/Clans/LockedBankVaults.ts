@@ -6,7 +6,7 @@ import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {LockedBankVaults, MockBrushToken, Territories} from "../../typechain-types";
 
-import {fulfillRandomWords} from "../utils";
+import {fulfillRandomWords, timeTravel} from "../utils";
 import {BaseContract, Block, ContractTransactionReceipt} from "ethers";
 import {allBattleSkills} from "../../scripts/data/territories";
 import {getXPFromLevel} from "../Players/utils";
@@ -25,33 +25,34 @@ describe("LockedBankVaults", function () {
     territories: Territories,
     combatantsHelper: BaseContract
   ) => {
-    await brush.mint(alice.address, amount);
-    await brush.connect(alice).approve(await lockedBankVaults.getAddress(), amount);
-    await lockedBankVaults.initializeAddresses(alice.address, await combatantsHelper.getAddress()); // Set it to alice so we can lock funds
-    await lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, amount);
-    await lockedBankVaults.initializeAddresses(await territories.getAddress(), await combatantsHelper.getAddress()); // Set it back after locking funds
+    await brush.mint(alice, amount);
+    await brush.connect(alice).approve(lockedBankVaults, amount);
+    await lockedBankVaults.initializeAddresses(alice, combatantsHelper); // Set it to alice so we can lock funds
+    await lockedBankVaults.connect(alice).lockFunds(clanId, alice, playerId, amount);
+    await lockedBankVaults.initializeAddresses(territories, combatantsHelper); // Set it back after locking funds
   };
 
   it("Lock funds", async () => {
     const {lockedBankVaults, clanId, playerId, alice, brush, combatantsHelper} = await loadFixture(clanFixture);
 
-    await brush.mint(alice.address, 1000);
-    await brush.connect(alice).approve(await lockedBankVaults.getAddress(), 1000);
-    await lockedBankVaults.initializeAddresses(alice.address, await combatantsHelper.getAddress());
-    await lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, 400);
-    expect(await brush.balanceOf(alice.address)).to.eq(600);
-    expect(await brush.balanceOf(await lockedBankVaults.getAddress())).to.eq(400);
+    await brush.mint(alice, 1000);
+    await brush.connect(alice).approve(lockedBankVaults, 1000);
+    await lockedBankVaults.initializeAddresses(alice, combatantsHelper);
+    await lockedBankVaults.connect(alice).lockFunds(clanId, alice, playerId, 400);
+    expect(await brush.balanceOf(alice)).to.eq(600);
+    expect(await brush.balanceOf(lockedBankVaults)).to.eq(400);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(400);
   });
 
   it("Only territories contract can lock funds", async () => {
     const {lockedBankVaults, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
 
-    await brush.mint(alice.address, 100);
-    await brush.connect(alice).approve(await lockedBankVaults.getAddress(), 100);
-    await expect(
-      lockedBankVaults.connect(alice).lockFunds(clanId, alice.address, playerId, 100)
-    ).to.be.revertedWithCustomError(lockedBankVaults, "OnlyTerritories");
+    await brush.mint(alice, 100);
+    await brush.connect(alice).approve(lockedBankVaults, 100);
+    await expect(lockedBankVaults.connect(alice).lockFunds(clanId, alice, playerId, 100)).to.be.revertedWithCustomError(
+      lockedBankVaults,
+      "OnlyTerritories"
+    );
   });
 
   it("Cannot attack your own clan", async function () {
@@ -422,20 +423,17 @@ describe("LockedBankVaults", function () {
     // Can now claim
     await lockedBankVaults.connect(alice).claimFunds(clanId, playerId);
     expect(await brush.balanceOf(bankAddress)).to.eq(1000);
-    expect(await brush.balanceOf(await lockedBankVaults.getAddress())).to.eq(750);
+    expect(await brush.balanceOf(lockedBankVaults)).to.eq(750);
     // Cannot claim twice
     await expect(lockedBankVaults.connect(alice).claimFunds(clanId, playerId)).to.be.revertedWithCustomError(
       LockedBankVaultsLibrary,
       "NothingToClaim"
     );
-    await ethers.provider.send("evm_increaseTime", [lockPeriodSlice]);
-    await ethers.provider.send("evm_mine", []);
-    await ethers.provider.send("evm_increaseTime", [lockPeriodSlice]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel(lockPeriodSlice * 2);
     // Claim both
     await lockedBankVaults.connect(alice).claimFunds(clanId, playerId);
     expect(await brush.balanceOf(bankAddress)).to.eq(1750);
-    expect(await brush.balanceOf(await lockedBankVaults.getAddress())).to.eq(0);
+    expect(await brush.balanceOf(lockedBankVaults)).to.eq(0);
     // Cannot claim again
     await expect(lockedBankVaults.connect(alice).claimFunds(clanId, playerId)).to.be.revertedWithCustomError(
       LockedBankVaultsLibrary,

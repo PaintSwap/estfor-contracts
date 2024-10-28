@@ -13,7 +13,7 @@ async function main() {
   const wishingWell = (await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS)) as WishingWell;
   const raffleCost = await wishingWell.getRaffleEntryCost();
   const brush = await ethers.getContractAt("IERC20", BRUSH_ADDRESS);
-  let tx = await brush.approve(await wishingWell.getAddress(), parseEther("1000"));
+  let tx = await brush.approve(wishingWell, parseEther("1000"));
   await tx.wait();
   const playerId = 1;
   await players.donate(playerId, raffleCost);

@@ -15,7 +15,7 @@ describe("Pets", function () {
       await loadFixture(playersFixture);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await expect(
@@ -43,7 +43,7 @@ describe("Pets", function () {
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     // Upgrade player, can now equip pet
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -71,7 +71,7 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -116,7 +116,7 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -161,7 +161,7 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -206,7 +206,7 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
@@ -244,7 +244,7 @@ describe("Pets", function () {
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
-    await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice.address, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 

@@ -15,7 +15,7 @@ describe("ItemNFT", function () {
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
       await owner.sendTransaction({
-        to: owner.getAddress(),
+        to: await owner.getAddress(),
         value: 1,
         maxFeePerGas: 1
       });
@@ -71,8 +71,8 @@ describe("ItemNFT", function () {
       }
     )) as unknown as RoyaltyReceiver;
 
-    const admins = [await owner.getAddress(), await alice.getAddress()];
-    const promotionalAdmins = [await alice.getAddress()];
+    const admins = [owner.address, alice.address];
+    const promotionalAdmins = [alice.address];
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
     const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, promotionalAdmins], {
       kind: "uups"
@@ -234,12 +234,10 @@ describe("ItemNFT", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
-    expect(await itemNFT.balanceOf(alice.getAddress(), EstforConstants.BRONZE_AXE)).to.be.eq(1);
-    await itemNFT
-      .connect(alice)
-      .safeTransferFrom(alice.getAddress(), owner.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x");
-    expect(await itemNFT.balanceOf(alice.getAddress(), EstforConstants.BRONZE_AXE)).to.be.eq(0);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_AXE, 1);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_AXE)).to.be.eq(1);
+    await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.BRONZE_AXE, 1, "0x");
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_AXE)).to.be.eq(0);
   });
 
   it("Non-transferable NFT", async function () {
@@ -254,38 +252,36 @@ describe("ItemNFT", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_AXE, 1);
     await expect(
-      itemNFT
-        .connect(alice)
-        .safeTransferFrom(alice.getAddress(), owner.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
+      itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.be.revertedWithCustomError(itemNFT, "ItemNotTransferable");
 
     // Allow it to be burnt
-    await expect(itemNFT.connect(alice).burn(alice.getAddress(), EstforConstants.BRONZE_AXE, 1)).to.not.be.reverted;
+    await expect(itemNFT.connect(alice).burn(alice, EstforConstants.BRONZE_AXE, 1)).to.not.be.reverted;
   });
 
   it("totalSupply", async function () {
     const {itemNFT, alice} = await loadFixture(deployContracts);
 
-    await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_AXE, 3);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_AXE, 3);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
     expect(await itemNFT["totalSupply(uint256)"](EstforConstants.BRONZE_AXE)).to.be.eq(3);
-    await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
-    await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_ARMOR, 1);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_ARMOR, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
-    await itemNFT.connect(alice).burn(alice.getAddress(), EstforConstants.BRONZE_AXE, 3);
+    await itemNFT.connect(alice).burn(alice, EstforConstants.BRONZE_AXE, 3);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
-    await itemNFT.connect(alice).burn(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.connect(alice).burn(alice, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
-    await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(2);
-    await itemNFT.connect(alice).burn(alice.getAddress(), EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.connect(alice).burn(alice, EstforConstants.BRONZE_AXE, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
-    await itemNFT.connect(alice).burn(alice.getAddress(), EstforConstants.BRONZE_ARMOR, 1);
+    await itemNFT.connect(alice).burn(alice, EstforConstants.BRONZE_ARMOR, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(0);
-    await itemNFT.testMint(alice.getAddress(), EstforConstants.BRONZE_ARMOR, 1);
+    await itemNFT.testMint(alice, EstforConstants.BRONZE_ARMOR, 1);
     expect(await itemNFT["totalSupply()"]()).to.be.eq(1);
     expect(await itemNFT["totalSupply(uint256)"](EstforConstants.BRONZE_ARMOR)).to.be.eq(1);
   });
@@ -294,36 +290,31 @@ describe("ItemNFT", function () {
     // Only owner can do it
     const {itemNFT, owner, alice} = await loadFixture(deployContracts);
 
-    await itemNFT.airdrop([owner.getAddress(), alice.getAddress()], EstforConstants.BRONZE_AXE, [1, 2]);
+    await itemNFT.airdrop([owner, alice], EstforConstants.BRONZE_AXE, [1, 2]);
 
-    expect(await itemNFT.balanceOf(owner.getAddress(), EstforConstants.BRONZE_AXE)).to.eq(1);
-    expect(await itemNFT.balanceOf(alice.getAddress(), EstforConstants.BRONZE_AXE)).to.eq(2);
+    expect(await itemNFT.balanceOf(owner, EstforConstants.BRONZE_AXE)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_AXE)).to.eq(2);
 
-    await itemNFT.airdrop([alice.getAddress()], EstforConstants.BRONZE_AXE, [3]);
-    expect(await itemNFT.balanceOf(owner.getAddress(), EstforConstants.BRONZE_AXE)).to.eq(1); // Unchanged
-    expect(await itemNFT.balanceOf(alice.getAddress(), EstforConstants.BRONZE_AXE)).to.eq(5);
+    await itemNFT.airdrop([alice], EstforConstants.BRONZE_AXE, [3]);
+    expect(await itemNFT.balanceOf(owner, EstforConstants.BRONZE_AXE)).to.eq(1); // Unchanged
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_AXE)).to.eq(5);
 
     await expect(
-      itemNFT.connect(alice).airdrop([alice.getAddress()], EstforConstants.BRONZE_AXE, [3])
+      itemNFT.connect(alice).airdrop([alice], EstforConstants.BRONZE_AXE, [3])
     ).to.be.revertedWithCustomError(itemNFT, "OwnableUnauthorizedAccount");
   });
 
   it("IsApprovedForAll override", async function () {
     const {itemNFT, owner, alice} = await loadFixture(deployContracts);
 
-    await itemNFT.testMint(owner.getAddress(), EstforConstants.BRONZE_AXE, 3);
+    await itemNFT.testMint(owner, EstforConstants.BRONZE_AXE, 3);
     await expect(
-      itemNFT
-        .connect(alice)
-        .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
+      itemNFT.connect(alice).safeTransferFrom(owner, alice, EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.be.revertedWithCustomError(itemNFT, "ERC1155MissingApprovalForAll");
 
     await itemNFT.initializeAddresses(alice, alice, alice, alice, alice, alice, alice, alice, alice, alice);
-    await expect(
-      itemNFT
-        .connect(alice)
-        .safeTransferFrom(owner.getAddress(), alice.getAddress(), EstforConstants.BRONZE_AXE, 1, "0x")
-    ).to.not.be.reverted;
+    await expect(itemNFT.connect(alice).safeTransferFrom(owner, alice, EstforConstants.BRONZE_AXE, 1, "0x")).to.not.be
+      .reverted;
   });
 
   it("name & symbol", async function () {
@@ -358,14 +349,13 @@ describe("ItemNFT", function () {
   it("Transfer of items to many different users at once", async function () {
     const {itemNFT, owner, alice, dev} = await loadFixture(deployContracts);
 
-    const ownerAddress = await owner.getAddress();
-    await itemNFT.testMint(ownerAddress, EstforConstants.TITANIUM_AXE, 2); // to alice
-    await itemNFT.testMint(ownerAddress, EstforConstants.IRON_AXE, 3); // to dev
-    await itemNFT.testMint(ownerAddress, EstforConstants.MITHRIL_AXE, 1); // Don't transfer this
+    await itemNFT.testMint(owner, EstforConstants.TITANIUM_AXE, 2); // to alice
+    await itemNFT.testMint(owner, EstforConstants.IRON_AXE, 3); // to dev
+    await itemNFT.testMint(owner, EstforConstants.MITHRIL_AXE, 1); // Don't transfer this
 
-    await itemNFT.testMint(ownerAddress, EstforConstants.ADAMANTINE_AXE, 4); // to dev
-    await itemNFT.testMint(ownerAddress, EstforConstants.RUNITE_AXE, 3); // to alice (only send 1)
-    await itemNFT.testMint(ownerAddress, EstforConstants.ORICHALCUM_AXE, 2); // to alice
+    await itemNFT.testMint(owner, EstforConstants.ADAMANTINE_AXE, 4); // to dev
+    await itemNFT.testMint(owner, EstforConstants.RUNITE_AXE, 3); // to alice (only send 1)
+    await itemNFT.testMint(owner, EstforConstants.ORICHALCUM_AXE, 2); // to alice
 
     const tokenIds = [
       EstforConstants.TITANIUM_AXE,
@@ -374,8 +364,7 @@ describe("ItemNFT", function () {
       EstforConstants.RUNITE_AXE,
       EstforConstants.ORICHALCUM_AXE
     ];
-    const [devAddress, aliceAddress] = await Promise.all([dev.getAddress(), alice.getAddress()]);
-    const tos = [aliceAddress, devAddress, devAddress, aliceAddress, aliceAddress];
+    const tos = [alice, dev, dev, alice, alice];
     const amounts = [2, 3, 4, 1, 2];
 
     // Turn this into expected transfer nft object
@@ -406,17 +395,17 @@ describe("ItemNFT", function () {
 
     // Check balances of the NFTs are as expected
     expect(
-      await itemNFT.balanceOfs(alice.getAddress(), [
+      await itemNFT.balanceOfs(alice, [
         EstforConstants.TITANIUM_AXE,
         EstforConstants.RUNITE_AXE,
         EstforConstants.ORICHALCUM_AXE
       ])
     ).to.deep.eq([2, 1, 2]);
 
-    expect(
-      await itemNFT.balanceOfs(dev.getAddress(), [EstforConstants.IRON_AXE, EstforConstants.ADAMANTINE_AXE])
-    ).to.deep.eq([3, 4]);
+    expect(await itemNFT.balanceOfs(dev, [EstforConstants.IRON_AXE, EstforConstants.ADAMANTINE_AXE])).to.deep.eq([
+      3, 4
+    ]);
 
-    expect(await itemNFT.balanceOf(owner.getAddress(), EstforConstants.MITHRIL_AXE)).to.eq(1);
+    expect(await itemNFT.balanceOf(owner, EstforConstants.MITHRIL_AXE)).to.eq(1);
   });
 });

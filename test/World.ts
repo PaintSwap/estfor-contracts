@@ -67,12 +67,12 @@ describe("World", function () {
       expect(randomWord).to.eq(0);
 
       // Retrieve the random number
-      await mockVRF.fulfill(requestId, await world.getAddress());
+      await mockVRF.fulfill(requestId, world);
       randomWord = await world.randomWords(requestId);
       expect(randomWord).to.not.eq(0);
 
       // Try fulfill same request should fail
-      await expect(mockVRF.fulfill(requestId, await world.getAddress())).to.be.reverted;
+      await expect(mockVRF.fulfill(requestId, world)).to.be.reverted;
 
       // Requesting new random word too soon
       await expect(world.requestRandomWords()).to.be.reverted;
@@ -82,17 +82,17 @@ describe("World", function () {
       await ethers.provider.send("evm_mine", []);
       await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 1n);
-      await mockVRF.fulfill(requestId, await world.getAddress());
+      await mockVRF.fulfill(requestId, world);
 
       // Increase it 2x more, should allow 2 random seeds to be requested
       await ethers.provider.send("evm_increaseTime", [Number(minRandomWordsUpdateTime * 2n)]);
       await ethers.provider.send("evm_mine", []);
       await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 2n);
-      await mockVRF.fulfill(requestId, await world.getAddress());
+      await mockVRF.fulfill(requestId, world);
       await world.requestRandomWords();
       requestId = await world.requestIds(startOffset + 3n);
-      await mockVRF.fulfill(requestId, await world.getAddress());
+      await mockVRF.fulfill(requestId, world);
       await expect(world.requestRandomWords()).to.be.reverted;
       await expect(world.requestIds(startOffset + 4n)).to.be.reverted;
     });
@@ -108,11 +108,11 @@ describe("World", function () {
       await world.requestRandomWords();
       await expect(world.requestIds(numDaysRandomWordsInitialized + 1n)).to.be.reverted;
       let requestId = await world.requestIds(numDaysRandomWordsInitialized);
-      await mockVRF.fulfill(requestId, await world.getAddress());
+      await mockVRF.fulfill(requestId, world);
       expect(await world.hasRandomWord(currentTimestamp)).to.be.false;
       await world.requestRandomWords();
       requestId = await world.requestIds(numDaysRandomWordsInitialized + 1n);
-      await mockVRF.fulfill(requestId, await world.getAddress());
+      await mockVRF.fulfill(requestId, world);
       expect(await world.hasRandomWord(currentTimestamp)).to.be.true;
       await expect(world.getRandomWord(currentTimestamp)).to.not.be.reverted;
       // Gives unhandled project rejection for some reason
@@ -136,11 +136,11 @@ describe("World", function () {
       await ethers.provider.send("evm_mine", []);
       await world.requestRandomWords();
       let requestId = await world.requestIds(numDaysRandomWordsInitialized);
-      await mockVRF.fulfill(requestId, await world.getAddress());
+      await mockVRF.fulfill(requestId, world);
       await expect(world.getMultipleWords(currentTimestamp)).to.be.revertedWithCustomError(world, "NoValidRandomWord");
       await world.requestRandomWords();
       requestId = await world.requestIds(numDaysRandomWordsInitialized + 1n);
-      await expect(mockVRF.fulfill(requestId, await world.getAddress())).to.not.be.reverted;
+      await expect(mockVRF.fulfill(requestId, world)).to.not.be.reverted;
     });
 
     it("Test new random rewards", async function () {

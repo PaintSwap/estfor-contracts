@@ -1066,7 +1066,7 @@ describe("Quests", function () {
       const twitter = "";
       const telegram = "";
 
-      await brush.connect(alice).approve(await playerNFT.getAddress(), upgradePlayerBrushPrice);
+      await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
       await brush.mint(alice.address, upgradePlayerBrushPrice);
 
       await playerNFT.connect(alice).editPlayer(playerId, origName, discord, twitter, telegram, true);

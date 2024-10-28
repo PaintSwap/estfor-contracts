@@ -1010,7 +1010,7 @@ describe("Combat Actions", function () {
       await itemNFT.testMint(alice.address, EstforConstants.XP_BOOST, 1);
 
       await brush.mint(alice.address, parseEther("100000"));
-      await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
+      await brush.connect(alice).approve(wishingWell, parseEther("100000"));
 
       const raffleCost = await wishingWell.getRaffleEntryCost();
       await players

@@ -443,7 +443,7 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, parseEther("10000"));
-    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("10000"));
+    await brush.connect(alice).approve(wishingWell, parseEther("10000"));
 
     const raffleCost = await wishingWell.getRaffleEntryCost();
     expect(raffleCost).to.be.gt(0);
@@ -507,7 +507,7 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, parseEther("10000"));
-    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("10000"));
+    await brush.connect(alice).approve(wishingWell, parseEther("10000"));
 
     const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextGlobalThreshold).to.be.gt(0);
@@ -599,7 +599,7 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, parseEther("100000"));
-    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
+    await brush.connect(alice).approve(wishingWell, parseEther("100000"));
 
     const clanId = 1;
     const clanDonationInfo = await wishingWell.getClanDonationInfo(clanId);
@@ -621,7 +621,7 @@ describe("Boosts", function () {
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
     await brush.mint(bob.address, parseEther("100000"));
-    await brush.connect(bob).approve(await wishingWell.getAddress(), parseEther("100000"));
+    await brush.connect(bob).approve(wishingWell, parseEther("100000"));
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
@@ -734,7 +734,7 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, parseEther("100000"));
-    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
+    await brush.connect(alice).approve(wishingWell, parseEther("100000"));
 
     const clanId = 1;
     const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
@@ -844,7 +844,7 @@ describe("Boosts", function () {
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
     await brush.mint(alice.address, parseEther("100000"));
-    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("100000"));
+    await brush.connect(alice).approve(wishingWell, parseEther("100000"));
 
     const clanId = 1;
     const raffleCost = await wishingWell.getRaffleEntryCost();
@@ -888,7 +888,7 @@ describe("Boosts", function () {
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
     await brush.mint(bob.address, parseEther("100000"));
-    await brush.connect(bob).approve(await wishingWell.getAddress(), parseEther("100000"));
+    await brush.connect(bob).approve(wishingWell, parseEther("100000"));
 
     await expect(players.connect(bob).donate(bobPlayerId, raffleCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
@@ -1000,7 +1000,7 @@ describe("Boosts", function () {
 
     // Currently only minted through donation thresholds
     await brush.mint(alice.address, parseEther("10000"));
-    await brush.connect(alice).approve(await wishingWell.getAddress(), parseEther("10000"));
+    await brush.connect(alice).approve(wishingWell, parseEther("10000"));
 
     const nextGlobalThreshold = await wishingWell.getNextGlobalThreshold();
     expect(nextGlobalThreshold).to.be.gt(0);

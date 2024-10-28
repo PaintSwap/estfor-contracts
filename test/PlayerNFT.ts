@@ -73,7 +73,7 @@ describe("PlayerNFT", function () {
   it("Minting with an upgrade should cost brush", async function () {
     const {playerNFT, players, alice, brush, upgradePlayerBrushPrice} = await loadFixture(deployContracts);
     const brushAmount = upgradePlayerBrushPrice;
-    await brush.connect(alice).approve(await playerNFT.getAddress(), brushAmount);
+    await brush.connect(alice).approve(playerNFT, brushAmount);
     await brush.mint(alice.address, brushAmount);
 
     const discord = "";
@@ -102,7 +102,7 @@ describe("PlayerNFT", function () {
   it("Edit Name", async function () {
     const {playerId, playerNFT, alice, brush, origName, editNameBrushPrice} = await loadFixture(deployContracts);
     const name = "My name is edited";
-    await brush.connect(alice).approve(await playerNFT.getAddress(), editNameBrushPrice * 3n);
+    await brush.connect(alice).approve(playerNFT, editNameBrushPrice * 3n);
 
     const discord = "";
     const twitter = "";
@@ -141,7 +141,7 @@ describe("PlayerNFT", function () {
       .withArgs(playerId, alice.address, origName, 0, discord, twitter, telegram, false);
 
     // Name changed should be true if name changed
-    await brush.connect(alice).approve(await playerNFT.getAddress(), editNameBrushPrice);
+    await brush.connect(alice).approve(playerNFT, editNameBrushPrice);
     await brush.mint(alice.address, editNameBrushPrice);
     const newName = "New name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, false))
@@ -157,23 +157,21 @@ describe("PlayerNFT", function () {
     const telegram = "";
 
     const brushAmount = editNameBrushPrice + upgradePlayerBrushPrice * 2n;
-    await brush.connect(alice).approve(await playerNFT.getAddress(), brushAmount);
+    await brush.connect(alice).approve(playerNFT, brushAmount);
     await brush.mint(alice.address, brushAmount);
 
     const newName = "new name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
       .to.emit(playerNFT, "EditPlayer")
-      .withArgs(playerId, alice.address, newName, editNameBrushPrice, discord, twitter, telegram, true)
+      .withArgs(playerId, alice, newName, editNameBrushPrice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001, upgradePlayerBrushPrice);
 
-    expect(await brush.balanceOf(alice.address)).to.eq(brushAmount - (editNameBrushPrice + upgradePlayerBrushPrice));
+    expect(await brush.balanceOf(alice)).to.eq(brushAmount - (editNameBrushPrice + upgradePlayerBrushPrice));
 
     // 25% goes to the dev address, 25% burned & 50% goes to the treasury for player upgrades & editing name.
-    expect(await brush.balanceOf(dev.address)).to.eq(upgradePlayerBrushPrice / 4n + editNameBrushPrice / 4n);
-    expect(await brush.balanceOf(await shop.getAddress())).to.eq(
-      upgradePlayerBrushPrice / 2n + editNameBrushPrice / 2n
-    );
+    expect(await brush.balanceOf(dev)).to.eq(upgradePlayerBrushPrice / 4n + editNameBrushPrice / 4n);
+    expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n + editNameBrushPrice / 2n);
 
     // Check upgraded flag
     const player = await players.getPlayers(playerId);
@@ -205,7 +203,7 @@ describe("PlayerNFT", function () {
     const telegram = "";
 
     const brushAmount = upgradePlayerBrushPrice;
-    await brush.connect(alice).approve(await playerNFT.getAddress(), brushAmount);
+    await brush.connect(alice).approve(playerNFT, brushAmount);
     await brush.mint(alice.address, brushAmount);
 
     const upgrade = true;
@@ -219,8 +217,8 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(alice.address)).to.eq(0);
 
     // 25% goes to the dev address, 25% burned & 50% goes to the treasury for player upgrades & editing name.
-    expect(await brush.balanceOf(dev.address)).to.eq(upgradePlayerBrushPrice / 4n);
-    expect(await brush.balanceOf(await shop.getAddress())).to.eq(upgradePlayerBrushPrice / 2n);
+    expect(await brush.balanceOf(dev)).to.eq(upgradePlayerBrushPrice / 4n);
+    expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n);
 
     // Check upgraded flag
     const player = await players.getPlayers(playerId);

@@ -99,7 +99,7 @@ describe("Shop", function () {
       }
     )) as unknown as ItemNFT;
 
-    await shop.setItemNFT(await itemNFT.getAddress());
+    await shop.setItemNFT(itemNFT);
 
     await itemNFT.addItems([
       {
@@ -240,7 +240,7 @@ describe("Shop", function () {
     await expect(shop.connect(alice).buy(alice.address, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
 
     await brush.mint(alice.address, 1000);
-    await brush.connect(alice).approve(await shop.getAddress(), 1000);
+    await brush.connect(alice).approve(shop, 1000);
     await expect(shop.connect(alice).buy(alice.address, EstforConstants.BRONZE_SHIELD, quantityBought))
       .to.emit(shop, "Buy")
       .withArgs(alice.address, alice.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
@@ -253,7 +253,7 @@ describe("Shop", function () {
     await shop.addBuyableItems([{tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200}]);
 
     await brush.mint(alice.address, 900);
-    await brush.connect(alice).approve(await shop.getAddress(), 900);
+    await brush.connect(alice).approve(shop, 900);
     await expect(
       shop
         .connect(alice)
@@ -280,7 +280,7 @@ describe("Shop", function () {
     await expect(shop.connect(alice).buy(bob.address, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
 
     await brush.mint(alice.address, 1000);
-    await brush.connect(alice).approve(await shop.getAddress(), 1000);
+    await brush.connect(alice).approve(shop, 1000);
     await expect(shop.connect(alice).buy(bob.address, EstforConstants.BRONZE_SHIELD, quantityBought))
       .to.emit(shop, "Buy")
       .withArgs(alice.address, bob.address, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
@@ -293,7 +293,7 @@ describe("Shop", function () {
     await shop.addBuyableItems([{tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200}]);
 
     await brush.mint(alice.address, 900);
-    await brush.connect(alice).approve(await shop.getAddress(), 900);
+    await brush.connect(alice).approve(shop, 900);
     await expect(
       shop
         .connect(alice)

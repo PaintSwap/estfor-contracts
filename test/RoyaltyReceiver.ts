@@ -61,14 +61,14 @@ describe("RoyaltyReceiver", function () {
     const {mockTerritories, brush, royaltyReceiver} = await loadFixture(deployContracts);
 
     const MIN_BRUSH_TO_DISTRIBUTE = await royaltyReceiver.MIN_BRUSH_TO_DISTRIBUTE();
-    await brush.mint(await royaltyReceiver.getAddress(), MIN_BRUSH_TO_DISTRIBUTE - 1n);
+    await brush.mint(royaltyReceiver, MIN_BRUSH_TO_DISTRIBUTE - 1n);
     expect(await royaltyReceiver.canDistribute()).to.be.false;
     expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(0);
     await expect(royaltyReceiver.distributeBrush()).to.be.revertedWithCustomError(
       royaltyReceiver,
       "BrushTooLowToDistribute"
     );
-    await brush.mint(await royaltyReceiver.getAddress(), 1);
+    await brush.mint(royaltyReceiver, 1);
     expect(await royaltyReceiver.canDistribute()).to.be.true;
     await royaltyReceiver.distributeBrush();
     expect(await royaltyReceiver.canDistribute()).to.be.false;

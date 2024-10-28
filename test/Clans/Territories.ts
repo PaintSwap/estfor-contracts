@@ -532,8 +532,8 @@ describe("Territories", function () {
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
-    await brush.mint(alice.address, parseEther("1000"));
-    await brush.connect(alice).approve(await territories.getAddress(), parseEther("1000"));
+    await brush.mint(alice, parseEther("1000"));
+    await brush.connect(alice).approve(territories, parseEther("1000"));
     await territories.connect(alice).addUnclaimedEmissions(parseEther("1000"));
 
     expect((await territories.getTerritory(territoryId)).unclaimedEmissions).to.eq(parseEther("100"));
@@ -548,7 +548,7 @@ describe("Territories", function () {
     expect((await territories.getTerritory(territoryId)).unclaimedEmissions).to.eq(parseEther("0"));
     expect((await territories.getTerritory(territoryId)).lastClaimTimestamp).to.eq(NOW);
 
-    expect(await brush.balanceOf(await lockedBankVaults.getAddress())).to.eq(parseEther("100"));
+    expect(await brush.balanceOf(lockedBankVaults)).to.eq(parseEther("100"));
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(parseEther("100"));
     //    expect((await lockedBankVaults.getClanInfo(clanId)).bank).to.eq(bankAddress);
   });
@@ -565,8 +565,8 @@ describe("Territories", function () {
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
-    await brush.mint(alice.address, parseEther("1000"));
-    await brush.connect(alice).approve(await territories.getAddress(), parseEther("1000"));
+    await brush.mint(alice, parseEther("1000"));
+    await brush.connect(alice).approve(territories, parseEther("1000"));
     await territories.connect(alice).addUnclaimedEmissions(parseEther("500"));
     await territories.connect(alice).harvest(territoryId, playerId);
     await territories.connect(alice).addUnclaimedEmissions(parseEther("500"));
@@ -612,8 +612,8 @@ describe("Territories", function () {
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
-    await brush.mint(alice.address, parseEther("1000"));
-    await brush.connect(alice).approve(await territories.getAddress(), parseEther("1000"));
+    await brush.mint(alice, parseEther("1000"));
+    await brush.connect(alice).approve(territories, parseEther("1000"));
     await territories.connect(alice).addUnclaimedEmissions(parseEther("500"));
 
     // Create a new player and a new clan

@@ -137,17 +137,11 @@ export const deployMockPaintSwapContracts = async (
   console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
   const brushPerSecond = parseEther("2");
   const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
-  const paintSwapDecorator = await TestPaintSwapDecorator.deploy(
-    await brush.getAddress(),
-    await router.getAddress(),
-    await wftm.getAddress(),
-    brushPerSecond,
-    NOW
-  );
+  const paintSwapDecorator = await TestPaintSwapDecorator.deploy(brush, router, wftm, brushPerSecond, NOW);
 
   console.log(`paintSwapDecorator = "${(await paintSwapDecorator.getAddress()).toLowerCase()}"`);
   const lp = await ethers.deployContract("MockBrushToken");
-  await paintSwapDecorator.add("2000", await lp.getAddress(), true);
+  await paintSwapDecorator.add("2000", lp, true);
 
   return {paintSwapMarketplaceWhitelist, paintSwapDecorator};
 };

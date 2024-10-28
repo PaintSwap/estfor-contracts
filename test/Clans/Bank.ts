@@ -308,37 +308,37 @@ describe("Bank", function () {
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
 
     await expect(
-      bank.connect(alice).depositToken(alice.address, playerId + 1n, await brush.getAddress(), 1000)
+      bank.connect(alice).depositToken(alice.address, playerId + 1n, brush, 1000)
     ).to.be.revertedWithCustomError(bank, "NotOwnerOfPlayer");
 
-    await expect(bank.connect(alice).depositToken(alice.address, playerId, await brush.getAddress(), 1000))
+    await expect(bank.connect(alice).depositToken(alice.address, playerId, brush, 1000))
       .to.emit(bank, "DepositToken")
       .withArgs(alice.address, playerId, await brush.getAddress(), 1000);
 
-    expect(await brush.balanceOf(await bank.getAddress())).to.eq(1000);
+    expect(await brush.balanceOf(bank)).to.eq(1000);
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-    await expect(bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, await brush.getAddress(), 500))
+    await expect(bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, brush, 500))
       .to.emit(bank, "WithdrawToken")
-      .withArgs(alice.address, playerId, bob.address, bobPlayerId, await brush.getAddress(), 500);
+      .withArgs(alice.address, playerId, bob.address, bobPlayerId, brush, 500);
 
     expect(await brush.balanceOf(bob.address)).to.eq(500);
-    expect(await brush.balanceOf(await bank.getAddress())).to.eq(500);
+    expect(await brush.balanceOf(bank)).to.eq(500);
 
     // Can also just transfer directly
-    await brush.mint(await bank.getAddress(), 500);
+    await brush.mint(bank, 500);
 
-    await expect(bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, await brush.getAddress(), 750))
+    await expect(bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, brush, 750))
       .to.emit(bank, "WithdrawToken")
-      .withArgs(alice.address, playerId, bob.address, bobPlayerId, await brush.getAddress(), 750);
+      .withArgs(alice.address, playerId, bob.address, bobPlayerId, brush, 750);
 
     expect(await brush.balanceOf(bob.address)).to.eq(1250);
-    expect(await brush.balanceOf(await bank.getAddress())).to.eq(250);
+    expect(await brush.balanceOf(bank)).to.eq(250);
 
     // Must be at least treasurer to withdraw
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.SCOUT, playerId);
     await expect(
-      bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, await brush.getAddress(), 250)
+      bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, brush, 250)
     ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
   });
 
@@ -370,39 +370,35 @@ describe("Bank", function () {
 
     const erc1155 = await ethers.deployContract("MockERC1155");
     const tokenId = 1;
-    await erc1155.mintSpecific(await bank.getAddress(), tokenId, 1000);
+    await erc1155.mintSpecific(bank, tokenId, 1000);
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-    await expect(
-      bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, await erc1155.getAddress(), tokenId, 400)
-    )
+    await expect(bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, erc1155, tokenId, 400))
       .to.emit(bank, "WithdrawNFT")
-      .withArgs(alice.address, playerId, bob.address, bobPlayerId, await erc1155.getAddress(), tokenId, 400);
+      .withArgs(alice.address, playerId, bob.address, bobPlayerId, erc1155, tokenId, 400);
 
     expect(await erc1155.balanceOf(bob.address, tokenId)).to.eq(400);
-    expect(await erc1155.balanceOf(await bank.getAddress(), tokenId)).to.eq(600);
+    expect(await erc1155.balanceOf(bank, tokenId)).to.eq(600);
 
     // Cannot send erc721s, so there's nothing to withdraw there
     const erc721 = await ethers.deployContract("MockERC721");
-    await expect(erc721.mint(await bank.getAddress())).to.be.reverted;
+    await expect(erc721.mint(bank)).to.be.reverted;
 
     await expect(
-      bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, await erc721.getAddress(), tokenId, 1)
+      bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, erc721, tokenId, 1)
     ).to.be.revertedWithCustomError(bank, "NFTTypeNotSupported");
 
     await expect(
-      bank.connect(alice).withdrawNFT(playerId, alice.address, bobPlayerId, await erc721.getAddress(), tokenId, 1)
+      bank.connect(alice).withdrawNFT(playerId, alice.address, bobPlayerId, erc721, tokenId, 1)
     ).to.be.revertedWithCustomError(bank, "ToIsNotOwnerOfPlayer");
 
     // Cannot withdraw itemNFTs
-    await expect(
-      bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, await erc1155.getAddress(), tokenId, 400)
-    );
+    await expect(bank.connect(alice).withdrawNFT(playerId, bob.address, bobPlayerId, erc1155, tokenId, 400));
 
     // Must be at least treasurer to withdraw
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.SCOUT, playerId);
     await expect(
-      bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, await brush.getAddress(), 250)
+      bank.connect(alice).withdrawToken(playerId, bob.address, bobPlayerId, brush, 250)
     ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
   });
 
@@ -416,12 +412,10 @@ describe("Bank", function () {
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
-      await brush.mint(await bank.getAddress(), 500);
+      await brush.mint(bank, 500);
 
       await expect(
-        bank
-          .connect(alice)
-          .withdrawTokenToMany(playerId + 1n, [alice.address], [playerId], await brush.getAddress(), [250])
+        bank.connect(alice).withdrawTokenToMany(playerId + 1n, [alice.address], [playerId], brush, [250])
       ).to.be.revertedWithCustomError(bank, "NotOwnerOfPlayer");
     });
 
@@ -434,11 +428,11 @@ describe("Bank", function () {
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
-      await brush.mint(await bank.getAddress(), 500);
+      await brush.mint(bank, 500);
       await clans.connect(alice).changeRank(clanId, playerId, ClanRank.SCOUT, playerId);
 
       await expect(
-        bank.connect(alice).withdrawTokenToMany(playerId, [alice.address], [playerId], await brush.getAddress(), [250])
+        bank.connect(alice).withdrawTokenToMany(playerId, [alice.address], [playerId], brush, [250])
       ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
     });
 
@@ -453,11 +447,11 @@ describe("Bank", function () {
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
 
       await expect(
-        bank.connect(alice).withdrawTokenToMany(playerId, [alice.address], [], await brush.getAddress(), [250])
+        bank.connect(alice).withdrawTokenToMany(playerId, [alice.address], [], brush, [250])
       ).to.be.revertedWithCustomError(bank, "LengthMismatch");
 
       await expect(
-        bank.connect(alice).withdrawTokenToMany(playerId, [alice.address], [playerId], await brush.getAddress(), [])
+        bank.connect(alice).withdrawTokenToMany(playerId, [alice.address], [playerId], brush, [])
       ).to.be.revertedWithCustomError(bank, "LengthMismatch");
     });
 
@@ -470,12 +464,10 @@ describe("Bank", function () {
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
-      await brush.mint(await bank.getAddress(), 500);
+      await brush.mint(bank, 500);
 
       await expect(
-        bank
-          .connect(alice)
-          .withdrawTokenToMany(playerId, [alice.address], [playerId + 1n], await brush.getAddress(), [250])
+        bank.connect(alice).withdrawTokenToMany(playerId, [alice.address], [playerId + 1n], brush, [250])
       ).to.be.revertedWithCustomError(bank, "ToIsNotOwnerOfPlayer");
     });
 
@@ -502,7 +494,7 @@ describe("Bank", function () {
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
-      await brush.mint(await bank.getAddress(), 500);
+      await brush.mint(bank, 500);
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
 
       await expect(
