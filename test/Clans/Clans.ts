@@ -642,7 +642,7 @@ describe("Clans", function () {
           maxMemberCapacity: 10,
           maxBankCapacity: 10,
           maxImageId: 16,
-          price: 10,
+          price: 100,
           minimumAge: 0
         },
         {
@@ -650,7 +650,7 @@ describe("Clans", function () {
           maxMemberCapacity: 20,
           maxBankCapacity: 10,
           maxImageId: 30,
-          price: 100,
+          price: 1000,
           minimumAge: 0
         }
       ]);
@@ -664,11 +664,12 @@ describe("Clans", function () {
       );
 
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-      await brush.mint(bob, 1000);
-      await brush.connect(bob).approve(clans, 1000);
+      const initialBrush = 2000n;
+      await brush.mint(bob, initialBrush);
+      await brush.connect(bob).approve(clans, initialBrush);
       const tierId = 2;
       await clans.connect(bob).createClan(bobPlayerId, "bob", discord, telegram, twitter, imageId, tierId);
-      expect(await brush.balanceOf(bob)).to.eq(1000n - (await clans.getTier(tierId)).price);
+      expect(await brush.balanceOf(bob)).to.eq(initialBrush - (await clans.getTier(tierId)).price);
     });
 
     it("Anyone can upgrade", async function () {
@@ -697,7 +698,7 @@ describe("Clans", function () {
       const {clans, clanId, playerId, alice, imageId, tierId, clanName, discord, telegram, twitter, brush} =
         await loadFixture(upgradedClansFixture);
 
-      const price = 1n;
+      const price = 1000n;
       const tiers: Tier[] = [
         {
           id: 1,

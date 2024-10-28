@@ -493,6 +493,7 @@ export const playersFixture = async function () {
   await shop.setBrushDistributionPercentages(25, 50, 25);
   await promotions.setBrushDistributionPercentages(25, 50, 25);
   await lockedBankVaults.setBrushDistributionPercentages(25, 50, 25);
+  await clans.setBrushDistributionPercentages(25, 50, 25);
 
   const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
   const treasuryPercentages = [10, 90];

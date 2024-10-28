@@ -255,6 +255,11 @@
   },
   {
     "inputs": [],
+    "name": "PercentNotTotal100",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PriceTooLow",
     "type": "error"
   },
@@ -958,6 +963,31 @@
       }
     ],
     "name": "PlayerRankUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushBurntPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushTreasuryPercentage",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "brushDevPercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetBrushDistributionPercentages",
     "type": "event"
   },
   {
@@ -2079,6 +2109,29 @@
       }
     ],
     "name": "setBankFactory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "brushBurntPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushTreasuryPercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "brushDevPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "setBrushDistributionPercentages",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

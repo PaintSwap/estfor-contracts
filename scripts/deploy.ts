@@ -819,6 +819,10 @@ async function main() {
   await tx.wait();
   console.log("lockedBankVaults.setBrushDistributionPercentages");
 
+  tx = await clans.setBrushDistributionPercentages(25, 50, 25);
+  await tx.wait();
+  console.log("clans.setBrushDistributionPercentages");
+
   tx = await shop.setItemNFT(itemNFT);
   await tx.wait();
   console.log("shop.setItemNFT");

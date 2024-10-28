@@ -44,6 +44,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   event GateKeepNFTs(uint256 clanId, address[] nfts, uint256 playerId);
   event PinMessage(uint256 clanId, string message, uint256 playerId);
   event SetInitialMMR(uint256 mmr);
+  event SetBrushDistributionPercentages(
+    uint256 brushBurntPercentage,
+    uint256 brushTreasuryPercentage,
+    uint256 brushDevPercentage
+  );
 
   error AlreadyInClan();
   error NotOwnerOfPlayer();
@@ -93,6 +98,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error UnsupportedNFTType();
   error MessageTooLong();
   error NotMMRSetter();
+  error PercentNotTotal100();
 
   struct Clan {
     uint80 owner;
@@ -133,17 +139,20 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IERC1155 private _playerNFT;
   uint80 private _nextClanId;
   uint16 private _initialMMR;
-  address private _pool;
+  address private _treasury;
   uint80 private _editNameCost;
   address private _dev;
+  uint8 private _brushBurntPercentage;
+  uint8 private _brushTreasuryPercentage;
+  uint8 private _brushDevPercentage;
+  address private _paintswapMarketplaceWhitelist;
+  IClanMemberLeftCB private _territories;
+  IClanMemberLeftCB private _lockedBankVaults;
   mapping(uint256 clanId => Clan clan) private _clans;
   mapping(uint256 playerId => PlayerInfo) private _playerInfo;
   mapping(uint256 id => Tier tier) private _tiers;
   mapping(string name => bool exists) private _lowercaseNames;
   mapping(uint256 clanId => uint40 timestampLeft) private _ownerlessClanTimestamps; // timestamp
-  address private _paintswapMarketplaceWhitelist;
-  IClanMemberLeftCB private _territories;
-  IClanMemberLeftCB private _lockedBankVaults;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
@@ -190,7 +199,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     __Ownable_init(_msgSender());
     _brush = brush;
     _playerNFT = playerNFT;
-    _pool = pool;
+    _treasury = pool;
     _dev = dev;
     _nextClanId = 1;
     _editNameCost = editNameCost;
@@ -737,15 +746,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function _pay(uint256 brushCost) private {
-    // Pay
-    _brush.transferFrom(_msgSender(), address(this), brushCost);
-    uint256 quarterCost = brushCost / 4;
-    // Burn 1 quarter
-    _brush.burn(quarterCost);
-    // Send half to the pool (currently shop)
-    _brush.transfer(_pool, quarterCost * 2);
-    // Send 1 quarter to the dev address
-    _brush.transfer(_dev, brushCost - quarterCost * 3);
+    _brush.burnFrom(_msgSender(), (brushCost * _brushBurntPercentage) / 100);
+    _brush.transferFrom(_msgSender(), _treasury, (brushCost * _brushTreasuryPercentage) / 100);
+    _brush.transferFrom(_msgSender(), _dev, (brushCost * _brushDevPercentage) / 100);
   }
 
   function _upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) private {
@@ -903,6 +906,19 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function setInitialMMR(uint16 mmr) public onlyOwner {
     _initialMMR = mmr;
     emit SetInitialMMR(mmr);
+  }
+
+  function setBrushDistributionPercentages(
+    uint8 brushBurntPercentage,
+    uint8 brushTreasuryPercentage,
+    uint8 brushDevPercentage
+  ) external onlyOwner {
+    require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
+
+    _brushBurntPercentage = brushBurntPercentage;
+    _brushTreasuryPercentage = brushTreasuryPercentage;
+    _brushDevPercentage = brushDevPercentage;
+    emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
   // solhint-disable-next-line no-empty-blocks
