@@ -11,7 +11,7 @@ describe("CombatantsHelper", function () {
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequests(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [playerId], playerId);
   });
@@ -74,7 +74,7 @@ describe("CombatantsHelper", function () {
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequests(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [playerId], playerId);
 
