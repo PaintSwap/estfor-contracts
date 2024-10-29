@@ -156,22 +156,22 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_actionId",
+        "name": "actionId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_actionAmount",
+        "name": "actionAmount",
         "type": "uint256"
       },
       {
         "internalType": "uint256[]",
-        "name": "_randomWords",
+        "name": "randomWords",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256",
-        "name": "_randomWordStartIndex",
+        "name": "randomWordStartIndex",
         "type": "uint256"
       }
     ],
@@ -205,7 +205,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_instantVRFActions",
+        "name": "instantVRFActions",
         "type": "address"
       }
     ],
@@ -283,7 +283,7 @@
           }
         ],
         "internalType": "struct InstantVRFActionInput",
-        "name": "_input",
+        "name": "input",
         "type": "tuple"
       }
     ],
@@ -296,7 +296,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_instantVRFActions",
+        "name": "instantVRFActions",
         "type": "address"
       }
     ],

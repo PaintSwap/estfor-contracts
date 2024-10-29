@@ -330,9 +330,9 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     emit ClaimPassiveAction(playerId, _msgSender(), queueId, itemTokenIds, amounts, startingAnother);
   }
 
-  function _getSlice(bytes memory _b, uint256 _index) private pure returns (uint16) {
-    uint256 index = _index * 2;
-    return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
+  function _getSlice(bytes memory b, uint256 index) private pure returns (uint16) {
+    uint256 key = index * 2;
+    return uint16(b[key] | (bytes2(b[key + 1]) >> 8));
   }
 
   function _isWinner(
@@ -591,12 +591,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     emit AddPassiveActions(passiveActionInputs);
   }
 
-  function editActions(PassiveActionInput[] calldata _passiveActionInputs) external onlyOwner {
-    for (uint256 i = 0; i < _passiveActionInputs.length; ++i) {
-      require(_actions[_passiveActionInputs[i].actionId].inputTokenId1 != NONE, ActionDoesNotExist());
-      _setAction(_passiveActionInputs[i]);
+  function editActions(PassiveActionInput[] calldata passiveActionInputs) external onlyOwner {
+    for (uint256 i = 0; i < passiveActionInputs.length; ++i) {
+      require(_actions[passiveActionInputs[i].actionId].inputTokenId1 != NONE, ActionDoesNotExist());
+      _setAction(passiveActionInputs[i]);
     }
-    emit EditPassiveActions(_passiveActionInputs);
+    emit EditPassiveActions(passiveActionInputs);
   }
 
   function setAvailable(uint256[] calldata actionIds, bool isAvailable) external onlyOwner {

@@ -333,12 +333,12 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     return _actions[actionId].inputTokenId1 != NONE;
   }
 
-  function _setAction(InstantVRFActionInput calldata _instantVRFActionInput) private {
-    require(_instantVRFActionInput.actionId != 0, ActionIdZeroNotAllowed());
-    _checkInputs(_instantVRFActionInput);
-    _actions[_instantVRFActionInput.actionId] = _packAction(_instantVRFActionInput);
+  function _setAction(InstantVRFActionInput calldata instantVRFActionInput) private {
+    require(instantVRFActionInput.actionId != 0, ActionIdZeroNotAllowed());
+    _checkInputs(instantVRFActionInput);
+    _actions[instantVRFActionInput.actionId] = _packAction(instantVRFActionInput);
 
-    IInstantVRFActionStrategy(_strategies[_instantVRFActionInput.actionType]).setAction(_instantVRFActionInput);
+    IInstantVRFActionStrategy(_strategies[instantVRFActionInput.actionType]).setAction(instantVRFActionInput);
   }
 
   function _requestRandomWords(uint256 numRandomWords, uint256 numActions) private returns (bytes32 requestId) {
@@ -362,30 +362,30 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _packAction(
-    InstantVRFActionInput calldata _actionInput
+    InstantVRFActionInput calldata actionInput
   ) private view returns (InstantVRFAction memory instantVRFAction) {
-    bytes1 packedData = bytes1(uint8(_actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
     instantVRFAction = InstantVRFAction({
-      inputTokenId1: _actionInput.inputTokenIds.length != 0 ? _actionInput.inputTokenIds[0] : NONE,
-      inputAmount1: _actionInput.inputAmounts.length != 0 ? uint8(_actionInput.inputAmounts[0]) : 0,
-      inputTokenId2: _actionInput.inputTokenIds.length > 1 ? _actionInput.inputTokenIds[1] : NONE,
-      inputAmount2: _actionInput.inputAmounts.length > 1 ? uint8(_actionInput.inputAmounts[1]) : 0,
-      inputTokenId3: _actionInput.inputTokenIds.length > 2 ? _actionInput.inputTokenIds[2] : NONE,
-      inputAmount3: _actionInput.inputAmounts.length > 2 ? _actionInput.inputAmounts[2] : 0,
+      inputTokenId1: actionInput.inputTokenIds.length != 0 ? actionInput.inputTokenIds[0] : NONE,
+      inputAmount1: actionInput.inputAmounts.length != 0 ? uint8(actionInput.inputAmounts[0]) : 0,
+      inputTokenId2: actionInput.inputTokenIds.length > 1 ? actionInput.inputTokenIds[1] : NONE,
+      inputAmount2: actionInput.inputAmounts.length > 1 ? uint8(actionInput.inputAmounts[1]) : 0,
+      inputTokenId3: actionInput.inputTokenIds.length > 2 ? actionInput.inputTokenIds[2] : NONE,
+      inputAmount3: actionInput.inputAmounts.length > 2 ? actionInput.inputAmounts[2] : 0,
       packedData: packedData,
-      strategy: _strategies[_actionInput.actionType]
+      strategy: _strategies[actionInput.actionType]
     });
   }
 
   // Assumes that it has at least 1 input
-  function _actionExists(InstantVRFActionInput calldata _actionInput) private view returns (bool) {
-    return _actions[_actionInput.actionId].inputTokenId1 != NONE;
+  function _actionExists(InstantVRFActionInput calldata actionInput) private view returns (bool) {
+    return _actions[actionInput.actionId].inputTokenId1 != NONE;
   }
 
-  function _checkInputs(InstantVRFActionInput calldata _actionInput) private view {
-    uint16[] calldata inputTokenIds = _actionInput.inputTokenIds;
-    uint24[] calldata amounts = _actionInput.inputAmounts;
+  function _checkInputs(InstantVRFActionInput calldata actionInput) private view {
+    uint16[] calldata inputTokenIds = actionInput.inputTokenIds;
+    uint24[] calldata amounts = actionInput.inputAmounts;
 
     require(inputTokenIds.length <= 3, TooManyInputItems());
     require(inputTokenIds.length == amounts.length, LengthMismatch());
@@ -405,7 +405,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       }
     }
 
-    require(_strategies[_actionInput.actionType] != address(0), InvalidStrategy());
+    require(_strategies[actionInput.actionType] != address(0), InvalidStrategy());
   }
 
   function requestCost(uint256 actionAmounts) public view returns (uint256) {

@@ -153,12 +153,12 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function mintedPlayer(
     address from,
     uint256 playerId,
-    Skill[2] calldata _startSkills,
-    bool _makeActive,
-    uint256[] calldata _startingItemTokenIds,
-    uint256[] calldata _startingAmounts
+    Skill[2] calldata startSkills,
+    bool makeActive,
+    uint256[] calldata startingItemTokenIds,
+    uint256[] calldata startingAmounts
   ) external override onlyPlayerNFT {
-    if (_makeActive) {
+    if (makeActive) {
       _setActivePlayer(from, playerId);
     }
 
@@ -168,9 +168,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         IPlayersDelegate.mintedPlayer.selector,
         from,
         playerId,
-        _startSkills,
-        _startingItemTokenIds,
-        _startingAmounts
+        startSkills,
+        startingItemTokenIds,
+        startingAmounts
       )
     );
   }
@@ -394,8 +394,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function getActivePlayer(address owner_) external view override returns (uint256 playerId) {
-    return _activePlayers[owner_];
+  function getActivePlayer(address playerOwner) external view override returns (uint256 playerId) {
+    return _activePlayers[playerOwner];
   }
 
   function getPlayerXP(uint256 playerId, Skill skill) external view override returns (uint256) {

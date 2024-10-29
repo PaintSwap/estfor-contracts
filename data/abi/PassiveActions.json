@@ -846,7 +846,7 @@
           }
         ],
         "internalType": "struct PassiveActions.PassiveActionInput[]",
-        "name": "_passiveActionInputs",
+        "name": "passiveActionInputs",
         "type": "tuple[]"
       }
     ],

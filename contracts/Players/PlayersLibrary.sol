@@ -563,21 +563,21 @@ library PlayersLibrary {
   }
 
   function _calculateTotalFoodRequired(
-    uint256 _totalHealthLost,
-    uint256 _healthRestoredFromItem,
-    uint256 _healingDoneFromHealth
+    uint256 totalHealthLost,
+    uint256 healthRestoredFromItem,
+    uint256 healingDoneFromHealth
   ) private pure returns (uint256 totalFoodRequired) {
-    uint256 numerator = _totalHealthLost * HEALING_SCALE;
-    uint256 denominator = _healthRestoredFromItem * _healingDoneFromHealth;
+    uint256 numerator = totalHealthLost * HEALING_SCALE;
+    uint256 denominator = healthRestoredFromItem * healingDoneFromHealth;
     totalFoodRequired = Math.ceilDiv(numerator, denominator);
   }
 
   function _getFoodConsumed(
     address from,
     uint16 regenerateId,
-    uint32 _totalHealthLost,
-    uint32 _totalHealthLostKilling,
-    uint32 _totalHealthPlayer,
+    uint32 totalHealthLost,
+    uint32 totalHealthLostKilling,
+    uint32 totalHealthPlayer,
     uint256 alphaCombatHealing,
     address itemNFT,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
@@ -588,19 +588,19 @@ library PlayersLibrary {
       healthRestoredFromItem = item.healthRestored;
     }
 
-    if (healthRestoredFromItem == 0 || _totalHealthLost <= 0) {
+    if (healthRestoredFromItem == 0 || totalHealthLost <= 0) {
       // No food attached or didn't lose any health
-      died = _totalHealthLost != 0;
+      died = totalHealthLost != 0;
     } else {
       // Equation used is totalFoodRequired = totalHealthLost / (healthRestoredFromItem * healingDoneFromHealth)
-      uint256 healingDoneFromHealth = _calculateHealingDoneFromHealth(_totalHealthPlayer, alphaCombatHealing);
+      uint256 healingDoneFromHealth = _calculateHealingDoneFromHealth(totalHealthPlayer, alphaCombatHealing);
       uint256 totalFoodRequired = _calculateTotalFoodRequired(
-        _totalHealthLost,
+        totalHealthLost,
         healthRestoredFromItem,
         healingDoneFromHealth
       );
       totalFoodRequiredKilling = _calculateTotalFoodRequired(
-        _totalHealthLostKilling,
+        totalHealthLostKilling,
         healthRestoredFromItem,
         healingDoneFromHealth
       );
@@ -650,34 +650,30 @@ library PlayersLibrary {
     xpElapsedTime = (uint256(baseInputItemsConsumedNum) * 3600 * RATE_MUL) / actionChoice.rate;
   }
 
-  function _isCombat(CombatStyle _combatStyle) private pure returns (bool) {
-    return _combatStyle != CombatStyle.NONE;
-  }
-
   function getBoostedTime(
-    uint256 _actionStartTime,
+    uint256 actionStartTime,
     uint256 elapsedTime,
     uint40 boostStartTime,
-    uint24 _boostDuration
+    uint24 boostDuration
   ) public pure returns (uint24 boostedTime) {
-    uint256 actionEndTime = _actionStartTime + elapsedTime;
-    uint256 boostEndTime = boostStartTime + _boostDuration;
-    bool boostFinishedBeforeOrOnActionStarted = _actionStartTime >= boostEndTime;
+    uint256 actionEndTime = actionStartTime + elapsedTime;
+    uint256 boostEndTime = boostStartTime + boostDuration;
+    bool boostFinishedBeforeOrOnActionStarted = actionStartTime >= boostEndTime;
     bool boostStartedAfterOrOnActionFinished = actionEndTime <= boostStartTime;
-    uint24 actionDuration = uint24(actionEndTime - _actionStartTime);
+    uint24 actionDuration = uint24(actionEndTime - actionStartTime);
     if (boostFinishedBeforeOrOnActionStarted || boostStartedAfterOrOnActionFinished || elapsedTime == 0) {
       // Boost was not active at all during this queued action
       boostedTime = 0;
-    } else if (boostStartTime <= _actionStartTime && boostEndTime >= actionEndTime) {
+    } else if (boostStartTime <= actionStartTime && boostEndTime >= actionEndTime) {
       boostedTime = actionDuration;
-    } else if (boostStartTime < _actionStartTime && boostEndTime < actionEndTime) {
-      boostedTime = uint24(boostEndTime - _actionStartTime);
-    } else if (boostStartTime > _actionStartTime && boostEndTime > actionEndTime) {
+    } else if (boostStartTime < actionStartTime && boostEndTime < actionEndTime) {
+      boostedTime = uint24(boostEndTime - actionStartTime);
+    } else if (boostStartTime > actionStartTime && boostEndTime > actionEndTime) {
       boostedTime = uint24(actionEndTime - boostStartTime);
-    } else if (boostStartTime > _actionStartTime && boostEndTime <= actionEndTime) {
-      boostedTime = _boostDuration;
-    } else if (boostStartTime == _actionStartTime && boostEndTime <= actionEndTime) {
-      boostedTime = _boostDuration;
+    } else if (boostStartTime > actionStartTime && boostEndTime <= actionEndTime) {
+      boostedTime = boostDuration;
+    } else if (boostStartTime == actionStartTime && boostEndTime <= actionEndTime) {
+      boostedTime = boostDuration;
     } else {
       assert(false); // Should never happen
     }
@@ -685,70 +681,68 @@ library PlayersLibrary {
 
   function _getXPFromBoostImpl(
     bool isCombatSkill,
-    uint256 _actionStartTime,
+    uint256 actionStartTime,
     uint256 xpElapsedTime,
     uint24 xpPerHour,
     BoostType boostType,
     uint40 boostStartTime,
-    uint24 _boostDuration,
-    uint16 _boostValue
+    uint24 boostDuration,
+    uint16 boostValue
   ) private pure returns (uint32 boostPointsAccrued) {
     if (
       boostType == BoostType.ANY_XP ||
       (isCombatSkill && boostType == BoostType.COMBAT_XP) ||
       (!isCombatSkill && boostType == BoostType.NON_COMBAT_XP)
     ) {
-      uint256 boostedTime = getBoostedTime(_actionStartTime, xpElapsedTime, boostStartTime, _boostDuration);
-      boostPointsAccrued = uint32((boostedTime * xpPerHour * _boostValue) / (3600 * 100));
+      uint256 boostedTime = getBoostedTime(actionStartTime, xpElapsedTime, boostStartTime, boostDuration);
+      boostPointsAccrued = uint32((boostedTime * xpPerHour * boostValue) / (3600 * 100));
     }
   }
 
   function _getXPFromBoost(
     bool isCombatSkill,
-    uint256 _actionStartTime,
+    uint256 actionStartTime,
     uint256 xpElapsedTime,
     uint24 xpPerHour,
-    PlayerBoostInfo storage _boostInfo
+    PlayerBoostInfo storage boostInfo
   ) private view returns (uint32 boostPointsAccrued) {
-    if (_boostInfo.itemTokenId != NONE && _boostInfo.startTime < block.timestamp && xpElapsedTime != 0) {
+    if (boostInfo.itemTokenId != NONE && boostInfo.startTime < block.timestamp && xpElapsedTime != 0) {
       // A boost is active
       return
         _getXPFromBoostImpl(
           isCombatSkill,
-          _actionStartTime,
+          actionStartTime,
           xpElapsedTime,
           xpPerHour,
-          _boostInfo.boostType,
-          _boostInfo.startTime,
-          _boostInfo.duration,
-          _boostInfo.value
+          boostInfo.boostType,
+          boostInfo.startTime,
+          boostInfo.duration,
+          boostInfo.value
         );
     }
   }
 
   function _getXPFromExtraOrLastBoost(
     bool isCombatSkill,
-    uint256 _actionStartTime,
+    uint256 actionStartTime,
     uint256 xpElapsedTime,
     uint24 xpPerHour,
-    PlayerBoostInfo storage _boostInfo
+    PlayerBoostInfo storage boostInfo
   ) private view returns (uint32 boostPointsAccrued) {
     if (
-      _boostInfo.extraOrLastItemTokenId != NONE &&
-      _boostInfo.extraOrLastStartTime < block.timestamp &&
-      xpElapsedTime != 0
+      boostInfo.extraOrLastItemTokenId != NONE && boostInfo.extraOrLastStartTime < block.timestamp && xpElapsedTime != 0
     ) {
       // An extra boost is active or an overriden one was active at this time
       return
         _getXPFromBoostImpl(
           isCombatSkill,
-          _actionStartTime,
+          actionStartTime,
           xpElapsedTime,
           xpPerHour,
-          _boostInfo.extraOrLastBoostType,
-          _boostInfo.extraOrLastStartTime,
-          _boostInfo.extraOrLastDuration,
-          _boostInfo.extraOrLastValue
+          boostInfo.extraOrLastBoostType,
+          boostInfo.extraOrLastStartTime,
+          boostInfo.extraOrLastDuration,
+          boostInfo.extraOrLastValue
         );
     }
   }

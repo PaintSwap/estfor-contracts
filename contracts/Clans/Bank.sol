@@ -150,43 +150,6 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     emit WithdrawItemsBulk(sender, nftsInfo, playerId);
   }
 
-  function onERC1155Received(
-    address operator,
-    address from,
-    uint256 id,
-    uint256 value,
-    bytes memory data
-  ) public override returns (bytes4) {
-    // Only care about itemNFTs sent from outside the bank here
-    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
-      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
-      _receivedItemUpdateUniqueItems(id, maxCapacity);
-      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
-      emit DepositItem(from, activePlayerId, id, value);
-    }
-    return super.onERC1155Received(operator, from, id, value, data);
-  }
-
-  function onERC1155BatchReceived(
-    address operator,
-    address from,
-    uint256[] memory ids,
-    uint256[] memory values,
-    bytes memory data
-  ) public override returns (bytes4) {
-    // Only care about itemNFTs sent from outside the bank here
-    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
-      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
-      uint256 bounds = ids.length;
-      for (uint256 iter; iter < bounds; iter++) {
-        _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
-      }
-      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
-      emit DepositItems(from, activePlayerId, ids, values);
-    }
-    return super.onERC1155BatchReceived(operator, from, ids, values, data);
-  }
-
   function depositFTM(
     address sender,
     uint256 playerId
@@ -279,6 +242,43 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
       _uniqueItemCount++;
       _uniqueItems[id] = true;
     }
+  }
+
+  function onERC1155Received(
+    address operator,
+    address from,
+    uint256 id,
+    uint256 value,
+    bytes memory data
+  ) public override returns (bytes4) {
+    // Only care about itemNFTs sent from outside the bank here
+    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
+      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+      _receivedItemUpdateUniqueItems(id, maxCapacity);
+      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
+      emit DepositItem(from, activePlayerId, id, value);
+    }
+    return super.onERC1155Received(operator, from, id, value, data);
+  }
+
+  function onERC1155BatchReceived(
+    address operator,
+    address from,
+    uint256[] memory ids,
+    uint256[] memory values,
+    bytes memory data
+  ) public override returns (bytes4) {
+    // Only care about itemNFTs sent from outside the bank here
+    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
+      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+      uint256 bounds = ids.length;
+      for (uint256 iter; iter < bounds; iter++) {
+        _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
+      }
+      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
+      emit DepositItems(from, activePlayerId, ids, values);
+    }
+    return super.onERC1155BatchReceived(operator, from, ids, values, data);
   }
 
   // Untested

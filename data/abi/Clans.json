@@ -1305,7 +1305,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_invitedPlayerIds",
+        "name": "invitedPlayerIds",
         "type": "uint256[]"
       },
       {
@@ -1845,7 +1845,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_memberPlayerIds",
+        "name": "memberPlayerIds",
         "type": "uint256[]"
       },
       {
@@ -2074,7 +2074,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_gateKeepTokenId",
+        "name": "gateKeepTokenId",
         "type": "uint256"
       }
     ],

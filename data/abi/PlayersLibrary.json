@@ -187,7 +187,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_actionStartTime",
+        "name": "actionStartTime",
         "type": "uint256"
       },
       {
@@ -202,7 +202,7 @@
       },
       {
         "internalType": "uint24",
-        "name": "_boostDuration",
+        "name": "boostDuration",
         "type": "uint24"
       }
     ],

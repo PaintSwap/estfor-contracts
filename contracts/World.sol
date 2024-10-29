@@ -155,15 +155,10 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     _fulfillRandomWords(uint256(requestId), words);
   }
 
-  function getWeeklyReward(uint256 _tier, uint256 playerId) public view returns (uint16 itemTokenId, uint24 amount) {
+  function getWeeklyReward(uint256 tier, uint256 playerId) public view returns (uint16 itemTokenId, uint24 amount) {
     uint256 day = 7;
-    uint256 index = _getRewardIndex(
-      playerId,
-      day,
-      uint64(_thisWeeksRandomWordSegment),
-      _weeklyRewardPool[_tier].length
-    );
-    Equipment storage equipment = _weeklyRewardPool[_tier][index];
+    uint256 index = _getRewardIndex(playerId, day, uint64(_thisWeeksRandomWordSegment), _weeklyRewardPool[tier].length);
+    Equipment storage equipment = _weeklyRewardPool[tier][index];
     return (equipment.itemTokenId, equipment.amount);
   }
 

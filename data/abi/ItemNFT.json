@@ -758,7 +758,7 @@
           }
         ],
         "internalType": "struct ItemInput[]",
-        "name": "_inputItems",
+        "name": "inputItems",
         "type": "tuple[]"
       }
     ],
@@ -771,7 +771,7 @@
     "inputs": [
       {
         "internalType": "address[]",
-        "name": "_tos",
+        "name": "tos",
         "type": "address[]"
       },
       {
@@ -781,7 +781,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_amounts",
+        "name": "amounts",
         "type": "uint256[]"
       }
     ],
@@ -842,12 +842,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_account",
+        "name": "account",
         "type": "address"
       },
       {
         "internalType": "uint16[]",
-        "name": "_ids",
+        "name": "ids",
         "type": "uint16[]"
       }
     ],
@@ -866,7 +866,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_from",
+        "name": "from",
         "type": "address"
       },
       {
@@ -876,7 +876,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -1016,7 +1016,7 @@
           }
         ],
         "internalType": "struct ItemInput[]",
-        "name": "_inputItems",
+        "name": "inputItems",
         "type": "tuple[]"
       }
     ],
@@ -1649,7 +1649,7 @@
     "inputs": [
       {
         "internalType": "uint16[]",
-        "name": "_itemTokenIds",
+        "name": "itemTokenIds",
         "type": "uint16[]"
       }
     ],
@@ -1674,7 +1674,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_salePrice",
+        "name": "salePrice",
         "type": "uint256"
       }
     ],
@@ -1748,7 +1748,7 @@
           }
         ],
         "internalType": "struct BulkTransferInfo[]",
-        "name": "_nftsInfo",
+        "name": "nftsInfo",
         "type": "tuple[]"
       }
     ],
@@ -1857,7 +1857,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
@@ -1867,7 +1867,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -1880,7 +1880,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "to",
         "type": "address"
       },
       {
@@ -1890,7 +1890,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_amounts",
+        "name": "amounts",
         "type": "uint256[]"
       }
     ],

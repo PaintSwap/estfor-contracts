@@ -2412,7 +2412,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_tier",
+        "name": "tier",
         "type": "uint256"
       },
       {

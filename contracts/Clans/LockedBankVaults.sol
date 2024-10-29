@@ -679,13 +679,13 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   // TODO Can delete after setting initial MMR
-  function initializeMMR(uint256[] calldata _clanIds, uint16[] calldata _mmrs, bool _clear) external onlyOwner {
+  function initializeMMR(uint256[] calldata clanIds, uint16[] calldata mmrs, bool clear) external onlyOwner {
     // First clean up any in it
-    if (_clear) {
+    if (clear) {
       delete _sortedClansByMMR;
     }
-    LockedBankVaultsLibrary.initializeMMR(_sortedClansByMMR, _clans, _clanInfos, _clanIds, _mmrs);
-    emit SetMMRs(_clanIds, _mmrs);
+    LockedBankVaultsLibrary.initializeMMR(_sortedClansByMMR, _clans, _clanInfos, clanIds, mmrs);
+    emit SetMMRs(clanIds, mmrs);
   }
 
   function clearCooldowns(uint256 clanId, uint256[] calldata otherClanIds) external isAdminAndBeta {

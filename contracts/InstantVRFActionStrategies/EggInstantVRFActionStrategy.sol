@@ -17,11 +17,11 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     uint16 rewardBasePetIdMax;
   }
 
-  address private instantVRFActions;
-  uint32[65535] private actions; // actionId => rewardBasePetIdMin | rewardBasePetIdMax
+  address private _instantVRFActions;
+  uint32[65535] private _actions; // actionId => rewardBasePetIdMin | rewardBasePetIdMax
 
   modifier onlyInstantVRFActions() {
-    require(instantVRFActions == _msgSender(), OnlyInstantVRFActions());
+    require(_instantVRFActions == _msgSender(), OnlyInstantVRFActions());
     _;
   }
 
@@ -30,16 +30,16 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     _disableInitializers();
   }
 
-  function initialize(address _instantVRFActions) external initializer {
+  function initialize(address instantVRFActions) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
-    instantVRFActions = _instantVRFActions;
+    _instantVRFActions = instantVRFActions;
   }
 
-  function setAction(InstantVRFActionInput calldata _input) external override onlyInstantVRFActions {
-    (, InstantVRFAction memory instantVRFAction) = abi.decode(_input.data, (uint8, InstantVRFAction));
-    actions[_input.actionId - 1] =
+  function setAction(InstantVRFActionInput calldata input) external override onlyInstantVRFActions {
+    (, InstantVRFAction memory instantVRFAction) = abi.decode(input.data, (uint8, InstantVRFAction));
+    _actions[input.actionId - 1] =
       (uint32(instantVRFAction.rewardBasePetIdMin) << 16) |
       instantVRFAction.rewardBasePetIdMax;
 
@@ -47,10 +47,10 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
   }
 
   function getRandomRewards(
-    uint256 _actionId,
-    uint256 _actionAmount,
-    uint256[] calldata _randomWords,
-    uint256 _randomWordStartIndex
+    uint256 actionId,
+    uint256 actionAmount,
+    uint256[] calldata randomWords,
+    uint256 randomWordStartIndex
   )
     external
     view
@@ -62,23 +62,20 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
       uint256[] memory producedPetRandomWords
     )
   {
-    producedPetBaseIds = new uint256[](_actionAmount);
-    producedPetRandomWords = new uint256[](_actionAmount);
+    producedPetBaseIds = new uint256[](actionAmount);
+    producedPetRandomWords = new uint256[](actionAmount);
 
-    uint256 numWords = _actionAmount / 16 + ((_actionAmount % 16) == 0 ? 0 : 1);
-    bytes memory randomBytes = abi.encodePacked(_randomWords[_randomWordStartIndex:_randomWordStartIndex + numWords]);
+    uint256 numWords = actionAmount / 16 + ((actionAmount % 16) == 0 ? 0 : 1);
+    bytes memory randomBytes = abi.encodePacked(randomWords[randomWordStartIndex:randomWordStartIndex + numWords]);
 
     bytes memory randomBytes1;
     for (uint256 i = 0; i < numWords; ++i) {
-      randomBytes1 = abi.encodePacked(
-        randomBytes1,
-        keccak256(abi.encodePacked(_randomWords[_randomWordStartIndex + i]))
-      );
+      randomBytes1 = abi.encodePacked(randomBytes1, keccak256(abi.encodePacked(randomWords[randomWordStartIndex + i])));
     }
-    for (uint256 i; i < _actionAmount; ++i) {
+    for (uint256 i; i < actionAmount; ++i) {
       uint16 slice = _getSlice(randomBytes, i);
 
-      uint32 packedBasePetIdExtremes = actions[_actionId - 1];
+      uint32 packedBasePetIdExtremes = _actions[actionId - 1];
       uint16 rewardBasePetIdMin = uint16(packedBasePetIdExtremes >> 16);
       uint16 rewardBasePetIdMax = uint16(packedBasePetIdExtremes);
 
@@ -88,13 +85,13 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     }
   }
 
-  function _getSlice(bytes memory _b, uint256 _index) private pure returns (uint16) {
-    uint256 index = _index * 2;
-    return uint16(_b[index] | (bytes2(_b[index + 1]) >> 8));
+  function _getSlice(bytes memory b, uint256 index) private pure returns (uint16) {
+    uint256 key = index * 2;
+    return uint16(b[key] | (bytes2(b[key + 1]) >> 8));
   }
 
-  function setInstantVRFActions(address _instantVRFActions) external onlyOwner {
-    instantVRFActions = _instantVRFActions;
+  function setInstantVRFActions(address instantVRFActions) external onlyOwner {
+    _instantVRFActions = instantVRFActions;
   }
 
   // solhint-disable-next-line no-empty-blocks

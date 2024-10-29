@@ -1991,7 +1991,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner_",
+        "name": "playerOwner",
         "type": "address"
       }
     ],
@@ -3142,22 +3142,22 @@
       },
       {
         "internalType": "enum Skill[2]",
-        "name": "_startSkills",
+        "name": "startSkills",
         "type": "uint8[2]"
       },
       {
         "internalType": "bool",
-        "name": "_makeActive",
+        "name": "makeActive",
         "type": "bool"
       },
       {
         "internalType": "uint256[]",
-        "name": "_startingItemTokenIds",
+        "name": "startingItemTokenIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint256[]",
-        "name": "_startingAmounts",
+        "name": "startingAmounts",
         "type": "uint256[]"
       }
     ],

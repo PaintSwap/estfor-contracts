@@ -377,12 +377,12 @@ abstract contract PlayersBase {
 
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function _pendingQueuedActionState(
-    address owner_,
+    address playerOwner,
     uint256 playerId
   ) internal view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, owner_, playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, playerOwner, playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
   }

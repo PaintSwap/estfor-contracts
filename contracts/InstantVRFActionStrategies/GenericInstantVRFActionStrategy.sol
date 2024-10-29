@@ -175,7 +175,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
   }
 
   // TODO, Delete later if there are other changes made in this file. Just to change up the bytecode for a rogue deployment
-  function version() external view returns (uint256) {
+  function version() external pure returns (uint256) {
     return 1;
   }
 

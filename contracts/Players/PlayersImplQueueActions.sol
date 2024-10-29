@@ -157,16 +157,16 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function _consumeBoost(address from, uint256 playerId, uint16 _itemTokenId, uint40 _startTime) private {
-    Item memory item = _itemNFT.getItem(_itemTokenId);
+  function _consumeBoost(address from, uint256 playerId, uint16 itemTokenId, uint40 startTime) private {
+    Item memory item = _itemNFT.getItem(itemTokenId);
     require(item.equipPosition == EquipPosition.BOOST_VIAL, NotABoostVial());
-    require(_startTime < block.timestamp + 7 days, StartTimeTooFarInTheFuture());
-    if (_startTime < block.timestamp) {
-      _startTime = uint40(block.timestamp);
+    require(startTime < block.timestamp + 7 days, StartTimeTooFarInTheFuture());
+    if (startTime < block.timestamp) {
+      startTime = uint40(block.timestamp);
     }
 
     // Burn it
-    _itemNFT.burn(from, _itemTokenId, 1);
+    _itemNFT.burn(from, itemTokenId, 1);
 
     // If there's an active potion which hasn't been consumed yet, then we can mint it back
     PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
@@ -174,21 +174,21 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       _itemNFT.mint(from, playerBoost.itemTokenId, 1);
     }
 
-    playerBoost.startTime = _startTime;
+    playerBoost.startTime = startTime;
     playerBoost.duration = item.boostDuration;
     playerBoost.value = item.boostValue;
     playerBoost.boostType = item.boostType;
-    playerBoost.itemTokenId = _itemTokenId;
+    playerBoost.itemTokenId = itemTokenId;
 
     emit ConsumeBoostVial(
       from,
       playerId,
       BoostInfo({
-        startTime: _startTime,
+        startTime: startTime,
         duration: item.boostDuration,
         value: item.boostValue,
         boostType: item.boostType,
-        itemTokenId: _itemTokenId
+        itemTokenId: itemTokenId
       })
     );
   }
@@ -196,32 +196,27 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function checkAddToQueue(
     address from,
     uint256 playerId,
-    QueuedActionInput memory _queuedActionInput,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
-    QuestState memory _pendingQuestState
+    QueuedActionInput memory queuedActionInput,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
+    QuestState memory pendingQuestState
   ) public view returns (bool setAttire) {
-    if (_queuedActionInput.attire.reserved1 != NONE) {
+    if (queuedActionInput.attire.reserved1 != NONE) {
       require(false, UnsupportedAttire());
     }
-    if (_queuedActionInput.regenerateId != NONE) {
+    if (queuedActionInput.regenerateId != NONE) {
       require(
-        _itemNFT.getItem(_queuedActionInput.regenerateId).equipPosition == EquipPosition.FOOD,
+        _itemNFT.getItem(queuedActionInput.regenerateId).equipPosition == EquipPosition.FOOD,
         UnsupportedRegenerateItem()
       );
     }
 
-    uint16 actionId = _queuedActionInput.actionId;
+    uint16 actionId = queuedActionInput.actionId;
     ActionInfo memory actionInfo = _world.getActionInfo(actionId);
     require(actionInfo.isAvailable, ActionNotAvailable());
 
     require(
       actionInfo.minXP == 0 ||
-        _getRealXP(
-          actionInfo.skill._asSkill(),
-          _playerXP[playerId],
-          _pendingQueuedActionProcessed,
-          _pendingQuestState
-        ) >=
+        _getRealXP(actionInfo.skill._asSkill(), _playerXP[playerId], pendingQueuedActionProcessed, pendingQuestState) >=
         actionInfo.minXP,
       ActionMinimumXPNotReached()
     );
@@ -232,15 +227,15 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
     if (actionInfo.actionChoiceRequired) {
-      require(_queuedActionInput.choiceId != NONE, ActionChoiceIdRequired());
-      actionChoice = _world.getActionChoice(isCombat ? NONE : _queuedActionInput.actionId, _queuedActionInput.choiceId);
+      require(queuedActionInput.choiceId != NONE, ActionChoiceIdRequired());
+      actionChoice = _world.getActionChoice(isCombat ? NONE : queuedActionInput.actionId, queuedActionInput.choiceId);
 
       require(
         _getRealXP(
           actionChoice.skill._asSkill(),
           _playerXP[playerId],
-          _pendingQueuedActionProcessed,
-          _pendingQuestState
+          pendingQueuedActionProcessed,
+          pendingQuestState
         ) >= actionChoice.minXP,
         ActionChoiceMinimumXPNotReached()
       );
@@ -250,8 +245,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
           _getRealXP(
             actionChoice.minSkill2._asSkill(),
             _playerXP[playerId],
-            _pendingQueuedActionProcessed,
-            _pendingQuestState
+            pendingQueuedActionProcessed,
+            pendingQuestState
           ) >=
           actionChoice.minXP2,
         ActionChoiceMinimumXPNotReached()
@@ -262,8 +257,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
           _getRealXP(
             actionChoice.minSkill3._asSkill(),
             _playerXP[playerId],
-            _pendingQueuedActionProcessed,
-            _pendingQuestState
+            pendingQueuedActionProcessed,
+            pendingQuestState
           ) >=
           actionChoice.minXP3,
         ActionChoiceMinimumXPNotReached()
@@ -273,23 +268,23 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
       if (actionInfo.skill._asSkill() == Skill.TRAVELING) {
-        require(_queuedActionInput.timespan == (RATE_MUL * 3600) / actionChoice.rate, InvalidTravellingTimespan());
+        require(queuedActionInput.timespan == (RATE_MUL * 3600) / actionChoice.rate, InvalidTravellingTimespan());
       }
 
       bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
       require(!actionChoiceFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
-    } else if (_queuedActionInput.choiceId != NONE) {
+    } else if (queuedActionInput.choiceId != NONE) {
       require(false, ActionChoiceIdNotRequired());
     }
 
     require(!(actionInfo.isFullModeOnly && !isPlayerUpgraded), PlayerNotUpgraded());
 
-    require(_queuedActionInput.timespan != 0, EmptyTimespan());
+    require(queuedActionInput.timespan != 0, EmptyTimespan());
 
     // Check combatStyle is only selected if queuedAction is combat
-    require(isCombat == _queuedActionInput.combatStyle._isCombatStyle(), InvalidCombatStyle());
+    require(isCombat == queuedActionInput.combatStyle._isCombatStyle(), InvalidCombatStyle());
 
-    Attire memory attire = _queuedActionInput.attire;
+    Attire memory attire = queuedActionInput.attire;
     if (
       attire.head != NONE ||
       attire.neck != NONE ||
@@ -299,7 +294,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire.feet != NONE ||
       attire.ring != NONE
     ) {
-      _checkAttire(from, playerId, isPlayerUpgraded, attire, _pendingQueuedActionProcessed, _pendingQuestState);
+      _checkAttire(from, playerId, isPlayerUpgraded, attire, pendingQueuedActionProcessed, pendingQuestState);
       setAttire = true;
     }
 
@@ -307,39 +302,39 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       from,
       playerId,
       isPlayerUpgraded,
-      [_queuedActionInput.leftHandEquipmentTokenId, _queuedActionInput.rightHandEquipmentTokenId],
+      [queuedActionInput.leftHandEquipmentTokenId, queuedActionInput.rightHandEquipmentTokenId],
       actionInfo.handItemTokenIdRangeMin,
       actionInfo.handItemTokenIdRangeMax,
       isCombat,
       actionChoice,
-      _pendingQueuedActionProcessed,
-      _pendingQuestState
+      pendingQueuedActionProcessed,
+      pendingQuestState
     );
 
-    _checkFood(playerId, isPlayerUpgraded, _queuedActionInput, _pendingQueuedActionProcessed, _pendingQuestState);
+    _checkFood(playerId, isPlayerUpgraded, queuedActionInput, pendingQueuedActionProcessed, pendingQuestState);
 
-    _checkPet(from, isPlayerUpgraded, _queuedActionInput.petId);
+    _checkPet(from, isPlayerUpgraded, queuedActionInput.petId);
   }
 
   // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
   function _getRealXP(
-    Skill _skill,
-    PackedXP storage _packedXP,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
-    QuestState memory _questState
+    Skill skill,
+    PackedXP storage packedXP,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
+    QuestState memory questState
   ) private view returns (uint256 xp) {
-    xp = PlayersLibrary.readXP(_skill, _packedXP);
+    xp = PlayersLibrary.readXP(skill, packedXP);
     // Add any pending XP from queued actions
-    for (uint256 i; i < _pendingQueuedActionProcessed.skills.length; ++i) {
-      if (_pendingQueuedActionProcessed.skills[i] == _skill) {
-        xp += _pendingQueuedActionProcessed.xpGainedSkills[i];
+    for (uint256 i; i < pendingQueuedActionProcessed.skills.length; ++i) {
+      if (pendingQueuedActionProcessed.skills[i] == skill) {
+        xp += pendingQueuedActionProcessed.xpGainedSkills[i];
       }
     }
 
     // Add any pending XP from quests
-    for (uint256 i; i < _questState.skills.length; ++i) {
-      if (_questState.skills[i] == _skill) {
-        xp += _questState.xpGainedSkills[i];
+    for (uint256 i; i < questState.skills.length; ++i) {
+      if (questState.skills[i] == skill) {
+        xp += questState.xpGainedSkills[i];
       }
     }
   }
@@ -347,39 +342,39 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   function _addToQueue(
     address from,
     uint256 playerId,
-    QueuedActionInput memory _queuedActionInput,
-    uint64 _queueId,
-    uint40 _startTime
+    QueuedActionInput memory queuedActionInput,
+    uint64 queueId,
+    uint40 startTime
   ) private returns (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed; // Empty
     QuestState memory pendingQuestState; // Empty
     bool setAttire = checkAddToQueue(
       from,
       playerId,
-      _queuedActionInput,
+      queuedActionInput,
       pendingQueuedActionProcessed,
       pendingQuestState
     );
     if (setAttire) {
-      _attire[playerId][_queueId] = _queuedActionInput.attire;
+      _attire[playerId][queueId] = queuedActionInput.attire;
     }
 
-    queuedAction.timespan = _queuedActionInput.timespan;
-    queuedAction.queueId = _queueId;
-    queuedAction.actionId = _queuedActionInput.actionId;
-    queuedAction.regenerateId = _queuedActionInput.regenerateId;
-    queuedAction.choiceId = _queuedActionInput.choiceId;
-    queuedAction.rightHandEquipmentTokenId = _queuedActionInput.rightHandEquipmentTokenId;
-    queuedAction.leftHandEquipmentTokenId = _queuedActionInput.leftHandEquipmentTokenId;
-    queuedAction.combatStyle = _queuedActionInput.combatStyle;
+    queuedAction.timespan = queuedActionInput.timespan;
+    queuedAction.queueId = queueId;
+    queuedAction.actionId = queuedActionInput.actionId;
+    queuedAction.regenerateId = queuedActionInput.regenerateId;
+    queuedAction.choiceId = queuedActionInput.choiceId;
+    queuedAction.rightHandEquipmentTokenId = queuedActionInput.rightHandEquipmentTokenId;
+    queuedAction.leftHandEquipmentTokenId = queuedActionInput.leftHandEquipmentTokenId;
+    queuedAction.combatStyle = queuedActionInput.combatStyle;
 
     bytes1 packed = bytes1(uint8(1)); // isValid
     // Only set variables in the second storage slot if it's necessary
-    if (_queuedActionInput.petId != 0) {
+    if (queuedActionInput.petId != 0) {
       packed |= bytes1(uint8(1 << HAS_PET_BIT));
-      queuedActionExtra.petId = _queuedActionInput.petId;
-      _queuedActionsExtra[_queueId] = queuedActionExtra;
-      _petNFT.assignPet(from, playerId, _queuedActionInput.petId, _startTime);
+      queuedActionExtra.petId = queuedActionInput.petId;
+      _queuedActionsExtra[queueId] = queuedActionExtra;
+      _petNFT.assignPet(from, playerId, queuedActionInput.petId, startTime);
     }
     queuedAction.packed = packed;
     _players[playerId].actionQueue.push(queuedAction);
@@ -387,28 +382,28 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _checkFood(
     uint256 playerId,
-    bool _isPlayerUpgraded,
-    QueuedActionInput memory _queuedActionInput,
-    PendingQueuedActionProcessed memory _pendingQueuedActionProcessed,
-    QuestState memory _questState
+    bool isPlayerUpgraded,
+    QueuedActionInput memory queuedActionInput,
+    PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
+    QuestState memory questState
   ) private view {
-    if (_queuedActionInput.regenerateId != NONE) {
+    if (queuedActionInput.regenerateId != NONE) {
       (Skill skill, uint32 minXP, , bool isFoodFullModeOnly) = _itemNFT.getEquipPositionAndMinRequirement(
-        _queuedActionInput.regenerateId
+        queuedActionInput.regenerateId
       );
       require(
-        _getRealXP(skill, _playerXP[playerId], _pendingQueuedActionProcessed, _questState) >= minXP,
+        _getRealXP(skill, _playerXP[playerId], pendingQueuedActionProcessed, questState) >= minXP,
         ConsumableMinimumXPNotReached()
       );
       // TODO: Untested
-      require(!isFoodFullModeOnly || _isPlayerUpgraded, PlayerNotUpgraded());
+      require(!isFoodFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
     }
   }
 
-  function _checkPet(address from, bool _isPlayerUpgraded, uint256 _petId) private view {
+  function _checkPet(address from, bool isPlayerUpgraded, uint256 _petId) private view {
     if (_petId != 0) {
       // All pets are upgrade only
-      require(_isPlayerUpgraded, PlayerNotUpgraded());
+      require(isPlayerUpgraded, PlayerNotUpgraded());
       require(_petNFT.balanceOf(from, _petId) != 0, PetNotOwned());
     }
   }

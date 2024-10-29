@@ -166,10 +166,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _;
   }
 
-  modifier isMinimumRank(uint256 clanId, uint256 playerId, ClanRank _rank) {
+  modifier isMinimumRank(uint256 clanId, uint256 playerId, ClanRank rank) {
     PlayerInfo storage player = _playerInfo[playerId];
     require(player.clanId == clanId, NotMemberOfClan());
-    require(_playerInfo[playerId].rank >= _rank, RankNotHighEnough());
+    require(_playerInfo[playerId].rank >= rank, RankNotHighEnough());
     _;
   }
 
@@ -285,34 +285,34 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function deleteInvitesAsClan(
     uint256 clanId,
-    uint256[] calldata _invitedPlayerIds,
+    uint256[] calldata invitedPlayerIds,
     uint256 playerId
   ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     Clan storage clan = _clans[clanId];
-    require(_invitedPlayerIds.length != 0, NoInvitesToDelete());
+    require(invitedPlayerIds.length != 0, NoInvitesToDelete());
 
-    for (uint256 i = 0; i < _invitedPlayerIds.length; ++i) {
-      uint256 invitedPlayerId = _invitedPlayerIds[i];
+    for (uint256 i = 0; i < invitedPlayerIds.length; ++i) {
+      uint256 invitedPlayerId = invitedPlayerIds[i];
       require(clan.inviteRequests[invitedPlayerId], InviteDoesNotExist());
       clan.inviteRequests[invitedPlayerId] = false;
     }
 
-    emit InvitesDeletedByClan(clanId, _invitedPlayerIds, playerId);
+    emit InvitesDeletedByClan(clanId, invitedPlayerIds, playerId);
   }
 
   function inviteMembers(
     uint256 clanId,
-    uint256[] calldata _memberPlayerIds,
+    uint256[] calldata memberPlayerIds,
     uint256 playerId
   ) external isOwnerOfPlayer(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     Clan storage clan = _clans[clanId];
     Tier storage tier = _tiers[clan.tierId];
-    require(clan.memberCount + _memberPlayerIds.length <= tier.maxMemberCapacity, ClanIsFull());
+    require(clan.memberCount + memberPlayerIds.length <= tier.maxMemberCapacity, ClanIsFull());
 
-    for (uint256 i = 0; i < _memberPlayerIds.length; ++i) {
-      _inviteMember(clanId, _memberPlayerIds[i]);
+    for (uint256 i = 0; i < memberPlayerIds.length; ++i) {
+      _inviteMember(clanId, memberPlayerIds[i]);
     }
-    emit InvitesSent(clanId, _memberPlayerIds, playerId);
+    emit InvitesSent(clanId, memberPlayerIds, playerId);
   }
 
   function _acceptInvite(uint256 clanId, uint256 playerId, uint256 gateKeepTokenId) private {
@@ -348,9 +348,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function requestToJoin(
     uint256 clanId,
     uint256 playerId,
-    uint256 _gateKeepTokenId
+    uint256 gateKeepTokenId
   ) external isOwnerOfPlayerAndActive(playerId) {
-    _requestToJoin(clanId, playerId, _gateKeepTokenId);
+    _requestToJoin(clanId, playerId, gateKeepTokenId);
   }
 
   function removeJoinRequest(uint256 clanId, uint256 playerId) public isOwnerOfPlayer(playerId) {

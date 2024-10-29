@@ -1232,17 +1232,17 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_clanIds",
+        "name": "clanIds",
         "type": "uint256[]"
       },
       {
         "internalType": "uint16[]",
-        "name": "_mmrs",
+        "name": "mmrs",
         "type": "uint16[]"
       },
       {
         "internalType": "bool",
-        "name": "_clear",
+        "name": "clear",
         "type": "bool"
       }
     ],
