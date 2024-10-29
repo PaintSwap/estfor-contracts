@@ -376,18 +376,18 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function acceptJoinRequests(
     uint256 clanId,
-    uint256[] calldata newMemberPlayedIds,
+    uint256[] calldata newMemberPlayerIds,
     uint256 playerId
   ) public isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.SCOUT) {
     Clan storage clan = _clans[clanId];
     Tier storage tier = _tiers[clan.tierId];
-    require(clan.memberCount + newMemberPlayedIds.length <= tier.maxMemberCapacity, ClanIsFull());
+    require(clan.memberCount + newMemberPlayerIds.length <= tier.maxMemberCapacity, ClanIsFull());
 
-    for (uint256 i = 0; i < newMemberPlayedIds.length; ++i) {
-      _acceptJoinRequest(clanId, newMemberPlayedIds[i]);
+    for (uint256 i = 0; i < newMemberPlayerIds.length; ++i) {
+      _acceptJoinRequest(clanId, newMemberPlayerIds[i]);
     }
 
-    emit JoinRequestsAccepted(clanId, newMemberPlayedIds, playerId);
+    emit JoinRequestsAccepted(clanId, newMemberPlayerIds, playerId);
   }
 
   function changeRank(
@@ -790,12 +790,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit JoinRequestSent(clanId, playerId);
   }
 
-  function _acceptJoinRequest(uint256 clanId, uint256 newMemberPlayedId) private {
+  function _acceptJoinRequest(uint256 clanId, uint256 newMemberPlayerId) private {
     Clan storage clan = _clans[clanId];
-    clan.inviteRequests[newMemberPlayedId] = false;
+    clan.inviteRequests[newMemberPlayerId] = false;
     clan.memberCount++;
 
-    PlayerInfo storage player = _playerInfo[newMemberPlayedId];
+    PlayerInfo storage player = _playerInfo[newMemberPlayerId];
     require(player.requestedClanId == clanId, NoJoinRequest());
     player.clanId = uint32(clanId);
     player.requestedClanId = 0;
