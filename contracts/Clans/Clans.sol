@@ -203,9 +203,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _treasury = pool;
     _dev = dev;
     _nextClanId = 1;
-    _editNameCost = editNameCost;
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
-    emit EditNameCost(editNameCost);
+    setEditNameCost(editNameCost);
     setInitialMMR(initialMMR);
   }
 
