@@ -866,7 +866,7 @@
       },
       {
         "internalType": "uint256[]",
-        "name": "_otherClanIds",
+        "name": "otherClanIds",
         "type": "uint256[]"
       }
     ],
@@ -1340,7 +1340,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_requestId",
+        "name": "requestId",
         "type": "uint256"
       }
     ],
@@ -1459,7 +1459,7 @@
     "inputs": [
       {
         "internalType": "bool",
-        "name": "__preventAttacks",
+        "name": "preventAttacks",
         "type": "bool"
       }
     ],

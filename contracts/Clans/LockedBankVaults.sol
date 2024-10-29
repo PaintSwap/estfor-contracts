@@ -674,8 +674,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   // TODO: Can delete if necessary
-  function setPreventAttacks(bool __preventAttacks) external onlyOwner {
-    _preventAttacks = __preventAttacks;
+  function setPreventAttacks(bool preventAttacks) external onlyOwner {
+    _preventAttacks = preventAttacks;
   }
 
   // TODO Can delete after setting initial MMR
@@ -688,13 +688,13 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     emit SetMMRs(_clanIds, _mmrs);
   }
 
-  function clearCooldowns(uint256 clanId, uint256[] calldata _otherClanIds) external isAdminAndBeta {
-    LockedBankVaultsLibrary.clearCooldowns(clanId, _otherClanIds, _clanInfos[clanId], _lastClanBattles);
+  function clearCooldowns(uint256 clanId, uint256[] calldata otherClanIds) external isAdminAndBeta {
+    LockedBankVaultsLibrary.clearCooldowns(clanId, otherClanIds, _clanInfos[clanId], _lastClanBattles);
   }
 
   // Useful to re-run a battle for testing
-  function setAttackInProgress(uint256 _requestId) external isAdminAndBeta {
-    _pendingAttacks[_requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
+  function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
+    _pendingAttacks[_requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks

@@ -34,7 +34,7 @@ library LockedBankVaultsLibrary {
   function initializeMMR(
     uint48[] storage sortedClansByMMR,
     IClans clans,
-    mapping(uint256 clanId => VaultClanInfo _clanInfo) storage clanInfos,
+    mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos,
     uint256[] calldata clanIds,
     uint16[] calldata mmrs
   ) external {
@@ -50,7 +50,7 @@ library LockedBankVaultsLibrary {
   function forceMMRUpdate(
     uint48[] storage sortedClansByMMR,
     IClans clans,
-    mapping(uint256 clanId => VaultClanInfo _clanInfo) storage clanInfos,
+    mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos,
     uint256[] calldata clanIds
   ) external returns (uint256[] memory clanIdsToDelete) {
     // Create an array to mark elements for deletion
@@ -97,18 +97,18 @@ library LockedBankVaultsLibrary {
   }
 
   function claimFunds(
-    uint48[] storage _sortedClansByMMR,
-    VaultClanInfo storage _clanInfo,
-    uint256 _clanId
+    uint48[] storage sortedClansByMMR,
+    VaultClanInfo storage clanInfo,
+    uint256 clanId
   ) external returns (uint256 total, uint256 numLocksClaimed) {
-    uint256 defendingVaultsOffset = _clanInfo.defendingVaultsOffset;
+    uint256 defendingVaultsOffset = clanInfo.defendingVaultsOffset;
     // There a few cases to consider here:
     // 1. The first one is not expired, so we can't claim anything
     // 2. The first one is expired, but the second one is not, so we can claim the first one
     // 3. The first one is expired, and the second one is expired, so we can claim both
     // We don't need to set claimed = true unless we know the second one is not expired yet
-    for (uint256 i = defendingVaultsOffset; i < _clanInfo.defendingVaults.length; ++i) {
-      Vault storage defendingVault = _clanInfo.defendingVaults[i];
+    for (uint256 i = defendingVaultsOffset; i < clanInfo.defendingVaults.length; ++i) {
+      Vault storage defendingVault = clanInfo.defendingVaults[i];
       if (defendingVault.timestamp > block.timestamp) {
         // Has not expired yet
         break;
@@ -116,7 +116,7 @@ library LockedBankVaultsLibrary {
 
       if (defendingVault.timestamp != 0 && !defendingVault.claimed) {
         total += defendingVault.amount;
-        ++numLocksClaimed;
+        numLocksClaimed++;
       }
 
       if (defendingVault.timestamp1 > block.timestamp) {
@@ -129,8 +129,8 @@ library LockedBankVaultsLibrary {
 
       if (defendingVault.timestamp1 != 0) {
         total += defendingVault.amount1;
-        ++numLocksClaimed;
-        ++defendingVaultsOffset;
+        numLocksClaimed++;
+        defendingVaultsOffset++;
       } else {
         // First one is claimed, second one is not set yet, so need to make sure we don't try and claim it again
         defendingVault.claimed = true;
@@ -139,83 +139,83 @@ library LockedBankVaultsLibrary {
 
     require(total != 0, NothingToClaim());
 
-    uint256 totalBrushLocked = _clanInfo.totalBrushLocked;
-    _clanInfo.totalBrushLocked = uint96(totalBrushLocked - total);
+    uint256 totalBrushLocked = clanInfo.totalBrushLocked;
+    clanInfo.totalBrushLocked = uint96(totalBrushLocked - total);
     bool hasRemainingLockedBrush = totalBrushLocked - total != 0;
     if (!hasRemainingLockedBrush) {
-      uint256 length = _sortedClansByMMR.length;
+      uint256 length = sortedClansByMMR.length;
       for (uint256 i = 0; i < length; ++i) {
-        bool foundClan = _getClanId(_sortedClansByMMR[i]) == _clanId;
+        bool foundClan = _getClanId(sortedClansByMMR[i]) == clanId;
         if (foundClan) {
           // Shift everything to the left and pop
           for (uint256 j = i; j < length - 1; ++j) {
-            _sortedClansByMMR[j] = _sortedClansByMMR[j + 1];
+            sortedClansByMMR[j] = sortedClansByMMR[j + 1];
           }
-          _sortedClansByMMR.pop();
-          _clanInfo.isInMMRArray = false;
+          sortedClansByMMR.pop();
+          clanInfo.isInMMRArray = false;
           break;
         }
       }
     }
-    _clanInfo.defendingVaultsOffset = uint24(defendingVaultsOffset);
+    clanInfo.defendingVaultsOffset = uint24(defendingVaultsOffset);
   }
 
   function checkWithinRange(
-    uint48[] storage _sortedClansByMMR,
-    uint256 _clanId,
-    uint256 _defendingClanId,
-    IClans _clans,
-    uint256 _mmrAttackDistance
+    uint48[] storage sortedClansByMMR,
+    uint256 clanId,
+    uint256 defendingClanId,
+    IClans clans,
+    uint256 mmrAttackDistance
   ) external view {
-    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndices(_sortedClansByMMR, _clanId, _defendingClanId);
+    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndices(sortedClansByMMR, clanId, defendingClanId);
     uint48[] memory modifiedSortedClansByMMR;
     if (clanIndex == type(uint256).max) {
       (modifiedSortedClansByMMR, clanIndex) = _insertMMRArrayInMemory(
-        _sortedClansByMMR,
-        _clans.getMMR(_clanId),
-        uint32(_clanId)
+        sortedClansByMMR,
+        clans.getMMR(clanId),
+        uint32(clanId)
       );
       if (clanIndex <= defendingClanIndex) {
-        ++defendingClanIndex;
+        defendingClanIndex++;
       }
     } else {
-      modifiedSortedClansByMMR = _sortedClansByMMR;
+      modifiedSortedClansByMMR = sortedClansByMMR;
     }
 
     require(
-      _isWithinRange(modifiedSortedClansByMMR, clanIndex, defendingClanIndex, _mmrAttackDistance),
+      _isWithinRange(modifiedSortedClansByMMR, clanIndex, defendingClanIndex, mmrAttackDistance),
       OutsideMMRRange()
     );
   }
 
-  function _hasLockedFunds(VaultClanInfo storage _clanInfo) internal view returns (bool) {
-    uint256 length = _clanInfo.defendingVaults.length;
+  function _hasLockedFunds(VaultClanInfo storage clanInfo) internal view returns (bool) {
+    uint256 length = clanInfo.defendingVaults.length;
     if (length == 0) {
       return false;
     }
     // 1 value has not expired yet
     return
-      (_clanInfo.defendingVaults[length - 1].timestamp > block.timestamp) ||
-      (_clanInfo.defendingVaults[length - 1].timestamp1 > block.timestamp);
+      (clanInfo.defendingVaults[length - 1].timestamp > block.timestamp) ||
+      (clanInfo.defendingVaults[length - 1].timestamp1 > block.timestamp);
   }
 
   function _getClanIndicesMemory(
-    uint48[] memory _sortedClansByMMR,
-    uint256 _clanId,
-    uint256 _defendingClanId
+    uint48[] memory sortedClansByMMR,
+    uint256 clanId,
+    uint256 defendingClanId
   ) private pure returns (uint256 clanIndex, uint256 defendingIndex) {
     uint256 numFound;
     clanIndex = type(uint256).max;
     defendingIndex = type(uint256).max;
-    for (uint256 i = 0; i < _sortedClansByMMR.length; ++i) {
-      if (_getClanId(_sortedClansByMMR[i]) == _clanId) {
+    for (uint256 i = 0; i < sortedClansByMMR.length; ++i) {
+      if (_getClanId(sortedClansByMMR[i]) == clanId) {
         clanIndex = i;
-        ++numFound;
+        numFound++;
       }
 
-      if (_getClanId(_sortedClansByMMR[i]) == _defendingClanId) {
+      if (_getClanId(sortedClansByMMR[i]) == defendingClanId) {
         defendingIndex = i;
-        ++numFound;
+        numFound++;
       }
 
       if (numFound == 2) {
@@ -225,22 +225,22 @@ library LockedBankVaultsLibrary {
   }
 
   function _getClanIndices(
-    uint48[] storage _sortedClansByMMR,
-    uint256 _clanId,
-    uint256 _defendingClanId
+    uint48[] storage sortedClansByMMR,
+    uint256 clanId,
+    uint256 defendingClanId
   ) private view returns (uint256 clanIndex, uint256 defendingIndex) {
     uint256 numFound;
     clanIndex = type(uint256).max;
     defendingIndex = type(uint256).max;
-    for (uint256 i = 0; i < _sortedClansByMMR.length; ++i) {
-      if (_getClanId(_sortedClansByMMR[i]) == _clanId) {
+    for (uint256 i = 0; i < sortedClansByMMR.length; ++i) {
+      if (_getClanId(sortedClansByMMR[i]) == clanId) {
         clanIndex = i;
-        ++numFound;
+        numFound++;
       }
 
-      if (_getClanId(_sortedClansByMMR[i]) == _defendingClanId) {
+      if (_getClanId(sortedClansByMMR[i]) == defendingClanId) {
         defendingIndex = i;
-        ++numFound;
+        numFound++;
       }
 
       if (numFound == 2) {

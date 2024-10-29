@@ -100,6 +100,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error NotMMRSetter();
   error PercentNotTotal100();
   error PlayersAlreadySet();
+  error BankFactoryAlreadySet();
 
   struct Clan {
     uint80 owner;
@@ -487,11 +488,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function pinMessage(
     uint256 clanId,
-    string calldata _message,
+    string calldata message,
     uint256 playerId
   ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
-    require(bytes(_message).length <= 200, MessageTooLong());
-    emit PinMessage(clanId, _message, playerId);
+    require(bytes(message).length <= 200, MessageTooLong());
+    emit PinMessage(clanId, message, playerId);
   }
 
   function setMMR(uint256 clanId, uint16 mmr) external onlyMMRSetter {
@@ -692,18 +693,18 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanDestroyed(clanId);
   }
 
-  function _removeFromClan(uint256 clanId, uint256 playerId, uint256 _removingPlayerId) private {
+  function _removeFromClan(uint256 clanId, uint256 playerId, uint256 removingPlayerId) private {
     Clan storage clan = _clans[clanId];
 
     if (clan.owner == playerId) {
       _ownerCleared(clanId);
     }
 
-    --clan.memberCount;
+    clan.memberCount--;
     if (clan.memberCount == 0) {
       _destroyClan(clanId);
     } else {
-      emit MemberLeft(clanId, playerId, _removingPlayerId);
+      emit MemberLeft(clanId, playerId, removingPlayerId);
     }
     PlayerInfo storage player = _playerInfo[playerId];
     player.clanId = 0;
@@ -855,6 +856,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function setBankFactory(IBankFactory bankFactory) external onlyOwner {
+    require(address(_bankFactory) == address(0), BankFactoryAlreadySet());
     _bankFactory = bankFactory;
   }
 

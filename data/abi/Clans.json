@@ -37,6 +37,11 @@
   },
   {
     "inputs": [],
+    "name": "BankFactoryAlreadySet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "CannotDowngradeTier",
     "type": "error"
   },
@@ -1957,7 +1962,7 @@
       },
       {
         "internalType": "string",
-        "name": "_message",
+        "name": "message",
         "type": "string"
       },
       {
