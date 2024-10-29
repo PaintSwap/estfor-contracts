@@ -99,6 +99,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error MessageTooLong();
   error NotMMRSetter();
   error PercentNotTotal100();
+  error PlayersAlreadySet();
 
   struct Clan {
     uint80 owner;
@@ -859,6 +860,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function setPlayers(IPlayers players) external onlyOwner {
+    require(address(_players) == address(0), PlayersAlreadySet());
     _players = players;
   }
 
