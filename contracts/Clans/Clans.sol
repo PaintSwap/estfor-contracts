@@ -862,7 +862,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _players = players;
   }
 
-  function setEditNameCost(uint72 editNameCost) external onlyOwner {
+  function setEditNameCost(uint80 editNameCost) public onlyOwner {
     _editNameCost = editNameCost;
     emit EditNameCost(editNameCost);
   }
