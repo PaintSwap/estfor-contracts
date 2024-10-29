@@ -617,7 +617,7 @@ describe("Boosts", function () {
     );
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-    await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+    await clans.connect(alice).inviteMembers(clanId, [bobPlayerId], playerId);
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
     await brush.mint(bob, parseEther("100000"));
@@ -884,7 +884,7 @@ describe("Boosts", function () {
     // Change to the next booster. This is combat XP, so it should give the same overall boost
     // Add bob
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-    await clans.connect(alice).inviteMember(clanId, bobPlayerId, playerId);
+    await clans.connect(alice).inviteMembers(clanId, [bobPlayerId], playerId);
     await clans.connect(bob).acceptInvite(clanId, bobPlayerId, 0);
 
     await brush.mint(bob, parseEther("100000"));

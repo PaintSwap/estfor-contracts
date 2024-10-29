@@ -89,7 +89,7 @@ describe("LockedBankVaults", function () {
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     await combatantsHelper
       .connect(alice)
@@ -160,7 +160,7 @@ describe("LockedBankVaults", function () {
     const bobClanId = clanId + 1;
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     // Attack
     await combatantsHelper
@@ -223,7 +223,7 @@ describe("LockedBankVaults", function () {
     const bobClanId = clanId + 1;
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     // Cannot attack unless have combatants specified
     await expect(
@@ -279,7 +279,7 @@ describe("LockedBankVaults", function () {
     const bobClanId = clanId + 1;
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
     // Increase odds of winning
     for (let i = 0; i < allBattleSkills.length; ++i) {
       await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
@@ -312,11 +312,11 @@ describe("LockedBankVaults", function () {
     // Let's give them more players so they can win
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 3, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
     await clans.connect(erin).requestToJoin(clanId, erinPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, erinPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [erinPlayerId], playerId);
     // Extend member capacity
     await clans.editTiers([
       {
@@ -331,7 +331,7 @@ describe("LockedBankVaults", function () {
 
     const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 5, true);
     await clans.connect(frank).requestToJoin(clanId, frankPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, frankPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [frankPlayerId], playerId);
 
     // But have to wait for the cooldown and not just the generic attack cooldown, the same clan attacking cooldown
     await expect(
@@ -477,7 +477,7 @@ describe("LockedBankVaults", function () {
     const bobClanId = clanId + 1;
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     // Attack
     await combatantsHelper
@@ -1198,7 +1198,7 @@ describe("LockedBankVaults", function () {
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     const bobClanId = clanId + 1;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     for (let i = 0; i < allBattleSkills.length; ++i) {
       await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
@@ -1264,7 +1264,7 @@ describe("LockedBankVaults", function () {
     const bobClanId = clanId + 1;
     const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     await combatantsHelper
       .connect(bob)
@@ -1465,7 +1465,7 @@ describe("LockedBankVaults", function () {
       const bobClanId = clanId + 1;
       const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-      await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+      await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
       // Attack
       await combatantsHelper
@@ -1533,7 +1533,7 @@ describe("LockedBankVaults", function () {
       const bobClanId = clanId + 1;
       const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-      await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+      await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
       await combatantsHelper
         .connect(bob)
@@ -1736,11 +1736,11 @@ describe("LockedBankVaults", function () {
       // Lose (make the other clan have 2 more combatant)
       const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-      await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+      await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
       const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 3, true);
       await clans.connect(frank).requestToJoin(bobClanId, frankPlayerId, 0);
-      await clans.connect(bob).acceptJoinRequest(bobClanId, frankPlayerId, bobPlayerId);
+      await clans.connect(bob).acceptJoinRequests(bobClanId, [frankPlayerId], bobPlayerId);
 
       await combatantsHelper.clearCooldowns([bobPlayerId]);
       await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
@@ -2119,7 +2119,7 @@ describe("LockedBankVaults", function () {
       const bobClanId = clanId + 1;
       const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-      await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+      await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
       await combatantsHelper
         .connect(bob)

@@ -260,6 +260,11 @@
   },
   {
     "inputs": [],
+    "name": "PlayersAlreadySet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PriceTooLow",
     "type": "error"
   },
@@ -1085,31 +1090,8 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "newMemberPlayedId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "acceptJoinRequest",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "clanId",
-        "type": "uint256"
-      },
-      {
         "internalType": "uint256[]",
-        "name": "newMemberPlayedIds",
+        "name": "newMemberPlayerIds",
         "type": "uint256[]"
       },
       {
@@ -1857,29 +1839,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "member",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "inviteMember",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "clanId",
-        "type": "uint256"
-      },
-      {
         "internalType": "uint256[]",
         "name": "_memberPlayerIds",
         "type": "uint256[]"
@@ -2158,9 +2117,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint72",
+        "internalType": "uint80",
         "name": "editNameCost",
-        "type": "uint72"
+        "type": "uint80"
       }
     ],
     "name": "setEditNameCost",

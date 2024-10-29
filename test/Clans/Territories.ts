@@ -240,7 +240,7 @@ describe("Territories", function () {
     const territoryId = 1;
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     await combatantsHelper
       .connect(alice)
@@ -266,9 +266,9 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
     await clans.connect(erin).requestToJoin(bobClanId, erinPlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, erinPlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [erinPlayerId], bobPlayerId);
 
     // leaves clan, check they are no longer classed as a defender
     let territory = (await territories.getTerrorities())[0];
@@ -349,7 +349,7 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
-    await clans.connect(bob).acceptJoinRequest(bobClanId, charliePlayerId, bobPlayerId);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [charliePlayerId], false, [], bobPlayerId);
     await territories
@@ -476,7 +476,7 @@ describe("Territories", function () {
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     await expect(
       combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId, playerId], false, [], playerId)
@@ -494,7 +494,7 @@ describe("Territories", function () {
     const territoryId = 1;
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
     await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.TREASURER, playerId);
 
     await combatantsHelper
@@ -958,7 +958,7 @@ describe("Territories", function () {
     const territoryId = 1;
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, ownerPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     await combatantsHelper
       .connect(alice)

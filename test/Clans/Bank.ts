@@ -140,7 +140,7 @@ describe("Bank", function () {
 
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser", true);
     await clans.requestToJoin(clanId, newPlayerId, 0);
-    await clans.connect(alice).acceptJoinRequest(clanId, newPlayerId, playerId);
+    await clans.connect(alice).acceptJoinRequests(clanId, [newPlayerId], playerId);
 
     await expect(
       bankRelay.connect(owner).withdrawItems(alice, newPlayerId, [EstforConstants.BRONZE_SHIELD], [1])
