@@ -6,6 +6,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import {IClans} from "../interfaces/IClans.sol";
 import {IBank} from "../interfaces/IBank.sol";
@@ -13,7 +14,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 
-contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
+contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgradeable {
   event DepositItems(address from, uint256 playerId, uint256[] ids, uint256[] values);
   event DepositItem(address from, uint256 playerId, uint256 id, uint256 value);
   event WithdrawItems(address from, address to, uint256 playerId, uint256[] ids, uint256[] values);
@@ -48,17 +49,12 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
   error WithdrawFailed();
   error LengthMismatch();
   error ToIsNotOwnerOfPlayer();
-  error ReentrancyGuardReentrantCall();
   error UseWithdrawItemsForNFT();
   error NFTTypeNotSupported();
-
-  uint8 private constant NOT_ENTERED = 1;
-  uint8 private constant ENTERED = 2;
 
   uint32 private _clanId;
   BankRegistry private _bankRegistry;
   uint16 private _uniqueItemCount;
-  uint8 private _reentrantStatus;
   mapping(uint256 itemTokenId => bool hasAny) private _uniqueItems;
 
   modifier onlyBankRelay() {
@@ -71,21 +67,9 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
     _;
   }
 
-  /**
-   * @dev Prevents a contract from calling itself, directly or indirectly.
-   * Calling a `nonReentrant` function from another `nonReentrant`
-   * function is not supported. It is possible to prevent this from happening
-   * by making the `nonReentrant` function external, and making it call a
-   * `private` function that does the actual work.
-   */
-  modifier nonReentrant() {
-    // On the first call to nonReentrant, _status will be NOT_ENTERED
-    require(_reentrantStatus != ENTERED, ReentrancyGuardReentrantCall());
-    _reentrantStatus = ENTERED;
+  modifier canWithdraw(uint256 playerId) {
+    require(_bankRegistry.getClans().canWithdraw(_clanId, playerId), NotClanAdmin());
     _;
-    // By storing the original value once again, a refund is triggered (see
-    // https://eips.ethereum.org/EIPS/eip-2200)
-    _reentrantStatus = NOT_ENTERED;
   }
 
   /// @custom:oz-upgrades-unsafe-allow constructor
