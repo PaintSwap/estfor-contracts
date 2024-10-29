@@ -1135,6 +1135,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "bankRelay",
+        "type": "address"
+      },
+      {
         "internalType": "contract ItemNFT",
         "name": "itemNFT",
         "type": "address"

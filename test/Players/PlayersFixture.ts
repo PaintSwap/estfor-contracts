@@ -33,7 +33,8 @@ import {
   WishingWell,
   World,
   WorldLibrary,
-  Treasury
+  Treasury,
+  BankRelay
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -304,11 +305,18 @@ export const playersFixture = async function () {
   const BankFactory = await ethers.getContractFactory("BankFactory");
   const bankFactory = (await upgrades.deployProxy(
     BankFactory,
-    [await bankRegistry.getAddress(), await bank.getAddress()],
+    [await clans.getAddress(), await bank.getAddress(), await bankRegistry.getAddress()],
     {
       kind: "uups"
     }
   )) as unknown as BankFactory;
+
+  const BankRelay = await ethers.getContractFactory("BankRelay");
+  const bankRelay = (await upgrades.deployProxy(BankRelay, [await clans.getAddress(), await bankFactory.getAddress()], {
+    kind: "uups"
+  })) as unknown as BankRelay;
+
+  await bankRegistry.setBankRelay(bankRelay);
 
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
@@ -398,6 +406,7 @@ export const playersFixture = async function () {
       await clans.getAddress(),
       await brush.getAddress(),
       await bankFactory.getAddress(),
+      await bankRelay.getAddress(),
       await itemNFT.getAddress(),
       await treasury.getAddress(),
       dev.address,
@@ -580,6 +589,8 @@ export const playersFixture = async function () {
     Bank,
     bankRegistry,
     bankFactory,
+    bankRelay,
+    BankRelay,
     estforLibrary,
     paintSwapMarketplaceWhitelist,
     passiveActions,

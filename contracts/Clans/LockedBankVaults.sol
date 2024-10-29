@@ -27,6 +27,7 @@ import {NONE} from "../globals/items.sol";
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 import {LockedBankVaultsLibrary} from "./LockedBankVaultsLibrary.sol";
+import {BankRelay} from "./BankRelay.sol";
 
 contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVaults, IClanMemberLeftCB {
   event AttackVaults(
@@ -136,6 +137,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   AdminAccess private _adminAccess;
   bool private _isBeta;
   IBankFactory private _bankFactory;
+  BankRelay private _bankRelay;
   address private _combatantsHelper;
   uint24 private _combatantChangeCooldown;
   uint8 private _maxClanCombatants;
@@ -204,6 +206,16 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _;
   }
 
+  modifier approveBankAddress(uint256 clanId) {
+    address bankAddress = address(_clanInfos[clanId].bank);
+    if (bankAddress == address(0)) {
+      bankAddress = _bankFactory.getBankAddress(clanId);
+      _brush.approve(bankAddress, type(uint256).max);
+      _clanInfos[clanId].bank = IBank(bankAddress);
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -214,6 +226,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     IClans clans,
     IBrushToken brush,
     IBankFactory bankFactory,
+    address bankRelay,
     ItemNFT itemNFT,
     address treasury,
     address dev,
@@ -234,6 +247,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _clans = clans;
     _brush = brush;
     _bankFactory = bankFactory;
+    _bankRelay = BankRelay(bankRelay);
     _itemNFT = itemNFT;
     _treasury = treasury;
     _dev = dev;
@@ -475,15 +489,19 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     }
   }
 
-  function claimFunds(uint256 clanId, uint256 playerId) external isOwnerOfPlayerAndActive(playerId) {
+  function claimFunds(
+    uint256 clanId,
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) approveBankAddress(clanId) {
     (uint256 total, uint256 numLocksClaimed) = LockedBankVaultsLibrary.claimFunds(
       _sortedClansByMMR,
       _clanInfos[clanId],
       clanId
     );
-    emit ClaimFunds(clanId, _msgSender(), playerId, total, numLocksClaimed);
-    address bankAddress = _getBankAddress(clanId);
-    IBank(bankAddress).depositToken(_msgSender(), playerId, address(_brush), total);
+    address sender = _msgSender();
+    emit ClaimFunds(clanId, sender, playerId, total, numLocksClaimed);
+
+    _bankRelay.depositTokenFor(sender, playerId, address(_brush), total);
   }
 
   function blockAttacks(
@@ -541,15 +559,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       losersVault.amount1 = uint80(amount1 - stealAmount1);
       _clanInfos[clanId].totalBrushLocked -= uint96(stealAmount1);
       amountWon += stealAmount1;
-    }
-  }
-
-  function _getBankAddress(uint256 clanId) private returns (address bankAddress) {
-    bankAddress = address(_clanInfos[clanId].bank);
-    if (bankAddress == address(0)) {
-      bankAddress = _bankFactory.getBankAddress(clanId);
-      _brush.approve(bankAddress, type(uint256).max);
-      _clanInfos[clanId].bank = IBank(bankAddress);
     }
   }
 

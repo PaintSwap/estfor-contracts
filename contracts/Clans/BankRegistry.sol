@@ -10,12 +10,16 @@ import {IPlayers} from "../interfaces/IPlayers.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
+  error BankRelayAlreadySet();
+  error LockedBankVaultsAlreadySet();
+
   address private _bankImpl; // Keep this same as it's used by the deleted BankProxy which is used by some old banks
   ItemNFT private _itemNFT;
   IERC1155 private _playerNFT;
   IClans private _clans;
   IPlayers private _players;
   address private _lockedBankVaults;
+  address private _bankRelay;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -52,8 +56,18 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
     return _lockedBankVaults;
   }
 
+  function getBankRelay() external view returns (address) {
+    return _bankRelay;
+  }
+
   function setLockedBankVaults(address lockedBankVaults) external onlyOwner {
+    require(_lockedBankVaults == address(0), LockedBankVaultsAlreadySet());
     _lockedBankVaults = lockedBankVaults;
+  }
+
+  function setBankRelay(address bankRelay) external onlyOwner {
+    require(_bankRelay == address(0), BankRelayAlreadySet());
+    _bankRelay = bankRelay;
   }
 
   // solhint-disable-next-line no-empty-blocks

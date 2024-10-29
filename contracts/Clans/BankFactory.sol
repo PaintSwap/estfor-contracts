@@ -8,23 +8,24 @@ import {BeaconProxy} from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol"
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {IClans} from "../interfaces/IClans.sol";
-import {BankRegistry} from "./BankRegistry.sol";
 
 contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   event BankContractCreated(address creator, uint256 clanId, address newContract);
 
   error OnlyClans();
   error BankAlreadyCreated();
+  error BankRelayAlreadySet();
 
   mapping(uint256 clanId => address bank) private _bankAddress;
   // Keeps track of which vault addresses have been created here
   mapping(address => bool) private _createdHere;
   /// @custom:oz-renamed-from bankUpgradeableProxy
+  address private _clans;
   address private _bankBeacon;
   address private _bankRegistry;
 
   modifier onlyClans() {
-    require(address(BankRegistry(_bankRegistry).getClans()) == _msgSender(), OnlyClans());
+    require(address(_clans) == _msgSender(), OnlyClans());
     _;
   }
 
@@ -33,11 +34,13 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     _disableInitializers();
   }
 
-  function initialize(address bankRegistry, address bankBeacon) external initializer {
+  function initialize(address clans, address bankBeacon, address bankRegistry) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
-    _bankRegistry = bankRegistry;
+
+    _clans = clans;
     _bankBeacon = bankBeacon;
+    _bankRegistry = bankRegistry;
   }
 
   function getBankAddress(uint256 clanId) external view override returns (address) {

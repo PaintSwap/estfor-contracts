@@ -2646,7 +2646,7 @@ describe("Rewards", function () {
 
       await timeTravel24Hours();
 
-      await requestAndFulfillRandomWordsSeeded(world, mockVRF, 10000000n);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, 100_000_000_000n);
 
       expect(await itemNFT.balanceOf(alice, BRONZE_ARROW)).to.be.eq(0);
 

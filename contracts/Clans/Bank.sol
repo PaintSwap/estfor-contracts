@@ -40,6 +40,7 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
     uint256 amount
   );
 
+  error OnlyBankRelay();
   error MaxBankCapacityReached();
   error NotClanAdmin();
   error NotOwnerOfPlayer();
@@ -60,13 +61,13 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
   uint8 private _reentrantStatus;
   mapping(uint256 itemTokenId => bool hasAny) private _uniqueItems;
 
-  modifier isOwnerOfPlayer(uint256 playerId) {
-    require(_bankRegistry.getPlayerNFT().balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
+  modifier onlyBankRelay() {
+    require(_msgSender() == _bankRegistry.getBankRelay(), OnlyBankRelay());
     _;
   }
 
-  modifier canWithdraw(uint256 playerId) {
-    require(_bankRegistry.getClans().canWithdraw(_clanId, playerId), NotClanAdmin());
+  modifier isOwnerOfPlayer(address sender, uint256 playerId) {
+    require(_bankRegistry.getPlayerNFT().balanceOf(sender, playerId) == 1, NotOwnerOfPlayer());
     _;
   }
 
@@ -93,23 +94,24 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
   }
 
   function initialize(uint256 clanId, address bankRegistry) external override initializer {
+    __ReentrancyGuard_init();
     _clanId = uint32(clanId);
     _bankRegistry = BankRegistry(bankRegistry);
-    _reentrantStatus = NOT_ENTERED;
   }
 
   function depositItems(
+    address sender,
     uint256 playerId,
     uint256[] calldata ids,
     uint256[] calldata values
-  ) external isOwnerOfPlayer(playerId) {
+  ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) {
     uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
     uint256 bounds = ids.length;
     for (uint256 iter; iter < bounds; iter++) {
       _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
     }
-    _bankRegistry.getItemNFT().safeBatchTransferFrom(_msgSender(), address(this), ids, values, "");
-    emit DepositItems(_msgSender(), playerId, ids, values);
+    _bankRegistry.getItemNFT().safeBatchTransferFrom(sender, address(this), ids, values, "");
+    emit DepositItems(sender, playerId, ids, values);
   }
 
   function getUniqueItemCount() external view returns (uint16) {
@@ -117,11 +119,12 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
   }
 
   function withdrawItems(
+    address sender,
     address to,
     uint256 playerId,
     uint256[] calldata ids,
     uint256[] calldata amounts
-  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) nonReentrant {
+  ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
     ItemNFT itemNFT = _bankRegistry.getItemNFT();
     itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
 
@@ -134,13 +137,14 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
         _uniqueItems[id] = false;
       }
     }
-    emit WithdrawItems(_msgSender(), to, playerId, ids, amounts);
+    emit WithdrawItems(sender, to, playerId, ids, amounts);
   }
 
   function withdrawItemsBulk(
+    address sender,
     BulkTransferInfo[] calldata nftsInfo,
     uint256 playerId
-  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) nonReentrant {
+  ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
     ItemNFT itemNFT = _bankRegistry.getItemNFT();
     itemNFT.safeBulkTransfer(nftsInfo);
 
@@ -159,7 +163,7 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
       }
     }
 
-    emit WithdrawItemsBulk(_msgSender(), nftsInfo, playerId);
+    emit WithdrawItemsBulk(sender, nftsInfo, playerId);
   }
 
   function onERC1155Received(
@@ -199,53 +203,63 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
     return super.onERC1155BatchReceived(operator, from, ids, values, data);
   }
 
-  function depositFTM(uint256 playerId) external payable isOwnerOfPlayer(playerId) {
+  function depositFTM(
+    address sender,
+    uint256 playerId
+  ) external payable onlyBankRelay isOwnerOfPlayer(sender, playerId) {
     if (msg.value != 0) {
-      emit DepositFTM(_msgSender(), playerId, msg.value);
+      emit DepositFTM(sender, playerId, msg.value);
     }
   }
 
   // Untested
   function withdrawFTM(
+    address sender,
     address to,
     uint256 playerId,
     uint256 amount
-  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
-    (bool success, ) = _msgSender().call{value: amount}("");
+  ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
+    (bool success, ) = sender.call{value: amount}("");
     require(success, WithdrawFailed());
-    emit WithdrawFTM(_msgSender(), to, playerId, amount);
+    emit WithdrawFTM(sender, to, playerId, amount);
   }
 
-  function depositToken(address from, uint256 playerId, address token, uint256 amount) external {
-    require(from == _msgSender() || _msgSender() == address(_bankRegistry.getLockedBankVaults()), NotOwnerOfPlayer());
-    require(_bankRegistry.getPlayerNFT().balanceOf(from, playerId) == 1, NotOwnerOfPlayer());
-
-    bool success = IERC20(token).transferFrom(_msgSender(), address(this), amount);
+  function depositToken(
+    address sender, // either Player owner or LockedBankVaults
+    address playerOwner,
+    uint256 playerId,
+    address token,
+    uint256 amount
+  ) external onlyBankRelay {
+    require(playerOwner == sender || sender == address(_bankRegistry.getLockedBankVaults()), NotOwnerOfPlayer());
+    require(_bankRegistry.getPlayerNFT().balanceOf(playerOwner, playerId) == 1, NotOwnerOfPlayer());
+    bool success = IERC20(token).transferFrom(sender, address(this), amount);
     require(success, DepositFailed());
-
-    emit DepositToken(from, playerId, token, amount);
+    emit DepositToken(playerOwner, playerId, token, amount);
   }
 
   function withdrawToken(
+    address sender,
     uint256 playerId,
     address to,
     uint256 toPlayerId,
     address token,
     uint256 amount
-  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
+  ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
     require(_bankRegistry.getPlayerNFT().balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
     bool success = IERC20(token).transfer(to, amount);
     require(success, WithdrawFailed());
-    emit WithdrawToken(_msgSender(), playerId, to, toPlayerId, token, amount);
+    emit WithdrawToken(sender, playerId, to, toPlayerId, token, amount);
   }
 
   function withdrawTokenToMany(
+    address sender,
     uint256 playerId,
     address[] calldata tos,
     uint256[] calldata toPlayerIds,
     address token,
     uint256[] calldata _amounts
-  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
+  ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
     require(toPlayerIds.length == _amounts.length, LengthMismatch());
     require(toPlayerIds.length == tos.length, LengthMismatch());
 
@@ -255,23 +269,24 @@ contract Bank is ERC1155Holder, IBank, ContextUpgradeable {
       require(success, WithdrawFailed());
     }
 
-    emit WithdrawTokens(_msgSender(), playerId, tos, toPlayerIds, token, _amounts);
+    emit WithdrawTokens(sender, playerId, tos, toPlayerIds, token, _amounts);
   }
 
   function withdrawNFT(
+    address sender,
     uint256 playerId,
     address to,
     uint256 toPlayerId,
     address nft,
     uint256 tokenId,
     uint256 amount
-  ) external isOwnerOfPlayer(playerId) canWithdraw(playerId) {
+  ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
     require(nft != address(_bankRegistry.getItemNFT()), UseWithdrawItemsForNFT());
     require(_bankRegistry.getPlayerNFT().balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
     require(IERC165(nft).supportsInterface(type(IERC1155).interfaceId), NFTTypeNotSupported());
 
     IERC1155(nft).safeTransferFrom(address(this), to, tokenId, amount, "");
-    emit WithdrawNFT(_msgSender(), playerId, to, toPlayerId, nft, tokenId, amount);
+    emit WithdrawNFT(sender, playerId, to, toPlayerId, nft, tokenId, amount);
   }
 
   function _receivedItemUpdateUniqueItems(uint256 id, uint256 maxCapacity) private {

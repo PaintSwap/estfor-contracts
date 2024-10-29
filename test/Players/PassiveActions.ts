@@ -8,7 +8,7 @@ import {
 } from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {expect} from "chai";
-import {requestAndFulfillRandomWords, timeTravel24Hours} from "../utils";
+import {requestAndFulfillRandomWords, requestAndFulfillRandomWordsSeeded, timeTravel24Hours} from "../utils";
 import {BRONZE_ARROW, IRON_ARROW} from "@paintswap/estfor-definitions/constants";
 import {getXPFromLevel} from "./utils";
 
@@ -372,7 +372,7 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWordsSeeded(world, mockVRF, 100_000_000_000_000n);
     finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.false;

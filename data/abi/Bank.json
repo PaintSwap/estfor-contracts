@@ -46,6 +46,11 @@
   },
   {
     "inputs": [],
+    "name": "OnlyBankRelay",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ReentrancyGuardReentrantCall",
     "type": "error"
   },
@@ -443,6 +448,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
@@ -455,6 +465,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "playerId",
@@ -480,7 +495,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "from",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "playerOwner",
         "type": "address"
       },
       {
@@ -636,6 +656,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "to",
         "type": "address"
       },
@@ -657,6 +682,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "to",
@@ -685,6 +715,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
       {
         "components": [
           {
@@ -720,6 +755,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "playerId",
@@ -759,6 +799,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
@@ -791,6 +836,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "playerId",

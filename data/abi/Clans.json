@@ -1571,6 +1571,25 @@
         "type": "uint256"
       }
     ],
+    "name": "getClanIdFromPlayer",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
     "name": "getClanNameOfPlayer",
     "outputs": [
       {

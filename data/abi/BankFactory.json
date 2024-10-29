@@ -21,6 +21,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "BankRelayAlreadySet",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -243,12 +248,17 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "bankRegistry",
+        "name": "clans",
         "type": "address"
       },
       {
         "internalType": "address",
         "name": "bankBeacon",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "bankRegistry",
         "type": "address"
       }
     ],

@@ -16,6 +16,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "BankRelayAlreadySet",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -39,6 +44,11 @@
   {
     "inputs": [],
     "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LockedBankVaultsAlreadySet",
     "type": "error"
   },
   {
@@ -137,6 +147,19 @@
         "internalType": "string",
         "name": "",
         "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBankRelay",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -264,6 +287,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "bankRelay",
+        "type": "address"
+      }
+    ],
+    "name": "setBankRelay",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
