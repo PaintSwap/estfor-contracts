@@ -495,7 +495,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     (uint256 total, uint256 numLocksClaimed) = LockedBankVaultsLibrary.claimFunds(_sortedClansByMMR, clanInfo, clanId);
     address sender = _msgSender();
     emit ClaimFunds(clanId, sender, playerId, total, numLocksClaimed);
-    _bankRelay.depositTokenFor(payable(address(clanInfo.bank)), sender, playerId, address(_brush), total);
+    _bankRelay.depositTokenForAtBank(payable(address(clanInfo.bank)), sender, playerId, address(_brush), total);
   }
 
   function blockAttacks(

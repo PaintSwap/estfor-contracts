@@ -32,10 +32,10 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function depositItems(uint256 playerId, uint256[] calldata ids, uint256[] calldata amounts) external {
-    depositItems(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, ids, amounts);
+    depositItemsAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, ids, amounts);
   }
 
-  function depositItems(
+  function depositItemsAtBank(
     address payable clanBankAddress,
     uint256 playerId,
     uint256[] calldata ids,
@@ -45,10 +45,10 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function withdrawItems(address to, uint256 playerId, uint256[] calldata ids, uint256[] calldata amounts) external {
-    withdrawItems(_getBankAddress(_getClanIdFromPlayer(playerId)), to, playerId, ids, amounts);
+    withdrawItemsAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), to, playerId, ids, amounts);
   }
 
-  function withdrawItems(
+  function withdrawItemsAtBank(
     address payable clanBankAddress,
     address to,
     uint256 playerId,
@@ -59,10 +59,10 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function withdrawItemsBulk(BulkTransferInfo[] calldata nftsInfo, uint256 playerId) external {
-    withdrawItemsBulk(_getBankAddress(_getClanIdFromPlayer(playerId)), nftsInfo, playerId);
+    withdrawItemsBulkAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), nftsInfo, playerId);
   }
 
-  function withdrawItemsBulk(
+  function withdrawItemsBulkAtBank(
     address payable clanBankAddress,
     BulkTransferInfo[] calldata nftsInfo,
     uint256 playerId
@@ -71,26 +71,26 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function depositFTM(uint256 playerId) external payable {
-    depositFTM(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId);
+    depositFTMAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId);
   }
 
-  function depositFTM(address payable clanBankAddress, uint256 playerId) public payable {
+  function depositFTMAtBank(address payable clanBankAddress, uint256 playerId) public payable {
     Bank(clanBankAddress).depositFTM{value: msg.value}(_msgSender(), playerId);
   }
 
   function depositToken(uint256 playerId, address token, uint256 amount) external {
-    depositToken(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, token, amount);
+    depositTokenAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, token, amount);
   }
 
-  function depositToken(address payable clanBankAddress, uint256 playerId, address token, uint256 amount) public {
+  function depositTokenAtBank(address payable clanBankAddress, uint256 playerId, address token, uint256 amount) public {
     Bank(clanBankAddress).depositToken(_msgSender(), _msgSender(), playerId, token, amount);
   }
 
   function depositTokenFor(address playerOwner, uint256 playerId, address token, uint256 amount) external {
-    depositTokenFor(_getBankAddress(_getClanIdFromPlayer(playerId)), playerOwner, playerId, token, amount);
+    depositTokenForAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), playerOwner, playerId, token, amount);
   }
 
-  function depositTokenFor(
+  function depositTokenForAtBank(
     address payable clanBankAddress,
     address playerOwner,
     uint256 playerId,
@@ -101,10 +101,10 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function withdrawToken(uint256 playerId, address to, uint256 toPlayerId, address token, uint256 amount) external {
-    withdrawToken(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, to, toPlayerId, token, amount);
+    withdrawTokenAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, to, toPlayerId, token, amount);
   }
 
-  function withdrawToken(
+  function withdrawTokenAtBank(
     address payable clanBankAddress,
     uint256 playerId,
     address to,
@@ -122,10 +122,17 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
     address token,
     uint256[] calldata amounts
   ) external {
-    withdrawTokenToMany(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, tos, toPlayerIds, token, amounts);
+    withdrawTokenToManyAtBank(
+      _getBankAddress(_getClanIdFromPlayer(playerId)),
+      playerId,
+      tos,
+      toPlayerIds,
+      token,
+      amounts
+    );
   }
 
-  function withdrawTokenToMany(
+  function withdrawTokenToManyAtBank(
     address payable clanBankAddress,
     uint256 playerId,
     address[] calldata tos,
@@ -144,10 +151,10 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
     uint256 tokenId,
     uint256 amount
   ) external {
-    withdrawNFT(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, to, toPlayerId, nft, tokenId, amount);
+    withdrawNFTAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), playerId, to, toPlayerId, nft, tokenId, amount);
   }
 
-  function withdrawNFT(
+  function withdrawNFTAtBank(
     address payable clanBankAddress,
     uint256 playerId,
     address to,
@@ -160,10 +167,10 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function withdrawFTM(address to, uint256 playerId, uint256 amount) external {
-    withdrawFTM(_getBankAddress(_getClanIdFromPlayer(playerId)), to, playerId, amount);
+    withdrawFTMAtBank(_getBankAddress(_getClanIdFromPlayer(playerId)), to, playerId, amount);
   }
 
-  function withdrawFTM(address payable clanBankAddress, address to, uint256 playerId, uint256 amount) public {
+  function withdrawFTMAtBank(address payable clanBankAddress, address to, uint256 playerId, uint256 amount) public {
     Bank(clanBankAddress).withdrawFTM(_msgSender(), to, playerId, amount);
   }
 
@@ -185,7 +192,7 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
     return Bank(_getBankAddress(clanId)).getUniqueItemCount();
   }
 
-  function getUniqueItemCountForBank(address payable bankAddress) external view returns (uint256) {
+  function getUniqueItemCountAtBank(address payable bankAddress) external view returns (uint256) {
     return Bank(bankAddress).getUniqueItemCount();
   }
 

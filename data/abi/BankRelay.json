@@ -173,7 +173,7 @@
         "type": "uint256"
       }
     ],
-    "name": "depositFTM",
+    "name": "depositFTMAtBank",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -181,11 +181,6 @@
   {
     "inputs": [
       {
-        "internalType": "address payable",
-        "name": "clanBankAddress",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
@@ -209,6 +204,11 @@
   {
     "inputs": [
       {
+        "internalType": "address payable",
+        "name": "clanBankAddress",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
@@ -224,7 +224,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "depositItems",
+    "name": "depositItemsAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -275,7 +275,7 @@
         "type": "uint256"
       }
     ],
-    "name": "depositToken",
+    "name": "depositTokenAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -336,7 +336,7 @@
         "type": "uint256"
       }
     ],
-    "name": "depositTokenFor",
+    "name": "depositTokenForAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -349,7 +349,7 @@
         "type": "address"
       }
     ],
-    "name": "getUniqueItemCountForBank",
+    "name": "getUniqueItemCountAtBank",
     "outputs": [
       {
         "internalType": "uint256",
@@ -534,7 +534,7 @@
         "type": "uint256"
       }
     ],
-    "name": "withdrawFTM",
+    "name": "withdrawFTMAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -595,47 +595,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "withdrawItems",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "clanBankAddress",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "tokenIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "amounts",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-          }
-        ],
-        "internalType": "struct BulkTransferInfo[]",
-        "name": "nftsInfo",
-        "type": "tuple[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawItemsBulk",
+    "name": "withdrawItemsAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -683,37 +643,34 @@
         "type": "address"
       },
       {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "tokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "amounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct BulkTransferInfo[]",
+        "name": "nftsInfo",
+        "type": "tuple[]"
+      },
+      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "toPlayerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "nft",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
       }
     ],
-    "name": "withdrawNFT",
+    "name": "withdrawItemsBulkAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -780,8 +737,13 @@
       },
       {
         "internalType": "address",
-        "name": "token",
+        "name": "nft",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -789,7 +751,7 @@
         "type": "uint256"
       }
     ],
-    "name": "withdrawToken",
+    "name": "withdrawNFTAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -840,14 +802,14 @@
         "type": "uint256"
       },
       {
-        "internalType": "address[]",
-        "name": "tos",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
       },
       {
-        "internalType": "uint256[]",
-        "name": "toPlayerIds",
-        "type": "uint256[]"
+        "internalType": "uint256",
+        "name": "toPlayerId",
+        "type": "uint256"
       },
       {
         "internalType": "address",
@@ -855,12 +817,12 @@
         "type": "address"
       },
       {
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
-    "name": "withdrawTokenToMany",
+    "name": "withdrawTokenAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -894,6 +856,44 @@
       }
     ],
     "name": "withdrawTokenToMany",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "clanBankAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tos",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "toPlayerIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "withdrawTokenToManyAtBank",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
