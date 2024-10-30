@@ -2,10 +2,23 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {QUEST_BURN_BAN} from "@paintswap/estfor-definitions/constants";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
-import {BankFactory, Clans, ItemNFT, MockBrushToken, PlayerNFT, Players, Shop} from "../typechain-types";
+import {
+  Bank,
+  BankFactory,
+  BankRegistry,
+  BankRelay,
+  Clans,
+  ItemNFT,
+  LockedBankVaults,
+  MockBrushToken,
+  PlayerNFT,
+  Players,
+  Shop
+} from "../typechain-types";
 import {createPlayer, isDevNetwork} from "./utils";
 import {parseEther} from "ethers";
 import {timeTravel} from "../test/utils";
+import {calculateClanBankAddress} from "../test/Clans/utils";
 
 export const addTestData = async (
   itemNFT: ItemNFT,
@@ -15,6 +28,10 @@ export const addTestData = async (
   brush: MockBrushToken,
   clans: Clans,
   bankFactory: BankFactory,
+  bank: Bank,
+  bankRegistry: BankRegistry,
+  bankRelay: BankRelay,
+  lockedBankVaults: LockedBankVaults,
   minItemQuantityBeforeSellsAllowed: bigint
 ) => {
   const [owner, alice] = await ethers.getSigners();
@@ -236,10 +253,19 @@ export const addTestData = async (
   console.log("Create clan");
 
   const clanId = 1;
-  const clanBankAddress = ethers.getCreateAddress({
-    from: await bankFactory.getAddress(),
-    nonce: clanId
-  });
+  const clanBankAddress = await calculateClanBankAddress(
+    clanId,
+    await bankFactory.getAddress(),
+    await clans.getAddress(),
+    await bank.getAddress(),
+    await bankRegistry.getAddress(),
+    await bankRelay.getAddress(),
+    await playerNFT.getAddress(),
+    await itemNFT.getAddress(),
+    await players.getAddress(),
+    await lockedBankVaults.getAddress()
+  );
+
   // Send some item to the bank
   tx = await itemNFT.safeTransferFrom(owner, clanBankAddress, EstforConstants.BRONZE_HELMET, 1, "0x");
   await tx.wait();

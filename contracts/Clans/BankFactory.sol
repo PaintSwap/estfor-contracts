@@ -75,7 +75,7 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
 
     // Create new Bank contract with EIP 1167 beacon proxy
     address proxy = address(
-      new BeaconProxy(
+      new BeaconProxy{salt: bytes32(clanId)}(
         _bankBeacon,
         abi.encodeWithSelector(
           IBank.initialize.selector,

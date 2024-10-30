@@ -31,7 +31,9 @@ import {
   LockedBankVaults,
   ClanBattleLibrary,
   BankRelay,
-  OrderBook
+  OrderBook,
+  Bank,
+  BankRegistry
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -92,7 +94,6 @@ import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
 import {parseEther} from "ethers";
 import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
-import {bazaar} from "../typechain-types/contracts";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -457,7 +458,7 @@ async function main() {
   console.log(`wishingWell = "${(await wishingWell.getAddress()).toLowerCase()}"`);
 
   const Bank = await ethers.getContractFactory("Bank");
-  const bank = await upgrades.deployBeacon(Bank);
+  const bank = (await upgrades.deployBeacon(Bank)) as unknown as Bank;
   await bank.waitForDeployment();
   console.log(`bank = "${(await bank.getAddress()).toLowerCase()}"`);
 
@@ -725,10 +726,10 @@ async function main() {
   console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`);
 
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
-  const bankRegistry = await upgrades.deployProxy(BankRegistry, [], {
+  const bankRegistry = (await upgrades.deployProxy(BankRegistry, [], {
     kind: "uups",
     timeout
-  });
+  })) as unknown as BankRegistry;
   await bankRegistry.waitForDeployment();
   console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`);
 
@@ -1124,7 +1125,20 @@ async function main() {
       "0xa801864d0D24686B15682261aa05D4e1e6e5BD94"
     ]);
 
-    await addTestData(itemNFT, playerNFT, players, shop, brush, clans, bankFactory, minItemQuantityBeforeSellsAllowed);
+    await addTestData(
+      itemNFT,
+      playerNFT,
+      players,
+      shop,
+      brush,
+      clans,
+      bankFactory,
+      bank,
+      bankRegistry,
+      bankRelay,
+      lockedBankVaults,
+      minItemQuantityBeforeSellsAllowed
+    );
   }
 }
 

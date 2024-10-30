@@ -6,12 +6,13 @@ import {createPlayer} from "../../scripts/utils";
 import {playersFixture} from "../Players/PlayersFixture";
 import {ClanRank} from "@paintswap/estfor-definitions/types";
 import {Bank} from "../../typechain-types";
+import {calculateClanBankAddress} from "./utils";
 
 describe("Bank", function () {
   async function bankFixture() {
     const fixture = await loadFixture(playersFixture);
 
-    const {clans} = fixture;
+    const {bankFactory, clans, bank, bankRegistry, bankRelay, playerNFT, itemNFT, players, lockedBankVaults} = fixture;
 
     // Add basic tier
     await clans.addTiers([
@@ -29,7 +30,22 @@ describe("Bank", function () {
     const discord = "G4ZgtP52JK";
     const telegram = "fantomfoundation";
     const twitter = "fantomfdn";
-    return {...fixture, clans, clanName, discord, telegram, twitter};
+
+    const clanId = 1;
+    const clanBankAddress = await calculateClanBankAddress(
+      clanId,
+      await bankFactory.getAddress(),
+      await clans.getAddress(),
+      await bank.getAddress(),
+      await bankRegistry.getAddress(),
+      await bankRelay.getAddress(),
+      await playerNFT.getAddress(),
+      await itemNFT.getAddress(),
+      await players.getAddress(),
+      await lockedBankVaults.getAddress()
+    );
+
+    return {...fixture, clanId, clanBankAddress, clans, clanName, discord, telegram, twitter};
   }
 
   it("Should be able to deposit items up to max capacity and only treasurers withdraw", async function () {
@@ -47,7 +63,9 @@ describe("Bank", function () {
       itemNFT,
       playerNFT,
       avatarId,
-      owner
+      owner,
+      clanId,
+      clanBankAddress
     } = await loadFixture(bankFixture);
 
     await itemNFT.testMints(
@@ -62,9 +80,6 @@ describe("Bank", function () {
     );
 
     // Send directly
-    const clanId = 1;
-    const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
-
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
     await itemNFT.connect(alice).setApprovalForAll(clanBankAddress, true);
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
@@ -148,11 +163,22 @@ describe("Bank", function () {
   });
 
   it("Withdraw (Distribute) to someone else", async function () {
-    const {clans, playerId, alice, bob, clanName, discord, telegram, twitter, bankRelay, bankFactory, Bank, itemNFT} =
-      await loadFixture(bankFixture);
+    const {
+      clans,
+      playerId,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      twitter,
+      bankRelay,
+      bankFactory,
+      Bank,
+      itemNFT,
+      clanBankAddress
+    } = await loadFixture(bankFixture);
 
-    const clanId = 1;
-    const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
 
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
@@ -164,11 +190,21 @@ describe("Bank", function () {
   });
 
   it("Withdraw (Distribute) to many users", async function () {
-    const {clans, playerId, alice, bob, clanName, discord, telegram, twitter, bankRelay, bankFactory, Bank, itemNFT} =
-      await loadFixture(bankFixture);
+    const {
+      clans,
+      playerId,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      twitter,
+      bankRelay,
+      clanBankAddress,
+      Bank,
+      itemNFT
+    } = await loadFixture(bankFixture);
 
-    const clanId = 1;
-    const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
 
     // Upgrade tier of clan
@@ -246,8 +282,20 @@ describe("Bank", function () {
   });
 
   it("Should be able to withdraw non-transferable boosts", async function () {
-    const {clans, playerId, alice, bob, clanName, discord, telegram, twitter, bankRelay, bankFactory, Bank, itemNFT} =
-      await loadFixture(bankFixture);
+    const {
+      clans,
+      playerId,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      twitter,
+      bankRelay,
+      clanBankAddress,
+      Bank,
+      itemNFT
+    } = await loadFixture(bankFixture);
 
     await itemNFT.addItems([
       {
@@ -265,8 +313,6 @@ describe("Bank", function () {
     ).to.be.revertedWithCustomError(itemNFT, "ItemNotTransferable");
 
     // Send directly
-    const clanId = 1;
-    const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
 
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
@@ -290,15 +336,14 @@ describe("Bank", function () {
       telegram,
       twitter,
       bankRelay,
-      bankFactory,
+      clanBankAddress,
       Bank,
       brush,
       playerNFT,
-      avatarId
+      avatarId,
+      clanId
     } = await loadFixture(bankFixture);
 
-    const clanId = 1;
-    const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
@@ -352,15 +397,14 @@ describe("Bank", function () {
       telegram,
       twitter,
       bankRelay,
-      bankFactory,
+      clanId,
+      clanBankAddress,
       Bank,
       brush,
       playerNFT,
       avatarId
     } = await loadFixture(bankFixture);
 
-    const clanId = 1;
-    const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
     await brush.mint(alice, 1000);
@@ -404,11 +448,9 @@ describe("Bank", function () {
 
   describe("Withdraw tokens to many users", function () {
     it("Withdrawer is not owner of player", async function () {
-      const {clans, playerId, alice, clanName, discord, telegram, twitter, bankRelay, bankFactory, Bank, brush} =
+      const {clans, playerId, alice, clanName, discord, telegram, twitter, bankRelay, clanBankAddress, Bank, brush} =
         await loadFixture(bankFixture);
 
-      const clanId = 1;
-      const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
@@ -420,11 +462,21 @@ describe("Bank", function () {
     });
 
     it("Must be at least treasurer to withdraw", async function () {
-      const {clans, playerId, alice, clanName, discord, telegram, twitter, bankRelay, bankFactory, Bank, brush} =
-        await loadFixture(bankFixture);
+      const {
+        clans,
+        playerId,
+        alice,
+        clanName,
+        discord,
+        telegram,
+        twitter,
+        bankRelay,
+        clanId,
+        clanBankAddress,
+        Bank,
+        brush
+      } = await loadFixture(bankFixture);
 
-      const clanId = 1;
-      const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
@@ -437,11 +489,9 @@ describe("Bank", function () {
     });
 
     it("Length mismatch", async function () {
-      const {clans, playerId, alice, clanName, discord, telegram, twitter, bankRelay, bankFactory, Bank, brush} =
+      const {clans, playerId, alice, clanName, discord, telegram, twitter, bankRelay, clanBankAddress, Bank, brush} =
         await loadFixture(bankFixture);
 
-      const clanId = 1;
-      const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
@@ -456,11 +506,9 @@ describe("Bank", function () {
     });
 
     it("Owner mismatch with the player id", async function () {
-      const {clans, playerId, alice, clanName, discord, telegram, twitter, bankRelay, bankFactory, Bank, brush} =
+      const {clans, playerId, alice, clanName, discord, telegram, twitter, bankRelay, clanBankAddress, Bank, brush} =
         await loadFixture(bankFixture);
 
-      const clanId = 1;
-      const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
@@ -483,15 +531,13 @@ describe("Bank", function () {
         twitter,
         bankRelay,
         Bank,
-        bankFactory,
         brush,
         origName,
         playerNFT,
-        avatarId
+        avatarId,
+        clanBankAddress
       } = await loadFixture(bankFixture);
 
-      const clanId = 1;
-      const clanBankAddress = ethers.getCreateAddress({from: await bankFactory.getAddress(), nonce: clanId});
       await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
 
       const bank = (await Bank.attach(clanBankAddress)) as Bank;
