@@ -128,26 +128,8 @@ async function main() {
       router = await MockRouter.deploy();
       console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
-    } else if (network.chainId == 4002n) {
-      // Fantom testnet
-      brush = await MockBrushToken.deploy();
-      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
-      await brush.waitForDeployment();
-
-      tx = await brush.mint(owner, parseEther("10000000"));
-      console.log("Minted brush");
-      await tx.wait();
-      wftm = (await WrappedNative.attach("0x6C3cCeB0BC228C3EbEa02c4703A805e58d0458Df")) as WrappedNative;
-      oracleAddress = "0x3d2341ADb2D31f1c5530cDC622016af293177AE0";
-      vrf = await MockVRF.deploy();
-      await vrf.waitForDeployment();
-
-      console.log(`mockVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
-      router = (await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883")) as MockRouter;
-      console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
-      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
     } else if (network.chainId == 64165n) {
-      // Sonic testnet. Later this should have a bridged version of brush, and it's own VRF not deployed each time
+      // Sonic testnet. Later this should have a bridged version of brush
       brush = await MockBrushToken.deploy();
       console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.waitForDeployment();
@@ -156,15 +138,12 @@ async function main() {
       console.log("Minted brush");
       await tx.wait();
       tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100"));
-      console.log("Send brush to account");
+      console.log("Send brush to an account");
       await tx.wait();
 
-      wftm = (await WrappedNative.attach("0xf1277d1ed8ad466beddf92ef448a132661956621")) as WrappedNative;
-      oracleAddress = "0x3d2341ADb2D31f1c5530cDC622016af293177AE0";
-      vrf = await MockVRF.deploy();
-      await vrf.waitForDeployment();
-
-      console.log(`mockVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
+      wftm = (await WrappedNative.attach(WFTM_ADDRESS)) as WrappedNative;
+      oracleAddress = ORACLE_ADDRESS;
+      vrf = (await MockVRF.attach(SAMWITCH_VRF_ADDRESS)) as MockVRF;
       router = (await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883")) as MockRouter;
       console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
       ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
@@ -235,6 +214,7 @@ async function main() {
   await worldLibrary.waitForDeployment();
 
   console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
+
   const World = await ethers.getContractFactory("World", {
     libraries: {WorldLibrary: await worldLibrary.getAddress()}
   });
@@ -345,7 +325,7 @@ async function main() {
     }
   )) as unknown as OrderBook;
   await orderbook.waitForDeployment();
-  console.log("Deployed Bazaar to:", await orderbook.getAddress());
+  console.log(`bazaar = "${(await orderbook.getAddress()).toLocaleLowerCase()}"`);
 
   // Create NFT contract which contains all the players
   const estforLibrary = await ethers.deployContract("EstforLibrary");
@@ -556,9 +536,9 @@ async function main() {
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
   const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
     kind: "uups",
-    timeout,
+    timeout: 50000,
     txOverrides: {
-      ...(!isDevNetwork(network) ? {gasLimit: 400000} : {})
+      ...(!isDevNetwork(network) ? {gasLimit: 1_500_000} : {}) // gas limit issue needed because of https://github.com/NomicFoundation/hardhat/issues/5855
     }
   })) as unknown as VRFRequestInfo;
   await vrfRequestInfo.waitForDeployment();
@@ -711,7 +691,7 @@ async function main() {
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
   const minHarvestInterval = BigInt(3.75 * 3600); // 3 hours 45 minutes;
-  const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
+  /*  const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
   const territoryTreasury = await upgrades.deployProxy(TerritoryTreasury, [
     await territories.getAddress(),
     await brush.getAddress(),
@@ -723,7 +703,7 @@ async function main() {
     pid
   ]);
   await territoryTreasury.waitForDeployment();
-  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`);
+  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`); */
 
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = (await upgrades.deployProxy(BankRegistry, [], {
@@ -787,10 +767,9 @@ async function main() {
         await lockedBankVaults.getAddress(),
         await territories.getAddress(),
         await clanBattleLibrary.getAddress(),
-        await territoryTreasury.getAddress(),
+        //        await territoryTreasury.getAddress(),
         await combatantsHelper.getAddress(),
         await vrfRequestInfo.getAddress(),
-        await territoryTreasury.getAddress(),
         await bank.getAddress(),
         await upgrades.beacon.getImplementationAddress(await bank.getAddress()),
         await bankRegistry.getAddress(),
@@ -909,7 +888,8 @@ async function main() {
   await tx.wait();
   console.log("treasury.setFundAllocationPercentages");
 
-  tx = await treasury.initializeAddresses(territoryTreasury, shop);
+  //  tx = await treasury.initializeAddresses(territoryTreasury, shop);
+  tx = await treasury.initializeAddresses(ethers.ZeroAddress, shop); // TODO: Update later
   await tx.wait();
   console.log("treasury.initializeAddresses");
 

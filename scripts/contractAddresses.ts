@@ -43,6 +43,7 @@ let bazaar;
 let petNFTLibrary;
 let petNFT;
 let passiveActions;
+let wftm;
 
 if (!isBeta) {
   worldLibrary = "0xcba2273a46649cc0ce76e69eb0bb05d9b699ca38";
@@ -88,6 +89,7 @@ if (!isBeta) {
   petNFTLibrary = "0x5a134487df2d8e216e34bf9407bd63cd80e76957";
   petNFT = "0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3";
   passiveActions = "0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4";
+  wftm = "";
 } else {
   worldLibrary = "0x31edace030c71d33bd8b6e53c1df123c0404e5ca";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -127,11 +129,12 @@ if (!isBeta) {
   territoryTreasury = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
-  samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
+  samWitchVRF = "0xB9E3CF6639123C00752849C40BEa43E63e107354";
   bazaar = "0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191";
   petNFTLibrary = "0x04a11e4afd667ca55b10d834a7367c4bed107750";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
   passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
+  wftm = "0xf1277d1ed8ad466beddf92ef448a132661956621";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -179,14 +182,16 @@ export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
 export const PET_NFT_LIBRARY_ADDRESS = petNFTLibrary;
 export const PET_NFT_ADDRESS = petNFT;
 export const PASSIVE_ACTIONS_ADDRESS = passiveActions;
+export const BAZAAR_ADDRESS = bazaar;
+
+export const WFTM_ADDRESS = wftm;
+// VRF
+export const ORACLE_ADDRESS = oracle;
+export const SAMWITCH_VRF_ADDRESS = samWitchVRF;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";
-export const WFTM_ADDRESS = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
 export const FAKE_BRUSH_ADDRESS = "0x8F85Ad0Ed1C6Cf23B82378efF7f71a7Df6A61071";
 export const FAKE_BRUSH_WFTM_LP_ADDRESS = "0xb3209C979b90436f0a43ED817CD36c4c908604fD";
 export const DECORATOR_ADDRESS = "0xCb80F529724B9620145230A0C866AC2FACBE4e3D";
 export const DEV_ADDRESS = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
-export const ORACLE_ADDRESS = oracle;
-export const SAMWITCH_VRF_ADDRESS = samWitchVRF;
-export const BAZAAR_ADDRESS = bazaar;

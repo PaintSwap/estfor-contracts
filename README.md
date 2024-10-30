@@ -98,7 +98,7 @@ Oracle [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/
 VRF [0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2](https://ftmscan.com/address/0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2)  
 Bazaar [0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE](https://ftmscan.com/address/0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE)
 
-### Sonic mainnet beta deployed contract addresses:
+### Sonic testnet beta deployed contract addresses:
 
 WorldLibrary [0x31edace030c71d33bd8b6e53c1df123c0404e5ca](https://ftmscan.com/address/0x31edace030c71d33bd8b6e53c1df123c0404e5ca)  
 World [0xe2f0b5cb118da85be68de1801d40726ce48009aa](https://ftmscan.com/address/0xe2f0b5cb118da85be68de1801d40726ce48009aa)  
@@ -146,7 +146,7 @@ PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/
 PassiveActions [0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6](https://ftmscan.com/address/0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6)
 
 Oracle [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)  
-VRF [0x58E9fd2Fae18c861B9F564200510A88106C05756](https://ftmscan.com/address/0x58E9fd2Fae18c861B9F564200510A88106C05756)  
+VRF [0xB9E3CF6639123C00752849C40BEa43E63e107354](https://ftmscan.com/address/0xB9E3CF6639123C00752849C40BEa43E63e107354)  
 Bazaar [0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191](https://ftmscan.com/address/0x082480aAAF1ac5bb0Db2c241eF8b4230Da85E191)
 
 ### Other addresses:

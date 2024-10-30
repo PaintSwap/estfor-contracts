@@ -5,7 +5,8 @@ import {
   DECORATOR_ADDRESS,
   TERRITORY_TREASURY_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
-  TERRITORIES_ADDRESS
+  TERRITORIES_ADDRESS,
+  BANK_FACTORY_ADDRESS
 } from "./contractAddresses";
 import {
   CombatantsHelper,
@@ -57,7 +58,7 @@ async function main() {
   console.log("Harvest");
 
   // Lock some brush in a vault
-  tx = await lockedBankVaults.connect(owner).initializeAddresses(owner, combatantsHelper);
+  tx = await lockedBankVaults.connect(owner).initializeAddresses(owner, combatantsHelper, BANK_FACTORY_ADDRESS);
   await tx.wait();
   console.log("set territories");
   tx = await brush.connect(owner).approve(lockedBankVaults, parseEther("100"));
@@ -66,7 +67,7 @@ async function main() {
   tx = await lockedBankVaults.connect(owner).lockFunds(1, owner, 1, parseEther("100"));
   await tx.wait();
   console.log("LockFunds");
-  tx = await lockedBankVaults.connect(owner).initializeAddresses(territories, combatantsHelper);
+  tx = await lockedBankVaults.connect(owner).initializeAddresses(territories, combatantsHelper, BANK_FACTORY_ADDRESS);
   await tx.wait();
   console.log("SetTerritories");
 
