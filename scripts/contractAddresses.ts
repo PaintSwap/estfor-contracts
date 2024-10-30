@@ -34,7 +34,7 @@ let clanBattleLibrary;
 let lockedBankVaults;
 let lockedBankVaultsLibrary;
 let territories;
-let decoratorProvider;
+let territoryTreasury;
 let combatantsHelper;
 let oracle;
 let samWitchVRF;
@@ -79,7 +79,7 @@ if (!isBeta) {
   lockedBankVaultsLibrary = "0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8";
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
   combatantsHelper = "0x8fedf83c55012acff7115b8fa164095721953c39";
-  decoratorProvider = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
+  territoryTreasury = "0xba2f8cff9ea18f3687eb685f0c1bcd509b539963";
   oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   bazaar = "0x6996c519dA4ac7815bEFbd836cf0b78Aa62fdBcE";
@@ -121,7 +121,7 @@ if (!isBeta) {
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
   lockedBankVaultsLibrary = "0x4361e1825cf5c910d1589600df613322e0e704b0";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
-  decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
+  territoryTreasury = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x58E9fd2Fae18c861B9F564200510A88106C05756";
@@ -169,7 +169,7 @@ export const CLAN_BATTLE_LIBRARY_ADDRESS = clanBattleLibrary;
 export const LOCKED_BANK_VAULTS_ADDRESS = lockedBankVaults;
 export const LOCKED_BANK_VAULTS_LIBRARY_ADDRESS = lockedBankVaultsLibrary;
 export const TERRITORIES_ADDRESS = territories;
-export const DECORATOR_PROVIDER_ADDRESS = decoratorProvider;
+export const TERRITORY_TREASURY_ADDRESS = territoryTreasury;
 export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
 
 export const PET_NFT_LIBRARY_ADDRESS = petNFTLibrary;

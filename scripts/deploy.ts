@@ -709,18 +709,20 @@ async function main() {
   await combatantsHelper.waitForDeployment();
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
-  /* TODO: Enable again later. It needs a masterchef set up
-  const DecoratorProvider = await ethers.getContractFactory("DecoratorProvider");
-  const decoratorProvider = await upgrades.deployProxy(DecoratorProvider, [
-    await paintSwapDecorator.getAddress(),
+  const minHarvestInterval = BigInt(3.75 * 3600); // 3 hours 45 minutes;
+  const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
+  const territoryTreasury = await upgrades.deployProxy(TerritoryTreasury, [
     await territories.getAddress(),
     await brush.getAddress(),
     await playerNFT.getAddress(),
     DEV_ADDRESS,
+    await treasury.getAddress(),
+    minHarvestInterval,
+    await paintSwapDecorator.getAddress(),
     pid
   ]);
-  await decoratorProvider.waitForDeployment();
-  console.log(`decoratorProvider = "${(await decoratorProvider.getAddress()).toLowerCase()}"`); */
+  await territoryTreasury.waitForDeployment();
+  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250n) {
@@ -757,7 +759,7 @@ async function main() {
         await lockedBankVaults.getAddress(),
         await territories.getAddress(),
         await clanBattleLibrary.getAddress(),
-        //        await decoratorProvider.getAddress(),
+        await territoryTreasury.getAddress(),
         await combatantsHelper.getAddress(),
         await vrfRequestInfo.getAddress(),
         await treasury.getAddress()
@@ -766,7 +768,6 @@ async function main() {
       await verifyContracts(addresses);
     } catch (e) {
       console.log("Error verifying contracts", e);
-      //      process.exit(99);
     }
   } else {
     console.log("Skipping verifying contracts");
@@ -879,7 +880,7 @@ async function main() {
   await tx.wait();
   console.log("treasury.setFundAllocationPercentages");
 
-  tx = await treasury.initializeAddresses(territories, shop);
+  tx = await treasury.initializeAddresses(territoryTreasury, shop);
   await tx.wait();
   console.log("treasury.initializeAddresses");
 

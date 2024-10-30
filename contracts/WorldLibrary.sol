@@ -107,7 +107,7 @@ library WorldLibrary {
       actionRewards.guaranteedRewardRate3 = guaranteedRewards[2].rate;
 
       uint256 _bounds = guaranteedRewardsLength - 1;
-      for (uint256 i; i < _bounds; i++) {
+      for (uint256 i; i < _bounds; ++i) {
         require(
           guaranteedRewards[i].itemTokenId != guaranteedRewards[guaranteedRewardsLength - 1].itemTokenId,
           GuaranteedRewardsNoDuplicates()
@@ -147,7 +147,7 @@ library WorldLibrary {
       );
 
       uint256 _bounds = randomRewardsLength - 1;
-      for (uint256 i; i < _bounds; i++) {
+      for (uint256 i; i < _bounds; ++i) {
         require(
           randomRewards[i].itemTokenId != randomRewards[randomRewardsLength - 1].itemTokenId,
           RandomRewardNoDuplicates()
@@ -163,7 +163,7 @@ library WorldLibrary {
         RandomRewardsMustBeInOrder(randomRewards[2].chance, randomRewards[3].chance)
       );
       uint256 _bounds = randomRewards.length - 1;
-      for (uint256 i; i < _bounds; i++) {
+      for (uint256 i; i < _bounds; ++i) {
         require(
           randomRewards[i].itemTokenId != randomRewards[randomRewards.length - 1].itemTokenId,
           RandomRewardNoDuplicates()

@@ -5,7 +5,7 @@ import {Treasury} from "../typechain-types";
 
 describe("Treasury", function () {
   async function deployTreasuryFixture() {
-    const [owner, alice, bob, territories, shop] = await ethers.getSigners();
+    const [owner, alice, bob, territoryTreasury, shop] = await ethers.getSigners();
 
     const BrushToken = await ethers.getContractFactory("MockBrushToken");
     const brushToken = await BrushToken.deploy();
@@ -16,11 +16,11 @@ describe("Treasury", function () {
     })) as unknown as Treasury;
     await treasury.waitForDeployment();
 
-    await treasury.initializeAddresses(territories, shop);
+    await treasury.initializeAddresses(territoryTreasury, shop);
     // Mint some tokens to the treasury
     await brushToken.mint(treasury, ethers.parseEther("1000"));
 
-    return {treasury, brushToken, owner, alice, bob, territories, shop};
+    return {treasury, brushToken, owner, alice, bob, territoryTreasury, shop};
   }
 
   describe("Initialization", function () {
@@ -31,17 +31,14 @@ describe("Treasury", function () {
 
     it("Should initialize with empty fund allocation", async function () {
       const {treasury, alice} = await loadFixture(deployTreasuryFixture);
-      await expect(treasury.totalClaimable(alice)).to.be.revertedWithCustomError(
-        treasury,
-        "EnumerableMapNonexistentKey"
-      );
+      expect(await treasury.totalClaimable(alice)).to.eq(0);
     });
   });
 
   describe("Fund Allocation", function () {
     it("Should set fund allocation percentages correctly", async function () {
-      const {treasury, alice, bob, territories} = await loadFixture(deployTreasuryFixture);
-      const accounts = [alice, bob, territories];
+      const {treasury, alice, bob, territoryTreasury} = await loadFixture(deployTreasuryFixture);
+      const accounts = [alice, bob, territoryTreasury];
       const percentages = [30, 20, 50];
       await expect(treasury.setFundAllocationPercentages(accounts, percentages))
         .to.emit(treasury, "SetFundAllocationPercentages")
@@ -49,7 +46,7 @@ describe("Treasury", function () {
 
       expect(await treasury.totalClaimable(alice)).to.equal(ethers.parseEther("300"));
       expect(await treasury.totalClaimable(bob)).to.equal(ethers.parseEther("200"));
-      expect(await treasury.totalClaimable(territories)).to.equal(ethers.parseEther("500"));
+      expect(await treasury.totalClaimable(territoryTreasury)).to.equal(ethers.parseEther("500"));
     });
 
     it("Should revert if percentages don't add up to 100", async function () {
@@ -65,27 +62,6 @@ describe("Treasury", function () {
       await expect(treasury.setFundAllocationPercentages([alice, bob], [50])).to.be.revertedWithCustomError(
         treasury,
         "LengthMismatch"
-      );
-    });
-  });
-
-  describe("Distribution", function () {
-    it("Should distribute to territories correctly", async function () {
-      const {treasury, brushToken, territories} = await loadFixture(deployTreasuryFixture);
-      await treasury.setFundAllocationPercentages([territories], [100]);
-
-      await expect(() => treasury.connect(territories).distributeToTerritories()).to.changeTokenBalances(
-        brushToken,
-        [treasury, territories],
-        [ethers.parseEther("-1000"), ethers.parseEther("1000")]
-      );
-    });
-
-    it("Should revert if called by non-territories address", async function () {
-      const {treasury, alice} = await loadFixture(deployTreasuryFixture);
-      await expect(treasury.connect(alice).distributeToTerritories()).to.be.revertedWithCustomError(
-        treasury,
-        "OnlyTerritories"
       );
     });
   });

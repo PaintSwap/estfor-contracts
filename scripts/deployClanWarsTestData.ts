@@ -3,16 +3,16 @@ import {
   BRUSH_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
   DECORATOR_ADDRESS,
-  DECORATOR_PROVIDER_ADDRESS,
+  TERRITORY_TREASURY_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
   TERRITORIES_ADDRESS
 } from "./contractAddresses";
 import {
   CombatantsHelper,
-  DecoratorProvider,
   LockedBankVaults,
   MockBrushToken,
   Territories,
+  TerritoryTreasury,
   TestPaintSwapDecorator
 } from "../typechain-types";
 import {getChainId} from "./utils";
@@ -37,22 +37,22 @@ async function main() {
     COMBATANTS_HELPER_ADDRESS
   )) as CombatantsHelper;
 
-  const decoratorProvider = (await ethers.getContractAt(
-    "DecoratorProvider",
-    DECORATOR_PROVIDER_ADDRESS
-  )) as DecoratorProvider;
+  const territoryTreasury = (await ethers.getContractAt(
+    "TerritoryTreasury",
+    TERRITORY_TREASURY_ADDRESS
+  )) as TerritoryTreasury;
 
   const pid = 22;
   const playerId = 1;
 
-  const pendingBrush = await decorator.pendingBrush(pid, decoratorProvider);
+  const pendingBrush = await decorator.pendingBrush(pid, territoryTreasury);
   console.log("Pending", pendingBrush);
 
-  let tx = await brush.connect(owner).transfer(decoratorProvider, (pendingBrush + pendingBrush) / 2n);
+  let tx = await brush.connect(owner).transfer(territoryTreasury, (pendingBrush + pendingBrush) / 2n);
   await tx.wait();
   console.log("Transferred brush");
 
-  tx = await decoratorProvider.connect(owner).harvest(playerId);
+  tx = await territoryTreasury.connect(owner).harvest(playerId);
   await tx.wait();
   console.log("Harvest");
 

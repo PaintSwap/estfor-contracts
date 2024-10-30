@@ -22,11 +22,6 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
   address private _territories;
   mapping(address spender => bool) private _spenders;
 
-  modifier onlyTerritories() {
-    require(_msgSender() == address(_territories), OnlyTerritories());
-    _;
-  }
-
   modifier onlySpenders() {
     require(_isSpender(msg.sender), OnlySpenders());
     _;
@@ -48,12 +43,11 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function totalClaimable(address account) public view returns (uint256 total) {
-    return (_brush.balanceOf(address(this)) * _accountsToPercentage.get(account)) / 100;
-  }
-
-  // Called every 8 hours or so, decided by territories contract
-  function distributeToTerritories() external onlyTerritories {
-    _brush.transfer(_territories, totalClaimable(_territories));
+    (bool success, uint256 percent) = _accountsToPercentage.tryGet(account);
+    if (!success) {
+      return 0;
+    }
+    return (_brush.balanceOf(address(this)) * percent) / 100;
   }
 
   function spend(address to, uint256 amountBrush) external onlySpenders {
@@ -75,7 +69,7 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
       _accountsToPercentage.remove(account);
     }
 
-    for (uint256 i = 0; i < accounts.length; i++) {
+    for (uint256 i = 0; i < accounts.length; ++i) {
       _accountsToPercentage.set(accounts[i], percentages[i]);
       totalPercentage += percentages[i];
     }
@@ -83,8 +77,8 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
     emit SetFundAllocationPercentages(accounts, percentages);
   }
 
-  function initializeAddresses(address territories, address shop) external onlyOwner {
-    _territories = territories;
+  function initializeAddresses(address territoryTreasury, address shop) external onlyOwner {
+    _spenders[territoryTreasury] = true;
     _spenders[shop] = true;
   }
 

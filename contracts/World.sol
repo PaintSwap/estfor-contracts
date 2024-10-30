@@ -219,7 +219,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function getMultipleWords(uint256 timestamp) public view returns (uint256[4] memory words) {
-    for (uint256 i; i < 4; i++) {
+    for (uint256 i; i < 4; ++i) {
       words[i] = getRandomWord(timestamp - (i * 1 days));
     }
   }
@@ -317,7 +317,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     } else if (numTickets <= MAX_UNIQUE_TICKETS) {
       // 4 * 32 bytes
       uint256[4] memory multipleWords = getMultipleWords(endTimestamp);
-      for (uint256 i; i < 4; i++) {
+      for (uint256 i; i < 4; ++i) {
         multipleWords[i] = uint256(
           _getRandomComponent(bytes32(multipleWords[i]), startTimestamp, endTimestamp, playerId)
         );
@@ -537,7 +537,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     require(actionIds.length != 0, NoActionChoices());
 
     uint16 _actionIdsLength = uint16(actionIds.length);
-    for (uint16 i; i < _actionIdsLength; i++) {
+    for (uint16 i; i < _actionIdsLength; ++i) {
       uint16 actionId = actionIds[i];
       addActionChoices(actionId, actionChoiceIds[i], actionChoicesToAdd[i]);
     }

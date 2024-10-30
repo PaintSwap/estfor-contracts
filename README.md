@@ -87,7 +87,7 @@ LockedBankVaults [0x65e944795d00cc287bdace77d57571fc4deff3e0](https://ftmscan.co
 LockedBankVaultsLibrary [0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8](https://ftmscan.com/address/0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8)  
 Territories [0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170](https://ftmscan.com/address/0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170)  
 CombatantsHelper [0x8fedf83c55012acff7115b8fa164095721953c39](https://ftmscan.com/address/0x8fedf83c55012acff7115b8fa164095721953c39)  
-DecoratorProvider [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.com/address/0xba2f8cff9ea18f3687eb685f0c1bcd509b539963)
+TerritoryTreasury [0xba2f8cff9ea18f3687eb685f0c1bcd509b539963](https://ftmscan.com/address/0xba2f8cff9ea18f3687eb685f0c1bcd509b539963)
 
 PetNFTLibrary [0x5a134487df2d8e216e34bf9407bd63cd80e76957](https://ftmscan.com/address/0x5a134487df2d8e216e34bf9407bd63cd80e76957)  
 PetNFT [0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3](https://ftmscan.com/address/0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3)  
@@ -138,7 +138,7 @@ LockedBankVaultsLibrary [0x4361e1825cf5c910d1589600df613322e0e704b0](https://ftm
 LockedBankVaults [0x40567ad9cd25c56422807ed67f0e66f1825bdb91](https://ftmscan.com/address/0x40567ad9cd25c56422807ed67f0e66f1825bdb91)  
 Territories [0xf31517db9f0987002f3a0fb4f787dfb9e892f184](https://ftmscan.com/address/0xf31517db9f0987002f3a0fb4f787dfb9e892f184)  
 CombatantsHelper [0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c](https://ftmscan.com/address/0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c)  
-DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
+TerritoryTreasury [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.com/address/0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2)
 
 PetNFTLibrary [0x04a11e4afd667ca55b10d834a7367c4bed107750](https://ftmscan.com/address/0x04a11e4afd667ca55b10d834a7367c4bed107750)  
 PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/0xa6489181b24e966402891225c65f8e2d136ddd2e)  

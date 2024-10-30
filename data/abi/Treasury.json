@@ -32,17 +32,6 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "key",
-        "type": "bytes32"
-      }
-    ],
-    "name": "EnumerableMapNonexistentKey",
-    "type": "error"
-  },
-  {
     "inputs": [],
     "name": "FailedCall",
     "type": "error"
@@ -199,13 +188,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "distributeToTerritories",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "contract IBrushToken",
@@ -222,7 +204,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "territories",
+        "name": "territoryTreasury",
         "type": "address"
       },
       {

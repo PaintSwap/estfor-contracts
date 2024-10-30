@@ -196,11 +196,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "pid",
+        "name": "minHarvestInterval",
         "type": "uint256"
       }
     ],
-    "name": "SetPID",
+    "name": "SetMinHarvestInternal",
     "type": "event"
   },
   {
@@ -215,19 +215,6 @@
     ],
     "name": "Upgraded",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "MIN_HARVEST_INTERVAL",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -272,11 +259,6 @@
   {
     "inputs": [
       {
-        "internalType": "contract IPaintSwapDecorator",
-        "name": "decorator",
-        "type": "address"
-      },
-      {
         "internalType": "contract ITerritories",
         "name": "territories",
         "type": "address"
@@ -294,6 +276,21 @@
       {
         "internalType": "address",
         "name": "dev",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Treasury",
+        "name": "treasury",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "minHarvestInterval",
+        "type": "uint16"
+      },
+      {
+        "internalType": "contract IPaintSwapDecorator",
+        "name": "decorator",
         "type": "address"
       },
       {
@@ -349,6 +346,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "minHarvestInterval",
+        "type": "uint16"
+      }
+    ],
+    "name": "setMinHarvestInterval",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

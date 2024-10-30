@@ -430,6 +430,7 @@ export const playersFixture = async function () {
   // Set K values to 3, 3 to make it easier to get consistent values close to each for same MMR testing
   await lockedBankVaults.setKValues(3, 3);
 
+  const minHarvestInterval = BigInt(3.75 * 3600); // 3 hours 45 minutes;
   const Territories = await ethers.getContractFactory("Territories");
   const territories = (await upgrades.deployProxy(
     Territories,
@@ -507,7 +508,7 @@ export const playersFixture = async function () {
   const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
   const treasuryPercentages = [10, 90];
   await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
-  await treasury.initializeAddresses(territories, shop);
+  await treasury.initializeAddresses(ethers.ZeroAddress, shop); // territoryTreasury is not set here on in the tests there
 
   await bankRegistry.setLockedBankVaults(lockedBankVaults);
 
@@ -615,6 +616,7 @@ export const playersFixture = async function () {
     initialMMR,
     maxLockedVaults,
     sellingCutoffDuration,
-    maxInstantVRFActionAmount
+    maxInstantVRFActionAmount,
+    minHarvestInterval
   };
 };

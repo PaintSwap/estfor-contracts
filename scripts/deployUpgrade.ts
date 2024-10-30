@@ -27,7 +27,7 @@ import {
   PROMOTIONS_ADDRESS,
   PROMOTIONS_LIBRARY_ADDRESS,
   TERRITORIES_ADDRESS,
-  DECORATOR_PROVIDER_ADDRESS,
+  TERRITORY_TREASURY_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
   COMBATANTS_HELPER_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
@@ -370,13 +370,13 @@ async function main() {
   await combatantsHelper.waitForDeployment();
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
-  const DecoratorProvider = (await ethers.getContractFactory("DecoratorProvider")).connect(owner);
-  const decoratorProvider = await upgrades.upgradeProxy(DECORATOR_PROVIDER_ADDRESS, DecoratorProvider, {
+  const TerritoryTreasury = (await ethers.getContractFactory("TerritoryTreasury")).connect(owner);
+  const territoryTreasury = await upgrades.upgradeProxy(TERRITORY_TREASURY_ADDRESS, TerritoryTreasury, {
     kind: "uups",
     timeout
   });
-  await decoratorProvider.waitForDeployment();
-  console.log(`decoratorProvider = "${(await decoratorProvider.getAddress()).toLowerCase()}"`);
+  await territoryTreasury.waitForDeployment();
+  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`);
 
   const RoyaltyReceiver = (await ethers.getContractFactory("RoyaltyReceiver")).connect(owner);
   const royaltyReceiver = (await upgrades.upgradeProxy(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
@@ -422,7 +422,7 @@ async function main() {
     await verifyContracts([await lockedBankVaults.getAddress()]);
     await verifyContracts([await lockedBankVaultsLibrary.getAddress()]);
     await verifyContracts([await combatantsHelper.getAddress()]);
-    await verifyContracts([await decoratorProvider.getAddress()]);
+    await verifyContracts([await territoryTreasury.getAddress()]);
     await verifyContracts([await royaltyReceiver.getAddress()]);
     await verifyContracts([await passiveActions.getAddress()]);
     await verifyContracts([await treasury.getAddress()]);
