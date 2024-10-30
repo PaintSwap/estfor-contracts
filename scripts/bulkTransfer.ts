@@ -73,9 +73,9 @@ async function main() {
   tx = await itemNFT.testMints(clanBankAddress, [EstforConstants.TITANIUM_AXE, EstforConstants.IRON_AXE], [2, 2]);
   await tx.wait();
 
-  const bank = await ethers.getContractAt("Bank", clanBankAddress);
+  const bankRelay = await ethers.getContractAt("BankRelay", BANK_RELAY_ADDRESS);
   const playerId = 1;
-  tx = await bank.withdrawItemsBulk(nftInfos, playerId);
+  tx = await bankRelay.withdrawItemsBulk(nftInfos, playerId);
   await tx.wait();
 }
 
