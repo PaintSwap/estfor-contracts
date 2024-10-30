@@ -4,6 +4,7 @@ import {
   ClanBattleLibrary__factory,
   EstforLibrary,
   LockedBankVaultsLibrary,
+  OrderBook,
   PetNFTLibrary,
   PromotionsLibrary,
   RoyaltyReceiver,
@@ -42,7 +43,8 @@ import {
   TREASURY_ADDRESS,
   CLAN_BATTLE_LIBRARY_ADDRESS,
   BANK_RELAY_ADDRESS,
-  BANK_FACTORY_ADDRESS
+  BANK_FACTORY_ADDRESS,
+  BAZAAR_ADDRESS
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -112,6 +114,14 @@ async function main() {
   });
   await itemNFT.waitForDeployment();
   console.log(`itemNFT = "${(await itemNFT.getAddress()).toLowerCase()}"`);
+
+  // Bazaar
+  const OrderBook = await ethers.getContractFactory("OrderBook");
+  const orderbook = (await upgrades.upgradeProxy(BAZAAR_ADDRESS, OrderBook, {
+    kind: "uups",
+    timeout
+  })) as unknown as OrderBook;
+  await orderbook.waitForDeployment();
 
   // Treasury
   const Treasury = (await ethers.getContractFactory("Treasury")).connect(owner);

@@ -84,7 +84,8 @@ const config: HardhatUserConfig = {
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
       "contracts/PetNFT.sol": lowRunsConfig,
-      "contracts/PlayerNFT.sol": mediumRunsConfig
+      "contracts/PlayerNFT.sol": mediumRunsConfig,
+      "contracts/Bazaar/OrderBook.sol": lowRunsConfig
     }
   },
   gasReporter: {

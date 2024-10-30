@@ -30,7 +30,8 @@ import {
   CombatantsHelper,
   LockedBankVaults,
   ClanBattleLibrary,
-  BankRelay
+  BankRelay,
+  OrderBook
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -90,6 +91,8 @@ import {allInstantVRFActions} from "./data/instantVRFActions";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
 import {parseEther} from "ethers";
+import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
+import {bazaar} from "../typechain-types/contracts";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -330,6 +333,19 @@ async function main() {
 
   console.log(`itemNFT = "${(await itemNFT.getAddress()).toLowerCase()}"`);
 
+  const maxOrdersPerPrice = 100;
+  const OrderBook = await ethers.getContractFactory("OrderBook");
+  const orderbook = (await upgrades.deployProxy(
+    OrderBook,
+    [await itemNFT.getAddress(), await brush.getAddress(), DEV_ADDRESS, 30, 30, maxOrdersPerPrice],
+    {
+      kind: "uups",
+      timeout
+    }
+  )) as unknown as OrderBook;
+  await orderbook.waitForDeployment();
+  console.log("Deployed Bazaar to:", await orderbook.getAddress());
+
   // Create NFT contract which contains all the players
   const estforLibrary = await ethers.deployContract("EstforLibrary");
   await estforLibrary.waitForDeployment();
@@ -554,7 +570,7 @@ async function main() {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await petNFT.getAddress(),
-      ORACLE_ADDRESS,
+      oracleAddress,
       await vrf.getAddress(),
       await vrfRequestInfo.getAddress(),
       maxActionAmount
@@ -654,7 +670,7 @@ async function main() {
       await brush.getAddress(),
       await lockedBankVaults.getAddress(),
       await itemNFT.getAddress(),
-      ORACLE_ADDRESS,
+      oracleAddress,
       await vrf.getAddress(),
       await vrfRequestInfo.getAddress(),
       allBattleSkills,
@@ -753,6 +769,7 @@ async function main() {
         await wishingWell.getAddress(),
         await itemNFTLibrary.getAddress(),
         await itemNFT.getAddress(),
+        await orderbook.getAddress(),
         await petNFT.getAddress(),
         await adminAccess.getAddress(),
         await treasury.getAddress(),
@@ -776,7 +793,8 @@ async function main() {
         await bank.getAddress(),
         await upgrades.beacon.getImplementationAddress(await bank.getAddress()),
         await bankRegistry.getAddress(),
-        await bankFactory.getAddress()
+        await bankFactory.getAddress(),
+        await bankRelay.getAddress()
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -931,6 +949,19 @@ async function main() {
     tx = await itemNFT.addItems(chunk);
     await tx.wait();
     console.log("Add items chunk ", i);
+  }
+
+  for (let i = 0; i < allOrderBookTokenIdInfos.length; i += chunkSize) {
+    const tokenIds: number[] = [];
+    const tokenIdInfos: {tick: string; minQuantity: string}[] = [];
+    const chunk = allOrderBookTokenIdInfos.slice(i, i + chunkSize);
+    chunk.forEach((tokenIdInfo) => {
+      tokenIds.push(tokenIdInfo.tokenId);
+      tokenIdInfos.push({tick: tokenIdInfo.tick, minQuantity: tokenIdInfo.minQuantity});
+    });
+    const tx = await orderbook.setTokenIdInfos(tokenIds, tokenIdInfos);
+    await tx.wait();
+    console.log("orderBook.setTokenIdInfos");
   }
 
   tx = await players.addFullAttireBonuses(allFullAttireBonuses);
