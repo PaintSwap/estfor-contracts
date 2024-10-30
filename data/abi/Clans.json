@@ -1671,9 +1671,9 @@
       {
         "components": [
           {
-            "internalType": "uint32",
+            "internalType": "uint40",
             "name": "clanId",
-            "type": "uint32"
+            "type": "uint40"
           },
           {
             "internalType": "enum ClanRank",
@@ -1681,9 +1681,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint32",
+            "internalType": "uint40",
             "name": "requestedClanId",
-            "type": "uint32"
+            "type": "uint40"
           }
         ],
         "internalType": "struct Clans.PlayerInfo",

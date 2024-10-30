@@ -29,7 +29,8 @@ import {
   Territories,
   CombatantsHelper,
   LockedBankVaults,
-  ClanBattleLibrary
+  ClanBattleLibrary,
+  BankRelay
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -508,30 +509,6 @@ async function main() {
   await players.waitForDeployment();
   console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
 
-  const BankRegistry = await ethers.getContractFactory("BankRegistry");
-  const bankRegistry = await upgrades.deployProxy(
-    BankRegistry,
-    [await itemNFT.getAddress(), await playerNFT.getAddress(), await clans.getAddress(), await players.getAddress()],
-    {
-      kind: "uups",
-      timeout
-    }
-  );
-  await bankRegistry.waitForDeployment();
-  console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`);
-
-  const BankFactory = await ethers.getContractFactory("BankFactory");
-  const bankFactory = (await upgrades.deployProxy(
-    BankFactory,
-    [await bankRegistry.getAddress(), await bank.getAddress()],
-    {
-      kind: "uups",
-      timeout
-    }
-  )) as unknown as BankFactory;
-  await bankFactory.waitForDeployment();
-  console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
-
   const PassiveActions = await ethers.getContractFactory("PassiveActions", {
     libraries: {WorldLibrary: await worldLibrary.getAddress()}
   });
@@ -613,6 +590,13 @@ async function main() {
   )) as unknown as EggInstantVRFActionStrategy;
   await eggInstantVRFActionStrategy.waitForDeployment();
 
+  const BankRelay = await ethers.getContractFactory("BankRelay");
+  const bankRelay = (await upgrades.deployProxy(BankRelay, [await clans.getAddress()], {
+    kind: "uups"
+  })) as unknown as BankRelay;
+  await bankRelay.waitForDeployment();
+  console.log(`bankRelay = "${(await bankRelay.getAddress()).toLowerCase()}"`);
+
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
   console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
 
@@ -635,7 +619,7 @@ async function main() {
       await players.getAddress(),
       await clans.getAddress(),
       await brush.getAddress(),
-      await bankFactory.getAddress(),
+      await bankRelay.getAddress(),
       await itemNFT.getAddress(),
       await treasury.getAddress(),
       DEV_ADDRESS,
@@ -724,6 +708,35 @@ async function main() {
   await territoryTreasury.waitForDeployment();
   console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`);
 
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = await upgrades.deployProxy(BankRegistry, [], {
+    kind: "uups",
+    timeout
+  });
+  await bankRegistry.waitForDeployment();
+  console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`);
+
+  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const bankFactory = (await upgrades.deployProxy(
+    BankFactory,
+    [
+      await bank.getAddress(),
+      await bankRegistry.getAddress(),
+      await bankRelay.getAddress(),
+      await playerNFT.getAddress(),
+      await itemNFT.getAddress(),
+      await clans.getAddress(),
+      await players.getAddress(),
+      await lockedBankVaults.getAddress()
+    ],
+    {
+      kind: "uups",
+      timeout
+    }
+  )) as unknown as BankFactory;
+  await bankFactory.waitForDeployment();
+  console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
+
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 250n) {
     try {
@@ -742,6 +755,7 @@ async function main() {
         await itemNFT.getAddress(),
         await petNFT.getAddress(),
         await adminAccess.getAddress(),
+        await treasury.getAddress(),
         await shop.getAddress(),
         await worldLibrary.getAddress(),
         await world.getAddress(),
@@ -749,10 +763,6 @@ async function main() {
         await clans.getAddress(),
         await quests.getAddress(),
         await promotions.getAddress(),
-        await bank.getAddress(),
-        await upgrades.beacon.getImplementationAddress(await bank.getAddress()),
-        await bankRegistry.getAddress(),
-        await bankFactory.getAddress(),
         await passiveActions.getAddress(),
         await instantActions.getAddress(),
         await instantVRFActions.getAddress(),
@@ -762,7 +772,11 @@ async function main() {
         await territoryTreasury.getAddress(),
         await combatantsHelper.getAddress(),
         await vrfRequestInfo.getAddress(),
-        await treasury.getAddress()
+        await territoryTreasury.getAddress(),
+        await bank.getAddress(),
+        await upgrades.beacon.getImplementationAddress(await bank.getAddress()),
+        await bankRegistry.getAddress(),
+        await bankFactory.getAddress()
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -854,7 +868,7 @@ async function main() {
   await tx.wait();
   console.log("petNFT.setTerritories");
 
-  tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper);
+  tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await tx.wait();
   console.log("lockedBankVaults initializeAddresses");
 
@@ -870,10 +884,6 @@ async function main() {
   await tx.wait();
   console.log("territories.setMinimumMMRs");
 
-  tx = await bankRegistry.setLockedBankVaults(lockedBankVaults);
-  await tx.wait();
-  console.log("bankRegistry.setLockedBankVaults");
-
   const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
   const treasuryPercentages = [10, 90];
   tx = await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
@@ -883,6 +893,10 @@ async function main() {
   tx = await treasury.initializeAddresses(territoryTreasury, shop);
   await tx.wait();
   console.log("treasury.initializeAddresses");
+
+  tx = await bankRelay.setBankFactory(bankFactory);
+  await tx.wait();
+  console.log("bankRelay.setBankFactory");
 
   tx = await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories], true);
   await tx.wait();

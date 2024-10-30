@@ -248,17 +248,42 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "clans",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "bankBeacon",
         "type": "address"
       },
       {
         "internalType": "address",
         "name": "bankRegistry",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "bankRelay",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "playerNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "clans",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "players",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lockedBankVaults",
         "type": "address"
       }
     ],

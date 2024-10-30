@@ -225,7 +225,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     IPlayers players,
     IClans clans,
     IBrushToken brush,
-    IBankFactory bankFactory,
     address bankRelay,
     ItemNFT itemNFT,
     address treasury,
@@ -246,7 +245,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _players = players;
     _clans = clans;
     _brush = brush;
-    _bankFactory = bankFactory;
     _bankRelay = BankRelay(bankRelay);
     _itemNFT = itemNFT;
     _treasury = treasury;
@@ -635,11 +633,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     emit SetKValues(kA, kD);
   }
 
-  function initializeAddresses(ITerritories territories, address combatantsHelper) external onlyOwner {
-    _territories = territories;
-    _combatantsHelper = combatantsHelper;
-  }
-
   function setMMRAttackDistance(uint16 mmrAttackDistance) public onlyOwner {
     _mmrAttackDistance = mmrAttackDistance;
     emit SetMMRAttackDistance(mmrAttackDistance);
@@ -686,6 +679,16 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     }
     LockedBankVaultsLibrary.initializeMMR(_sortedClansByMMR, _clans, _clanInfos, clanIds, mmrs);
     emit SetMMRs(clanIds, mmrs);
+  }
+
+  function initializeAddresses(
+    ITerritories territories,
+    address combatantsHelper,
+    IBankFactory bankFactory
+  ) external onlyOwner {
+    _territories = territories;
+    _combatantsHelper = combatantsHelper;
+    _bankFactory = bankFactory;
   }
 
   function clearCooldowns(uint256 clanId, uint256[] calldata otherClanIds) external isAdminAndBeta {

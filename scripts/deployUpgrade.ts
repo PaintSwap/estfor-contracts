@@ -40,7 +40,9 @@ import {
   PET_NFT_LIBRARY_ADDRESS,
   LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
   TREASURY_ADDRESS,
-  CLAN_BATTLE_LIBRARY_ADDRESS
+  CLAN_BATTLE_LIBRARY_ADDRESS,
+  BANK_RELAY_ADDRESS,
+  BANK_FACTORY_ADDRESS
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -168,6 +170,22 @@ async function main() {
   });
   await bankRegistry.waitForDeployment();
   console.log(`bankRegistry = "${(await bankRegistry.getAddress()).toLowerCase()}"`);
+
+  const BankRelay = (await ethers.getContractFactory("BankRelay")).connect(owner);
+  const bankRelay = await upgrades.upgradeProxy(BANK_RELAY_ADDRESS, BankRelay, {
+    kind: "uups",
+    timeout
+  });
+  await bankRelay.waitForDeployment();
+  console.log(`bankRelay = "${(await bankRelay.getAddress()).toLowerCase()}"`);
+
+  const BankFactory = (await ethers.getContractFactory("BankFactory")).connect(owner);
+  const bankFactory = await upgrades.upgradeProxy(BANK_FACTORY_ADDRESS, BankFactory, {
+    kind: "uups",
+    timeout
+  });
+  await bankFactory.waitForDeployment();
+  console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 
   // World
   const newWorldLibrary = false;

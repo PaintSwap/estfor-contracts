@@ -7,9 +7,9 @@ import {ethers} from "hardhat";
 import {LockedBankVaults, MockBrushToken, Territories} from "../../typechain-types";
 
 import {fulfillRandomWords, timeTravel} from "../utils";
-import {BaseContract, Block, ContractTransactionReceipt} from "ethers";
+import {Block, ContractTransactionReceipt} from "ethers";
 import {allBattleSkills} from "../../scripts/data/territories";
-import {getXPFromLevel} from "../Players/utils";
+import {getXPFromLevel, makeSigner} from "../Players/utils";
 import {allItems} from "../../scripts/data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers";
@@ -22,24 +22,20 @@ describe("LockedBankVaults", function () {
     alice: SignerWithAddress,
     playerId: bigint,
     amount: number,
-    territories: Territories,
-    combatantsHelper: BaseContract
+    territories: Territories
   ) => {
-    await brush.mint(alice, amount);
-    await brush.connect(alice).approve(lockedBankVaults, amount);
-    await lockedBankVaults.initializeAddresses(alice, combatantsHelper); // Set it to alice so we can lock funds
-    await lockedBankVaults.connect(alice).lockFunds(clanId, alice, playerId, amount);
-    await lockedBankVaults.initializeAddresses(territories, combatantsHelper); // Set it back after locking funds
+    await brush.mint(territories, amount);
+    const territoriesSigner = await makeSigner(territories);
+    await lockedBankVaults.connect(territoriesSigner).lockFunds(clanId, alice, playerId, amount);
   };
 
   it("Lock funds", async () => {
-    const {lockedBankVaults, clanId, playerId, alice, brush, combatantsHelper} = await loadFixture(clanFixture);
+    const {lockedBankVaults, clanId, playerId, alice, brush, territories} = await loadFixture(clanFixture);
 
-    await brush.mint(alice, 1000);
-    await brush.connect(alice).approve(lockedBankVaults, 1000);
-    await lockedBankVaults.initializeAddresses(alice, combatantsHelper);
-    await lockedBankVaults.connect(alice).lockFunds(clanId, alice, playerId, 400);
-    expect(await brush.balanceOf(alice)).to.eq(600);
+    await brush.mint(territories, 1000);
+    const territoriesSigner = await makeSigner(territories);
+    await lockedBankVaults.connect(territoriesSigner).lockFunds(clanId, alice, playerId, 400);
+    expect(await brush.balanceOf(territories)).to.eq(600);
     expect(await brush.balanceOf(lockedBankVaults)).to.eq(400);
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(400);
   });
@@ -59,7 +55,7 @@ describe("LockedBankVaults", function () {
     const {lockedBankVaults, LockedBankVaultsLibrary, combatantsHelper, territories, clanId, playerId, brush, alice} =
       await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
     await expect(
@@ -85,7 +81,7 @@ describe("LockedBankVaults", function () {
       clans
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
 
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
@@ -100,7 +96,7 @@ describe("LockedBankVaults", function () {
   });
 
   it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
-    const {lockedBankVaultsLibrary, combatantsHelper, clanId, playerId, alice, combatantChangeCooldown} =
+    const {lockedBankVaultsLibrary, clanId, playerId, alice, combatantChangeCooldown, combatantsHelper} =
       await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -148,7 +144,7 @@ describe("LockedBankVaults", function () {
       lockedFundsPeriod
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -177,9 +173,7 @@ describe("LockedBankVaults", function () {
 
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(1);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(900);
-    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(
-      NOW + lockedFundsPeriod - 1
-    );
+    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(NOW + lockedFundsPeriod);
 
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults.length).to.eq(1);
     expect((await lockedBankVaults.getClanInfo(bobClanId)).defendingVaults[0].amount).to.eq(100);
@@ -212,7 +206,7 @@ describe("LockedBankVaults", function () {
       brush
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -267,7 +261,7 @@ describe("LockedBankVaults", function () {
       players
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -368,9 +362,7 @@ describe("LockedBankVaults", function () {
 
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(1);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(855);
-    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(
-      NOW + lockedFundsPeriod - 1
-    );
+    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(NOW + lockedFundsPeriod);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(10);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(NOW2 + lockedFundsPeriod);
 
@@ -393,19 +385,18 @@ describe("LockedBankVaults", function () {
       alice,
       brush,
       bankAddress,
-      combatantsHelper,
       lockedFundsPeriod
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
     const lockPeriodSlice = lockedFundsPeriod / 10;
 
     await ethers.provider.send("evm_increaseTime", [lockPeriodSlice]);
     await ethers.provider.send("evm_mine", []);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
     await ethers.provider.send("evm_increaseTime", [lockPeriodSlice]);
     await ethers.provider.send("evm_mine", []);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 450, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 450, territories);
 
     // Nothing to claim
     await expect(lockedBankVaults.connect(alice).claimFunds(clanId, playerId)).to.be.revertedWithCustomError(
@@ -466,7 +457,7 @@ describe("LockedBankVaults", function () {
       vrfRequestInfo
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -527,12 +518,13 @@ describe("LockedBankVaults", function () {
 
   it("Multiple locked funds claim", async () => {
     // Test it for gas usage
-    const {lockedBankVaults, territories, clanId, playerId, brush, alice, combatantsHelper, lockedFundsPeriod} =
-      await loadFixture(clanFixture);
+    const {lockedBankVaults, territories, clanId, playerId, brush, alice, lockedFundsPeriod} = await loadFixture(
+      clanFixture
+    );
 
     const NOWS = [];
     for (let i = 0; i < 5; ++i) {
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 100 + i, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 100 + i, territories);
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       NOWS.push(NOW);
 
@@ -544,25 +536,25 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount).to.eq(100);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(
-      NOWS[0] + lockedFundsPeriod - 1
+      NOWS[0] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(101);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(
-      NOWS[1] + lockedFundsPeriod - 1
+      NOWS[1] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount).to.eq(102);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp).to.eq(
-      NOWS[2] + lockedFundsPeriod - 1
+      NOWS[2] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount1).to.eq(103);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp1).to.eq(
-      NOWS[3] + lockedFundsPeriod - 1
+      NOWS[3] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1
+      NOWS[4] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(0);
@@ -577,7 +569,7 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(101);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(
-      NOWS[1] + lockedFundsPeriod - 1
+      NOWS[1] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(0);
 
@@ -591,21 +583,21 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].amount1).to.eq(101);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[0].timestamp1).to.eq(
-      NOWS[1] + lockedFundsPeriod - 1
+      NOWS[1] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount).to.eq(102);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp).to.eq(
-      NOWS[2] + lockedFundsPeriod - 1
+      NOWS[2] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].amount1).to.eq(103);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[1].timestamp1).to.eq(
-      NOWS[3] + lockedFundsPeriod - 1
+      NOWS[3] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].claimed).to.be.false;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1
+      NOWS[4] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(0);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(0);
@@ -619,16 +611,14 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].claimed).to.be.true;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104); // Leave it unchanged
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1
+      NOWS[4] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(2);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 100, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 100, territories);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(100);
-    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(
-      NOW + lockedFundsPeriod - 1
-    );
+    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(NOW + lockedFundsPeriod);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(2);
 
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + lockedFundsPeriod]);
@@ -637,12 +627,10 @@ describe("LockedBankVaults", function () {
 
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount).to.eq(104); // Leave unchanged
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp).to.eq(
-      NOWS[4] + lockedFundsPeriod - 1
+      NOWS[4] + lockedFundsPeriod
     );
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].amount1).to.eq(100);
-    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(
-      NOW + lockedFundsPeriod - 1
-    );
+    expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults[2].timestamp1).to.eq(NOW + lockedFundsPeriod);
 
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaultsOffset).to.eq(3);
   });
@@ -673,7 +661,7 @@ describe("LockedBankVaults", function () {
     } = await loadFixture(clanFixture);
 
     for (let i = 0; i < maxLockedVaults - 1; ++i) {
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
     }
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -683,7 +671,7 @@ describe("LockedBankVaults", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
 
-    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 400, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 400, territories);
 
     // Attack
     await lockedBankVaults
@@ -692,7 +680,7 @@ describe("LockedBankVaults", function () {
     await fulfillRandomWords(1, lockedBankVaults, mockVRF);
     await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
 
     await expect(
       lockedBankVaults
@@ -729,7 +717,7 @@ describe("LockedBankVaults", function () {
     } = await loadFixture(clanFixture);
 
     for (let i = 0; i < maxLockedVaults; ++i) {
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
     }
 
     await combatantsHelper
@@ -835,8 +823,7 @@ describe("LockedBankVaults", function () {
       tierId,
       brush,
       mockVRF,
-      attackingCooldown,
-      reattackingCooldown
+      attackingCooldown
     } = await loadFixture(clanFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
@@ -846,7 +833,7 @@ describe("LockedBankVaults", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
-    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
 
     // But have to wait for the cooldown and not just the generic attack cooldown, the same clan attacking cooldown
     await lockedBankVaults
@@ -933,7 +920,7 @@ describe("LockedBankVaults", function () {
 
     const bobClanId = clanId + 1;
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
-    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
 
     const item = allItems.find((inputItem) => inputItem.tokenId == EstforConstants.SHARPENED_CLAW) as ItemInput;
     await itemNFT.addItems([item]);
@@ -995,7 +982,7 @@ describe("LockedBankVaults", function () {
 
     const bobClanId = clanId + 1;
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
-    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
 
     const item = allItems.find((inputItem) => inputItem.tokenId == EstforConstants.SHARPENED_CLAW) as ItemInput;
     await itemNFT.addItems([item]);
@@ -1022,16 +1009,7 @@ describe("LockedBankVaults", function () {
     await combatantsHelper
       .connect(charlie)
       .assignCombatants(charlieClanId, false, [], true, [charliePlayerId], charliePlayerId);
-    await lockFundsForClan(
-      lockedBankVaults,
-      charlieClanId,
-      brush,
-      charlie,
-      charliePlayerId,
-      1000,
-      territories,
-      combatantsHelper
-    );
+    await lockFundsForClan(lockedBankVaults, charlieClanId, brush, charlie, charliePlayerId, 1000, territories);
 
     // Forward by attack cooldown and attack another clan
     await ethers.provider.send("evm_increaseTime", [attackingCooldown]);
@@ -1081,7 +1059,7 @@ describe("LockedBankVaults", function () {
       brush
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
     // Create a new clan to attack/defend
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
@@ -1185,9 +1163,9 @@ describe("LockedBankVaults", function () {
       players
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories, combatantsHelper);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories, combatantsHelper);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -1206,7 +1184,7 @@ describe("LockedBankVaults", function () {
     }
 
     // Lock
-    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 800, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 800, territories);
 
     await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
 
@@ -1251,9 +1229,9 @@ describe("LockedBankVaults", function () {
       mockVRF
     } = await loadFixture(clanFixture);
 
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories, combatantsHelper);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories, combatantsHelper);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -1312,7 +1290,7 @@ describe("LockedBankVaults", function () {
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = clanId + 1;
-    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories);
 
     await lockedBankVaults
       .connect(alice)
@@ -1325,21 +1303,22 @@ describe("LockedBankVaults", function () {
   });
 
   it("Claim with a full packed vault but only the first is claimable, the next lock should start a new segment", async () => {
-    const {lockedBankVaults, territories, clanId, playerId, alice, brush, combatantsHelper, lockedFundsPeriod} =
-      await loadFixture(clanFixture);
+    const {lockedBankVaults, territories, clanId, playerId, alice, brush, lockedFundsPeriod} = await loadFixture(
+      clanFixture
+    );
 
     // Get one lock
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
     // Wait a couple days and get another lock
     await ethers.provider.send("evm_increaseTime", [86400 * 2]);
     await ethers.provider.send("evm_mine", []);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
     // Unlock it
     await ethers.provider.send("evm_increaseTime", [lockedFundsPeriod - 86400 * 2]);
     await ethers.provider.send("evm_mine", []);
     // Claim funds and check the locks are correct
     await lockedBankVaults.connect(alice).claimFunds(clanId, playerId);
-    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 500, territories);
     expect((await lockedBankVaults.getClanInfo(clanId)).defendingVaults.length).to.eq(2);
   });
 
@@ -1371,7 +1350,7 @@ describe("LockedBankVaults", function () {
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = clanId + 1;
-    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories, combatantsHelper);
+    await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories);
     await lockedBankVaults.setPreventAttacks(true);
     await expect(
       lockedBankVaults
@@ -1399,7 +1378,6 @@ describe("LockedBankVaults", function () {
       const {
         clans,
         lockedBankVaults,
-        combatantsHelper,
         territories,
         clanId,
         playerId,
@@ -1417,14 +1395,14 @@ describe("LockedBankVaults", function () {
         brush
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       // Create a new clan to attack/defend
       const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = 2;
 
-      await lockFundsForClan(lockedBankVaults, bobClanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, bobClanId, brush, alice, playerId, 1000, territories);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
@@ -1454,7 +1432,7 @@ describe("LockedBankVaults", function () {
         mockVRF
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -1523,7 +1501,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -1595,16 +1573,7 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 501, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, erinClanId, bobClanId]);
 
-      await lockFundsForClan(
-        lockedBankVaults,
-        frankClanId,
-        brush,
-        alice,
-        playerId,
-        1000,
-        territories,
-        combatantsHelper
-      );
+      await lockFundsForClan(lockedBankVaults, frankClanId, brush, alice, playerId, 1000, territories);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 500, 501, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, erinClanId, bobClanId]);
@@ -1668,7 +1637,7 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([501, 503]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, erinClanId]);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       const idleClanIds = await lockedBankVaults.getIdleClans();
       expect(idleClanIds).to.deep.eq([bobClanId, erinClanId]);
@@ -1715,7 +1684,7 @@ describe("LockedBankVaults", function () {
 
       const bobClanId = clanId + 1;
       await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [bobPlayerId], bobPlayerId);
-      await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
 
       for (let i = 0; i < allBattleSkills.length; ++i) {
         await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
@@ -1846,7 +1815,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -1912,7 +1881,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -1980,7 +1949,7 @@ describe("LockedBankVaults", function () {
         lockedFundsPeriod
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -2042,7 +2011,7 @@ describe("LockedBankVaults", function () {
         lockedFundsPeriod
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -2109,7 +2078,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
@@ -2181,16 +2150,7 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 501, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, erinClanId, bobClanId]);
 
-      await lockFundsForClan(
-        lockedBankVaults,
-        frankClanId,
-        brush,
-        alice,
-        playerId,
-        1000,
-        territories,
-        combatantsHelper
-      );
+      await lockFundsForClan(lockedBankVaults, frankClanId, brush, alice, playerId, 1000, territories);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 500, 501, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, erinClanId, bobClanId]);
@@ -2253,7 +2213,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
       // Create a new clan to attack/defend between each other
@@ -2316,11 +2276,9 @@ describe("LockedBankVaults", function () {
     });
 
     it("Force updating MMR should correctly cleanse any initialized clans which do not have any locked vaults", async () => {
-      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} = await loadFixture(
-        clanFixture
-      );
+      const {lockedBankVaults, territories, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       const clanIds = [1, 2, 3, 4];
       const mmrs = [1000, 2000, 3000, 4000];
@@ -2342,7 +2300,6 @@ describe("LockedBankVaults", function () {
       const {
         clans,
         lockedBankVaults,
-        combatantsHelper,
         territories,
         playerId,
         clanId,
@@ -2365,11 +2322,11 @@ describe("LockedBankVaults", function () {
       }
 
       // alice is 1, owner is 2
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       // owner and bob get nothing
-      await lockFundsForClan(lockedBankVaults, clanId + 3, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId + 3, brush, alice, playerId, 1000, territories);
       // dev and erin get nothing
-      await lockFundsForClan(lockedBankVaults, clanId + 6, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId + 6, brush, alice, playerId, 1000, territories);
 
       const clanIds = [1, 2, 3, 4, 5, 6, 7];
       const mmrs = [500, 500, 500, 500, 500, 500, 500];
@@ -2387,11 +2344,9 @@ describe("LockedBankVaults", function () {
     });
 
     it("Try not clearing with initializeMMR", async () => {
-      const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, alice, brush} = await loadFixture(
-        clanFixture
-      );
+      const {lockedBankVaults, territories, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       let clanIds = [1, 2, 3, 4];
       let mmrs = [1000, 2000, 3000, 4000];
@@ -2449,7 +2404,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
       // Create a new clan to attack/defend between each other
@@ -2503,7 +2458,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
       // Create a new clan to attack/defend between each other
@@ -2555,7 +2510,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
       // Create a new clan to attack/defend between each other
@@ -2608,7 +2563,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
       // Create a new clan to attack/defend between each other
@@ -2662,7 +2617,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
       // Create a new clan to attack/defend between each other
@@ -2714,7 +2669,7 @@ describe("LockedBankVaults", function () {
         players
       } = await loadFixture(clanFixture);
 
-      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories, combatantsHelper);
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
 
       // Create a new clan to attack/defend between each other

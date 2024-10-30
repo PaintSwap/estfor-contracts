@@ -290,34 +290,6 @@ export const playersFixture = async function () {
     }
   )) as unknown as Players;
 
-  const Bank = await ethers.getContractFactory("Bank");
-  const bank = (await upgrades.deployBeacon(Bank)) as unknown as Bank;
-
-  const BankRegistry = await ethers.getContractFactory("BankRegistry");
-  const bankRegistry = (await upgrades.deployProxy(
-    BankRegistry,
-    [await itemNFT.getAddress(), await playerNFT.getAddress(), await clans.getAddress(), await players.getAddress()],
-    {
-      kind: "uups"
-    }
-  )) as unknown as BankRegistry;
-
-  const BankFactory = await ethers.getContractFactory("BankFactory");
-  const bankFactory = (await upgrades.deployProxy(
-    BankFactory,
-    [await clans.getAddress(), await bank.getAddress(), await bankRegistry.getAddress()],
-    {
-      kind: "uups"
-    }
-  )) as unknown as BankFactory;
-
-  const BankRelay = await ethers.getContractFactory("BankRelay");
-  const bankRelay = (await upgrades.deployProxy(BankRelay, [await clans.getAddress(), await bankFactory.getAddress()], {
-    kind: "uups"
-  })) as unknown as BankRelay;
-
-  await bankRegistry.setBankRelay(bankRelay);
-
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
     InstantActions,
@@ -370,6 +342,11 @@ export const playersFixture = async function () {
     }
   )) as unknown as EggInstantVRFActionStrategy;
 
+  const BankRelay = await ethers.getContractFactory("BankRelay");
+  const bankRelay = (await upgrades.deployProxy(BankRelay, [await clans.getAddress()], {
+    kind: "uups"
+  })) as unknown as BankRelay;
+
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
   const WrappedNative = await ethers.getContractFactory("WrappedNative");
@@ -405,7 +382,6 @@ export const playersFixture = async function () {
       await players.getAddress(),
       await clans.getAddress(),
       await brush.getAddress(),
-      await bankFactory.getAddress(),
       await bankRelay.getAddress(),
       await itemNFT.getAddress(),
       await treasury.getAddress(),
@@ -486,6 +462,32 @@ export const playersFixture = async function () {
     }
   )) as unknown as PassiveActions;
 
+  const Bank = await ethers.getContractFactory("Bank");
+  const bank = (await upgrades.deployBeacon(Bank)) as unknown as Bank;
+
+  const BankRegistry = await ethers.getContractFactory("BankRegistry");
+  const bankRegistry = (await upgrades.deployProxy(BankRegistry, [], {
+    kind: "uups"
+  })) as unknown as BankRegistry;
+
+  const BankFactory = await ethers.getContractFactory("BankFactory");
+  const bankFactory = (await upgrades.deployProxy(
+    BankFactory,
+    [
+      await bank.getAddress(),
+      await bankRegistry.getAddress(),
+      await bankRelay.getAddress(),
+      await playerNFT.getAddress(),
+      await itemNFT.getAddress(),
+      await clans.getAddress(),
+      await players.getAddress(),
+      await lockedBankVaults.getAddress()
+    ],
+    {
+      kind: "uups"
+    }
+  )) as unknown as BankFactory;
+
   await world.setWishingWell(wishingWell);
 
   await playerNFT.setPlayers(players);
@@ -510,7 +512,7 @@ export const playersFixture = async function () {
   await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
   await treasury.initializeAddresses(ethers.ZeroAddress, shop); // territoryTreasury is not set here on in the tests there
 
-  await bankRegistry.setLockedBankVaults(lockedBankVaults);
+  await bankRelay.setBankFactory(bankFactory);
 
   await clans.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
 
@@ -530,7 +532,7 @@ export const playersFixture = async function () {
   await royaltyReceiver.setTerritories(territories);
   await petNFT.setTerritories(territories);
   await territories.setCombatantsHelper(combatantsHelper);
-  await lockedBankVaults.initializeAddresses(territories, combatantsHelper);
+  await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories], true);
 
   await players.setAlphaCombatHealing(0); // This was introduced later, so to not mess up existing tests reset this to 0

@@ -154,105 +154,6 @@
   },
   {
     "inputs": [],
-    "name": "getBankRelay",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getClans",
-    "outputs": [
-      {
-        "internalType": "contract IClans",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getItemNFT",
-    "outputs": [
-      {
-        "internalType": "contract ItemNFT",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getLockedBankVaults",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getPlayerNFT",
-    "outputs": [
-      {
-        "internalType": "contract IERC1155",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getPlayers",
-    "outputs": [
-      {
-        "internalType": "contract IPlayers",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract ItemNFT",
-        "name": "itemNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IERC1155",
-        "name": "playerNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IClans",
-        "name": "clans",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IPlayers",
-        "name": "players",
-        "type": "address"
-      }
-    ],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -287,32 +188,6 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "bankRelay",
-        "type": "address"
-      }
-    ],
-    "name": "setBankRelay",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "lockedBankVaults",
-        "type": "address"
-      }
-    ],
-    "name": "setLockedBankVaults",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -116,9 +116,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   struct PlayerInfo {
-    uint32 clanId; // What clan they are in
+    uint40 clanId; // What clan they are in
     ClanRank rank; // Current clan rank
-    uint32 requestedClanId; // What clan they have requested to join
+    uint40 requestedClanId; // What clan they have requested to join
   }
 
   struct Tier {

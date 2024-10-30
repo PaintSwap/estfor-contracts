@@ -18,6 +18,7 @@ let clans;
 let bank;
 let bankRegistry;
 let bankFactory;
+let bankRelay;
 let playersLibrary;
 let playersImplQueueActions;
 let playersImplProcessActions;
@@ -69,6 +70,7 @@ if (!isBeta) {
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
+  bankRelay = "";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
   instantVRFActions = "0xfe2c07fd7751bba25164adbd96e09b382403f4d7";
   vrfRequestInfo = "0x8c3dcf7b09ea620b265d9daab237f29f485f725b";
@@ -112,6 +114,7 @@ if (!isBeta) {
   players = "0x0aac9c0966ad5ea59cd0a47a0d415a68126ab7be";
   bankRegistry = "0xd5da02cee3d9ef0d63d1b79c659df16770c3c4e0";
   bankFactory = "0x7b8197e7d7352e8910a7af79a9184f50290403da";
+  bankRelay = "";
   instantActions = "0xe9a1a09be4a64f806a26b33fbdf07a6f3e61af76";
   instantVRFActions = "0xbbcc13d2359ad6f2c02e172de46097a1c534ef89";
   vrfRequestInfo = "0x9bcf94e6c067c575dd6a748e45330b4ae4dc0483";
@@ -148,6 +151,7 @@ export const CLANS_ADDRESS = clans;
 export const BANK_ADDRESS = bank;
 export const BANK_REGISTRY_ADDRESS = bankRegistry;
 export const BANK_FACTORY_ADDRESS = bankFactory;
+export const BANK_RELAY_ADDRESS = bankRelay;
 
 export const ESTFOR_LIBRARY_ADDRESS = estforLibrary;
 export const PLAYER_NFT_ADDRESS = playerNFT;

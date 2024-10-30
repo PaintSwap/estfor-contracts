@@ -1130,11 +1130,6 @@
         "type": "address"
       },
       {
-        "internalType": "contract IBankFactory",
-        "name": "bankFactory",
-        "type": "address"
-      },
-      {
         "internalType": "address",
         "name": "bankRelay",
         "type": "address"
@@ -1220,6 +1215,11 @@
       {
         "internalType": "address",
         "name": "combatantsHelper",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IBankFactory",
+        "name": "bankFactory",
         "type": "address"
       }
     ],

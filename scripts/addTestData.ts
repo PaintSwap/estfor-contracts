@@ -248,7 +248,7 @@ export const addTestData = async (
   // Invite new member
   const alicePlayerId = await createPlayer(playerNFT, startAvatarId, alice, "Alice", makeActive);
   console.log("create Alice");
-  tx = await clans.inviteMembers(clanId, alicePlayerId, playerId);
+  tx = await clans.inviteMembers(clanId, [alicePlayerId], playerId);
   await tx.wait();
   console.log("Invite Alice");
   tx = await clans.connect(alice).acceptInvite(clanId, alicePlayerId, 0);
@@ -260,7 +260,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Leave clan");
 
-  tx = await clans.inviteMembers(clanId, alicePlayerId, playerId);
+  tx = await clans.inviteMembers(clanId, [alicePlayerId], playerId);
   await tx.wait();
   console.log("Re-invite Alice");
 
@@ -273,7 +273,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Delete invites as player");
 
-  tx = await clans.inviteMembers(clanId, alicePlayerId, playerId);
+  tx = await clans.inviteMembers(clanId, [alicePlayerId], playerId);
   await tx.wait();
   console.log("Re-invite Alice1");
 
@@ -282,7 +282,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Delete invites as clan");
 
-  tx = await clans.inviteMembers(clanId, alicePlayerId, playerId);
+  tx = await clans.inviteMembers(clanId, [alicePlayerId], playerId);
   await tx.wait();
   console.log("Re-invite Alice2");
 };

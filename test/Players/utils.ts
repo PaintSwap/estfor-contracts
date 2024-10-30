@@ -9,6 +9,8 @@ import {
   ACTION_FISHING_MINNUS,
   ACTION_WOODCUTTING_LOG
 } from "@paintswap/estfor-definitions/constants";
+import {HardhatEthersSigner} from "@nomicfoundation/hardhat-ethers/signers";
+import {BaseContract} from "ethers";
 
 export const setupBasicWoodcutting = async function (
   itemNFT: ItemNFT,
@@ -911,6 +913,12 @@ export function checkPendingQueuedActionState(
   expect(pendingQueuedActionState.dailyRewardItemTokenIds.length).to.eq(0);
   expect(pendingQueuedActionState.dailyRewardAmounts.length).to.eq(0);
 }
+
+export const makeSigner = async (contract: BaseContract): Promise<HardhatEthersSigner> => {
+  const signer = await ethers.getImpersonatedSigner(await contract.getAddress());
+  await ethers.provider.send("hardhat_setBalance", [signer.address, "0x100000000000000000"]);
+  return signer;
+};
 
 export const getXPFromLevel = (level: number) => {
   return EstforConstants.levelXp[level - 1];

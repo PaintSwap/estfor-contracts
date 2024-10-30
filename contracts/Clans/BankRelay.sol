@@ -24,30 +24,11 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(address clans, address bankFactory) external initializer {
+  function initialize(address clans) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
     _clans = Clans(clans);
-    _bankFactory = BankFactory(bankFactory);
-  }
-
-  function _getBank(uint256 clanId) private view returns (Bank) {
-    return Bank(payable(_bankFactory.getBankAddress(clanId)));
-  }
-
-  function _getClanIdFromPlayer(uint256 playerId) private view returns (uint256) {
-    uint clanId = _clans.getClanIdFromPlayer(playerId);
-    require(clanId != 0, PlayerNotInClan());
-    return clanId;
-  }
-
-  function getUniqueItemCountForPlayer(uint256 playerId) external view returns (uint256) {
-    return _getBank(_getClanIdFromPlayer(playerId)).getUniqueItemCount();
-  }
-
-  function getUniqueItemCountForClan(uint256 clanId) external view returns (uint256) {
-    return _getBank(clanId).getUniqueItemCount();
   }
 
   function depositItems(uint256 playerId, uint256[] calldata ids, uint256[] calldata amounts) external {
@@ -108,6 +89,28 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
 
   function withdrawFTM(address to, uint256 playerId, uint256 amount) external {
     _getBank(_getClanIdFromPlayer(playerId)).withdrawFTM(_msgSender(), to, playerId, amount);
+  }
+
+  function _getBank(uint256 clanId) private view returns (Bank) {
+    return Bank(payable(_bankFactory.getBankAddress(clanId)));
+  }
+
+  function _getClanIdFromPlayer(uint256 playerId) private view returns (uint256) {
+    uint clanId = _clans.getClanIdFromPlayer(playerId);
+    require(clanId != 0, PlayerNotInClan());
+    return clanId;
+  }
+
+  function getUniqueItemCountForPlayer(uint256 playerId) external view returns (uint256) {
+    return _getBank(_getClanIdFromPlayer(playerId)).getUniqueItemCount();
+  }
+
+  function getUniqueItemCountForClan(uint256 clanId) external view returns (uint256) {
+    return _getBank(clanId).getUniqueItemCount();
+  }
+
+  function setBankFactory(address bankFactory) external onlyOwner {
+    _bankFactory = BankFactory(bankFactory);
   }
 
   // solhint-disable-next-line no-empty-blocks

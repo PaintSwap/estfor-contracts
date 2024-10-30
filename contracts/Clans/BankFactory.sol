@@ -20,9 +20,14 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   // Keeps track of which vault addresses have been created here
   mapping(address => bool) private _createdHere;
   /// @custom:oz-renamed-from bankUpgradeableProxy
-  address private _clans;
   address private _bankBeacon;
   address private _bankRegistry;
+  address private _bankRelay;
+  address private _playerNFT;
+  address private _itemNFT;
+  address private _clans;
+  address private _players;
+  address private _lockedBankVaults;
 
   modifier onlyClans() {
     require(address(_clans) == _msgSender(), OnlyClans());
@@ -34,13 +39,27 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     _disableInitializers();
   }
 
-  function initialize(address clans, address bankBeacon, address bankRegistry) external initializer {
+  function initialize(
+    address bankBeacon,
+    address bankRegistry,
+    address bankRelay,
+    address playerNFT,
+    address itemNFT,
+    address clans,
+    address players,
+    address lockedBankVaults
+  ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
-    _clans = clans;
     _bankBeacon = bankBeacon;
     _bankRegistry = bankRegistry;
+    _bankRelay = bankRelay;
+    _playerNFT = playerNFT;
+    _itemNFT = itemNFT;
+    _clans = clans;
+    _players = players;
+    _lockedBankVaults = lockedBankVaults;
   }
 
   function getBankAddress(uint256 clanId) external view override returns (address) {
@@ -56,8 +75,22 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
 
     // Create new Bank contract with EIP 1167 beacon proxy
     address proxy = address(
-      new BeaconProxy(_bankBeacon, abi.encodeWithSelector(IBank.initialize.selector, clanId, _bankRegistry))
+      new BeaconProxy(
+        _bankBeacon,
+        abi.encodeWithSelector(
+          IBank.initialize.selector,
+          clanId,
+          _bankRegistry,
+          _bankRelay,
+          _playerNFT,
+          _itemNFT,
+          _clans,
+          _players,
+          _lockedBankVaults
+        )
+      )
     );
+
     _createdHere[proxy] = true;
     _bankAddress[clanId] = proxy;
     emit BankContractCreated(from, clanId, proxy);

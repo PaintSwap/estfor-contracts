@@ -7,14 +7,18 @@ import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
+import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 
-contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgradeable {
+contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, IBank {
+  using SafeCast for uint256;
+
   event DepositItems(address from, uint256 playerId, uint256[] ids, uint256[] values);
   event DepositItem(address from, uint256 playerId, uint256 id, uint256 value);
   event WithdrawItems(address from, address to, uint256 playerId, uint256[] ids, uint256[] values);
@@ -52,23 +56,29 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
   error UseWithdrawItemsForNFT();
   error NFTTypeNotSupported();
 
-  uint32 private _clanId;
+  uint40 private _clanId;
   BankRegistry private _bankRegistry;
+  address private _bankRelay;
+  IERC1155 private _playerNFT;
+  ItemNFT private _itemNFT;
   uint16 private _uniqueItemCount;
+  IClans private _clans;
+  IPlayers private _players;
+  address private _lockedBankVaults;
   mapping(uint256 itemTokenId => bool hasAny) private _uniqueItems;
 
   modifier onlyBankRelay() {
-    require(_msgSender() == _bankRegistry.getBankRelay(), OnlyBankRelay());
+    require(_msgSender() == _bankRelay, OnlyBankRelay());
     _;
   }
 
   modifier isOwnerOfPlayer(address sender, uint256 playerId) {
-    require(_bankRegistry.getPlayerNFT().balanceOf(sender, playerId) == 1, NotOwnerOfPlayer());
+    require(_playerNFT.balanceOf(sender, playerId) == 1, NotOwnerOfPlayer());
     _;
   }
 
   modifier canWithdraw(uint256 playerId) {
-    require(_bankRegistry.getClans().canWithdraw(_clanId, playerId), NotClanAdmin());
+    require(_clans.canWithdraw(_clanId, playerId), NotClanAdmin());
     _;
   }
 
@@ -77,10 +87,25 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     _disableInitializers();
   }
 
-  function initialize(uint256 clanId, address bankRegistry) external override initializer {
+  function initialize(
+    uint256 clanId,
+    address bankRegistry,
+    address bankRelay,
+    address playerNFT,
+    address itemNFT,
+    address clans,
+    address players,
+    address lockedBankVaults
+  ) external override initializer {
     __ReentrancyGuard_init();
-    _clanId = uint32(clanId);
+    _clanId = clanId.toUint40();
     _bankRegistry = BankRegistry(bankRegistry);
+    _bankRelay = bankRelay;
+    _playerNFT = IERC1155(playerNFT);
+    _itemNFT = ItemNFT(itemNFT);
+    _clans = IClans(clans);
+    _players = IPlayers(players);
+    _lockedBankVaults = lockedBankVaults;
   }
 
   function depositItems(
@@ -89,12 +114,12 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     uint256[] calldata ids,
     uint256[] calldata values
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) {
-    uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+    uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
     uint256 bounds = ids.length;
-    for (uint256 iter; iter < bounds; iter++) {
+    for (uint256 iter; iter < bounds; ++iter) {
       _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
     }
-    _bankRegistry.getItemNFT().safeBatchTransferFrom(sender, address(this), ids, values, "");
+    _itemNFT.safeBatchTransferFrom(sender, address(this), ids, values, "");
     emit DepositItems(sender, playerId, ids, values);
   }
 
@@ -109,15 +134,14 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     uint256[] calldata ids,
     uint256[] calldata amounts
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
-    ItemNFT itemNFT = _bankRegistry.getItemNFT();
-    itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
+    _itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
 
     // Update uniqueItemCount after withdrawing items
     uint256 bounds = ids.length;
-    for (uint256 iter; iter < bounds; iter++) {
+    for (uint256 iter; iter < bounds; ++iter) {
       uint256 id = ids[iter];
-      if (_uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
-        _uniqueItemCount--;
+      if (_uniqueItems[id] && _itemNFT.balanceOf(address(this), id) == 0) {
+        --_uniqueItemCount;
         _uniqueItems[id] = false;
       }
     }
@@ -129,18 +153,17 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     BulkTransferInfo[] calldata nftsInfo,
     uint256 playerId
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
-    ItemNFT itemNFT = _bankRegistry.getItemNFT();
-    itemNFT.safeBulkTransfer(nftsInfo);
+    _itemNFT.safeBulkTransfer(nftsInfo);
 
     // Update uniqueItemCount after withdrawing items
     for (uint256 i; i < nftsInfo.length; ++i) {
       uint256 bounds = nftsInfo.length;
-      for (uint256 iter; iter < bounds; iter++) {
+      for (uint256 iter; iter < bounds; ++iter) {
         uint256[] calldata ids = nftsInfo[iter].tokenIds;
         for (uint256 j; j < ids.length; ++j) {
           uint256 id = ids[j];
-          if (_uniqueItems[id] && itemNFT.balanceOf(address(this), id) == 0) {
-            _uniqueItemCount--;
+          if (_uniqueItems[id] && _itemNFT.balanceOf(address(this), id) == 0) {
+            --_uniqueItemCount;
             _uniqueItems[id] = false;
           }
         }
@@ -177,9 +200,8 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     uint256 playerId,
     address token,
     uint256 amount
-  ) external onlyBankRelay {
-    require(playerOwner == sender || sender == address(_bankRegistry.getLockedBankVaults()), NotOwnerOfPlayer());
-    require(_bankRegistry.getPlayerNFT().balanceOf(playerOwner, playerId) == 1, NotOwnerOfPlayer());
+  ) external onlyBankRelay isOwnerOfPlayer(playerOwner, playerId) {
+    require(playerOwner == sender || sender == _lockedBankVaults, NotOwnerOfPlayer());
     bool success = IERC20(token).transferFrom(sender, address(this), amount);
     require(success, DepositFailed());
     emit DepositToken(playerOwner, playerId, token, amount);
@@ -193,7 +215,7 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     address token,
     uint256 amount
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
-    require(_bankRegistry.getPlayerNFT().balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
+    require(_playerNFT.balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
     bool success = IERC20(token).transfer(to, amount);
     require(success, WithdrawFailed());
     emit WithdrawToken(sender, playerId, to, toPlayerId, token, amount);
@@ -207,11 +229,10 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     address token,
     uint256[] calldata _amounts
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
-    require(toPlayerIds.length == _amounts.length, LengthMismatch());
-    require(toPlayerIds.length == tos.length, LengthMismatch());
+    require(toPlayerIds.length == _amounts.length && toPlayerIds.length == tos.length, LengthMismatch());
 
     for (uint256 i = 0; i < toPlayerIds.length; ++i) {
-      require(_bankRegistry.getPlayerNFT().balanceOf(tos[i], toPlayerIds[i]) == 1, ToIsNotOwnerOfPlayer());
+      require(_playerNFT.balanceOf(tos[i], toPlayerIds[i]) == 1, ToIsNotOwnerOfPlayer());
       bool success = IERC20(token).transfer(tos[i], _amounts[i]);
       require(success, WithdrawFailed());
     }
@@ -228,8 +249,8 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     uint256 tokenId,
     uint256 amount
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
-    require(nft != address(_bankRegistry.getItemNFT()), UseWithdrawItemsForNFT());
-    require(_bankRegistry.getPlayerNFT().balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
+    require(nft != address(_itemNFT), UseWithdrawItemsForNFT());
+    require(_playerNFT.balanceOf(to, toPlayerId) == 1, ToIsNotOwnerOfPlayer());
     require(IERC165(nft).supportsInterface(type(IERC1155).interfaceId), NFTTypeNotSupported());
 
     IERC1155(nft).safeTransferFrom(address(this), to, tokenId, amount, "");
@@ -239,7 +260,7 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
   function _receivedItemUpdateUniqueItems(uint256 id, uint256 maxCapacity) private {
     if (!_uniqueItems[id]) {
       require(_uniqueItemCount < maxCapacity, MaxBankCapacityReached());
-      _uniqueItemCount++;
+      ++_uniqueItemCount;
       _uniqueItems[id] = true;
     }
   }
@@ -252,10 +273,10 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     bytes memory data
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
-    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
-      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+    if (_msgSender() == address(_itemNFT) && operator != address(this)) {
+      uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
       _receivedItemUpdateUniqueItems(id, maxCapacity);
-      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
+      uint256 activePlayerId = _players.getActivePlayer(from);
       emit DepositItem(from, activePlayerId, id, value);
     }
     return super.onERC1155Received(operator, from, id, value, data);
@@ -269,13 +290,13 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
     bytes memory data
   ) public override returns (bytes4) {
     // Only care about itemNFTs sent from outside the bank here
-    if (_msgSender() == address(_bankRegistry.getItemNFT()) && operator != address(this)) {
-      uint256 maxCapacity = _bankRegistry.getClans().maxBankCapacity(_clanId);
+    if (_msgSender() == address(_itemNFT) && operator != address(this)) {
+      uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
       uint256 bounds = ids.length;
       for (uint256 iter; iter < bounds; iter++) {
         _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
       }
-      uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(from);
+      uint256 activePlayerId = _players.getActivePlayer(from);
       emit DepositItems(from, activePlayerId, ids, values);
     }
     return super.onERC1155BatchReceived(operator, from, ids, values, data);
@@ -284,7 +305,7 @@ contract Bank is ERC1155Holder, IBank, ReentrancyGuardUpgradeable, ContextUpgrad
   // Untested
   receive() external payable {
     // Accept FTM
-    uint256 activePlayerId = _bankRegistry.getPlayers().getActivePlayer(_msgSender());
+    uint256 activePlayerId = _players.getActivePlayer(_msgSender());
     emit DepositFTM(_msgSender(), activePlayerId, msg.value);
   }
 }

@@ -278,11 +278,6 @@
         "internalType": "address",
         "name": "clans",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "bankFactory",
-        "type": "address"
       }
     ],
     "name": "initialize",
@@ -319,6 +314,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "bankFactory",
+        "type": "address"
+      }
+    ],
+    "name": "setBankFactory",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
