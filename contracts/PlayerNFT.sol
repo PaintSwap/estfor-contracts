@@ -104,7 +104,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
   mapping(uint256 playerId => string name) private _names;
   mapping(string name => bool exists) private _lowercaseNames;
-  BloomFilter.Filter private _reservedHeroNames; // TODO: remove 30 days after launch
+  BloomFilter.Filter private _reservedHeroNames;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
