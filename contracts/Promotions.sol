@@ -31,10 +31,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256 tokenCost
   );
 
-  event AddPromotion(PromotionInfoInput promotionInfo);
-  event EditPromotion(PromotionInfoInput promotionInfo);
-  event RemovePromotion(Promotion promotion);
-  event ClearPlayerPromotion(uint256 playerId, Promotion promotion);
+  event AddPromotions(PromotionInfoInput[] promotionInfos);
+  event EditPromotions(PromotionInfoInput[] promotionInfos);
+  event RemovePromotions(Promotion[] promotions);
+  event ClearPlayerPromotions(uint256 playerId, Promotion[] promotions);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
@@ -618,26 +618,34 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     return _singlePlayerPromotionsCompleted[playerId].get(uint256(promotion));
   }
 
-  function testClearPlayerPromotion(uint256 playerId, Promotion promotion) external isAdminAndBeta {
-    _singlePlayerPromotionsCompleted[playerId].unset(uint256(promotion));
-    delete _multidayPlayerPromotionsCompleted[playerId][promotion];
-    emit ClearPlayerPromotion(playerId, promotion);
+  function testClearPlayerPromotion(uint256 playerId, Promotion[] calldata promotions) external isAdminAndBeta {
+    for (uint256 i; i < promotions.length; ++i) {
+      _singlePlayerPromotionsCompleted[playerId].unset(uint256(promotions[i]));
+      delete _multidayPlayerPromotionsCompleted[playerId][promotions[i]];
+    }
+    emit ClearPlayerPromotions(playerId, promotions);
   }
 
-  function addPromotion(PromotionInfoInput calldata promotionInfoInput) external onlyOwner {
-    PromotionsLibrary.addPromotion(_activePromotions, promotionInfoInput);
-    emit AddPromotion(promotionInfoInput);
+  function addPromotions(PromotionInfoInput[] calldata promotionInfoInput) external onlyOwner {
+    for (uint256 i; i < promotionInfoInput.length; ++i) {
+      PromotionsLibrary.addPromotion(_activePromotions, promotionInfoInput[i]);
+    }
+    emit AddPromotions(promotionInfoInput);
   }
 
-  function editPromotion(PromotionInfoInput calldata promotionInfoInput) external onlyOwner {
-    PromotionsLibrary.editPromotion(_activePromotions, promotionInfoInput);
-    emit EditPromotion(promotionInfoInput);
+  function editPromotions(PromotionInfoInput[] calldata promotionInfoInputs) external onlyOwner {
+    for (uint256 i; i < promotionInfoInputs.length; ++i) {
+      PromotionsLibrary.editPromotion(_activePromotions, promotionInfoInputs[i]);
+    }
+    emit EditPromotions(promotionInfoInputs);
   }
 
-  function removePromotion(Promotion promotion) external onlyOwner {
-    require(_activePromotions[promotion].promotion != Promotion.NONE, PromotionNotAdded());
-    delete _activePromotions[promotion];
-    emit RemovePromotion(promotion);
+  function removePromotions(Promotion[] calldata promotions) external onlyOwner {
+    for (uint256 i; i < promotions.length; ++i) {
+      require(_activePromotions[promotions[i]].promotion != Promotion.NONE, PromotionNotAdded());
+      delete _activePromotions[promotions[i]];
+    }
+    emit RemovePromotions(promotions);
   }
 
   function setBrushDistributionPercentages(
@@ -646,7 +654,6 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint8 brushDevPercentage
   ) external onlyOwner {
     require(brushBurntPercentage + brushTreasuryPercentage + brushDevPercentage == 100, PercentNotTotal100());
-
     _brushBurntPercentage = brushBurntPercentage;
     _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;

@@ -336,12 +336,12 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct PromotionInfoInput",
-        "name": "promotionInfo",
-        "type": "tuple"
+        "internalType": "struct PromotionInfoInput[]",
+        "name": "promotionInfos",
+        "type": "tuple[]"
       }
     ],
-    "name": "AddPromotion",
+    "name": "AddPromotions",
     "type": "event"
   },
   {
@@ -355,12 +355,12 @@
       },
       {
         "indexed": false,
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
+        "internalType": "enum Promotion[]",
+        "name": "promotions",
+        "type": "uint8[]"
       }
     ],
-    "name": "ClearPlayerPromotion",
+    "name": "ClearPlayerPromotions",
     "type": "event"
   },
   {
@@ -510,12 +510,12 @@
           }
         ],
         "indexed": false,
-        "internalType": "struct PromotionInfoInput",
-        "name": "promotionInfo",
-        "type": "tuple"
+        "internalType": "struct PromotionInfoInput[]",
+        "name": "promotionInfos",
+        "type": "tuple[]"
       }
     ],
-    "name": "EditPromotion",
+    "name": "EditPromotions",
     "type": "event"
   },
   {
@@ -610,12 +610,12 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
+        "internalType": "enum Promotion[]",
+        "name": "promotions",
+        "type": "uint8[]"
       }
     ],
-    "name": "RemovePromotion",
+    "name": "RemovePromotions",
     "type": "event"
   },
   {
@@ -827,12 +827,12 @@
             "type": "uint32[]"
           }
         ],
-        "internalType": "struct PromotionInfoInput",
+        "internalType": "struct PromotionInfoInput[]",
         "name": "promotionInfoInput",
-        "type": "tuple"
+        "type": "tuple[]"
       }
     ],
-    "name": "addPromotion",
+    "name": "addPromotions",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1010,12 +1010,12 @@
             "type": "uint32[]"
           }
         ],
-        "internalType": "struct PromotionInfoInput",
-        "name": "promotionInfoInput",
-        "type": "tuple"
+        "internalType": "struct PromotionInfoInput[]",
+        "name": "promotionInfoInputs",
+        "type": "tuple[]"
       }
     ],
-    "name": "editPromotion",
+    "name": "editPromotions",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1477,12 +1477,12 @@
   {
     "inputs": [
       {
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
+        "internalType": "enum Promotion[]",
+        "name": "promotions",
+        "type": "uint8[]"
       }
     ],
-    "name": "removePromotion",
+    "name": "removePromotions",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1525,9 +1525,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "enum Promotion",
-        "name": "promotion",
-        "type": "uint8"
+        "internalType": "enum Promotion[]",
+        "name": "promotions",
+        "type": "uint8[]"
       }
     ],
     "name": "testClearPlayerPromotion",
