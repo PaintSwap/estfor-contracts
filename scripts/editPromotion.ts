@@ -60,7 +60,7 @@ async function main() {
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
     brushCostMissedDay: parseEther("25"),
-    brushCost: "0",
+    tokenCost: "0",
     redeemCodeLength: 0,
     adminOnly: false,
     promotionTiedToUser: false,

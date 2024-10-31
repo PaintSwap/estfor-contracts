@@ -221,7 +221,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "brushCost",
+            "name": "tokenCost",
             "type": "uint256"
           },
           {
@@ -395,7 +395,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "brushCost",
+            "name": "tokenCost",
             "type": "uint256"
           },
           {
@@ -598,7 +598,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "brushCost",
+        "name": "tokenCost",
         "type": "uint256"
       }
     ],
@@ -713,7 +713,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "brushCost",
+            "name": "tokenCost",
             "type": "uint256"
           },
           {
@@ -896,7 +896,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "brushCost",
+            "name": "tokenCost",
             "type": "uint256"
           },
           {
@@ -1059,7 +1059,7 @@
           },
           {
             "internalType": "uint24",
-            "name": "brushCost",
+            "name": "tokenCost",
             "type": "uint24"
           },
           {

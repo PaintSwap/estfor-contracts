@@ -373,23 +373,23 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     }
   }
 
-  function _pay(uint256 brushCost) private {
-    if (brushCost == 0) {
+  function _pay(uint256 tokenCost) private {
+    if (tokenCost == 0) {
       return;
     }
 
     address[] memory recipients = new address[](2);
     uint256[] memory amounts = new uint256[](2);
     recipients[0] = _treasury;
-    amounts[0] = (brushCost * _brushTreasuryPercentage) / 100;
+    amounts[0] = (tokenCost * _brushTreasuryPercentage) / 100;
 
     recipients[1] = _dev;
-    amounts[1] = (brushCost * _brushDevPercentage) / 100;
+    amounts[1] = (tokenCost * _brushDevPercentage) / 100;
 
     _brush.transferFromBulk(_msgSender(), recipients, amounts);
 
     if (_brushBurntPercentage != 0) {
-      _brush.burnFrom(_msgSender(), (brushCost * _brushBurntPercentage) / 100);
+      _brush.burnFrom(_msgSender(), (tokenCost * _brushBurntPercentage) / 100);
     }
   }
 

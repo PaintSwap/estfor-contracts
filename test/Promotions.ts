@@ -21,7 +21,7 @@ type PromotionInfoInput = {
   endTime: number; // Exclusive
   numDailyRandomItemsToPick: number; // Number of items to pick
   minTotalXP: number; // Minimum xp required to claim
-  brushCost: bigint; // Cost in brush to start the promotion, max 16mil
+  tokenCost: bigint; // Cost in brush to start the promotion, max 16mil
   redeemCodeLength: number; // Length of the redeem code
   adminOnly: boolean; // Only admins can mint the promotion, like for 1kin (Not used yet)
   promotionTiedToUser: boolean; // If the promotion is tied to a user
@@ -127,7 +127,7 @@ describe("Promotions", function () {
       numDaysHitNeededForStreakBonus: 0,
       numRandomStreakBonusItemsToPick1: 0,
       numRandomStreakBonusItemsToPick2: 0,
-      brushCost: 0n,
+      tokenCost: 0n,
       randomStreakBonusItemTokenIds1: [],
       randomStreakBonusAmounts1: [],
       randomStreakBonusItemTokenIds2: [],
@@ -353,7 +353,7 @@ describe("Promotions", function () {
       it("Brush cost to enter promotion", async function () {
         const {promotions, playerId, brush, alice, treasury, dev, world, mockVRF} = await loadFixture(playersFixture);
         let promotion = await getBasicSingleMintPromotion();
-        promotion = {...promotion, brushCost: parseEther("1")};
+        promotion = {...promotion, tokenCost: parseEther("1")};
         await promotions.addPromotion(promotion);
         await requestAndFulfillRandomWords(world, mockVRF);
         await brush.connect(alice).approve(promotions, parseEther("1"));
@@ -389,7 +389,7 @@ describe("Promotions", function () {
         numDailyRandomItemsToPick: 1,
         isMultiday: true,
         brushCostMissedDay: "0",
-        brushCost: 0n,
+        tokenCost: 0n,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
         numRandomStreakBonusItemsToPick1: 0,
@@ -764,7 +764,7 @@ describe("Promotions", function () {
           numDailyRandomItemsToPick: 1,
           isMultiday: true,
           brushCostMissedDay: "0",
-          brushCost: 0n,
+          tokenCost: 0n,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 1,
           numRandomStreakBonusItemsToPick1: 1,
@@ -940,7 +940,7 @@ describe("Promotions", function () {
           numDailyRandomItemsToPick: 1,
           isMultiday: true,
           brushCostMissedDay: "0",
-          brushCost: 0n,
+          tokenCost: 0n,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 2,
           numRandomStreakBonusItemsToPick1: 1,
@@ -1126,7 +1126,7 @@ describe("Promotions", function () {
         const {promotions, playerId, brush, alice, treasury, dev} = await loadFixture(promotionFixture);
 
         let promotion = await getStreakBonusPromotion();
-        promotion = {...promotion, brushCost: parseEther("1")};
+        promotion = {...promotion, tokenCost: parseEther("1")};
 
         await promotions.addPromotion(promotion);
         await brush.connect(alice).approve(promotions, parseEther("1"));

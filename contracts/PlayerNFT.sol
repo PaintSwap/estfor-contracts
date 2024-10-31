@@ -39,7 +39,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   event EditNameCost(uint256 newCost);
   event UpgradePlayerCost(uint256 newCost);
   event SetAvatars(uint256[] avatarIds, AvatarInfo[] avatarInfos);
-  event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId, uint256 brushCost);
+  event UpgradePlayerAvatar(uint256 playerId, uint256 newAvatarId, uint256 tokenCost);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
@@ -176,9 +176,9 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   function _upgradePlayer(uint256 playerId, uint24 newAvatarId) private {
     _playerInfos[playerId].avatarId = newAvatarId;
     _players.upgradePlayer(playerId);
-    uint256 brushCost = _upgradePlayerCost;
-    _pay(brushCost);
-    emit UpgradePlayerAvatar(playerId, newAvatarId, brushCost);
+    uint256 tokenCost = _upgradePlayerCost;
+    _pay(tokenCost);
+    emit UpgradePlayerAvatar(playerId, newAvatarId, tokenCost);
   }
 
   function editPlayer(
@@ -210,10 +210,10 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     emit EditPlayer(playerId, _msgSender(), trimmedName, amountPaid, discord, twitter, telegram, upgrade);
   }
 
-  function _pay(uint256 brushCost) private {
-    _brush.transferFrom(msg.sender, _treasury, (brushCost * _brushTreasuryPercentage) / 100);
-    _brush.transferFrom(msg.sender, _dev, (brushCost * _brushDevPercentage) / 100);
-    _brush.burnFrom(msg.sender, (brushCost * _brushBurntPercentage) / 100);
+  function _pay(uint256 tokenCost) private {
+    _brush.transferFrom(msg.sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
+    _brush.transferFrom(msg.sender, _dev, (tokenCost * _brushDevPercentage) / 100);
+    _brush.burnFrom(msg.sender, (tokenCost * _brushBurntPercentage) / 100);
   }
 
   function _mintStartingItems(address from, uint256 playerId, uint256 avatarId, bool makeActive) private {

@@ -28,7 +28,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256[] itemTokenIds,
     uint256[] amounts,
     uint256[] daysRedeemed,
-    uint256 brushCost
+    uint256 tokenCost
   );
 
   event AddPromotion(PromotionInfoInput promotionInfo);
@@ -289,8 +289,8 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     // Check they have paid or have an evolved hero if the promotion requires it
     PromotionInfo storage promotionInfo = _activePromotions[promotion];
     if (!hasClaimedAny(playerId, promotion)) {
-      if (promotionInfo.brushCost != 0) {
-        _pay(promotionInfo.brushCost * 1 ether);
+      if (promotionInfo.tokenCost != 0) {
+        _pay(promotionInfo.tokenCost * 1 ether);
       } else {
         require(
           !promotionInfo.evolvedHeroOnly || IPlayers(_itemNFT.getPlayersAddress()).isPlayerUpgraded(playerId),
@@ -580,10 +580,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _pay(uint256 brushCost) private {
-    require(_brush.transferFrom(msg.sender, _treasury, (brushCost * _brushTreasuryPercentage) / 100), NotEnoughBrush());
-    require(_brush.transferFrom(msg.sender, _dev, (brushCost * _brushDevPercentage) / 100), NotEnoughBrush());
-    _brush.burnFrom(msg.sender, (brushCost * _brushBurntPercentage) / 100);
+  function _pay(uint256 tokenCost) private {
+    require(_brush.transferFrom(msg.sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100), NotEnoughBrush());
+    require(_brush.transferFrom(msg.sender, _dev, (tokenCost * _brushDevPercentage) / 100), NotEnoughBrush());
+    _brush.burnFrom(msg.sender, (tokenCost * _brushBurntPercentage) / 100);
   }
 
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.

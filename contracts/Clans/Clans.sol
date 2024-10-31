@@ -722,10 +722,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanOwnershipTransferred(clanId, playerId);
   }
 
-  function _pay(uint256 brushCost) private {
-    _brush.burnFrom(_msgSender(), (brushCost * _brushBurntPercentage) / 100);
-    _brush.transferFrom(_msgSender(), _treasury, (brushCost * _brushTreasuryPercentage) / 100);
-    _brush.transferFrom(_msgSender(), _dev, (brushCost * _brushDevPercentage) / 100);
+  function _pay(uint256 tokenCost) private {
+    _brush.burnFrom(_msgSender(), (tokenCost * _brushBurntPercentage) / 100);
+    _brush.transferFrom(_msgSender(), _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
+    _brush.transferFrom(_msgSender(), _dev, (tokenCost * _brushDevPercentage) / 100);
   }
 
   function _upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) private {

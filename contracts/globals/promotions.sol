@@ -32,7 +32,7 @@ struct PromotionInfoInput {
   uint40 endTime; // Exclusive
   uint8 numDailyRandomItemsToPick; // Number of items to pick
   uint40 minTotalXP; // Minimum xp required to claim
-  uint256 brushCost; // Cost in brush to start the promotion, max 16mil
+  uint256 tokenCost; // Cost in brush to start the promotion, max 16mil
   // Special promotion specific (like 1kin)
   uint8 redeemCodeLength; // Length of the redeem code
   bool adminOnly; // Only admins can mint the promotion, like for 1kin (Not used yet)
@@ -67,7 +67,7 @@ struct PromotionInfo {
   uint8 numDays;
   uint8 numDailyRandomItemsToPick; // Number of items to pick
   uint40 minTotalXP; // Minimum xp required to claim
-  uint24 brushCost; // Cost in brush to mint the promotion (in ether), max 16mil
+  uint24 tokenCost; // Cost in brush to mint the promotion (in ether), max 16mil
   // Special promotion specific (like 1kin), could pack these these later
   uint8 redeemCodeLength; // Length of the redeem code
   bool adminOnly; // Only admins can mint the promotion, like for 1kin

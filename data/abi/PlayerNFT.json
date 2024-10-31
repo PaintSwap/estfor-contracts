@@ -656,7 +656,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "brushCost",
+        "name": "tokenCost",
         "type": "uint256"
       }
     ],

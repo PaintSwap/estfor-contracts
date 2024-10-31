@@ -45,7 +45,7 @@ async function main() {
     numDailyRandomItemsToPick: 1,
     isMultiday: true,
     brushCostMissedDay: parseEther("25"),
-    brushCost: "0",
+    tokenCost: 0n,
     redeemCodeLength: 0,
     adminOnly: false,
     promotionTiedToUser: false,
@@ -59,7 +59,7 @@ async function main() {
     randomStreakBonusItemTokenIds1: [
       EstforConstants.HALLOWEEN_BONUS_1,
       EstforConstants.HALLOWEEN_BONUS_2,
-      EstforConstants.HALLOWEEN_BONUS_3,
+      EstforConstants.HALLOWEEN_BONUS_3
     ],
     randomStreakBonusAmounts1: [1, 1, 1],
     randomStreakBonusItemTokenIds2: [],
@@ -69,7 +69,7 @@ async function main() {
     guaranteedItemTokenIds: [],
     guaranteedAmounts: [],
     randomItemTokenIds: [],
-    randomAmounts: [],
+    randomAmounts: []
   });
 }
 

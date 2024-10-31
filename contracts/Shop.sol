@@ -124,9 +124,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   function buy(address to, uint16 tokenId, uint256 quantity) external {
     uint256 price = _shopItems[tokenId];
     require(price != 0, ItemCannotBeBought());
-    uint256 brushCost = price * quantity;
+    uint256 tokenCost = price * quantity;
     // Pay
-    (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(brushCost);
+    (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
     _brush.transferFromBulk(msg.sender, accounts, amounts);
     _itemNFT.mint(to, tokenId, quantity);
     emit Buy(msg.sender, to, tokenId, quantity, price);
@@ -136,18 +136,18 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint256 iter = tokenIds.length;
     require(iter != 0, LengthEmpty());
     require(iter == quantities.length, LengthMismatch());
-    uint256 brushCost;
+    uint256 tokenCost;
     uint256[] memory prices = new uint256[](iter);
     while (iter != 0) {
       iter--;
       uint256 price = _shopItems[uint16(tokenIds[iter])];
       require(price != 0, ItemCannotBeBought());
-      brushCost += price * quantities[iter];
+      tokenCost += price * quantities[iter];
       prices[iter] = price;
     }
 
     // Pay
-    (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(brushCost);
+    (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
     _brush.transferFromBulk(msg.sender, accounts, amounts);
     _itemNFT.mintBatch(to, tokenIds, quantities);
     emit BuyBatch(msg.sender, to, tokenIds, quantities, prices);
@@ -232,13 +232,13 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _buyDistribution(
-    uint256 brushCost
+    uint256 tokenCost
   ) private view returns (address[] memory accounts, uint256[] memory amounts) {
     accounts = new address[](3);
     amounts = new uint256[](3);
-    amounts[0] = (brushCost * _brushBurntPercentage) / 100;
-    amounts[1] = (brushCost * _brushTreasuryPercentage) / 100;
-    amounts[2] = (brushCost * _brushDevPercentage) / 100;
+    amounts[0] = (tokenCost * _brushBurntPercentage) / 100;
+    amounts[1] = (tokenCost * _brushTreasuryPercentage) / 100;
+    amounts[2] = (tokenCost * _brushDevPercentage) / 100;
     accounts[0] = address(0);
     accounts[1] = address(_treasury);
     accounts[2] = _dev;

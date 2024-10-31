@@ -59,7 +59,7 @@ library PromotionsLibrary {
     // TODO: Special handling for now, only allowing 1 item to be picked
     require(promotionInfoInput.numDailyRandomItemsToPick == 1, InvalidPromotion());
     // Check brush input is valid
-    require(promotionInfoInput.brushCost % 1 ether == 0, InvalidBrushCost());
+    require(promotionInfoInput.tokenCost % 1 ether == 0, InvalidBrushCost());
     // start and endTime must be factors of 24 hours apart
     require(
       (promotionInfoInput.endTime - promotionInfoInput.startTime) % 1 days == 0,
@@ -165,7 +165,7 @@ library PromotionsLibrary {
         numDailyRandomItemsToPick: promotionInfoInput.numDailyRandomItemsToPick,
         minTotalXP: promotionInfoInput.minTotalXP,
         evolvedHeroOnly: promotionInfoInput.evolvedHeroOnly,
-        brushCost: uint24(promotionInfoInput.brushCost / 1 ether),
+        tokenCost: uint24(promotionInfoInput.tokenCost / 1 ether),
         redeemCodeLength: promotionInfoInput.redeemCodeLength,
         adminOnly: promotionInfoInput.adminOnly,
         promotionTiedToUser: promotionInfoInput.promotionTiedToUser,
