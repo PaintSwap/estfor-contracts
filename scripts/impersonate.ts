@@ -6,11 +6,13 @@ import {
   INSTANT_VRF_ACTIONS_ADDRESS,
   ITEM_NFT_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
+  ORACLE_ADDRESS,
   PET_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
   PROMOTIONS_ADDRESS,
   QUESTS_ADDRESS,
+  SAMWITCH_VRF_ADDRESS,
   SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
   WORLD_ADDRESS
@@ -36,6 +38,7 @@ import {
   WorldLibrary
 } from "../typechain-types";
 import {LockedBankVault} from "@paintswap/estfor-definitions/types";
+import {makeSigner} from "../test/Players/utils";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -43,6 +46,7 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
+
   const player = await ethers.getImpersonatedSigner("0x8ca12fb5438252ab8efa25d3fb34166eda1c17ed");
   const playerId = 3;
   const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
@@ -192,6 +196,18 @@ async function main() {
 
   const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
   console.log(pendingQueuedActionState);
+
+  /* When trying to fix a VRF issue
+  const world = await ethers.getContractAt("World", WORLD_ADDRESS);
+  const samwitchVRFSigner = await makeSigner(SAMWITCH_VRF_ADDRESS);
+  const tx = await world
+    .connect(samwitchVRFSigner)
+    .fulfillRandomWords(
+      ethers.toBeHex("48152596258688856331046453104979743108144756013227431252859358250059933127453", 32),
+      [132342342342342343n]
+    );
+  await tx.wait();
+*/
 }
 
 main().catch((error) => {

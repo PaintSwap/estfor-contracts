@@ -914,8 +914,9 @@ export function checkPendingQueuedActionState(
   expect(pendingQueuedActionState.dailyRewardAmounts.length).to.eq(0);
 }
 
-export const makeSigner = async (contract: BaseContract): Promise<HardhatEthersSigner> => {
-  const signer = await ethers.getImpersonatedSigner(await contract.getAddress());
+export const makeSigner = async (account: BaseContract | string): Promise<HardhatEthersSigner> => {
+  const address = typeof account === "string" ? account : await account.getAddress();
+  const signer = await ethers.getImpersonatedSigner(address);
   await ethers.provider.send("hardhat_setBalance", [signer.address, "0x100000000000000000"]);
   return signer;
 };

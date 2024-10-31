@@ -167,6 +167,7 @@ async function main() {
   console.log(`brush = "${(await brush.getAddress()).toLowerCase()}"`);
   console.log(`wftm = "${(await wftm.getAddress()).toLowerCase()}"`);
   console.log(`oracle = "${oracleAddress.toLowerCase()}"`);
+  console.log(`samWitchVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
 
   const timeout = 600 * 1000; // 10 minutes
 
