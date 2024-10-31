@@ -1396,7 +1396,7 @@ describe("Non-Combat Actions", function () {
 
       await ethers.provider.send("evm_increaseTime", [25 * 3600]);
       await ethers.provider.send("evm_mine", []);
-      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWordsSeeded(world, mockVRF, 7_000_001n);
       await players.connect(alice).processActions(playerId);
 
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.THIEVING)).to.eq(xpPerHour * numRepeats * numHours);
