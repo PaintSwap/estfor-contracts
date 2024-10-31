@@ -144,10 +144,10 @@ export function generateUniqueBitPositions(
   const hashCount = calculatedHashCount < 256n ? calculatedHashCount : 255n;
 
   for (const item of items) {
-    const itemHash = ethers.keccak256(ethers.solidityPacked(["string"], [item]));
+    const itemHash = ethers.solidityPackedKeccak256(["string"], [item.trim().toLowerCase()]);
 
     for (let i = 0n; i < hashCount; i++) {
-      const position = BigInt(ethers.keccak256(ethers.solidityPacked(["bytes32", "uint8"], [itemHash, i]))) % bitCount;
+      const position = BigInt(ethers.solidityPackedKeccak256(["bytes32", "uint8"], [itemHash, i])) % bitCount;
       positions.add(position); // Automatically prevents duplicate entries
     }
   }
