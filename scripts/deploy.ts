@@ -94,6 +94,7 @@ import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
 import {parseEther} from "ethers";
 import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
+import {allPassiveActions} from "./data/passiveActions";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -131,7 +132,6 @@ async function main() {
     } else if (network.chainId == 64165n) {
       // Sonic testnet. Later this should have a bridged version of brush
       brush = await MockBrushToken.deploy();
-      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.waitForDeployment();
 
       tx = await brush.mint(owner, parseEther("10000000"));
@@ -163,6 +163,10 @@ async function main() {
       throw Error("Not a supported network");
     }
   }
+
+  console.log(`brush = "${(await brush.getAddress()).toLowerCase()}"`);
+  console.log(`wftm = "${(await wftm.getAddress()).toLowerCase()}"`);
+  console.log(`oracle = "${oracleAddress.toLowerCase()}"`);
 
   const timeout = 600 * 1000; // 10 minutes
 
@@ -586,6 +590,7 @@ async function main() {
     }
   )) as unknown as EggInstantVRFActionStrategy;
   await eggInstantVRFActionStrategy.waitForDeployment();
+  console.log(`eggInstantVRFActionStrategy = "${(await eggInstantVRFActionStrategy.getAddress()).toLowerCase()}"`);
 
   const BankRelay = await ethers.getContractFactory("BankRelay");
   const bankRelay = (await upgrades.deployProxy(BankRelay, [await clans.getAddress()], {
@@ -1032,6 +1037,11 @@ async function main() {
     await tx.wait();
     console.log("Add instant vrf actions chunk ", i);
   }
+
+  // Add passive actions
+  tx = await passiveActions.addActions(allPassiveActions);
+  await tx.wait();
+  console.log("Add passive actions");
 
   // Add base pets
   const basePetChunkSize = 20;

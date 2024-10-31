@@ -12,14 +12,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.EGG_TIER1,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER2,
@@ -32,14 +33,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.EGG_TIER2,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER3,
@@ -52,14 +54,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.EGG_TIER3,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER4,
@@ -72,14 +75,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.EGG_TIER4,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER5,
@@ -92,14 +96,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.EGG_TIER5,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER2,
@@ -112,14 +117,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_1_TIER2,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER3,
@@ -132,14 +138,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_1_TIER3,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER4,
@@ -152,14 +159,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_1_TIER4,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER5,
@@ -172,14 +180,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_1_TIER5,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER2,
@@ -192,14 +201,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_2_TIER2,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER3,
@@ -212,14 +222,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_2_TIER3,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER4,
@@ -232,14 +243,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_2_TIER4,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER5,
@@ -252,14 +264,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_2_TIER5,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER2,
@@ -272,14 +285,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_3_TIER2,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER3,
@@ -292,14 +306,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_3_TIER3,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER4,
@@ -312,14 +327,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_3_TIER4,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER5,
@@ -332,14 +348,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_3_TIER5,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER2,
@@ -352,14 +369,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_4_TIER2,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER3,
@@ -372,14 +390,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_4_TIER3,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER4,
@@ -392,14 +411,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_4_TIER4,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER5,
@@ -412,14 +432,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.SECRET_EGG_4_TIER5,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER2,
@@ -432,14 +453,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.ANNIV1_EGG_TIER2,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER3,
@@ -452,14 +474,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.ANNIV1_EGG_TIER3,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4,
@@ -472,14 +495,15 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.ANNIV1_EGG_TIER4,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
+    randomRewards: []
   },
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER5,
@@ -492,13 +516,14 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
+      isAvailable: true
     },
     guaranteedRewards: [
       {
         itemTokenId: EstforConstants.ANNIV1_EGG_TIER5,
-        rate: 1,
-      },
+        rate: 1
+      }
     ],
-    randomRewards: [],
-  },
+    randomRewards: []
+  }
 ];
