@@ -11,11 +11,15 @@ import {IBrushToken} from "./interfaces/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
+import {BloomFilter} from "./libraries/BloomFilter.sol";
+
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
 contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
+  using BloomFilter for BloomFilter.Filter;
+
   event NewPlayer(
     uint256 playerId,
     uint256 avatarId,
@@ -66,6 +70,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   error TwitterInvalidCharacters();
   error LengthMismatch();
   error PercentNotTotal100();
+  error HeroNameIsReserved(string reservedName);
 
   struct PlayerInfo {
     uint24 avatarId;
@@ -97,6 +102,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
   mapping(uint256 playerId => string name) private _names;
   mapping(string name => bool exists) private _lowercaseNames;
+  BloomFilter.Filter private _reservedHeroNames;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -140,6 +146,8 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     _royaltyFee = 30; // 3%
     _royaltyReceiver = royaltyReceiver;
     _isBeta = isBeta;
+
+    _reservedHeroNames._initialize();
   }
 
   function mint(
@@ -154,6 +162,9 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     address from = _msgSender();
     uint256 playerId = _nextPlayerId++;
     (string memory trimmedName, ) = _setName(playerId, heroName);
+
+    require(!_reservedHeroNames._probablyContainsString(trimmedName), HeroNameIsReserved(trimmedName));
+
     _checkSocials(discord, twitter, telegram);
     emit NewPlayer(playerId, avatarId, trimmedName, from, discord, twitter, telegram, upgrade);
     _checkMintingAvatar(avatarId);
@@ -393,6 +404,20 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
   function setInitialLevel(uint8 initialLevel) public onlyOwner {
     emit SetInitialLevel(initialLevel);
+  }
+
+  function setReservedHeroNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
+    _reservedHeroNames._initialize(itemCount, positions);
+  }
+
+  function isHeroNameReserved(string calldata heroName) public view returns (bool) {
+    return _reservedHeroNames._probablyContainsString(heroName);
+  }
+
+  function addReservedHeroNames(string[] calldata names) external onlyOwner {
+    for (uint256 i = 0; i < names.length; i++) {
+      _reservedHeroNames._addString(names[i]);
+    }
   }
 
   function setBrushDistributionPercentages(

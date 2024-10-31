@@ -112,5 +112,33 @@ export const timeTravel = async (seconds: number | bigint) => {
   await ethers.provider.send("evm_mine", []);
 };
 
+/**
+ * Generates unique bit positions for each item in the Bloom filter.
+ * @param items Array of items to add to the Bloom filter (strings).
+ * @param existing Set of unique bit positions for the Bloom filter.
+ * @param bitCount Number of bits in the Bloom filter.
+ * @returns Set of unique bit positions for the Bloom filter.
+ */
+export function generateUniqueBitPositions(
+  items: string[],
+  existing: bigint[] = [],
+  bitCount: bigint = 65536n
+): bigint[] {
+  const positions = new Set<bigint>(existing);
+  const calculatedHashCount = (bitCount * 144n) / (BigInt(items.length) * 100n) + 1n;
+  const hashCount = calculatedHashCount < 256n ? calculatedHashCount : 255n;
+
+  for (const item of items) {
+    const itemHash = ethers.keccak256(ethers.solidityPacked(["string"], [item]));
+
+    for (let i = 0n; i < hashCount; i++) {
+      const position = BigInt(ethers.keccak256(ethers.solidityPacked(["bytes32", "uint8"], [itemHash, i]))) % bitCount;
+      positions.add(position); // Automatically prevents duplicate entries
+    }
+  }
+
+  return [...positions];
+}
+
 // see Initilizable.sol. keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Initializable")) - 1)) & ~bytes32(uint256(0xff))
 export const initializerSlot = "0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00";

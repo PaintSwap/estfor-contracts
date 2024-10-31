@@ -7,6 +7,7 @@ import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
 import {parseEther} from "ethers";
+import {generateUniqueBitPositions} from "./utils";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
@@ -55,6 +56,42 @@ describe("PlayerNFT", function () {
       playerNFT,
       "NameAlreadyExists"
     );
+  });
+
+  it("Mint should not allow using a reserved hero name", async function () {
+    const {playerNFT, alice} = await loadFixture(deployContracts);
+
+    const reservedName = "Reserved Name";
+    const secondReservedName = "Reserved Name 2";
+    const unreservedName = "Unreserved Name";
+    await playerNFT.addReservedHeroNames([reservedName]);
+
+    const isProbablyReserved = await playerNFT.isHeroNameReserved(reservedName);
+    expect(isProbablyReserved).to.be.true;
+
+    const isNotReserved = await playerNFT.isHeroNameReserved(unreservedName);
+    expect(isNotReserved).to.be.false;
+
+    // should get custom error HeroNameIsReserved(name) if name is reserved
+    await expect(createPlayer(playerNFT, 1, alice, reservedName, true)).to.be.revertedWithCustomError(
+      playerNFT,
+      "HeroNameIsReserved"
+    );
+
+    const isSecondNameReserved1 = await playerNFT.isHeroNameReserved(secondReservedName);
+    expect(isSecondNameReserved1).to.be.false;
+
+    const reservedNames = [reservedName, secondReservedName]; // Replace with actual names if needed
+    await playerNFT.setReservedHeroNames(reservedNames.length, generateUniqueBitPositions(reservedNames));
+
+    const isReservedNameStillReserved = await playerNFT.isHeroNameReserved(reservedName);
+    expect(isReservedNameStillReserved).to.be.true;
+
+    const isSecondNameReserved2 = await playerNFT.isHeroNameReserved(secondReservedName);
+    expect(isSecondNameReserved2).to.be.true;
+
+    // this should work
+    await createPlayer(playerNFT, 1, alice, unreservedName, true);
   });
 
   it("Mint a standard player", async function () {
