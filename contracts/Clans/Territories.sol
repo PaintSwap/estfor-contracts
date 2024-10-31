@@ -494,13 +494,10 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     ClanInfo storage clanInfo = _clanInfos[clanId];
     // Must have at least 1 combatant
     require(clanInfo.playerIds.length != 0, NoCombatants());
-    require(!clanInfo.currentlyAttacking, CannotChangeCombatantsDuringAttack());
+    require(!clanInfo.currentlyAttacking, CannotAttackWhileStillAttacking());
     require(clanInfo.attackingCooldownTimestamp <= block.timestamp, ClanAttackingCooldown());
     require(_clanInfos[defendingClanId].blockAttacksTimestamp <= block.timestamp, ClanIsBlockingAttacks());
-    require(clanInfo.playerIds.length != 0, CannotAttackWhileStillAttacking());
-
-    // TODO - unreachable! (CannotChangeCombatantsDuringAttack)
-    require(!clanInfo.currentlyAttacking, CannotAttackWhileStillAttacking());
+    require(clanInfo.playerIds.length != 0, CannotChangeCombatantsDuringAttack());
   }
 
   function _requestRandomWords() private returns (bytes32 requestId) {
