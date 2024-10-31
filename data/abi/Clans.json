@@ -86,6 +86,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "ClanNameIsReserved",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "DiscordInvalidCharacters",
     "type": "error"
@@ -337,6 +348,11 @@
   {
     "inputs": [],
     "name": "UnsupportedNFTType",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroHashCount",
     "type": "error"
   },
   {
@@ -1106,6 +1122,19 @@
       }
     ],
     "name": "acceptJoinRequests",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string[]",
+        "name": "names",
+        "type": "string[]"
+      }
+    ],
+    "name": "addReservedClanNames",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1886,6 +1915,25 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "clanName",
+        "type": "string"
+      }
+    ],
+    "name": "isClanNameReserved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
@@ -2208,6 +2256,24 @@
       }
     ],
     "name": "setPlayers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "positions",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setReservedClanNames",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

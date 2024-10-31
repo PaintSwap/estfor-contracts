@@ -303,6 +303,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "PetNameIsReserved",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "PlayerDoesNotOwnPet",
     "type": "error"
@@ -366,6 +377,11 @@
       }
     ],
     "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroHashCount",
     "type": "error"
   },
   {
@@ -1340,6 +1356,25 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "petName",
+        "type": "string"
+      }
+    ],
+    "name": "isPetNameReserved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "to",
         "type": "address"
@@ -1615,6 +1650,24 @@
       }
     ],
     "name": "setPlayers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "positions",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setReservedPetNames",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

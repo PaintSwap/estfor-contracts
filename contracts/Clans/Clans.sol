@@ -15,9 +15,13 @@ import {IMarketplaceWhitelist} from "../interfaces/IMarketplaceWhitelist.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
+import {BloomFilter} from "../libraries/BloomFilter.sol";
+
 import {ClanRank} from "../globals/clans.sol";
 
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
+  using BloomFilter for BloomFilter.Filter;
+
   event ClanCreated(uint256 clanId, uint256 playerId, string[] clanInfo, uint256 imageId, uint256 tierId);
   event SetClanRank(uint256 clanId, uint256 playerId, ClanRank clan);
   event InviteSent(uint256 clanId, uint256 playerId, uint256 fromPlayerId);
@@ -101,6 +105,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error PercentNotTotal100();
   error PlayersAlreadySet();
   error BankFactoryAlreadySet();
+  error ClanNameIsReserved(string name);
 
   struct Clan {
     uint80 owner;
@@ -155,6 +160,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(uint256 id => Tier tier) private _tiers;
   mapping(string name => bool exists) private _lowercaseNames;
   mapping(uint256 clanId => uint40 timestampLeft) private _ownerlessClanTimestamps; // timestamp
+  BloomFilter.Filter private _reservedClanNames; // TODO: remove 30 days after launch
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
@@ -207,6 +213,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
     setEditNameCost(editNameCost);
     setInitialMMR(initialMMR);
+    _reservedClanNames._initialize();
   }
 
   function createClan(
@@ -618,6 +625,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     string memory oldName = EstforLibrary.toLower(_clans[clanId].name);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
+      require(
+        !_reservedClanNames._probablyContainsString(trimmedAndLowercaseName),
+        ClanNameIsReserved(trimmedAndLowercaseName)
+      );
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
@@ -898,6 +909,20 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+  }
+
+  function setReservedClanNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
+    _reservedClanNames._initialize(itemCount, positions);
+  }
+
+  function isClanNameReserved(string calldata clanName) public view returns (bool) {
+    return _reservedClanNames._probablyContainsString(EstforLibrary.toLower(clanName));
+  }
+
+  function addReservedClanNames(string[] calldata names) external onlyOwner {
+    for (uint256 i = 0; i < names.length; i++) {
+      _reservedClanNames._addString(EstforLibrary.toLower(names[i]));
+    }
   }
 
   // solhint-disable-next-line no-empty-blocks
