@@ -163,8 +163,6 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint256 playerId = _nextPlayerId++;
     (string memory trimmedName, ) = _setName(playerId, heroName);
 
-    require(!_reservedHeroNames._probablyContainsString(trimmedName), HeroNameIsReserved(trimmedName));
-
     _checkSocials(discord, twitter, telegram);
     emit NewPlayer(playerId, avatarId, trimmedName, from, discord, twitter, telegram, upgrade);
     _checkMintingAvatar(avatarId);
@@ -264,6 +262,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     string memory oldName = EstforLibrary.toLower(_names[playerId]);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
+      require(!_reservedHeroNames._probablyContainsString(trimmedName), HeroNameIsReserved(trimmedName));
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
