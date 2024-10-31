@@ -102,7 +102,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
   mapping(uint256 playerId => string name) private _names;
   mapping(string name => bool exists) private _lowercaseNames;
-  BloomFilter.Filter private _reservedHeroNames;
+  BloomFilter.Filter private _reservedHeroNames; // TODO: remove 30 days after launch
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -262,7 +262,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     string memory oldName = EstforLibrary.toLower(_names[playerId]);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      require(!_reservedHeroNames._probablyContainsString(trimmedName), HeroNameIsReserved(trimmedName));
+      require(!_reservedHeroNames._probablyContainsString(trimmedAndLowercaseName), HeroNameIsReserved(playerName));
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
@@ -410,12 +410,12 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   }
 
   function isHeroNameReserved(string calldata heroName) public view returns (bool) {
-    return _reservedHeroNames._probablyContainsString(heroName);
+    return _reservedHeroNames._probablyContainsString(EstforLibrary.toLower(heroName));
   }
 
   function addReservedHeroNames(string[] calldata names) external onlyOwner {
     for (uint256 i = 0; i < names.length; i++) {
-      _reservedHeroNames._addString(names[i]);
+      _reservedHeroNames._addString(EstforLibrary.toLower(names[i]));
     }
   }
 
