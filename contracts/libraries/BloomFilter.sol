@@ -31,7 +31,7 @@ library BloomFilter {
    * @param item Hash value of the item to add.
    */
   function _add(Filter storage filter, bytes32 item) internal {
-    if (filter.hashCount == 0) revert ZeroHashCount();
+    require(filter.hashCount != 0, ZeroHashCount());
     uint64 bitCount = filter.bitCount;
     for (uint8 i = 0; i < filter.hashCount; i++) {
       uint256 position = uint256(keccak256(abi.encodePacked(item, i))) % bitCount;
