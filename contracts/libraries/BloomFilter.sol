@@ -50,6 +50,30 @@ library BloomFilter {
   }
 
   /**
+   * @notice Removes a `bytes32` item from the filter by clearing bits in the bitmap.
+   * @param filter The Bloom filter to update.
+   * @param item Hash value of the item to remove.
+   */
+  function _remove(Filter storage filter, bytes32 item) internal {
+    require(filter.hashCount != 0, ZeroHashCount());
+    uint64 bitCount = filter.bitCount;
+    for (uint8 i = 0; i < filter.hashCount; i++) {
+      uint256 position = uint256(keccak256(abi.encodePacked(item, i))) % bitCount;
+      filter.bitmap.unset(position); // Clear the bit in the bitmap at the calculated position
+    }
+  }
+
+  /**
+   * @notice Removes a string from the filter by hashing it and clearing bits in the bitmap.
+   * @param filter The Bloom filter to update.
+   * @param item String to remove from the filter.
+   */
+  function _removeString(Filter storage filter, string memory item) internal {
+    bytes32 itemHash = keccak256(abi.encodePacked(item));
+    _remove(filter, itemHash);
+  }
+
+  /**
    * @notice Checks if a `bytes32` item is probably present in the filter or definitely not present.
    * @param filter The Bloom filter to check.
    * @param item Hash value of the item to check.
