@@ -23,7 +23,7 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
   mapping(address spender => bool) private _spenders;
 
   modifier onlySpenders() {
-    require(_isSpender(msg.sender), OnlySpenders());
+    require(_isSpender(_msgSender()), OnlySpenders());
     _;
   }
 
@@ -34,7 +34,7 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
 
   function initialize(IBrushToken brush) external initializer {
     __UUPSUpgradeable_init();
-    __Ownable_init(msg.sender);
+    __Ownable_init(_msgSender());
     _brush = brush;
   }
 

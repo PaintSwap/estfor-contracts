@@ -103,17 +103,13 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function liquidatePrices(uint16[] calldata tokenIds) external view returns (uint256[] memory prices) {
-    uint256 iter = tokenIds.length;
-    if (iter == 0) {
-      return prices;
-    }
-
-    uint256 totalBrushForItem = _totalBrushForItem();
-
-    prices = new uint256[](iter);
-    while (iter != 0) {
-      iter--;
-      prices[iter] = _liquidatePrice(tokenIds[iter], totalBrushForItem);
+    uint256 length = tokenIds.length;
+    if (length != 0) {
+      uint256 totalBrushForItem = _totalBrushForItem();
+      prices = new uint256[](length);
+      for (uint256 iter; iter < length; iter++) {
+        prices[iter] = _liquidatePrice(tokenIds[iter], totalBrushForItem);
+      }
     }
   }
 
@@ -124,9 +120,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint256 tokenCost = price * quantity;
     // Pay
     (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
-    _brush.transferFromBulk(msg.sender, accounts, amounts);
+    address sender = _msgSender();
+    _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mint(to, tokenId, quantity);
-    emit Buy(msg.sender, to, tokenId, quantity, price);
+    emit Buy(sender, to, tokenId, quantity, price);
   }
 
   function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
@@ -145,9 +142,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
     // Pay
     (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
-    _brush.transferFromBulk(msg.sender, accounts, amounts);
+    address sender = _msgSender();
+    _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mintBatch(to, tokenIds, quantities);
-    emit BuyBatch(msg.sender, to, tokenIds, quantities, prices);
+    emit BuyBatch(sender, to, tokenIds, quantities, prices);
   }
 
   function sell(uint16 tokenId, uint256 quantity, uint256 minExpectedBrush) external {
@@ -155,9 +153,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint256 totalBrush = price * quantity;
     _sell(tokenId, quantity, price);
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
-    _treasury.spend(msg.sender, totalBrush);
-    _itemNFT.burn(msg.sender, tokenId, quantity);
-    emit Sell(msg.sender, tokenId, quantity, price);
+    address sender = _msgSender();
+    _treasury.spend(sender, totalBrush);
+    _itemNFT.burn(sender, tokenId, quantity);
+    emit Sell(sender, tokenId, quantity, price);
   }
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
@@ -177,9 +176,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       _sell(tokenIds[iter], quantities[iter], prices[iter]);
     } while (iter != 0);
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
-    _treasury.spend(msg.sender, totalBrush);
-    _itemNFT.burnBatch(msg.sender, tokenIds, quantities);
-    emit SellBatch(msg.sender, tokenIds, quantities, prices);
+    address sender = _msgSender();
+    _treasury.spend(sender, totalBrush);
+    _itemNFT.burnBatch(sender, tokenIds, quantities);
+    emit SellBatch(sender, tokenIds, quantities, prices);
   }
 
   // Does not burn!

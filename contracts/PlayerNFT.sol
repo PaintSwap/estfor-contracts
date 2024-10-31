@@ -211,9 +211,10 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   }
 
   function _pay(uint256 tokenCost) private {
-    _brush.transferFrom(msg.sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
-    _brush.transferFrom(msg.sender, _dev, (tokenCost * _brushDevPercentage) / 100);
-    _brush.burnFrom(msg.sender, (tokenCost * _brushBurntPercentage) / 100);
+    address sender = _msgSender();
+    _brush.transferFrom(sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
+    _brush.transferFrom(sender, _dev, (tokenCost * _brushDevPercentage) / 100);
+    _brush.burnFrom(sender, (tokenCost * _brushBurntPercentage) / 100);
   }
 
   function _mintStartingItems(address from, uint256 playerId, uint256 avatarId, bool makeActive) private {

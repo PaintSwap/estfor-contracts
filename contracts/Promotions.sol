@@ -581,9 +581,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _pay(uint256 tokenCost) private {
-    require(_brush.transferFrom(msg.sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100), NotEnoughBrush());
-    require(_brush.transferFrom(msg.sender, _dev, (tokenCost * _brushDevPercentage) / 100), NotEnoughBrush());
-    _brush.burnFrom(msg.sender, (tokenCost * _brushBurntPercentage) / 100);
+    address sender = _msgSender();
+    require(_brush.transferFrom(sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100), NotEnoughBrush());
+    require(_brush.transferFrom(sender, _dev, (tokenCost * _brushDevPercentage) / 100), NotEnoughBrush());
+    _brush.burnFrom(sender, (tokenCost * _brushBurntPercentage) / 100);
   }
 
   // Takes into account the current day for multiday promotions unless outside the range in which case checks the final day bonus.

@@ -71,12 +71,12 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint16[3] private _clanBoostRewardItemTokenIds;
 
   modifier onlyPlayers() {
-    require(address(_players) == msg.sender, NotPlayers());
+    require(address(_players) == _msgSender(), NotPlayers());
     _;
   }
 
   modifier onlyWorld() {
-    require(_world == msg.sender, OnlyWorld());
+    require(_world == _msgSender(), OnlyWorld());
     _;
   }
 
