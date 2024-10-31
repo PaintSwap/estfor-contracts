@@ -103,17 +103,13 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function liquidatePrices(uint16[] calldata tokenIds) external view returns (uint256[] memory prices) {
-    uint256 iter = tokenIds.length;
-    if (iter == 0) {
-      return prices;
-    }
-
-    uint256 totalBrushForItem = _totalBrushForItem();
-
-    prices = new uint256[](iter);
-    while (iter != 0) {
-      iter--;
-      prices[iter] = _liquidatePrice(tokenIds[iter], totalBrushForItem);
+    uint256 length = tokenIds.length;
+    if (length != 0) {
+      uint256 totalBrushForItem = _totalBrushForItem();
+      prices = new uint256[](length);
+      for (uint256 iter; iter < length; iter++) {
+        prices[iter] = _liquidatePrice(tokenIds[iter], totalBrushForItem);
+      }
     }
   }
 
