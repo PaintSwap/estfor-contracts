@@ -690,7 +690,7 @@ describe("Shop", function () {
       expect(tokenAllocation.allocationRemaining).to.eq(parseEther("1") - parseEther("1") / 1000n);
     });
 
-    it("Unsellable greater than total supply should revert", async function () {
+    it("Unsellable greater than total supply should not revert", async function () {
       const {itemNFT, shop, treasury, brush, alice, sellingCutoffDuration, minItemQuantityBeforeSellsAllowed} =
         await loadFixture(deployContracts);
 
@@ -715,7 +715,9 @@ describe("Shop", function () {
       const numItems = 2n;
       const splitBrush = totalBrush / numItems;
       const priceShield = splitBrush / minItemQuantityBeforeSellsAllowed;
+      // confirm liquidate price(s) works
       expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.eq(priceShield);
+      expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD])).to.deep.eq([priceShield]);
 
       // Sell
       await expect(shop.connect(alice).sell(EstforConstants.BRONZE_SHIELD, 1, priceShield))
