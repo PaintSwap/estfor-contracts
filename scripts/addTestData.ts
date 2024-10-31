@@ -1,6 +1,6 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {QUEST_BURN_BAN} from "@paintswap/estfor-definitions/constants";
-import {ClanRank} from "@paintswap/estfor-definitions/types";
+import {ClanRank, OrderSide, TokenIdInfo} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {
   Bank,
@@ -11,6 +11,7 @@ import {
   ItemNFT,
   LockedBankVaults,
   MockBrushToken,
+  OrderBook,
   PlayerNFT,
   Players,
   Shop
@@ -19,6 +20,7 @@ import {createPlayer, isDevNetwork} from "./utils";
 import {parseEther} from "ethers";
 import {timeTravel} from "../test/utils";
 import {calculateClanBankAddress} from "../test/Clans/utils";
+import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
 
 export const addTestData = async (
   itemNFT: ItemNFT,
@@ -32,7 +34,8 @@ export const addTestData = async (
   bankRegistry: BankRegistry,
   bankRelay: BankRelay,
   lockedBankVaults: LockedBankVaults,
-  minItemQuantityBeforeSellsAllowed: bigint
+  minItemQuantityBeforeSellsAllowed: bigint,
+  orderBook: OrderBook
 ) => {
   const [owner, alice] = await ethers.getSigners();
 
@@ -311,4 +314,19 @@ export const addTestData = async (
   tx = await clans.inviteMembers(clanId, [alicePlayerId], playerId);
   await tx.wait();
   console.log("Re-invite Alice2");
+
+  // Make an orderbook update
+  const tokenId = EstforConstants.MAGIC_FIRE_STARTER;
+  const price = (allOrderBookTokenIdInfos.find((info) => info.tokenId === tokenId) as TokenIdInfo).tick;
+  const quantity = 1;
+  tx = await orderBook.connect(alice).limitOrders([
+    {
+      side: OrderSide.SELL,
+      tokenId,
+      price,
+      quantity
+    }
+  ]);
+  await tx.wait();
+  console.log("Make a limit order");
 };

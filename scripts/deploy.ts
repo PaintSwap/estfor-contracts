@@ -93,8 +93,8 @@ import {allInstantVRFActions} from "./data/instantVRFActions";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
 import {parseEther} from "ethers";
-import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
 import {allPassiveActions} from "./data/passiveActions";
+import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -321,7 +321,7 @@ async function main() {
 
   const maxOrdersPerPrice = 100;
   const OrderBook = await ethers.getContractFactory("OrderBook");
-  const orderbook = (await upgrades.deployProxy(
+  const orderBook = (await upgrades.deployProxy(
     OrderBook,
     [await itemNFT.getAddress(), await brush.getAddress(), DEV_ADDRESS, 30, 30, maxOrdersPerPrice],
     {
@@ -329,8 +329,8 @@ async function main() {
       timeout
     }
   )) as unknown as OrderBook;
-  await orderbook.waitForDeployment();
-  console.log(`bazaar = "${(await orderbook.getAddress()).toLocaleLowerCase()}"`);
+  await orderBook.waitForDeployment();
+  console.log(`bazaar = "${(await orderBook.getAddress()).toLocaleLowerCase()}"`);
 
   // Create NFT contract which contains all the players
   const estforLibrary = await ethers.deployContract("EstforLibrary");
@@ -626,7 +626,7 @@ async function main() {
       await itemNFT.getAddress(),
       await treasury.getAddress(),
       DEV_ADDRESS,
-      ORACLE_ADDRESS,
+      oracleAddress,
       await vrf.getAddress(),
       await vrfRequestInfo.getAddress(),
       allBattleSkills,
@@ -756,7 +756,7 @@ async function main() {
         await wishingWell.getAddress(),
         await itemNFTLibrary.getAddress(),
         await itemNFT.getAddress(),
-        await orderbook.getAddress(),
+        await orderBook.getAddress(),
         await petNFT.getAddress(),
         await adminAccess.getAddress(),
         await treasury.getAddress(),
@@ -858,7 +858,7 @@ async function main() {
     instantActions,
     territories,
     lockedBankVaults,
-    BAZAAR_ADDRESS,
+    orderBook,
     instantVRFActions,
     passiveActions
   );
@@ -946,7 +946,7 @@ async function main() {
       tokenIds.push(tokenIdInfo.tokenId);
       tokenIdInfos.push({tick: tokenIdInfo.tick, minQuantity: tokenIdInfo.minQuantity});
     });
-    const tx = await orderbook.setTokenIdInfos(tokenIds, tokenIdInfos);
+    const tx = await orderBook.setTokenIdInfos(tokenIds, tokenIdInfos);
     await tx.wait();
     console.log("orderBook.setTokenIdInfos");
   }
@@ -1128,7 +1128,8 @@ async function main() {
       bankRegistry,
       bankRelay,
       lockedBankVaults,
-      minItemQuantityBeforeSellsAllowed
+      minItemQuantityBeforeSellsAllowed,
+      orderBook
     );
   }
 }
