@@ -733,9 +733,9 @@
     "name": "liquidatePrice",
     "outputs": [
       {
-        "internalType": "uint80",
-        "name": "price",
-        "type": "uint80"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

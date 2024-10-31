@@ -98,10 +98,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     return _minItemQuantityBeforeSellsAllowed;
   }
 
-  function liquidatePrice(uint16 tokenId) public view returns (uint80 price) {
-    uint256 totalBrush = _treasury.totalClaimable(address(this));
-    uint256 totalBrushForItem = totalBrush / _getNumItems();
-    return _liquidatePrice(tokenId, totalBrushForItem);
+  function liquidatePrice(uint16 tokenId) external view returns (uint256) {
+    return _liquidatePrice(tokenId, _totalBrushForItem());
   }
 
   function liquidatePrices(uint16[] calldata tokenIds) external view returns (uint256[] memory prices) {
@@ -110,8 +108,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
       return prices;
     }
 
-    uint256 totalBrush = _treasury.totalClaimable(address(this));
-    uint256 totalBrushForItem = totalBrush / (_itemNFT.totalSupply() - _numUnsellableItems);
+    uint256 totalBrushForItem = _totalBrushForItem();
 
     prices = new uint256[](iter);
     while (iter != 0) {
@@ -154,7 +151,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function sell(uint16 tokenId, uint256 quantity, uint256 minExpectedBrush) external {
-    uint256 price = liquidatePrice(tokenId);
+    uint256 price = _liquidatePrice(tokenId, _totalBrushForItem());
     uint256 totalBrush = price * quantity;
     _sell(tokenId, quantity, price);
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
@@ -164,14 +161,17 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
+    // check array lengths
     uint256 iter = tokenIds.length;
     require(iter != 0, LengthEmpty());
     require(iter == quantities.length, LengthMismatch());
+
     uint256 totalBrush;
     uint256[] memory prices = new uint256[](iter);
+    uint256 totalBrushForItem = _totalBrushForItem();
     do {
       iter--;
-      uint256 sellPrice = liquidatePrice(uint16(tokenIds[iter]));
+      uint256 sellPrice = _liquidatePrice(uint16(tokenIds[iter]), totalBrushForItem);
       totalBrush = totalBrush + (sellPrice * quantities[iter]);
       prices[iter] = sellPrice;
       _sell(tokenIds[iter], quantities[iter], prices[iter]);
@@ -247,6 +247,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   function _getNumItems() private view returns (uint256) {
     uint256 totalSupply = _itemNFT.totalSupply();
     return (_numUnsellableItems >= totalSupply) ? totalSupply : totalSupply - _numUnsellableItems;
+  }
+
+  function _totalBrushForItem() private view returns (uint256) {
+    return _treasury.totalClaimable(address(this)) / _getNumItems();
   }
 
   function _addBuyableItem(ShopItem calldata buyableItem) private {
