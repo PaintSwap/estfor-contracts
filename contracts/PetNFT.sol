@@ -16,6 +16,8 @@ import {IWorld} from "./interfaces/IWorld.sol";
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {PetNFTLibrary} from "./PetNFTLibrary.sol";
 
+import {BloomFilter} from "./libraries/BloomFilter.sol";
+
 // solhint-disable-next-line no-global-import
 import {Skill} from "./globals/misc.sol";
 import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.sol";
@@ -25,6 +27,8 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // into the pet struct and avoid updating multiple to/from balances using
 // SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
 contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IERC2981 {
+  using BloomFilter for BloomFilter.Filter;
+
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
@@ -70,6 +74,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   error SameName();
   error CannotTransferThisPet(uint256 petId);
   error TrainOnCooldown();
+  error PetNameIsReserved(string name);
 
   struct BasePetInput {
     string description;
@@ -116,6 +121,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   address private _territories;
   address private _players;
   IWorld private _world;
+  BloomFilter.Filter private _reservedPetNames; // TODO: remove 30 days after launch
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
@@ -181,6 +187,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     _treasury = treasury;
     _world = world;
     setEditNameCost(editNameCost);
+
+    _reservedPetNames._initialize();
   }
 
   function editPet(
@@ -419,6 +427,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     string memory oldName = EstforLibrary.toLower(PetNFTLibrary._getPetName(petId, _names[petId]));
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
+      require(
+        !_reservedPetNames._probablyContainsString(trimmedAndLowercaseName),
+        PetNameIsReserved(trimmedAndLowercaseName)
+      );
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
@@ -658,6 +670,14 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+  }
+
+  function setReservedPetNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
+    _reservedPetNames._initialize(itemCount, positions);
+  }
+
+  function isPetNameReserved(string calldata petName) public view returns (bool) {
+    return _reservedPetNames._probablyContainsString(EstforLibrary.toLower(petName));
   }
 
   // solhint-disable-next-line no-empty-blocks

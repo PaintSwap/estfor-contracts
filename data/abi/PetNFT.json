@@ -303,6 +303,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "PetNameIsReserved",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "PlayerDoesNotOwnPet",
     "type": "error"
@@ -371,6 +382,11 @@
       }
     ],
     "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroHashCount",
     "type": "error"
   },
   {
@@ -1406,29 +1422,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "instantVRFActions",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "players",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "territories",
-        "type": "address"
-      }
-    ],
-    "name": "initializeAddresses",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "account",
         "type": "address"
       },
@@ -1439,6 +1432,25 @@
       }
     ],
     "name": "isApprovedForAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "petName",
+        "type": "string"
+      }
+    ],
+    "name": "isPetNameReserved",
     "outputs": [
       {
         "internalType": "bool",
@@ -1724,6 +1736,63 @@
       }
     ],
     "name": "setImageBaseUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "instantVRFActions",
+        "type": "address"
+      }
+    ],
+    "name": "setInstantVRFActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "players",
+        "type": "address"
+      }
+    ],
+    "name": "setPlayers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "positions",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setReservedPetNames",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "territories",
+        "type": "address"
+      }
+    ],
+    "name": "setTerritories",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
