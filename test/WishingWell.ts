@@ -2,7 +2,13 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {playersFixture} from "./Players/PlayersFixture";
-import {requestAndFulfillRandomWords, timeTravel, timeTravel24Hours, timeTravelToNextCheckpoint} from "./utils";
+import {
+  initializerSlot,
+  requestAndFulfillRandomWords,
+  timeTravel,
+  timeTravel24Hours,
+  timeTravelToNextCheckpoint
+} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
@@ -137,6 +143,33 @@ describe("WishingWell", function () {
       players,
       "NotOwnerOfPlayer"
     );
+  });
+
+  it("Check initialization params", async function () {
+    const {world, brush, playerNFT, shop, clans} = await loadFixture(deployContracts);
+
+    const wishingWell = await ethers.deployContract("WishingWell");
+
+    await ethers.provider.send("hardhat_setStorageAt", [
+      await wishingWell.getAddress(),
+      initializerSlot,
+      ethers.ZeroHash
+    ]);
+
+    await expect(
+      wishingWell.initialize(
+        await brush.getAddress(),
+        await playerNFT.getAddress(),
+        await shop.getAddress(),
+        await world.getAddress(),
+        await clans.getAddress(),
+        parseEther("5"),
+        parseEther("1000"),
+        parseEther("250")
+      )
+    )
+      .to.emit(wishingWell, "ClanDonationThreshold")
+      .withArgs(parseEther("250"), EstforConstants.CLAN_BOOSTER);
   });
 
   it("Claim lottery winnings", async function () {

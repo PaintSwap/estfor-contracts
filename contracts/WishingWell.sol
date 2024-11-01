@@ -104,10 +104,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     _world = world;
     _clans = clans;
 
-    setRaffleEntryCost(raffleEntryCost);
-    setGlobalDonationThresholdIncrement(globalThresholdIncrement);
-    setClanDonationThresholdIncrement(clanThresholdIncrement);
-
+    // Note: _clanBoostRewardItemTokenIds must be set before setClanDonationThresholdIncrement is called as it reads from them
     _globalBoostRewardItemTokenIds = [PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3];
     _clanBoostRewardItemTokenIds = [CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3];
 
@@ -116,6 +113,10 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     _lastLotteryId = 1;
     _nextLotteryWinnerRewardItemTokenId = LUCKY_POTION;
     _nextLotteryWinnerRewardInstantConsume = true;
+
+    setClanDonationThresholdIncrement(clanThresholdIncrement);
+    setRaffleEntryCost(raffleEntryCost);
+    setGlobalDonationThresholdIncrement(globalThresholdIncrement);
 
     emit LastGlobalDonationThreshold(0, _globalBoostRewardItemTokenIds[0]);
     emit WinnerAndNewLottery(0, 0, _nextLotteryWinnerRewardItemTokenId, 1);
