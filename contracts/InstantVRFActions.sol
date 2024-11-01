@@ -137,7 +137,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _oracle = oracle;
     _samWitchVRF = samWitchVRF;
     _vrfRequestInfo = vrfRequestInfo;
-    setGasCostPerUnit(15_000);
+    setGasCostPerUnit(18_000);
     setMaxActionAmount(maxActionAmount);
   }
 
@@ -232,7 +232,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _vrfRequestInfo.updateAverageGasPrice();
 
     delete _playerActionInfos[playerId]; // Allows another request to be made
-    delete _requestIdToPlayer[requestId]; // Not strictly necessary
+    delete _requestIdToPlayer[requestId];
 
     if (itemTokenIds.length != 0) {
       try _itemNFT.mintBatch(from, itemTokenIds, itemAmounts) {} catch {
@@ -453,7 +453,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     emit RemoveInstantVRFActions(instantVRFActionIds);
   }
 
-  function setGasCostPerUnit(uint256 gasCostPerUnit) public onlyOwner {
+  function setGasCostPerUnit(uint64 gasCostPerUnit) public onlyOwner {
     _gasCostPerUnit = uint64(gasCostPerUnit);
     emit SetGasCostPerUnit(gasCostPerUnit);
   }
