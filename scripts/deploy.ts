@@ -366,29 +366,6 @@ async function main() {
   await promotionsLibrary.waitForDeployment();
   console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`);
 
-  const Promotions = await ethers.getContractFactory("Promotions", {
-    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
-  });
-  const promotions = (await upgrades.deployProxy(
-    Promotions,
-    [
-      await itemNFT.getAddress(),
-      await playerNFT.getAddress(),
-      await brush.getAddress(),
-      await treasury.getAddress(),
-      DEV_ADDRESS,
-      await adminAccess.getAddress(),
-      isBeta
-    ],
-    {
-      kind: "uups",
-      unsafeAllow: ["external-library-linking"],
-      timeout
-    }
-  )) as unknown as Promotions;
-  await promotions.waitForDeployment();
-  console.log(`promotions = "${(await promotions.getAddress()).toLowerCase()}"`);
-
   const buyPath: [string, string] = [await wftm.getAddress(), await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [await world.getAddress(), await router.getAddress(), buyPath], {
@@ -510,6 +487,30 @@ async function main() {
   )) as unknown as Players;
   await players.waitForDeployment();
   console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
+
+  const Promotions = await ethers.getContractFactory("Promotions", {
+    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
+  });
+  const promotions = (await upgrades.deployProxy(
+    Promotions,
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await playerNFT.getAddress(),
+      await brush.getAddress(),
+      await treasury.getAddress(),
+      DEV_ADDRESS,
+      await adminAccess.getAddress(),
+      isBeta
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout
+    }
+  )) as unknown as Promotions;
+  await promotions.waitForDeployment();
+  console.log(`promotions = "${(await promotions.getAddress()).toLowerCase()}"`);
 
   const PassiveActions = await ethers.getContractFactory("PassiveActions", {
     libraries: {WorldLibrary: await worldLibrary.getAddress()}

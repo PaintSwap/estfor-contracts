@@ -157,27 +157,6 @@ export const playersFixture = async function () {
     }
   )) as unknown as PlayerNFT;
 
-  const promotionsLibrary = (await ethers.deployContract("PromotionsLibrary")) as PromotionsLibrary;
-  const Promotions = await ethers.getContractFactory("Promotions", {
-    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
-  });
-  const promotions = (await upgrades.deployProxy(
-    Promotions,
-    [
-      await itemNFT.getAddress(),
-      await playerNFT.getAddress(),
-      await brush.getAddress(),
-      await treasury.getAddress(),
-      await dev.getAddress(),
-      await adminAccess.getAddress(),
-      isBeta
-    ],
-    {
-      kind: "uups",
-      unsafeAllow: ["external-library-linking"]
-    }
-  )) as unknown as Promotions;
-
   const buyPath: [string, string] = [alice.address, await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [await world.getAddress(), await router.getAddress(), buyPath], {
@@ -289,6 +268,28 @@ export const playersFixture = async function () {
       unsafeAllow: ["delegatecall"]
     }
   )) as unknown as Players;
+
+  const promotionsLibrary = (await ethers.deployContract("PromotionsLibrary")) as PromotionsLibrary;
+  const Promotions = await ethers.getContractFactory("Promotions", {
+    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
+  });
+  const promotions = (await upgrades.deployProxy(
+    Promotions,
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await playerNFT.getAddress(),
+      await brush.getAddress(),
+      await treasury.getAddress(),
+      await dev.getAddress(),
+      await adminAccess.getAddress(),
+      isBeta
+    ],
+    {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"]
+    }
+  )) as unknown as Promotions;
 
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
