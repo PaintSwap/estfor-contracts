@@ -18,11 +18,11 @@ jobs:
       PRIVATE_KEY1: "0xa0610ad18a7a793b0d2c12d28d74ccc8d90a422514db2e4cea3a9eaec7215ad3"
       IS_BETA: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install packages
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "16.x"
+          node-version: "18.x"
       - run: yarn install
         shell: bash
       - name: Deploy
