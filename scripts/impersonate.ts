@@ -49,15 +49,15 @@ async function main() {
 
   const player = await ethers.getImpersonatedSigner("0x8ca12fb5438252ab8efa25d3fb34166eda1c17ed");
   const playerId = 3;
-  const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
+  const estforLibrary = (await ethers.deployContract("EstforLibrary")) as unknown as EstforLibrary;
   // Players
-  const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as PlayersLibrary;
+  const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as unknown as PlayersLibrary;
 
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"]
-  })) as unknown as Players;
+  })) as unknown as unknown as unknown as Players;
 
   // Set the implementations
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
@@ -73,6 +73,7 @@ async function main() {
       await playersImplMisc1.getAddress()
     );
   await tx.wait();
+
   /*
   // PlayerNFT
   const PlayerNFT = (
@@ -83,21 +84,21 @@ async function main() {
   const playerNFT = (await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-  })) as PlayerNFT;
+  })) as unknown as PlayerNFT;
 
   // Quests
   const Quests = (await ethers.getContractFactory("Quests")).connect(owner);
   const quests = (await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
     kind: "uups",
-  })) as Quests;
+  })) as unknown as Quests;
 
   const Shop = (await ethers.getContractFactory("Shop")).connect(owner);
   const shop = (await upgrades.upgradeProxy(SHOP_ADDRESS, Shop, {
     kind: "uups",
-  })) as Shop;
+  })) as unknown as Shop;
 
   // Create the world
-  const worldLibrary = (await ethers.deployContract("WorldLibrary")) as WorldLibrary;
+  const worldLibrary = (await ethers.deployContract("WorldLibrary")) as unknown as WorldLibrary;
 
   const World = (
     await ethers.getContractFactory("World", {
@@ -118,7 +119,7 @@ async function main() {
   const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-  })) as ItemNFT;
+  })) as unknown as ItemNFT;
 
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
   const Promotions = (
@@ -129,7 +130,7 @@ async function main() {
   const promotions = (await upgrades.upgradeProxy(PROMOTIONS_ADDRESS, Promotions, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-  })) as Promotions;
+  })) as unknown as Promotions;
 
   const Clans = (
     await ethers.getContractFactory("Clans", {
@@ -139,9 +140,9 @@ async function main() {
   const clans = (await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-  })) as Clans;
+  })) as unknown as Clans;
 
-  const lockedBankVaultsLibrary = (await ethers.deployContract("LockedBankVaultsLibrary")) as LockedBankVaultsLibrary;
+  const lockedBankVaultsLibrary = (await ethers.deployContract("LockedBankVaultsLibrary")) as unknown as LockedBankVaultsLibrary;
 
   const LockedBankVaults = (
     await ethers.getContractFactory("LockedBankVaults", {
@@ -154,15 +155,15 @@ async function main() {
   const lockedBankVaults = (await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-  })) as LockedBankVaults;
+  })) as unknown as LockedBankVaults;
 
   const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
   const territories = (await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-  })) as Territories;
+  })) as unknown as Territories;
 
-  const petNFTLibrary = (await ethers.deployContract("PetNFTLibrary")) as PetNFTLibrary;
+  const petNFTLibrary = (await ethers.deployContract("PetNFTLibrary")) as unknown as PetNFTLibrary;
   const PetNFT = (
     await ethers.getContractFactory("PetNFT", {
       libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: (await petNFTLibrary.getAddress())},
@@ -172,7 +173,7 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout: 10000,
-  })) as PetNFT;
+  })) as unknown as PetNFT;
   await petNFT.waitForDeployment();
 
   const EggInstantVRFActionStrategy = (await ethers.getContractFactory("EggInstantVRFActionStrategy")).connect(owner);
@@ -183,31 +184,30 @@ async function main() {
       kind: "uups",
       timeout: 100000,
     }
-  )) as EggInstantVRFActionStrategy;
+  )) as unknown as EggInstantVRFActionStrategy;
   await eggInstantVRFActionStrategy.waitForDeployment();
 
   const InstantVRFActions = (await ethers.getContractFactory("InstantVRFActions")).connect(owner);
   const instantVRFActions = (await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
     kind: "uups",
-    timeout: 100000,
-  })) as InstantVRFActions;
-*/
+    timeout: 100000
+  })) as unknown as unknown as unknown as InstantVRFActions;
+  */
   //  await players.connect(player).testModifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, true);
-
   const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
   console.log(pendingQueuedActionState);
-
   /* When trying to fix a VRF issue
-  const world = await ethers.getContractAt("World", WORLD_ADDRESS);
+const world = await ethers.getContractAt("World", WORLD_ADDRESS);
   const samwitchVRFSigner = await makeSigner(SAMWITCH_VRF_ADDRESS);
   const tx = await world
     .connect(samwitchVRFSigner)
     .fulfillRandomWords(
-      ethers.toBeHex("48152596258688856331046453104979743108144756013227431252859358250059933127453", 32),
-      [132342342342342343n]
+      ethers.toBeHex("104046019367107169710442674117296229748040445173308782669979590837825775087813", 32),
+      [1323423423423423431111111111111111111n],
+      {gasLimit: 1000000}
     );
   await tx.wait();
-*/
+  */
 }
 
 main().catch((error) => {

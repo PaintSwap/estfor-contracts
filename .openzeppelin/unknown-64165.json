@@ -14990,6 +14990,715 @@
           ]
         }
       }
+    },
+    "468af5450927c1bb211a0b035caf08fee06213924f58fdbc2b80b587f274b3f5": {
+      "address": "0x8141fd3a2D613D5E137C11BED730EfB7a1E071BD",
+      "txHash": "0xe9a656b64fd1b8b900902e944b3c32e79389f02025e8c84798f694887d98ae93",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_comparableSkills",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_enum(Skill)34659)dyn_storage",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:125"
+          },
+          {
+            "label": "_nextPendingAttackId",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint64",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:126"
+          },
+          {
+            "label": "_preventAttacks",
+            "offset": 8,
+            "slot": "1",
+            "type": "t_bool",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:127"
+          },
+          {
+            "label": "_clanInfos",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_struct(VaultClanInfo)34389_storage)",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:128"
+          },
+          {
+            "label": "_pendingAttacks",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_struct(PendingAttack)14921_storage)",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:129"
+          },
+          {
+            "label": "_requestToPendingAttackIds",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_bytes32,t_uint256)",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:130"
+          },
+          {
+            "label": "_lastClanBattles",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(ClanBattleInfo)34349_storage))",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:131"
+          },
+          {
+            "label": "_clans",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_contract(IClans)35889",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:132"
+          },
+          {
+            "label": "_players",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_contract(IPlayers)36164",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:133"
+          },
+          {
+            "label": "_brush",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_contract(IBrushToken)35818",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:134"
+          },
+          {
+            "label": "_territories",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_contract(ITerritories)36219",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:135"
+          },
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_contract(ItemNFT)23261",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:136"
+          },
+          {
+            "label": "_adminAccess",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_contract(AdminAccess)8155",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:137"
+          },
+          {
+            "label": "_isBeta",
+            "offset": 20,
+            "slot": "11",
+            "type": "t_bool",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:138"
+          },
+          {
+            "label": "_bankFactory",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_contract(IBankFactory)35788",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:139"
+          },
+          {
+            "label": "_bankRelay",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_contract(BankRelay)10365",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:140"
+          },
+          {
+            "label": "_combatantsHelper",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:141"
+          },
+          {
+            "label": "_combatantChangeCooldown",
+            "offset": 20,
+            "slot": "14",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:142"
+          },
+          {
+            "label": "_maxClanCombatants",
+            "offset": 23,
+            "slot": "14",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:143"
+          },
+          {
+            "label": "_treasury",
+            "offset": 0,
+            "slot": "15",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:144"
+          },
+          {
+            "label": "_dev",
+            "offset": 0,
+            "slot": "16",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:145"
+          },
+          {
+            "label": "_brushBurntPercentage",
+            "offset": 20,
+            "slot": "16",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:146"
+          },
+          {
+            "label": "_brushTreasuryPercentage",
+            "offset": 21,
+            "slot": "16",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:147"
+          },
+          {
+            "label": "_brushDevPercentage",
+            "offset": 22,
+            "slot": "16",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:148"
+          },
+          {
+            "label": "_vrfRequestInfo",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_contract(VRFRequestInfo)30728",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:150"
+          },
+          {
+            "label": "_oracle",
+            "offset": 0,
+            "slot": "18",
+            "type": "t_address",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:151"
+          },
+          {
+            "label": "_mmrAttackDistance",
+            "offset": 20,
+            "slot": "18",
+            "type": "t_uint16",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:152"
+          },
+          {
+            "label": "_expectedGasLimitFulfill",
+            "offset": 22,
+            "slot": "18",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:153"
+          },
+          {
+            "label": "_attackingCooldown",
+            "offset": 25,
+            "slot": "18",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:154"
+          },
+          {
+            "label": "_reattackingCooldown",
+            "offset": 28,
+            "slot": "18",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:155"
+          },
+          {
+            "label": "_maxLockedVaults",
+            "offset": 31,
+            "slot": "18",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:156"
+          },
+          {
+            "label": "_samWitchVRF",
+            "offset": 0,
+            "slot": "19",
+            "type": "t_contract(ISamWitchVRF)36207",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:157"
+          },
+          {
+            "label": "_kA",
+            "offset": 20,
+            "slot": "19",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:158"
+          },
+          {
+            "label": "_kD",
+            "offset": 21,
+            "slot": "19",
+            "type": "t_uint8",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:159"
+          },
+          {
+            "label": "_lockFundsPeriod",
+            "offset": 22,
+            "slot": "19",
+            "type": "t_uint24",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:160"
+          },
+          {
+            "label": "_sortedClansByMMR",
+            "offset": 0,
+            "slot": "20",
+            "type": "t_array(t_uint48)dyn_storage",
+            "contract": "LockedBankVaults",
+            "src": "contracts\\Clans\\LockedBankVaults.sol:166"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_enum(Skill)34659)dyn_storage": {
+            "label": "enum Skill[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(Vault)34360_storage)dyn_storage": {
+            "label": "struct Vault[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint48)dyn_storage": {
+            "label": "uint48[]",
+            "numberOfBytes": "32"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(AdminAccess)8155": {
+            "label": "contract AdminAccess",
+            "numberOfBytes": "20"
+          },
+          "t_contract(BankRelay)10365": {
+            "label": "contract BankRelay",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBank)35762": {
+            "label": "contract IBank",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBankFactory)35788": {
+            "label": "contract IBankFactory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)35818": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IClans)35889": {
+            "label": "contract IClans",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlayers)36164": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISamWitchVRF)36207": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ITerritories)36219": {
+            "label": "contract ITerritories",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)23261": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(VRFRequestInfo)30728": {
+            "label": "contract VRFRequestInfo",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Skill)34659": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "FARMING",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(ClanBattleInfo)34349_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct ClanBattleInfo))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ClanBattleInfo)34349_storage)": {
+            "label": "mapping(uint256 => struct ClanBattleInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PendingAttack)14921_storage)": {
+            "label": "mapping(uint256 => struct LockedBankVaults.PendingAttack)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(VaultClanInfo)34389_storage)": {
+            "label": "mapping(uint256 => struct VaultClanInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ClanBattleInfo)34349_storage": {
+            "label": "struct ClanBattleInfo",
+            "members": [
+              {
+                "label": "lastClanIdAttackOtherClanIdCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "numReattacks",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "lastOtherClanIdAttackClanIdCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "numReattacksOtherClan",
+                "type": "t_uint8",
+                "offset": 11,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PendingAttack)14921_storage": {
+            "label": "struct LockedBankVaults.PendingAttack",
+            "members": [
+              {
+                "label": "clanId",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "defendingClanId",
+                "type": "t_uint40",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "attackInProgress",
+                "type": "t_bool",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "extraRollsAttacker",
+                "type": "t_uint8",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "extraRollsDefender",
+                "type": "t_uint8",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Vault)34360_storage": {
+            "label": "struct Vault",
+            "members": [
+              {
+                "label": "claimed",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint40",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint80",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "timestamp1",
+                "type": "t_uint40",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "amount1",
+                "type": "t_uint80",
+                "offset": 21,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(VaultClanInfo)34389_storage": {
+            "label": "struct VaultClanInfo",
+            "members": [
+              {
+                "label": "bank",
+                "type": "t_contract(IBank)35762",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "totalBrushLocked",
+                "type": "t_uint96",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "attackingCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "assignCombatantsCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 5,
+                "slot": "1"
+              },
+              {
+                "label": "currentlyAttacking",
+                "type": "t_bool",
+                "offset": 10,
+                "slot": "1"
+              },
+              {
+                "label": "defendingVaultsOffset",
+                "type": "t_uint24",
+                "offset": 11,
+                "slot": "1"
+              },
+              {
+                "label": "blockAttacksTimestamp",
+                "type": "t_uint40",
+                "offset": 14,
+                "slot": "1"
+              },
+              {
+                "label": "blockAttacksCooldownHours",
+                "type": "t_uint8",
+                "offset": 19,
+                "slot": "1"
+              },
+              {
+                "label": "isInMMRArray",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "superAttackCooldownTimestamp",
+                "type": "t_uint40",
+                "offset": 21,
+                "slot": "1"
+              },
+              {
+                "label": "playerIds",
+                "type": "t_array(t_uint48)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "defendingVaults",
+                "type": "t_array(t_struct(Vault)34360_storage)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint48": {
+            "label": "uint48",
+            "numberOfBytes": "6"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          },
+          "t_uint96": {
+            "label": "uint96",
+            "numberOfBytes": "12"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }
