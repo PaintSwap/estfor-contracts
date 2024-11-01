@@ -1261,6 +1261,11 @@
   {
     "inputs": [
       {
+        "internalType": "contract IPlayers",
+        "name": "players",
+        "type": "address"
+      },
+      {
         "internalType": "contract ItemNFT",
         "name": "itemNFT",
         "type": "address"

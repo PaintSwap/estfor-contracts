@@ -64,6 +64,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error PercentNotTotal100();
 
   AdminAccess private _adminAccess;
+  IPlayers private _players;
   ItemNFT private _itemNFT;
   PlayerNFT private _playerNFT;
   IBrushToken private _brush;
@@ -85,10 +86,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   uint256 public constant FINAL_PROMOTION_DAY_INDEX = 31;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
-    require(
-      IPlayers(_itemNFT.getPlayersAddress()).isOwnerOfPlayerAndActive(_msgSender(), playerId),
-      NotOwnerOfPlayerAndActive()
-    );
+    require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
   }
 
@@ -98,6 +96,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(
+    IPlayers players,
     ItemNFT itemNFT,
     PlayerNFT playerNFT,
     IBrushToken brush,
@@ -109,6 +108,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
+    _players = players;
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;
     _brush = brush;
