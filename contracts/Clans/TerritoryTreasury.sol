@@ -82,18 +82,22 @@ contract TerritoryTreasury is UUPSUpgradeable, OwnableUpgradeable {
     // Max harvest once every few hours
     require(block.timestamp >= _nextHarvestAllowedTimestamp, HarvestingTooSoon());
 
+    uint16 pid = _pid;
     _nextHarvestAllowedTimestamp = uint40(block.timestamp + _minHarvestInterval);
-    _decorator.updatePool(_pid);
+    IPaintSwapDecorator decorator = _decorator;
+    decorator.updatePool(pid);
     uint256 fullBrushAmount = pendingBrush();
     require(fullBrushAmount != 0, ZeroBalance());
-    _decorator.deposit(_pid, 0); // get rewards
-    _territories.addUnclaimedEmissions(fullBrushAmount);
+    decorator.deposit(pid, 0); // get rewards
+    ITerritories territories = _territories;
+    territories.addUnclaimedEmissions(fullBrushAmount);
 
-    uint256 totalBrush = _treasury.totalClaimable(address(this)); // Take 1 % of it
+    Treasury treasury = _treasury;
+    uint256 totalBrush = treasury.totalClaimable(address(this)); // Take 1 % of it
     uint256 harvestableBrush = totalBrush / 100;
     if (harvestableBrush != 0) {
-      _treasury.spend(address(this), harvestableBrush);
-      _territories.addUnclaimedEmissions(harvestableBrush);
+      treasury.spend(address(this), harvestableBrush);
+      territories.addUnclaimedEmissions(harvestableBrush);
     }
 
     emit Harvest(_msgSender(), playerId, fullBrushAmount, uint40(block.timestamp + _minHarvestInterval));

@@ -231,8 +231,9 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) {
     require(toPlayerIds.length == _amounts.length && toPlayerIds.length == tos.length, LengthMismatch());
 
+    IERC1155 playerNFT = _playerNFT;
     for (uint256 i = 0; i < toPlayerIds.length; ++i) {
-      require(_playerNFT.balanceOf(tos[i], toPlayerIds[i]) == 1, ToIsNotOwnerOfPlayer());
+      require(playerNFT.balanceOf(tos[i], toPlayerIds[i]) == 1, ToIsNotOwnerOfPlayer());
       bool success = IERC20(token).transfer(tos[i], _amounts[i]);
       require(success, WithdrawFailed());
     }

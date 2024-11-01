@@ -177,8 +177,9 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     instantActionState.producedTokenIds = new uint256[](actionIds.length);
     instantActionState.producedAmounts = new uint256[](actionIds.length);
     uint256 length;
+    mapping(uint16 actionId => InstantAction instantAction) storage actions = _actions[InstantActionType.GENERIC];
     for (uint256 i; i < actionIds.length; ++i) {
-      InstantAction storage instantAction = _actions[InstantActionType.GENERIC][actionIds[i]];
+      InstantAction storage instantAction = actions[actionIds[i]];
 
       _checkDoActionRequirements(playerId, instantAction);
 

@@ -423,12 +423,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function addItems(ItemInput[] calldata inputItems) external onlyOwner {
-    uint256 iter = inputItems.length;
-    ItemOutput[] memory items = new ItemOutput[](iter);
-    uint16[] memory tokenIds = new uint16[](iter);
-    string[] memory names = new string[](iter);
-    while (iter != 0) {
-      iter--;
+    uint256 length = inputItems.length;
+    ItemOutput[] memory items = new ItemOutput[](length);
+    uint16[] memory tokenIds = new uint16[](length);
+    string[] memory names = new string[](length);
+    for (uint256 iter; iter < length; iter++) {
       require(!exists(inputItems[iter].tokenId), ItemAlreadyExists());
       items[iter] = _setItem(inputItems[iter]);
       tokenIds[iter] = inputItems[iter].tokenId;

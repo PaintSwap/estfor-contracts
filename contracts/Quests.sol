@@ -256,7 +256,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     sellPath[0] = _buyPath2;
     sellPath[1] = _buyPath1;
 
-    IERC20(_buyPath2).transferFrom(_msgSender(), address(this), brushAmount);
+    IERC20(sellPath[0]).transferFrom(_msgSender(), address(this), brushAmount);
 
     if (useExactETH) {
       uint256 amountOut = minFTM;
@@ -550,11 +550,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _questExists(uint256 questId) private view returns (bool) {
+    Quest memory quest = _allFixedQuests[questId];
     return
-      _allFixedQuests[questId].actionId1 != NONE ||
-      _allFixedQuests[questId].actionChoiceId != NONE ||
-      _allFixedQuests[questId].skillReward != Skill.NONE ||
-      _allFixedQuests[questId].rewardItemTokenId1 != NONE;
+      quest.actionId1 != NONE ||
+      quest.actionChoiceId != NONE ||
+      quest.skillReward != Skill.NONE ||
+      quest.rewardItemTokenId1 != NONE;
   }
 
   function _isQuestPackedDataFullMode(bytes1 packedData) private pure returns (bool) {

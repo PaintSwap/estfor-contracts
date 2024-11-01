@@ -218,7 +218,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint16 imageId,
     uint8 tierId
   ) external isOwnerOfPlayerAndActive(playerId) {
-    PlayerInfo storage player = _playerInfo[playerId];
     require(!isMemberOfAnyClan(playerId), AlreadyInClan());
 
     Tier storage tier = _tiers[tierId];
@@ -235,6 +234,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     clan.createdTimestamp = uint40(block.timestamp);
     clan.mmr = _initialMMR;
 
+    PlayerInfo storage player = _playerInfo[playerId];
     player.clanId = uint32(clanId);
     player.rank = ClanRank.OWNER;
     if (player.requestedClanId != 0) {
@@ -317,7 +317,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _acceptInvite(uint256 clanId, uint256 playerId, uint256 gateKeepTokenId) private {
     Clan storage clan = _clans[clanId];
-    PlayerInfo storage player = _playerInfo[playerId];
 
     require(clan.inviteRequests[playerId], InviteDoesNotExist());
     require(!isMemberOfAnyClan(playerId), AlreadyInClan());
@@ -330,6 +329,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     clan.inviteRequests[playerId] = false;
     clan.memberCount++;
 
+    PlayerInfo storage player = _playerInfo[playerId];
     player.clanId = uint32(clanId);
     player.rank = ClanRank.COMMONER;
     player.requestedClanId = 0;
@@ -367,9 +367,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     for (uint256 i = 0; i < joinRequestPlayerIds.length; ++i) {
       uint256 joinRequestPlayerId = joinRequestPlayerIds[i];
-      PlayerInfo storage player = _playerInfo[joinRequestPlayerId];
-      require(player.requestedClanId == clanId, NoJoinRequest());
-      player.requestedClanId = 0;
+      PlayerInfo storage playerInfo = _playerInfo[joinRequestPlayerId];
+      require(playerInfo.requestedClanId == clanId, NoJoinRequest());
+      playerInfo.requestedClanId = 0;
     }
 
     emit JoinRequestsRemovedByClan(clanId, joinRequestPlayerIds, playerId);
@@ -615,7 +615,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     require(EstforLibrary.containsValidNameCharacters(trimmedName), NameInvalidCharacters());
 
     string memory trimmedAndLowercaseName = EstforLibrary.toLower(trimmedName);
-    string memory oldName = EstforLibrary.toLower(_clans[clanId].name);
+    Clan storage clan = _clans[clanId];
+    string memory oldName = EstforLibrary.toLower(clan.name);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
@@ -623,7 +624,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
         delete _lowercaseNames[oldName];
       }
       _lowercaseNames[trimmedAndLowercaseName] = true;
-      _clans[clanId].name = trimmedName;
+      clan.name = trimmedName;
     }
   }
 
@@ -657,14 +658,15 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _checkGateKeeping(uint256 clanId, uint256 gateKeepTokenId) private view {
     NFTInfo[] memory nftInfo = _clans[clanId].gateKeptNFTs;
-    bool foundNFT;
     if (nftInfo.length != 0) {
+      bool foundNFT;
       // Check the player owns one of these NFTs
+      address sender = _msgSender();
       for (uint256 i = 0; i < nftInfo.length; ++i) {
         if (nftInfo[i].nftType == 1155) {
-          foundNFT = foundNFT || IERC1155(nftInfo[i].nft).balanceOf(_msgSender(), gateKeepTokenId) != 0;
+          foundNFT = foundNFT || IERC1155(nftInfo[i].nft).balanceOf(sender, gateKeepTokenId) != 0;
         } else if (nftInfo[i].nftType == 721) {
-          foundNFT = foundNFT || IERC721(nftInfo[i].nft).ownerOf(gateKeepTokenId) == _msgSender();
+          foundNFT = foundNFT || IERC721(nftInfo[i].nft).ownerOf(gateKeepTokenId) == sender;
         }
       }
 
@@ -673,8 +675,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function _ownerCleared(uint256 clanId) private {
-    uint256 oldOwnerId = _clans[clanId].owner;
-    _clans[clanId].owner = 0;
+    Clan storage clan = _clans[clanId];
+    uint256 oldOwnerId = clan.owner;
+    clan.owner = 0;
     _ownerlessClanTimestamps[clanId] = uint40(block.timestamp);
     emit ClanOwnerLeft(clanId, oldOwnerId);
   }
@@ -687,8 +690,9 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _destroyClan(uint256 clanId) private {
     // Defensive check
-    require(_clans[clanId].memberCount == 0, ClanDestroyFailedHasMembers());
-    _lowercaseNames[EstforLibrary.toLower(_clans[clanId].name)] = false; // Name can be used again
+    Clan storage clan = _clans[clanId];
+    require(clan.memberCount == 0, ClanDestroyFailedHasMembers());
+    _lowercaseNames[EstforLibrary.toLower(clan.name)] = false; // Name can be used again
     delete _clans[clanId]; // Delete the clan
     emit ClanDestroyed(clanId);
   }
@@ -723,15 +727,19 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function _pay(uint256 tokenCost) private {
-    _brush.burnFrom(_msgSender(), (tokenCost * _brushBurntPercentage) / 100);
-    _brush.transferFrom(_msgSender(), _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
-    _brush.transferFrom(_msgSender(), _dev, (tokenCost * _brushDevPercentage) / 100);
+    IBrushToken brush = _brush;
+    address sender = _msgSender();
+    brush.burnFrom(sender, (tokenCost * _brushBurntPercentage) / 100);
+    brush.transferFrom(sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
+    brush.transferFrom(sender, _dev, (tokenCost * _brushDevPercentage) / 100);
   }
 
   function _upgradeClan(uint256 clanId, uint256 playerId, uint8 newTierId) private {
     Tier storage oldTier = _tiers[_clans[clanId].tierId];
     require(oldTier.id != 0, ClanDoesNotExist());
     require(newTierId > oldTier.id, CannotDowngradeTier());
+
+    // require(_playerInfo[playerId].clanId == clanId, NotMemberOfClan());
 
     _checkTierExists(newTierId);
 
@@ -749,10 +757,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     // Price should be higher than the one prior
     if (tierId > 1) {
-      require(tier.price >= _tiers[tierId - 1].price, PriceTooLow());
-      require(tier.maxMemberCapacity >= _tiers[tierId - 1].maxMemberCapacity, MemberCapacityTooLow());
-      require(tier.maxBankCapacity >= _tiers[tierId - 1].maxBankCapacity, BankCapacityTooLow());
-      require(tier.maxImageId >= _tiers[tierId - 1].maxImageId, ImageIdTooLow());
+      Tier memory priorTier = _tiers[tierId - 1];
+      require(tier.price >= priorTier.price, PriceTooLow());
+      require(tier.maxMemberCapacity >= priorTier.maxMemberCapacity, MemberCapacityTooLow());
+      require(tier.maxBankCapacity >= priorTier.maxBankCapacity, BankCapacityTooLow());
+      require(tier.maxImageId >= priorTier.maxImageId, ImageIdTooLow());
     }
     _tiers[tierId] = tier;
   }
@@ -829,13 +838,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     require(nftInfos.length <= 5, TooManyNFTs());
 
     address[] memory nfts = new address[](nftInfos.length);
+    IMarketplaceWhitelist paintswapMarketplaceWhitelist = IMarketplaceWhitelist(_paintswapMarketplaceWhitelist);
     for (uint256 i; i < nftInfos.length; ++i) {
       // This must be whitelisted by the PaintSwapMarketplace marketplace
       address nft = nftInfos[i].nft;
-      require(
-        IMarketplaceWhitelist(_paintswapMarketplaceWhitelist).isWhitelisted(nft),
-        NFTNotWhitelistedOnMarketplace()
-      );
+      require(paintswapMarketplaceWhitelist.isWhitelisted(nft), NFTNotWhitelistedOnMarketplace());
       // Must be a supported NFT standard
       uint256 nftType = nftInfos[i].nftType;
 

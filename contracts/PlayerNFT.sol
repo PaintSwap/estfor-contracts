@@ -281,10 +281,11 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     if (from != address(0) && amounts.length != 0 && from != to) {
       uint256 iter = ids.length;
       uint32 burned;
+      IPlayers players = _players;
       while (iter != 0) {
         iter--;
         uint256 playerId = ids[iter];
-        _players.clearEverythingBeforeTokenTransfer(from, playerId);
+        players.clearEverythingBeforeTokenTransfer(from, playerId);
         if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
           // Burning
           string memory oldName = EstforLibrary.toLower(_names[playerId]);
@@ -292,7 +293,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
           burned++;
         } else if (from != address(0)) {
           // Not minting
-          _players.beforeTokenTransferTo(to, playerId);
+          players.beforeTokenTransferTo(to, playerId);
         }
       }
       if (burned != 0) {
@@ -323,11 +324,10 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
    * @dev See {IERC1155-balanceOfBatch}. This implementation is not standard ERC1155, it's optimized for the single account case
    */
   function balanceOfs(address account, uint16[] memory ids) external view returns (uint256[] memory batchBalances) {
-    uint256 iter = ids.length;
-    batchBalances = new uint256[](iter);
-    while (iter != 0) {
-      iter--;
-      batchBalances[iter] = balanceOf(account, ids[iter]);
+    uint256 length = ids.length;
+    batchBalances = new uint256[](length);
+    for (uint256 i; i < length; ++i) {
+      batchBalances[i] = balanceOf(account, ids[i]);
     }
   }
 

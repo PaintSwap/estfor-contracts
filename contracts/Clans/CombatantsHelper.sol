@@ -130,31 +130,32 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     if (setCombatants) {
       uint256 newCombatantCooldownTimestamp = block.timestamp + _combatantChangeCooldown;
       // Check they are not being placed as a locked vault combatant
+      IClans clans = _clans;
       for (uint256 i; i < playerIds.length; ++i) {
+        uint48 playerId = playerIds[i];
         if (setOtherCombatants) {
           if (otherPlayerIds.length != 0) {
-            uint256 searchIndex = EstforLibrary.binarySearchMemory(otherPlayerIds, playerIds[i]);
+            uint256 searchIndex = EstforLibrary.binarySearchMemory(otherPlayerIds, playerId);
             require(searchIndex == type(uint256).max, PlayerOnTerritoryAndLockedVault());
           }
         } else {
-          require(!otherCombatants.isCombatant(clanId, playerIds[i]), PlayerAlreadyExistingCombatant());
+          require(!otherCombatants.isCombatant(clanId, playerId), PlayerAlreadyExistingCombatant());
         }
+
+        PlayerInfo storage playerInfo = _playerInfos[playerId];
 
         // Check the cooldown periods on combatant assignment.
         // They might have just joined from another clan or assigned from territory to locked vaults
-        require(
-          _playerInfos[playerIds[i]].combatantCooldownTimestamp <= block.timestamp,
-          PlayerCombatantCooldownTimestamp()
-        );
+        require(playerInfo.combatantCooldownTimestamp <= block.timestamp, PlayerCombatantCooldownTimestamp());
 
         // Check they are part of the clan
-        require(_clans.getRank(clanId, playerIds[i]) != ClanRank.NONE, NotMemberOfClan());
+        require(clans.getRank(clanId, playerId) != ClanRank.NONE, NotMemberOfClan());
 
         if (i != playerIds.length - 1) {
           require(playerIds[i] < playerIds[i + 1], PlayerIdsNotSortedOrDuplicates());
         }
 
-        _playerInfos[playerIds[i]].combatantCooldownTimestamp = uint40(newCombatantCooldownTimestamp);
+        playerInfo.combatantCooldownTimestamp = uint40(newCombatantCooldownTimestamp);
       }
       combatants.assignCombatants(clanId, playerIds, newCombatantCooldownTimestamp, leaderPlayerId);
     } else {

@@ -379,6 +379,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       finished = true;
     }
 
+    World world = _world;
     for (uint256 timestamp = startTime; timestamp <= startTime + numDays * 1 days; timestamp += 1 days) {
       // Work out how many days we can skip
       if (action.skipSuccessPercent != 0 && timestamp < startTime + numDays * 1 days) {
@@ -387,7 +388,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
           boostIncrease = _itemNFT.getItem(passiveAction.boostItemTokenId).boostValue;
         }
 
-        oracleCalled = _world.hasRandomWord(timestamp);
+        oracleCalled = world.hasRandomWord(timestamp);
 
         if (oracleCalled && _isWinner(playerId, startTime, timestamp, boostIncrease, action.skipSuccessPercent)) {
           ++numWinners;
@@ -404,7 +405,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         finished = true;
         // Actually check if it has the random word for this day
         if (action.hasRandomRewards && timestamp != startTime + duration - numWinners * 1 days - 1 days) {
-          oracleCalled = _world.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
+          oracleCalled = world.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
         }
         break;
       }

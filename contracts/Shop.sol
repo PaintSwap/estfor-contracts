@@ -299,9 +299,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function addUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
     for (uint256 i; i < itemTokenIds.length; ++i) {
-      require(!_tokenInfos[itemTokenIds[i]].unsellable, AlreadyUnsellable());
-      require(_itemNFT.exists(itemTokenIds[i]), ItemDoesNotExist());
-      _tokenInfos[itemTokenIds[i]].unsellable = true;
+      uint16 tokenId = itemTokenIds[i];
+      TokenInfo storage tokenInfo = _tokenInfos[tokenId];
+      require(!tokenInfo.unsellable, AlreadyUnsellable());
+      require(_itemNFT.exists(tokenId), ItemDoesNotExist());
+      tokenInfo.unsellable = true;
     }
     _numUnsellableItems += uint16(itemTokenIds.length);
     emit AddUnsellableItems(itemTokenIds);
@@ -309,8 +311,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function removeUnsellableItems(uint16[] calldata itemTokenIds) external onlyOwner {
     for (uint256 i; i < itemTokenIds.length; ++i) {
-      require(_tokenInfos[itemTokenIds[i]].unsellable, AlreadySellable());
-      _tokenInfos[itemTokenIds[i]].unsellable = false;
+      TokenInfo storage tokenInfo = _tokenInfos[itemTokenIds[i]];
+      require(tokenInfo.unsellable, AlreadySellable());
+      tokenInfo.unsellable = false;
     }
     _numUnsellableItems -= uint16(itemTokenIds.length);
     emit RemoveUnsellableItems(itemTokenIds);
