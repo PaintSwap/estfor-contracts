@@ -607,7 +607,7 @@ async function main() {
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
 
-  const lockedFundsPeriod = (isBeta ? 1 : 7) * 86400; // 7 days
+  const lockedFundsPeriod = 7 * 86400; // 7 days
   const maxClanComabtantsLockedBankVaults = 20;
   const maxLockedVaults = 100;
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
