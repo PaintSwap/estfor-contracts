@@ -362,10 +362,6 @@ async function main() {
   await playerNFT.waitForDeployment();
   console.log(`playerNFT = "${(await playerNFT.getAddress()).toLowerCase()}"`);
 
-  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
-  await promotionsLibrary.waitForDeployment();
-  console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`);
-
   const buyPath: [string, string] = [await wftm.getAddress(), await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(Quests, [await world.getAddress(), await router.getAddress(), buyPath], {
@@ -487,6 +483,10 @@ async function main() {
   )) as unknown as Players;
   await players.waitForDeployment();
   console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
+
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
+  await promotionsLibrary.waitForDeployment();
+  console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`);
 
   const Promotions = await ethers.getContractFactory("Promotions", {
     libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
