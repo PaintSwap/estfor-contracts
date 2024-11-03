@@ -61,7 +61,6 @@
     "deployImpls": "npx hardhat run scripts/deployImpls.ts",
     "deployBankBeaconUpgrade": "npx hardhat run scripts/deployBankBeaconUpgrade.ts",
     "deployTestData": "npx hardhat run scripts/deployTestData.ts",
-    "deployBrushNonTransferrable": "npx hardhat run scripts/deployBrushNonTransferrable.ts",
     "deployPetNFT": "npx hardhat run scripts/deployPetNFT.ts",
     "deployInstantVRFActionTestData": "npx hardhat run scripts/deployInstantVRFActionTestData.ts",
     "deployPassiveActions": "npx hardhat run scripts/deployPassiveActions.ts",

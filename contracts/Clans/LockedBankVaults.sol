@@ -7,7 +7,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {IClans} from "../interfaces/IClans.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IBrushToken} from "../interfaces/IBrushToken.sol";
+import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
 import {ILockedBankVaults} from "../interfaces/ILockedBankVaults.sol";

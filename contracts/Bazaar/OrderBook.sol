@@ -11,7 +11,7 @@ import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {BokkyPooBahsRedBlackTreeLibrary} from "./BokkyPooBahsRedBlackTreeLibrary.sol";
 
-import {IBrushToken} from "../interfaces/IBrushToken.sol";
+import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IOrderBook} from "./interfaces/IOrderBook.sol";
 
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing

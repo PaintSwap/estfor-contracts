@@ -9,4 +9,6 @@ interface IBrushToken is IERC20 {
   function burnFrom(address account, uint256 amount) external;
 
   function transferFromBulk(address from, address[] calldata tos, uint256[] calldata amounts) external;
+
+  function transferOwnership(address newOwner) external;
 }

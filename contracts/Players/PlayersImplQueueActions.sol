@@ -100,7 +100,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     uint256 startTimeNewActions = block.timestamp - totalTimespan;
     for (uint256 iter; iter != queuedActionsLength; iter++) {
-      if (totalTimespan + queuedActionInputs[iter].timespan > MAX_TIME_) {
+      if (totalTimespan + queuedActionInputs[iter].timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time
         require(iter == queuedActionsLength - 1, ActionTimespanExceedsMaxTime());
 
@@ -111,7 +111,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         } else {
           remainder = queuedActionInputs[0].timespan % 1 hours;
         }
-        queuedActionInputs[iter].timespan = uint24(MAX_TIME_ + remainder - totalTimespan);
+        queuedActionInputs[iter].timespan = uint24(MAX_TIME + remainder - totalTimespan);
       }
 
       (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) = _addToQueue(
@@ -141,7 +141,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTime, queuedActionsExtra);
 
-    assert(totalTimespan < MAX_TIME_ + 1 hours); // Should never happen
+    assert(totalTimespan < MAX_TIME + 1 hours); // Should never happen
     _nextQueueId = uint56(queueId);
 
     if (questId != 0) {

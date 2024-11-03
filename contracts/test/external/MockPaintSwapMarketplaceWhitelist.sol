@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../../interfaces/IMarketplaceWhitelist.sol";
+import "../../interfaces/external/IMarketplaceWhitelist.sol";
 
 contract MockPaintSwapMarketplaceWhitelist is IMarketplaceWhitelist {
   mapping(address => bool) public whitelist;

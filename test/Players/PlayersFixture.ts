@@ -358,7 +358,6 @@ export const playersFixture = async function () {
 
   const decorator = await ethers.deployContract("TestPaintSwapDecorator", [
     await brush.getAddress(),
-    await router.getAddress(),
     await wftm.getAddress(),
     brushPerSecond,
     NOW

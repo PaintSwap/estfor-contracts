@@ -1232,13 +1232,13 @@
         "type": "address"
       },
       {
-        "internalType": "contract IRouterV2",
+        "internalType": "contract ISolidlyRouter",
         "name": "router",
         "type": "address"
       },
       {
         "internalType": "address[2]",
-        "name": "buyPath",
+        "name": "path",
         "type": "address[2]"
       }
     ],

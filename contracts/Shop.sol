@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 
 import {Treasury} from "./Treasury.sol";
 
-import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
 // The contract allows items to be bought/sold

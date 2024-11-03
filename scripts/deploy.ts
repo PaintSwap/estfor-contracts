@@ -33,7 +33,9 @@ import {
   BankRelay,
   OrderBook,
   Bank,
-  BankRegistry
+  BankRegistry,
+  SolidlyExtendedRouter,
+  FakeDecoratorBrush
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -71,11 +73,10 @@ import {
   allActionChoiceIdsForging
 } from "./data/actionChoiceIds";
 import {
-  BAZAAR_ADDRESS,
   BRUSH_ADDRESS,
-  DECORATOR_ADDRESS,
   DEV_ADDRESS,
   ORACLE_ADDRESS,
+  ROUTER_ADDRESS,
   SAMWITCH_VRF_ADDRESS,
   WFTM_ADDRESS
 } from "./contractAddresses";
@@ -104,61 +105,100 @@ async function main() {
   let wftm: WrappedNative;
   let oracleAddress: string;
   let vrf: MockVRF;
-  let router: MockRouter;
+  let router: SolidlyExtendedRouter | MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   let paintSwapDecorator: TestPaintSwapDecorator;
   let tx;
   let pid = 0;
+  let fakeBrush: FakeDecoratorBrush;
   {
-    const MockBrushToken = await ethers.getContractFactory("MockBrushToken");
-    const WrappedNative = await ethers.getContractFactory("WrappedNative");
-    const MockVRF = await ethers.getContractFactory("MockVRF");
-    const MockRouter = await ethers.getContractFactory("MockRouter");
-    const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
-    const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
     if (isDevNetwork(network)) {
-      brush = await MockBrushToken.deploy();
+      brush = await ethers.deployContract("MockBrushToken");
       console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
       await brush.mint(owner, parseEther("10000000"));
       console.log("Minted brush");
-      wftm = await WrappedNative.deploy();
+      wftm = await ethers.deployContract("WrappedNative");
       console.log("Minted WFTM");
       oracleAddress = owner.address;
-      vrf = await MockVRF.deploy();
-      console.log(`mockVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
-      router = await MockRouter.deploy();
-      console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
-      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
-    } else if (network.chainId == 64165n) {
-      // Sonic testnet. Later this should have a bridged version of brush
-      brush = await MockBrushToken.deploy();
-      await brush.waitForDeployment();
+      vrf = await ethers.deployContract("MockVRF");
+      console.log("Minted MockVRF");
+      router = await ethers.deployContract("MockRouter");
+      console.log("Minted SolidlyExtendedRouter");
 
-      tx = await brush.mint(owner, parseEther("10000000"));
+      const FakeDecoratorBrush = await ethers.getContractFactory("FakeDecoratorBrush");
+      fakeBrush = (await upgrades.deployProxy(FakeDecoratorBrush)) as unknown as FakeDecoratorBrush;
+      await fakeBrush.waitForDeployment();
+      console.log("Deployed fake brush");
+      tx = await fakeBrush.mint(owner, ethers.parseEther("10000"));
+      await tx.wait();
+      console.log("Minted fake brush");
+      tx = await fakeBrush.approve(router, ethers.parseEther("100000000"));
+      await tx.wait();
+      console.log("Approved fake brush on the router");
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(
+        brush,
+        wftm,
+        await fakeBrush.getAddress()
+      ));
+    } else if (network.chainId == 64165n) {
+      // Sonic testnet.
+      brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
+
+      tx = await brush.mint(owner, parseEther("1000000000000"));
       console.log("Minted brush");
       await tx.wait();
-      tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100"));
+      tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100000"));
       console.log("Send brush to an account");
       await tx.wait();
 
-      wftm = (await WrappedNative.attach(WFTM_ADDRESS)) as WrappedNative;
+      wftm = (await ethers.getContractAt("WrappedNative", WFTM_ADDRESS)) as WrappedNative;
       oracleAddress = ORACLE_ADDRESS;
-      vrf = (await MockVRF.attach(SAMWITCH_VRF_ADDRESS)) as MockVRF;
-      router = (await MockRouter.attach("0xa6AD18C2aC47803E193F75c3677b14BF19B94883")) as MockRouter;
-      console.log(`mockRouter = "${(await router.getAddress()).toLowerCase()}"`);
-      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(brush, router, wftm));
-    } else if (network.chainId == 250n) {
-      // Fantom mainnet
-      brush = (await MockBrushToken.attach(BRUSH_ADDRESS)) as MockBrushToken;
-      wftm = (await WrappedNative.attach(WFTM_ADDRESS)) as WrappedNative;
-      oracleAddress = ORACLE_ADDRESS;
-      vrf = (await MockVRF.attach(SAMWITCH_VRF_ADDRESS)) as MockVRF;
-      router = (await MockRouter.attach("0x31F63A33141fFee63D4B26755430a390ACdD8a4d")) as MockRouter;
-      paintSwapMarketplaceWhitelist = (await MockPaintSwapMarketplaceWhitelist.attach(
-        "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
-      )) as MockPaintSwapMarketplaceWhitelist;
-      paintSwapDecorator = (await TestPaintSwapDecorator.attach(DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
-      pid = 22;
+      vrf = (await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS)) as MockVRF;
+      console.log("attached wftm and vrf");
+      router = (await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS)) as SolidlyExtendedRouter;
+      console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
+
+      const factory = await ethers.getContractAt("ISolidlyFactory", await router.factory());
+      console.log("Factory is at ", await router.factory());
+
+      const pair = await factory.getPair(brush, WFTM_ADDRESS, false);
+      console.log(pair);
+      if (pair == ethers.ZeroAddress) {
+        tx = await brush.approve(router, ethers.parseEther("100000000"));
+        await tx.wait();
+        console.log("Approved brush on the router");
+
+        tx = await router.addLiquidityETH(
+          brush,
+          false,
+          ethers.parseEther("10000"),
+          ethers.parseEther("10000"),
+          ethers.parseEther("1"),
+          owner,
+          Date.now() + 1000000000,
+          {value: ethers.parseEther("1")}
+        );
+        await tx.wait();
+        console.log("Added liquidity");
+      }
+
+      const FakeDecoratorBrush = await ethers.getContractFactory("FakeDecoratorBrush");
+      fakeBrush = (await upgrades.deployProxy(FakeDecoratorBrush)) as unknown as FakeDecoratorBrush;
+      await fakeBrush.waitForDeployment();
+      console.log("Deployed brushNonTransferrable");
+      tx = await fakeBrush.mint(owner, ethers.parseEther("10000"));
+      await tx.wait();
+      console.log("Minted fake brush");
+      tx = await fakeBrush.approve(router, ethers.parseEther("100000000"));
+      await tx.wait();
+      console.log("Approved fake brush on the router");
+      ({paintSwapMarketplaceWhitelist, paintSwapDecorator} = await deployMockPaintSwapContracts(
+        brush,
+        wftm,
+        await fakeBrush.getAddress()
+      ));
+
+      // End of fake brush
     } else {
       throw Error("Not a supported network");
     }
@@ -168,6 +208,9 @@ async function main() {
   console.log(`wftm = "${(await wftm.getAddress()).toLowerCase()}"`);
   console.log(`oracle = "${oracleAddress.toLowerCase()}"`);
   console.log(`samWitchVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
+  console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
+  console.log(`paintSwapDecorator = "${(await paintSwapDecorator.getAddress()).toLowerCase()}"`);
+  console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
 
   const timeout = 600 * 1000; // 10 minutes
 
@@ -698,7 +741,7 @@ async function main() {
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
   const minHarvestInterval = BigInt(3.75 * 3600); // 3 hours 45 minutes;
-  /*  const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
+  const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
   const territoryTreasury = await upgrades.deployProxy(TerritoryTreasury, [
     await territories.getAddress(),
     await brush.getAddress(),
@@ -710,7 +753,7 @@ async function main() {
     pid
   ]);
   await territoryTreasury.waitForDeployment();
-  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`); */
+  console.log(`territoryTreasury = "${(await territoryTreasury.getAddress()).toLowerCase()}"`);
 
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = (await upgrades.deployProxy(BankRegistry, [], {
@@ -774,7 +817,7 @@ async function main() {
         await lockedBankVaults.getAddress(),
         await territories.getAddress(),
         await clanBattleLibrary.getAddress(),
-        //        await territoryTreasury.getAddress(),
+        await territoryTreasury.getAddress(),
         await combatantsHelper.getAddress(),
         await vrfRequestInfo.getAddress(),
         await bank.getAddress(),
@@ -875,7 +918,7 @@ async function main() {
 
   tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await tx.wait();
-  console.log("lockedBankVaults initializeAddresses");
+  console.log("lockedBankVaults.initializeAddresses");
 
   tx = await territories.setCombatantsHelper(combatantsHelper);
   await tx.wait();
@@ -895,8 +938,7 @@ async function main() {
   await tx.wait();
   console.log("treasury.setFundAllocationPercentages");
 
-  //  tx = await treasury.initializeAddresses(territoryTreasury, shop);
-  tx = await treasury.initializeAddresses(ethers.ZeroAddress, shop); // TODO: Update later
+  tx = await treasury.initializeAddresses(territoryTreasury, shop);
   await tx.wait();
   console.log("treasury.initializeAddresses");
 
@@ -930,6 +972,14 @@ async function main() {
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();
   console.log("Add xp threshold rewards");
+
+  // TODO: Remove this when we no longer have the decorator
+  tx = await fakeBrush.approve(territoryTreasury, ethers.parseEther("10000000"));
+  await tx.wait();
+  console.log("Approved fake brush on the territory treasury");
+  tx = await territoryTreasury.deposit();
+  await tx.wait();
+  console.log("Deposit fake brush to territory treasury which deposits to the decorator");
 
   const chunkSize = 100;
   for (let i = 0; i < allItems.length; i += chunkSize) {
@@ -1130,7 +1180,8 @@ async function main() {
       bankRelay,
       lockedBankVaults,
       minItemQuantityBeforeSellsAllowed,
-      orderBook
+      orderBook,
+      quests
     );
   }
 }

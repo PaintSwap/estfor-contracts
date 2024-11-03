@@ -10,7 +10,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {AdminAccess} from "./AdminAccess.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
-import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {PetNFTLibrary} from "./PetNFTLibrary.sol";

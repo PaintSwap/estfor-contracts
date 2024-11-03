@@ -7,7 +7,7 @@ import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
-import {IRouterV2} from "./interfaces/IRouterV2.sol";
+import {ISolidlyRouter, Route} from "./interfaces/external/ISolidlyRouter.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -69,9 +69,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint256 playerId => mapping(uint256 queueId => PlayerQuest quest)) private _inProgressFixedQuests; // Only puts it here if changing active quest for something else
   mapping(uint256 questId => MinimumRequirement[3]) private _minimumRequirements;
   mapping(uint256 playerId => PlayerQuestInfo) private _playerInfo;
-  IRouterV2 private _router;
-  address private _buyPath1; // For buying brush
-  address private _buyPath2;
+  // For buying/selling brush
+  ISolidlyRouter private _router;
+  address private _wNative; // wFTM
+  address private _brush; // brush
 
   modifier onlyWorld() {
     require(_msgSender() == _world, NotWorld());
@@ -93,16 +94,16 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(address world, IRouterV2 router, address[2] calldata buyPath) external initializer {
+  function initialize(address world, ISolidlyRouter router, address[2] calldata path) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
     _world = world;
     _router = router;
-    _buyPath1 = buyPath[0];
-    _buyPath2 = buyPath[1];
+    _wNative = path[0];
+    _brush = path[1];
 
-    IERC20(buyPath[1]).approve(address(router), type(uint256).max);
+    IERC20(_brush).approve(address(router), type(uint256).max);
   }
 
   function allFixedQuests(uint256 questId) external view returns (Quest memory) {
@@ -228,16 +229,15 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
 
     uint256 deadline = block.timestamp + 10 minutes;
     // Buy brush and send it back to the user
-    address[] memory buyPath = new address[](2);
-    buyPath[0] = _buyPath1;
-    buyPath[1] = _buyPath2;
+    Route[] memory routes = new Route[](1);
+    routes[0] = Route({from: _wNative, to: _brush, stable: false});
 
     if (useExactETH) {
       uint256 amountOutMin = minimumBrushExpected;
-      amounts = _router.swapExactETHForTokens{value: msg.value}(amountOutMin, buyPath, to, deadline);
+      amounts = _router.swapExactETHForTokens{value: msg.value}(amountOutMin, routes, to, deadline);
     } else {
       uint256 amountOut = minimumBrushExpected;
-      amounts = _router.swapETHForExactTokens{value: msg.value}(amountOut, buyPath, to, deadline);
+      amounts = _router.swapETHForExactTokens{value: msg.value}(amountOut, routes, to, deadline);
       if (amounts[0] != 0 && _msgSender() != address(_players)) {
         // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
         (bool success, ) = _msgSender().call{value: msg.value - amounts[0]}("");
@@ -251,21 +251,19 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     require(brushAmount != 0, InvalidBrushAmount());
 
     uint256 deadline = block.timestamp + 10 minutes;
-    // Sell brush and send ftm back to the user
-    address[] memory sellPath = new address[](2);
-    sellPath[0] = _buyPath2;
-    sellPath[1] = _buyPath1;
-
-    IERC20(sellPath[0]).transferFrom(_msgSender(), address(this), brushAmount);
+    Route[] memory routes = new Route[](1);
+    routes[0] = Route({from: _wNative, to: _brush, stable: false});
+    address token = _brush;
+    IERC20(token).transferFrom(_msgSender(), address(this), brushAmount);
 
     if (useExactETH) {
       uint256 amountOut = minFTM;
       uint256 amountInMax = brushAmount;
-      _router.swapTokensForExactETH(amountOut, amountInMax, sellPath, to, deadline);
+      _router.swapTokensForExactETH(amountOut, amountInMax, routes, to, deadline);
     } else {
       uint256 amountIn = brushAmount;
       uint256 amountOutMin = minFTM;
-      _router.swapExactTokensForETH(amountIn, amountOutMin, sellPath, to, deadline);
+      _router.swapExactTokensForETH(amountIn, amountOutMin, routes, to, deadline);
     }
   }
 

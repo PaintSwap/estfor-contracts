@@ -7,11 +7,11 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import {IBrushToken} from "../interfaces/IBrushToken.sol";
+import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
-import {IMarketplaceWhitelist} from "../interfaces/IMarketplaceWhitelist.sol";
+import {IMarketplaceWhitelist} from "../interfaces/external/IMarketplaceWhitelist.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 

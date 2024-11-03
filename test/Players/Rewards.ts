@@ -2366,7 +2366,7 @@ describe("Rewards", function () {
     });
 
     it("Ticket excess with rare items uses higher chance reward system", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, world, alice, mockVRF, playersImplMisc} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         melee: 1,
@@ -2378,7 +2378,7 @@ describe("Rewards", function () {
         health: 1
       };
 
-      const randomRewardChanceMultiplier = await players.RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF();
+      const randomRewardChanceMultiplier = await playersImplMisc.getRandomRewardChanceMultiplierCutoff();
       const randomChance = 999;
       expect(randomRewardChanceMultiplier).to.be.gt(randomChance);
       const numSpawned = 150 * SPAWN_MUL;

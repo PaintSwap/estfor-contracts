@@ -791,7 +791,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         isCombat,
         pendingQueuedActionProcessed,
         address(_world),
-        MAX_SUCCESS_PERCENT_CHANCE_,
+        MAX_SUCCESS_PERCENT_CHANCE,
         _playerXP[playerId]
       );
   }

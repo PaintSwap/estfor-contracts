@@ -193,7 +193,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract Router",
+        "internalType": "contract ISolidlyRouter",
         "name": "router",
         "type": "address"
       },

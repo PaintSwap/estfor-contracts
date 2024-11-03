@@ -431,15 +431,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return _globalBoost;
   }
 
-  function RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF() external pure returns (uint256) {
-    return RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_;
-  }
-
   function isPlayerUpgraded(uint256 playerId) external view override returns (bool) {
     return _isPlayerFullMode(playerId);
   }
-
-  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
   function setImpls(
     address implQueueActions,
@@ -536,4 +530,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       }
     }
   }
+
+  // solhint-disable-next-line no-empty-blocks
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

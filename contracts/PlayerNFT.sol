@@ -7,7 +7,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
-import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 

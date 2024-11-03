@@ -145,13 +145,13 @@ abstract contract PlayersBase {
   error PlayerNotUpgraded();
   error PetNotOwned();
 
-  uint32 internal constant MAX_TIME_ = 1 days;
-  uint256 internal constant START_XP_ = 374;
+  uint32 internal constant MAX_TIME = 1 days;
+  uint256 internal constant START_XP = 374;
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
-  uint256 internal constant MAX_SUCCESS_PERCENT_CHANCE_ = 90;
+  uint256 internal constant MAX_SUCCESS_PERCENT_CHANCE = 90;
   // The random chance where the odds are increased when there are dice roll overflows.
   // Don't set this above 1747 otherwise it can result in 100% chance for anything around that value
-  uint256 internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_ = 1328;
+  uint256 internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF = 1328;
 
   // *IMPORTANT* keep as the first non-constant state variable
   uint256 internal _startSlot;

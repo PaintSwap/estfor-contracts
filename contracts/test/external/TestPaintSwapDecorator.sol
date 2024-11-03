@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later Or MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import {IPaintSwapDecorator} from "../../interfaces/IPaintSwapDecorator.sol";
+import {IPaintSwapDecorator} from "../../interfaces/external/IPaintSwapDecorator.sol";
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
@@ -313,6 +313,7 @@ interface IPancakePair {
 
   function initialize(address, address) external;
 }
+
 interface IPancakeRouter01 {
   function factory() external view returns (address);
 
@@ -1382,9 +1383,8 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
   event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
   event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
 
-  constructor(BrushToken _brush, IPancakeRouter02 _router, address _wftm, uint256 _brushPerSecond, uint256 _startTime) {
+  constructor(BrushToken _brush, address _wftm, uint256 _brushPerSecond, uint256 _startTime) {
     brush = _brush;
-    router = _router;
     brushPerSecond = _brushPerSecond;
     startTime = _startTime;
     wftm = _wftm;
@@ -1392,7 +1392,6 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     inverseWithdrawFeeLP = 100;
     depositsDisabled = false;
 
-    universalApprove(_brush, address(router), type(uint256).max);
     lps.values.push(address(_brush));
     lps.is_in[address(_brush)] = true;
   }
@@ -1419,7 +1418,6 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
 
     lps.values.push(address(_lpToken));
     lps.is_in[address(_lpToken)] = true;
-    universalApprove(_lpToken, address(router), type(uint256).max);
   }
 
   // Update the given pool's BRUSH allocation point. Can only be called by the owner.
@@ -1501,7 +1499,7 @@ contract TestPaintSwapDecorator is Ownable, IPaintSwapDecorator {
     }
   }
 
-  // Deposit LP tokens to Decorator for BRUSH allocation.
+  // Deposit tokens or LP tokens to Decorator for BRUSH allocation.
   function deposit(uint256 _pid, uint256 _amount) public {
     require(!depositsDisabled);
     PoolInfo storage pool = poolInfo_[_pid];

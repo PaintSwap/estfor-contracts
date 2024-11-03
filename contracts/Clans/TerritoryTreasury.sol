@@ -6,9 +6,9 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
-import {IBrushToken} from "../interfaces/IBrushToken.sol";
+import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
-import {IPaintSwapDecorator} from "../interfaces/IPaintSwapDecorator.sol";
+import {IPaintSwapDecorator} from "../interfaces/external/IPaintSwapDecorator.sol";
 import {Treasury} from "../Treasury.sol";
 
 contract TerritoryTreasury is UUPSUpgradeable, OwnableUpgradeable {
@@ -32,7 +32,7 @@ contract TerritoryTreasury is UUPSUpgradeable, OwnableUpgradeable {
   uint40 private _nextHarvestAllowedTimestamp;
   /* TODO: delete after the decorator is no longer used */
   IPaintSwapDecorator private _decorator;
-  IERC20 private _lpToken;
+  IERC20 private _fakeBrush;
   uint16 private _pid;
   /* End delete */
 
@@ -65,15 +65,15 @@ contract TerritoryTreasury is UUPSUpgradeable, OwnableUpgradeable {
     _treasury = treasury;
     _brush.approve(address(territories), type(uint256).max);
     setMinHarvestInterval(minHarvestInterval);
-
+    // Must set before calling setPID
     _decorator = decorator;
     setPID(pid);
   }
 
   function deposit() external {
-    uint256 balance = _lpToken.balanceOf(_msgSender());
+    uint256 balance = _fakeBrush.balanceOf(_msgSender());
     require(balance != 0, ZeroBalance());
-    require(_lpToken.transferFrom(_msgSender(), address(this), balance), TransferFailed());
+    require(_fakeBrush.transferFrom(_msgSender(), address(this), balance), TransferFailed());
     _decorator.deposit(_pid, balance);
     emit Deposit(balance);
   }
@@ -112,9 +112,9 @@ contract TerritoryTreasury is UUPSUpgradeable, OwnableUpgradeable {
     (address lpToken, , , ) = _decorator.poolInfo(pid);
     require(lpToken != address(0), InvalidPool());
 
-    _lpToken = IERC20(lpToken);
+    _fakeBrush = IERC20(lpToken);
     _pid = uint16(pid);
-    _lpToken.approve(address(_decorator), type(uint256).max);
+    IERC20(lpToken).approve(address(_decorator), type(uint256).max);
   }
 
   function setMinHarvestInterval(uint16 minHarvestInterval) public onlyOwner {

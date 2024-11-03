@@ -284,7 +284,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         );
         uint256 extraBoost = skillLevel - minLevel;
 
-        successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE_, actionChoice.successPercent + extraBoost));
+        successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE, actionChoice.successPercent + extraBoost));
       }
 
       uint24 numProduced = uint24(
@@ -558,13 +558,13 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256[] calldata startingAmounts
   ) external {
     Player storage player = _players[playerId];
-    player.totalXP = uint56(START_XP_);
+    player.totalXP = uint56(START_XP);
 
     uint256 length = uint256(startSkills[1] != Skill.NONE ? 2 : 1);
-    uint32 xpEach = uint32(START_XP_ / length);
+    uint32 xpEach = uint32(START_XP / length);
 
-    for (uint256 iter; iter < length; iter++) {
-      Skill skill = startSkills[iter];
+    for (uint256 i; i < length; ++i) {
+      Skill skill = startSkills[i];
       _updateXP(from, playerId, skill, xpEach);
     }
 
@@ -622,7 +622,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           mintMultipliers[jter] = 1;
           mintMultipliersExcess[jter] = 1;
           if (numTickets > MAX_UNIQUE_TICKETS) {
-            if (randomReward.chance <= RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF_) {
+            if (randomReward.chance <= RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF) {
               // Rare item, increase chance if there aren't enough unique tickets
               extraChances[jter] = uint16(randomReward.chance * multiplier);
               extraChancesExcess[jter] = uint16(randomReward.chance * (multiplier + 1));
@@ -667,6 +667,10 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       mstore(ids, length)
       mstore(amounts, length)
     }
+  }
+
+  function getRandomRewardChanceMultiplierCutoff() external pure returns (uint256) {
+    return RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF;
   }
 
   function _setupRandomRewards(

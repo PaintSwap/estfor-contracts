@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {SamWitchERC1155UpgradeableSinglePerToken} from "../SamWitchERC1155UpgradeableSinglePerToken.sol";
+import {SamWitchERC1155UpgradeableSinglePerToken} from "../../SamWitchERC1155UpgradeableSinglePerToken.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 

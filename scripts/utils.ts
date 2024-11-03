@@ -3,7 +3,6 @@ import {ethers, run} from "hardhat";
 import {
   MockBrushToken,
   MockPaintSwapMarketplaceWhitelist,
-  MockRouter,
   WrappedNative,
   PlayerNFT,
   PlayersImplMisc,
@@ -123,27 +122,28 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
 
 export const deployMockPaintSwapContracts = async (
   brush: MockBrushToken,
-  router: MockRouter,
-  wftm: WrappedNative
+  wftm: WrappedNative,
+  fakeBrushLP: string
 ): Promise<{
   paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   paintSwapDecorator: TestPaintSwapDecorator;
+  pid: number;
 }> => {
-  const MockPaintSwapMarketplaceWhitelist = await ethers.getContractFactory("MockPaintSwapMarketplaceWhitelist");
-  const TestPaintSwapDecorator = await ethers.getContractFactory("TestPaintSwapDecorator");
-
-  const paintSwapMarketplaceWhitelist = await MockPaintSwapMarketplaceWhitelist.deploy();
-
-  console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
+  const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
   const brushPerSecond = parseEther("2");
   const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
-  const paintSwapDecorator = await TestPaintSwapDecorator.deploy(brush, router, wftm, brushPerSecond, NOW);
+  const paintSwapDecorator = await ethers.deployContract("TestPaintSwapDecorator", [brush, wftm, brushPerSecond, NOW]);
 
-  console.log(`paintSwapDecorator = "${(await paintSwapDecorator.getAddress()).toLowerCase()}"`);
-  const lp = await ethers.deployContract("MockBrushToken");
-  await paintSwapDecorator.add("2000", lp, true);
+  const token = await ethers.getContractAt("IERC20", fakeBrushLP);
+  let tx = await token.approve(paintSwapDecorator, parseEther("1000000000000000000000"));
+  await tx.wait();
+  console.log("Approve fake brush LP");
 
-  return {paintSwapMarketplaceWhitelist, paintSwapDecorator};
+  // Add the LP to the decorator
+  tx = await paintSwapDecorator.add("1", fakeBrushLP, true);
+  await tx.wait();
+  const pid = 0;
+  return {paintSwapMarketplaceWhitelist, paintSwapDecorator, pid};
 };
 
 export const isBeta = process.env.IS_BETA == "true";

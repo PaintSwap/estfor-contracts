@@ -1552,19 +1552,6 @@
   },
   {
     "inputs": [],
-    "name": "RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "UPGRADE_INTERFACE_VERSION",
     "outputs": [
       {

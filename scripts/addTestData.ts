@@ -14,6 +14,7 @@ import {
   OrderBook,
   PlayerNFT,
   Players,
+  Quests,
   Shop
 } from "../typechain-types";
 import {createPlayer, isDevNetwork} from "./utils";
@@ -35,7 +36,8 @@ export const addTestData = async (
   bankRelay: BankRelay,
   lockedBankVaults: LockedBankVaults,
   minItemQuantityBeforeSellsAllowed: bigint,
-  orderBook: OrderBook
+  orderBook: OrderBook,
+  quests: Quests
 ) => {
   const [owner, alice] = await ethers.getSigners();
 
@@ -329,4 +331,9 @@ export const addTestData = async (
   ]);
   await tx.wait();
   console.log("Make a limit order");
+
+  // Buy some brush
+  tx = await quests.buyBrush(owner, 1, true, {value: ethers.parseEther("0.001")});
+  await tx.wait();
+  console.log("Bought some brush");
 };

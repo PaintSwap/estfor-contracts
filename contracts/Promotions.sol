@@ -8,7 +8,7 @@ import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
-import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {World} from "./World.sol";
 import {PromotionsLibrary} from "./PromotionsLibrary.sol";

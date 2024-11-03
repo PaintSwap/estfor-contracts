@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {IBrushToken} from "../interfaces/IBrushToken.sol";
+import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";

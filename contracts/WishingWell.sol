@@ -6,7 +6,7 @@ import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import {IBrushToken} from "./interfaces/IBrushToken.sol";
+import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";

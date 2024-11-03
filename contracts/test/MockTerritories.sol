@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {ITerritories} from "../interfaces/ITerritories.sol";
-import {IBrushToken} from "../interfaces/IBrushToken.sol";
+import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 
 contract MockTerritories is ITerritories {
   uint256 public addUnclaimedEmissionsCBCount;

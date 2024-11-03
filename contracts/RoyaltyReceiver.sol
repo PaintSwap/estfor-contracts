@@ -4,17 +4,10 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import {IBrushToken} from "./interfaces/IBrushToken.sol";
-import {ITerritories} from "./interfaces/ITerritories.sol";
+import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
+import {ISolidlyRouter, Route} from "./interfaces/external/ISolidlyRouter.sol";
 
-interface Router {
-  function swapExactETHForTokens(
-    uint256 amountOutMin,
-    address[] calldata path,
-    address to,
-    uint256 deadline
-  ) external payable returns (uint256[] memory amounts);
-}
+import {ITerritories} from "./interfaces/ITerritories.sol";
 
 contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   uint256 public constant MIN_BRUSH_TO_DISTRIBUTE = 100 ether;
@@ -28,7 +21,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   error FailedSendToDev();
   error BrushTooLowToDistribute();
 
-  Router private _router;
+  ISolidlyRouter private _router;
   address private _pool;
   IBrushToken private _brush;
   address private _wNative;
@@ -37,7 +30,7 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
   uint256 private constant DEADLINE_DURATION = 10 minutes; // Doesn't matter
 
   function initialize(
-    Router router,
+    ISolidlyRouter router,
     address pool,
     address dev,
     IBrushToken brush,
@@ -64,12 +57,6 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     _territories.addUnclaimedEmissions(balance);
   }
 
-  function _buyPath() private view returns (address[] memory buyPath) {
-    buyPath = new address[](2);
-    buyPath[0] = _wNative;
-    buyPath[1] = address(_brush);
-  }
-
   function canDistribute() external view returns (bool) {
     return _brush.balanceOf(address(this)) >= MIN_BRUSH_TO_DISTRIBUTE;
   }
@@ -87,9 +74,12 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     require(success, FailedSendToDev());
 
     // Buy brush and send it to the pool
+    Route[] memory routes = new Route[](1);
+    routes[0] = Route({from: _wNative, to: address(_brush), stable: false});
+
     uint256[] memory amounts = _router.swapExactETHForTokens{value: msg.value - third}(
       0,
-      _buyPath(),
+      routes,
       address(this),
       deadline
     );
