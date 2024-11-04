@@ -862,31 +862,25 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit GateKeepNFTs(clanId, nfts, playerId);
   }
 
-  function setBankFactory(IBankFactory bankFactory) external onlyOwner {
-    require(address(_bankFactory) == address(0), BankFactoryAlreadySet());
-    _bankFactory = bankFactory;
-  }
+  function initializeAddresses(
+    IPlayers players,
+    IBankFactory bankFactory,
+    IClanMemberLeftCB territories,
+    IClanMemberLeftCB lockedBankVaults,
+    address paintswapMarketplaceWhitelist
+  ) external onlyOwner {
+    require(address(_bankFactory) == address(0) || _bankFactory == bankFactory, BankFactoryAlreadySet());
 
-  function setPlayers(IPlayers players) external onlyOwner {
-    require(address(_players) == address(0), PlayersAlreadySet());
     _players = players;
+    _bankFactory = bankFactory;
+    _territories = territories;
+    _lockedBankVaults = lockedBankVaults;
+    _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
   }
 
   function setEditNameCost(uint80 editNameCost) public onlyOwner {
     _editNameCost = editNameCost;
     emit EditNameCost(editNameCost);
-  }
-
-  function setPaintSwapMarketplaceWhitelist(address paintswapMarketplaceWhitelist) external onlyOwner {
-    _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
-  }
-
-  function setTerritoriesAndLockedBankVaults(
-    IClanMemberLeftCB territories,
-    IClanMemberLeftCB lockedBankVaults
-  ) external onlyOwner {
-    _territories = territories;
-    _lockedBankVaults = lockedBankVaults;
   }
 
   function setInitialMMR(uint16 mmr) public onlyOwner {

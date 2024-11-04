@@ -486,12 +486,11 @@ export const playersFixture = async function () {
 
   await playerNFT.setPlayers(players);
   await quests.setPlayers(players);
-  await clans.setPlayers(players);
   await wishingWell.setPlayers(players);
 
-  await clans.setBankFactory(bankFactory);
-
   await petNFT.initializeAddresses(instantVRFActions, players, territories);
+
+  await clans.initializeAddresses(players, bankFactory, territories, lockedBankVaults, paintSwapMarketplaceWhitelist);
 
   await playerNFT.setBrushDistributionPercentages(25, 50, 25);
   await petNFT.setBrushDistributionPercentages(25, 50, 25);
@@ -506,8 +505,6 @@ export const playersFixture = async function () {
   await treasury.setSpenders([shop], true);
 
   await bankRelay.setBankFactory(bankFactory);
-
-  await clans.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
 
   await itemNFT.initializeAddresses(bankFactory);
   await itemNFT.setApproved(
