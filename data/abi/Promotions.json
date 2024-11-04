@@ -1266,6 +1266,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract World",
+        "name": "world",
+        "type": "address"
+      },
+      {
         "internalType": "contract ItemNFT",
         "name": "itemNFT",
         "type": "address"
@@ -1535,7 +1540,7 @@
         "type": "uint8[]"
       }
     ],
-    "name": "testClearPlayerPromotion",
+    "name": "testClearPlayerPromotions",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

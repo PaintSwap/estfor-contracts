@@ -344,14 +344,7 @@ async function main() {
   });
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [
-      await world.getAddress(),
-      await shop.getAddress(),
-      await royaltyReceiver.getAddress(),
-      await adminAccess.getAddress(),
-      itemsUri,
-      isBeta
-    ],
+    [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
@@ -538,6 +531,7 @@ async function main() {
     Promotions,
     [
       await players.getAddress(),
+      await world.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
       await brush.getAddress(),
@@ -894,20 +888,26 @@ async function main() {
   await tx.wait();
   console.log("clans.setTerritoriesAndLockedBankVaults");
 
-  tx = await itemNFT.initializeAddresses(
-    players,
-    bankFactory,
-    shop,
-    promotions,
-    instantActions,
-    territories,
-    lockedBankVaults,
-    orderBook,
-    instantVRFActions,
-    passiveActions
-  );
+  tx = await itemNFT.initializeAddresses(bankFactory);
   await tx.wait();
   console.log("itemNFT.initializeAddresses");
+
+  tx = await itemNFT.setApproved(
+    [
+      players,
+      shop,
+      promotions,
+      instantActions,
+      territories,
+      lockedBankVaults,
+      orderBook,
+      instantVRFActions,
+      passiveActions
+    ],
+    true
+  );
+  await tx.wait();
+  console.log("itemNFT.setApproved");
 
   tx = await royaltyReceiver.setTerritories(territories);
   await tx.wait();

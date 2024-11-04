@@ -86,14 +86,7 @@ describe("ItemNFT", function () {
     const itemsUri = "ipfs://";
     const itemNFT = (await upgrades.deployProxy(
       ItemNFT,
-      [
-        await world.getAddress(),
-        await shop.getAddress(),
-        await royaltyReceiver.getAddress(),
-        await adminAccess.getAddress(),
-        itemsUri,
-        isBeta
-      ],
+      [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"]
@@ -312,7 +305,7 @@ describe("ItemNFT", function () {
       itemNFT.connect(alice).safeTransferFrom(owner, alice, EstforConstants.BRONZE_AXE, 1, "0x")
     ).to.be.revertedWithCustomError(itemNFT, "ERC1155MissingApprovalForAll");
 
-    await itemNFT.initializeAddresses(alice, alice, alice, alice, alice, alice, alice, alice, alice, alice);
+    await itemNFT.setApproved([alice], true);
     await expect(itemNFT.connect(alice).safeTransferFrom(owner, alice, EstforConstants.BRONZE_AXE, 1, "0x")).to.not.be
       .reverted;
   });
@@ -329,14 +322,7 @@ describe("ItemNFT", function () {
     const itemsUri = "ipfs://";
     const itemNFTNotBeta = await upgrades.deployProxy(
       ItemNFT,
-      [
-        await world.getAddress(),
-        await shop.getAddress(),
-        await royaltyReceiver.getAddress(),
-        await adminAccess.getAddress(),
-        itemsUri,
-        isBeta
-      ],
+      [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"]

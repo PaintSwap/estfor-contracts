@@ -373,18 +373,8 @@ describe("PlayerNFT", function () {
       }
     );
 
-    await itemNFT.initializeAddresses(
-      players,
-      bankFactory,
-      shop,
-      promotions,
-      instantActions,
-      territories,
-      lockedBankVaults,
-      ethers.ZeroAddress,
-      instantVRFActions,
-      passiveActions
-    );
+    await itemNFT.initializeAddresses(bankFactory);
+    await itemNFT.setApproved([shop, players], true);
 
     await playerNFTNotBeta.setPlayers(await players.getAddress());
     await playerNFTNotBeta.setAvatars([avatarId], [avatarInfo]);

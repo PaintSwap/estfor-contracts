@@ -10,7 +10,6 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
-import {World} from "./World.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
 // solhint-disable-next-line no-global-import
@@ -34,64 +33,35 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotAdminAndBeta();
   error LengthMismatch();
 
-  World private _world;
-  bool private _isBeta;
+  uint16 private _totalSupplyAll;
   string private _baseURI;
 
-  // How many of this item exist
-  mapping(uint256 itemId => uint256 amount) private _itemBalances;
-  mapping(uint256 itemId => uint256 timestamp) private _timestampFirstMint;
-
-  address private _players;
-  address private _shop;
-  uint16 private _totalSupplyAll;
+  AdminAccess private _adminAccess;
+  bool private _isBeta;
+  IBankFactory private _bankFactory;
 
   // Royalties
   address private _royaltyReceiver;
   uint8 private _royaltyFee; // base 1000, highest is 25.5
 
+  // How many of this item exist
+  mapping(uint256 itemId => uint256 amount) private _itemBalances;
+  mapping(uint256 itemId => uint256 timestamp) private _timestampFirstMint;
+
   mapping(uint256 itemId => string tokenURI) private _tokenURIs;
   mapping(uint256 itemId => CombatStats combatStats) private _combatStats;
   mapping(uint256 itemId => Item item) private _items;
 
-  AdminAccess private _adminAccess;
-  IBankFactory private _bankFactory;
-  address private _promotions;
-  address private _instantActions;
-  address private _territories;
-  address private _lockedBankVaults;
-  address private _bazaar;
-  address private _instantVRFActions;
-  address private _passiveActions;
+  mapping(address account => bool isApproved) private _approvals;
 
   modifier onlyMinters() {
-    address sender = _msgSender();
-    require(
-      sender == _players ||
-        sender == _shop ||
-        sender == _promotions ||
-        sender == _instantActions ||
-        sender == _instantVRFActions ||
-        sender == _passiveActions,
-      NotMinter()
-    );
+    require(_isApproved(_msgSender()), NotMinter());
     _;
   }
 
   modifier onlyBurners(address from) {
     address sender = _msgSender();
-    require(
-      sender == from ||
-        isApprovedForAll(from, sender) ||
-        sender == _players ||
-        sender == _shop ||
-        sender == _instantActions ||
-        sender == _instantVRFActions ||
-        sender == _territories ||
-        sender == _lockedBankVaults ||
-        sender == _passiveActions,
-      NotBurner()
-    );
+    require(sender == from || isApprovedForAll(from, sender), NotBurner());
     _;
   }
 
@@ -106,19 +76,15 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function initialize(
-    World world,
-    address shop,
     address royaltyReceiver,
-    AdminAccess adminAccess,
     string calldata baseURI,
+    AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
     __ERC1155_init("");
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
-    _world = world;
-    _shop = shop;
     _baseURI = baseURI;
     _royaltyFee = 30; // 3%
     _royaltyReceiver = royaltyReceiver;
@@ -243,9 +209,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       } else {
         _checkIsTransferable(from, ids);
       }
-      if (_players == address(0)) {
-        require(block.chainid == 31337, InvalidChainId());
-      }
     }
     super._update(from, to, ids, amounts);
   }
@@ -290,6 +253,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       EquipmentPositionShouldNotChange()
     );
     item = _setItem(inputItem);
+  }
+
+  function _isApproved(address account) private view returns (bool) {
+    return _approvals[account];
   }
 
   function uri(uint256 tokenId) public view virtual override returns (string memory) {
@@ -399,7 +366,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
    * @dev See {IERC1155-isApprovedForAll}.
    */
   function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
-    return super.isApprovedForAll(account, operator) || operator == _bazaar;
+    return super.isApprovedForAll(account, operator) || _approvals[operator];
   }
 
   function supportsInterface(bytes4 interfaceId) public view override(IERC165, ERC1155Upgradeable) returns (bool) {
@@ -412,14 +379,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function symbol() external view returns (string memory) {
     return string(abi.encodePacked("EK_I", _isBeta ? "B" : ""));
-  }
-
-  function getPlayersAddress() external view returns (address) {
-    return _players;
-  }
-
-  function getWorld() external view returns (World) {
-    return _world;
   }
 
   function addItems(ItemInput[] calldata inputItems) external onlyOwner {
@@ -463,28 +422,14 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     emit RemoveItems(itemTokenIds);
   }
 
-  function initializeAddresses(
-    address players,
-    IBankFactory bankFactory,
-    address shop,
-    address promotions,
-    address instantActions,
-    address territories,
-    address lockedBankVaults,
-    address bazaar,
-    address instantVRFActions,
-    address passiveActions
-  ) external onlyOwner {
-    _players = players;
+  function initializeAddresses(IBankFactory bankFactory) external onlyOwner {
     _bankFactory = bankFactory;
-    _shop = shop;
-    _promotions = promotions;
-    _instantActions = instantActions;
-    _territories = territories;
-    _lockedBankVaults = lockedBankVaults;
-    _bazaar = bazaar;
-    _instantVRFActions = instantVRFActions;
-    _passiveActions = passiveActions;
+  }
+
+  function setApproved(address[] calldata accounts, bool isApproved) external onlyOwner {
+    for (uint256 i = 0; i < accounts.length; ++i) {
+      _approvals[accounts[i]] = isApproved;
+    }
   }
 
   function setBaseURI(string calldata baseURI) external onlyOwner {

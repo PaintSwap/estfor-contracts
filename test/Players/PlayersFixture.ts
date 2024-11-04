@@ -113,14 +113,7 @@ export const playersFixture = async function () {
   const itemsUri = "ipfs://";
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [
-      await world.getAddress(),
-      await shop.getAddress(),
-      await royaltyReceiver.getAddress(),
-      await adminAccess.getAddress(),
-      itemsUri,
-      isBeta
-    ],
+    [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"]
@@ -277,6 +270,7 @@ export const playersFixture = async function () {
     Promotions,
     [
       await players.getAddress(),
+      await world.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
       await brush.getAddress(),
@@ -516,17 +510,10 @@ export const playersFixture = async function () {
 
   await clans.setTerritoriesAndLockedBankVaults(territories, lockedBankVaults);
 
-  await itemNFT.initializeAddresses(
-    players,
-    bankFactory,
-    shop,
-    promotions,
-    instantActions,
-    territories,
-    lockedBankVaults,
-    ethers.ZeroAddress,
-    instantVRFActions,
-    passiveActions
+  await itemNFT.initializeAddresses(bankFactory);
+  await itemNFT.setApproved(
+    [players, shop, promotions, instantActions, territories, lockedBankVaults, instantVRFActions, passiveActions],
+    true
   );
 
   await royaltyReceiver.setTerritories(territories);

@@ -85,19 +85,14 @@ describe("Shop", function () {
     const itemsUri = "ipfs://";
     const itemNFT = (await upgrades.deployProxy(
       ItemNFT,
-      [
-        await world.getAddress(),
-        await shop.getAddress(),
-        await royaltyReceiver.getAddress(),
-        await adminAccess.getAddress(),
-        itemsUri,
-        isBeta
-      ],
+      [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
       {
         kind: "uups",
         unsafeAllow: ["external-library-linking"]
       }
     )) as unknown as ItemNFT;
+
+    await itemNFT.setApproved([shop], true);
 
     await shop.setItemNFT(itemNFT);
 

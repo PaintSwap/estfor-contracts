@@ -1396,19 +1396,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getPlayersAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -1428,44 +1415,21 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getWorld",
-    "outputs": [
-      {
-        "internalType": "contract World",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
-      {
-        "internalType": "contract World",
-        "name": "world",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "shop",
-        "type": "address"
-      },
       {
         "internalType": "address",
         "name": "royaltyReceiver",
         "type": "address"
       },
       {
-        "internalType": "contract AdminAccess",
-        "name": "adminAccess",
-        "type": "address"
-      },
-      {
         "internalType": "string",
         "name": "baseURI",
         "type": "string"
+      },
+      {
+        "internalType": "contract AdminAccess",
+        "name": "adminAccess",
+        "type": "address"
       },
       {
         "internalType": "bool",
@@ -1481,53 +1445,8 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "players",
-        "type": "address"
-      },
-      {
         "internalType": "contract IBankFactory",
         "name": "bankFactory",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "shop",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "promotions",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "instantActions",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "territories",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "lockedBankVaults",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "bazaar",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "instantVRFActions",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "passiveActions",
         "type": "address"
       }
     ],
@@ -1804,6 +1723,24 @@
       }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "accounts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "isApproved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApproved",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
