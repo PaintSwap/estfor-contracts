@@ -189,7 +189,7 @@ export const addTestData = async (
   // Buy from shop
   tx = await brush.approve(shop, parseEther("100"));
   await tx.wait();
-  console.log("Approve brush");
+  console.log("Approve brush for buying in the shop");
 
   tx = await shop.buy(owner, EstforConstants.MAGIC_FIRE_STARTER, 1);
   await tx.wait();
@@ -336,4 +336,13 @@ export const addTestData = async (
   tx = await quests.buyBrush(owner, 1, true, {value: ethers.parseEther("0.001")});
   await tx.wait();
   console.log("Bought some brush");
+
+  // Sell some brush
+  tx = await brush.approve(quests, ethers.parseEther("1"));
+  await tx.wait();
+  console.log("Approve brush for selling in quests");
+
+  tx = await quests.sellBrush(owner, ethers.parseEther("0.001"), 0, false);
+  await tx.wait();
+  console.log("Sold brush");
 };

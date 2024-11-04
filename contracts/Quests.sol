@@ -252,7 +252,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
 
     uint256 deadline = block.timestamp + 10 minutes;
     Route[] memory routes = new Route[](1);
-    routes[0] = Route({from: _wNative, to: _brush, stable: false});
+    routes[0] = Route({from: _brush, to: _wNative, stable: false});
     address token = _brush;
     IERC20(token).transferFrom(_msgSender(), address(this), brushAmount);
 
@@ -261,9 +261,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
       uint256 amountInMax = brushAmount;
       _router.swapTokensForExactETH(amountOut, amountInMax, routes, to, deadline);
     } else {
-      uint256 amountIn = brushAmount;
-      uint256 amountOutMin = minFTM;
-      _router.swapExactTokensForETH(amountIn, amountOutMin, routes, to, deadline);
+      _router.swapExactTokensForETH(brushAmount, minFTM, routes, to, deadline);
     }
   }
 

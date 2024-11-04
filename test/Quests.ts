@@ -300,6 +300,66 @@ describe("Quests", function () {
     });
   });
 
+  describe("Buying and selling brush", function () {
+    it("Buying brush, use exact eth", async function () {
+      const {alice, quests, brush} = await loadFixture(questsFixture);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
+      await quests.addQuests([quest], [defaultMinRequirements]);
+      const questId = quest.questId;
+      expect(questId).to.not.eq(0);
+      const balanceBefore = await brush.balanceOf(alice);
+      await quests.connect(alice).buyBrush(alice, 0, true, {value: 10});
+      const balanceAfter = await brush.balanceOf(alice);
+      expect(balanceBefore + 1n).to.eq(balanceAfter);
+    });
+
+    it("Buying brush, use exact brush output", async function () {
+      const {alice, quests, brush} = await loadFixture(questsFixture);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
+      await quests.addQuests([quest], [defaultMinRequirements]);
+      const questId = quest.questId;
+      expect(questId).to.not.eq(0);
+      const balanceBefore = await brush.balanceOf(alice);
+      const brushOutput = 1;
+      await quests.connect(alice).buyBrush(alice, brushOutput, false, {value: 10});
+      const balanceAfter = await brush.balanceOf(alice);
+      expect(balanceBefore + 1n).to.eq(balanceAfter);
+    });
+
+    it("Selling brush, use exact brush", async function () {
+      const {alice, quests, brush} = await loadFixture(questsFixture);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
+      await quests.addQuests([quest], [defaultMinRequirements]);
+      const questId = quest.questId;
+      expect(questId).to.not.eq(0);
+      const balanceBefore = await brush.balanceOf(alice);
+      await quests.connect(alice).buyBrush(alice, 0, true, {value: 10});
+      const balanceAfter = await brush.balanceOf(alice);
+      await brush.connect(alice).approve(quests, balanceAfter);
+      expect(balanceBefore + 1n).to.eq(balanceAfter);
+      await quests.connect(alice).sellBrush(alice, balanceAfter, 0, false);
+      const balanceAfterSell = await brush.balanceOf(alice);
+      expect(balanceAfterSell).to.eq(0);
+    });
+
+    it("Selling brush, use exact ETH output", async function () {
+      const {alice, quests, brush} = await loadFixture(questsFixture);
+      const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
+      await quests.addQuests([quest], [defaultMinRequirements]);
+      const questId = quest.questId;
+      expect(questId).to.not.eq(0);
+      const balanceBefore = await brush.balanceOf(alice);
+      await quests.connect(alice).buyBrush(alice, 0, true, {value: 10});
+      const balanceAfter = await brush.balanceOf(alice);
+      await brush.connect(alice).approve(quests, balanceAfter);
+      expect(balanceBefore + 1n).to.eq(balanceAfter);
+      const ethOutput = 1;
+      await quests.connect(alice).sellBrush(alice, balanceAfter, ethOutput, true);
+      const balanceAfterSell = await brush.balanceOf(alice);
+      expect(balanceAfterSell).to.eq(0);
+    });
+  });
+
   describe("Minimum requirements", function () {
     it("1 minimum requirement", async function () {
       const {alice, playerId, quests, players} = await loadFixture(questsFixture);

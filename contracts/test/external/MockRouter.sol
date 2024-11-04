@@ -36,6 +36,7 @@ contract MockRouter is ISolidlyRouter {
     address to,
     uint256 /*deadline*/
   ) external override returns (uint256[] memory amounts) {
+    MockBrushToken(routes[0].from).transferFrom(msg.sender, address(this), amountIn);
     MockBrushToken(routes[0].from).burn(amountIn);
     amounts = new uint256[](2);
     amounts[0] = amountIn;
@@ -50,6 +51,7 @@ contract MockRouter is ISolidlyRouter {
     address to,
     uint256 /* deadline */
   ) external returns (uint[] memory amounts) {
+    MockBrushToken(routes[0].from).transferFrom(msg.sender, address(this), amountInMax);
     MockBrushToken(routes[0].from).burn(amountInMax);
     amounts = new uint256[](2);
     amounts[0] = amountInMax;

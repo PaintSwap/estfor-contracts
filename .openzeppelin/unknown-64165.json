@@ -1009,6 +1009,21 @@
       "address": "0xA2D9052a7f2b833646Dd209DD78824a5DDfB6f26",
       "txHash": "0xe723c6b012ca36ce76bc351d6328d8ba3bebb98f6b26b7a1fdd865b2dcac6ee4",
       "kind": "uups"
+    },
+    {
+      "address": "0xB739052fFeC0ABE4863686b3dBdd2655a35FB1e9",
+      "txHash": "0xeecad59fb71f5ece8adda7e133368be1f599137d8eaf5650184101fa567a17eb",
+      "kind": "uups"
+    },
+    {
+      "address": "0xB01A55e6bEB61Aa554FfEAa76C7826b7ce25d3B7",
+      "txHash": "0xb35e7be2b2701cc1e12736788abd908f552f4be1040bcfbb356d47bc4d617ebb",
+      "kind": "uups"
+    },
+    {
+      "address": "0x307e85c1e985922461B553510e01713D0961B310",
+      "txHash": "0xd822c579514630300fcc99f4407e6f54fe6f413faa8c3c34b44c5146fee62454",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -44123,7 +44138,7 @@
             "label": "_players",
             "offset": 0,
             "slot": "1",
-            "type": "t_contract(IPlayers)40707",
+            "type": "t_contract(IPlayers)47075",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:64"
           },
@@ -44139,7 +44154,7 @@
             "label": "_allFixedQuests",
             "offset": 0,
             "slot": "2",
-            "type": "t_mapping(t_uint256,t_struct(Quest)40179_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Quest)46547_storage)",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:66"
           },
@@ -44147,7 +44162,7 @@
             "label": "_questsCompleted",
             "offset": 0,
             "slot": "3",
-            "type": "t_mapping(t_uint256,t_struct(BitMap)8311_storage)",
+            "type": "t_mapping(t_uint256,t_struct(BitMap)8510_storage)",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:67"
           },
@@ -44155,7 +44170,7 @@
             "label": "_activeQuests",
             "offset": 0,
             "slot": "4",
-            "type": "t_mapping(t_uint256,t_struct(PlayerQuest)40192_storage)",
+            "type": "t_mapping(t_uint256,t_struct(PlayerQuest)46560_storage)",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:68"
           },
@@ -44163,7 +44178,7 @@
             "label": "_inProgressFixedQuests",
             "offset": 0,
             "slot": "5",
-            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(PlayerQuest)40192_storage))",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(PlayerQuest)46560_storage))",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:69"
           },
@@ -44171,7 +44186,7 @@
             "label": "_minimumRequirements",
             "offset": 0,
             "slot": "6",
-            "type": "t_mapping(t_uint256,t_array(t_struct(MinimumRequirement)30169_storage)3_storage)",
+            "type": "t_mapping(t_uint256,t_array(t_struct(MinimumRequirement)36537_storage)3_storage)",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:70"
           },
@@ -44179,7 +44194,7 @@
             "label": "_playerInfo",
             "offset": 0,
             "slot": "7",
-            "type": "t_mapping(t_uint256,t_struct(PlayerQuestInfo)30172_storage)",
+            "type": "t_mapping(t_uint256,t_struct(PlayerQuestInfo)36540_storage)",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:71"
           },
@@ -44187,7 +44202,7 @@
             "label": "_router",
             "offset": 0,
             "slot": "8",
-            "type": "t_contract(ISolidlyRouter)41224",
+            "type": "t_contract(ISolidlyRouter)47592",
             "contract": "Quests",
             "src": "contracts\\Quests.sol:73"
           },
@@ -44251,7 +44266,7 @@
             "label": "uint64",
             "numberOfBytes": "8"
           },
-          "t_array(t_struct(MinimumRequirement)30169_storage)3_storage": {
+          "t_array(t_struct(MinimumRequirement)36537_storage)3_storage": {
             "label": "struct Quests.MinimumRequirement[3]",
             "numberOfBytes": "96"
           },
@@ -44259,15 +44274,15 @@
             "label": "bytes1",
             "numberOfBytes": "1"
           },
-          "t_contract(IPlayers)40707": {
+          "t_contract(IPlayers)47075": {
             "label": "contract IPlayers",
             "numberOfBytes": "20"
           },
-          "t_contract(ISolidlyRouter)41224": {
+          "t_contract(ISolidlyRouter)47592": {
             "label": "contract ISolidlyRouter",
             "numberOfBytes": "20"
           },
-          "t_enum(Skill)39273": {
+          "t_enum(Skill)45641": {
             "label": "enum Skill",
             "members": [
               "NONE",
@@ -44313,27 +44328,27 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_mapping(t_uint256,t_array(t_struct(MinimumRequirement)30169_storage)3_storage)": {
+          "t_mapping(t_uint256,t_array(t_struct(MinimumRequirement)36537_storage)3_storage)": {
             "label": "mapping(uint256 => struct Quests.MinimumRequirement[3])",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(PlayerQuest)40192_storage))": {
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(PlayerQuest)46560_storage))": {
             "label": "mapping(uint256 => mapping(uint256 => struct PlayerQuest))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(BitMap)8311_storage)": {
+          "t_mapping(t_uint256,t_struct(BitMap)8510_storage)": {
             "label": "mapping(uint256 => struct BitMaps.BitMap)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(PlayerQuest)40192_storage)": {
+          "t_mapping(t_uint256,t_struct(PlayerQuest)46560_storage)": {
             "label": "mapping(uint256 => struct PlayerQuest)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(PlayerQuestInfo)30172_storage)": {
+          "t_mapping(t_uint256,t_struct(PlayerQuestInfo)36540_storage)": {
             "label": "mapping(uint256 => struct Quests.PlayerQuestInfo)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(Quest)40179_storage)": {
+          "t_mapping(t_uint256,t_struct(Quest)46547_storage)": {
             "label": "mapping(uint256 => struct Quest)",
             "numberOfBytes": "32"
           },
@@ -44341,7 +44356,7 @@
             "label": "mapping(uint256 => uint256)",
             "numberOfBytes": "32"
           },
-          "t_struct(BitMap)8311_storage": {
+          "t_struct(BitMap)8510_storage": {
             "label": "struct BitMaps.BitMap",
             "members": [
               {
@@ -44353,12 +44368,12 @@
             ],
             "numberOfBytes": "32"
           },
-          "t_struct(MinimumRequirement)30169_storage": {
+          "t_struct(MinimumRequirement)36537_storage": {
             "label": "struct Quests.MinimumRequirement",
             "members": [
               {
                 "label": "skill",
-                "type": "t_enum(Skill)39273",
+                "type": "t_enum(Skill)45641",
                 "offset": 0,
                 "slot": "0"
               },
@@ -44371,7 +44386,7 @@
             ],
             "numberOfBytes": "32"
           },
-          "t_struct(PlayerQuest)40192_storage": {
+          "t_struct(PlayerQuest)46560_storage": {
             "label": "struct PlayerQuest",
             "members": [
               {
@@ -44413,7 +44428,7 @@
             ],
             "numberOfBytes": "32"
           },
-          "t_struct(PlayerQuestInfo)30172_storage": {
+          "t_struct(PlayerQuestInfo)36540_storage": {
             "label": "struct Quests.PlayerQuestInfo",
             "members": [
               {
@@ -44425,7 +44440,7 @@
             ],
             "numberOfBytes": "32"
           },
-          "t_struct(Quest)40179_storage": {
+          "t_struct(Quest)46547_storage": {
             "label": "struct Quest",
             "members": [
               {
@@ -44472,7 +44487,7 @@
               },
               {
                 "label": "skillReward",
-                "type": "t_enum(Skill)39273",
+                "type": "t_enum(Skill)45641",
                 "offset": 14,
                 "slot": "0"
               },
@@ -47545,6 +47560,1196 @@
           "t_uint40": {
             "label": "uint40",
             "numberOfBytes": "5"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "d1a90438f206c0954e965fd03d361dd837d2052941aed3d6a3bbac7d3b2b36fd": {
+      "address": "0xA95faA1C83E78Ec73Ab57424d512664B40C4d140",
+      "txHash": "0x68ffdee477f02517fd7fe19030b550c7a3a416e08acc8a2791bb3bba8f6827dc",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_world",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:63"
+          },
+          {
+            "label": "_players",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IPlayers)40516",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:64"
+          },
+          {
+            "label": "_numTotalQuests",
+            "offset": 20,
+            "slot": "1",
+            "type": "t_uint16",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:65"
+          },
+          {
+            "label": "_allFixedQuests",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_struct(Quest)39988_storage)",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:66"
+          },
+          {
+            "label": "_questsCompleted",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_struct(BitMap)8311_storage)",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:67"
+          },
+          {
+            "label": "_activeQuests",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_uint256,t_struct(PlayerQuest)40001_storage)",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:68"
+          },
+          {
+            "label": "_inProgressFixedQuests",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(PlayerQuest)40001_storage))",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:69"
+          },
+          {
+            "label": "_minimumRequirements",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_array(t_struct(MinimumRequirement)29986_storage)3_storage)",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:70"
+          },
+          {
+            "label": "_playerInfo",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_struct(PlayerQuestInfo)29989_storage)",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:71"
+          },
+          {
+            "label": "_router",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_contract(ISolidlyRouter)41033",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:73"
+          },
+          {
+            "label": "_wNative",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_address",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:74"
+          },
+          {
+            "label": "_brush",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_address",
+            "contract": "Quests",
+            "src": "contracts\\Quests.sol:75"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_struct(MinimumRequirement)29986_storage)3_storage": {
+            "label": "struct Quests.MinimumRequirement[3]",
+            "numberOfBytes": "96"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IPlayers)40516": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISolidlyRouter)41033": {
+            "label": "contract ISolidlyRouter",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Skill)39082": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "FARMING",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_uint256,t_array(t_struct(MinimumRequirement)29986_storage)3_storage)": {
+            "label": "mapping(uint256 => struct Quests.MinimumRequirement[3])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(PlayerQuest)40001_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct PlayerQuest))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(BitMap)8311_storage)": {
+            "label": "mapping(uint256 => struct BitMaps.BitMap)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerQuest)40001_storage)": {
+            "label": "mapping(uint256 => struct PlayerQuest)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerQuestInfo)29989_storage)": {
+            "label": "mapping(uint256 => struct Quests.PlayerQuestInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Quest)39988_storage)": {
+            "label": "mapping(uint256 => struct Quest)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(BitMap)8311_storage": {
+            "label": "struct BitMaps.BitMap",
+            "members": [
+              {
+                "label": "_data",
+                "type": "t_mapping(t_uint256,t_uint256)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(MinimumRequirement)29986_storage": {
+            "label": "struct Quests.MinimumRequirement",
+            "members": [
+              {
+                "label": "skill",
+                "type": "t_enum(Skill)39082",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "xp",
+                "type": "t_uint64",
+                "offset": 1,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerQuest)40001_storage": {
+            "label": "struct PlayerQuest",
+            "members": [
+              {
+                "label": "questId",
+                "type": "t_uint32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "actionCompletedNum1",
+                "type": "t_uint16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "actionCompletedNum2",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "actionChoiceCompletedNum",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "burnCompletedAmount",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "isFixed",
+                "type": "t_bool",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerQuestInfo)29989_storage": {
+            "label": "struct Quests.PlayerQuestInfo",
+            "members": [
+              {
+                "label": "numFixedQuestsCompleted",
+                "type": "t_uint32",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Quest)39988_storage": {
+            "label": "struct Quest",
+            "members": [
+              {
+                "label": "dependentQuestId",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "actionId1",
+                "type": "t_uint16",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "actionNum1",
+                "type": "t_uint16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "actionId2",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "actionNum2",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "actionChoiceId",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "actionChoiceNum",
+                "type": "t_uint16",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "skillReward",
+                "type": "t_enum(Skill)39082",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "skillXPGained",
+                "type": "t_uint16",
+                "offset": 15,
+                "slot": "0"
+              },
+              {
+                "label": "rewardItemTokenId1",
+                "type": "t_uint16",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "rewardAmount1",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "rewardItemTokenId2",
+                "type": "t_uint16",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "rewardAmount2",
+                "type": "t_uint16",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "burnItemTokenId",
+                "type": "t_uint16",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "burnAmount",
+                "type": "t_uint16",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "reserved",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 31,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "a38e00bdc0e26fbd6110790c11d6ce11c6be128210577a21458913b882eab55a": {
+      "address": "0x73BF6Eb213F43d4749C53Cce009bCAf5d8634f0b",
+      "txHash": "0x2d6c4966e0b03819b3c06482e00dbac5e6590021a24882bdc63b4b5b5a050746",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_requestIds",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "World",
+            "src": "contracts\\World.sol:56"
+          },
+          {
+            "label": "_randomWords",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "World",
+            "src": "contracts\\World.sol:57"
+          },
+          {
+            "label": "_lastRandomWordsUpdatedTime",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint40",
+            "contract": "World",
+            "src": "contracts\\World.sol:58"
+          },
+          {
+            "label": "_startTime",
+            "offset": 5,
+            "slot": "2",
+            "type": "t_uint40",
+            "contract": "World",
+            "src": "contracts\\World.sol:59"
+          },
+          {
+            "label": "_weeklyRewardCheckpoint",
+            "offset": 10,
+            "slot": "2",
+            "type": "t_uint40",
+            "contract": "World",
+            "src": "contracts\\World.sol:60"
+          },
+          {
+            "label": "_thisWeeksRandomWordSegment",
+            "offset": 15,
+            "slot": "2",
+            "type": "t_bytes8",
+            "contract": "World",
+            "src": "contracts\\World.sol:61"
+          },
+          {
+            "label": "_callbackGasLimit",
+            "offset": 23,
+            "slot": "2",
+            "type": "t_uint24",
+            "contract": "World",
+            "src": "contracts\\World.sol:62"
+          },
+          {
+            "label": "_samWitchVRF",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(ISamWitchVRF)39743",
+            "contract": "World",
+            "src": "contracts\\World.sol:63"
+          },
+          {
+            "label": "_actions",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_uint256,t_struct(ActionInfo)37583_storage)",
+            "contract": "World",
+            "src": "contracts\\World.sol:65"
+          },
+          {
+            "label": "_lastAddedDynamicActions",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_array(t_uint16)dyn_storage",
+            "contract": "World",
+            "src": "contracts\\World.sol:66"
+          },
+          {
+            "label": "_lastDynamicUpdatedTime",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "World",
+            "src": "contracts\\World.sol:67"
+          },
+          {
+            "label": "_actionChoices",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint16,t_struct(ActionChoice)38349_storage))",
+            "contract": "World",
+            "src": "contracts\\World.sol:69"
+          },
+          {
+            "label": "_actionCombatStats",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_struct(CombatStats)37975_storage)",
+            "contract": "World",
+            "src": "contracts\\World.sol:70"
+          },
+          {
+            "label": "_actionRewards",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_mapping(t_uint256,t_struct(ActionRewards)38938_storage)",
+            "contract": "World",
+            "src": "contracts\\World.sol:72"
+          },
+          {
+            "label": "_dailyRewardPool",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_uint256,t_array(t_struct(Equipment)37902_storage)dyn_storage)",
+            "contract": "World",
+            "src": "contracts\\World.sol:74"
+          },
+          {
+            "label": "_weeklyRewardPool",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_mapping(t_uint256,t_array(t_struct(Equipment)37902_storage)dyn_storage)",
+            "contract": "World",
+            "src": "contracts\\World.sol:75"
+          },
+          {
+            "label": "_wishingWell",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_contract(IOracleRewardCB)39260",
+            "contract": "World",
+            "src": "contracts\\World.sol:77"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_struct(Equipment)37902_storage)dyn_storage": {
+            "label": "struct Equipment[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint16)dyn_storage": {
+            "label": "uint16[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes8": {
+            "label": "bytes8",
+            "numberOfBytes": "8"
+          },
+          "t_contract(IOracleRewardCB)39260": {
+            "label": "contract IOracleRewardCB",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISamWitchVRF)39743": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_int16": {
+            "label": "int16",
+            "numberOfBytes": "2"
+          },
+          "t_mapping(t_uint16,t_struct(ActionChoice)38349_storage)": {
+            "label": "mapping(uint16 => struct ActionChoice)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_array(t_struct(Equipment)37902_storage)dyn_storage)": {
+            "label": "mapping(uint256 => struct Equipment[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint16,t_struct(ActionChoice)38349_storage))": {
+            "label": "mapping(uint256 => mapping(uint16 => struct ActionChoice))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ActionInfo)37583_storage)": {
+            "label": "mapping(uint256 => struct ActionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ActionRewards)38938_storage)": {
+            "label": "mapping(uint256 => struct ActionRewards)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(CombatStats)37975_storage)": {
+            "label": "mapping(uint256 => struct CombatStats)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ActionChoice)38349_storage": {
+            "label": "struct ActionChoice",
+            "members": [
+              {
+                "label": "skill",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "minXP",
+                "type": "t_uint32",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "skillDiff",
+                "type": "t_int16",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "rate",
+                "type": "t_uint24",
+                "offset": 7,
+                "slot": "0"
+              },
+              {
+                "label": "xpPerHour",
+                "type": "t_uint24",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint8",
+                "offset": 15,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint8",
+                "offset": 18,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint8",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "outputTokenId",
+                "type": "t_uint16",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "outputAmount",
+                "type": "t_uint8",
+                "offset": 24,
+                "slot": "0"
+              },
+              {
+                "label": "successPercent",
+                "type": "t_uint8",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "handItemTokenIdRangeMin",
+                "type": "t_uint16",
+                "offset": 26,
+                "slot": "0"
+              },
+              {
+                "label": "handItemTokenIdRangeMax",
+                "type": "t_uint16",
+                "offset": 28,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 30,
+                "slot": "0"
+              },
+              {
+                "label": "reserved",
+                "type": "t_bytes1",
+                "offset": 31,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill2",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "minXP2",
+                "type": "t_uint32",
+                "offset": 1,
+                "slot": "1"
+              },
+              {
+                "label": "minSkill3",
+                "type": "t_uint8",
+                "offset": 5,
+                "slot": "1"
+              },
+              {
+                "label": "minXP3",
+                "type": "t_uint32",
+                "offset": 6,
+                "slot": "1"
+              },
+              {
+                "label": "newInputAmount1",
+                "type": "t_uint24",
+                "offset": 10,
+                "slot": "1"
+              },
+              {
+                "label": "newInputAmount2",
+                "type": "t_uint24",
+                "offset": 13,
+                "slot": "1"
+              },
+              {
+                "label": "newInputAmount3",
+                "type": "t_uint24",
+                "offset": 16,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(ActionInfo)37583_storage": {
+            "label": "struct ActionInfo",
+            "members": [
+              {
+                "label": "skill",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "isAvailable",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "isDynamic",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "actionChoiceRequired",
+                "type": "t_bool",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "xpPerHour",
+                "type": "t_uint24",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "minXP",
+                "type": "t_uint32",
+                "offset": 7,
+                "slot": "0"
+              },
+              {
+                "label": "numSpawned",
+                "type": "t_uint24",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "handItemTokenIdRangeMin",
+                "type": "t_uint16",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "handItemTokenIdRangeMax",
+                "type": "t_uint16",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "successPercent",
+                "type": "t_uint8",
+                "offset": 18,
+                "slot": "0"
+              },
+              {
+                "label": "worldLocation",
+                "type": "t_uint8",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "isFullModeOnly",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ActionRewards)38938_storage": {
+            "label": "struct ActionRewards",
+            "members": [
+              {
+                "label": "guaranteedRewardTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate1",
+                "type": "t_uint16",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardTokenId2",
+                "type": "t_uint16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate2",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardTokenId3",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate3",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId1",
+                "type": "t_uint16",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance1",
+                "type": "t_uint16",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount1",
+                "type": "t_uint8",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId2",
+                "type": "t_uint16",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance2",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount2",
+                "type": "t_uint8",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId3",
+                "type": "t_uint16",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance3",
+                "type": "t_uint16",
+                "offset": 24,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount3",
+                "type": "t_uint8",
+                "offset": 26,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId4",
+                "type": "t_uint16",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance4",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount4",
+                "type": "t_uint8",
+                "offset": 31,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(CombatStats)37975_storage": {
+            "label": "struct CombatStats",
+            "members": [
+              {
+                "label": "melee",
+                "type": "t_int16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "magic",
+                "type": "t_int16",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "ranged",
+                "type": "t_int16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "health",
+                "type": "t_int16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "meleeDefence",
+                "type": "t_int16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "magicDefence",
+                "type": "t_int16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "rangedDefence",
+                "type": "t_int16",
+                "offset": 12,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Equipment)37902_storage": {
+            "label": "struct Equipment",
+            "members": [
+              {
+                "label": "itemTokenId",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint24",
+                "offset": 2,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
           }
         },
         "namespaces": {
