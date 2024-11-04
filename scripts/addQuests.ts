@@ -9,7 +9,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add quests using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const quests = (await ethers.getContractAt("Quests", QUESTS_ADDRESS)).connect(owner) as Quests;
+  const quests = (await ethers.getContractAt("Quests", QUESTS_ADDRESS)) as Quests;
   const newQuestsRaw = new Set([
     EstforConstants.QUEST_WAY_OF_THE_AXE,
     EstforConstants.QUEST_WAY_OF_THE_AXE_II,
@@ -37,7 +37,7 @@ async function main() {
     EstforConstants.QUEST_SPECIAL_ASSIGNMENT_II,
     EstforConstants.QUEST_SPECIAL_ASSIGNMENT_III,
     EstforConstants.QUEST_SPECIAL_ASSIGNMENT_IV,
-    EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V,
+    EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
   ]);
 
   const questIndexes = allQuests

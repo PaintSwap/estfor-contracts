@@ -456,12 +456,12 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(wishingWell, totalBrush);
+    await brush.approve(wishingWell, totalBrush);
     for (let i = 0; i < 3; ++i) {
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser" + i, false);
-      await players.connect(owner).donate(newPlayerId, raffleEntryCost);
+      await players.donate(newPlayerId, raffleEntryCost);
     }
 
     // Should no longer be claimable
@@ -482,7 +482,7 @@ describe("WishingWell", function () {
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(world, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "should work now" + i, false);
-      await players.connect(owner).donate(newPlayerId, raffleEntryCost);
+      await players.donate(newPlayerId, raffleEntryCost);
     }
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
@@ -505,7 +505,7 @@ describe("WishingWell", function () {
     expect(await wishingWell.getLastUnclaimedWinner(4)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(5)).to.eq(lotteryId);
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
-    await players.connect(owner).donate(newPlayerId, raffleEntryCost);
+    await players.donate(newPlayerId, raffleEntryCost);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWords(world, mockVRF);
@@ -530,7 +530,7 @@ describe("WishingWell", function () {
     expect(lotteryId).to.eq(1);
 
     await brush.mint(owner.address, totalBrush);
-    await brush.connect(owner).approve(wishingWell, totalBrush);
+    await brush.approve(wishingWell, totalBrush);
     for (let i = 0; i < 2; ++i) {
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);

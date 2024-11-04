@@ -7,7 +7,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit base pets using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const petNFT = (await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS)).connect(owner);
+  const petNFT = await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS);
 
   const chunkSize = 20;
   for (let i = 0; i < allBasePets.length; i += chunkSize) {

@@ -37,7 +37,7 @@ async function main() {
 
   const startTime = 1701417600; // Fri dec 1st 08:00 UTC
   const numDays = 22;
-  await promotions.connect(owner).addPromotions([
+  await promotions.addPromotions([
     {
       promotion: Promotion.XMAS_2023,
       startTime,

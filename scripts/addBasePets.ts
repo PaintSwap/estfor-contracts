@@ -3,12 +3,13 @@ import {PET_NFT_ADDRESS} from "./contractAddresses";
 import {allBasePets} from "./data/pets";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {getChainId} from "./utils";
+import {PetNFT} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add base pets using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const petNFT = (await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS)).connect(owner);
+  const petNFT = (await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS)) as PetNFT;
 
   const basePetIds = new Set([
     EstforConstants.PET_ANNIV1_MELEE_TIER1,
@@ -50,7 +51,7 @@ async function main() {
     EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER2,
     EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER3,
     EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER4,
-    EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER5,
+    EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER5
   ]);
 
   const basePets = allBasePets.filter((basePet) => basePetIds.has(basePet.baseId));

@@ -43,7 +43,7 @@ async function main() {
   const playersLibrary = await PlayersLibrary.deploy();
   console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
-  const Players = (await ethers.getContractFactory("Players")).connect(owner);
+  const Players = (await ethers.getContractFactory("Players"));
   let players = Players.attach(PLAYERS_ADDRESS);
   await players.pauseGame(true);
   players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
@@ -101,7 +101,7 @@ async function main() {
 
   const ItemNFT = (
     await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: (await itemNFTLibrary.getAddress())}})
-  ).connect(owner);
+  );
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -119,7 +119,7 @@ async function main() {
 
   const Players = (
     await ethers.getContractFactory("Players")
-  ).connect(owner);
+  );
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
@@ -145,7 +145,7 @@ async function main() {
     await ethers.getContractFactory("Clans", {
       libraries: {EstforLibrary: (await estforLibrary.getAddress())},
     })
-  ).connect(owner);
+  );
   const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -163,7 +163,7 @@ async function main() {
     await ethers.getContractFactory("PlayerNFT", {
       libraries: {EstforLibrary: (await estforLibrary.getAddress())},
     })
-  ).connect(owner);
+  );
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -225,7 +225,7 @@ async function main() {
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
-  const Players = (await ethers.getContractFactory("Players")).connect(owner);
+  const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
@@ -249,9 +249,9 @@ async function main() {
 
   // ItemNFT
   const itemNFTLibrary = await ethers.getContractAt("ItemNFTLibrary", ITEM_NFT_LIBRARY_ADDRESS);
-  const ItemNFT = (
-    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}})
-  ).connect(owner);
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {
+    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
+  });
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -279,11 +279,9 @@ async function main() {
   console.log("Add items");
 
   // Update player upgrade cost
-  const PlayerNFT = (
-    await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: await estforLibrary.getAddress()}
-    })
-  ).connect(owner);
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: await estforLibrary.getAddress()}
+  });
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -295,15 +293,13 @@ async function main() {
   await tx.wait();
 
   const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
-  tx = await instantActions.connect(owner).addActions(allInstantActions);
+  tx = await instantActions.addActions(allInstantActions);
   await tx.wait();
 
   const worldLibrary = await ethers.deployContract("WorldLibrary");
   console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
 
-  const World = (
-    await ethers.getContractFactory("World", {libraries: {WorldLibrary: await worldLibrary.getAddress()}})
-  ).connect(owner);
+  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: await worldLibrary.getAddress()}});
   const world = (await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -319,7 +315,7 @@ async function main() {
     console.log("Cannot find actions");
     process.exit(1);
   } else {
-    await world.connect(owner).addActions(actions);
+    await world.addActions(actions);
   }
   console.log("Add forging action");
 
@@ -375,13 +371,11 @@ async function main() {
 
   const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
   const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
-  tx = await world
-    .connect(owner)
-    .addBulkActionChoices(
-      [alchemyActionId, forgingActionId],
-      [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
-      [newActionChoicesAlchemy, allActionChoicesForging]
-    );
+  tx = await world.addBulkActionChoices(
+    [alchemyActionId, forgingActionId],
+    [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
+    [newActionChoicesAlchemy, allActionChoicesForging]
+  );
   await tx.wait();
 
   console.log("Set new action choices");
@@ -392,14 +386,12 @@ async function main() {
 
   // Update shop with new flux item
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
-  tx = await shop
-    .connect(owner)
-    .addBuyableItems(allShopItems.filter((shopItem) => shopItem.tokenId == EstforConstants.FLUX));
+  tx = await shop.addBuyableItems(allShopItems.filter((shopItem) => shopItem.tokenId == EstforConstants.FLUX));
   await tx.wait();
   console.log("Add flux");
 
   // Quests
-  const Quests = (await ethers.getContractFactory("Quests")).connect(owner);
+  const Quests = await ethers.getContractFactory("Quests");
   const quests = await upgrades.upgradeProxy(QUESTS_ADDRESS, Quests, {
     kind: "uups",
     timeout,

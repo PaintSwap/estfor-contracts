@@ -501,23 +501,20 @@ describe("Territories", function () {
       .connect(alice)
       .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], playerId);
     await expect(
-      territories
-        .connect(owner)
-        .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()})
+      territories.attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()})
     ).to.be.revertedWithCustomError(territories, "NotLeader");
     await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.LEADER, playerId);
-    await territories
-      .connect(owner)
-      .attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()});
+    await territories.attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()});
   });
 
   it("Is owner of player when attacking", async () => {
     const {clanId, playerId, territories, owner} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await expect(
-      territories.connect(owner).attackTerritory(clanId, territoryId, playerId)
-    ).to.be.revertedWithCustomError(territories, "NotOwnerOfPlayerAndActive");
+    await expect(territories.attackTerritory(clanId, territoryId, playerId)).to.be.revertedWithCustomError(
+      territories,
+      "NotOwnerOfPlayerAndActive"
+    );
   });
 
   it("Occupied territories should emit brush", async () => {

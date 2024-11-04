@@ -6,7 +6,7 @@ import {MockBrushToken, Territories} from "../typechain-types";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Sent some brush to the territories: ${owner.address} on chain id ${await getChainId(owner)}`);
-  const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)).connect(owner) as Territories;
+  const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
 
   const brush = (await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS)) as MockBrushToken;
   let tx = await brush.approve(TERRITORIES_ADDRESS, ethers.parseEther("100000"));

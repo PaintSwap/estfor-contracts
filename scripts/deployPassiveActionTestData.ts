@@ -16,11 +16,11 @@ async function main() {
   ) as PassiveActions;
 
   const playerId = 1;
-  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)).connect(owner) as Players;
+  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
   let tx = await players.testModifyXP(owner.address, playerId, EstforTypes.Skill.ALCHEMY, getXPFromLevel(20), true);
   await tx.wait();
 
-  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)).connect(owner) as ItemNFT;
+  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
   tx = await itemNFT.mintBatch(
     owner.address,
     [EstforConstants.PAPER, EstforConstants.BONEMEAL, EstforConstants.ASH],

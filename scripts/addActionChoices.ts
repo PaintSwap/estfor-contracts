@@ -8,7 +8,7 @@ import {getChainId} from "./utils";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add action choices using account: ${owner.address} on chain id ${await getChainId(owner)}`);
-  const world = (await ethers.getContractAt("World", WORLD_ADDRESS)).connect(owner);
+  const world = await ethers.getContractAt("World", WORLD_ADDRESS);
 
   const newActionChoiceIds = new Set([
     EstforConstants.ACTIONCHOICE_RANGED_BASIC_BOW_POISON,
@@ -24,7 +24,7 @@ async function main() {
     EstforConstants.ACTIONCHOICE_RANGED_GLITTERING_BOW_POISON,
     EstforConstants.ACTIONCHOICE_RANGED_GLITTERING_BOW_FIRE,
     EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_POISON,
-    EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_FIRE,
+    EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_FIRE
   ]);
 
   const actionChoiceIndices = allActionChoiceIdsRanged.reduce((indices: number[], actionChoiceId, index) => {

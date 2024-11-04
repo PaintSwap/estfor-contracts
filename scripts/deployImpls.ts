@@ -7,7 +7,7 @@ import {
   PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
   PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
   PLAYERS_IMPL_REWARDS_ADDRESS,
-  PLAYERS_LIBRARY_ADDRESS,
+  PLAYERS_LIBRARY_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations, getChainId, verifyContracts} from "./utils";
 
@@ -47,7 +47,7 @@ async function main() {
       await playersImplProcessActions.getAddress(),
       await playersImplRewards.getAddress(),
       await playersImplMisc.getAddress(),
-      await playersImplMisc1.getAddress(),
+      await playersImplMisc1.getAddress()
     ]);
   }
 
@@ -58,13 +58,13 @@ async function main() {
     PLAYERS_IMPL_MISC_ADDRESS,
     PLAYERS_IMPL_MISC1_ADDRESS
   */
-  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)).connect(owner) as Players;
+  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
   const tx = await players.setImpls(
     await playersImplQueueActions.getAddress(),
     await playersImplProcessActions.getAddress(),
     await playersImplRewards.getAddress(),
     await playersImplMisc.getAddress(),
-    await playersImplMisc1.getAddress(),
+    await playersImplMisc1.getAddress()
   );
   await tx.wait();
 }

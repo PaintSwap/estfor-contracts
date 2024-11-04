@@ -12,8 +12,8 @@ import "hardhat-gas-reporter";
 import "hardhat-storage-layout";
 import "hardhat-abi-exporter";
 import "solidity-coverage";
-import {parseUnits} from "ethers";
-import {SolcUserConfig} from "hardhat/types";
+import {ethers, parseUnits} from "ethers";
+import {HardhatNetworkAccountUserConfig, SolcUserConfig} from "hardhat/types";
 
 const defaultConfig: SolcUserConfig = {
   version: "0.8.28",
@@ -68,6 +68,20 @@ const lowestRunsConfig: SolcUserConfig = {
   }
 };
 
+const privateKey = process.env.PRIVATE_KEY as string;
+const privateKey1 = process.env.PRIVATE_KEY1 as string;
+
+const hardhatAccounts: HardhatNetworkAccountUserConfig[] = [
+  {
+    privateKey,
+    balance: ethers.parseEther("100000").toString()
+  },
+  {
+    privateKey: privateKey1,
+    balance: ethers.parseEther("100000").toString()
+  }
+];
+
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, lowestRunsConfig],
@@ -96,7 +110,8 @@ const config: HardhatUserConfig = {
     hardhat: {
       gasPrice: 0,
       initialBaseFeePerGas: 0,
-      allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true,
+      accounts: process.env.USE_PRIVATE_KEY === "true" ? hardhatAccounts : {count: 10}
     },
     sonic: {
       url: process.env.SONIC_RPC,

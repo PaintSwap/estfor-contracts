@@ -14,7 +14,7 @@ async function main() {
   )) as InstantVRFActions;
 
   const amount = 64;
-  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)).connect(owner);
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
   let tx = await itemNFT.mintBatch(
     owner.address,
     [

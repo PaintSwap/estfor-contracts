@@ -9,7 +9,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add actions using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const world = (await ethers.getContractAt("World", WORLD_ADDRESS)).connect(owner) as World;
+  const world = (await ethers.getContractAt("World", WORLD_ADDRESS)) as World;
 
   const actionIds = new Set([EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW]);
   const actions = allActions.filter((action) => actionIds.has(action.actionId));
@@ -17,7 +17,7 @@ async function main() {
   if (actions.length !== actionIds.size) {
     console.log("Cannot find actions");
   } else {
-    const tx = await world.connect(owner).addActions(actions);
+    const tx = await world.addActions(actions);
     await tx.wait();
   }
 }

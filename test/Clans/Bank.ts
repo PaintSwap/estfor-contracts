@@ -158,7 +158,7 @@ describe("Bank", function () {
     await clans.connect(alice).acceptJoinRequests(clanId, [newPlayerId], playerId);
 
     await expect(
-      bankRelay.connect(owner).withdrawItems(alice, newPlayerId, [EstforConstants.BRONZE_SHIELD], [1])
+      bankRelay.withdrawItems(alice, newPlayerId, [EstforConstants.BRONZE_SHIELD], [1])
     ).to.be.revertedWithCustomError(bank, "NotClanAdmin");
   });
 

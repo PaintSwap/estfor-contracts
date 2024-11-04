@@ -1,15 +1,29 @@
 import {ethers} from "hardhat";
-import {CLANS_ADDRESS} from "./contractAddresses";
+import {
+  BANK_FACTORY_ADDRESS,
+  CLANS_ADDRESS,
+  LOCKED_BANK_VAULTS_ADDRESS,
+  PAINTSWAP_MARKETPLACE_WHITELIST,
+  PLAYERS_ADDRESS,
+  TERRITORIES_ADDRESS
+} from "./contractAddresses";
 import {getChainId} from "./utils";
+import {Clans} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(
-    `Set PaintSwapMarketplaceWhitelist on Clans using account: ${owner.address} on chain id ${await getChainId(owner)}`,
+    `Set PaintSwapMarketplaceWhitelist on Clans using account: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
-  const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);
-  const tx = await clans.setPaintSwapMarketplaceWhitelist("0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD");
+  const clans = (await ethers.getContractAt("Clans", CLANS_ADDRESS)) as Clans;
+  const tx = await clans.initializeAddresses(
+    PLAYERS_ADDRESS,
+    BANK_FACTORY_ADDRESS,
+    TERRITORIES_ADDRESS,
+    LOCKED_BANK_VAULTS_ADDRESS,
+    PAINTSWAP_MARKETPLACE_WHITELIST
+  );
   await tx.wait();
 }
 

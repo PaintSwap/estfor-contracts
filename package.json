@@ -122,7 +122,7 @@
     "setOrderbookTokenIdInfos": "npx hardhat run scripts/setOrderbookTokenIdInfos.ts",
     "overhaulUpgrade": "npx hardhat run scripts/overhaulUpgrade.ts",
     "donate": "npx hardhat run scripts/donate.ts",
-    "fork": "npx hardhat node --fork",
+    "fork": "cross-env USE_PRIVATE_KEY=true npx hardhat node --fork",
     "impersonate": "npx hardhat run scripts/impersonate.ts",
     "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",
     "forceMMRUpdate": "npx hardhat run scripts/forceMMRUpdate.ts",

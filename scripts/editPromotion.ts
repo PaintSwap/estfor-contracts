@@ -13,7 +13,7 @@ async function main() {
 
   /*
   // Edit old haloween promotion to use the new structure just cause.
-  let tx = await promotions.connect(owner).editPromotion({
+  let tx = await promotions.editPromotion({
     promotion: Promotion.HALLOWEEN_2023,
     startTime: 1698701204, // Any time from now
     endTime: 1698825600, // Expires 8am UTC on Nov 1st
@@ -52,7 +52,7 @@ async function main() {
 
   const startTime = 1701417600; // Fri dec 1st 08:00 UTC
   const numDays = 22;
-  await promotions.connect(owner).editPromotions([
+  await promotions.editPromotions([
     {
       promotion: Promotion.XMAS_2023,
       startTime,

@@ -49,38 +49,38 @@ async function main() {
   const pendingBrush = await decorator.pendingBrush(pid, territoryTreasury);
   console.log("Pending", pendingBrush);
 
-  let tx = await brush.connect(owner).transfer(territoryTreasury, (pendingBrush + pendingBrush) / 2n);
+  let tx = await brush.transfer(territoryTreasury, (pendingBrush + pendingBrush) / 2n);
   await tx.wait();
   console.log("Transferred brush");
 
-  tx = await territoryTreasury.connect(owner).harvest(playerId);
+  tx = await territoryTreasury.harvest(playerId);
   await tx.wait();
   console.log("Harvest");
 
   // Lock some brush in a vault
-  tx = await lockedBankVaults.connect(owner).initializeAddresses(owner, combatantsHelper, BANK_FACTORY_ADDRESS);
+  tx = await lockedBankVaults.initializeAddresses(owner, combatantsHelper, BANK_FACTORY_ADDRESS);
   await tx.wait();
   console.log("set territories");
-  tx = await brush.connect(owner).approve(lockedBankVaults, parseEther("100"));
+  tx = await brush.approve(lockedBankVaults, parseEther("100"));
   await tx.wait();
   console.log("Approve");
-  tx = await lockedBankVaults.connect(owner).lockFunds(1, owner, 1, parseEther("100"));
+  tx = await lockedBankVaults.lockFunds(1, owner, 1, parseEther("100"));
   await tx.wait();
   console.log("LockFunds");
-  tx = await lockedBankVaults.connect(owner).initializeAddresses(territories, combatantsHelper, BANK_FACTORY_ADDRESS);
+  tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper, BANK_FACTORY_ADDRESS);
   await tx.wait();
   console.log("SetTerritories");
 
   // Claim the territory
-  tx = await combatantsHelper.connect(owner).assignCombatants(1, true, [1], false, [], 1);
+  tx = await combatantsHelper.assignCombatants(1, true, [1], false, [], 1);
   await tx.wait();
   console.log("assign combatants for territories");
   let territoryAttackCost = await territories.getAttackCost();
-  tx = await territories.connect(owner).attackTerritory(1, 1, 1, {value: territoryAttackCost}); // Unclaimed
+  tx = await territories.attackTerritory(1, 1, 1, {value: territoryAttackCost}); // Unclaimed
   await tx.wait();
   console.log("attack territory");
 
-  tx = await territories.connect(owner).harvest(1, 1);
+  tx = await territories.harvest(1, 1);
   await tx.wait();
   console.log("Harvest unclaimed emissions from the territory");
 

@@ -25,7 +25,7 @@ async function main() {
     COMBATANTS_HELPER_ADDRESS
   )) as CombatantsHelper;
 
-  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)).connect(owner) as ItemNFT;
+  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
 
   const clanId = 1;
   const playerId = 1;
@@ -77,7 +77,7 @@ async function main() {
   await tx.wait();
   console.log("block attacks on locked vaults");
 
-  tx = await territories.connect(owner).blockAttacks(playerId, EstforConstants.MIRROR_SHIELD, playerId);
+  tx = await territories.blockAttacks(playerId, EstforConstants.MIRROR_SHIELD, playerId);
   await tx.wait();
   console.log("block attacks on territories");
 }
