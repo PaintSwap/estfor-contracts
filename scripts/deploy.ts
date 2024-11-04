@@ -835,9 +835,6 @@ async function main() {
   tx = await playerNFT.setPlayers(players);
   await tx.wait();
   console.log("playerNFT setPlayers");
-  tx = await petNFT.setPlayers(players);
-  await tx.wait();
-  console.log("petNFT setPlayers");
   tx = await quests.setPlayers(players);
   await tx.wait();
   console.log("quests setPlayers");
@@ -852,9 +849,9 @@ async function main() {
   await tx.wait();
   console.log("clans setBankFactory");
 
-  tx = await petNFT.setInstantVRFActions(instantVRFActions);
+  tx = await petNFT.initializeAddresses(instantVRFActions, players, territories);
   await tx.wait();
-  console.log("petNFT setInstantVRFActions");
+  console.log("petNFT initializeAddresses");
 
   tx = await playerNFT.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
@@ -912,9 +909,6 @@ async function main() {
   tx = await royaltyReceiver.setTerritories(territories);
   await tx.wait();
   console.log("royaltyReceiver.setTerritories");
-  tx = await petNFT.setTerritories(territories);
-  await tx.wait();
-  console.log("petNFT.setTerritories");
 
   tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await tx.wait();

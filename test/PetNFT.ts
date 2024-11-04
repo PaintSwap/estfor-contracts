@@ -152,7 +152,8 @@ describe("PetNFT", function () {
       petNFTNotBeta,
       "NotMinter"
     );
-    await petNFTNotBeta.setInstantVRFActions(alice);
+    await petNFTNotBeta.initializeAddresses(alice, alice, alice);
+
     await petNFTNotBeta.connect(alice).mintBatch(alice, [baseId], [randomWord]);
 
     const uriNotBeta = await petNFTNotBeta.uri(petId);
@@ -257,7 +258,7 @@ describe("PetNFT", function () {
       "NotPlayersOrAdminAndBeta"
     );
 
-    await petNFT.setPlayers(bob);
+    await petNFT.initializeAddresses(bob, bob, bob);
     await expect(petNFT.connect(bob).assignPet(alice, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
       "NotPlayersOrAdminAndBeta"

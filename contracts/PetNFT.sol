@@ -552,21 +552,15 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     _imageBaseUri = imageBaseUri;
   }
 
-  function setPlayers(address players) external onlyOwner {
-    _players = players;
-  }
-
   function setEditNameCost(uint72 editNameCost) public onlyOwner {
     _editNameCost = editNameCost;
     emit EditNameCost(editNameCost);
   }
 
-  function setTerritories(address territories) external onlyOwner {
-    _territories = territories;
-  }
-
-  function setInstantVRFActions(address instantVRFActions) external onlyOwner {
+  function initializeAddresses(address instantVRFActions, address players, address territories) external onlyOwner {
     _instantVRFActions = instantVRFActions;
+    _players = players;
+    _territories = territories;
   }
 
   function addBasePets(BasePetInput[] calldata basePetInputs) external onlyOwner {

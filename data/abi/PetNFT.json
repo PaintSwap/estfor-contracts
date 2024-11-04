@@ -1317,6 +1317,29 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "instantVRFActions",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "players",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "territories",
+        "type": "address"
+      }
+    ],
+    "name": "initializeAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "account",
         "type": "address"
       },
@@ -1589,45 +1612,6 @@
       }
     ],
     "name": "setImageBaseUri",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "instantVRFActions",
-        "type": "address"
-      }
-    ],
-    "name": "setInstantVRFActions",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "players",
-        "type": "address"
-      }
-    ],
-    "name": "setPlayers",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "territories",
-        "type": "address"
-      }
-    ],
-    "name": "setTerritories",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
