@@ -201,24 +201,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "territoryTreasury",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "shop",
-        "type": "address"
-      }
-    ],
-    "name": "initializeAddresses",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -265,6 +247,24 @@
       }
     ],
     "name": "setFundAllocationPercentages",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "spenders",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "isSpender",
+        "type": "bool"
+      }
+    ],
+    "name": "setSpenders",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

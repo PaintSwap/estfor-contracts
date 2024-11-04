@@ -37,40 +37,42 @@ async function main() {
 
   const startTime = 1701417600; // Fri dec 1st 08:00 UTC
   const numDays = 22;
-  await promotions.connect(owner).addPromotion({
-    promotion: Promotion.XMAS_2023,
-    startTime,
-    endTime: startTime + 24 * 3600 * numDays,
-    minTotalXP: 0,
-    numDailyRandomItemsToPick: 1,
-    isMultiday: true,
-    brushCostMissedDay: parseEther("25"),
-    tokenCost: 0n,
-    redeemCodeLength: 0,
-    adminOnly: false,
-    promotionTiedToUser: false,
-    promotionTiedToPlayer: true,
-    promotionMustOwnPlayer: true,
-    evolvedHeroOnly: false,
-    numDaysClaimablePeriodStreakBonus: 9,
-    numDaysHitNeededForStreakBonus: 20,
-    numRandomStreakBonusItemsToPick1: 1,
-    numRandomStreakBonusItemsToPick2: 0,
-    randomStreakBonusItemTokenIds1: [
-      EstforConstants.HALLOWEEN_BONUS_1,
-      EstforConstants.HALLOWEEN_BONUS_2,
-      EstforConstants.HALLOWEEN_BONUS_3
-    ],
-    randomStreakBonusAmounts1: [1, 1, 1],
-    randomStreakBonusItemTokenIds2: [],
-    randomStreakBonusAmounts2: [],
-    guaranteedStreakBonusItemTokenIds: [],
-    guaranteedStreakBonusAmounts: [],
-    guaranteedItemTokenIds: [],
-    guaranteedAmounts: [],
-    randomItemTokenIds: [],
-    randomAmounts: []
-  });
+  await promotions.connect(owner).addPromotions([
+    {
+      promotion: Promotion.XMAS_2023,
+      startTime,
+      endTime: startTime + 24 * 3600 * numDays,
+      minTotalXP: 0,
+      numDailyRandomItemsToPick: 1,
+      isMultiday: true,
+      brushCostMissedDay: parseEther("25"),
+      tokenCost: 0n,
+      redeemCodeLength: 0,
+      adminOnly: false,
+      promotionTiedToUser: false,
+      promotionTiedToPlayer: true,
+      promotionMustOwnPlayer: true,
+      evolvedHeroOnly: false,
+      numDaysClaimablePeriodStreakBonus: 9,
+      numDaysHitNeededForStreakBonus: 20,
+      numRandomStreakBonusItemsToPick1: 1,
+      numRandomStreakBonusItemsToPick2: 0,
+      randomStreakBonusItemTokenIds1: [
+        EstforConstants.HALLOWEEN_BONUS_1,
+        EstforConstants.HALLOWEEN_BONUS_2,
+        EstforConstants.HALLOWEEN_BONUS_3
+      ],
+      randomStreakBonusAmounts1: [1, 1, 1],
+      randomStreakBonusItemTokenIds2: [],
+      randomStreakBonusAmounts2: [],
+      guaranteedStreakBonusItemTokenIds: [],
+      guaranteedStreakBonusAmounts: [],
+      guaranteedItemTokenIds: [],
+      guaranteedAmounts: [],
+      randomItemTokenIds: [],
+      randomAmounts: []
+    }
+  ]);
 }
 
 main().catch((error) => {

@@ -504,7 +504,7 @@ export const playersFixture = async function () {
   const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
   const treasuryPercentages = [10, 90];
   await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
-  await treasury.initializeAddresses(ethers.ZeroAddress, shop); // territoryTreasury is not set here on in the tests there
+  await treasury.setSpenders([shop], true);
 
   await bankRelay.setBankFactory(bankFactory);
 

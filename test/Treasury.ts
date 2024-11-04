@@ -16,7 +16,8 @@ describe("Treasury", function () {
     })) as unknown as Treasury;
     await treasury.waitForDeployment();
 
-    await treasury.initializeAddresses(territoryTreasury, shop);
+    await treasury.setSpenders([territoryTreasury, shop], true);
+
     // Mint some tokens to the treasury
     await brushToken.mint(treasury, ethers.parseEther("1000"));
 

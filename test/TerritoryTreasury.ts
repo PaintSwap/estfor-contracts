@@ -30,7 +30,7 @@ describe("TerritoryTreasury", function () {
       pid
     ])) as unknown as TerritoryTreasury;
 
-    await treasury.initializeAddresses(territoryTreasury, shop);
+    await treasury.setSpenders([territoryTreasury, shop], true);
     const treasuryAccounts = [await shop.getAddress(), await territoryTreasury.getAddress()];
     const treasuryPercentages = [10, 90];
     await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);

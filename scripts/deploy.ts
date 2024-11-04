@@ -922,7 +922,7 @@ async function main() {
 
   tx = await territories.setCombatantsHelper(combatantsHelper);
   await tx.wait();
-  console.log("territories.initializeAddresses");
+  console.log("territories.setCombatantsHelper");
 
   const territoryIds = allTerritories.map((territory) => {
     return territory.territoryId;
@@ -938,9 +938,9 @@ async function main() {
   await tx.wait();
   console.log("treasury.setFundAllocationPercentages");
 
-  tx = await treasury.initializeAddresses(territoryTreasury, shop);
+  await treasury.setSpenders([territoryTreasury, shop], true);
   await tx.wait();
-  console.log("treasury.initializeAddresses");
+  console.log("treasury.setSpenders");
 
   tx = await bankRelay.setBankFactory(bankFactory);
   await tx.wait();

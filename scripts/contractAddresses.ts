@@ -4,7 +4,6 @@ let brush;
 let wftm;
 let oracle;
 let samWitchVRF;
-let decorator;
 let router;
 let paintSwapMarketplaceWhitelist;
 let paintSwapDecorator;
@@ -52,16 +51,15 @@ let passiveActions;
 
 if (!isBeta) {
   brush = "0x85dec8c4B2680793661bCA91a8F129607571863d";
-  wftm = "";
+  wftm = "0x000000000000000000000000000000000000dEaD";
   oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
-  decorator = "";
-  router = "";
-  paintSwapMarketplaceWhitelist = "";
-  paintSwapDecorator = "";
+  router = "0x000000000000000000000000000000000000dEaD";
+  paintSwapDecorator = "0x000000000000000000000000000000000000dEaD";
+  paintSwapMarketplaceWhitelist = "0x000000000000000000000000000000000000dEaD";
   worldLibrary = "0xcba2273a46649cc0ce76e69eb0bb05d9b699ca38";
   world = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
-  treasury = "";
+  treasury = "0x000000000000000000000000000000000000dEaD";
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
   royaltyReceiver = "0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b";
   adminAccess = "0xe63b7195b301b9313c9e337df4aceac436c3751e";
@@ -84,13 +82,13 @@ if (!isBeta) {
   players = "0x058ec56aba13f7fee3ae9c9b91b3bb03bc336143";
   bankRegistry = "0x55a1b0251e1375bd41dd9778c379322e3863a54e";
   bankFactory = "0x4af59427b2aeb66e6f7dca98c366ec66cca4e8d4";
-  bankRelay = "";
+  bankRelay = "0x000000000000000000000000000000000000dEaD";
   instantActions = "0x7e89fe755b546b10ea8372b056ea0d7b26cf36fe";
   instantVRFActions = "0xfe2c07fd7751bba25164adbd96e09b382403f4d7";
   vrfRequestInfo = "0x8c3dcf7b09ea620b265d9daab237f29f485f725b";
   genericInstantVRFActionStrategy = "0x6270b82049724ff6d7a78b71f2273bba03bfcdfc";
   eggInstantVRFActionStrategy = "0x7797fd3904fc399184d2a549dff025210d62e645";
-  clanBattleLibrary = "";
+  clanBattleLibrary = "0x000000000000000000000000000000000000dEaD";
   lockedBankVaults = "0x65e944795d00cc287bdace77d57571fc4deff3e0";
   lockedBankVaultsLibrary = "0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8";
   territories = "0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170";
@@ -200,7 +198,7 @@ export const BAZAAR_ADDRESS = bazaar;
 
 export const WFTM_ADDRESS = wftm;
 export const BRUSH_ADDRESS = brush;
-export const DECORATOR_ADDRESS = decorator;
+export const DECORATOR_ADDRESS = paintSwapDecorator;
 export const ROUTER_ADDRESS = router;
 export const PAINTSWAP_MARKETPLACE_WHITELIST = paintSwapMarketplaceWhitelist;
 

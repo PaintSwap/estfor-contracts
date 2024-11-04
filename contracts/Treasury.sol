@@ -77,9 +77,10 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
     emit SetFundAllocationPercentages(accounts, percentages);
   }
 
-  function initializeAddresses(address territoryTreasury, address shop) external onlyOwner {
-    _spenders[territoryTreasury] = true;
-    _spenders[shop] = true;
+  function setSpenders(address[] calldata spenders, bool isSpender) external onlyOwner {
+    for (uint256 i; i < spenders.length; ++i) {
+      _spenders[spenders[i]] = isSpender;
+    }
   }
 
   // solhint-disable-next-line no-empty-blocks

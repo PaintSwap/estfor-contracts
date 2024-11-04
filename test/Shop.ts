@@ -119,7 +119,7 @@ describe("Shop", function () {
       }
     ]);
 
-    await treasury.initializeAddresses(ethers.ZeroAddress, shop);
+    await treasury.setSpenders([shop], true);
     const treasuryAccounts = [await shop.getAddress()];
     const treasuryPercentages = [100];
     await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
