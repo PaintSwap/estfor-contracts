@@ -855,7 +855,7 @@ describe("LockedBankVaults", function () {
         inputItem.tokenId == EstforConstants.DEVILISH_FINGERS || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD
     );
     await itemNFT.addItems(items);
-    await itemNFT.testMints(alice, [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD], [1, 1]);
+    await itemNFT.mintBatch(alice, [EstforConstants.DEVILISH_FINGERS, EstforConstants.PROTECTION_SHIELD], [1, 1]);
 
     // Wrong item
     await expect(
@@ -924,7 +924,7 @@ describe("LockedBankVaults", function () {
 
     const item = allItems.find((inputItem) => inputItem.tokenId == EstforConstants.SHARPENED_CLAW) as ItemInput;
     await itemNFT.addItems([item]);
-    await itemNFT.testMint(alice, EstforConstants.SHARPENED_CLAW, 10);
+    await itemNFT.mint(alice, EstforConstants.SHARPENED_CLAW, 10);
 
     let requestId = 1;
     // Try 10 times
@@ -986,7 +986,7 @@ describe("LockedBankVaults", function () {
 
     const item = allItems.find((inputItem) => inputItem.tokenId == EstforConstants.SHARPENED_CLAW) as ItemInput;
     await itemNFT.addItems([item]);
-    await itemNFT.testMint(alice, EstforConstants.SHARPENED_CLAW, 10);
+    await itemNFT.mint(alice, EstforConstants.SHARPENED_CLAW, 10);
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
@@ -1074,7 +1074,7 @@ describe("LockedBankVaults", function () {
         inputItem.tokenId == EstforConstants.PROTECTION_SHIELD || inputItem.tokenId == EstforConstants.MIRROR_SHIELD
     );
     await itemNFT.addItems(items);
-    await itemNFT.testMints(alice, [EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD], [2, 1]);
+    await itemNFT.mintBatch(alice, [EstforConstants.PROTECTION_SHIELD, EstforConstants.MIRROR_SHIELD], [2, 1]);
 
     // Wrong item
     await expect(

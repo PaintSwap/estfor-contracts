@@ -151,7 +151,7 @@ describe("Non-Combat Actions", function () {
         petId: EstforConstants.NONE
       };
 
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [
           EstforConstants.NATURE_MASK,
@@ -310,7 +310,7 @@ describe("Non-Combat Actions", function () {
     ]);
 
     const mintAmount = 5;
-    await itemNFT.testMint(alice, EstforConstants.LOG, mintAmount); // Mint less than will be used
+    await itemNFT.mint(alice, EstforConstants.LOG, mintAmount); // Mint less than will be used
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -419,7 +419,7 @@ describe("Non-Combat Actions", function () {
     );
     const choiceId = await getActionChoiceId(tx, world);
 
-    await itemNFT.testMint(alice, EstforConstants.MAGIC_FIRE_STARTER, 1);
+    await itemNFT.mint(alice, EstforConstants.MAGIC_FIRE_STARTER, 1);
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
@@ -587,7 +587,7 @@ describe("Non-Combat Actions", function () {
       );
       const choiceId = await getActionChoiceId(tx, world);
 
-      await itemNFT.testMint(alice, EstforConstants.MAGIC_FIRE_STARTER, 1);
+      await itemNFT.mint(alice, EstforConstants.MAGIC_FIRE_STARTER, 1);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
@@ -629,7 +629,7 @@ describe("Non-Combat Actions", function () {
 */
     await players.connect(alice).startActions(playerId, queuedActions, EstforTypes.ActionQueueStatus.NONE);
 
-    await itemNFT.testMint(alice, EstforConstants.LOG, 1);
+    await itemNFT.mint(alice, EstforConstants.LOG, 1);
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -672,7 +672,7 @@ describe("Non-Combat Actions", function () {
 
     const actionId = await getActionId(tx, world);
 
-    await itemNFT.testMint(alice, EstforConstants.BRONZE_PICKAXE, 1);
+    await itemNFT.mint(alice, EstforConstants.BRONZE_PICKAXE, 1);
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,
@@ -783,8 +783,8 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      await itemNFT.testMint(alice, EstforConstants.COAL_ORE, 255);
-      await itemNFT.testMint(alice, EstforConstants.MITHRIL_ORE, 255);
+      await itemNFT.mint(alice, EstforConstants.COAL_ORE, 255);
+      await itemNFT.mint(alice, EstforConstants.MITHRIL_ORE, 255);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
@@ -894,7 +894,7 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      await itemNFT.testMints(alice, [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE], [1000, 1000]);
+      await itemNFT.mintBatch(alice, [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE], [1000, 1000]);
       const queuedAction1 = {...queuedAction, choiceId: choiceId1};
       await players
         .connect(alice)
@@ -1117,7 +1117,7 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
       await ethers.provider.send("evm_mine", []);
 
-      await itemNFT.testMint(alice, EstforConstants.SKILL_BOOST, 1);
+      await itemNFT.mint(alice, EstforConstants.SKILL_BOOST, 1);
       await players
         .connect(alice)
         .startActionsExtra(
@@ -1476,7 +1476,7 @@ describe("Non-Combat Actions", function () {
         petId: EstforConstants.NONE
       };
 
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [
           EstforConstants.NATUOW_HOOD,
@@ -1637,7 +1637,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction, rate} = await setupBasicCrafting(itemNFT, world);
 
       const startingAmount = 200;
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.SAPPHIRE, EstforConstants.ROPE],
         [startingAmount, startingAmount]
@@ -1666,7 +1666,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction, rate} = await setupBasicCrafting(itemNFT, world);
 
       const startingAmount = 200;
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.SAPPHIRE, EstforConstants.ROPE],
         [startingAmount, startingAmount]
@@ -1729,7 +1729,7 @@ describe("Non-Combat Actions", function () {
       const rate = 60 * RATE_MUL;
       const {queuedAction} = await setupBasicCrafting(itemNFT, world, rate);
 
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20 * 60, 1 * 60]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20 * 60, 1 * 60]);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
 
@@ -1804,7 +1804,7 @@ describe("Non-Combat Actions", function () {
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       // Don't have enough rope (needs 2)
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [40, 1]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [40, 1]);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -1838,7 +1838,7 @@ describe("Non-Combat Actions", function () {
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       // Don't have enough rope (needs 2)
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 2]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 2]);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -1871,7 +1871,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
       const queuedAction = {...queuedActionCrafting, timespan: 3600 * 3};
 
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [200, 10]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [200, 10]);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [900]);
@@ -1910,7 +1910,7 @@ describe("Non-Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.CRAFTING)).to.eq(xpGained);
 
-      await itemNFT.connect(alice).testMint(alice, EstforConstants.SAPPHIRE, 180);
+      await itemNFT.connect(alice).mint(alice, EstforConstants.SAPPHIRE, 180);
       // Don't have enough to make any
       await ethers.provider.send("evm_increaseTime", [3600]);
       await ethers.provider.send("evm_mine", []);
@@ -1933,14 +1933,14 @@ describe("Non-Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 7200n);
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 0]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 0]);
       pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 7200n);
       await itemNFT.connect(alice).burn(alice, EstforConstants.SAPPHIRE, 20);
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [0, 1]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [0, 1]);
       pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, 7200n);
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 0]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 0]);
       expect(await itemNFT.balanceOf(alice, EstforConstants.SAPPHIRE)).to.eq(20);
       expect(await itemNFT.balanceOf(alice, EstforConstants.ROPE)).to.eq(1);
       pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1970,7 +1970,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction} = await setupBasicCrafting(itemNFT, world);
 
       // Don't enough enough rope (needs 2)
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [60, 3]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [60, 3]);
 
       // Queue 2 for 1 hour each
       await players
@@ -2064,7 +2064,7 @@ describe("Non-Combat Actions", function () {
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       // Don't enough enough rope (needs 2)
-      await itemNFT.testMints(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [41, 3]);
+      await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [41, 3]);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -2100,7 +2100,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction, rate} = await setupBasicAlchemy(itemNFT, world);
 
       const startingAmount = 200;
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.SHADOW_SCROLL, EstforConstants.NATURE_SCROLL, EstforConstants.PAPER],
         [startingAmount, startingAmount, startingAmount]
@@ -2137,7 +2137,7 @@ describe("Non-Combat Actions", function () {
     const {queuedAction} = await setupBasicAlchemy(itemNFT, world, rate, outputAmount);
 
     const startingAmount = 1000000;
-    await itemNFT.testMints(
+    await itemNFT.mintBatch(
       alice,
       [EstforConstants.SHADOW_SCROLL, EstforConstants.NATURE_SCROLL, EstforConstants.PAPER],
       [startingAmount, startingAmount, startingAmount]
@@ -2173,7 +2173,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction, rate} = await setupBasicFletching(itemNFT, world);
 
       const startingAmount = 200;
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
         [startingAmount, startingAmount, startingAmount]
@@ -2209,7 +2209,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction, rate} = await setupBasicForging(itemNFT, world);
 
       const startingAmount = 200;
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
         [startingAmount, startingAmount, startingAmount]
@@ -2375,7 +2375,7 @@ describe("Non-Combat Actions", function () {
       .to.be.revertedWithCustomError(players, "NoItemBalance")
       .withArgs(EstforConstants.BRONZE_AXE);
 
-    await itemNFT.testMint(alice, EstforConstants.BRONZE_AXE, 1);
+    await itemNFT.mint(alice, EstforConstants.BRONZE_AXE, 1);
 
     // This works
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);

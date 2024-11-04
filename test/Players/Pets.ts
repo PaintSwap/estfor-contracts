@@ -180,7 +180,7 @@ describe("Pets", function () {
     await players.connect(alice).processActions(playerId);
 
     expect((await players.getActionQueue(playerId)).length).to.eq(1);
-    await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 20000);
+    await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 20000);
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);

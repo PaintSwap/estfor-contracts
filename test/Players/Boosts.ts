@@ -32,7 +32,7 @@ describe("Boosts", function () {
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
-    await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.XP_BOOST)).to.eq(1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -79,7 +79,7 @@ describe("Boosts", function () {
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
-    await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.XP_BOOST)).to.eq(1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -128,7 +128,7 @@ describe("Boosts", function () {
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
-      await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+      await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
@@ -177,7 +177,7 @@ describe("Boosts", function () {
       const queuedActionFinishAfterBoost = {...queuedAction};
       queuedActionFinishAfterBoost.timespan = 86400 - queuedAction.timespan;
 
-      await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+      await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
@@ -227,7 +227,7 @@ describe("Boosts", function () {
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
 
-      await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+      await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
@@ -274,7 +274,7 @@ describe("Boosts", function () {
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
-    await itemNFT.testMint(alice, EstforConstants.COMBAT_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.COMBAT_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
@@ -327,7 +327,7 @@ describe("Boosts", function () {
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
 
-    await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
@@ -379,7 +379,7 @@ describe("Boosts", function () {
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
 
-    await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
@@ -718,7 +718,7 @@ describe("Boosts", function () {
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
     const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
-    await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
@@ -1136,7 +1136,7 @@ describe("Boosts", function () {
     const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, world);
     const queuedAction = {...queuedActionWoodcutting, timespan: 3600 * 8};
 
-    await itemNFT.testMints(alice, [EstforConstants.XP_BOOST, EstforConstants.GATHERING_BOOST], [2, 2]);
+    await itemNFT.mintBatch(alice, [EstforConstants.XP_BOOST, EstforConstants.GATHERING_BOOST], [2, 2]);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
@@ -1223,7 +1223,7 @@ describe("Boosts", function () {
     ]);
 
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
-    await itemNFT.testMint(alice, EstforConstants.GATHERING_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -1273,7 +1273,7 @@ describe("Boosts", function () {
     const successPercent = 50;
     const minLevel = 1;
     const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
-    await itemNFT.testMint(alice, EstforConstants.GATHERING_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.GATHERING_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
@@ -1374,7 +1374,7 @@ describe("Boosts", function () {
       petId: EstforConstants.NONE
     };
 
-    await itemNFT.testMint(alice, EstforConstants.GATHERING_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -1472,7 +1472,7 @@ describe("Boosts", function () {
       petId: EstforConstants.NONE
     };
 
-    await itemNFT.testMint(alice, EstforConstants.GATHERING_BOOST, 2);
+    await itemNFT.mint(alice, EstforConstants.GATHERING_BOOST, 2);
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(2);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -1608,7 +1608,7 @@ describe("Boosts", function () {
       petId: EstforConstants.NONE
     };
 
-    await itemNFT.testMint(alice, EstforConstants.GATHERING_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -1663,7 +1663,7 @@ describe("Boosts", function () {
     const {queuedAction} = await setupBasicAlchemy(itemNFT, world, rate, outputAmount);
 
     const startingAmount = 1000000;
-    await itemNFT.testMints(
+    await itemNFT.mintBatch(
       alice,
       [
         EstforConstants.SHADOW_SCROLL,

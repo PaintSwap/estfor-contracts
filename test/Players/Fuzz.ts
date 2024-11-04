@@ -170,7 +170,7 @@ describe("Fuzz testing", async function () {
             console.log("WTF!!!!");
           }
 
-          await itemNFT.testMint(alice, rightHandEquipmentTokenId, 1); // mint 1
+          await itemNFT.mint(alice, rightHandEquipmentTokenId, 1); // mint 1
         }
       }
 

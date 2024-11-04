@@ -8,11 +8,11 @@ import {getChainId} from "./utils";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(
-    `Deploying passive action test data using account: ${owner.address} on chain id ${await getChainId(owner)}`,
+    `Deploying passive action test data using account: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
   const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)).connect(
-    owner,
+    owner
   ) as PassiveActions;
 
   const playerId = 1;
@@ -21,10 +21,10 @@ async function main() {
   await tx.wait();
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)).connect(owner) as ItemNFT;
-  tx = await itemNFT.testMints(
+  tx = await itemNFT.mintBatch(
     owner.address,
     [EstforConstants.PAPER, EstforConstants.BONEMEAL, EstforConstants.ASH],
-    [10000, 100000, 100000],
+    [10000, 100000, 100000]
   );
   await tx.wait();
   console.log("test Mint");

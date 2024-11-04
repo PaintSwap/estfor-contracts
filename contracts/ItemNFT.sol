@@ -30,7 +30,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error EquipmentPositionShouldNotChange();
   error NotMinter();
   error NotBurner();
-  error NotAdminAndBeta();
   error LengthMismatch();
 
   uint16 private _totalSupplyAll;
@@ -55,18 +54,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(address account => bool isApproved) private _approvals;
 
   modifier onlyMinters() {
-    require(_isApproved(_msgSender()), NotMinter());
+    require(_isApproved(_msgSender()) || (_adminAccess.isAdmin(_msgSender()) && _isBeta), NotMinter());
     _;
   }
 
   modifier onlyBurners(address from) {
     address sender = _msgSender();
     require(sender == from || isApprovedForAll(from, sender), NotBurner());
-    _;
-  }
-
-  modifier isAdminAndBeta() {
-    require(_adminAccess.isAdmin(_msgSender()) && _isBeta, NotAdminAndBeta());
     _;
   }
 
@@ -438,14 +432,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
-
-  function testMint(address to, uint256 tokenId, uint256 amount) external isAdminAndBeta {
-    _mintItem(to, tokenId, amount);
-  }
-
-  function testMints(address to, uint256[] calldata tokenIds, uint256[] calldata amounts) external isAdminAndBeta {
-    _mintBatchItems(to, tokenIds, amounts);
-  }
 
   function airdrop(address[] calldata tos, uint256 tokenId, uint256[] calldata amounts) external onlyOwner {
     require(tos.length == amounts.length, LengthMismatch());

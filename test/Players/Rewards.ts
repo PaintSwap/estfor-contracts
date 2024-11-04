@@ -2250,10 +2250,10 @@ describe("Rewards", function () {
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
-      await itemNFT.testMint(alice, EstforConstants.BRONZE_SWORD, 1);
-      await itemNFT.testMint(alice, EstforConstants.BRONZE_HELMET, 1);
+      await itemNFT.mint(alice, EstforConstants.BRONZE_SWORD, 1);
+      await itemNFT.mint(alice, EstforConstants.BRONZE_HELMET, 1);
 
-      await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 255);
+      await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 255);
 
       const numHours = 5;
 
@@ -2423,7 +2423,7 @@ describe("Rewards", function () {
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
         [1, 1, 255]
@@ -2574,7 +2574,7 @@ describe("Rewards", function () {
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
         [1, 1, 255]
@@ -2715,7 +2715,7 @@ describe("Rewards", function () {
         ]
       );
       const choiceId = await getActionChoiceId(tx, world);
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
         [1, 1, 255]

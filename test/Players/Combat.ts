@@ -228,7 +228,7 @@ describe("Combat Actions", function () {
       const queuedAction = {...meleeQueuedAction};
       queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
 
-      await itemNFT.testMint(alice, EstforConstants.BRONZE_SHIELD, 1);
+      await itemNFT.mint(alice, EstforConstants.BRONZE_SHIELD, 1);
 
       await expect(
         players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
@@ -504,7 +504,7 @@ describe("Combat Actions", function () {
       queuedAction.actionId = 2;
 
       // Exceed 2^16
-      await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too;
+      await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too;
       const foodBalance = await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -570,7 +570,7 @@ describe("Combat Actions", function () {
       queuedAction.actionId = 2;
 
       // Exceed 2^16
-      await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too;
+      await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too;
       const foodBalance = await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -632,7 +632,7 @@ describe("Combat Actions", function () {
       queuedAction.actionId = 2;
 
       // Exceed 2^16
-      await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too
+      await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 70000); // Have 255 from before too
       const foodBalance = await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -682,7 +682,7 @@ describe("Combat Actions", function () {
       ) as EstforTypes.ActionInput;
       await world.addActions([grogAction]);
 
-      await itemNFT.testMint(alice, EstforConstants.COOKED_BLEKK, 10000);
+      await itemNFT.mint(alice, EstforConstants.COOKED_BLEKK, 10000);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -718,7 +718,7 @@ describe("Combat Actions", function () {
           isTransferable: false
         }
       ]);
-      await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+      await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
       await players
@@ -806,7 +806,7 @@ describe("Combat Actions", function () {
       ) as EstforTypes.ActionInput;
       await world.addActions([grogAction]);
 
-      await itemNFT.testMint(alice, EstforConstants.COOKED_BLEKK, 10000);
+      await itemNFT.mint(alice, EstforConstants.COOKED_BLEKK, 10000);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -842,7 +842,7 @@ describe("Combat Actions", function () {
           isTransferable: false
         }
       ]);
-      await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+      await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
       await players
@@ -993,7 +993,7 @@ describe("Combat Actions", function () {
       ) as EstforTypes.ActionInput;
       await world.addActions([natuowAction]);
 
-      await itemNFT.testMint(alice, EstforConstants.COOKED_BLEKK, 10000);
+      await itemNFT.mint(alice, EstforConstants.COOKED_BLEKK, 10000);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1007,7 +1007,7 @@ describe("Combat Actions", function () {
         petId: EstforConstants.NONE
       };
 
-      await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+      await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
 
       await brush.mint(alice, parseEther("100000"));
       await brush.connect(alice).approve(wishingWell, parseEther("100000"));
@@ -1211,7 +1211,7 @@ describe("Combat Actions", function () {
       ]);
       const actionId = await getActionId(tx, world);
 
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [
           EstforConstants.TOTEM_STAFF,
@@ -1477,7 +1477,7 @@ describe("Combat Actions", function () {
       ]);
       const actionId = await getActionId(tx, world);
 
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [
           EstforConstants.TOTEM_STAFF,
@@ -1634,7 +1634,7 @@ describe("Combat Actions", function () {
       ]);
       const actionId = await getActionId(tx, world);
 
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [
           EstforConstants.TOTEM_STAFF,
@@ -1852,7 +1852,7 @@ describe("Combat Actions", function () {
         timespan: 24 * 3600
       };
 
-      await itemNFT.testMint(alice, EstforConstants.IRON_GAUNTLETS, 1);
+      await itemNFT.mint(alice, EstforConstants.IRON_GAUNTLETS, 1);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
@@ -1992,7 +1992,7 @@ describe("Combat Actions", function () {
       // Now have enough scrolls
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 4]);
       await ethers.provider.send("evm_mine", []);
-      await itemNFT.connect(alice).testMint(alice, EstforConstants.SHADOW_SCROLL, 100);
+      await itemNFT.connect(alice).mint(alice, EstforConstants.SHADOW_SCROLL, 100);
       await players.connect(alice).processActions(playerId);
 
       // Check no more food is consumed as this is an excess
@@ -2109,7 +2109,7 @@ describe("Combat Actions", function () {
       queuedAction.actionId = 2;
 
       // Exceed 2^16
-      await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 70000);
+      await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 70000);
       const foodBalance = await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2182,7 +2182,7 @@ describe("Combat Actions", function () {
       queuedAction.actionId = 2;
 
       // Exceed 2^16
-      await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 70000);
+      await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 70000);
       const foodBalance = await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
@@ -2286,7 +2286,7 @@ describe("Combat Actions", function () {
         regenerateId: EstforConstants.NONE
       };
 
-      await itemNFT.testMint(alice, EstforConstants.IRON_GAUNTLETS, 1);
+      await itemNFT.mint(alice, EstforConstants.IRON_GAUNTLETS, 1);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
       await ethers.provider.send("evm_increaseTime", [180]); // respawn every 360s
       await ethers.provider.send("evm_mine", []);
@@ -2374,7 +2374,7 @@ describe("Combat Actions", function () {
         ]
       );
 
-      await itemNFT.testMints(alice, [...items], [1350, 2092, 1046]); // Ensure mutable arrays
+      await itemNFT.mintBatch(alice, [...items], [1350, 2092, 1046]); // Ensure mutable arrays
 
       const queuedAction = {...magicQueuedAction}; // Ensure mutable copy
       queuedAction.actionId = 2;
@@ -2532,7 +2532,7 @@ describe("Combat Actions", function () {
       ]);
       const actionId = await getActionId(tx, world);
 
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [
           EstforConstants.BRONZE_SHIELD,
@@ -2673,7 +2673,7 @@ describe("Combat Actions", function () {
           equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
         }
       ]);
-      await itemNFT.testMint(alice, EstforConstants.GODLY_BOW, 1);
+      await itemNFT.mint(alice, EstforConstants.GODLY_BOW, 1);
       const queuedAction = {...rangedQueuedAction};
       queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW;
 
@@ -2730,7 +2730,7 @@ describe("Combat Actions", function () {
           equipPosition: EstforTypes.EquipPosition.BOTH_HANDS
         }
       ]);
-      await itemNFT.testMint(alice, EstforConstants.GODLY_BOW_5, 1);
+      await itemNFT.mint(alice, EstforConstants.GODLY_BOW_5, 1);
       const queuedAction = {...rangedQueuedAction};
       queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW_5;
       queuedAction.choiceId = choiceId;
@@ -2740,13 +2740,13 @@ describe("Combat Actions", function () {
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
 
       // Cannot use INFUSED godly bow either
-      await itemNFT.testMint(alice, EstforConstants.INFUSED_GODLY_BOW, 1);
+      await itemNFT.mint(alice, EstforConstants.INFUSED_GODLY_BOW, 1);
       queuedAction.rightHandEquipmentTokenId = EstforConstants.INFUSED_GODLY_BOW;
       await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE))
         .to.be.revertedWithCustomError(players, "IncorrectRightHandEquipment")
         .withArgs(EstforConstants.INFUSED_GODLY_BOW);
 
-      await itemNFT.testMint(alice, EstforConstants.GODLY_BOW_4, 1);
+      await itemNFT.mint(alice, EstforConstants.GODLY_BOW_4, 1);
       queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW_4;
 
       await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
@@ -2911,7 +2911,7 @@ describe("Combat Actions", function () {
     const actionId = await getActionId(tx, world);
 
     const foodNum = 100;
-    await itemNFT.testMints(
+    await itemNFT.mintBatch(
       alice,
       [EstforConstants.BRONZE_SWORD, EstforConstants.COOKED_MINNUS, EstforConstants.BRONZE_HELMET],
       [1, foodNum, 1]
@@ -3033,7 +3033,7 @@ describe("Combat Actions", function () {
     const actionId = await getActionId(tx, world);
 
     const foodNum = 100;
-    await itemNFT.testMints(
+    await itemNFT.mintBatch(
       alice,
       [EstforConstants.BRONZE_SWORD, EstforConstants.COOKED_MINNUS, EstforConstants.BRONZE_HELMET],
       [1, foodNum, 1]
@@ -3148,8 +3148,8 @@ describe("Combat Actions", function () {
     const actionId = await getActionId(tx, world);
 
     const foodNum = 2;
-    await itemNFT.testMint(alice, EstforConstants.BRONZE_SWORD, 1);
-    await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 2);
+    await itemNFT.mint(alice, EstforConstants.BRONZE_SWORD, 1);
+    await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 2);
     const timespan = 3600 * 3; // 3 hours
     tx = await world.addActionChoices(
       EstforConstants.NONE,

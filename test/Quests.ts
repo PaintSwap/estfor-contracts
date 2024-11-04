@@ -387,7 +387,7 @@ describe("Quests", function () {
     await players.connect(alice).activateQuest(playerId, questId);
     // Process immediately
     const initialMintNum = 10;
-    await itemNFT.connect(alice).testMints(alice, [COOKED_MINNUS], [initialMintNum]);
+    await itemNFT.connect(alice).mintBatch(alice, [COOKED_MINNUS], [initialMintNum]);
     let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.quests.rewardItemTokenIds.length).to.eq(0);
     expect(pendingQueuedActionState.quests.consumedItemTokenIds.length).to.eq(0);
@@ -1028,7 +1028,7 @@ describe("Quests", function () {
       const {queuedAction, choiceId} = await setupBasicFletching(itemNFT, world);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
         [1000, 1000, 1000]

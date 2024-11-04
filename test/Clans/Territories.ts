@@ -862,7 +862,7 @@ describe("Territories", function () {
         inputItem.tokenId == EstforConstants.MIRROR_SHIELD || inputItem.tokenId == EstforConstants.PROTECTION_SHIELD
     );
     await itemNFT.addItems(items);
-    await itemNFT.testMints(alice, [EstforConstants.MIRROR_SHIELD, EstforConstants.PROTECTION_SHIELD], [2, 1]);
+    await itemNFT.mintBatch(alice, [EstforConstants.MIRROR_SHIELD, EstforConstants.PROTECTION_SHIELD], [2, 1]);
 
     // Wrong item
     await expect(

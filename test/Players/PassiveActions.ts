@@ -34,7 +34,7 @@ describe("Passive actions", function () {
       }
     };
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
 
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
@@ -113,9 +113,9 @@ describe("Passive actions", function () {
 
     await passiveActions.addActions([passiveActionInput]);
     // Give 1 less than you need to start
-    await itemNFT.testMint(alice, EstforConstants.OAK_LOG, 99);
+    await itemNFT.mint(alice, EstforConstants.OAK_LOG, 99);
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0)).to.be.reverted;
-    await itemNFT.testMint(alice, EstforConstants.OAK_LOG, 1);
+    await itemNFT.mint(alice, EstforConstants.OAK_LOG, 1);
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0)).to.not.be
       .reverted;
   });
@@ -177,7 +177,7 @@ describe("Passive actions", function () {
 
     const passiveActionInput = defaultPassiveActionInput;
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 2);
+    await itemNFT.mint(alice, EstforConstants.POISON, 2);
     await expect(passiveActions.startAction(playerId, passiveActionInput.actionId, 0)).to.be.revertedWithCustomError(
       passiveActions,
       "NotOwnerOfPlayerAndActive"
@@ -233,7 +233,7 @@ describe("Passive actions", function () {
     };
 
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0))
       .to.be.revertedWithCustomError(passiveActions, "MinimumLevelNotReached")
       .withArgs(Skill.WOODCUTTING, 2);
@@ -299,7 +299,7 @@ describe("Passive actions", function () {
       ]
     };
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 3);
+    await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
@@ -355,7 +355,7 @@ describe("Passive actions", function () {
     };
     await requestAndFulfillRandomWords(world, mockVRF);
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 3);
+    await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await timeTravel24Hours();
     await requestAndFulfillRandomWords(world, mockVRF);
@@ -420,7 +420,7 @@ describe("Passive actions", function () {
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
     await requestAndFulfillRandomWords(world, mockVRF);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 3);
+    await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
@@ -480,7 +480,7 @@ describe("Passive actions", function () {
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
     await requestAndFulfillRandomWords(world, mockVRF);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 3);
+    await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
@@ -566,7 +566,7 @@ describe("Passive actions", function () {
       randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}]
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 3);
+    await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]); // Only go forward by 1 day
     await ethers.provider.send("evm_mine", []);
@@ -605,7 +605,7 @@ describe("Passive actions", function () {
     };
 
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
@@ -633,7 +633,7 @@ describe("Passive actions", function () {
     };
 
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
@@ -672,7 +672,7 @@ describe("Passive actions", function () {
     };
     await passiveActions.addActions([passiveActionInput]);
     expect((await passiveActions.getAction(passiveActionInput.actionId)).packedData == "0x80");
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await expect(
       passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0)
     ).to.be.revertedWithCustomError(passiveActions, "PlayerNotUpgraded");
@@ -690,7 +690,7 @@ describe("Passive actions", function () {
 
     const passiveActionInput = defaultPassiveActionInput;
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
 
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
@@ -727,7 +727,7 @@ describe("Passive actions", function () {
       }
     };
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
 
     await ethers.provider.send("evm_increaseTime", [3 * 24 * 60 * 60]);
@@ -788,7 +788,7 @@ describe("Passive actions", function () {
       }
     ]);
 
-    await itemNFT.testMints(alice, [boostId, BRONZE_ARROW, IRON_ARROW], [1, 2, 3]);
+    await itemNFT.mintBatch(alice, [boostId, BRONZE_ARROW, IRON_ARROW], [1, 2, 3]);
     expect(await itemNFT.balanceOf(alice, boostId)).to.eq(1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, boostId);
     // Confirm they are all burned
@@ -826,7 +826,7 @@ describe("Passive actions", function () {
       }
     };
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await requestAndFulfillRandomWords(world, mockVRF);
     await ethers.provider.send("evm_increaseTime", [3 * 24 * 60 * 60]);
@@ -869,7 +869,7 @@ describe("Passive actions", function () {
       }
     };
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await passiveActions.connect(alice).claim(playerId);
   });
@@ -885,7 +885,7 @@ describe("Passive actions", function () {
       guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}]
     };
     await passiveActions.addActions([passiveActionInput]);
-    await itemNFT.testMint(alice, EstforConstants.POISON, 1);
+    await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
 
     await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);

@@ -25,7 +25,7 @@ async function main() {
       tokenIds.push(item.tokenId);
       amounts.push(100);
     });
-    const tx = await itemNFT.testMints("0xa801864d0D24686B15682261aa05D4e1e6e5BD94", tokenIds, amounts);
+    const tx = await itemNFT.mintBatch("0xa801864d0D24686B15682261aa05D4e1e6e5BD94", tokenIds, amounts);
     await tx.wait();
     console.log(`Minted items: ${i}`);
   }

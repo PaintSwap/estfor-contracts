@@ -190,7 +190,7 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
     }
   ]);
 
-  await itemNFT.testMint(alice, EstforConstants.LOG, 5000);
+  await itemNFT.mint(alice, EstforConstants.LOG, 5000);
 
   return {queuedAction, rate, actionId, choiceId};
 };
@@ -244,10 +244,10 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
     ]
   );
   const choiceId = await getActionChoiceId(tx, world);
-  await itemNFT.testMint(alice, EstforConstants.BRONZE_SWORD, 1);
-  await itemNFT.testMint(alice, EstforConstants.BRONZE_HELMET, 1);
+  await itemNFT.mint(alice, EstforConstants.BRONZE_SWORD, 1);
+  await itemNFT.mint(alice, EstforConstants.BRONZE_HELMET, 1);
 
-  await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 255);
+  await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 255);
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
     attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -363,7 +363,7 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
       equipPosition: EstforTypes.EquipPosition.FOOD
     }
   ]);
-  await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 20000);
+  await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 20000);
 
   return {queuedAction};
 };
@@ -451,7 +451,7 @@ export const setupBasicCooking = async function (
     }
   ]);
 
-  await itemNFT.testMint(alice, EstforConstants.RAW_MINNUS, 1000);
+  await itemNFT.mint(alice, EstforConstants.RAW_MINNUS, 1000);
 
   return {queuedAction, rate, choiceId};
 };

@@ -237,7 +237,7 @@ describe("Players", function () {
         equipPosition: EstforTypes.EquipPosition.ARMS
       }
     ]);
-    await itemNFT.testMint(alice, EstforConstants.BRONZE_GAUNTLETS, 1);
+    await itemNFT.mint(alice, EstforConstants.BRONZE_GAUNTLETS, 1);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
@@ -331,7 +331,7 @@ describe("Players", function () {
         equipPosition: EstforTypes.EquipPosition.ARMS
       }
     ]);
-    await itemNFT.testMint(alice, EstforConstants.BRONZE_GAUNTLETS, 1);
+    await itemNFT.mint(alice, EstforConstants.BRONZE_GAUNTLETS, 1);
 
     const queuedActionCorrect = {...queuedAction, attire: {...EstforTypes.noAttire}};
 
@@ -427,7 +427,7 @@ describe("Players", function () {
         equipPosition: EstforTypes.EquipPosition.ARMS
       }
     ]);
-    await itemNFT.testMint(alice, EstforConstants.BRONZE_GAUNTLETS, 1);
+    await itemNFT.mint(alice, EstforConstants.BRONZE_GAUNTLETS, 1);
 
     const queuedActionCorrect = {...queuedAction, attire: {...EstforTypes.noAttire}};
 
@@ -706,7 +706,7 @@ describe("Players", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice, EstforConstants.ORICHALCUM_AXE, 1);
+    await itemNFT.mint(alice, EstforConstants.ORICHALCUM_AXE, 1);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
@@ -932,8 +932,8 @@ describe("Players", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice, EstforConstants.LOG, 5);
-    await itemNFT.testMint(alice, EstforConstants.COOKED_MINNUS, 1);
+    await itemNFT.mint(alice, EstforConstants.LOG, 5);
+    await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 1);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
@@ -953,7 +953,7 @@ describe("Players", function () {
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
     const minXP = getXPFromLevel(70);
 
-    await itemNFT.testMints(
+    await itemNFT.mintBatch(
       alice,
       [
         EstforConstants.BRONZE_AXE,
@@ -1090,7 +1090,7 @@ describe("Players", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice, EstforConstants.ORICHALCUM_AXE, 1);
+    await itemNFT.mint(alice, EstforConstants.ORICHALCUM_AXE, 1);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
@@ -1386,7 +1386,7 @@ describe("Players", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice, EstforConstants.ORICHALCUM_AXE, 1);
+    await itemNFT.mint(alice, EstforConstants.ORICHALCUM_AXE, 1);
 
     // 16MM is the maximum xp per hour that can be gained, so need to loop it many times to go over
     for (let i = 0; i < 25; ++i) {
@@ -1446,7 +1446,7 @@ describe("Players", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice, EstforConstants.XP_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     await players
       .connect(alice)
       .startActionsExtra(
@@ -1842,7 +1842,7 @@ describe("Players", function () {
       }
 
       // Add a boost to the receiver, and setting active player if no longer possible
-      await itemNFT.testMint(alice, boost, 1);
+      await itemNFT.mint(alice, boost, 1);
       await playerNFT.safeTransferFrom(owner, alice, playerId, 1, "0x");
       await expect(players.connect(alice).setActivePlayer(playerId)).to.be.revertedWithCustomError(
         players,
@@ -1859,7 +1859,7 @@ describe("Players", function () {
   it("Transferring a player with boost should add a lock released after some time", async function () {
     const {players, playerId, playerNFT, itemNFT, alice, owner} = await loadFixture(playersFixture);
 
-    await itemNFT.testMint(owner, EstforConstants.COMBAT_BOOST, 1);
+    await itemNFT.mint(owner, EstforConstants.COMBAT_BOOST, 1);
     await playerNFT.connect(alice).safeTransferFrom(alice, owner, playerId, 1, "0x");
 
     await expect(players.setActivePlayer(playerId)).to.be.revertedWithCustomError(players, "PlayerLocked");
@@ -1915,7 +1915,7 @@ describe("Players", function () {
       }
     ]);
 
-    await itemNFT.testMint(alice, EstforConstants.BRONZE_HELMET, 1);
+    await itemNFT.mint(alice, EstforConstants.BRONZE_HELMET, 1);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
@@ -2223,7 +2223,7 @@ describe("Players", function () {
     ]);
 
     const startingBalance = 1000000;
-    await itemNFT.testMints(
+    await itemNFT.mintBatch(
       alice,
       [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE, EstforConstants.SAPPHIRE],
       [startingBalance, startingBalance, startingBalance]

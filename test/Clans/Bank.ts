@@ -68,7 +68,7 @@ describe("Bank", function () {
       clanBankAddress
     } = await loadFixture(bankFixture);
 
-    await itemNFT.testMints(
+    await itemNFT.mintBatch(
       alice,
       [
         EstforConstants.BRONZE_SHIELD,
@@ -182,7 +182,7 @@ describe("Bank", function () {
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
 
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
-    await itemNFT.testMint(clanBankAddress, EstforConstants.BRONZE_SHIELD, 1);
+    await itemNFT.mint(clanBankAddress, EstforConstants.BRONZE_SHIELD, 1);
 
     await expect(bankRelay.connect(alice).withdrawItems(bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "WithdrawItems")
@@ -221,13 +221,13 @@ describe("Bank", function () {
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 2);
 
     // Send directly
-    await itemNFT.testMint(clanBankAddress, EstforConstants.TITANIUM_AXE, 2); // to alice
-    await itemNFT.testMint(clanBankAddress, EstforConstants.IRON_AXE, 3); // to bob
-    await itemNFT.testMint(clanBankAddress, EstforConstants.MITHRIL_AXE, 1); // Don't transfer this
+    await itemNFT.mint(clanBankAddress, EstforConstants.TITANIUM_AXE, 2); // to alice
+    await itemNFT.mint(clanBankAddress, EstforConstants.IRON_AXE, 3); // to bob
+    await itemNFT.mint(clanBankAddress, EstforConstants.MITHRIL_AXE, 1); // Don't transfer this
 
-    await itemNFT.testMint(clanBankAddress, EstforConstants.ADAMANTINE_AXE, 4); // to bob
-    await itemNFT.testMint(clanBankAddress, EstforConstants.RUNITE_AXE, 3); // to alice (only send 1)
-    await itemNFT.testMint(clanBankAddress, EstforConstants.ORICHALCUM_AXE, 2); // to alice
+    await itemNFT.mint(clanBankAddress, EstforConstants.ADAMANTINE_AXE, 4); // to bob
+    await itemNFT.mint(clanBankAddress, EstforConstants.RUNITE_AXE, 3); // to alice (only send 1)
+    await itemNFT.mint(clanBankAddress, EstforConstants.ORICHALCUM_AXE, 2); // to alice
 
     const tokenIds = [
       EstforConstants.TITANIUM_AXE,
@@ -307,7 +307,7 @@ describe("Bank", function () {
     ]);
 
     // Confirm item cannot be transferred normally
-    await itemNFT.testMint(alice, EstforConstants.SKILL_BOOST, 1);
+    await itemNFT.mint(alice, EstforConstants.SKILL_BOOST, 1);
     await expect(
       itemNFT.connect(alice).safeTransferFrom(alice, bob, EstforConstants.SKILL_BOOST, 1, "0x")
     ).to.be.revertedWithCustomError(itemNFT, "ItemNotTransferable");
@@ -316,7 +316,7 @@ describe("Bank", function () {
     const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
 
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
-    await itemNFT.testMint(clanBankAddress, EstforConstants.SKILL_BOOST, 1);
+    await itemNFT.mint(clanBankAddress, EstforConstants.SKILL_BOOST, 1);
 
     await expect(bankRelay.connect(alice).withdrawItems(alice, playerId, [EstforConstants.SKILL_BOOST], [1]))
       .to.emit(bank, "WithdrawItems")

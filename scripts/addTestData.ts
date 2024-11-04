@@ -149,7 +149,7 @@ export const addTestData = async (
     await ethers.provider.send("evm_mine", []);
   }
 
-  tx = await itemNFT.testMint(owner, EstforConstants.BRONZE_HELMET, 1);
+  tx = await itemNFT.mint(owner, EstforConstants.BRONZE_HELMET, 1);
   await tx.wait();
   console.log("Minted Bronze Helmet");
 
@@ -200,7 +200,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Transfer some brush");
 
-  tx = await itemNFT.testMints(
+  tx = await itemNFT.mintBatch(
     owner,
     [EstforConstants.MAGIC_FIRE_STARTER, EstforConstants.TITANIUM_ARMOR],
     [minItemQuantityBeforeSellsAllowed, 1n]

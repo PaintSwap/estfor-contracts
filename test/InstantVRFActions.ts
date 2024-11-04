@@ -120,7 +120,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
       const actionAmount = 1;
       await instantVRFActions
@@ -151,7 +151,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [1000, 1000, 1000]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [1000, 1000, 1000]);
 
       const actionAmount = maxInstantVRFActionAmount + 1n;
       await expect(
@@ -190,7 +190,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [1000, 1000, 1000]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [1000, 1000, 1000]);
 
       const actionAmount = maxInstantVRFActionAmount - 2n;
       let actionAmount1 = 3;
@@ -236,7 +236,7 @@ describe("Instant VRF actions", function () {
 
       await instantVRFActions.addActions([instantVRFActionInput, instantVRFActionInput1]);
 
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         alice,
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW, BRONZE_BAR, IRON_BAR, ADAMANTINE_BAR],
         [6, 6, 6, 6, 6, 6]
@@ -280,7 +280,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
       const actionAmount = 1;
       await expect(
@@ -313,7 +313,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [3, 3, 3]);
 
       const actionAmount = 1;
       await expect(
@@ -473,7 +473,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -498,7 +498,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -522,7 +522,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [12, 12, 12]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [12, 12, 12]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -561,7 +561,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions
@@ -594,7 +594,7 @@ describe("Instant VRF actions", function () {
       await playerNFT
         .connect(alice)
         .safeTransferFrom(alice, await erc1155HolderRogue.getAddress(), playerId, 1, "0x00");
-      await itemNFT.testMints(
+      await itemNFT.mintBatch(
         await erc1155HolderRogue.getAddress(),
         [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
         [6, 6, 6]
@@ -669,7 +669,7 @@ describe("Instant VRF actions", function () {
       };
       await instantVRFActions.addActions([instantVRFActionInput]);
 
-      await itemNFT.testMint(alice, BRONZE_ARROW, 2);
+      await itemNFT.mint(alice, BRONZE_ARROW, 2);
       const actionAmount = 2;
       await expect(
         instantVRFActions.connect(alice).doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [2], {
@@ -817,7 +817,7 @@ describe("Instant VRF actions", function () {
       };
 
       await instantVRFActions.addActions([instantVRFActionInput]);
-      await itemNFT.testMints(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
       await instantVRFActions.setAvailable([instantVRFActionInput.actionId], false);
@@ -987,7 +987,7 @@ describe("Instant VRF actions", function () {
       // Add it twice, just to get this tested
       await instantVRFActions.addActions([instantVRFActionInput, {...instantVRFActionInput, actionId: 2}]);
 
-      await itemNFT.testMint(alice, BRONZE_ARROW, 1000000);
+      await itemNFT.mint(alice, BRONZE_ARROW, 1000000);
 
       const actionAmount1 = maxInstantVRFActionAmount / 2n;
       const actionAmount2 = maxInstantVRFActionAmount / 2n - 1n;

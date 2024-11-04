@@ -21,7 +21,7 @@ async function main() {
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
   // From player
-  let tx = await itemNFT.testMints(owner.address, [EstforConstants.TITANIUM_AXE, EstforConstants.IRON_AXE], [2, 2]);
+  let tx = await itemNFT.mintBatch(owner.address, [EstforConstants.TITANIUM_AXE, EstforConstants.IRON_AXE], [2, 2]);
   await tx.wait();
 
   const tokenIds = [EstforConstants.TITANIUM_AXE, EstforConstants.IRON_AXE];
@@ -70,7 +70,7 @@ async function main() {
   );
 
   // Send directly
-  tx = await itemNFT.testMints(clanBankAddress, [EstforConstants.TITANIUM_AXE, EstforConstants.IRON_AXE], [2, 2]);
+  tx = await itemNFT.mintBatch(clanBankAddress, [EstforConstants.TITANIUM_AXE, EstforConstants.IRON_AXE], [2, 2]);
   await tx.wait();
 
   const bankRelay = await ethers.getContractAt("BankRelay", BANK_RELAY_ADDRESS);
