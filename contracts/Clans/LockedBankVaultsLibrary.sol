@@ -116,7 +116,7 @@ library LockedBankVaultsLibrary {
 
       if (defendingVault.timestamp != 0 && !defendingVault.claimed) {
         total += defendingVault.amount;
-        numLocksClaimed++;
+        ++numLocksClaimed;
       }
 
       if (defendingVault.timestamp1 > block.timestamp) {
@@ -129,8 +129,8 @@ library LockedBankVaultsLibrary {
 
       if (defendingVault.timestamp1 != 0) {
         total += defendingVault.amount1;
-        numLocksClaimed++;
-        defendingVaultsOffset++;
+        ++numLocksClaimed;
+        ++defendingVaultsOffset;
       } else {
         // First one is claimed, second one is not set yet, so need to make sure we don't try and claim it again
         defendingVault.claimed = true;
@@ -176,7 +176,7 @@ library LockedBankVaultsLibrary {
         uint32(clanId)
       );
       if (clanIndex <= defendingClanIndex) {
-        defendingClanIndex++;
+        ++defendingClanIndex;
       }
     } else {
       modifiedSortedClansByMMR = sortedClansByMMR;
@@ -210,12 +210,12 @@ library LockedBankVaultsLibrary {
     for (uint256 i = 0; i < sortedClansByMMR.length; ++i) {
       if (_getClanId(sortedClansByMMR[i]) == clanId) {
         clanIndex = i;
-        numFound++;
+        ++numFound;
       }
 
       if (_getClanId(sortedClansByMMR[i]) == defendingClanId) {
         defendingIndex = i;
-        numFound++;
+        ++numFound;
       }
 
       if (numFound == 2) {
@@ -235,12 +235,12 @@ library LockedBankVaultsLibrary {
     for (uint256 i = 0; i < sortedClansByMMR.length; ++i) {
       if (_getClanId(sortedClansByMMR[i]) == clanId) {
         clanIndex = i;
-        numFound++;
+        ++numFound;
       }
 
       if (_getClanId(sortedClansByMMR[i]) == defendingClanId) {
         defendingIndex = i;
-        numFound++;
+        ++numFound;
       }
 
       if (numFound == 2) {

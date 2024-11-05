@@ -78,6 +78,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint8 skipSuccessPercent; // 0-100 (% chance of skipping a day)
     uint8 worldLocation; // 0 is the main starting world
     bool isFullModeOnly;
+    uint16 questPrerequisiteId;
   }
 
   struct PassiveAction {
@@ -97,6 +98,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint8 skipSuccessPercent;
     bool hasRandomRewards;
     bytes1 packedData; // worldLocation first bit, second bit isAvailable, last bit isFullModeOnly
+    uint16 questPrerequisiteId;
   }
 
   struct PendingPassiveActionState {
@@ -515,7 +517,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       inputAmount3: actionInfo.inputAmounts.length > 2 ? actionInfo.inputAmounts[2] : 0,
       skipSuccessPercent: actionInfo.skipSuccessPercent,
       hasRandomRewards: hasRandomRewards,
-      packedData: packedData
+      packedData: packedData,
+      questPrerequisiteId: actionInfo.questPrerequisiteId
     });
   }
 

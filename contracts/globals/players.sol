@@ -59,8 +59,10 @@ struct Player {
 struct Item {
   EquipPosition equipPosition;
   bytes1 packedData; // 0x1 exists, upper most bit is full mode
+  bool isAvailable;
+  uint16 questPrerequisiteId;
   // Can it be transferred?
-  bool isTransferable;
+  bool isTransferable; // TODO: Move into packedData
   // Food
   uint16 healthRestored;
   // Boost vial
@@ -76,25 +78,6 @@ struct Item {
   int16 rangedDefence;
   int16 health;
   // Minimum requirements in this skill to use this item (can be NONE)
-  Skill skill;
-  uint32 minXP;
-}
-
-struct ItemOutput {
-  EquipPosition equipPosition;
-  bool isFullModeOnly;
-  bool isTransferable;
-  uint16 healthRestored;
-  BoostType boostType;
-  uint16 boostValue;
-  uint24 boostDuration;
-  int16 melee;
-  int16 magic;
-  int16 ranged;
-  int16 meleeDefence;
-  int16 magicDefence;
-  int16 rangedDefence;
-  int16 health;
   Skill skill;
   uint32 minXP;
 }
@@ -138,6 +121,8 @@ struct ActionChoiceInput {
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
   bool isFullModeOnly;
+  bool isAvailable;
+  uint16 questPrerequisiteId;
   uint8[] minSkills; // Skills required to do this action choice
   uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
 }
@@ -172,6 +157,7 @@ struct ActionChoice {
   uint24 newInputAmount1; // alternative inputAmount1 which is larger
   uint24 newInputAmount2; // alternative inputAmount2 which is larger
   uint24 newInputAmount3; // alternative inputAmount3 which is larger
+  uint16 questPrerequisiteId;
 }
 
 // Must be in the same order as Skill enum
@@ -305,6 +291,8 @@ struct ItemInput {
   EquipPosition equipPosition;
   bool isTransferable;
   bool isFullModeOnly;
+  bool isAvailable;
+  uint16 questPrerequisiteId;
   // Minimum requirements in this skill
   Skill skill;
   uint32 minXP;

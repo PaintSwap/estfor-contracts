@@ -248,9 +248,61 @@
       {
         "components": [
           {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint16",
+            "name": "tokenId",
+            "type": "uint16"
+          },
+          {
             "internalType": "enum EquipPosition",
             "name": "equipPosition",
             "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
           },
           {
             "internalType": "bool",
@@ -259,8 +311,23 @@
           },
           {
             "internalType": "bool",
-            "name": "isTransferable",
+            "name": "isAvailable",
             "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
           },
           {
             "internalType": "uint16",
@@ -283,67 +350,20 @@
             "type": "uint24"
           },
           {
-            "internalType": "int16",
-            "name": "melee",
-            "type": "int16"
+            "internalType": "string",
+            "name": "metadataURI",
+            "type": "string"
           },
           {
-            "internalType": "int16",
-            "name": "magic",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "ranged",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "meleeDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "health",
-            "type": "int16"
-          },
-          {
-            "internalType": "enum Skill",
-            "name": "skill",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "minXP",
-            "type": "uint32"
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
           }
         ],
         "indexed": false,
-        "internalType": "struct ItemOutput[]",
+        "internalType": "struct ItemInput[]",
         "name": "items",
         "type": "tuple[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint16[]",
-        "name": "tokenIds",
-        "type": "uint16[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "string[]",
-        "name": "names",
-        "type": "string[]"
       }
     ],
     "name": "AddItems",
@@ -380,9 +400,61 @@
       {
         "components": [
           {
+            "components": [
+              {
+                "internalType": "int16",
+                "name": "melee",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magic",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "ranged",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "health",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "meleeDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "magicDefence",
+                "type": "int16"
+              },
+              {
+                "internalType": "int16",
+                "name": "rangedDefence",
+                "type": "int16"
+              }
+            ],
+            "internalType": "struct CombatStats",
+            "name": "combatStats",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint16",
+            "name": "tokenId",
+            "type": "uint16"
+          },
+          {
             "internalType": "enum EquipPosition",
             "name": "equipPosition",
             "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
           },
           {
             "internalType": "bool",
@@ -391,8 +463,23 @@
           },
           {
             "internalType": "bool",
-            "name": "isTransferable",
+            "name": "isAvailable",
             "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
           },
           {
             "internalType": "uint16",
@@ -415,67 +502,20 @@
             "type": "uint24"
           },
           {
-            "internalType": "int16",
-            "name": "melee",
-            "type": "int16"
+            "internalType": "string",
+            "name": "metadataURI",
+            "type": "string"
           },
           {
-            "internalType": "int16",
-            "name": "magic",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "ranged",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "meleeDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "health",
-            "type": "int16"
-          },
-          {
-            "internalType": "enum Skill",
-            "name": "skill",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "minXP",
-            "type": "uint32"
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
           }
         ],
         "indexed": false,
-        "internalType": "struct ItemOutput[]",
+        "internalType": "struct ItemInput[]",
         "name": "items",
         "type": "tuple[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint16[]",
-        "name": "tokenIds",
-        "type": "uint16[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "string[]",
-        "name": "names",
-        "type": "string[]"
       }
     ],
     "name": "EditItems",
@@ -710,6 +750,16 @@
             "internalType": "bool",
             "name": "isFullModeOnly",
             "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           },
           {
             "internalType": "enum Skill",
@@ -970,6 +1020,16 @@
             "type": "bool"
           },
           {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "enum Skill",
             "name": "skill",
             "type": "uint8"
@@ -1164,6 +1224,16 @@
           },
           {
             "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
             "name": "isTransferable",
             "type": "bool"
           },
@@ -1262,6 +1332,16 @@
             "internalType": "bytes1",
             "name": "packedData",
             "type": "bytes1"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           },
           {
             "internalType": "bool",

@@ -4,7 +4,13 @@ import {expect} from "chai";
 import {playersFixture} from "./Players/PlayersFixture";
 import {ethers} from "hardhat";
 import {Promotion} from "@paintswap/estfor-definitions/types";
-import {requestAndFulfillRandomWords, timeTravel, timeTravel24Hours, timeTravelToNextCheckpoint} from "./utils";
+import {
+  createAndDoPurseStringsQuest,
+  requestAndFulfillRandomWords,
+  timeTravel,
+  timeTravel24Hours,
+  timeTravelToNextCheckpoint
+} from "./utils";
 import {
   TIER_2_DAILY_REWARD_START_XP,
   TIER_3_DAILY_REWARD_START_XP,
@@ -42,6 +48,7 @@ type PromotionInfoInput = {
   randomStreakBonusAmounts2: number[];
   guaranteedStreakBonusItemTokenIds: number[];
   guaranteedStreakBonusAmounts: number[];
+  questPrerequisiteId: number; // If the player must have a quest completed to claim the promotion
   // Single and multiday
   guaranteedItemTokenIds: number[]; // Guaranteed items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
   guaranteedAmounts: number[]; // Corresponding amounts to the itemTokenIds
@@ -128,6 +135,7 @@ describe("Promotions", function () {
       numRandomStreakBonusItemsToPick1: 0,
       numRandomStreakBonusItemsToPick2: 0,
       tokenCost: 0n,
+      questPrerequisiteId: 0,
       randomStreakBonusItemTokenIds1: [],
       randomStreakBonusAmounts1: [],
       randomStreakBonusItemTokenIds2: [],
@@ -232,6 +240,19 @@ describe("Promotions", function () {
       await requestAndFulfillRandomWords(world, mockVRF);
       await promotions.addPromotions([promotion]);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
+    });
+
+    it("A promotion with a quest requirement must have the quest completed to do it", async function () {
+      const {promotions, playerId, quests, itemNFT, players, alice} = await loadFixture(promotionFixture);
+      let promotion = await getBasicSingleMintPromotion();
+      promotion = {...promotion, questPrerequisiteId: EstforConstants.QUEST_PURSE_STRINGS};
+      await promotions.addPromotions([promotion]);
+
+      await expect(
+        promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
+      ).to.be.revertedWithCustomError(promotions, "DependentQuestNotCompleted");
+      await createAndDoPurseStringsQuest(players, quests, alice, playerId);
+      await expect(promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)).to.not.be.reverted;
     });
   });
 
@@ -390,6 +411,7 @@ describe("Promotions", function () {
         isMultiday: true,
         brushCostMissedDay: "0",
         tokenCost: 0n,
+        questPrerequisiteId: 0,
         numDaysClaimablePeriodStreakBonus: 0,
         numDaysHitNeededForStreakBonus: 0,
         numRandomStreakBonusItemsToPick1: 0,
@@ -765,6 +787,7 @@ describe("Promotions", function () {
           isMultiday: true,
           brushCostMissedDay: "0",
           tokenCost: 0n,
+          questPrerequisiteId: 0,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 1,
           numRandomStreakBonusItemsToPick1: 1,
@@ -941,6 +964,7 @@ describe("Promotions", function () {
           isMultiday: true,
           brushCostMissedDay: "0",
           tokenCost: 0n,
+          questPrerequisiteId: 0,
           numDaysClaimablePeriodStreakBonus: 1,
           numDaysHitNeededForStreakBonus: 2,
           numRandomStreakBonusItemsToPick1: 1,

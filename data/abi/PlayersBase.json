@@ -76,6 +76,11 @@
   },
   {
     "inputs": [],
+    "name": "DependentQuestNotCompleted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "EmptyTimespan",
     "type": "error"
   },

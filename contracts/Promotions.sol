@@ -11,6 +11,7 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {World} from "./World.sol";
+import {Quests} from "./Quests.sol";
 import {PromotionsLibrary} from "./PromotionsLibrary.sol";
 
 import "./globals/items.sol";
@@ -62,6 +63,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   error DaysArrayNotSortedOrDuplicates();
   error PromotionFinished();
   error PercentNotTotal100();
+  error DependentQuestNotCompleted();
 
   AdminAccess private _adminAccess;
   IPlayers private _players;
@@ -69,6 +71,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   PlayerNFT private _playerNFT;
   IBrushToken private _brush;
   World private _world;
+  Quests private _quests;
   address private _dev;
   address private _treasury;
   uint8 private _brushBurntPercentage;
@@ -101,6 +104,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     World world,
     ItemNFT itemNFT,
     PlayerNFT playerNFT,
+    Quests quests,
     IBrushToken brush,
     address treasury,
     address dev,
@@ -114,6 +118,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     _world = world;
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;
+    _quests = quests;
     _brush = brush;
     _treasury = treasury;
     _dev = dev;
@@ -276,6 +281,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         promotionMintStatus != PromotionMintStatus.PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS,
         PlayerNotHitEnoughClaims()
       );
+      require(promotionMintStatus != PromotionMintStatus.DEPENDENT_QUEST_NOT_COMPLETED, DependentQuestNotCompleted());
     }
   }
 
@@ -390,6 +396,13 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     if (promotionInfo.minTotalXP > _players.getTotalXP(playerId)) {
       return PromotionMintStatus.PLAYER_DOES_NOT_QUALIFY;
     }
+
+    if (
+      promotionInfo.questPrerequisiteId != 0 && !_quests.isQuestCompleted(playerId, promotionInfo.questPrerequisiteId)
+    ) {
+      return PromotionMintStatus.DEPENDENT_QUEST_NOT_COMPLETED;
+    }
+
     return PromotionMintStatus.SUCCESS;
   }
 

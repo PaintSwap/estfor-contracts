@@ -32,7 +32,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   error CanOnlyRequestAfter1DayHasPassed();
   error ActionIdZeroNotAllowed();
   error MinCannotBeGreaterThanMax();
-  error DynamicActionsCannotBeAdded();
   error ActionAlreadyExists(uint16 actionId);
   error ActionDoesNotExist();
   error ActionChoiceIdZeroNotAllowed();
@@ -267,6 +266,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     choice.handItemTokenIdRangeMin = _actionChoice.handItemTokenIdRangeMin;
     choice.handItemTokenIdRangeMax = _actionChoice.handItemTokenIdRangeMax;
     choice.packedData = _actionChoice.packedData;
+    choice.questPrerequisiteId = _actionChoice.questPrerequisiteId;
+
+    // TODO: Just returning the action choice by itself would be preferable than all this trash.
     // Only read second storage when needed
     if (
       (uint8(choice.packedData >> ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT) & 1 == 1) ||
@@ -333,7 +335,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function _addAction(Action calldata action) private {
-    require(!action.info.isDynamic, DynamicActionsCannotBeAdded());
     require(_actions[action.actionId].skill._asSkill() == Skill.NONE, ActionAlreadyExists(action.actionId));
     _setAction(action);
   }
@@ -379,7 +380,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     }
   }
 
-  function _addActionChoice(
+  function _checkAddActionChoice(
     uint16 actionId,
     uint16 actionChoiceId,
     ActionChoiceInput calldata actionChoiceInput
@@ -389,7 +390,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     WorldLibrary.checkActionChoice(actionChoiceInput);
   }
 
-  function _editActionChoice(
+  function _checkEditActionChoice(
     uint16 actionId,
     uint16 actionChoiceId,
     ActionChoiceInput calldata actionChoiceInput
@@ -415,13 +416,13 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     if (actionChoiceInput.minSkills.length > 1) {
       _packedData |= bytes1(uint8(1)) << ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT;
     }
-
-    bool _anyInputExceedsStandardAmount = (actionChoiceInput.inputAmounts.length != 0 &&
+    // TODO: Add isAvailable
+    bool anyInputExceedsStandardAmount = (actionChoiceInput.inputAmounts.length != 0 &&
       actionChoiceInput.inputAmounts[0] > 255) ||
       (actionChoiceInput.inputAmounts.length > 1 && actionChoiceInput.inputAmounts[1] > 255) ||
       (actionChoiceInput.inputAmounts.length > 2 && actionChoiceInput.inputAmounts[2] > 255);
 
-    if (_anyInputExceedsStandardAmount) {
+    if (anyInputExceedsStandardAmount) {
       _packedData |= bytes1(uint8(1)) << ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT;
     }
 
@@ -432,15 +433,15 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
       rate: actionChoiceInput.rate,
       xpPerHour: actionChoiceInput.xpPerHour,
       inputTokenId1: actionChoiceInput.inputTokenIds.length != 0 ? actionChoiceInput.inputTokenIds[0] : NONE,
-      inputAmount1: actionChoiceInput.inputAmounts.length != 0 && !_anyInputExceedsStandardAmount
+      inputAmount1: actionChoiceInput.inputAmounts.length != 0 && !anyInputExceedsStandardAmount
         ? uint8(actionChoiceInput.inputAmounts[0])
         : 0,
       inputTokenId2: actionChoiceInput.inputTokenIds.length > 1 ? actionChoiceInput.inputTokenIds[1] : NONE,
-      inputAmount2: actionChoiceInput.inputAmounts.length > 1 && !_anyInputExceedsStandardAmount
+      inputAmount2: actionChoiceInput.inputAmounts.length > 1 && !anyInputExceedsStandardAmount
         ? uint8(actionChoiceInput.inputAmounts[1])
         : 0,
       inputTokenId3: actionChoiceInput.inputTokenIds.length > 2 ? actionChoiceInput.inputTokenIds[2] : NONE,
-      inputAmount3: actionChoiceInput.inputAmounts.length > 2 && !_anyInputExceedsStandardAmount
+      inputAmount3: actionChoiceInput.inputAmounts.length > 2 && !anyInputExceedsStandardAmount
         ? uint8(actionChoiceInput.inputAmounts[2])
         : 0,
       outputTokenId: actionChoiceInput.outputTokenId,
@@ -455,15 +456,16 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
       minXP2: actionChoiceInput.minXPs.length > 1 ? actionChoiceInput.minXPs[1] : 0,
       minSkill3: actionChoiceInput.minSkills.length > 2 ? actionChoiceInput.minSkills[2] : Skill.NONE._asUint8(),
       minXP3: actionChoiceInput.minXPs.length > 2 ? actionChoiceInput.minXPs[2] : 0,
-      newInputAmount1: actionChoiceInput.inputAmounts.length != 0 && _anyInputExceedsStandardAmount
+      newInputAmount1: actionChoiceInput.inputAmounts.length != 0 && anyInputExceedsStandardAmount
         ? actionChoiceInput.inputAmounts[0]
         : 0,
-      newInputAmount2: actionChoiceInput.inputAmounts.length > 1 && _anyInputExceedsStandardAmount
+      newInputAmount2: actionChoiceInput.inputAmounts.length > 1 && anyInputExceedsStandardAmount
         ? actionChoiceInput.inputAmounts[1]
         : 0,
-      newInputAmount3: actionChoiceInput.inputAmounts.length > 2 && _anyInputExceedsStandardAmount
+      newInputAmount3: actionChoiceInput.inputAmounts.length > 2 && anyInputExceedsStandardAmount
         ? actionChoiceInput.inputAmounts[2]
-        : 0
+        : 0,
+      questPrerequisiteId: actionChoiceInput.questPrerequisiteId
     });
   }
 
@@ -493,10 +495,10 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function addActions(Action[] calldata actionsToAdd) external onlyOwner {
-    uint16 iter = uint16(actionsToAdd.length);
-    while (iter != 0) {
-      iter--;
-      _addAction(actionsToAdd[iter]);
+    uint16 i = uint16(actionsToAdd.length);
+    while (i != 0) {
+      --i;
+      _addAction(actionsToAdd[i]);
     }
     emit AddActions(actionsToAdd);
   }
@@ -520,10 +522,10 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     require(actionChoiceLength == actionChoiceIds.length, LengthMismatch());
     require(actionChoiceIds.length != 0, NoActionChoices());
 
-    for (uint16 iter; iter < actionChoiceLength; iter++) {
-      _addActionChoice(actionId, actionChoiceIds[iter], actionChoicesToAdd[iter]);
+    for (uint16 i; i < actionChoiceLength; ++i) {
+      _checkAddActionChoice(actionId, actionChoiceIds[i], actionChoicesToAdd[i]);
       // TODO: Could set the first storage slot only in cases where appropriate (same as editing)
-      _actionChoices[actionId][actionChoiceIds[iter]] = _packActionChoice(actionChoicesToAdd[iter]);
+      _actionChoices[actionId][actionChoiceIds[i]] = _packActionChoice(actionChoicesToAdd[i]);
     }
   }
 
@@ -552,9 +554,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     require(actionChoiceIds.length == actionChoicesToEdit.length, LengthMismatch());
 
     uint256 _actionIdsLength = actionChoiceIds.length;
-    for (uint16 iter; iter < _actionIdsLength; iter++) {
-      _editActionChoice(actionId, actionChoiceIds[iter], actionChoicesToEdit[iter]);
-      _actionChoices[actionId][actionChoiceIds[iter]] = _packActionChoice(actionChoicesToEdit[iter]);
+    for (uint16 i; i < _actionIdsLength; ++i) {
+      _checkEditActionChoice(actionId, actionChoiceIds[i], actionChoicesToEdit[i]);
+      _actionChoices[actionId][actionChoiceIds[i]] = _packActionChoice(actionChoicesToEdit[i]);
     }
 
     emit EditActionChoices(actionId, actionChoiceIds, actionChoicesToEdit);
@@ -564,8 +566,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     require(actionChoiceIds.length != 0, NoActionChoices());
 
     uint256 length = actionChoiceIds.length;
-    for (uint16 iter; iter < length; iter++) {
-      delete _actionChoices[actionId][actionChoiceIds[iter]];
+    for (uint16 i; i < length; ++i) {
+      delete _actionChoices[actionId][actionChoiceIds[i]];
     }
     emit RemoveActionChoices(actionId, actionChoiceIds);
   }

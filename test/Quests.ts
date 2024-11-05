@@ -262,7 +262,7 @@ describe("Quests", function () {
     });
 
     it("Quest completed", async function () {
-      const {alice, playerId, quests, players, brush, itemNFT} = await loadFixture(questsFixture);
+      const {alice, playerId, quests, players, brush} = await loadFixture(questsFixture);
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
       await quests.addQuests([quest], [defaultMinRequirements]);
       const questId = quest.questId;
@@ -522,13 +522,13 @@ describe("Quests", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
           worldLocation: 0,
           isFullModeOnly: false,
           numSpawned,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
           isAvailable: true,
+          questPrerequisiteId: 0,
           actionChoiceRequired: true,
           successPercent: 100
         },
@@ -614,13 +614,13 @@ describe("Quests", function () {
           skill: EstforTypes.Skill.THIEVING,
           xpPerHour,
           minXP: 0,
-          isDynamic: false,
           worldLocation: 0,
           isFullModeOnly: false,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: true,
+          questPrerequisiteId: 0,
           actionChoiceRequired: false,
           successPercent: 100
         },

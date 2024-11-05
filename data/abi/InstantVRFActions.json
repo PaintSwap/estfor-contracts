@@ -46,6 +46,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "DependentQuestNotCompleted",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -228,6 +233,16 @@
             "internalType": "bool",
             "name": "isFullModeOnly",
             "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "indexed": false,
@@ -384,6 +399,16 @@
             "internalType": "bool",
             "name": "isFullModeOnly",
             "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "indexed": false,
@@ -544,6 +569,16 @@
             "internalType": "bool",
             "name": "isFullModeOnly",
             "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct InstantVRFActionInput[]",
@@ -630,6 +665,16 @@
             "internalType": "bool",
             "name": "isFullModeOnly",
             "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct InstantVRFActionInput[]",
@@ -711,6 +756,11 @@
             "internalType": "address",
             "name": "strategy",
             "type": "address"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct InstantVRFActions.InstantVRFAction",
@@ -755,6 +805,11 @@
       {
         "internalType": "contract PetNFT",
         "name": "petNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Quests",
+        "name": "quests",
         "type": "address"
       },
       {

@@ -18,6 +18,8 @@ import NONE, {
   RUNITE_ARROW,
   RUNITE_BAR
 } from "@paintswap/estfor-definitions/constants";
+import {EstforConstants} from "@paintswap/estfor-definitions";
+import {createAndDoPurseStringsQuest} from "./utils";
 
 describe("Instant actions", function () {
   describe("Generic", function () {
@@ -698,5 +700,37 @@ describe("Instant actions", function () {
         .connect(alice)
         .doInstantActions(playerId, [instantActionInput.actionId], [2], InstantActionType.NONE)
     ).to.be.revertedWithCustomError(instantActions, "UnsupportedActionType");
+  });
+
+  it("An action with a quest requirement must have the quest completed to do it", async function () {
+    const {instantActions, playerId, quests, itemNFT, players, alice} = await loadFixture(playersFixture);
+
+    const instantActionInput: InstantActionInput = {
+      ..._defaultInstantActionInput,
+      actionId: 1,
+      actionType: InstantActionType.GENERIC,
+      inputTokenIds: [BRONZE_ARROW],
+      inputAmounts: [1],
+      outputTokenId: RUNITE_ARROW,
+      outputAmount: 2,
+      questPrerequisiteId: EstforConstants.QUEST_PURSE_STRINGS
+    };
+
+    await instantActions.addActions([instantActionInput]);
+    await itemNFT.mintBatch(alice, [BRONZE_ARROW], [1]);
+
+    await expect(
+      instantActions
+        .connect(alice)
+        .doInstantActions(playerId, [instantActionInput.actionId], [1], InstantActionType.GENERIC)
+    ).to.be.revertedWithCustomError(instantActions, "DependentQuestNotCompleted");
+
+    // Should work now after doing the quest
+    await createAndDoPurseStringsQuest(players, quests, alice, playerId);
+    await expect(
+      instantActions
+        .connect(alice)
+        .doInstantActions(playerId, [instantActionInput.actionId], [1], InstantActionType.GENERIC)
+    ).to.not.be.reverted;
   });
 });

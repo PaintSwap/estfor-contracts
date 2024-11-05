@@ -15,8 +15,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FIREMAKING,
@@ -31,8 +33,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 2,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.FIREMAKING,
@@ -47,8 +51,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 3,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.FIREMAKING,
@@ -63,8 +69,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 4,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [23681],
+    minXPs: [23681]
   },
   {
     skill: Skill.FIREMAKING,
@@ -79,8 +87,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 5,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.FIREMAKING,
@@ -95,8 +105,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 6,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.FIREMAKING,
@@ -111,8 +123,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 7,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.FIREMAKING,
@@ -127,8 +141,10 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 8,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [392228],
+    minXPs: [392228]
   },
   {
     skill: Skill.FIREMAKING,
@@ -143,9 +159,11 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH,
     outputAmount: 10,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FIREMAKING],
-    minXPs: [784726],
-  },
+    minXPs: [784726]
+  }
 ];
 export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
@@ -161,8 +179,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_BAR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -177,8 +197,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_BAR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.SMITHING,
@@ -193,8 +215,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_BAR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.SMITHING,
@@ -209,8 +233,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_BAR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.SMITHING,
@@ -225,8 +251,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_BAR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [33913],
+    minXPs: [33913]
   },
   {
     skill: Skill.SMITHING,
@@ -241,8 +269,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_BAR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [97582],
+    minXPs: [97582]
   },
   {
     skill: Skill.SMITHING,
@@ -257,8 +287,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_BAR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [195864],
+    minXPs: [195864]
   },
   {
     skill: Skill.SMITHING,
@@ -273,8 +305,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -289,8 +323,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -305,8 +341,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.SMITHING,
@@ -321,8 +359,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -337,8 +377,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -353,8 +395,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -369,8 +413,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.SMITHING,
@@ -385,8 +431,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -401,8 +449,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -417,8 +467,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.SMITHING,
@@ -433,8 +485,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -449,8 +503,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -465,8 +521,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -481,8 +539,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.SMITHING,
@@ -497,8 +557,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -513,8 +575,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -529,8 +593,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.SMITHING,
@@ -545,8 +611,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -561,8 +629,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -577,8 +647,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -593,8 +665,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.SMITHING,
@@ -609,8 +683,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -625,8 +701,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -641,8 +719,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.SMITHING,
@@ -657,8 +737,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -673,8 +755,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -689,8 +773,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -705,8 +791,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.SMITHING,
@@ -721,8 +809,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -737,8 +827,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -753,8 +845,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.SMITHING,
@@ -769,8 +863,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -785,8 +881,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -801,8 +899,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -817,8 +917,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.SMITHING,
@@ -833,8 +935,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -849,8 +953,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -865,8 +971,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.SMITHING,
@@ -881,8 +989,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -897,8 +1007,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -913,8 +1025,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -929,8 +1043,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.SMITHING,
@@ -945,8 +1061,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -961,8 +1079,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -977,8 +1097,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.SMITHING,
@@ -993,8 +1115,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -1009,8 +1133,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -1025,8 +1151,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -1041,8 +1169,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.SMITHING,
@@ -1057,8 +1187,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_ARROW_HEAD,
     outputAmount: 5,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.SMITHING,
@@ -1073,8 +1205,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_ARROW_HEAD,
     outputAmount: 4,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.SMITHING,
@@ -1089,8 +1223,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_ARROW_HEAD,
     outputAmount: 5,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.SMITHING,
@@ -1105,8 +1241,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_ARROW_HEAD,
     outputAmount: 5,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.SMITHING,
@@ -1121,8 +1259,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_ARROW_HEAD,
     outputAmount: 6,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.SMITHING,
@@ -1137,8 +1277,10 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_ARROW_HEAD,
     outputAmount: 8,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.SMITHING,
@@ -1153,9 +1295,11 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_ARROW_HEAD,
     outputAmount: 8,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.SMITHING],
-    minXPs: [277219],
-  },
+    minXPs: [277219]
+  }
 ];
 export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
@@ -1171,8 +1315,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_MINNUS,
     outputAmount: 1,
     successPercent: 60,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.COOKING,
@@ -1187,8 +1334,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_BLEKK,
     outputAmount: 1,
     successPercent: 52,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.COOKING,
@@ -1203,8 +1353,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_SKRIMP,
     outputAmount: 1,
     successPercent: 49,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.COOKING,
@@ -1219,8 +1372,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_FEOLA,
     outputAmount: 1,
     successPercent: 43,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.COOKING,
@@ -1235,8 +1391,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ANCHO,
     outputAmount: 1,
     successPercent: 47,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.COOKING,
@@ -1251,8 +1410,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_TROUT,
     outputAmount: 1,
     successPercent: 41,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [5067],
+    minXPs: [5067]
   },
   {
     skill: Skill.COOKING,
@@ -1267,8 +1429,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ROJJA,
     outputAmount: 1,
     successPercent: 41,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.COOKING,
@@ -1283,8 +1448,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_BOWFISH,
     outputAmount: 1,
     successPercent: 34,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.COOKING,
@@ -1299,8 +1467,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_GOLDFISH,
     outputAmount: 1,
     successPercent: 34,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [16432],
+    minXPs: [16432]
   },
   {
     skill: Skill.COOKING,
@@ -1315,8 +1486,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_MYSTY_BLUE,
     outputAmount: 1,
     successPercent: 31,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [33913],
+    minXPs: [33913]
   },
   {
     skill: Skill.COOKING,
@@ -1331,8 +1505,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_FLITFISH,
     outputAmount: 1,
     successPercent: 32,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.COOKING,
@@ -1347,8 +1524,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_RAZORFISH,
     outputAmount: 1,
     successPercent: 30,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [97582],
+    minXPs: [97582]
   },
   {
     skill: Skill.COOKING,
@@ -1363,8 +1543,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_QUAFFER,
     outputAmount: 1,
     successPercent: 30,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.COOKING,
@@ -1379,8 +1562,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ROXA,
     outputAmount: 1,
     successPercent: 30,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [170430],
+    minXPs: [170430]
   },
   {
     skill: Skill.COOKING,
@@ -1395,8 +1581,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_AZACUDDA,
     outputAmount: 1,
     successPercent: 30,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [241267],
+    minXPs: [241267]
   },
   {
     skill: Skill.COOKING,
@@ -1411,8 +1600,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_STONECLAW,
     outputAmount: 1,
     successPercent: 32,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [392228],
+    minXPs: [392228]
   },
   {
     skill: Skill.COOKING,
@@ -1427,8 +1619,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_CRUSKAN,
     outputAmount: 1,
     successPercent: 30,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [554828],
+    minXPs: [554828]
   },
   {
     skill: Skill.COOKING,
@@ -1443,8 +1638,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_CHODFISH,
     outputAmount: 1,
     successPercent: 32,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [637364],
+    minXPs: [637364]
   },
   {
     skill: Skill.COOKING,
@@ -1459,8 +1657,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_DOUBTFISH,
     outputAmount: 1,
     successPercent: 35,
+    isAvailable: true,
+    questPrerequisiteId: 0,
+
     minSkills: [Skill.COOKING],
-    minXPs: [784726],
+    minXPs: [784726]
   },
   {
     skill: Skill.COOKING,
@@ -1475,9 +1676,11 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COOKED_ROSEFIN,
     outputAmount: 1,
     successPercent: 40,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.COOKING],
-    minXPs: [1035476],
-  },
+    minXPs: [1035476]
+  }
 ];
 export const allActionChoicesMelee: ActionChoiceInput[] = [
   {
@@ -1493,9 +1696,11 @@ export const allActionChoicesMelee: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
-  },
+    minXPs: []
+  }
 ];
 export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
@@ -1511,8 +1716,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.MAGIC,
@@ -1527,8 +1734,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.MAGIC,
@@ -1543,8 +1752,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.MAGIC,
@@ -1559,8 +1770,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [6510],
+    minXPs: [6510]
   },
   {
     skill: Skill.MAGIC,
@@ -1575,8 +1788,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [16432],
+    minXPs: [16432]
   },
   {
     skill: Skill.MAGIC,
@@ -1591,8 +1806,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [39102],
+    minXPs: [39102]
   },
   {
     skill: Skill.MAGIC,
@@ -1607,8 +1824,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [112206],
+    minXPs: [112206]
   },
   {
     skill: Skill.MAGIC,
@@ -1623,8 +1842,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.MAGIC,
@@ -1639,8 +1860,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [392228],
+    minXPs: [392228]
   },
   {
     skill: Skill.MAGIC,
@@ -1655,8 +1878,10 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [784726],
+    minXPs: [784726]
   },
   {
     skill: Skill.MAGIC,
@@ -1671,9 +1896,11 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.MAGIC],
-    minXPs: [1035476],
-  },
+    minXPs: [1035476]
+  }
 ];
 export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
@@ -1689,8 +1916,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SAPPHIRE_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.CRAFTING,
@@ -1705,8 +1934,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.EMERALD_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [5067],
+    minXPs: [5067]
   },
   {
     skill: Skill.CRAFTING,
@@ -1721,8 +1952,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUBY_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [16432],
+    minXPs: [16432]
   },
   {
     skill: Skill.CRAFTING,
@@ -1737,8 +1970,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AMETHYST_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -1753,8 +1988,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DIAMOND_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.CRAFTING,
@@ -1769,8 +2006,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DRAGONSTONE_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.CRAFTING,
@@ -1785,8 +2024,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -1801,8 +2042,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.CRAFTING,
@@ -1817,8 +2060,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -1833,8 +2078,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [16432],
+    minXPs: [16432]
   },
   {
     skill: Skill.CRAFTING,
@@ -1849,8 +2096,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.CRAFTING,
@@ -1865,8 +2114,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.CRAFTING,
@@ -1881,8 +2132,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_PICKAXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [554828],
+    minXPs: [554828]
   },
   {
     skill: Skill.CRAFTING,
@@ -1897,8 +2150,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_AXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -1913,8 +2168,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_AXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.CRAFTING,
@@ -1929,8 +2186,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_AXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -1945,8 +2204,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_AXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [16432],
+    minXPs: [16432]
   },
   {
     skill: Skill.CRAFTING,
@@ -1961,8 +2222,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_AXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.CRAFTING,
@@ -1977,8 +2240,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_AXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.CRAFTING,
@@ -1993,8 +2258,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_AXE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [554828],
+    minXPs: [554828]
   },
   {
     skill: Skill.CRAFTING,
@@ -2009,8 +2276,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_LEATHER,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2025,8 +2294,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONEMEAL,
     outputAmount: 3,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.CRAFTING,
@@ -2041,8 +2312,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONEMEAL,
     outputAmount: 5,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.CRAFTING,
@@ -2057,8 +2330,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONEMEAL,
     outputAmount: 7,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.CRAFTING,
@@ -2073,8 +2348,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONEMEAL,
     outputAmount: 10,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [374],
+    minXPs: [374]
   },
   {
     skill: Skill.CRAFTING,
@@ -2089,8 +2366,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ROPE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2105,8 +2384,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ACORN_PATCH,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.CRAFTING,
@@ -2121,8 +2402,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_PATCH,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -2137,8 +2420,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2153,8 +2438,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2169,8 +2456,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2185,8 +2474,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2201,8 +2492,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATUOW_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2217,8 +2510,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_HAT,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.CRAFTING,
@@ -2233,8 +2528,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.CRAFTING,
@@ -2249,8 +2546,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.CRAFTING,
@@ -2265,8 +2564,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.CRAFTING,
@@ -2281,8 +2582,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BAT_WING_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.CRAFTING,
@@ -2297,8 +2600,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_MASK,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -2313,8 +2618,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -2329,8 +2636,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -2345,8 +2654,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -2361,8 +2672,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -2377,8 +2690,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TOTEM_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2393,8 +2708,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SAPPHIRE_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2409,8 +2726,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.EMERALD_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.CRAFTING,
@@ -2425,8 +2744,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUBY_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -2441,8 +2762,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AMETHYST_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -2457,8 +2780,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DIAMOND_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -2473,8 +2798,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_HAT,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2489,8 +2816,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2505,8 +2834,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2521,8 +2852,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2537,8 +2870,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.APPRENTICE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2553,8 +2888,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2569,8 +2906,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2585,8 +2924,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2601,8 +2942,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2617,8 +2960,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2633,8 +2978,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_HAT,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -2649,8 +2996,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -2665,8 +3014,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -2681,8 +3032,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -2697,8 +3050,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SORCERER_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -2713,8 +3068,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -2729,8 +3086,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -2745,8 +3104,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -2761,8 +3122,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -2777,8 +3140,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SEERS_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -2793,8 +3158,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_HOOD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -2809,8 +3176,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -2825,8 +3194,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -2841,8 +3212,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -2857,8 +3230,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHAMAN_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -2873,8 +3248,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AZAMITE_COWL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2889,8 +3266,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AZAMITE_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2905,8 +3284,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AZAMITE_CHAPS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2921,8 +3302,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AZAMITE_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2937,8 +3320,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AZAMITE_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.CRAFTING,
@@ -2953,8 +3338,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.HAUBERK_COWL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2969,8 +3356,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.HAUBERK_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -2985,8 +3374,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.HAUBERK_CHAPS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -3001,8 +3392,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.HAUBERK_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -3017,8 +3410,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.HAUBERK_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.CRAFTING,
@@ -3033,8 +3428,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.GARAGOS_COWL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -3049,8 +3446,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.GARAGOS_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -3065,8 +3464,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.GARAGOS_CHAPS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -3081,8 +3482,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.GARAGOS_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -3097,8 +3500,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.GARAGOS_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.CRAFTING,
@@ -3113,8 +3518,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ETERNAL_COWL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -3129,8 +3536,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ETERNAL_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -3145,8 +3554,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ETERNAL_CHAPS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -3161,8 +3572,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ETERNAL_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -3177,8 +3590,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ETERNAL_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.CRAFTING,
@@ -3193,8 +3608,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.REAVER_COWL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -3209,8 +3626,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.REAVER_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -3225,8 +3644,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.REAVER_CHAPS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -3241,8 +3662,10 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.REAVER_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.CRAFTING,
@@ -3257,9 +3680,11 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.REAVER_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.CRAFTING],
-    minXPs: [138307],
-  },
+    minXPs: [138307]
+  }
 ];
 export const allActionChoicesAlchemy: ActionChoiceInput[] = [
   {
@@ -3275,8 +3700,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 2,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3291,8 +3718,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 3,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3307,8 +3736,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 4,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3323,8 +3754,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 6,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3339,8 +3772,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 8,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3355,8 +3790,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 10,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3371,8 +3808,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 13,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3387,8 +3826,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 16,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3403,8 +3844,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 19,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.ALCHEMY,
@@ -3419,8 +3862,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SHADOW_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3435,8 +3880,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NATURE_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3451,8 +3898,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AQUA_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [5067],
+    minXPs: [5067]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3467,8 +3916,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.HELL_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3483,8 +3934,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AIR_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [23681],
+    minXPs: [23681]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3499,8 +3952,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BARRAGE_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [33913],
+    minXPs: [33913]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3515,8 +3970,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.FREEZE_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3531,8 +3988,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ANCIENT_SCROLL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3547,8 +4006,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COPPER_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3563,8 +4024,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TIN_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [1938, 374],
+    minXPs: [1938, 374]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3579,8 +4042,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [3236, 1938],
+    minXPs: [3236, 1938]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3595,8 +4060,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SAPPHIRE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [5067, 3236],
+    minXPs: [5067, 3236]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3611,8 +4078,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.COAL_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [7650, 7650],
+    minXPs: [7650, 7650]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3627,8 +4096,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.EMERALD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [16432, 16432],
+    minXPs: [16432, 16432]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3643,8 +4114,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [33913, 33913],
+    minXPs: [33913, 33913]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3659,8 +4132,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUBY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [68761, 68761],
+    minXPs: [68761, 68761]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3675,8 +4150,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [138307, 138307],
+    minXPs: [138307, 138307]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3691,8 +4168,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.AMETHYST,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [277219, 277219],
+    minXPs: [277219, 277219]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3707,8 +4186,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DIAMOND,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [392228, 341403],
+    minXPs: [392228, 341403]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3723,8 +4204,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [450605, 392228],
+    minXPs: [450605, 392228]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3739,8 +4222,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.DRAGONSTONE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [554828, 554828],
+    minXPs: [554828, 554828]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3755,8 +4240,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [637364, 784726],
+    minXPs: [637364, 784726]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3771,8 +4258,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_ORE,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.MINING],
-    minXPs: [784726, 1109796],
+    minXPs: [784726, 1109796]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3787,8 +4276,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.FEATHER,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.HEALTH],
-    minXPs: [1021, 16432],
+    minXPs: [1021, 16432]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3803,8 +4294,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3819,8 +4312,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.OAK_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [1938, 1021],
+    minXPs: [1938, 1021]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3835,8 +4330,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.WILLOW_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [3236, 7650],
+    minXPs: [3236, 7650]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3851,8 +4348,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAPLE_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [5067, 23681],
+    minXPs: [5067, 23681]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3867,8 +4366,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.REDWOOD_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [7650, 48359],
+    minXPs: [7650, 48359]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3883,8 +4384,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MAGICAL_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [16432, 68761],
+    minXPs: [16432, 68761]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3899,8 +4402,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ASH_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [33913, 138307],
+    minXPs: [33913, 138307]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3915,8 +4420,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ENCHANTED_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [68761, 392228],
+    minXPs: [68761, 392228]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3931,8 +4438,10 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.LIVING_LOG,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY, Skill.WOODCUTTING],
-    minXPs: [138307, 784726],
+    minXPs: [138307, 784726]
   },
   {
     skill: Skill.ALCHEMY,
@@ -3947,9 +4456,11 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.PAPER,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.ALCHEMY],
-    minXPs: [1021],
-  },
+    minXPs: [1021]
+  }
 ];
 export const allActionChoicesFletching: ActionChoiceInput[] = [
   {
@@ -3965,8 +4476,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 2,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -3981,8 +4494,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 3,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -3997,8 +4512,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 4,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4013,8 +4530,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 6,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4029,8 +4548,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 8,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4045,8 +4566,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 10,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4061,8 +4584,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 13,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4077,8 +4602,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 16,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4093,8 +4620,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ARROW_SHAFT,
     outputAmount: 19,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4109,8 +4638,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BRONZE_ARROW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.FLETCHING,
@@ -4125,8 +4656,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.IRON_ARROW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.FLETCHING,
@@ -4141,8 +4674,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MITHRIL_ARROW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [5067],
+    minXPs: [5067]
   },
   {
     skill: Skill.FLETCHING,
@@ -4157,8 +4692,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ADAMANTINE_ARROW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.FLETCHING,
@@ -4173,8 +4710,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.RUNITE_ARROW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [23681],
+    minXPs: [23681]
   },
   {
     skill: Skill.FLETCHING,
@@ -4189,8 +4728,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.TITANIUM_ARROW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [33913],
+    minXPs: [33913]
   },
   {
     skill: Skill.FLETCHING,
@@ -4205,8 +4746,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ORICHALCUM_ARROW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.FLETCHING,
@@ -4221,8 +4764,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BASIC_BOW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FLETCHING,
@@ -4237,8 +4782,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.BONE_BOW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.FLETCHING,
@@ -4253,8 +4800,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.EXPERT_BOW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.FLETCHING,
@@ -4269,8 +4818,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SPECTRAL_BOW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [11294],
+    minXPs: [11294]
   },
   {
     skill: Skill.FLETCHING,
@@ -4285,8 +4836,10 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.ICY_BOW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [48359],
+    minXPs: [48359]
   },
   {
     skill: Skill.FLETCHING,
@@ -4301,9 +4854,11 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.GLITTERING_BOW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FLETCHING],
-    minXPs: [138307],
-  },
+    minXPs: [138307]
+  }
 ];
 export const allActionChoicesRanged: ActionChoiceInput[] = [
   {
@@ -4319,8 +4874,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.RANGED,
@@ -4335,8 +4892,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.RANGED,
@@ -4351,8 +4910,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.RANGED,
@@ -4367,8 +4928,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED],
-    minXPs: [16432],
+    minXPs: [16432]
   },
   {
     skill: Skill.RANGED,
@@ -4383,8 +4946,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED],
-    minXPs: [68761],
+    minXPs: [68761]
   },
   {
     skill: Skill.RANGED,
@@ -4399,8 +4964,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.RANGED,
@@ -4415,8 +4982,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED],
-    minXPs: [554828],
+    minXPs: [554828]
   },
   {
     skill: Skill.RANGED,
@@ -4431,8 +5000,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [0, 1021],
+    minXPs: [0, 1021]
   },
   {
     skill: Skill.RANGED,
@@ -4447,8 +5018,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [0, 1021],
+    minXPs: [0, 1021]
   },
   {
     skill: Skill.RANGED,
@@ -4463,8 +5036,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [1021, 1938],
+    minXPs: [1021, 1938]
   },
   {
     skill: Skill.RANGED,
@@ -4479,8 +5054,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [1021, 1938],
+    minXPs: [1021, 1938]
   },
   {
     skill: Skill.RANGED,
@@ -4495,8 +5072,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [3236, 5067],
+    minXPs: [3236, 5067]
   },
   {
     skill: Skill.RANGED,
@@ -4511,8 +5090,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [3236, 5067],
+    minXPs: [3236, 5067]
   },
   {
     skill: Skill.RANGED,
@@ -4527,8 +5108,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [16432, 7650],
+    minXPs: [16432, 7650]
   },
   {
     skill: Skill.RANGED,
@@ -4543,8 +5126,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [16432, 7650],
+    minXPs: [16432, 7650]
   },
   {
     skill: Skill.RANGED,
@@ -4559,8 +5144,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [68761, 23681],
+    minXPs: [68761, 23681]
   },
   {
     skill: Skill.RANGED,
@@ -4575,8 +5162,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [68761, 23681],
+    minXPs: [68761, 23681]
   },
   {
     skill: Skill.RANGED,
@@ -4591,8 +5180,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [277219, 33913],
+    minXPs: [277219, 33913]
   },
   {
     skill: Skill.RANGED,
@@ -4607,8 +5198,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [277219, 33913],
+    minXPs: [277219, 33913]
   },
   {
     skill: Skill.RANGED,
@@ -4623,8 +5216,10 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [554828, 68761],
+    minXPs: [554828, 68761]
   },
   {
     skill: Skill.RANGED,
@@ -4639,9 +5234,11 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.NONE,
     outputAmount: 0,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.RANGED, Skill.FLETCHING],
-    minXPs: [554828, 68761],
-  },
+    minXPs: [554828, 68761]
+  }
 ];
 export const allActionChoicesForging: ActionChoiceInput[] = [
   {
@@ -4657,8 +5254,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.SMALL_ELIXIUM,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [],
-    minXPs: [],
+    minXPs: []
   },
   {
     skill: Skill.FORGING,
@@ -4673,8 +5272,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.MEDIUM_ELIXIUM,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.FORGING,
@@ -4689,8 +5290,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.LARGE_ELIXIUM,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.FORGING,
@@ -4705,8 +5308,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.EXTRA_LARGE_ELIXIUM,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [33913],
+    minXPs: [33913]
   },
   {
     skill: Skill.FORGING,
@@ -4721,8 +5326,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.FORGING,
@@ -4737,8 +5344,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.FORGING,
@@ -4753,8 +5362,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.FORGING,
@@ -4769,8 +5380,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.FORGING,
@@ -4785,8 +5398,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [23681],
+    minXPs: [23681]
   },
   {
     skill: Skill.FORGING,
@@ -4801,8 +5416,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [33913],
+    minXPs: [33913]
   },
   {
     skill: Skill.FORGING,
@@ -4817,8 +5434,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [138307],
+    minXPs: [138307]
   },
   {
     skill: Skill.FORGING,
@@ -4833,8 +5452,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_HAT,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.FORGING,
@@ -4849,8 +5470,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.FORGING,
@@ -4863,14 +5486,16 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.MASTER_TROUSERS,
       EstforConstants.MEDIUM_ELIXIUM,
-      EstforConstants.QUARTZ_INFUSED_FEATHER,
+      EstforConstants.QUARTZ_INFUSED_FEATHER
     ],
     inputAmounts: [1, 15, 300],
     outputTokenId: EstforConstants.INFUSED_MASTER_TROUSERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.FORGING,
@@ -4885,8 +5510,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.FORGING,
@@ -4901,8 +5528,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [23681],
+    minXPs: [23681]
   },
   {
     skill: Skill.FORGING,
@@ -4917,8 +5546,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.FORGING,
@@ -4931,14 +5562,16 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.DRAGONSTONE_STAFF,
       EstforConstants.EXTRA_LARGE_ELIXIUM,
-      EstforConstants.BARRAGE_SCROLL,
+      EstforConstants.BARRAGE_SCROLL
     ],
     inputAmounts: [1, 5, 20000],
     outputTokenId: EstforConstants.INFUSED_DRAGONSTONE_STAFF,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.FORGING,
@@ -4953,8 +5586,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_GODLY_BOW,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [277219],
+    minXPs: [277219]
   },
   {
     skill: Skill.FORGING,
@@ -4969,8 +5604,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_COWL,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [1021],
+    minXPs: [1021]
   },
   {
     skill: Skill.FORGING,
@@ -4985,8 +5622,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_BODY,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [1938],
+    minXPs: [1938]
   },
   {
     skill: Skill.FORGING,
@@ -5001,8 +5640,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_CHAPS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [3236],
+    minXPs: [3236]
   },
   {
     skill: Skill.FORGING,
@@ -5017,8 +5658,10 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_BRACERS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [7650],
+    minXPs: [7650]
   },
   {
     skill: Skill.FORGING,
@@ -5033,7 +5676,9 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_BOOTS,
     outputAmount: 1,
     successPercent: 100,
+    isAvailable: true,
+    questPrerequisiteId: 0,
     minSkills: [Skill.FORGING],
-    minXPs: [23681],
-  },
+    minXPs: [23681]
+  }
 ];

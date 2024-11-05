@@ -78,16 +78,6 @@ abstract contract PlayersBase {
   event LevelUp(address from, uint256 playerId, Skill skill, uint256 oldLevel, uint256 newLevel);
   event AddFullAttireBonus(Skill skill, uint16[5] itemTokenIds, uint256 bonusXPPercent, uint256 bonusRewardsPercent);
 
-  struct FullAttireBonus {
-    uint8 bonusXPPercent; // 3 = 3%
-    uint8 bonusRewardsPercent; // 3 = 3%
-    uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
-  }
-
-  struct WalletDailyInfo {
-    uint40 lastDailyRewardClaimedTimestamp;
-  }
-
   error NotOwnerOfPlayer();
   error NotOwnerOfPlayerAndActive();
   error EquipSameItem();
@@ -144,6 +134,17 @@ abstract contract PlayersBase {
   error AlreadyUpgraded();
   error PlayerNotUpgraded();
   error PetNotOwned();
+  error DependentQuestNotCompleted();
+
+  struct FullAttireBonus {
+    uint8 bonusXPPercent; // 3 = 3%
+    uint8 bonusRewardsPercent; // 3 = 3%
+    uint16[5] itemTokenIds; // 0 = head, 1 = body, 2 arms, 3 body, 4 = feet
+  }
+
+  struct WalletDailyInfo {
+    uint40 lastDailyRewardClaimedTimestamp;
+  }
 
   uint32 internal constant MAX_TIME = 1 days;
   uint256 internal constant START_XP = 374;
@@ -156,10 +157,6 @@ abstract contract PlayersBase {
   // *IMPORTANT* keep as the first non-constant state variable
   uint256 internal _startSlot;
 
-  mapping(address user => uint256 playerId) internal _activePlayers;
-
-  mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal _activeBoosts;
-
   World internal _world;
   // Constants for the damage formula
   uint8 internal _alphaCombat;
@@ -169,19 +166,10 @@ abstract contract PlayersBase {
   bool internal _dailyRewardsEnabled;
   bool internal _isBeta;
 
-  mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
-
-  mapping(uint256 playerId => Player player) internal _players;
-  mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal _attire;
   ItemNFT internal _itemNFT;
   PlayerNFT internal _playerNFT;
   bool internal _gamePaused;
-  mapping(uint256 playerId => PendingRandomReward[] pendingRandomRewards) internal _pendingRandomRewards; // queue, will be sorted by timestamp
-
-  // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
-  mapping(uint256 playerId => bytes32) internal _dailyRewardMasks;
-
-  mapping(uint256 xp => Equipment[] equipments) internal _xpRewardThresholds; // Thresholds and all items rewarded for it
+  AdminAccess internal _adminAccess;
 
   address internal _implQueueActions;
   address internal _implProcessActions;
@@ -189,21 +177,27 @@ abstract contract PlayersBase {
   address internal _implMisc;
   address internal _implMisc1;
 
-  AdminAccess internal _adminAccess;
-
-  mapping(Skill skill => FullAttireBonus) internal _fullAttireBonus;
   Quests internal _quests;
   Clans internal _clans;
   WishingWell internal _wishingWell;
-  address internal reserved1;
+  PetNFT internal _petNFT;
 
   PlayerBoostInfo internal _globalBoost; // A boost shared by everyone
-  mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
 
+  mapping(address user => uint256 playerId) internal _activePlayers;
+  mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal _activeBoosts;
+  mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
+  mapping(uint256 playerId => Player player) internal _players;
+  mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal _attire;
+  mapping(uint256 playerId => PendingRandomReward[] pendingRandomRewards) internal _pendingRandomRewards; // queue, will be sorted by timestamp
+
+  // First 7 bytes are whether that day has been claimed (Can be extended to 30 days), the last 2 bytes is the current checkpoint number (whether it needs clearing)
+  mapping(uint256 playerId => bytes32) internal _dailyRewardMasks;
+  mapping(uint256 xp => Equipment[] equipments) internal _xpRewardThresholds; // Thresholds and all items rewarded for it
+  mapping(Skill skill => FullAttireBonus) internal _fullAttireBonus;
+  mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
   mapping(address user => WalletDailyInfo walletDailyInfo) internal _walletDailyInfo;
   mapping(uint256 queueId => QueuedActionExtra queuedActionExtra) internal _queuedActionsExtra;
-
-  PetNFT internal _petNFT;
 
   modifier onlyPlayerNFT() {
     require(msg.sender == address(_playerNFT), NotPlayerNFT());

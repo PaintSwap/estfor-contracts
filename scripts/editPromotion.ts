@@ -81,7 +81,8 @@ async function main() {
       guaranteedItemTokenIds: [],
       guaranteedAmounts: [],
       randomItemTokenIds: [],
-      randomAmounts: []
+      randomAmounts: [],
+      questPrerequisiteId: 0
     }
   ]);
 }

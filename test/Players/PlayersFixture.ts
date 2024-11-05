@@ -273,6 +273,7 @@ export const playersFixture = async function () {
       await world.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
+      await quests.getAddress(),
       await brush.getAddress(),
       await treasury.getAddress(),
       await dev.getAddress(),
@@ -288,7 +289,7 @@ export const playersFixture = async function () {
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
     InstantActions,
-    [await players.getAddress(), await itemNFT.getAddress()],
+    [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress()],
     {
       kind: "uups"
     }
@@ -309,6 +310,7 @@ export const playersFixture = async function () {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await petNFT.getAddress(),
+      await quests.getAddress(),
       oracleAddress,
       await mockVRF.getAddress(),
       await vrfRequestInfo.getAddress(),

@@ -37,9 +37,7 @@ async function main() {
 
   // Passive actions
   // TODO: Don't remove these yet, wait a few months
-  const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)).connect(
-    owner
-  ) as PassiveActions;
+  const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)) as PassiveActions;
 
   const passiveActionIdsToRemove = [EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4];
   let tx = await passiveActions.setAvailable(passiveActionIdsToRemove, isAvailable);
@@ -57,9 +55,10 @@ async function main() {
     EstforConstants.INSTANT_VRF_ACTION_THIEVING_ANNIV1_CHEST
   ];
 
-  const instantVRFActions = (await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS)).connect(
-    owner
-  ) as InstantVRFActions;
+  const instantVRFActions = (await ethers.getContractAt(
+    "InstantVRFActions",
+    INSTANT_VRF_ACTIONS_ADDRESS
+  )) as InstantVRFActions;
   tx = await instantVRFActions.setAvailable(instantVRFActionIds, isAvailable);
   await tx.wait();
   console.log("Set available instant VRF actions");
@@ -71,9 +70,7 @@ async function main() {
     EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_KEY,
     EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_RING
   ];
-  const instantActions = (await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)).connect(
-    owner
-  ) as InstantActions;
+  const instantActions = (await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS)) as InstantActions;
 
   tx = await instantActions.removeActions(
     [InstantActionType.GENERIC, InstantActionType.GENERIC, InstantActionType.GENERIC, InstantActionType.GENERIC],

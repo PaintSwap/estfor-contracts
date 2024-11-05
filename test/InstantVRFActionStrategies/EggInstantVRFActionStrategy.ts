@@ -24,7 +24,9 @@ describe("EggInstantVRFActionStrategy", function () {
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [0, {rewardBasePetIdMin, rewardBasePetIdMax}]
     ),
-    isFullModeOnly: false
+    isFullModeOnly: false,
+    isAvailable: true,
+    questPrerequisiteId: 0
   };
 
   it("Only instantVRFActions can call setInstantVRFActions", async function () {

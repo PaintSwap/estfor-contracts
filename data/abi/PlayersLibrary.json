@@ -365,6 +365,11 @@
             "internalType": "uint24",
             "name": "newInputAmount3",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct ActionChoice",
@@ -763,6 +768,11 @@
             "internalType": "uint24",
             "name": "newInputAmount3",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct ActionChoice",
@@ -1407,6 +1417,11 @@
             "internalType": "uint24",
             "name": "newInputAmount3",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct ActionChoice",

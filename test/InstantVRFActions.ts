@@ -17,7 +17,7 @@ import NONE, {
   RUNITE_ARROW
 } from "@paintswap/estfor-definitions/constants";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {fulfillRandomWords} from "./utils";
+import {createAndDoPurseStringsQuest, fulfillRandomWords} from "./utils";
 import {AbiCoder, ZeroAddress} from "ethers"; // ethers v6
 import {ethers} from "hardhat";
 import {ERC1155HolderRogue} from "../typechain-types";
@@ -81,6 +81,38 @@ describe("Instant VRF actions", function () {
 
       instantVRFActionInput.inputAmounts[2] = 3;
       expect(await instantVRFActions.addActions([instantVRFActionInput])).to.not.be.reverted;
+    });
+
+    it("An action with a quest requirement must have the quest completed to do it", async function () {
+      const {playerId, instantVRFActions, quests, itemNFT, players, alice} = await loadFixture(forgingFixture);
+
+      const instantVRFActionInput: InstantVRFActionInput = {
+        ...defaultInstantVRFActionInput,
+        questPrerequisiteId: EstforConstants.QUEST_PURSE_STRINGS,
+        inputTokenIds: [BRONZE_ARROW],
+        inputAmounts: [1]
+      };
+      await itemNFT.mintBatch(alice, [BRONZE_ARROW], [1]);
+      await instantVRFActions.addActions([instantVRFActionInput]);
+
+      const actionAmount = 1;
+      await expect(
+        instantVRFActions
+          .connect(alice)
+          .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
+            value: await instantVRFActions.requestCost(actionAmount)
+          })
+      ).to.be.revertedWithCustomError(instantVRFActions, "DependentQuestNotCompleted");
+
+      // Should work now after doing the quest
+      await createAndDoPurseStringsQuest(players, quests, alice, playerId);
+      await expect(
+        instantVRFActions
+          .connect(alice)
+          .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
+            value: await instantVRFActions.requestCost(actionAmount)
+          })
+      ).to.not.be.reverted;
     });
 
     it("Check input item validation", async function () {

@@ -23,7 +23,8 @@ enum PromotionMintStatus {
   ORACLE_NOT_CALLED,
   MINTING_OUTSIDE_AVAILABLE_DATE,
   PLAYER_DOES_NOT_QUALIFY,
-  PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS
+  PLAYER_NOT_HIT_ENOUGH_CLAIMS_FOR_STREAK_BONUS,
+  DEPENDENT_QUEST_NOT_COMPLETED
 }
 
 struct PromotionInfoInput {
@@ -59,6 +60,8 @@ struct PromotionInfoInput {
   uint32[] guaranteedAmounts; // Corresponding amounts to the itemTokenIds
   uint16[] randomItemTokenIds; // Possible items for the promotions each day, if empty then they are handled in a specific way for the promotion like daily rewards
   uint32[] randomAmounts; // Corresponding amounts to the randomItemTokenIds
+  // Quests
+  uint16 questPrerequisiteId;
 }
 
 struct PromotionInfo {
@@ -68,6 +71,8 @@ struct PromotionInfo {
   uint8 numDailyRandomItemsToPick; // Number of items to pick
   uint40 minTotalXP; // Minimum xp required to claim
   uint24 tokenCost; // Cost in brush to mint the promotion (in ether), max 16mil
+  // Quests
+  uint16 questPrerequisiteId;
   // Special promotion specific (like 1kin), could pack these these later
   uint8 redeemCodeLength; // Length of the redeem code
   bool adminOnly; // Only admins can mint the promotion, like for 1kin

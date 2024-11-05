@@ -265,105 +265,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function processQuestsView(
-    uint256 playerId,
-    uint256[] calldata actionIds,
-    uint256[] calldata actionAmounts,
-    uint256[] calldata choiceIds,
-    uint256[] calldata choiceAmounts,
-    uint256 burnedAmountOwned
-  )
-    external
-    view
-    returns (
-      uint256[] memory itemTokenIds,
-      uint256[] memory amounts,
-      uint256[] memory itemTokenIdsBurned,
-      uint256[] memory amountsBurned,
-      Skill[] memory skillsGained,
-      uint32[] memory xpGained,
-      uint256[] memory questsCompleted,
-      PlayerQuest[] memory activeQuestsCompletionInfo
-    )
-  {
-    // Handle active quest
-    PlayerQuest memory questCompletionInfo = _activeQuests[playerId];
-    if (questCompletionInfo.questId != 0) {
-      activeQuestsCompletionInfo = new PlayerQuest[](2);
-      itemTokenIds = new uint256[](2 * MAX_QUEST_REWARDS);
-      amounts = new uint256[](2 * MAX_QUEST_REWARDS);
-      itemTokenIdsBurned = new uint256[](2);
-      amountsBurned = new uint256[](2);
-      skillsGained = new Skill[](2);
-      xpGained = new uint32[](2);
-      questsCompleted = new uint256[](2);
-      uint256 itemTokenIdsLength;
-      uint256 itemTokenIdsBurnedLength;
-      uint256 skillsGainedLength;
-      uint256 questsCompletedLength;
-      uint256 activeQuestsLength;
-
-      (
-        uint256[] memory itemTokenIds_,
-        uint256[] memory amounts_,
-        uint256 itemTokenIdBurned,
-        uint256 amountBurned,
-        Skill skillGained,
-        uint32 xp,
-        bool questCompleted
-      ) = _processQuestView(actionIds, actionAmounts, choiceIds, choiceAmounts, questCompletionInfo, burnedAmountOwned);
-
-      uint256 bounds = itemTokenIds_.length;
-      for (uint256 iter; iter < bounds; iter++) {
-        itemTokenIds[itemTokenIdsLength] = itemTokenIds_[iter];
-        amounts[itemTokenIdsLength] = amounts_[iter];
-        itemTokenIdsLength++;
-      }
-
-      if (questCompleted) {
-        questsCompleted[questsCompletedLength++] = questCompletionInfo.questId;
-      } else {
-        activeQuestsCompletionInfo[activeQuestsLength++] = questCompletionInfo;
-      }
-      if (itemTokenIdBurned != NONE) {
-        itemTokenIdsBurned[itemTokenIdsBurnedLength] = itemTokenIdBurned;
-        amountsBurned[itemTokenIdsBurnedLength++] = amountBurned;
-      }
-      if (xp != 0) {
-        skillsGained[skillsGainedLength] = skillGained;
-        xpGained[skillsGainedLength++] = xp;
-      }
-
-      assembly ("memory-safe") {
-        mstore(itemTokenIds, itemTokenIdsLength)
-        mstore(amounts, itemTokenIdsLength)
-        mstore(itemTokenIdsBurned, itemTokenIdsBurnedLength)
-        mstore(amountsBurned, itemTokenIdsBurnedLength)
-        mstore(skillsGained, skillsGainedLength)
-        mstore(xpGained, skillsGainedLength)
-        mstore(questsCompleted, questsCompletedLength)
-        mstore(activeQuestsCompletionInfo, activeQuestsLength)
-      }
-    }
-  }
-
-  function isQuestCompleted(uint256 playerId, uint256 questId) external view returns (bool) {
-    return _questsCompleted[playerId].get(questId);
-  }
-
-  function getActiveQuestId(uint256 playerId) external view returns (uint256) {
-    return _activeQuests[playerId].questId;
-  }
-
-  function getActiveQuestBurnedItemTokenId(uint256 playerId) external view returns (uint256) {
-    uint256 questId = _activeQuests[playerId].questId;
-    if (questId == 0) {
-      return NONE;
-    }
-
-    return _allFixedQuests[questId].burnItemTokenId;
-  }
-
   function _questCompleted(address from, uint256 playerId, uint256 questId) private {
     emit QuestCompleted(from, playerId, questId);
     _questsCompleted[playerId].set(questId);
@@ -476,28 +377,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function getQuestCompletedRewards(
-    uint256 questId
-  ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained) {
-    Quest storage quest = _allFixedQuests[questId];
-    // length can be 0, 1 or 2
-    uint256 mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
-    mintLength += (quest.rewardItemTokenId2 == NONE ? 0 : 1);
-
-    itemTokenIds = new uint256[](mintLength);
-    amounts = new uint256[](mintLength);
-    if (quest.rewardItemTokenId1 != NONE) {
-      itemTokenIds[0] = quest.rewardItemTokenId1;
-      amounts[0] = quest.rewardAmount1;
-    }
-    if (quest.rewardItemTokenId2 != NONE) {
-      itemTokenIds[1] = quest.rewardItemTokenId2;
-      amounts[1] = quest.rewardAmount2;
-    }
-    skillGained = quest.skillReward;
-    xpGained = quest.skillXPGained;
-  }
-
   function _checkQuest(QuestInput calldata quest) private pure {
     require(quest.rewardItemTokenId1 == NONE || quest.rewardAmount1 != 0, InvalidRewardAmount());
     require(quest.rewardItemTokenId2 == NONE || quest.rewardAmount2 != 0, InvalidRewardAmount());
@@ -579,6 +458,127 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
       reserved: 0,
       packedData: packedData
     });
+  }
+
+  function processQuestsView(
+    uint256 playerId,
+    uint256[] calldata actionIds,
+    uint256[] calldata actionAmounts,
+    uint256[] calldata choiceIds,
+    uint256[] calldata choiceAmounts,
+    uint256 burnedAmountOwned
+  )
+    external
+    view
+    returns (
+      uint256[] memory itemTokenIds,
+      uint256[] memory amounts,
+      uint256[] memory itemTokenIdsBurned,
+      uint256[] memory amountsBurned,
+      Skill[] memory skillsGained,
+      uint32[] memory xpGained,
+      uint256[] memory questsCompleted,
+      PlayerQuest[] memory activeQuestsCompletionInfo
+    )
+  {
+    // Handle active quest
+    PlayerQuest memory questCompletionInfo = _activeQuests[playerId];
+    if (questCompletionInfo.questId != 0) {
+      activeQuestsCompletionInfo = new PlayerQuest[](2);
+      itemTokenIds = new uint256[](2 * MAX_QUEST_REWARDS);
+      amounts = new uint256[](2 * MAX_QUEST_REWARDS);
+      itemTokenIdsBurned = new uint256[](2);
+      amountsBurned = new uint256[](2);
+      skillsGained = new Skill[](2);
+      xpGained = new uint32[](2);
+      questsCompleted = new uint256[](2);
+      uint256 itemTokenIdsLength;
+      uint256 itemTokenIdsBurnedLength;
+      uint256 skillsGainedLength;
+      uint256 questsCompletedLength;
+      uint256 activeQuestsLength;
+
+      (
+        uint256[] memory itemTokenIds_,
+        uint256[] memory amounts_,
+        uint256 itemTokenIdBurned,
+        uint256 amountBurned,
+        Skill skillGained,
+        uint32 xp,
+        bool questCompleted
+      ) = _processQuestView(actionIds, actionAmounts, choiceIds, choiceAmounts, questCompletionInfo, burnedAmountOwned);
+
+      uint256 bounds = itemTokenIds_.length;
+      for (uint256 iter; iter < bounds; iter++) {
+        itemTokenIds[itemTokenIdsLength] = itemTokenIds_[iter];
+        amounts[itemTokenIdsLength] = amounts_[iter];
+        itemTokenIdsLength++;
+      }
+
+      if (questCompleted) {
+        questsCompleted[questsCompletedLength++] = questCompletionInfo.questId;
+      } else {
+        activeQuestsCompletionInfo[activeQuestsLength++] = questCompletionInfo;
+      }
+      if (itemTokenIdBurned != NONE) {
+        itemTokenIdsBurned[itemTokenIdsBurnedLength] = itemTokenIdBurned;
+        amountsBurned[itemTokenIdsBurnedLength++] = amountBurned;
+      }
+      if (xp != 0) {
+        skillsGained[skillsGainedLength] = skillGained;
+        xpGained[skillsGainedLength++] = xp;
+      }
+
+      assembly ("memory-safe") {
+        mstore(itemTokenIds, itemTokenIdsLength)
+        mstore(amounts, itemTokenIdsLength)
+        mstore(itemTokenIdsBurned, itemTokenIdsBurnedLength)
+        mstore(amountsBurned, itemTokenIdsBurnedLength)
+        mstore(skillsGained, skillsGainedLength)
+        mstore(xpGained, skillsGainedLength)
+        mstore(questsCompleted, questsCompletedLength)
+        mstore(activeQuestsCompletionInfo, activeQuestsLength)
+      }
+    }
+  }
+
+  function isQuestCompleted(uint256 playerId, uint256 questId) external view returns (bool) {
+    return _questsCompleted[playerId].get(questId);
+  }
+
+  function getActiveQuestId(uint256 playerId) external view returns (uint256) {
+    return _activeQuests[playerId].questId;
+  }
+
+  function getActiveQuestBurnedItemTokenId(uint256 playerId) external view returns (uint256) {
+    uint256 questId = _activeQuests[playerId].questId;
+    if (questId == 0) {
+      return NONE;
+    }
+
+    return _allFixedQuests[questId].burnItemTokenId;
+  }
+
+  function getQuestCompletedRewards(
+    uint256 questId
+  ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, Skill skillGained, uint32 xpGained) {
+    Quest storage quest = _allFixedQuests[questId];
+    // length can be 0, 1 or 2
+    uint256 mintLength = quest.rewardItemTokenId1 == NONE ? 0 : 1;
+    mintLength += (quest.rewardItemTokenId2 == NONE ? 0 : 1);
+
+    itemTokenIds = new uint256[](mintLength);
+    amounts = new uint256[](mintLength);
+    if (quest.rewardItemTokenId1 != NONE) {
+      itemTokenIds[0] = quest.rewardItemTokenId1;
+      amounts[0] = quest.rewardAmount1;
+    }
+    if (quest.rewardItemTokenId2 != NONE) {
+      itemTokenIds[1] = quest.rewardItemTokenId2;
+      amounts[1] = quest.rewardAmount2;
+    }
+    skillGained = quest.skillReward;
+    xpGained = quest.skillXPGained;
   }
 
   function setPlayers(IPlayers players) external onlyOwner {

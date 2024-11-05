@@ -6,7 +6,6 @@ export const allActions: ActionInput[] = [
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -15,7 +14,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate: 120 * 10}],
     randomRewards: [],
@@ -26,15 +26,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_OAK,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -43,7 +42,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 100 * 10}],
     randomRewards: [],
@@ -54,15 +54,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_WILLOW,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 65,
       numSpawned: 0 * 1000,
@@ -71,7 +70,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.WILLOW_LOG, rate: 90 * 10}],
     randomRewards: [],
@@ -82,15 +82,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_MAPLE,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 130,
       numSpawned: 0 * 1000,
@@ -99,7 +98,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MAPLE_LOG, rate: 80 * 10}],
     randomRewards: [],
@@ -110,15 +110,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_REDWOOD,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 290,
       numSpawned: 0 * 1000,
@@ -127,7 +126,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.REDWOOD_LOG, rate: 75 * 10}],
     randomRewards: [],
@@ -138,15 +138,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_MAGICAL,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 360,
       numSpawned: 0 * 1000,
@@ -155,7 +154,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 72 * 10}],
     randomRewards: [],
@@ -166,15 +166,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_ASH,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 480,
       numSpawned: 0 * 1000,
@@ -183,7 +182,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ASH_LOG, rate: 60 * 10}],
     randomRewards: [],
@@ -194,15 +194,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_ENCHANTED,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 570,
       numSpawned: 0 * 1000,
@@ -211,7 +210,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 40 * 10}],
     randomRewards: [],
@@ -222,15 +222,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_LIVING,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 680,
       numSpawned: 0 * 1000,
@@ -239,7 +238,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LIVING_LOG, rate: 36 * 10}],
     randomRewards: [],
@@ -250,15 +250,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_SECLUDED_FOREST,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 55,
       numSpawned: 0 * 1000,
@@ -267,16 +266,17 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.LOG, rate: 40 * 10},
-      {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
+      {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_1, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 10, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -285,15 +285,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_THE_WOODLANDS,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 95,
       numSpawned: 0 * 1000,
@@ -302,17 +301,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.LOG, rate: 40 * 10},
       {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
-      {itemTokenId: EstforConstants.WILLOW_LOG, rate: 30 * 10},
+      {itemTokenId: EstforConstants.WILLOW_LOG, rate: 30 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_2, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 30, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 16, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 16, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -321,15 +321,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_CURSED_MOUNTAIN,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 210,
       numSpawned: 0 * 1000,
@@ -338,17 +337,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
       {itemTokenId: EstforConstants.WILLOW_LOG, rate: 30 * 10},
-      {itemTokenId: EstforConstants.MAPLE_LOG, rate: 25 * 10},
+      {itemTokenId: EstforConstants.MAPLE_LOG, rate: 25 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_3, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 90, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 32, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 32, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -357,15 +357,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_ENCHANTED_GROVE,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 420,
       numSpawned: 0 * 1000,
@@ -374,17 +373,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.MAPLE_LOG, rate: 25 * 10},
       {itemTokenId: EstforConstants.REDWOOD_LOG, rate: 25 * 10},
-      {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 24 * 10},
+      {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 24 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_4, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 270, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 64, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 64, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -393,15 +393,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_WOODCUTTING_WHISPERING_WOODS,
     info: {
       skill: Skill.WOODCUTTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 525,
       numSpawned: 0 * 1000,
@@ -410,17 +409,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.REDWOOD_LOG, rate: 25 * 10},
       {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 24 * 10},
-      {itemTokenId: EstforConstants.ASH_LOG, rate: 20 * 10},
+      {itemTokenId: EstforConstants.ASH_LOG, rate: 20 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WOODCUTTING_CHEST_5, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 810, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 128, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 128, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -429,15 +429,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_COPPER,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -446,7 +445,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 120 * 10}],
     randomRewards: [],
@@ -457,15 +457,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_TIN,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 35,
       numSpawned: 0 * 1000,
@@ -474,7 +473,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.TIN_ORE, rate: 120 * 10}],
     randomRewards: [],
@@ -485,15 +485,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_IRON,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -502,7 +501,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.IRON_ORE, rate: 100 * 10}],
     randomRewards: [],
@@ -513,15 +513,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_SAPPHIRE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 100,
       numSpawned: 0 * 1000,
@@ -530,7 +529,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SAPPHIRE, rate: 50 * 10}],
     randomRewards: [],
@@ -541,15 +541,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_COAL,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 120,
       numSpawned: 0 * 1000,
@@ -558,7 +557,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.COAL_ORE, rate: 90 * 10}],
     randomRewards: [],
@@ -569,15 +569,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_EMERALD,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 240,
       numSpawned: 0 * 1000,
@@ -586,7 +585,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.EMERALD, rate: 45 * 10}],
     randomRewards: [],
@@ -597,15 +597,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_MITHRIL,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 300,
       numSpawned: 0 * 1000,
@@ -614,7 +613,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MITHRIL_ORE, rate: 90 * 10}],
     randomRewards: [],
@@ -625,15 +625,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_RUBY,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 350,
       numSpawned: 0 * 1000,
@@ -642,7 +641,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RUBY, rate: 40 * 10}],
     randomRewards: [],
@@ -653,15 +653,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_ADAMANTINE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 400,
       numSpawned: 0 * 1000,
@@ -670,7 +669,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ADAMANTINE_ORE, rate: 75 * 10}],
     randomRewards: [],
@@ -681,15 +681,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_AMETHYST,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 470,
       numSpawned: 0 * 1000,
@@ -698,7 +697,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.AMETHYST, rate: 36 * 10}],
     randomRewards: [],
@@ -709,15 +709,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_RUNITE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 540,
       numSpawned: 0 * 1000,
@@ -726,7 +725,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RUNITE_ORE, rate: 72 * 10}],
     randomRewards: [],
@@ -737,15 +737,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_DIAMOND,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 650,
       numSpawned: 0 * 1000,
@@ -754,7 +753,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.DIAMOND, rate: 30 * 10}],
     randomRewards: [],
@@ -765,15 +765,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_TITANIUM,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 800,
       numSpawned: 0 * 1000,
@@ -782,7 +781,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.TITANIUM_ORE, rate: 60 * 10}],
     randomRewards: [],
@@ -793,15 +793,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_DRAGONSTONE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 900,
       numSpawned: 0 * 1000,
@@ -810,7 +809,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.DRAGONSTONE, rate: 20 * 10}],
     randomRewards: [],
@@ -821,15 +821,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_ORICHALCUM,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 1000,
       numSpawned: 0 * 1000,
@@ -838,7 +837,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 40 * 10}],
     randomRewards: [],
@@ -849,15 +849,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_TIN_MOTHERLODE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 180,
       numSpawned: 0 * 1000,
@@ -866,17 +865,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.TIN_ORE, rate: 40 * 10},
       {itemTokenId: EstforConstants.IRON_ORE, rate: 40 * 10},
-      {itemTokenId: EstforConstants.SAPPHIRE, rate: 16 * 10},
+      {itemTokenId: EstforConstants.SAPPHIRE, rate: 16 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_1, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.BAT_WING, chance: 16, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -885,15 +885,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_MITHRIL_MOTHERLODE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 375,
       numSpawned: 0 * 1000,
@@ -902,17 +901,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.MITHRIL_ORE, rate: 30 * 10},
       {itemTokenId: EstforConstants.COAL_ORE, rate: 30 * 10},
-      {itemTokenId: EstforConstants.EMERALD, rate: 15 * 10},
+      {itemTokenId: EstforConstants.EMERALD, rate: 15 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_2, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.BAT_WING, chance: 48, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 16, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 16, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -921,15 +921,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_ADAMANTINE_MOTHERLODE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 500,
       numSpawned: 0 * 1000,
@@ -938,17 +937,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ADAMANTINE_ORE, rate: 25 * 10},
       {itemTokenId: EstforConstants.COAL_ORE, rate: 30 * 10},
-      {itemTokenId: EstforConstants.RUBY, rate: 12 * 10},
+      {itemTokenId: EstforConstants.RUBY, rate: 12 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_3, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.BAT_WING, chance: 144, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 32, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 32, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -957,15 +957,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_RUNITE_MOTHERLODE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 950,
       numSpawned: 0 * 1000,
@@ -974,17 +973,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RUNITE_ORE, rate: 45 * 10},
       {itemTokenId: EstforConstants.COAL_ORE, rate: 36 * 10},
-      {itemTokenId: EstforConstants.DIAMOND, rate: 10 * 10},
+      {itemTokenId: EstforConstants.DIAMOND, rate: 10 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_4, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.BAT_WING, chance: 432, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 64, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 64, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -993,15 +993,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_MINING_TITANIUM_MOTHERLODE,
     info: {
       skill: Skill.MINING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 1050,
       numSpawned: 0 * 1000,
@@ -1010,17 +1009,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.TITANIUM_ORE, rate: 20 * 10},
       {itemTokenId: EstforConstants.COAL_ORE, rate: 36 * 10},
-      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 6 * 10},
+      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 6 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.MINING_CHEST_5, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.BAT_WING, chance: 1296, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 128, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 128, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -1029,15 +1029,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FIREMAKING_ITEM,
     info: {
       skill: Skill.FIREMAKING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -1046,7 +1045,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -1057,15 +1057,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_SMITHING_ITEM,
     info: {
       skill: Skill.SMITHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -1074,7 +1073,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -1085,15 +1085,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_COOKING_ITEM,
     info: {
       skill: Skill.COOKING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -1102,7 +1101,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -1113,15 +1113,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_MINNUS,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -1130,7 +1129,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MINNUS, rate: 120 * 10}],
     randomRewards: [],
@@ -1141,15 +1141,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_BLEKK,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 35,
       numSpawned: 0 * 1000,
@@ -1158,7 +1157,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_BLEKK, rate: 120 * 10}],
     randomRewards: [],
@@ -1169,15 +1169,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_SKRIMP,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -1186,7 +1185,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SKRIMP, rate: 120 * 10}],
     randomRewards: [],
@@ -1197,15 +1197,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_FEOLA,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 70,
       numSpawned: 0 * 1000,
@@ -1214,7 +1213,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_FEOLA, rate: 100 * 10}],
     randomRewards: [],
@@ -1225,15 +1225,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_ANCHO,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 140,
       numSpawned: 0 * 1000,
@@ -1242,7 +1241,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ANCHO, rate: 90 * 10}],
     randomRewards: [],
@@ -1253,15 +1253,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_TROUT,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 160,
       numSpawned: 0 * 1000,
@@ -1270,7 +1269,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_TROUT, rate: 72 * 10}],
     randomRewards: [],
@@ -1281,15 +1281,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_ROJJA,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 240,
       numSpawned: 0 * 1000,
@@ -1298,7 +1297,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ROJJA, rate: 60 * 10}],
     randomRewards: [],
@@ -1309,15 +1309,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_BOWFISH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 260,
       numSpawned: 0 * 1000,
@@ -1326,7 +1325,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_BOWFISH, rate: 50 * 10}],
     randomRewards: [],
@@ -1337,15 +1337,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_GOLDFISH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 300,
       numSpawned: 0 * 1000,
@@ -1354,7 +1353,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_GOLDFISH, rate: 45 * 10}],
     randomRewards: [],
@@ -1365,15 +1365,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_MYSTY_BLUE,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 370,
       numSpawned: 0 * 1000,
@@ -1382,7 +1381,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MYSTY_BLUE, rate: 48 * 10}],
     randomRewards: [],
@@ -1393,15 +1393,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_FLITFISH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 400,
       numSpawned: 0 * 1000,
@@ -1410,7 +1409,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_FLITFISH, rate: 50 * 10}],
     randomRewards: [],
@@ -1421,15 +1421,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_RAZORFISH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 440,
       numSpawned: 0 * 1000,
@@ -1438,7 +1437,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_RAZORFISH, rate: 50 * 10}],
     randomRewards: [],
@@ -1449,15 +1449,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_QUAFFER,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 500,
       numSpawned: 0 * 1000,
@@ -1466,7 +1465,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_QUAFFER, rate: 48 * 10}],
     randomRewards: [],
@@ -1477,15 +1477,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_ROXA,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 550,
       numSpawned: 0 * 1000,
@@ -1494,7 +1493,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ROXA, rate: 45 * 10}],
     randomRewards: [],
@@ -1505,15 +1505,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_AZACUDDA,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 650,
       numSpawned: 0 * 1000,
@@ -1522,7 +1521,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_AZACUDDA, rate: 45 * 10}],
     randomRewards: [],
@@ -1533,15 +1533,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_STONECLAW,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 700,
       numSpawned: 0 * 1000,
@@ -1550,7 +1549,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_STONECLAW, rate: 45 * 10}],
     randomRewards: [],
@@ -1561,15 +1561,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_CRUSKAN,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 780,
       numSpawned: 0 * 1000,
@@ -1578,7 +1577,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_CRUSKAN, rate: 45 * 10}],
     randomRewards: [],
@@ -1589,15 +1589,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_CHODFISH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 830,
       numSpawned: 0 * 1000,
@@ -1606,7 +1605,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_CHODFISH, rate: 36 * 10}],
     randomRewards: [],
@@ -1617,15 +1617,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_DOUBTFISH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 880,
       numSpawned: 0 * 1000,
@@ -1634,7 +1633,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_DOUBTFISH, rate: 36 * 10}],
     randomRewards: [],
@@ -1645,15 +1645,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_ROSEFIN,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 900,
       numSpawned: 0 * 1000,
@@ -1662,7 +1661,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ROSEFIN, rate: 36 * 10}],
     randomRewards: [],
@@ -1673,15 +1673,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_HIDDEN_POND,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 150,
       numSpawned: 0 * 1000,
@@ -1690,17 +1689,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MEDIUM_NET,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_BLEKK, rate: 40 * 10},
       {itemTokenId: EstforConstants.RAW_SKRIMP, rate: 40 * 10},
-      {itemTokenId: EstforConstants.RAW_FEOLA, rate: 36 * 10},
+      {itemTokenId: EstforConstants.RAW_FEOLA, rate: 36 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FISHING_CHEST_1, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 16, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -1709,15 +1709,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_SECRET_LAKE,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 325,
       numSpawned: 0 * 1000,
@@ -1726,17 +1725,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOOD_FISHING_ROD,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_ROJJA, rate: 20 * 10},
       {itemTokenId: EstforConstants.RAW_TROUT, rate: 24 * 10},
-      {itemTokenId: EstforConstants.RAW_ANCHO, rate: 30 * 10},
+      {itemTokenId: EstforConstants.RAW_ANCHO, rate: 30 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FISHING_CHEST_2, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 48, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 16, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 16, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -1745,15 +1745,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_ENCHANTED_LAGOON,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 420,
       numSpawned: 0 * 1000,
@@ -1762,17 +1761,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOOD_FISHING_ROD,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_GOLDFISH, rate: 15 * 10},
       {itemTokenId: EstforConstants.RAW_MYSTY_BLUE, rate: 16 * 10},
-      {itemTokenId: EstforConstants.RAW_BOWFISH, rate: 16 * 10},
+      {itemTokenId: EstforConstants.RAW_BOWFISH, rate: 16 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FISHING_CHEST_3, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 144, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 32, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 32, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -1781,15 +1781,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_UNDERGROUND_RIVER,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 740,
       numSpawned: 0 * 1000,
@@ -1798,17 +1797,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.CAGE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_ROXA, rate: 16 * 10},
       {itemTokenId: EstforConstants.RAW_QUAFFER, rate: 15 * 10},
-      {itemTokenId: EstforConstants.RAW_RAZORFISH, rate: 15 * 10},
+      {itemTokenId: EstforConstants.RAW_RAZORFISH, rate: 15 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FISHING_CHEST_4, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 432, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 64, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 64, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -1817,15 +1817,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FISHING_DEEP_SEA,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 890,
       numSpawned: 0 * 1000,
@@ -1834,17 +1833,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.LARGE_NET,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_CHODFISH, rate: 12 * 10},
       {itemTokenId: EstforConstants.RAW_CRUSKAN, rate: 15 * 10},
-      {itemTokenId: EstforConstants.RAW_STONECLAW, rate: 15 * 10},
+      {itemTokenId: EstforConstants.RAW_STONECLAW, rate: 15 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FISHING_CHEST_5, chance: 27307, amount: 1},
       {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 1296, amount: 1},
-      {itemTokenId: EstforConstants.COIN, chance: 128, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 128, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -1853,15 +1853,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_NATUOW,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 100,
       numSpawned: 100 * 1000,
@@ -1870,11 +1869,12 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
-      {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 1 * 10},
+      {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 1 * 10}
     ],
     randomRewards: [],
     combatStats: {
@@ -1884,15 +1884,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 20,
-    },
+      health: 20
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_GROG_TOAD,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 120,
       numSpawned: 100 * 1000,
@@ -1901,12 +1900,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.POISON, chance: 6640, amount: 1},
-      {itemTokenId: EstforConstants.FLIXORA, chance: 1200, amount: 1},
+      {itemTokenId: EstforConstants.FLIXORA, chance: 1200, amount: 1}
     ],
     combatStats: {
       melee: 3,
@@ -1915,15 +1915,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 3,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 50,
-    },
+      health: 50
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_UFFINCH,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 150,
       numSpawned: 100 * 1000,
@@ -1932,15 +1931,16 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
-      {itemTokenId: EstforConstants.FEATHER, rate: 5 * 10},
+      {itemTokenId: EstforConstants.FEATHER, rate: 5 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 1200, amount: 1},
-      {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 600, amount: 1},
+      {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 600, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -1949,15 +1949,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 5,
       rangedDefence: 0,
-      health: 60,
-    },
+      health: 60
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_NATURARACNID,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 150,
       numSpawned: 100 * 1000,
@@ -1966,7 +1965,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.STRING, rate: 1 * 10}],
     randomRewards: [],
@@ -1977,15 +1977,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 4,
       magicDefence: 4,
       rangedDefence: 3,
-      health: 80,
-    },
+      health: 80
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_DRAGON_FROG,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 200,
       numSpawned: 100 * 1000,
@@ -1994,7 +1993,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.BECARA_GRASS, chance: 1328, amount: 1}],
@@ -2005,15 +2005,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 5,
       magicDefence: 5,
       rangedDefence: 0,
-      health: 100,
-    },
+      health: 100
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_ELDER_BURGOF,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 200,
       numSpawned: 75 * 1000,
@@ -2022,7 +2021,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MEDIUM_BONE, rate: 1 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.BLUECANAR, chance: 750, amount: 2}],
@@ -2033,15 +2033,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 4,
       magicDefence: 10,
       rangedDefence: 0,
-      health: 120,
-    },
+      health: 120
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_GRAND_TREE_IMP,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -2050,12 +2049,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.WILLOW_LOG, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.MITHRIL_AXE, chance: 3320, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_BODY, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_BODY, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 10,
@@ -2064,15 +2064,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 10,
       magicDefence: 10,
       rangedDefence: 0,
-      health: 160,
-    },
+      health: 160
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_BANOXNID,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -2081,12 +2080,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.STRING, rate: 2 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.POISON, chance: 10000, amount: 1},
-      {itemTokenId: EstforConstants.SCORCHING_COWL, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.SCORCHING_COWL, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 3,
@@ -2095,15 +2095,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 15,
       rangedDefence: 3,
-      health: 180,
-    },
+      health: 180
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_ARCANE_DRAGON,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -2112,12 +2111,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.DRAGON_BONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_TEETH, chance: 664, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_BOOTS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_BOOTS, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 5,
@@ -2126,15 +2126,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 5,
       magicDefence: 15,
       rangedDefence: 15,
-      health: 250,
-    },
+      health: 250
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_SNAPPER_BUG,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 75 * 1000,
@@ -2143,12 +2142,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MEDIUM_BONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.HURA_ROOT, chance: 1328, amount: 1},
-      {itemTokenId: EstforConstants.NATURE_KEY, chance: 291, amount: 1},
+      {itemTokenId: EstforConstants.NATURE_KEY, chance: 291, amount: 1}
     ],
     combatStats: {
       melee: 18,
@@ -2157,15 +2157,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 20,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 200,
-    },
+      health: 200
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_SNUFFLEQUARG,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 350,
       numSpawned: 75 * 1000,
@@ -2174,13 +2173,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 1328, amount: 4},
       {itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 1},
-      {itemTokenId: EstforConstants.BARK_CHUNK, chance: 664, amount: 1},
+      {itemTokenId: EstforConstants.BARK_CHUNK, chance: 664, amount: 1}
     ],
     combatStats: {
       melee: 25,
@@ -2189,15 +2189,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 25,
       magicDefence: 20,
       rangedDefence: 25,
-      health: 230,
-    },
+      health: 230
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_OBGORA,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 350,
       numSpawned: 50 * 1000,
@@ -2206,12 +2205,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.AQUA_KEY, chance: 437, amount: 1},
-      {itemTokenId: EstforConstants.SCORCHING_BODY, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.SCORCHING_BODY, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 30,
@@ -2220,15 +2220,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 35,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 250,
-    },
+      health: 250
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_LOSSUTH,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 350,
       numSpawned: 50 * 1000,
@@ -2237,12 +2236,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.LOSSUTH_SCALE, chance: 664, amount: 2},
-      {itemTokenId: EstforConstants.LOSSUTH_TEETH, chance: 664, amount: 1},
+      {itemTokenId: EstforConstants.LOSSUTH_TEETH, chance: 664, amount: 1}
     ],
     combatStats: {
       melee: 35,
@@ -2251,15 +2251,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 40,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 280,
-    },
+      health: 280
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_SQUIGGLE_EGG,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 450,
       numSpawned: 50 * 1000,
@@ -2268,13 +2267,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.RUFARUM, chance: 1328, amount: 1},
       {itemTokenId: EstforConstants.RIGOB_CLOTH, chance: 1328, amount: 1},
-      {itemTokenId: EstforConstants.NATURE_KEY, chance: 437, amount: 1},
+      {itemTokenId: EstforConstants.NATURE_KEY, chance: 437, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -2283,15 +2283,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 30,
       magicDefence: 30,
       rangedDefence: 30,
-      health: 320,
-    },
+      health: 320
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 450,
       numSpawned: 50 * 1000,
@@ -2300,17 +2299,18 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10},
-      {itemTokenId: EstforConstants.FEATHER, rate: 10 * 10},
+      {itemTokenId: EstforConstants.FEATHER, rate: 10 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.ANURGAT, chance: 1328, amount: 2},
       {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 664, amount: 1},
       {itemTokenId: EstforConstants.FLUX, chance: 60, amount: 1},
-      {itemTokenId: EstforConstants.SCORCHING_CHAPS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.SCORCHING_CHAPS, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 55,
@@ -2319,15 +2319,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 55,
       magicDefence: 35,
       rangedDefence: 0,
-      health: 360,
-    },
+      health: 360
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_DWELLER_BAT,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 500,
       numSpawned: 50 * 1000,
@@ -2336,13 +2335,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.BAT_WING, chance: 1328, amount: 1},
       {itemTokenId: EstforConstants.QUAVA_SILK, chance: 1328, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_BRACERS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_BRACERS, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 65,
@@ -2351,15 +2351,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 60,
       magicDefence: 60,
       rangedDefence: 0,
-      health: 400,
-    },
+      health: 400
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_ANCIENT_ENT,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 500,
       numSpawned: 50 * 1000,
@@ -2368,13 +2367,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.REDWOOD_LOG, rate: 2 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.ENCHANTED_ACORN, chance: 3320, amount: 1},
       {itemTokenId: EstforConstants.ADAMANTINE_AXE, chance: 3000, amount: 1},
-      {itemTokenId: EstforConstants.MASTER_HAT, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.MASTER_HAT, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 30,
@@ -2383,15 +2383,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 50,
       magicDefence: 80,
       rangedDefence: 10,
-      health: 420,
-    },
+      health: 420
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_ROCKHAWK,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 600,
       numSpawned: 50 * 1000,
@@ -2400,16 +2399,17 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
       {itemTokenId: EstforConstants.IRON_ORE, rate: 1 * 10},
-      {itemTokenId: EstforConstants.FEATHER, rate: 2 * 10},
+      {itemTokenId: EstforConstants.FEATHER, rate: 2 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.WHITE_DEATH_SPORE, chance: 1328, amount: 2},
-      {itemTokenId: EstforConstants.FLUX, chance: 600, amount: 1},
+      {itemTokenId: EstforConstants.FLUX, chance: 600, amount: 1}
     ],
     combatStats: {
       melee: 70,
@@ -2418,15 +2418,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 100,
       magicDefence: 30,
       rangedDefence: 30,
-      health: 450,
-    },
+      health: 450
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_QRAKUR,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 600,
       numSpawned: 50 * 1000,
@@ -2435,15 +2434,16 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
-      {itemTokenId: EstforConstants.FEATHER, rate: 10 * 10},
+      {itemTokenId: EstforConstants.FEATHER, rate: 10 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.FLUX, chance: 600, amount: 2},
-      {itemTokenId: EstforConstants.SCORCHING_BRACERS, chance: 8, amount: 1},
+      {itemTokenId: EstforConstants.SCORCHING_BRACERS, chance: 8, amount: 1}
     ],
     combatStats: {
       melee: 130,
@@ -2452,15 +2452,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 170,
       magicDefence: 70,
       rangedDefence: 30,
-      health: 560,
-    },
+      health: 560
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 1000,
       numSpawned: 10 * 1000,
@@ -2469,18 +2468,19 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.FLUX, rate: 1 * 10},
       {itemTokenId: EstforConstants.DRAGON_TEETH, rate: 1 * 10},
-      {itemTokenId: EstforConstants.DRAGON_BONE, rate: 5 * 10},
+      {itemTokenId: EstforConstants.DRAGON_BONE, rate: 5 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_CHEST, chance: 2800, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_SCALE, chance: 400, amount: 1},
       {itemTokenId: EstforConstants.SCORCHING_BOOTS, chance: 8, amount: 1},
-      {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.DRAGONSTONE_STAFF, chance: 2, amount: 1}
     ],
     combatStats: {
       melee: 200,
@@ -2489,15 +2489,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 200,
       magicDefence: 100,
       rangedDefence: 200,
-      health: 1000,
-    },
+      health: 1000
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_ERKAD,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 2000,
       numSpawned: 10 * 1000,
@@ -2506,18 +2505,19 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.FLUX, rate: 1 * 10},
       {itemTokenId: EstforConstants.POISON, rate: 2 * 10},
-      {itemTokenId: EstforConstants.STRING, rate: 10 * 10},
+      {itemTokenId: EstforConstants.STRING, rate: 10 * 10}
     ],
     randomRewards: [
       {itemTokenId: EstforConstants.BONE_CHEST, chance: 2800, amount: 1},
       {itemTokenId: EstforConstants.VENOM_POUCH, chance: 1328, amount: 1},
       {itemTokenId: EstforConstants.MASTER_TROUSERS, chance: 8, amount: 1},
-      {itemTokenId: EstforConstants.GODLY_BOW, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.GODLY_BOW, chance: 2, amount: 1}
     ],
     combatStats: {
       melee: 250,
@@ -2526,15 +2526,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 150,
       magicDefence: 250,
       rangedDefence: 250,
-      health: 2000,
-    },
+      health: 2000
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_EMBER_WHELP,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 275,
       numSpawned: 75 * 1000,
@@ -2543,7 +2542,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRIMSTONE, rate: 1 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.NATURE_KEY, chance: 364, amount: 1}],
@@ -2554,15 +2554,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 20,
       magicDefence: 20,
       rangedDefence: 20,
-      health: 250,
-    },
+      health: 250
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_JUVENILE_CAVE_FAIRY,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 400,
       numSpawned: 75 * 1000,
@@ -2571,7 +2570,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.AQUA_KEY, chance: 364, amount: 1}],
@@ -2582,15 +2582,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 25,
       magicDefence: 30,
       rangedDefence: 20,
-      health: 350,
-    },
+      health: 350
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_CAVE_FAIRY,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 475,
       numSpawned: 60 * 1000,
@@ -2599,12 +2598,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 455, amount: 1},
-      {itemTokenId: EstforConstants.AQUA_KEY, chance: 455, amount: 1},
+      {itemTokenId: EstforConstants.AQUA_KEY, chance: 455, amount: 1}
     ],
     combatStats: {
       melee: 40,
@@ -2613,15 +2613,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 50,
       magicDefence: 60,
       rangedDefence: 40,
-      health: 550,
-    },
+      health: 550
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_ICE_TROLL,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 550,
       numSpawned: 50 * 1000,
@@ -2630,12 +2629,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 546, amount: 1},
-      {itemTokenId: EstforConstants.OCULITE_RING, chance: 1, amount: 1},
+      {itemTokenId: EstforConstants.OCULITE_RING, chance: 1, amount: 1}
     ],
     combatStats: {
       melee: 60,
@@ -2644,15 +2644,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 65,
       magicDefence: 60,
       rangedDefence: 80,
-      health: 700,
-    },
+      health: 700
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_BLAZING_MONTANITE,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 650,
       numSpawned: 30 * 1000,
@@ -2661,12 +2660,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRIMSTONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.BONE_KEY, chance: 910, amount: 1},
-      {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 1, amount: 1},
+      {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 1, amount: 1}
     ],
     combatStats: {
       melee: 60,
@@ -2675,15 +2675,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 80,
       magicDefence: 150,
       rangedDefence: 50,
-      health: 1000,
-    },
+      health: 1000
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 1200,
       numSpawned: 10 * 1000,
@@ -2692,13 +2691,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2048, amount: 2},
       {itemTokenId: EstforConstants.BONE_KEY, chance: 2048, amount: 2},
-      {itemTokenId: EstforConstants.ETCHED_RING, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.ETCHED_RING, chance: 2, amount: 1}
     ],
     combatStats: {
       melee: 220,
@@ -2707,15 +2707,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 220,
       magicDefence: 220,
       rangedDefence: 120,
-      health: 1200,
-    },
+      health: 1200
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN,
     info: {
       skill: Skill.COMBAT,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 2400,
       numSpawned: 10 * 1000,
@@ -2724,13 +2723,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRIMSTONE, rate: 5 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.BONE_KEY, chance: 2731, amount: 1},
-      {itemTokenId: EstforConstants.NOVIAN_RING, chance: 2, amount: 1},
+      {itemTokenId: EstforConstants.NOVIAN_RING, chance: 2, amount: 1}
     ],
     combatStats: {
       melee: 260,
@@ -2739,15 +2739,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 260,
       magicDefence: 260,
       rangedDefence: 260,
-      health: 2400,
-    },
+      health: 2400
+    }
   },
   {
     actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW,
     info: {
       skill: Skill.COMBAT,
       isAvailable: false,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 250,
       numSpawned: 10 * 1000,
@@ -2756,11 +2755,12 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 3 * 10},
-      {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 3 * 10},
+      {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 3 * 10}
     ],
     randomRewards: [{itemTokenId: EstforConstants.COIN, chance: 2731, amount: 1}],
     combatStats: {
@@ -2770,15 +2770,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 100,
-    },
+      health: 100
+    }
   },
   {
     actionId: EstforConstants.ACTION_CRAFTING_ITEM,
     info: {
       skill: Skill.CRAFTING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -2787,7 +2786,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -2798,15 +2798,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_CHILD,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 25,
       numSpawned: 0 * 1000,
@@ -2815,12 +2814,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 70,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.LOG, chance: 48000, amount: 120},
-      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 32000, amount: 40},
+      {itemTokenId: EstforConstants.BRONZE_BAR, chance: 32000, amount: 40}
     ],
     combatStats: {
       melee: 0,
@@ -2829,15 +2829,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_MAN,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 65,
       numSpawned: 0 * 1000,
@@ -2846,12 +2845,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 65,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.BRONZE_BAR, chance: 40000, amount: 50},
-      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 32000, amount: 100},
+      {itemTokenId: EstforConstants.WILLOW_LOG, chance: 32000, amount: 100}
     ],
     combatStats: {
       melee: 0,
@@ -2860,15 +2860,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_GUARD,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 80,
       numSpawned: 0 * 1000,
@@ -2877,12 +2876,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 60,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.IRON_BAR, chance: 28000, amount: 40},
-      {itemTokenId: EstforConstants.BRONZE_SWORD, chance: 8000, amount: 1},
+      {itemTokenId: EstforConstants.BRONZE_SWORD, chance: 8000, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -2891,15 +2891,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_CHEST,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 45,
       numSpawned: 0 * 1000,
@@ -2908,7 +2907,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 65,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 12000, amount: 100}],
@@ -2919,15 +2919,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_STALL,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 55,
       numSpawned: 0 * 1000,
@@ -2936,12 +2935,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 65,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.WILLOW_LOG, chance: 36000, amount: 120},
-      {itemTokenId: EstforConstants.IRON_BAR, chance: 36000, amount: 50},
+      {itemTokenId: EstforConstants.IRON_BAR, chance: 36000, amount: 50}
     ],
     combatStats: {
       melee: 0,
@@ -2950,15 +2950,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_FARMER,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 120,
       numSpawned: 0 * 1000,
@@ -2967,7 +2966,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 40000, amount: 2}],
@@ -2978,15 +2978,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_FISHERMAN,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 200,
       numSpawned: 0 * 1000,
@@ -2995,13 +2994,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.RAW_TROUT, chance: 40000, amount: 100},
       {itemTokenId: EstforConstants.RAW_ROJJA, chance: 20000, amount: 100},
-      {itemTokenId: EstforConstants.RAW_BOWFISH, chance: 12000, amount: 100},
+      {itemTokenId: EstforConstants.RAW_BOWFISH, chance: 12000, amount: 100}
     ],
     combatStats: {
       melee: 0,
@@ -3010,15 +3010,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_LUMBERJACK,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 280,
       numSpawned: 0 * 1000,
@@ -3027,13 +3026,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.OAK_LOG, chance: 40000, amount: 120},
       {itemTokenId: EstforConstants.WILLOW_LOG, chance: 20000, amount: 140},
-      {itemTokenId: EstforConstants.MAPLE_LOG, chance: 20000, amount: 160},
+      {itemTokenId: EstforConstants.MAPLE_LOG, chance: 20000, amount: 160}
     ],
     combatStats: {
       melee: 0,
@@ -3042,15 +3042,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_BLACKSMITH,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 300,
       numSpawned: 0 * 1000,
@@ -3059,13 +3058,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.BRONZE_BAR, chance: 12000, amount: 60},
       {itemTokenId: EstforConstants.IRON_BAR, chance: 12000, amount: 60},
-      {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 8000, amount: 60},
+      {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 8000, amount: 60}
     ],
     combatStats: {
       melee: 0,
@@ -3074,15 +3074,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_HEAD_GUARD,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 100,
       numSpawned: 0 * 1000,
@@ -3091,12 +3090,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 80,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 14000, amount: 80},
-      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 10000, amount: 80},
+      {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 10000, amount: 80}
     ],
     combatStats: {
       melee: 0,
@@ -3105,15 +3105,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_WIZARD,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 350,
       numSpawned: 0 * 1000,
@@ -3122,13 +3121,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 12000, amount: 80},
       {itemTokenId: EstforConstants.NATURE_SCROLL, chance: 10000, amount: 80},
-      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 8000, amount: 80},
+      {itemTokenId: EstforConstants.AQUA_SCROLL, chance: 8000, amount: 80}
     ],
     combatStats: {
       melee: 0,
@@ -3137,15 +3137,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_POTION_SHOP,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 450,
       numSpawned: 0 * 1000,
@@ -3154,7 +3153,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.BLUECANAR, chance: 40000, amount: 2}],
@@ -3165,15 +3165,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_GEM_MERCHANT,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 500,
       numSpawned: 0 * 1000,
@@ -3182,13 +3181,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.SAPPHIRE, chance: 32000, amount: 80},
       {itemTokenId: EstforConstants.EMERALD, chance: 28000, amount: 80},
-      {itemTokenId: EstforConstants.RUBY, chance: 24000, amount: 80},
+      {itemTokenId: EstforConstants.RUBY, chance: 24000, amount: 80}
     ],
     combatStats: {
       melee: 0,
@@ -3197,15 +3197,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_BANK,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 400,
       numSpawned: 0 * 1000,
@@ -3214,12 +3213,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.MITHRIL_BAR, chance: 20000, amount: 40},
-      {itemTokenId: EstforConstants.NATURE_KEY, chance: 2800, amount: 1},
+      {itemTokenId: EstforConstants.NATURE_KEY, chance: 2800, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -3228,15 +3228,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_MASTER_THIEF,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 1000,
       numSpawned: 0 * 1000,
@@ -3245,7 +3244,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -3256,15 +3256,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_FOREST,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 100,
       numSpawned: 0 * 1000,
@@ -3273,13 +3272,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 27306, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 1365, amount: 1},
-      {itemTokenId: EstforConstants.BONE_KEY, chance: 1365, amount: 1},
+      {itemTokenId: EstforConstants.BONE_KEY, chance: 1365, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -3288,15 +3288,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_LAKE,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 290,
       numSpawned: 0 * 1000,
@@ -3305,13 +3304,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.AQUA_KEY, chance: 54613, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2731, amount: 1},
-      {itemTokenId: EstforConstants.BONE_KEY, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.BONE_KEY, chance: 2731, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -3320,15 +3320,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_NEST,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 375,
       numSpawned: 0 * 1000,
@@ -3337,14 +3336,15 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 40959, amount: 1},
       {itemTokenId: EstforConstants.AQUA_KEY, chance: 40959, amount: 1},
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 4096, amount: 1},
-      {itemTokenId: EstforConstants.BONE_KEY, chance: 4096, amount: 1},
+      {itemTokenId: EstforConstants.BONE_KEY, chance: 4096, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -3353,15 +3353,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_LAIR,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 525,
       numSpawned: 0 * 1000,
@@ -3370,13 +3369,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 54613, amount: 1},
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 5461, amount: 1},
-      {itemTokenId: EstforConstants.AQUA_KEY, chance: 5461, amount: 1},
+      {itemTokenId: EstforConstants.AQUA_KEY, chance: 5461, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -3385,15 +3385,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_THIEVING_HIDEOUT,
     info: {
       skill: Skill.THIEVING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: false,
       xpPerHour: 800,
       numSpawned: 0 * 1000,
@@ -3402,13 +3401,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: true,
+      questPrerequisiteId: 0,
+      isFullModeOnly: true
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.BONE_KEY, chance: 54613, amount: 1},
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 5461, amount: 1},
-      {itemTokenId: EstforConstants.AQUA_KEY, chance: 5461, amount: 1},
+      {itemTokenId: EstforConstants.AQUA_KEY, chance: 5461, amount: 1}
     ],
     combatStats: {
       melee: 0,
@@ -3417,15 +3417,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FLETCHING_ITEM,
     info: {
       skill: Skill.FLETCHING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -3434,7 +3433,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -3445,15 +3445,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_ALCHEMY_ITEM,
     info: {
       skill: Skill.ALCHEMY,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -3462,7 +3461,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -3473,15 +3473,14 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
+      health: 0
+    }
   },
   {
     actionId: EstforConstants.ACTION_FORGING_ITEM,
     info: {
       skill: Skill.FORGING,
       isAvailable: true,
-      isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 0,
       numSpawned: 0 * 1000,
@@ -3490,7 +3489,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      isFullModeOnly: false,
+      questPrerequisiteId: 0,
+      isFullModeOnly: false
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -3501,7 +3501,7 @@ export const allActions: ActionInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0,
-    },
-  },
+      health: 0
+    }
+  }
 ];

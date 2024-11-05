@@ -18,6 +18,9 @@ library ItemNFTLibrary {
     bytes1 packedData = bytes1(uint8(0x1)); // Exists
     packedData = packedData | bytes1(uint8(inputItem.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     item.packedData = packedData;
+    item.isAvailable = inputItem.isAvailable; // TODO pack
+
+    item.questPrerequisiteId = inputItem.questPrerequisiteId;
 
     if (hasCombat) {
       // Combat stats

@@ -54,7 +54,6 @@ struct Action {
 struct ActionInfo {
   uint8 skill;
   bool isAvailable;
-  bool isDynamic;
   bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint24 xpPerHour;
   uint32 minXP;
@@ -64,6 +63,7 @@ struct ActionInfo {
   uint8 successPercent; // 0-100
   uint8 worldLocation; // 0 is the main starting world
   bool isFullModeOnly;
+  uint16 questPrerequisiteId;
 }
 
 // Allows for 2, 4 or 8 hour respawn time

@@ -124,7 +124,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       queuedActions[remainingQueuedActions.length + iter] = queuedAction;
       _queuedActionsExtra[remainingQueuedActions.length + iter] = queuedActionExtra;
 
-      queueId++;
+      ++queueId;
       totalTimespan += queuedActionInputs[iter].timespan;
       startTimeNewActions += queuedActionInputs[iter].timespan;
     }
@@ -273,6 +273,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
       require(!actionChoiceFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
+
+      // Check whether the quest is completed
+      if (actionChoice.questPrerequisiteId != 0) {
+        require(_quests.isQuestCompleted(playerId, actionChoice.questPrerequisiteId), DependentQuestNotCompleted());
+      }
     } else if (queuedActionInput.choiceId != NONE) {
       require(false, ActionChoiceIdNotRequired());
     }
@@ -296,6 +301,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     ) {
       _checkAttire(from, playerId, isPlayerUpgraded, attire, pendingQueuedActionProcessed, pendingQuestState);
       setAttire = true;
+    }
+
+    // Check whether the quest is completed
+    if (actionInfo.questPrerequisiteId != 0) {
+      require(_quests.isQuestCompleted(playerId, actionInfo.questPrerequisiteId), DependentQuestNotCompleted());
     }
 
     _checkHandEquipments(
@@ -348,6 +358,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   ) private returns (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed; // Empty
     QuestState memory pendingQuestState; // Empty
+
     bool setAttire = checkAddToQueue(
       from,
       playerId,

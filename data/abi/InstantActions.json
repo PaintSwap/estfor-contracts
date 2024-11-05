@@ -31,6 +31,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "DependentQuestNotCompleted",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -252,8 +257,18 @@
             "type": "uint16"
           },
           {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "bool",
             "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
             "type": "bool"
           },
           {
@@ -373,8 +388,18 @@
             "type": "uint16"
           },
           {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "bool",
             "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
             "type": "bool"
           },
           {
@@ -509,8 +534,18 @@
             "type": "uint16"
           },
           {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "bool",
             "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
             "type": "bool"
           },
           {
@@ -597,8 +632,18 @@
             "type": "uint16"
           },
           {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "bool",
             "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
             "type": "bool"
           },
           {
@@ -708,6 +753,11 @@
             "internalType": "bytes1",
             "name": "packedData",
             "type": "bytes1"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct InstantActions.InstantAction",
@@ -784,6 +834,11 @@
       {
         "internalType": "contract ItemNFT",
         "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Quests",
+        "name": "quests",
         "type": "address"
       }
     ],

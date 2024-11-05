@@ -91,6 +91,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "DependentQuestNotCompleted",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",

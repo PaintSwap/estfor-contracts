@@ -287,6 +287,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct PassiveActions.PassiveActionInfoInput",
@@ -461,6 +466,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct PassiveActions.PassiveActionInfoInput",
@@ -680,6 +690,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct PassiveActions.PassiveActionInfoInput",
@@ -799,6 +814,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct PassiveActions.PassiveActionInfoInput",
@@ -998,6 +1018,11 @@
             "internalType": "bytes1",
             "name": "packedData",
             "type": "bytes1"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct PassiveActions.PassiveAction",

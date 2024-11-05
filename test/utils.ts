@@ -1,8 +1,10 @@
-import {EstforTypes} from "@paintswap/estfor-definitions";
+import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BaseContract, Block, ContractTransactionReceipt, ContractTransactionResponse} from "ethers";
-import {MockVRF, World} from "../typechain-types";
+import {MockVRF, Players, Quests, World} from "../typechain-types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
+import {allQuests, defaultMinRequirements, QuestInput} from "../scripts/data/quests";
+import {SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers";
 
 export const getRequestId = async (tx: ContractTransactionResponse, contract: BaseContract): Promise<number> => {
   return Number((await getEventLog(tx, contract, "RequestSent")).requestId);
@@ -110,6 +112,19 @@ export const timeTravel = async (seconds: number | bigint) => {
   seconds = Number(seconds);
   await ethers.provider.send("evm_increaseTime", [seconds]);
   await ethers.provider.send("evm_mine", []);
+};
+
+export const createAndDoPurseStringsQuest = async (
+  players: Players,
+  quests: Quests,
+  signer: SignerWithAddress,
+  playerId: bigint
+) => {
+  const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_PURSE_STRINGS) as QuestInput;
+  await quests.addQuests([quest], [defaultMinRequirements]);
+  const questId = quest.questId;
+  await players.connect(signer).activateQuest(playerId, questId);
+  await players.connect(signer).buyBrushQuest(signer, playerId, 0, true, {value: 10});
 };
 
 // see Initilizable.sol. keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Initializable")) - 1)) & ~bytes32(uint256(0xff))

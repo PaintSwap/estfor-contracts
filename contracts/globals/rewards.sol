@@ -69,6 +69,8 @@ struct InstantVRFActionInput {
   bytes data;
   InstantVRFActionType actionType;
   bool isFullModeOnly;
+  bool isAvailable;
+  uint16 questPrerequisiteId;
 }
 
 struct InstantVRFRandomReward {

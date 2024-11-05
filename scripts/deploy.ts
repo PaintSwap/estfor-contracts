@@ -534,6 +534,7 @@ async function main() {
       await world.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
+      await quests.getAddress(),
       await brush.getAddress(),
       await treasury.getAddress(),
       DEV_ADDRESS,
@@ -567,7 +568,7 @@ async function main() {
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
     InstantActions,
-    [await players.getAddress(), await itemNFT.getAddress()],
+    [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress()],
     {
       kind: "uups",
       timeout
@@ -594,6 +595,7 @@ async function main() {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await petNFT.getAddress(),
+      await quests.getAddress(),
       oracleAddress,
       await vrf.getAddress(),
       await vrfRequestInfo.getAddress(),
@@ -982,6 +984,11 @@ async function main() {
     console.log("Add items chunk ", i);
   }
 
+  // Add quests. Make sure this is called before actions etc as they could be prerequisites
+  tx = await quests.addQuests(allQuests, allQuestsMinRequirements);
+  await tx.wait();
+  console.log("Add quests");
+
   for (let i = 0; i < allOrderBookTokenIdInfos.length; i += chunkSize) {
     const tokenIds: number[] = [];
     const tokenIdInfos: {tick: string; minQuantity: string}[] = [];
@@ -1056,11 +1063,6 @@ async function main() {
   tx = await shop.addBuyableItems(isBeta ? allShopItemsBeta : allShopItems);
   await tx.wait();
   console.log("Add shopping items");
-
-  // Add quests
-  tx = await quests.addQuests(allQuests, allQuestsMinRequirements);
-  await tx.wait();
-  console.log("Add quests");
 
   // Add clan tiers
   tx = await clans.addTiers(isBeta ? allClanTiersBeta : allClanTiers);

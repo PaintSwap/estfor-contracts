@@ -5,9 +5,9 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer} from "../../scripts/utils";
 import {
+  createAndDoPurseStringsQuest,
   getActionChoiceId,
   getActionId,
-  getEventLog,
   GUAR_MUL,
   NO_DONATION_AMOUNT,
   RATE_MUL,
@@ -28,7 +28,7 @@ import {
 } from "./utils";
 import {Players} from "../../typechain-types";
 import {ACTION_FISHING_MINNUS} from "@paintswap/estfor-definitions/constants";
-import {Block, ContractTransactionReceipt, ZeroAddress} from "ethers";
+import {Block, ContractTransactionReceipt} from "ethers";
 
 const actionIsAvailable = true;
 
@@ -189,7 +189,6 @@ describe("Players", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -283,7 +282,6 @@ describe("Players", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -379,7 +377,6 @@ describe("Players", function () {
           skill: EstforTypes.Skill.COMBAT,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
           numSpawned: 1 * SPAWN_MUL,
           handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
           handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
@@ -669,7 +666,6 @@ describe("Players", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: getXPFromLevel(70),
-          isDynamic: false,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -865,7 +861,6 @@ describe("Players", function () {
           skill: EstforTypes.Skill.FIREMAKING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.MAGIC_FIRE_STARTER,
           handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
@@ -1051,7 +1046,6 @@ describe("Players", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 3600,
           minXP: 0,
-          isDynamic: false,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -1345,7 +1339,6 @@ describe("Players", function () {
           skill: EstforTypes.Skill.WOODCUTTING,
           xpPerHour: 16000000, // 16MM
           minXP: 0,
-          isDynamic: false,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
           handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
@@ -2010,13 +2003,13 @@ describe("Players", function () {
           skill: EstforTypes.Skill.COOKING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
           worldLocation: 0,
           isFullModeOnly: true,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: true,
+          questPrerequisiteId: 0,
           actionChoiceRequired: true,
           successPercent: 100
         },
@@ -2072,13 +2065,13 @@ describe("Players", function () {
           skill: EstforTypes.Skill.COOKING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
           worldLocation: 0,
           isFullModeOnly: true,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: true,
+          questPrerequisiteId: 0,
           actionChoiceRequired: true,
           successPercent: 100
         },
@@ -2154,13 +2147,13 @@ describe("Players", function () {
           skill: EstforTypes.Skill.SMITHING,
           xpPerHour: 0,
           minXP: 0,
-          isDynamic: false,
           worldLocation: 0,
           isFullModeOnly: false,
           numSpawned: 0,
           handItemTokenIdRangeMin: EstforConstants.NONE,
           handItemTokenIdRangeMax: EstforConstants.NONE,
           isAvailable: actionIsAvailable,
+          questPrerequisiteId: 0,
           actionChoiceRequired: true,
           successPercent: 100
         },
@@ -2287,6 +2280,56 @@ describe("Players", function () {
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
     ).to.be.revertedWithCustomError(players, "ActionNotAvailable");
+  });
+
+  it("An action with a quest requirement must have the quest completed to do it", async function () {
+    const {players, playerId, itemNFT, world, quests, alice} = await loadFixture(playersFixture);
+
+    const {queuedAction, action} = await setupBasicWoodcutting(itemNFT, world);
+    const actionInput = {...action};
+    actionInput.info.questPrerequisiteId = EstforConstants.QUEST_PURSE_STRINGS;
+    await world.editActions([actionInput]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "DependentQuestNotCompleted");
+    await createAndDoPurseStringsQuest(players, quests, alice, playerId);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
+  });
+
+  it("An action choice with a quest requirement must have the quest completed to do it", async function () {
+    const {players, playerId, itemNFT, world, quests, alice} = await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await world.editActionChoices(
+      queuedAction.actionId,
+      [choiceId],
+      [
+        {
+          ...defaultActionChoice,
+          skill: EstforTypes.Skill.COOKING,
+          xpPerHour: 3600,
+          rate,
+          inputTokenIds: [EstforConstants.RAW_MINNUS],
+          inputAmounts: [1],
+          outputTokenId: EstforConstants.COOKED_MINNUS,
+          outputAmount: 1,
+          successPercent,
+          questPrerequisiteId: EstforConstants.QUEST_PURSE_STRINGS
+        }
+      ]
+    );
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "DependentQuestNotCompleted");
+    await createAndDoPurseStringsQuest(players, quests, alice, playerId);
+    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)).to
+      .not.be.reverted;
   });
 
   it.skip("Travelling", async function () {

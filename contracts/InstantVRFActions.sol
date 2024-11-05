@@ -10,6 +10,7 @@ import {ItemNFT} from "./ItemNFT.sol";
 import {PetNFT} from "./PetNFT.sol";
 import {Players} from "./Players/Players.sol";
 import {VRFRequestInfo} from "./VRFRequestInfo.sol";
+import {Quests} from "./Quests.sol";
 
 import {Skill, EquipPosition, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./globals/players.sol";
 import {InstantVRFActionInput, InstantVRFActionType} from "./globals/rewards.sol";
@@ -63,6 +64,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   error NotDoingAnyActions();
   error InvalidStrategy();
   error StrategyAlreadyExists();
+  error DependentQuestNotCompleted();
 
   struct PlayerActionInfo {
     uint16[10] actionIdAmountPairs; // actionId, amount
@@ -78,7 +80,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint24 inputAmount3;
     bytes1 packedData; // worldLocation first bit, second bit isAvailable, last bit isFullModeOnly
     address strategy;
-    // No free slots
+    // Second storage slot
+    uint16 questPrerequisiteId;
   }
 
   struct Player {
@@ -86,13 +89,12 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint64 playerId;
   }
 
+  uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 135_000;
+  uint256 private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
+
   ItemNFT private _itemNFT;
   Players private _players;
-  mapping(uint256 playerId => PlayerActionInfo) private _playerActionInfos;
-  mapping(uint256 actionId => InstantVRFAction action) private _actions;
-  mapping(bytes32 requestId => Player player) private _requestIdToPlayer;
-  mapping(InstantVRFActionType actionType => address strategy) private _strategies;
-
+  Quests private _quests;
   VRFRequestInfo private _vrfRequestInfo;
   uint64 private _gasCostPerUnit;
   uint8 private _maxActionAmount;
@@ -101,8 +103,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   ISamWitchVRF private _samWitchVRF;
   PetNFT private _petNFT;
 
-  uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 120_000;
-  uint256 private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
+  mapping(uint256 playerId => PlayerActionInfo) private _playerActionInfos;
+  mapping(uint256 actionId => InstantVRFAction action) private _actions;
+  mapping(bytes32 requestId => Player player) private _requestIdToPlayer;
+  mapping(InstantVRFActionType actionType => address strategy) private _strategies;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -124,6 +128,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     Players players,
     ItemNFT itemNFT,
     PetNFT petNFT,
+    Quests quests,
     address oracle,
     ISamWitchVRF samWitchVRF,
     VRFRequestInfo vrfRequestInfo,
@@ -134,10 +139,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _players = players;
     _itemNFT = itemNFT;
     _petNFT = petNFT;
+    _quests = quests;
     _oracle = oracle;
     _samWitchVRF = samWitchVRF;
     _vrfRequestInfo = vrfRequestInfo;
-    setGasCostPerUnit(18_000);
+    setGasCostPerUnit(15_000);
     setMaxActionAmount(maxActionAmount);
   }
 
@@ -159,13 +165,19 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       require(_actionExists(actionId), ActionDoesNotExist());
       require(_isActionAvailable(actionId), ActionNotAvailable());
       require(isPlayerUpgraded || !_isActionFullMode(actionId), PlayerNotUpgraded());
+
+      uint16 questPrerequisiteId = _actions[actionId].questPrerequisiteId;
+      if (questPrerequisiteId != 0) {
+        require(_quests.isQuestCompleted(playerId, questPrerequisiteId), DependentQuestNotCompleted());
+      }
+
       _playerActionInfos[playerId].actionIdAmountPairs[i * 2] = actionId;
       _playerActionInfos[playerId].actionIdAmountPairs[i * 2 + 1] = uint16(actionAmounts[i]);
       totalAmount += actionAmounts[i];
       numRandomWords += actionAmounts[i] / 16 + ((actionAmounts[i] % 16) == 0 ? 0 : 1);
     }
 
-    // Mainly to keep response gas costs down
+    // Mainly to keep response gas within block gas limits
     require(totalAmount <= _maxActionAmount, TooManyActionAmounts());
     // // Check they are paying enough
     require(msg.value >= requestCost(totalAmount), NotEnoughFTM());
@@ -365,7 +377,9 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     InstantVRFActionInput calldata actionInput
   ) private view returns (InstantVRFAction memory instantVRFAction) {
     bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
-    packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
+    if (actionInput.isAvailable) {
+      packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
+    }
     instantVRFAction = InstantVRFAction({
       inputTokenId1: actionInput.inputTokenIds.length != 0 ? actionInput.inputTokenIds[0] : NONE,
       inputAmount1: actionInput.inputAmounts.length != 0 ? uint8(actionInput.inputAmounts[0]) : 0,
@@ -374,7 +388,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       inputTokenId3: actionInput.inputTokenIds.length > 2 ? actionInput.inputTokenIds[2] : NONE,
       inputAmount3: actionInput.inputAmounts.length > 2 ? actionInput.inputAmounts[2] : 0,
       packedData: packedData,
-      strategy: _strategies[actionInput.actionType]
+      strategy: _strategies[actionInput.actionType],
+      questPrerequisiteId: actionInput.questPrerequisiteId
     });
   }
 

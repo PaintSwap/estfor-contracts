@@ -186,7 +186,8 @@ library PromotionsLibrary {
         guaranteedItemTokenIds: promotionInfoInput.guaranteedItemTokenIds,
         guaranteedAmounts: promotionInfoInput.guaranteedAmounts,
         randomItemTokenIds: promotionInfoInput.randomItemTokenIds,
-        randomAmounts: promotionInfoInput.randomAmounts
+        randomAmounts: promotionInfoInput.randomAmounts,
+        questPrerequisiteId: promotionInfoInput.questPrerequisiteId
       });
   }
 }

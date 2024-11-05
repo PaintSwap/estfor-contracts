@@ -6,6 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {ItemNFT} from "./ItemNFT.sol";
+import {Quests} from "./Quests.sol";
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
 // solhint-disable-next-line no-global-import
@@ -51,6 +52,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   error InvalidActionId();
   error OutputAmountCannotBeZero();
   error OutputTokenIdCannotBeEmpty();
+  error DependentQuestNotCompleted();
 
   enum InstantActionType {
     NONE,
@@ -66,7 +68,9 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint16[] inputAmounts;
     uint16 outputTokenId;
     uint16 outputAmount;
+    uint16 questPrerequisiteId;
     bool isFullModeOnly;
+    bool isAvailable;
     InstantActionType actionType;
   }
 
@@ -86,6 +90,8 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint16 outputTokenId;
     uint16 outputAmount;
     bytes1 packedData; // last bit is full mode only
+    // Second storage slot
+    uint16 questPrerequisiteId;
   }
 
   struct InstantActionState {
@@ -96,6 +102,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   IPlayers private _players;
+  Quests private _quests;
   mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) private _actions;
   ItemNFT private _itemNFT;
 
@@ -109,9 +116,10 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(IPlayers players, ItemNFT itemNFT) external initializer {
+  function initialize(IPlayers players, ItemNFT itemNFT, Quests quests) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    _quests = quests;
     _players = players;
     _itemNFT = itemNFT;
   }
@@ -148,6 +156,9 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     require(instantAction.inputTokenId1 != NONE, InvalidActionId());
     _checkMinXPRequirements(playerId, instantAction);
     require(!_isActionFullMode(instantAction) || _players.isPlayerUpgraded(playerId), PlayerNotUpgraded());
+    if (instantAction.questPrerequisiteId != 0) {
+      require(_quests.isQuestCompleted(playerId, instantAction.questPrerequisiteId), DependentQuestNotCompleted());
+    }
   }
 
   function getInstantActionState(
@@ -275,6 +286,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     InstantActionInput calldata actionInput
   ) private pure returns (InstantAction memory instantAction) {
     bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    // TODO: Pack isAvailable
     instantAction = InstantAction({
       minSkill1: actionInput.minSkills.length != 0 ? actionInput.minSkills[0] : Skill.NONE._asUint8(),
       minXP1: actionInput.minXPs.length != 0 ? actionInput.minXPs[0] : 0,
@@ -290,7 +302,8 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       inputAmount3: actionInput.inputAmounts.length > 2 ? actionInput.inputAmounts[2] : 0,
       outputTokenId: actionInput.outputTokenId,
       outputAmount: actionInput.outputAmount,
-      packedData: packedData
+      packedData: packedData,
+      questPrerequisiteId: actionInput.questPrerequisiteId
     });
   }
 

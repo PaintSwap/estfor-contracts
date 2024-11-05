@@ -26,6 +26,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "DependentQuestNotCompleted",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -333,6 +338,11 @@
             "internalType": "uint32[]",
             "name": "randomAmounts",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "indexed": false,
@@ -507,6 +517,11 @@
             "internalType": "uint32[]",
             "name": "randomAmounts",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "indexed": false,
@@ -825,6 +840,11 @@
             "internalType": "uint32[]",
             "name": "randomAmounts",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct PromotionInfoInput[]",
@@ -1008,6 +1028,11 @@
             "internalType": "uint32[]",
             "name": "randomAmounts",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct PromotionInfoInput[]",
@@ -1061,6 +1086,11 @@
             "internalType": "uint24",
             "name": "tokenCost",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           },
           {
             "internalType": "uint8",
@@ -1278,6 +1308,11 @@
       {
         "internalType": "contract PlayerNFT",
         "name": "playerNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Quests",
+        "name": "quests",
         "type": "address"
       },
       {

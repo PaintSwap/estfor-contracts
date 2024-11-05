@@ -12,12 +12,12 @@ import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
-import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput, ItemOutput, Skill, IS_FULL_MODE_BIT} from "./globals/all.sol";
+import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput, Skill, IS_FULL_MODE_BIT} from "./globals/all.sol";
 
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, IItemNFT {
-  event AddItems(ItemOutput[] items, uint16[] tokenIds, string[] names);
-  event EditItems(ItemOutput[] items, uint16[] tokenIds, string[] names);
+  event AddItems(ItemInput[] items);
+  event EditItems(ItemInput[] items);
   event RemoveItems(uint16[] tokenIds);
 
   error IdTooHigh();
@@ -215,32 +215,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     super._update(from, to, ids, amounts);
   }
 
-  function _setItem(ItemInput calldata input) private returns (ItemOutput memory item) {
+  function _setItem(ItemInput calldata input) private {
     require(input.tokenId != 0, InvalidTokenId());
     ItemNFTLibrary.setItem(input, _items[input.tokenId]);
     _tokenURIs[input.tokenId] = input.metadataURI;
-
-    item = ItemOutput({
-      equipPosition: input.equipPosition,
-      isFullModeOnly: input.isFullModeOnly,
-      isTransferable: input.isTransferable,
-      healthRestored: input.healthRestored,
-      boostType: input.boostType,
-      boostValue: input.boostValue,
-      boostDuration: input.boostDuration,
-      melee: input.combatStats.melee,
-      ranged: input.combatStats.ranged,
-      magic: input.combatStats.magic,
-      meleeDefence: input.combatStats.meleeDefence,
-      rangedDefence: input.combatStats.rangedDefence,
-      magicDefence: input.combatStats.magicDefence,
-      health: input.combatStats.health,
-      skill: input.skill,
-      minXP: input.minXP
-    });
   }
 
-  function _editItem(ItemInput calldata inputItem) private returns (ItemOutput memory item) {
+  function _editItem(ItemInput calldata inputItem) private {
     require(exists(inputItem.tokenId), ItemDoesNotExist(inputItem.tokenId));
     EquipPosition oldPosition = _items[inputItem.tokenId].equipPosition;
     EquipPosition newPosition = inputItem.equipPosition;
@@ -254,7 +235,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       oldPosition == newPosition || oldPosition == EquipPosition.NONE || isRightHandPositionSwapWithBothHands,
       EquipmentPositionShouldNotChange()
     );
-    item = _setItem(inputItem);
+    _setItem(inputItem);
   }
 
   function _isApproved(address account) private view returns (bool) {
@@ -381,31 +362,20 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function addItems(ItemInput[] calldata inputItems) external onlyOwner {
     uint256 length = inputItems.length;
-    ItemOutput[] memory items = new ItemOutput[](length);
-    uint16[] memory tokenIds = new uint16[](length);
-    string[] memory names = new string[](length);
     for (uint256 iter; iter < length; iter++) {
       require(!exists(inputItems[iter].tokenId), ItemAlreadyExists());
-      items[iter] = _setItem(inputItems[iter]);
-      tokenIds[iter] = inputItems[iter].tokenId;
-      names[iter] = inputItems[iter].name;
+      _setItem(inputItems[iter]);
     }
 
-    emit AddItems(items, tokenIds, names);
+    emit AddItems(inputItems);
   }
 
   function editItems(ItemInput[] calldata inputItems) external onlyOwner {
-    ItemOutput[] memory items = new ItemOutput[](inputItems.length);
-    uint16[] memory tokenIds = new uint16[](inputItems.length);
-    string[] memory names = new string[](inputItems.length);
-
     for (uint256 i = 0; i < inputItems.length; ++i) {
-      items[i] = _editItem(inputItems[i]);
-      tokenIds[i] = inputItems[i].tokenId;
-      names[i] = inputItems[i].name;
+      _editItem(inputItems[i]);
     }
 
-    emit EditItems(items, tokenIds, names);
+    emit EditItems(inputItems);
   }
 
   // This should be only used when an item is not in active use

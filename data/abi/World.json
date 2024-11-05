@@ -84,11 +84,6 @@
   },
   {
     "inputs": [],
-    "name": "DynamicActionsCannotBeAdded",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "DynamicActionsCannotBeSet",
     "type": "error"
   },
@@ -300,6 +295,16 @@
             "type": "bool"
           },
           {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
@@ -339,11 +344,6 @@
               {
                 "internalType": "bool",
                 "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "isDynamic",
                 "type": "bool"
               },
               {
@@ -390,6 +390,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct ActionInfo",
@@ -565,6 +570,16 @@
             "type": "bool"
           },
           {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
@@ -604,11 +619,6 @@
               {
                 "internalType": "bool",
                 "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "isDynamic",
                 "type": "bool"
               },
               {
@@ -655,6 +665,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct ActionInfo",
@@ -936,11 +951,6 @@
           },
           {
             "internalType": "bool",
-            "name": "isDynamic",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
             "name": "actionChoiceRequired",
             "type": "bool"
           },
@@ -983,6 +993,11 @@
             "internalType": "bool",
             "name": "isFullModeOnly",
             "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct ActionInfo",
@@ -1068,6 +1083,16 @@
             "type": "bool"
           },
           {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
@@ -1107,11 +1132,6 @@
               {
                 "internalType": "bool",
                 "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "isDynamic",
                 "type": "bool"
               },
               {
@@ -1158,6 +1178,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct ActionInfo",
@@ -1331,6 +1356,16 @@
             "type": "bool"
           },
           {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
@@ -1426,6 +1461,16 @@
             "type": "bool"
           },
           {
+            "internalType": "bool",
+            "name": "isAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
             "internalType": "uint8[]",
             "name": "minSkills",
             "type": "uint8[]"
@@ -1465,11 +1510,6 @@
               {
                 "internalType": "bool",
                 "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
-                "name": "isDynamic",
                 "type": "bool"
               },
               {
@@ -1516,6 +1556,11 @@
                 "internalType": "bool",
                 "name": "isFullModeOnly",
                 "type": "bool"
+              },
+              {
+                "internalType": "uint16",
+                "name": "questPrerequisiteId",
+                "type": "uint16"
               }
             ],
             "internalType": "struct ActionInfo",
@@ -1773,6 +1818,11 @@
             "internalType": "uint24",
             "name": "newInputAmount3",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct ActionChoice",
@@ -1803,11 +1853,6 @@
           {
             "internalType": "bool",
             "name": "isAvailable",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "isDynamic",
             "type": "bool"
           },
           {
@@ -1854,6 +1899,11 @@
             "internalType": "bool",
             "name": "isFullModeOnly",
             "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
           }
         ],
         "internalType": "struct ActionInfo",
