@@ -330,7 +330,7 @@ describe("Shop", function () {
       .withArgs(await shop.getAddress(), alice, ZeroAddress, EstforConstants.BRONZE_SHIELD, 1);
 
     // Item should get burnt, and they should get the amount of brush expected.
-    expect(await itemNFT.getItemBalance(EstforConstants.BRONZE_SHIELD)).to.eq(
+    expect(await itemNFT["totalSupply(uint256)"](EstforConstants.BRONZE_SHIELD)).to.eq(
       minItemQuantityBeforeSellsAllowed * 2n - 1n
     );
     expect(await brush.balanceOf(alice)).to.eq(priceShield);
@@ -379,10 +379,12 @@ describe("Shop", function () {
         [1, 2]
       );
 
-    expect(await itemNFT.getItemBalance(EstforConstants.BRONZE_SHIELD)).to.eq(
+    expect(await itemNFT["totalSupply(uint256)"](EstforConstants.BRONZE_SHIELD)).to.eq(
       minItemQuantityBeforeSellsAllowed * 2n - 1n
     );
-    expect(await itemNFT.getItemBalance(EstforConstants.SAPPHIRE_AMULET)).to.eq(minItemQuantityBeforeSellsAllowed - 2n);
+    expect(await itemNFT["totalSupply(uint256)"](EstforConstants.SAPPHIRE_AMULET)).to.eq(
+      minItemQuantityBeforeSellsAllowed - 2n
+    );
     expect(await brush.balanceOf(alice)).to.eq(expectedTotal);
   });
 

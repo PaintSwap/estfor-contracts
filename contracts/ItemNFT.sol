@@ -112,7 +112,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function _getMinRequirement(uint16 tokenId) private view returns (Skill, uint32, bool isFullModeOnly) {
-    return (_items[tokenId].skill, _items[tokenId].minXP, _isItemFullMode(tokenId));
+    Item memory item = _items[tokenId];
+    return (item.skill, item.minXP, _isItemFullMode(tokenId));
   }
 
   function _isItemFullMode(uint256 tokenId) private view returns (bool) {
@@ -173,14 +174,16 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   // If an item is burnt, remove it from the total
   function _removeAnyBurntFromTotal(uint256[] memory ids, uint256[] memory amounts) private {
     uint256 iter = ids.length;
+    uint256 totalSupplyDelta;
     while (iter != 0) {
       --iter;
       uint256 newBalance = _itemInfo[ids[iter]].balance - amounts[iter];
       if (newBalance == 0) {
-        --_totalSupplyAll;
+        ++totalSupplyDelta;
       }
       _itemInfo[ids[iter]].balance = uint216(newBalance);
     }
+    _totalSupplyAll -= uint16(totalSupplyDelta);
   }
 
   function _checkIsTransferable(address from, uint256[] memory ids) private view {
