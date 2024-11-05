@@ -12,9 +12,9 @@ interface IItemNFT {
 
   function getItems(uint16[] calldata tokenIds) external view returns (Item[] memory);
 
-  function totalSupply(uint256 id) external view returns (uint256);
+  function totalSupply(uint256 id) external view returns (uint256); // ERC1155Supply
 
-  function totalSupply() external view returns (uint256);
+  function totalSupply() external view returns (uint256); // ERC1155Supply
 
   function mint(address to, uint256 id, uint256 quantity) external;
 
