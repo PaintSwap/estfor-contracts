@@ -216,7 +216,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function _liquidatePrice(uint16 tokenId, uint256 totalBrushPerItem) private view returns (uint80 price) {
     TokenInfo storage tokenInfo = _tokenInfos[tokenId];
-    uint256 totalOfThisItem = _itemNFT.getItemBalance(tokenId);
+    uint256 totalOfThisItem = _itemNFT.totalSupply(tokenId);
     if (_hasNewDailyData(tokenInfo.checkpointTimestamp)) {
       if (totalOfThisItem != 0) {
         price = uint80(totalBrushPerItem / totalOfThisItem);

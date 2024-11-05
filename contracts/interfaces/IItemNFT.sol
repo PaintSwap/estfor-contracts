@@ -12,6 +12,8 @@ interface IItemNFT {
 
   function getItems(uint16[] calldata tokenIds) external view returns (Item[] memory);
 
+  function totalSupply(uint256 id) external view returns (uint256);
+
   function totalSupply() external view returns (uint256);
 
   function mint(address to, uint256 id, uint256 quantity) external;
@@ -23,8 +25,6 @@ interface IItemNFT {
   function burnBatch(address account, uint256[] calldata ids, uint256[] calldata values) external;
 
   function getTimestampFirstMint(uint256 id) external view returns (uint256);
-
-  function getItemBalance(uint256 id) external view returns (uint256);
 
   function exists(uint256 id) external view returns (bool);
 }
