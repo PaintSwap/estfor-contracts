@@ -12,8 +12,7 @@ import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
-// solhint-disable-next-line no-global-import
-import "./globals/all.sol";
+import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput, ItemOutput, Skill, IS_FULL_MODE_BIT} from "./globals/all.sol";
 
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, IItemNFT {
