@@ -58,7 +58,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(address account => bool isApproved) private _approvals;
 
   modifier onlyMinters() {
-    require(_isApproved(_msgSender()) || (_adminAccess.isAdmin(_msgSender()) && _isBeta), NotMinter());
+    address sender = _msgSender();
+    require(_isApproved(sender) || (_adminAccess.isAdmin(sender) && _isBeta), NotMinter());
     _;
   }
 
