@@ -246,7 +246,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function _getNumItems() private view returns (uint256) {
     uint256 totalSupply = _itemNFT.totalSupply();
-    return (_numUnsellableItems >= totalSupply) ? totalSupply : totalSupply - _numUnsellableItems;
+    uint16 numUnsellableItems = _numUnsellableItems;
+    return (numUnsellableItems >= totalSupply) ? totalSupply : totalSupply - numUnsellableItems;
   }
 
   function _totalBrushForItem() private view returns (uint256) {
