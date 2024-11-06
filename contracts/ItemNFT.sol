@@ -31,7 +31,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   error NotBurner();
   error LengthMismatch();
 
-  // Item info by itemId
   struct ItemInfo {
     uint40 timestampFirstMint;
     uint216 balance; // can possibly be smaller if we want to pack more data
@@ -48,9 +47,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   address private _royaltyReceiver;
   uint8 private _royaltyFee; // base 1000, highest is 25.5
 
-  // timestampFirstMint, balance
-  mapping(uint256 => ItemInfo) private _itemInfo;
-
+  mapping(uint256 itemId => ItemInfo itemInfo) private _itemInfos; // (timestampFirstMint, balance)
   mapping(uint256 itemId => string tokenURI) private _tokenURIs;
   mapping(uint256 itemId => CombatStats combatStats) private _combatStats;
   mapping(uint256 itemId => Item item) private _items;
@@ -127,13 +124,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function _premint(uint256 tokenId, uint256 amount) private returns (uint256 numNewUniqueItems) {
     require(tokenId < type(uint16).max, IdTooHigh());
-    uint256 existingBalance = _itemInfo[tokenId].balance;
+    uint256 existingBalance = _itemInfos[tokenId].balance;
     if (existingBalance == 0) {
       // Brand new item
-      _itemInfo[tokenId].timestampFirstMint = uint40(block.timestamp);
+      _itemInfos[tokenId].timestampFirstMint = uint40(block.timestamp);
       numNewUniqueItems++;
     }
-    _itemInfo[tokenId].balance = uint216(existingBalance + amount);
+    _itemInfos[tokenId].balance = uint216(existingBalance + amount);
   }
 
   function _mintItem(address to, uint256 tokenId, uint256 amount) internal {
@@ -182,11 +179,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     uint256 totalSupplyDelta;
     while (iter != 0) {
       --iter;
-      uint256 newBalance = _itemInfo[ids[iter]].balance - amounts[iter];
+      uint256 newBalance = _itemInfos[ids[iter]].balance - amounts[iter];
       if (newBalance == 0) {
         ++totalSupplyDelta;
       }
-      _itemInfo[ids[iter]].balance = uint216(newBalance);
+      _itemInfos[ids[iter]].balance = uint216(newBalance);
     }
     _totalSupplyAll -= uint16(totalSupplyDelta);
   }
@@ -257,7 +254,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function totalSupply(uint256 tokenId) external view override returns (uint256) {
-    return _itemInfo[tokenId].balance;
+    return _itemInfos[tokenId].balance;
   }
 
   function totalSupply() external view override returns (uint256) {
@@ -277,7 +274,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   }
 
   function getTimestampFirstMint(uint256 tokenId) external view override returns (uint256) {
-    return _itemInfo[tokenId].timestampFirstMint;
+    return _itemInfos[tokenId].timestampFirstMint;
   }
 
   function getEquipPositionAndMinRequirement(
