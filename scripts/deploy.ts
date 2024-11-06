@@ -1152,8 +1152,13 @@ async function main() {
     EstforConstants.SECRET_EGG_4_TIER5
   ];
 
-  // Only works if not trying to sell anything
-  await shop.addUnsellableItems(items);
+  tx = await shop.addUnsellableItems(items);
+  await tx.wait();
+  console.log("Add unsellable items");
+
+  tx = await adminAccess.addPromotionalAdmins(["0xe9fb52d7611e502d93af381ac493981b42d91974"]);
+  await tx.wait();
+  console.log("Add promotional admins");
 
   // Add test data for the game
   if (isBeta) {
