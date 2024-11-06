@@ -8,6 +8,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
@@ -18,6 +19,7 @@ import {BulkTransferInfo} from "../globals/items.sol";
 
 contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, IBank {
   using SafeCast for uint256;
+  using BitMaps for BitMaps.BitMap;
 
   event DepositItems(address from, uint256 playerId, uint256[] ids, uint256[] values);
   event DepositItem(address from, uint256 playerId, uint256 id, uint256 value);
@@ -65,7 +67,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   IClans private _clans;
   IPlayers private _players;
   address private _lockedBankVaults;
-  mapping(uint256 itemTokenId => bool hasAny) private _uniqueItems;
+
+  BitMaps.BitMap private _uniqueItems; // itemTokenId => bool hasAny
 
   modifier onlyBankRelay() {
     require(_msgSender() == _bankRelay, OnlyBankRelay());
@@ -116,8 +119,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) {
     uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
     uint256 bounds = ids.length;
-    for (uint256 iter; iter < bounds; ++iter) {
-      _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
+    for (uint256 i; i < bounds; ++i) {
+      _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
     }
     _itemNFT.safeBatchTransferFrom(sender, address(this), ids, values, "");
     emit DepositItems(sender, playerId, ids, values);
@@ -125,6 +128,16 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
 
   function getUniqueItemCount() external view returns (uint16) {
     return _uniqueItemCount;
+  }
+
+  function _withdraw(uint256[] calldata ids) private returns (uint256 uniqueItemsToRemove) {
+    for (uint256 i; i < ids.length; ++i) {
+      uint256 id = ids[i];
+      if (_uniqueItems.get(id) && _itemNFT.balanceOf(address(this), id) == 0) {
+        ++uniqueItemsToRemove;
+        _uniqueItems.unset(id);
+      }
+    }
   }
 
   function withdrawItems(
@@ -136,15 +149,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
     _itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
 
-    // Update uniqueItemCount after withdrawing items
-    uint256 bounds = ids.length;
-    for (uint256 iter; iter < bounds; ++iter) {
-      uint256 id = ids[iter];
-      if (_uniqueItems[id] && _itemNFT.balanceOf(address(this), id) == 0) {
-        --_uniqueItemCount;
-        _uniqueItems[id] = false;
-      }
-    }
+    // Update uniqueItemCount after trasnferring the items
+    _withdraw(ids);
     emit WithdrawItems(sender, to, playerId, ids, amounts);
   }
 
@@ -155,21 +161,12 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
     _itemNFT.safeBulkTransfer(nftsInfo);
 
-    // Update uniqueItemCount after withdrawing items
+    // Update uniqueItemCount after trasnferring the items
+    uint256 uniqueItemsToRemove;
     for (uint256 i; i < nftsInfo.length; ++i) {
-      uint256 bounds = nftsInfo.length;
-      for (uint256 iter; iter < bounds; ++iter) {
-        uint256[] calldata ids = nftsInfo[iter].tokenIds;
-        for (uint256 j; j < ids.length; ++j) {
-          uint256 id = ids[j];
-          if (_uniqueItems[id] && _itemNFT.balanceOf(address(this), id) == 0) {
-            --_uniqueItemCount;
-            _uniqueItems[id] = false;
-          }
-        }
-      }
+      uniqueItemsToRemove += _withdraw(nftsInfo[i].tokenIds);
     }
-
+    _uniqueItemCount -= uint16(uniqueItemsToRemove);
     emit WithdrawItemsBulk(sender, nftsInfo, playerId);
   }
 
@@ -259,10 +256,11 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   }
 
   function _receivedItemUpdateUniqueItems(uint256 id, uint256 maxCapacity) private {
-    if (!_uniqueItems[id]) {
+    bool isNewItem = !_uniqueItems.get(id);
+    if (isNewItem) {
       require(_uniqueItemCount < maxCapacity, MaxBankCapacityReached());
       ++_uniqueItemCount;
-      _uniqueItems[id] = true;
+      _uniqueItems.set(id);
     }
   }
 
@@ -294,8 +292,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     if (_msgSender() == address(_itemNFT) && operator != address(this)) {
       uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
       uint256 bounds = ids.length;
-      for (uint256 iter; iter < bounds; iter++) {
-        _receivedItemUpdateUniqueItems(ids[iter], maxCapacity);
+      for (uint256 i; i < bounds; ++i) {
+        _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
       }
       uint256 activePlayerId = _players.getActivePlayer(from);
       emit DepositItems(from, activePlayerId, ids, values);
