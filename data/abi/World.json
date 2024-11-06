@@ -1720,9 +1720,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint8",
+            "internalType": "uint24",
             "name": "inputAmount1",
-            "type": "uint8"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -1730,9 +1730,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint8",
+            "internalType": "uint24",
             "name": "inputAmount2",
-            "type": "uint8"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -1740,9 +1740,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint8",
+            "internalType": "uint24",
             "name": "inputAmount3",
-            "type": "uint8"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -1758,26 +1758,6 @@
             "internalType": "uint8",
             "name": "successPercent",
             "type": "uint8"
-          },
-          {
-            "internalType": "uint16",
-            "name": "handItemTokenIdRangeMin",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "handItemTokenIdRangeMax",
-            "type": "uint16"
-          },
-          {
-            "internalType": "bytes1",
-            "name": "packedData",
-            "type": "bytes1"
-          },
-          {
-            "internalType": "bytes1",
-            "name": "reserved",
-            "type": "bytes1"
           },
           {
             "internalType": "uint8",
@@ -1800,24 +1780,24 @@
             "type": "uint32"
           },
           {
-            "internalType": "uint24",
-            "name": "newInputAmount1",
-            "type": "uint24"
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
           },
           {
-            "internalType": "uint24",
-            "name": "newInputAmount2",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint24",
-            "name": "newInputAmount3",
-            "type": "uint24"
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
           },
           {
             "internalType": "uint16",
             "name": "questPrerequisiteId",
             "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
           }
         ],
         "internalType": "struct ActionChoice",

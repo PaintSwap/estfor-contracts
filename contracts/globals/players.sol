@@ -133,30 +133,25 @@ struct ActionChoice {
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
   uint16 inputTokenId1;
-  uint8 inputAmount1;
+  uint24 inputAmount1;
   uint16 inputTokenId2;
-  uint8 inputAmount2;
+  uint24 inputAmount2;
   uint16 inputTokenId3;
-  uint8 inputAmount3;
+  uint24 inputAmount3;
   uint16 outputTokenId;
   uint8 outputAmount;
   uint8 successPercent; // 0-100
-  uint16 handItemTokenIdRangeMin; // Inclusive
-  uint16 handItemTokenIdRangeMax; // Inclusive
-  // FullMode is last bit, first 6 bits is worldLocation,
-  // 2nd last bit is if there are other skills in next storage slot to check,
-  // 3rd last bit if the input amounts should be used
-  bytes1 packedData;
-  bytes1 reserved;
-  // Second storage slot
   uint8 minSkill2;
   uint32 minXP2;
   uint8 minSkill3;
   uint32 minXP3;
-  uint24 newInputAmount1; // alternative inputAmount1 which is larger
-  uint24 newInputAmount2; // alternative inputAmount2 which is larger
-  uint24 newInputAmount3; // alternative inputAmount3 which is larger
+  uint16 handItemTokenIdRangeMin; // Inclusive
+  uint16 handItemTokenIdRangeMax; // Inclusive
   uint16 questPrerequisiteId;
+  // FullMode is last bit, first 6 bits is worldLocation,
+  // 2nd last bit is if there are other skills in next storage slot to check,
+  // 3rd last bit if the input amounts should be used
+  bytes1 packedData;
 }
 
 // Must be in the same order as Skill enum
@@ -311,9 +306,6 @@ uint256 constant IS_FULL_MODE_BIT = 7;
 
 // Passive/Instant/InstantVRF/Actions/ActionChoices/Item action
 uint256 constant IS_AVAILABLE_BIT = 6;
-
-// Action choice
-uint256 constant ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT = 5; // TODO: remove this if we can
 
 // Queued action
 uint256 constant HAS_PET_BIT = 1;

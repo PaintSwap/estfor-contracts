@@ -12,7 +12,7 @@ import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 import {Skill, CombatStats, CombatStyle, BoostType, Attire} from "../globals/misc.sol";
 import {PendingQueuedActionEquipmentState, QueuedAction, ActionChoice, PlayerBoostInfo, PackedXP, PendingQueuedActionProcessed, Item, Player, Player, XP_BYTES, IS_FULL_MODE_BIT} from "../globals/players.sol";
 import {NONE} from "../globals/items.sol";
-import {RATE_MUL, SPAWN_MUL, ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT} from "../globals/actions.sol";
+import {RATE_MUL, SPAWN_MUL} from "../globals/actions.sol";
 
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayersLibrary {
@@ -128,18 +128,12 @@ library PlayersLibrary {
   ) private view returns (uint256 maxRequiredRatio) {
     maxRequiredRatio = baseInputItemsConsumedNum;
 
-    bool useSecondInputTokens = uint8(
-      actionChoice.packedData >> ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT
-    ) &
-      1 ==
-      1;
-
     if (baseInputItemsConsumedNum != 0) {
       if (actionChoice.inputTokenId1 != 0) {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           from,
           actionChoice.inputTokenId1,
-          useSecondInputTokens ? actionChoice.newInputAmount1 : actionChoice.inputAmount1,
+          actionChoice.inputAmount1,
           maxRequiredRatio,
           itemNFT,
           pendingQueuedActionEquipmentStates
@@ -149,7 +143,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           from,
           actionChoice.inputTokenId2,
-          useSecondInputTokens ? actionChoice.newInputAmount2 : actionChoice.inputAmount2,
+          actionChoice.inputAmount2,
           maxRequiredRatio,
           itemNFT,
           pendingQueuedActionEquipmentStates
@@ -159,7 +153,7 @@ library PlayersLibrary {
         maxRequiredRatio = _getMaxRequiredRatioPartial(
           from,
           actionChoice.inputTokenId3,
-          useSecondInputTokens ? actionChoice.newInputAmount3 : actionChoice.inputAmount3,
+          actionChoice.inputAmount3,
           maxRequiredRatio,
           itemNFT,
           pendingQueuedActionEquipmentStates
@@ -646,6 +640,7 @@ library PlayersLibrary {
         baseInputItemsConsumedNum = uint16(maxRequiredRatio);
       }
     }
+
     // Work out what the actual elapsedTime should be had all those been made
     xpElapsedTime = (uint256(baseInputItemsConsumedNum) * 3600 * RATE_MUL) / actionChoice.rate;
   }
@@ -801,7 +796,7 @@ library PlayersLibrary {
     if (skill._isSkillNone()) {
       return 0;
     }
-    uint256 offset = 2; // Accounts for NONE & COMBAT skills
+    uint256 offset = 2; // Accounts for NONE & COMBAT meta-skills
     uint256 val = uint8(skill) - offset;
     uint256 slotNum = val / 6;
     uint256 relativePos = val % 6;

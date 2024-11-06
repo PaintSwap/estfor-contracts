@@ -70,5 +70,3 @@ struct ActionInfo {
 uint256 constant SPAWN_MUL = 1000;
 uint256 constant RATE_MUL = 1000;
 uint256 constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour action times)
-
-uint256 constant ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT = 5;
