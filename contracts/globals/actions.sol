@@ -53,7 +53,6 @@ struct Action {
 
 struct ActionInfo {
   uint8 skill;
-  bool isAvailable;
   bool actionChoiceRequired; // If true, then the user must choose an action choice
   uint24 xpPerHour;
   uint32 minXP;
@@ -63,6 +62,7 @@ struct ActionInfo {
   uint8 successPercent; // 0-100
   uint8 worldLocation; // 0 is the main starting world
   bool isFullModeOnly;
+  bool isAvailable;
   uint16 questPrerequisiteId;
 }
 
@@ -71,5 +71,4 @@ uint256 constant SPAWN_MUL = 1000;
 uint256 constant RATE_MUL = 1000;
 uint256 constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour action times)
 
-uint256 constant ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT = 6;
 uint256 constant ACTION_CHOICE_USE_ALTERNATE_INPUTS_SECOND_STORAGE_SLOT = 5;

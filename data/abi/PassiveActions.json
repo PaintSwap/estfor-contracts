@@ -48,11 +48,6 @@
   },
   {
     "inputs": [],
-    "name": "DurationCannotBeZero",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "DurationTooLong",
     "type": "error"
   },
@@ -289,6 +284,11 @@
                 "type": "bool"
               },
               {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
                 "internalType": "uint16",
                 "name": "questPrerequisiteId",
                 "type": "uint16"
@@ -468,6 +468,11 @@
                 "type": "bool"
               },
               {
+                "internalType": "bool",
+                "name": "isAvailable",
+                "type": "bool"
+              },
+              {
                 "internalType": "uint16",
                 "name": "questPrerequisiteId",
                 "type": "uint16"
@@ -556,25 +561,6 @@
       }
     ],
     "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "actionIds",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "isAvailable",
-        "type": "bool"
-      }
-    ],
-    "name": "SetAvailableActions",
     "type": "event"
   },
   {
@@ -689,6 +675,11 @@
               {
                 "internalType": "bool",
                 "name": "isFullModeOnly",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
                 "type": "bool"
               },
               {
@@ -813,6 +804,11 @@
               {
                 "internalType": "bool",
                 "name": "isFullModeOnly",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
                 "type": "bool"
               },
               {
@@ -1219,24 +1215,6 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "actionIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "isAvailable",
-        "type": "bool"
-      }
-    ],
-    "name": "setAvailable",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

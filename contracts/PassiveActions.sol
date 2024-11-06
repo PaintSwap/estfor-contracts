@@ -33,7 +33,6 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint256[] amounts,
     bool startingAnother
   );
-  event SetAvailableActions(uint256[] actionIds, bool isAvailable); // TODO: Combine this with PassiveActionInput later
 
   error NotOwnerOfPlayerAndActive();
   error NotPassiveVial();
@@ -42,7 +41,6 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   error ActionAlreadyExists(uint16 actionId);
   error ActionDoesNotExist();
   error ActionIdZeroNotAllowed();
-  error DurationCannotBeZero();
   error DurationTooLong();
   error PlayerNotUpgraded();
   error MinimumLevelNotReached(Skill minSkill, uint256 minLevel);
@@ -78,6 +76,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint8 skipSuccessPercent; // 0-100 (% chance of skipping a day)
     uint8 worldLocation; // 0 is the main starting world
     bool isFullModeOnly;
+    bool isAvailable;
     uint16 questPrerequisiteId;
   }
 
@@ -97,7 +96,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16 minLevel3;
     uint8 skipSuccessPercent;
     bool hasRandomRewards;
-    bytes1 packedData; // worldLocation first bit, second bit isAvailable, last bit isFullModeOnly
+    bytes1 packedData; // worldLocation first bit, 7th bit isAvailable, last bit isFullModeOnly
     uint16 questPrerequisiteId;
   }
 
@@ -500,7 +499,9 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     bool hasRandomRewards
   ) private pure returns (PassiveAction memory passiveAction) {
     bytes1 packedData = bytes1(uint8(actionInfo.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
-    packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
+    if (actionInfo.isAvailable) {
+      packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
+    }
     passiveAction = PassiveAction({
       durationDays: actionInfo.durationDays,
       minSkill1: actionInfo.minSkills.length != 0 ? actionInfo.minSkills[0] : Skill.NONE,
@@ -524,13 +525,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   function _setAction(PassiveActionInput calldata passiveActionInput) private {
     require(passiveActionInput.actionId != 0, ActionIdZeroNotAllowed());
-    PassiveActionInfoInput calldata actionInfo = passiveActionInput.info;
-    // Allow for the beta for initial testing
-    //    if (_passiveActionInput.info.durationDays == 0) {
-    //      revert DurationCannotBeZero();
-    //    }
     require(passiveActionInput.info.durationDays <= MAX_UNIQUE_TICKETS, DurationTooLong());
-
+    PassiveActionInfoInput calldata actionInfo = passiveActionInput.info;
     _checkInfo(actionInfo);
     _actions[passiveActionInput.actionId] = _packAction(
       passiveActionInput.info,
@@ -601,21 +597,6 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       _setAction(passiveActionInputs[i]);
     }
     emit EditPassiveActions(passiveActionInputs);
-  }
-
-  function setAvailable(uint256[] calldata actionIds, bool isAvailable) external onlyOwner {
-    for (uint16 i; i < actionIds.length; ++i) {
-      bytes1 packedData = _actions[actionIds[i]].packedData;
-      bytes1 mask = bytes1(uint8(1 << IS_AVAILABLE_BIT));
-      if (isAvailable) {
-        packedData |= mask;
-      } else {
-        packedData &= ~mask;
-      }
-
-      _actions[actionIds[i]].packedData = packedData;
-    }
-    emit SetAvailableActions(actionIds, isAvailable);
   }
 
   function getAction(uint16 actionId) external view returns (PassiveAction memory) {

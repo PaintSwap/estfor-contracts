@@ -39,7 +39,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint256[] producedPetTokenIds
   );
   event AddStrategies(InstantVRFActionType[] actionTypes, address[] strategies);
-  event SetAvailableActions(uint256[] actionIds, bool isAvailable); // TODO: Combine this with InstantVRFActionsInput later
   event SetMaxActionAmount(uint8 maxActionAmount);
 
   error ActionIdZeroNotAllowed();
@@ -475,21 +474,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
   function setPetNFT(PetNFT petNFT) external onlyOwner {
     _petNFT = petNFT;
-  }
-
-  function setAvailable(uint256[] calldata actionIds, bool isAvailable) external onlyOwner {
-    for (uint16 i; i < actionIds.length; ++i) {
-      bytes1 packedData = _actions[actionIds[i]].packedData;
-      bytes1 mask = bytes1(uint8(1 << IS_AVAILABLE_BIT));
-      if (isAvailable) {
-        packedData |= mask;
-      } else {
-        packedData &= ~mask;
-      }
-
-      _actions[actionIds[i]].packedData = packedData;
-    }
-    emit SetAvailableActions(actionIds, isAvailable);
   }
 
   function setMaxActionAmount(uint8 maxActionAmount) public onlyOwner {

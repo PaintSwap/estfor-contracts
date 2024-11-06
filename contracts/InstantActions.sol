@@ -53,6 +53,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   error OutputAmountCannotBeZero();
   error OutputTokenIdCannotBeEmpty();
   error DependentQuestNotCompleted();
+  error ActionMustBeAvailable();
 
   enum InstantActionType {
     NONE,
@@ -70,7 +71,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint16 outputAmount;
     uint16 questPrerequisiteId;
     bool isFullModeOnly;
-    bool isAvailable;
+    bool isAvailable; // Only used for
     InstantActionType actionType;
   }
 
@@ -274,6 +275,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   function _setAction(InstantActionInput calldata instantActionInput) private {
     require(instantActionInput.actionId != 0, ActionIdZeroNotAllowed());
     require(instantActionInput.actionType != InstantActionType.NONE, UnsupportedActionType());
+    require(instantActionInput.isAvailable, ActionMustBeAvailable());
     _checkInputs(instantActionInput);
     _actions[instantActionInput.actionType][instantActionInput.actionId] = _packAction(instantActionInput);
   }
@@ -286,7 +288,6 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     InstantActionInput calldata actionInput
   ) private pure returns (InstantAction memory instantAction) {
     bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
-    // TODO: Pack isAvailable
     instantAction = InstantAction({
       minSkill1: actionInput.minSkills.length != 0 ? actionInput.minSkills[0] : Skill.NONE._asUint8(),
       minXP1: actionInput.minXPs.length != 0 ? actionInput.minXPs[0] : 0,

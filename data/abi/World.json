@@ -83,11 +83,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "DynamicActionsCannotBeSet",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -343,11 +338,6 @@
               },
               {
                 "internalType": "bool",
-                "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
                 "name": "actionChoiceRequired",
                 "type": "bool"
               },
@@ -389,6 +379,11 @@
               {
                 "internalType": "bool",
                 "name": "isFullModeOnly",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
                 "type": "bool"
               },
               {
@@ -618,11 +613,6 @@
               },
               {
                 "internalType": "bool",
-                "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
                 "name": "actionChoiceRequired",
                 "type": "bool"
               },
@@ -664,6 +654,11 @@
               {
                 "internalType": "bool",
                 "name": "isFullModeOnly",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
                 "type": "bool"
               },
               {
@@ -946,11 +941,6 @@
           },
           {
             "internalType": "bool",
-            "name": "isAvailable",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
             "name": "actionChoiceRequired",
             "type": "bool"
           },
@@ -992,6 +982,11 @@
           {
             "internalType": "bool",
             "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
             "type": "bool"
           },
           {
@@ -1131,11 +1126,6 @@
               },
               {
                 "internalType": "bool",
-                "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
                 "name": "actionChoiceRequired",
                 "type": "bool"
               },
@@ -1177,6 +1167,11 @@
               {
                 "internalType": "bool",
                 "name": "isFullModeOnly",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
                 "type": "bool"
               },
               {
@@ -1509,11 +1504,6 @@
               },
               {
                 "internalType": "bool",
-                "name": "isAvailable",
-                "type": "bool"
-              },
-              {
-                "internalType": "bool",
                 "name": "actionChoiceRequired",
                 "type": "bool"
               },
@@ -1555,6 +1545,11 @@
               {
                 "internalType": "bool",
                 "name": "isFullModeOnly",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isAvailable",
                 "type": "bool"
               },
               {
@@ -1852,11 +1847,6 @@
           },
           {
             "internalType": "bool",
-            "name": "isAvailable",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
             "name": "actionChoiceRequired",
             "type": "bool"
           },
@@ -1898,6 +1888,11 @@
           {
             "internalType": "bool",
             "name": "isFullModeOnly",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAvailable",
             "type": "bool"
           },
           {

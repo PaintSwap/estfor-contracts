@@ -2282,6 +2282,56 @@ describe("Players", function () {
     ).to.be.revertedWithCustomError(players, "ActionNotAvailable");
   });
 
+  it("Check looting with temporary action choices", async function () {
+    const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+    const successPercent = 100;
+    const minLevel = 1;
+    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    // Make it not available
+    const actionChoiceInput = {
+      ...defaultActionChoice,
+      skill: EstforTypes.Skill.COOKING,
+      xpPerHour: 3600,
+      rate,
+      inputTokenIds: [EstforConstants.RAW_MINNUS],
+      inputAmounts: [1],
+      outputTokenId: EstforConstants.COOKED_MINNUS,
+      outputAmount: 1,
+      successPercent,
+      isAvailable: false
+    };
+    await world.editActionChoices(queuedAction.actionId, [choiceId], [actionChoiceInput]);
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "ActionChoiceNotAvailable");
+
+    actionChoiceInput.isAvailable = false;
+    await world.editActionChoices(queuedAction.actionId, [choiceId], [actionChoiceInput]);
+
+    // Allow to queue something else if using keeping last in progress
+    const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
+    await players
+      .connect(alice)
+      .startActions(playerId, [queuedActionFishing], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+
+    await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+    await ethers.provider.send("evm_mine", []);
+    const balanceBefore = await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS);
+    expect(balanceBefore).to.eq(0);
+    await players.connect(alice).processActions(playerId);
+    // Should get the loot even if the action choice is not available
+    expect(await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS)).to.be.greaterThan(0);
+
+    // Still cannot queue it
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE)
+    ).to.be.revertedWithCustomError(players, "ActionChoiceNotAvailable");
+  });
+
   it("An action with a quest requirement must have the quest completed to do it", async function () {
     const {players, playerId, itemNFT, world, quests, alice} = await loadFixture(playersFixture);
 

@@ -1071,11 +1071,11 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
     ActionChoice calldata actionChoice
   ) external view returns (bool missingRequiredHandEquipment, CombatStats memory statsOut) {
-    uint256 iter = handEquipmentTokenIds.length;
+    uint256 i = handEquipmentTokenIds.length;
     statsOut = combatStats;
-    while (iter != 0) {
-      iter--;
-      uint16 handEquipmentTokenId = handEquipmentTokenIds[iter];
+    while (i != 0) {
+      --i;
+      uint16 handEquipmentTokenId = handEquipmentTokenIds[i];
       if (handEquipmentTokenId != NONE) {
         uint256 balance = getRealBalance(from, handEquipmentTokenId, itemNFT, pendingQueuedActionEquipmentStates);
         if (balance == 0) {

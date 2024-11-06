@@ -888,10 +888,11 @@ describe("Passive actions", function () {
     await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
 
-    await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel24Hours();
 
-    await passiveActions.setAvailable([passiveActionInput.actionId], false);
+    passiveActionInput.info.isAvailable = false;
+    await passiveActions.editActions([passiveActionInput]);
+
     await expect(
       passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0)
     ).to.be.revertedWithCustomError(passiveActions, "ActionNotAvailable");

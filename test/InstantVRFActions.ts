@@ -852,7 +852,10 @@ describe("Instant VRF actions", function () {
       await itemNFT.mintBatch(alice, [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW], [6, 6, 6]);
 
       const actionAmount = 2;
-      await instantVRFActions.setAvailable([instantVRFActionInput.actionId], false);
+
+      instantVRFActionInput.isAvailable = false;
+      await instantVRFActions.editActions([instantVRFActionInput]);
+
       await expect(
         instantVRFActions
           .connect(alice)
@@ -861,13 +864,17 @@ describe("Instant VRF actions", function () {
           })
       ).to.be.revertedWithCustomError(instantVRFActions, "ActionNotAvailable");
 
-      await instantVRFActions.setAvailable([instantVRFActionInput.actionId], true);
+      instantVRFActionInput.isAvailable = true;
+      await instantVRFActions.editActions([instantVRFActionInput]);
+
       await instantVRFActions
         .connect(alice)
         .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
           value: await instantVRFActions.requestCost(actionAmount)
         });
-      await instantVRFActions.setAvailable([instantVRFActionInput.actionId], false);
+
+      instantVRFActionInput.isAvailable = false;
+      await instantVRFActions.editActions([instantVRFActionInput]);
 
       // Even if the action is unavailable you can do the VRF response correctly.
       const requestId = 1;

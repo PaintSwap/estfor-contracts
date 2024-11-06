@@ -21,6 +21,11 @@
   },
   {
     "inputs": [],
+    "name": "ActionChoiceNotAvailable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ActionMinimumXPNotReached",
     "type": "error"
   },

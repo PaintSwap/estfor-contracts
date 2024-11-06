@@ -273,6 +273,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
       require(!actionChoiceFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
+      bool actionChoiceIsAvailable = uint8(actionChoice.packedData >> IS_AVAILABLE_BIT) & 1 == 1;
+      require(actionChoiceIsAvailable, ActionChoiceNotAvailable());
 
       // Check whether the quest is completed
       if (actionChoice.questPrerequisiteId != 0) {
@@ -283,9 +285,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     require(!(actionInfo.isFullModeOnly && !isPlayerUpgraded), PlayerNotUpgraded());
-
+    require(actionInfo.isAvailable, ActionNotAvailable());
     require(queuedActionInput.timespan != 0, EmptyTimespan());
-
     // Check combatStyle is only selected if queuedAction is combat
     require(isCombat == queuedActionInput.combatStyle._isCombatStyle(), InvalidCombatStyle());
 

@@ -35,7 +35,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   error ActionAlreadyExists(uint16 actionId);
   error ActionDoesNotExist();
   error ActionChoiceIdZeroNotAllowed();
-  error DynamicActionsCannotBeSet();
   error LengthMismatch();
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
@@ -51,7 +50,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
   uint32 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
 
-  // Past request ids
   uint256[] private _requestIds; // Each one is a set of random words for 1 day
   mapping(uint256 requestId => uint256 randomWord) private _randomWords;
   uint40 private _lastRandomWordsUpdatedTime;
@@ -60,10 +58,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   bytes8 private _thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
   uint24 private _callbackGasLimit;
   ISamWitchVRF private _samWitchVRF;
+  IOracleRewardCB private _wishingWell;
 
   mapping(uint256 actionId => ActionInfo actionInfo) private _actions;
-  uint16[] private _lastAddedDynamicActions;
-  uint256 private _lastDynamicUpdatedTime;
 
   mapping(uint256 actionId => mapping(uint16 choiceId => ActionChoice actionChoice)) private _actionChoices;
   mapping(uint256 actionId => CombatStats combatStats) private _actionCombatStats;
@@ -72,8 +69,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   mapping(uint256 tier => Equipment[]) private _dailyRewardPool;
   mapping(uint256 tier => Equipment[]) private _weeklyRewardPool;
-
-  IOracleRewardCB private _wishingWell;
 
   /// @dev Reverts if the caller is not the SamWitchVRF contract.
   modifier onlySamWitchVRF() {
@@ -416,7 +411,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     if (actionChoiceInput.minSkills.length > 1) {
       _packedData |= bytes1(uint8(1)) << ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT;
     }
-    // TODO: Add isAvailable
+    if (actionChoiceInput.isAvailable) {
+      _packedData |= bytes1(uint8(1)) << IS_AVAILABLE_BIT;
+    }
     bool anyInputExceedsStandardAmount = (actionChoiceInput.inputAmounts.length != 0 &&
       actionChoiceInput.inputAmounts[0] > 255) ||
       (actionChoiceInput.inputAmounts.length > 1 && actionChoiceInput.inputAmounts[1] > 255) ||
@@ -495,9 +492,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   }
 
   function addActions(Action[] calldata actionsToAdd) external onlyOwner {
-    uint16 i = uint16(actionsToAdd.length);
-    while (i != 0) {
-      --i;
+    for (uint256 i = 0; i < actionsToAdd.length; ++i) {
       _addAction(actionsToAdd[i]);
     }
     emit AddActions(actionsToAdd);

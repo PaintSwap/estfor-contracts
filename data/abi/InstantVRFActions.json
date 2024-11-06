@@ -470,25 +470,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256[]",
-        "name": "actionIds",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "isAvailable",
-        "type": "bool"
-      }
-    ],
-    "name": "SetAvailableActions",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "gasCostPerUnit",
         "type": "uint256"
@@ -901,24 +882,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "actionIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "isAvailable",
-        "type": "bool"
-      }
-    ],
-    "name": "setAvailable",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

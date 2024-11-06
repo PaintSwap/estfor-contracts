@@ -133,6 +133,7 @@ abstract contract PlayersBase {
   error NonInstanceConsumeNotSupportedYet();
   error AlreadyUpgraded();
   error PlayerNotUpgraded();
+  error ActionChoiceNotAvailable();
   error PetNotOwned();
   error DependentQuestNotCompleted();
 

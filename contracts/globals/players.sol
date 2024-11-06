@@ -59,7 +59,6 @@ struct Player {
 struct Item {
   EquipPosition equipPosition;
   bytes1 packedData; // 0x1 exists, upper most bit is full mode
-  bool isAvailable;
   uint16 questPrerequisiteId;
   // Can it be transferred?
   bool isTransferable; // TODO: Move into packedData
@@ -310,8 +309,11 @@ struct ItemInput {
 uint256 constant MAX_UNIQUE_TICKETS = 64;
 uint256 constant IS_FULL_MODE_BIT = 7;
 
-// Passive/InstantVRF action
-uint256 constant IS_AVAILABLE_BIT = 1;
+// Passive/Instant/InstantVRF/Actions/ActionChoices/Item action
+uint256 constant IS_AVAILABLE_BIT = 6;
+
+// Action choice
+uint256 constant ACTION_CHOICE_USE_NEW_MIN_SKILL_SECOND_STORAGE_SLOT_BIT = 5; // TODO: remove this if we can
 
 // Queued action
 uint256 constant HAS_PET_BIT = 1;

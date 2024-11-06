@@ -1223,11 +1223,6 @@
             "type": "bytes1"
           },
           {
-            "internalType": "bool",
-            "name": "isAvailable",
-            "type": "bool"
-          },
-          {
             "internalType": "uint16",
             "name": "questPrerequisiteId",
             "type": "uint16"
@@ -1332,11 +1327,6 @@
             "internalType": "bytes1",
             "name": "packedData",
             "type": "bytes1"
-          },
-          {
-            "internalType": "bool",
-            "name": "isAvailable",
-            "type": "bool"
           },
           {
             "internalType": "uint16",

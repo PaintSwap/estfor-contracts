@@ -672,7 +672,9 @@ describe("World", function () {
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
-      expect(actionChoice.packedData).to.eq("0x40");
+      const binaryPackedData = 0b01100000;
+      const packedData = ethers.toBeHex(binaryPackedData);
+      expect(actionChoice.packedData).to.eq(packedData);
       expect(actionChoice.skill).to.eq(Skill.WOODCUTTING);
       expect(actionChoice.minXP).to.eq(1);
       expect(actionChoice.minSkill2).to.eq(Skill.FIREMAKING);
@@ -701,13 +703,62 @@ describe("World", function () {
       );
 
       const actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
-      expect(actionChoice.packedData).to.eq("0x20");
+      const binaryPackedData = 0b01100000;
+      const packedData = ethers.toBeHex(binaryPackedData);
+      expect(actionChoice.packedData).to.eq(packedData);
       expect(actionChoice.inputAmount1).to.eq(0);
       expect(actionChoice.inputAmount2).to.eq(0);
       expect(actionChoice.inputAmount3).to.eq(0);
       expect(actionChoice.newInputAmount1).to.eq(1);
       expect(actionChoice.newInputAmount2).to.eq(256);
       expect(actionChoice.newInputAmount3).to.eq(6553);
+    });
+
+    it("Packed data checks when it's available & not available", async function () {
+      const {world} = await loadFixture(deployContracts);
+      const choiceId = 1;
+      await world.addActionChoices(
+        EstforConstants.NONE,
+        [choiceId],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            xpPerHour: 0,
+            rate: 1 * RATE_MUL,
+            inputTokenIds: [EstforConstants.BRONZE_ARROW],
+            inputAmounts: [1]
+          }
+        ]
+      );
+
+      let actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
+      let binaryPackedData = 0b01000000;
+      let packedData = ethers.toBeHex(binaryPackedData);
+      expect(actionChoice.packedData).to.eq(packedData);
+
+      await world.editActionChoices(
+        EstforConstants.NONE,
+        [choiceId],
+        [
+          {
+            ...defaultActionChoice,
+            skill: EstforTypes.Skill.MAGIC,
+            skillDiff: 2,
+            xpPerHour: 0,
+            rate: 1 * RATE_MUL,
+            inputTokenIds: [EstforConstants.BRONZE_ARROW],
+            inputAmounts: [1],
+            isAvailable: false
+          }
+        ]
+      );
+
+      actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
+      binaryPackedData = 0b00000000;
+      packedData = ethers.toBeHex(binaryPackedData);
+      expect(actionChoice.packedData).to.eq(packedData);
     });
   });
 

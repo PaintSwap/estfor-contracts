@@ -12,7 +12,7 @@ import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
-import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput, Skill, IS_FULL_MODE_BIT} from "./globals/all.sol";
+import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput, Skill, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./globals/all.sol";
 
 // The NFT contract contains data related to the items and who owns them
 contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, IItemNFT {
@@ -118,6 +118,11 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   function _isItemFullMode(uint256 tokenId) private view returns (bool) {
     return uint8(_items[tokenId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
+  }
+
+  // TODO: Not used yet
+  function _isItemAvailable(uint16 tokenId) private view returns (bool) {
+    return uint8(_items[tokenId].packedData >> IS_AVAILABLE_BIT) & 1 == 1;
   }
 
   function _premint(uint256 tokenId, uint256 amount) private returns (uint256 numNewUniqueItems) {
@@ -266,8 +271,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   function getItems(uint16[] calldata tokenIds) external view override returns (Item[] memory items) {
     uint256 tokenIdsLength = tokenIds.length;
     items = new Item[](tokenIdsLength);
-    for (uint256 iter; iter < tokenIdsLength; iter++) {
-      items[iter] = _getItem(tokenIds[iter]);
+    for (uint256 i; i < tokenIdsLength; ++i) {
+      items[i] = _getItem(tokenIds[i]);
     }
   }
 

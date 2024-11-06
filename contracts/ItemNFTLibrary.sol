@@ -17,8 +17,11 @@ library ItemNFTLibrary {
 
     bytes1 packedData = bytes1(uint8(0x1)); // Exists
     packedData = packedData | bytes1(uint8(inputItem.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
+    if (inputItem.isAvailable) {
+      packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
+    }
+
     item.packedData = packedData;
-    item.isAvailable = inputItem.isAvailable; // TODO pack
 
     item.questPrerequisiteId = inputItem.questPrerequisiteId;
 

@@ -1070,8 +1070,9 @@ async function main() {
   console.log("Add clan tiers");
 
   // Add instant actions
-  for (let i = 0; i < allInstantActions.length; i += chunkSize) {
-    const chunk = allInstantActions.slice(i, i + chunkSize);
+  const _allInstantActions = allInstantActions.filter((action) => action.isAvailable);
+  for (let i = 0; i < _allInstantActions.length; i += chunkSize) {
+    const chunk = _allInstantActions.slice(i, i + chunkSize);
     tx = await instantActions.addActions(chunk);
     await tx.wait();
     console.log("Add instant actions chunk ", i);
