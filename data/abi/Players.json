@@ -3396,8 +3396,8 @@
         "type": "tuple[]"
       },
       {
-        "internalType": "enum ActionQueueStatus",
-        "name": "queueStatus",
+        "internalType": "enum ActionQueueStrategy",
+        "name": "queueStrategy",
         "type": "uint8"
       }
     ],
@@ -3528,8 +3528,8 @@
         "type": "uint256"
       },
       {
-        "internalType": "enum ActionQueueStatus",
-        "name": "queueStatus",
+        "internalType": "enum ActionQueueStrategy",
+        "name": "queueStrategy",
         "type": "uint8"
       }
     ],

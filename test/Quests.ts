@@ -220,7 +220,7 @@ describe("Quests", function () {
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [1800]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
@@ -292,7 +292,7 @@ describe("Quests", function () {
       await players.connect(alice).activateQuest(playerId, questId);
       // Check that this is not marked as completed automatically
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
       const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -397,7 +397,7 @@ describe("Quests", function () {
     const minLevel = 1;
     const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as QuestInput;
@@ -431,7 +431,7 @@ describe("Quests", function () {
     const successPercent = 100;
     const minLevel = 1;
     const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as QuestInput;
@@ -564,7 +564,7 @@ describe("Quests", function () {
 
     await players
       .connect(alice)
-      .startActions(playerId, [queuedAction, queuedActionMelee], EstforTypes.ActionQueueStatus.NONE);
+      .startActions(playerId, [queuedAction, queuedActionMelee], EstforTypes.ActionQueueStrategy.NONE);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as QuestInput;
@@ -596,7 +596,7 @@ describe("Quests", function () {
 
     // Queue more cooking
     queuedAction.timespan = 3600;
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -655,7 +655,7 @@ describe("Quests", function () {
     const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [(quest1.actionNum1 / 2) * 3600]);
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -701,7 +701,7 @@ describe("Quests", function () {
     const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
     // Kill 1
     const time = (3600 * SPAWN_MUL) / numSpawned;
@@ -772,7 +772,7 @@ describe("Quests", function () {
       .startActions(
         playerId,
         [queuedActionFishing, queuedActionCooking, queuedActionFishing],
-        EstforTypes.ActionQueueStatus.NONE
+        EstforTypes.ActionQueueStrategy.NONE
       );
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
@@ -817,7 +817,7 @@ describe("Quests", function () {
     const questId = quest.questId;
     await players.connect(alice).activateQuest(playerId, questId);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -834,7 +834,7 @@ describe("Quests", function () {
     const questId = 1;
     await players.connect(alice).activateQuest(playerId, questId);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [1]);
     await ethers.provider.send("evm_mine", []);
 
@@ -871,7 +871,7 @@ describe("Quests", function () {
     const minLevel = 1;
     const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_ALMS_POOR) as QuestInput;
@@ -940,7 +940,7 @@ describe("Quests", function () {
       const questId = firemakingQuest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       const timeNeeded = ((rate / 10) * 3600) / firemakingQuest.actionChoiceNum;
 
       await ethers.provider.send("evm_increaseTime", [timeNeeded]);
@@ -968,7 +968,7 @@ describe("Quests", function () {
       const questId = firemakingQuest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       const timeNeeded = ((rate / RATE_MUL) * 3600) / firemakingQuest.actionChoiceNum;
 
       // Set time to just before, should still not have quest rewards
@@ -1020,7 +1020,7 @@ describe("Quests", function () {
       const questId = firemakingQuest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       const timeNeeded = ((rate / RATE_MUL) * 3600) / firemakingQuest.actionChoiceNum;
 
       // Set time to just before, should still not have quest rewards
@@ -1076,7 +1076,7 @@ describe("Quests", function () {
           0,
           questId,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStrategy.NONE
         );
       expect((await quests.activeQuests(playerId)).questId).to.eq(questId);
     });
@@ -1087,7 +1087,7 @@ describe("Quests", function () {
 
       const {queuedAction, choiceId} = await setupBasicFletching(itemNFT, world);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],

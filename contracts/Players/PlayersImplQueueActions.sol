@@ -31,7 +31,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint40 boostStartTime,
     uint256 questId,
     uint256 donationAmount,
-    ActionQueueStatus queueStatus
+    ActionQueueStrategy queueStrategy
   ) external {
     address from = msg.sender;
     uint256 totalTimespan;
@@ -41,7 +41,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     ) = _processActions(from, playerId);
 
     Player storage player = _players[playerId];
-    if (queueStatus == ActionQueueStatus.NONE) {
+    if (queueStrategy == ActionQueueStrategy.NONE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
         delete player.actionQueue;
@@ -53,7 +53,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
       require(queuedActionInputs.length <= 3, TooManyActionsQueued());
     } else {
-      if (queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS && remainingQueuedActions.length > 1) {
+      if (queueStrategy == ActionQueueStrategy.KEEP_LAST_IN_PROGRESS && remainingQueuedActions.length > 1) {
         // Only want one
         assembly ("memory-safe") {
           mstore(remainingQueuedActions, 1)
@@ -71,7 +71,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     if (
-      (queueStatus == ActionQueueStatus.KEEP_LAST_IN_PROGRESS || queueStatus == ActionQueueStatus.APPEND) &&
+      (queueStrategy == ActionQueueStrategy.KEEP_LAST_IN_PROGRESS || queueStrategy == ActionQueueStrategy.APPEND) &&
       remainingQueuedActions.length != 0
     ) {
       _setPrevPlayerState(player, currentActionProcessed);

@@ -268,14 +268,14 @@ describe("Fuzz testing", async function () {
         await expect(
           players
             .connect(alice)
-            .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS)
+            .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.KEEP_LAST_IN_PROGRESS)
         ).to.be.reverted;
       } else {
         console.log("Right hand", rightHandEquipmentTokenId);
 
         await players
           .connect(alice)
-          .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+          .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.KEEP_LAST_IN_PROGRESS);
         console.log("Not reverted");
       }
 

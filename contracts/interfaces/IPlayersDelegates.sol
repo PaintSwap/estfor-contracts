@@ -22,7 +22,7 @@ interface IPlayersDelegate {
     uint40 boostStartTime,
     uint256 questId,
     uint256 donationAmount,
-    ActionQueueStatus queueStatus
+    ActionQueueStrategy queueStrategy
   ) external;
 
   function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external;

@@ -107,14 +107,14 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @notice Start actions for a player
   /// @param playerId Id for the player
   /// @param queuedActions Actions to queue
-  /// @param queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
-  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
+  /// @param queueStrategy Can be either `ActionQueueStrategy.NONE` for overwriting all actions,
+  ///                     `ActionQueueStrategy.KEEP_LAST_IN_PROGRESS` or `ActionQueueStrategy.APPEND`
   function startActions(
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions,
-    ActionQueueStatus queueStatus
+    ActionQueueStrategy queueStrategy
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _startActions(playerId, queuedActions, NONE, uint40(block.timestamp), 0, 0, queueStatus);
+    _startActions(playerId, queuedActions, NONE, uint40(block.timestamp), 0, 0, queueStrategy);
   }
 
   /// @notice Start actions for a player
@@ -122,8 +122,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   /// @param queuedActions Actions to queue
   /// @param boostItemTokenId Which boost to consume, can be NONE
   /// @param boostStartTime (Not used yet)
-  /// @param queueStatus Can be either `ActionQueueStatus.NONE` for overwriting all actions,
-  ///                     `ActionQueueStatus.KEEP_LAST_IN_PROGRESS` or `ActionQueueStatus.APPEND`
+  /// @param queueStrategy Can be either `ActionQueueStrategy.NONE` for overwriting all actions,
+  ///                     `ActionQueueStrategy.KEEP_LAST_IN_PROGRESS` or `ActionQueueStrategy.APPEND`
   function startActionsExtra(
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions,
@@ -131,7 +131,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint40 boostStartTime, // Not used yet (always current time)
     uint256 questId,
     uint256 donationAmount,
-    ActionQueueStatus queueStatus
+    ActionQueueStrategy queueStrategy
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     _startActions(
       playerId,
@@ -140,7 +140,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       uint40(block.timestamp),
       questId,
       donationAmount,
-      queueStatus
+      queueStrategy
     );
   }
 
@@ -276,7 +276,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     uint40 boostStartTime,
     uint256 questId,
     uint256 donationAmount,
-    ActionQueueStatus queueStatus
+    ActionQueueStrategy queueStrategy
   ) private {
     _delegatecall(
       _implQueueActions,
@@ -288,7 +288,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
         boostStartTime,
         questId,
         donationAmount,
-        queueStatus
+        queueStrategy
       )
     );
   }

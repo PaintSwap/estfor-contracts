@@ -38,7 +38,7 @@ describe("Rewards", function () {
       );
       await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [50]);
       await ethers.provider.send("evm_mine", []);
 
@@ -112,7 +112,7 @@ describe("Rewards", function () {
       const rewards1: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_HELMET, amount: 4}];
       await players.addXPThresholdRewards([{xpThreshold: 1000, rewards: rewards1}]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [1600]);
       await ethers.provider.send("evm_mine", []);
 
@@ -161,7 +161,7 @@ describe("Rewards", function () {
       const queuedAction = {...queuedActionWoodcutting};
       queuedAction.timespan = 500;
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [50]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
@@ -222,7 +222,7 @@ describe("Rewards", function () {
 
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [50]);
       await ethers.provider.send("evm_mine", []);
 
@@ -293,12 +293,12 @@ describe("Rewards", function () {
       );
 
       for (let i = 0; i < 4; ++i) {
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
         await ethers.provider.send("evm_mine", []);
         await requestAndFulfillRandomWords(world, mockVRF);
       }
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       let afterBalances = await itemNFT.balanceOfs(
         alice,
@@ -329,7 +329,7 @@ describe("Rewards", function () {
         (equipmentCache.get(sundayReward.itemTokenId) || 0n) + sundayReward.amount
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       expect(balanceAfterWeeklyReward).to.eq(await itemNFT.balanceOf(alice, weeklyEquipment.itemTokenId));
       let balanceAfterDailyReward = await itemNFT.balanceOf(alice, sundayReward.itemTokenId);
       expect(balanceAfterDailyReward).to.eq(prevBalanceDailyReward + sundayReward.amount);
@@ -361,7 +361,7 @@ describe("Rewards", function () {
       );
 
       for (let i = 0; i < 7; ++i) {
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
         if (i != 6) {
           await ethers.provider.send("evm_increaseTime", [3600 * 24]);
           await ethers.provider.send("evm_mine", []);
@@ -412,13 +412,13 @@ describe("Rewards", function () {
       let equipment = equipments[0];
 
       let balanceBefore = await itemNFT.balanceOf(alice, equipment.itemTokenId);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       let balanceAfter = await itemNFT.balanceOf(alice, equipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore + equipment.amount);
 
       // Start again, shouldn't get any more rewards
       balanceBefore = await itemNFT.balanceOf(alice, equipment.itemTokenId);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       balanceAfter = await itemNFT.balanceOf(alice, equipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore);
     });
@@ -452,7 +452,7 @@ describe("Rewards", function () {
       let equipment = equipments[0];
 
       let balanceBefore = await itemNFT.balanceOf(alice, equipment.itemTokenId);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       let balanceAfter = await itemNFT.balanceOf(alice, equipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore + equipment.amount);
 
@@ -463,7 +463,7 @@ describe("Rewards", function () {
       equipment = equipments[0];
 
       balanceBefore = await itemNFT.balanceOf(alice, equipment.itemTokenId);
-      await players.connect(alice).startActions(newPlayerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(newPlayerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       balanceAfter = await itemNFT.balanceOf(alice, equipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore);
     });
@@ -502,7 +502,7 @@ describe("Rewards", function () {
         await requestAndFulfillRandomWords(world, mockVRF);
       }
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -540,7 +540,7 @@ describe("Rewards", function () {
       let mondayEquipment = equipments[0];
 
       let balanceBeforeMondayReward = await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       // Do not get Monday reward yet
       expect(balanceBeforeMondayReward).eq(await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId));
 
@@ -611,7 +611,7 @@ describe("Rewards", function () {
       let baseEquipment = equipments[0];
       expect(await itemNFT.balanceOf(alice, baseEquipment.itemTokenId)).to.be.eq(0);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       expect(await players.dailyClaimedRewards(playerId)).to.eql([true, false, false, false, false, false, false]);
       expect(await itemNFT.balanceOf(alice, baseEquipment.itemTokenId)).to.eq((baseEquipment.amount * 11n) / 10n);
 
@@ -688,13 +688,13 @@ describe("Rewards", function () {
       await players.testModifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, tier3Start, false);
 
       let balanceBefore = await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       let balanceAfter = await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore + mondayEquipment.amount);
 
       // Start again, shouldn't get any more rewards
       balanceBefore = await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       balanceAfter = await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId);
       expect(balanceAfter).to.eq(balanceBefore);
     });
@@ -754,7 +754,7 @@ describe("Rewards", function () {
       }
     ]);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [1810]);
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -832,7 +832,7 @@ describe("Rewards", function () {
       }
     ]);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [1810]);
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -929,7 +929,7 @@ describe("Rewards", function () {
       const numRepeats = 50;
       let numRandomRewardsHit = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
         let endTime;
         {
           const actionQueue = await players.getActionQueue(playerId);
@@ -1061,7 +1061,7 @@ describe("Rewards", function () {
       for (let i = 0; i < numRepeats; ++i) {
         await players
           .connect(alice)
-          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStatus.KEEP_LAST_IN_PROGRESS);
+          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.KEEP_LAST_IN_PROGRESS);
         let endTime;
         {
           const actionQueue = await players.getActionQueue(playerId);
@@ -1182,7 +1182,7 @@ describe("Rewards", function () {
         petId: EstforConstants.NONE
       };
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 1]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1282,7 +1282,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStrategy.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1390,7 +1390,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStrategy.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1503,7 +1503,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStrategy.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1612,7 +1612,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionThieving, queuedActionCombat, queuedActionThieving2],
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStrategy.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 23 + 1]); // Have not passed 00:00 yet
       await ethers.provider.send("evm_mine", []);
@@ -1732,7 +1732,7 @@ describe("Rewards", function () {
         .startActions(
           playerId,
           [queuedActionCombat, queuedActionCombat2, queuedActionThieving],
-          EstforTypes.ActionQueueStatus.NONE
+          EstforTypes.ActionQueueStrategy.NONE
         );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -1841,7 +1841,7 @@ describe("Rewards", function () {
 
       await players
         .connect(alice)
-        .startActions(playerId, [queuedActionCombat, queuedActionThieving], EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedActionCombat, queuedActionThieving], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]); // Go another hour past the 24
       await ethers.provider.send("evm_mine", []);
 
@@ -1850,7 +1850,9 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].rolls).to.eq((combatNumHours * numSpawned) / SPAWN_MUL);
       expect(pendingQueuedActionState.actionMetadatas[1].rolls).to.eq(thievingNumHours);
 
-      await players.connect(alice).startActions(playerId, [queuedActionThieving2], EstforTypes.ActionQueueStatus.NONE);
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedActionThieving2], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 48]); // Go another hour past the 24
       await ethers.provider.send("evm_mine", []);
 
@@ -1945,7 +1947,7 @@ describe("Rewards", function () {
 
       await players
         .connect(alice)
-        .startActions(playerId, [queuedActionCombat, queuedActionThieving], EstforTypes.ActionQueueStatus.NONE);
+        .startActions(playerId, [queuedActionCombat, queuedActionThieving], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -2042,7 +2044,7 @@ describe("Rewards", function () {
         petId: EstforConstants.NONE
       };
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await timeTravel24Hours();
 
@@ -2098,7 +2100,7 @@ describe("Rewards", function () {
         petId: EstforConstants.NONE
       };
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await ethers.provider.send("evm_increaseTime", [3600 + 60]); // 1 hour 1 minute
       await ethers.provider.send("evm_mine", []);
@@ -2189,7 +2191,7 @@ describe("Rewards", function () {
         await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
         await ethers.provider.send("evm_mine", []);
         await requestAndFulfillRandomWords(world, mockVRF);
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
         await ethers.provider.send("evm_increaseTime", [7200 + 4]);
         await ethers.provider.send("evm_mine", []);
         await players.connect(alice).processActions(playerId); // Continues the action
@@ -2311,7 +2313,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -2482,7 +2484,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -2629,7 +2631,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await timeTravel24Hours();
 
@@ -2769,7 +2771,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await timeTravel24Hours();
 
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -2842,7 +2844,7 @@ describe("Rewards", function () {
       }
     ]);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
     expect(await itemNFT.balanceOf(alice, EstforConstants.LOG)).to.eq(0);

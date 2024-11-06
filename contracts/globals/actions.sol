@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {Skill, Attire, CombatStyle, CombatStats} from "./misc.sol";
 import {GuaranteedReward, RandomReward} from "./rewards.sol";
 
-enum ActionQueueStatus {
+enum ActionQueueStrategy {
   NONE,
   APPEND,
   KEEP_LAST_IN_PROGRESS
