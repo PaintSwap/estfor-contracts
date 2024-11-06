@@ -77,10 +77,8 @@ library EstforLibrary {
   function containsValidNameCharacters(string calldata name) external pure returns (bool) {
     bytes memory b = bytes(name);
     bool lastCharIsWhitespace;
-    uint256 iter = b.length;
-    while (iter != 0) {
-      iter--;
-      bytes1 char = b[iter];
+    for (uint256 i = 0; i < b.length; ++i) {
+      bytes1 char = b[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -98,10 +96,8 @@ library EstforLibrary {
 
   function containsValidDiscordCharacters(string calldata discord) external pure returns (bool) {
     bytes memory discordBytes = bytes(discord);
-    uint256 iter = discordBytes.length;
-    while (iter != 0) {
-      iter--;
-      bytes1 char = discordBytes[iter];
+    for (uint256 i = 0; i < discordBytes.length; ++i) {
+      bytes1 char = discordBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -116,10 +112,8 @@ library EstforLibrary {
 
   function containsValidTelegramCharacters(string calldata telegram) external pure returns (bool) {
     bytes memory telegramBytes = bytes(telegram);
-    uint256 iter = telegramBytes.length;
-    while (iter != 0) {
-      iter--;
-      bytes1 char = telegramBytes[iter];
+    for (uint256 i = 0; i < telegramBytes.length; ++i) {
+      bytes1 char = telegramBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -135,10 +129,8 @@ library EstforLibrary {
 
   function containsValidTwitterCharacters(string calldata twitter) external pure returns (bool) {
     bytes memory twitterBytes = bytes(twitter);
-    uint256 iter = twitterBytes.length;
-    while (iter != 0) {
-      iter--;
-      bytes1 char = twitterBytes[iter];
+    for (uint256 i = 0; i < twitterBytes.length; ++i) {
+      bytes1 char = twitterBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -153,10 +145,8 @@ library EstforLibrary {
 
   function containsBaselineSocialNameCharacters(string calldata socialMediaName) external pure returns (bool) {
     bytes memory socialMediaNameBytes = bytes(socialMediaName);
-    uint256 iter = socialMediaNameBytes.length;
-    while (iter != 0) {
-      iter--;
-      bytes1 char = socialMediaNameBytes[iter];
+    for (uint256 i = 0; i < socialMediaNameBytes.length; ++i) {
+      bytes1 char = socialMediaNameBytes[i];
 
       bool isUpperCaseLetter = (char >= 0x41) && (char <= 0x5A); // A-Z
       bool isLowerCaseLetter = (char >= 0x61) && (char <= 0x7A); // a-z
@@ -174,12 +164,11 @@ library EstforLibrary {
 
   function toLower(string memory str) internal pure returns (string memory) {
     bytes memory lowerStr = abi.encodePacked(str);
-    uint256 iter = lowerStr.length;
-    while (iter != 0) {
-      iter--;
-      if ((uint8(lowerStr[iter]) >= 65) && (uint8(lowerStr[iter]) <= 90)) {
+    for (uint256 i = 0; i < lowerStr.length; ++i) {
+      bytes1 char = lowerStr[i];
+      if ((char >= 0x41) && (char <= 0x5A)) {
         // So we add 32 to make it lowercase
-        lowerStr[iter] = bytes1(uint8(lowerStr[iter]) + 32);
+        lowerStr[i] = bytes1(uint8(char) + 32);
       }
     }
     return string(lowerStr);

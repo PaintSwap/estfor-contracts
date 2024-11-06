@@ -149,9 +149,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   }
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external {
-    uint256 bounds = fullAttireBonuses.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      FullAttireBonusInput calldata fullAttireBonus = fullAttireBonuses[iter];
+    for (uint256 i; i < fullAttireBonuses.length; ++i) {
+      FullAttireBonusInput calldata fullAttireBonus = fullAttireBonuses[i];
 
       require(fullAttireBonus.skill != Skill.NONE, InvalidSkill());
       EquipPosition[5] memory expectedEquipPositions = [
@@ -162,10 +161,10 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
         EquipPosition.FEET
       ];
       uint256 jbounds = expectedEquipPositions.length;
-      for (uint256 jter; jter < jbounds; jter++) {
-        require(fullAttireBonus.itemTokenIds[jter] != NONE, InvalidItemTokenId());
+      for (uint256 j; j < jbounds; ++j) {
+        require(fullAttireBonus.itemTokenIds[j] != NONE, InvalidItemTokenId());
         require(
-          _itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[jter]) == expectedEquipPositions[jter],
+          _itemNFT.getEquipPosition(fullAttireBonus.itemTokenIds[j]) == expectedEquipPositions[j],
           InvalidEquipPosition()
         );
       }

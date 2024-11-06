@@ -435,12 +435,12 @@ abstract contract PlayersBase {
       } else {
         // Shift the remaining rewards to the front of the array
         uint256 bounds = _pendingRandomRewards[playerId].length - numPastRandomRewardInstancesToRemove;
-        for (uint256 iter; iter < bounds; iter++) {
-          _pendingRandomRewards[playerId][iter] = _pendingRandomRewards[playerId][
-            iter + numPastRandomRewardInstancesToRemove
+        for (uint256 i; i < bounds; ++i) {
+          _pendingRandomRewards[playerId][i] = _pendingRandomRewards[playerId][
+            i + numPastRandomRewardInstancesToRemove
           ];
         }
-        for (uint256 iter = numPastRandomRewardInstancesToRemove; iter != 0; iter--) {
+        for (uint256 i = 0; i < numPastRandomRewardInstancesToRemove; ++i) {
           _pendingRandomRewards[playerId].pop();
         }
       }

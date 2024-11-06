@@ -813,19 +813,17 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function addTiers(Tier[] calldata tiers) external onlyOwner {
-    uint256 bounds = tiers.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      require(tiers[iter].id != 0 && _tiers[tiers[iter].id].id == 0, TierAlreadyExists());
-      _setTier(tiers[iter]);
+    for (uint256 i; i < tiers.length; ++i) {
+      require(tiers[i].id != 0 && _tiers[tiers[i].id].id == 0, TierAlreadyExists());
+      _setTier(tiers[i]);
     }
     emit AddTiers(tiers);
   }
 
   function editTiers(Tier[] calldata tiers) external onlyOwner {
-    uint256 bounds = tiers.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      _checkTierExists(tiers[iter].id);
-      _setTier(tiers[iter]);
+    for (uint256 i; i < tiers.length; ++i) {
+      _checkTierExists(tiers[i].id);
+      _setTier(tiers[i]);
     }
     emit EditTiers(tiers);
   }

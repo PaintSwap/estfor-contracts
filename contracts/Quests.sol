@@ -182,8 +182,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   ) external onlyPlayers {
     if (questsCompleted.length != 0) {
       uint256 bounds = questsCompleted.length;
-      for (uint256 iter; iter < bounds; iter++) {
-        uint256 questId = questsCompleted[iter];
+      for (uint256 i; i < bounds; ++i) {
+        uint256 questId = questsCompleted[i];
         _questCompleted(from, playerId, questId);
       }
     } else if (activeQuestInfo.length != 0) {
@@ -309,12 +309,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   {
     Quest storage quest = _allFixedQuests[playerQuest.questId];
     uint256 bounds = actionIds.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      if (quest.actionId1 == actionIds[iter]) {
+    for (uint256 i; i < bounds; ++i) {
+      if (quest.actionId1 == actionIds[i]) {
         uint256 remainingAmount = quest.actionNum1 > playerQuest.actionCompletedNum1
           ? quest.actionNum1 - playerQuest.actionCompletedNum1
           : 0;
-        uint256 amount = Math.min(remainingAmount, actionAmounts[iter]);
+        uint256 amount = Math.min(remainingAmount, actionAmounts[i]);
         if (quest.burnItemTokenId != NONE) {
           amount = Math.min(burnedAmountOwned, amount);
           burnedAmountOwned -= amount;
@@ -335,12 +335,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     bounds = choiceIds.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      if (quest.actionChoiceId == choiceIds[iter]) {
+    for (uint256 i; i < bounds; ++i) {
+      if (quest.actionChoiceId == choiceIds[i]) {
         uint256 remainingAmount = quest.actionChoiceNum > playerQuest.actionChoiceCompletedNum
           ? quest.actionChoiceNum - playerQuest.actionChoiceCompletedNum
           : 0;
-        uint256 amount = Math.min(remainingAmount, choiceAmounts[iter]);
+        uint256 amount = Math.min(remainingAmount, choiceAmounts[i]);
         if (quest.burnItemTokenId != NONE) {
           amount = Math.min(burnedAmountOwned, amount);
           burnedAmountOwned -= amount;
@@ -393,8 +393,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
 
     bool anyMinimumRequirement;
     uint256 bounds = minimumRequirements.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      if (minimumRequirements[iter].skill != Skill.NONE) {
+    for (uint256 i; i < bounds; ++i) {
+      if (minimumRequirements[i].skill != Skill.NONE) {
         anyMinimumRequirement = true;
         break;
       }
@@ -509,9 +509,9 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
       ) = _processQuestView(actionIds, actionAmounts, choiceIds, choiceAmounts, questCompletionInfo, burnedAmountOwned);
 
       uint256 bounds = itemTokenIds_.length;
-      for (uint256 iter; iter < bounds; iter++) {
-        itemTokenIds[itemTokenIdsLength] = itemTokenIds_[iter];
-        amounts[itemTokenIdsLength] = amounts_[iter];
+      for (uint256 i; i < bounds; ++i) {
+        itemTokenIds[itemTokenIdsLength] = itemTokenIds_[i];
+        amounts[itemTokenIdsLength] = amounts_[i];
         itemTokenIdsLength++;
       }
 
@@ -592,8 +592,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     require(quests.length == minimumRequirements.length, LengthMismatch());
 
     uint256 bounds = quests.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      _addQuest(quests[iter], minimumRequirements[iter]);
+    for (uint256 i; i < bounds; ++i) {
+      _addQuest(quests[i], minimumRequirements[i]);
     }
     _numTotalQuests += uint16(quests.length);
     emit AddQuests(quests, minimumRequirements);

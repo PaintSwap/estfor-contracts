@@ -63,10 +63,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       // Keep remaining actions
       require(remainingQueuedActions.length + queuedActionInputs.length <= 3, TooManyActionsQueuedSomeAlreadyExist());
       player.actionQueue = remainingQueuedActions;
-      uint256 j = remainingQueuedActions.length;
-      while (j != 0) {
-        j--;
-        totalTimespan += remainingQueuedActions[j].timespan;
+      for (uint256 i; i < remainingQueuedActions.length; ++i) {
+        totalTimespan += remainingQueuedActions[i].timespan;
       }
     }
 
@@ -99,10 +97,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     uint256 startTimeNewActions = block.timestamp - totalTimespan;
-    for (uint256 iter; iter != queuedActionsLength; iter++) {
-      if (totalTimespan + queuedActionInputs[iter].timespan > MAX_TIME) {
+    for (uint256 i; i != queuedActionsLength; ++i) {
+      if (totalTimespan + queuedActionInputs[i].timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time
-        require(iter == queuedActionsLength - 1, ActionTimespanExceedsMaxTime());
+        require(i == queuedActionsLength - 1, ActionTimespanExceedsMaxTime());
 
         uint256 remainder;
         // Allow to queue the excess for any running action up to 1 hour
@@ -111,22 +109,22 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         } else {
           remainder = queuedActionInputs[0].timespan % 1 hours;
         }
-        queuedActionInputs[iter].timespan = uint24(MAX_TIME + remainder - totalTimespan);
+        queuedActionInputs[i].timespan = uint24(MAX_TIME + remainder - totalTimespan);
       }
 
       (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) = _addToQueue(
         from,
         playerId,
-        queuedActionInputs[iter],
+        queuedActionInputs[i],
         uint64(queueId),
         uint40(startTimeNewActions)
       );
-      queuedActions[remainingQueuedActions.length + iter] = queuedAction;
-      _queuedActionsExtra[remainingQueuedActions.length + iter] = queuedActionExtra;
+      queuedActions[remainingQueuedActions.length + i] = queuedAction;
+      _queuedActionsExtra[remainingQueuedActions.length + i] = queuedActionExtra;
 
       ++queueId;
-      totalTimespan += queuedActionInputs[iter].timespan;
-      startTimeNewActions += queuedActionInputs[iter].timespan;
+      totalTimespan += queuedActionInputs[i].timespan;
+      startTimeNewActions += queuedActionInputs[i].timespan;
     }
 
     // Create an array from remainingAttire and queuedActions passed in
@@ -313,7 +311,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       from,
       playerId,
       isPlayerUpgraded,
-      [queuedActionInput.leftHandEquipmentTokenId, queuedActionInput.rightHandEquipmentTokenId],
+      [queuedActionInput.rightHandEquipmentTokenId, queuedActionInput.leftHandEquipmentTokenId], // Must be in order of right -> left
       actionInfo.handItemTokenIdRangeMin,
       actionInfo.handItemTokenIdRangeMax,
       isCombat,
@@ -466,8 +464,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
     if (attireLength != 0) {
       EquipPosition[] memory equipPositions = _itemNFT.getEquipPositions(itemTokenIds);
-      for (uint256 iter; iter < attireLength; iter++) {
-        require(expectedEquipPositions[iter] == equipPositions[iter], InvalidEquipPosition());
+      for (uint256 i; i < attireLength; ++i) {
+        require(expectedEquipPositions[i] == equipPositions[i], InvalidEquipPosition());
       }
     }
   }
@@ -497,15 +495,13 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isItemFullModeOnly) = _itemNFT.getMinRequirements(
         itemTokenIds
       );
-      uint256 iter = balances.length;
-      while (iter != 0) {
-        iter--;
+      for (uint256 i = 0; i < balances.length; ++i) {
         require(
-          _getRealXP(skills[iter], _playerXP[playerId], pendingQueuedActionProcessed, questState) >= minXPs[iter],
+          _getRealXP(skills[i], _playerXP[playerId], pendingQueuedActionProcessed, questState) >= minXPs[i],
           AttireMinimumXPNotReached()
         );
-        require(balances[iter] != 0, NoItemBalance(itemTokenIds[iter]));
-        require(isPlayerUpgraded || !isItemFullModeOnly[iter], PlayerNotUpgraded());
+        require(balances[i] != 0, NoItemBalance(itemTokenIds[i]));
+        require(isPlayerUpgraded || !isItemFullModeOnly[i], PlayerNotUpgraded());
       }
     }
   }
@@ -514,7 +510,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     address from,
     uint256 playerId,
     bool isPlayerUpgraded,
-    uint16[2] memory equippedItemTokenIds, // left, right
+    uint16[2] memory equippedItemTokenIds, // [right, left]
     uint16 handItemTokenIdRangeMin,
     uint16 handItemTokenIdRangeMax,
     bool isCombat,
@@ -522,12 +518,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory questState
   ) private view {
-    uint256 iter = equippedItemTokenIds.length;
     bool twoHanded;
-    while (iter != 0) {
-      iter--;
-      bool isRightHand = iter == 1;
-      uint16 equippedItemTokenId = equippedItemTokenIds[iter];
+    for (uint256 i = 0; i < equippedItemTokenIds.length; ++i) {
+      bool isRightHand = i == 0;
+      uint16 equippedItemTokenId = equippedItemTokenIds[i];
       if (equippedItemTokenId != NONE) {
         require(
           handItemTokenIdRangeMin == NONE ||

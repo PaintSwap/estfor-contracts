@@ -71,21 +71,21 @@ library PlayersLibrary {
   ) private pure returns (uint256 balance) {
     balance = originalBalance;
     uint256 bounds = pendingQueuedActionEquipmentStates.length;
-    for (uint256 iter; iter < bounds; iter++) {
+    for (uint256 i; i < bounds; ++i) {
       PendingQueuedActionEquipmentState memory pendingQueuedActionEquipmentState = pendingQueuedActionEquipmentStates[
-        iter
+        i
       ];
       uint256 jBounds = pendingQueuedActionEquipmentState.producedItemTokenIds.length;
-      for (uint256 jIter; jIter < jBounds; jIter++) {
-        if (pendingQueuedActionEquipmentState.producedItemTokenIds[jIter] == itemId) {
-          balance += pendingQueuedActionEquipmentState.producedAmounts[jIter];
+      for (uint256 j; j < jBounds; ++j) {
+        if (pendingQueuedActionEquipmentState.producedItemTokenIds[j] == itemId) {
+          balance += pendingQueuedActionEquipmentState.producedAmounts[j];
         }
       }
       jBounds = pendingQueuedActionEquipmentState.consumedItemTokenIds.length;
-      for (uint256 jIter; jIter < jBounds; jIter++) {
-        if (pendingQueuedActionEquipmentState.consumedItemTokenIds[jIter] == itemId) {
-          if (balance >= pendingQueuedActionEquipmentState.consumedAmounts[jIter]) {
-            balance -= pendingQueuedActionEquipmentState.consumedAmounts[jIter];
+      for (uint256 j; j < jBounds; ++j) {
+        if (pendingQueuedActionEquipmentState.consumedItemTokenIds[j] == itemId) {
+          if (balance >= pendingQueuedActionEquipmentState.consumedAmounts[j]) {
+            balance -= pendingQueuedActionEquipmentState.consumedAmounts[j];
           } else {
             balance = 0;
           }
@@ -114,8 +114,8 @@ library PlayersLibrary {
     balances = IItemNFT(itemNFT).balanceOfs(from, itemIds);
 
     uint256 bounds = balances.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      balances[iter] = _getRealBalance(balances[iter], itemIds[iter], pendingQueuedActionEquipmentStates);
+    for (uint256 i; i < bounds; ++i) {
+      balances[i] = _getRealBalance(balances[i], itemIds[i], pendingQueuedActionEquipmentStates);
     }
   }
 
@@ -749,8 +749,8 @@ library PlayersLibrary {
   ) private pure returns (bool matches) {
     // Check if they have the full equipment required
     if (itemTokenIds.length == 5) {
-      for (uint256 iter; iter < 5; iter++) {
-        if (itemTokenIds[iter] != expectedItemTokenIds[iter] || balances[iter] == 0) {
+      for (uint256 i; i < 5; ++i) {
+        if (itemTokenIds[i] != expectedItemTokenIds[i] || balances[i] == 0) {
           return false;
         }
       }
@@ -768,16 +768,16 @@ library PlayersLibrary {
     ids = newIds;
     amounts = newAmounts;
     uint256 prevNewIdsLength = prevNewIds.length;
-    for (uint256 jter; jter < prevNewIdsLength; jter++) {
-      uint16 prevNewId = uint16(prevNewIds[jter]);
-      uint24 prevNewAmount = uint24(prevNewAmounts[jter]);
+    for (uint256 i; i < prevNewIdsLength; ++i) {
+      uint16 prevNewId = uint16(prevNewIds[i]);
+      uint24 prevNewAmount = uint24(prevNewAmounts[i]);
       uint256 length = ids.length;
-      for (uint256 k = 0; k < length; ++k) {
-        if (ids[k] == prevNewId) {
-          amounts[k] -= prevNewAmount;
-          if (amounts[k] == 0) {
-            ids[k] = ids[ids.length - 1];
-            amounts[k] = amounts[amounts.length - 1];
+      for (uint256 j = 0; j < length; ++j) {
+        if (ids[j] == prevNewId) {
+          amounts[j] -= prevNewAmount;
+          if (amounts[j] == 0) {
+            ids[j] = ids[ids.length - 1];
+            amounts[j] = amounts[amounts.length - 1];
 
             assembly ("memory-safe") {
               mstore(ids, length)
@@ -878,11 +878,9 @@ library PlayersLibrary {
     );
     if (itemTokenIds.length != 0) {
       Item[] memory items = IItemNFT(itemNFT).getItems(itemTokenIds);
-      uint256 iter = items.length;
-      while (iter != 0) {
-        iter--;
-        if (balances[iter] != 0) {
-          _updateCombatStatsFromItem(statsOut, items[iter]);
+      for (uint256 i = 0; i < items.length; ++i) {
+        if (balances[i] != 0) {
+          _updateCombatStatsFromItem(statsOut, items[i]);
         }
       }
     }
@@ -1066,10 +1064,8 @@ library PlayersLibrary {
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
     ActionChoice calldata actionChoice
   ) external view returns (bool missingRequiredHandEquipment, CombatStats memory statsOut) {
-    uint256 i = handEquipmentTokenIds.length;
     statsOut = combatStats;
-    while (i != 0) {
-      --i;
+    for (uint256 i = 0; i < handEquipmentTokenIds.length; ++i) {
       uint16 handEquipmentTokenId = handEquipmentTokenIds[i];
       if (handEquipmentTokenId != NONE) {
         uint256 balance = getRealBalance(from, handEquipmentTokenId, itemNFT, pendingQueuedActionEquipmentStates);

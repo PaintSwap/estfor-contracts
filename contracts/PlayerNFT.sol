@@ -279,12 +279,10 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
   function _update(address from, address to, uint256[] memory ids, uint256[] memory amounts) internal virtual override {
     if (from != address(0) && amounts.length != 0 && from != to) {
-      uint256 iter = ids.length;
       uint32 burned;
       IPlayers players = _players;
-      while (iter != 0) {
-        iter--;
-        uint256 playerId = ids[iter];
+      for (uint256 i = 0; i < ids.length; ++i) {
+        uint256 playerId = ids[i];
         players.clearEverythingBeforeTokenTransfer(from, playerId);
         if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
           // Burning

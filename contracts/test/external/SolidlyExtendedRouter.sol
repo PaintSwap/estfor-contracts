@@ -63,7 +63,9 @@ interface IRouter {
 
 interface IWETH {
   function deposit() external payable returns (uint);
+
   function transfer(address to, uint value) external returns (bool);
+
   function withdraw(uint) external returns (uint);
 }
 
@@ -71,12 +73,19 @@ interface IWETH {
 
 interface IPairFactory {
   function isPaused() external view returns (bool);
+
   function allPairsLength() external view returns (uint);
+
   function isPair(address pair) external view returns (bool);
+
   function getFee(bool _stable) external view returns (uint256);
+
   function pairCodeHash() external pure returns (bytes32);
+
   function getPair(address tokenA, address token, bool stable) external view returns (address);
+
   function getInitializable() external view returns (address, address, bool);
+
   function createPair(address tokenA, address tokenB, bool stable) external returns (address pair);
 }
 
@@ -84,14 +93,23 @@ interface IPairFactory {
 
 interface IPair {
   function metadata() external view returns (uint dec0, uint dec1, uint r0, uint r1, bool st, address t0, address t1);
+
   function claimFees() external returns (uint, uint);
+
   function tokens() external returns (address, address);
+
   function transferFrom(address src, address dst, uint amount) external returns (bool);
+
   function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external;
+
   function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;
+
   function burn(address to) external returns (uint amount0, uint amount1);
+
   function mint(address to) external returns (uint liquidity);
+
   function getReserves() external view returns (uint _reserve0, uint _reserve1, uint _blockTimestampLast);
+
   function getAmountOut(uint, address) external view returns (uint);
 }
 
@@ -99,8 +117,11 @@ interface IPair {
 
 interface IGaugeEquivalent {
   function deposit(uint256 amount) external;
+
   function depositFor(address _user, uint256 amount) external;
+
   function depositAll() external;
+
   function depositAllFor(address _user) external;
 }
 
@@ -118,9 +139,11 @@ library Math {
   function max(uint a, uint b) internal pure returns (uint) {
     return a >= b ? a : b;
   }
+
   function min(uint a, uint b) internal pure returns (uint) {
     return a < b ? a : b;
   }
+
   function sqrt(uint y) internal pure returns (uint z) {
     if (y > 3) {
       z = y;
@@ -133,6 +156,7 @@ library Math {
       z = 1;
     }
   }
+
   function cbrt(uint256 n) internal pure returns (uint256) {
     unchecked {
       uint256 x = 0;
@@ -160,7 +184,7 @@ contract SolidlyExtendedRouter is IRouter {
     bool stable;
   }
 
-  uint internal constant MINIMUM_LIQUIDITY = 10 ** 3;
+  uint256 internal constant MINIMUM_LIQUIDITY = 10 ** 3;
   address public immutable factory;
   IWETH public immutable weth;
   IVoter public immutable voter;
@@ -241,7 +265,7 @@ contract SolidlyExtendedRouter is IRouter {
     require(routes.length >= 1, "Equalizer Router: INVALID_PATH");
     amounts = new uint[](routes.length + 1);
     amounts[0] = amountIn;
-    for (uint i = 0; i < routes.length; i++) {
+    for (uint256 i = 0; i < routes.length; ++i) {
       address pair = pairFor(routes[i].from, routes[i].to, routes[i].stable);
       if (IPairFactory(factory).isPair(pair)) {
         amounts[i + 1] = IPair(pair).getAmountOut(amounts[i], routes[i].from);
@@ -495,7 +519,7 @@ contract SolidlyExtendedRouter is IRouter {
   // **** SWAP ****
   /// @dev requires the initial amount to have already been sent to the first pair
   function _swap(uint[] memory amounts, Route[] memory routes, address _to) internal virtual {
-    for (uint i = 0; i < routes.length; i++) {
+    for (uint256 i = 0; i < routes.length; ++i) {
       (address token0, ) = sortTokens(routes[i].from, routes[i].to);
       uint amountOut = amounts[i + 1];
       (uint amount0Out, uint amount1Out) = routes[i].from == token0 ? (uint(0), amountOut) : (amountOut, uint(0));
@@ -607,6 +631,7 @@ contract SolidlyExtendedRouter is IRouter {
     weth.withdraw(amountETH);
     _safeTransferETH(to, amountETH);
   }
+
   function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
     address token,
     bool stable,
@@ -633,10 +658,11 @@ contract SolidlyExtendedRouter is IRouter {
       deadline
     );
   }
+
   // **** SWAP (supporting fee-on-transfer tokens) ****
   // requires the initial amount to have already been sent to the first pair
   function _swapSupportingFeeOnTransferTokens(Route[] calldata routes, address _to) internal virtual {
-    for (uint i; i < routes.length; i++) {
+    for (uint256 i; i < routes.length; ++i) {
       (address input, address output) = (routes[i].from, routes[i].to);
       (address token0, ) = sortTokens(input, output);
       IPair pair = IPair(pairFor(routes[i].from, routes[i].to, routes[i].stable));
@@ -654,6 +680,7 @@ contract SolidlyExtendedRouter is IRouter {
       pair.swap(amount0Out, amount1Out, to, new bytes(0));
     }
   }
+
   function swapExactTokensForTokensSupportingFeeOnTransferTokens(
     uint amountIn,
     uint amountOutMin,
@@ -669,6 +696,7 @@ contract SolidlyExtendedRouter is IRouter {
       "Equalizer Router: INSUFFICIENT_OUTPUT_AMOUNT"
     );
   }
+
   function swapExactETHForTokensSupportingFeeOnTransferTokens(
     uint amountOutMin,
     Route[] calldata routes,
@@ -686,6 +714,7 @@ contract SolidlyExtendedRouter is IRouter {
       "Equalizer Router: INSUFFICIENT_OUTPUT_AMOUNT"
     );
   }
+
   function swapExactTokensForETHSupportingFeeOnTransferTokens(
     uint amountIn,
     uint amountOutMin,

@@ -23,15 +23,15 @@ contract AdminAccess is UUPSUpgradeable, OwnableUpgradeable {
 
   function _updateAdmins(address[] calldata admins, bool hasAdmin) internal {
     uint256 bounds = admins.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      _admins[admins[iter]] = hasAdmin;
+    for (uint256 i; i < bounds; ++i) {
+      _admins[admins[i]] = hasAdmin;
     }
   }
 
   function _updatePromotionalAdmins(address[] calldata promotionalAdmins, bool hasAdmin) internal {
     uint256 bounds = promotionalAdmins.length;
-    for (uint256 iter; iter < bounds; iter++) {
-      _promotionalAdmins[promotionalAdmins[iter]] = hasAdmin;
+    for (uint256 i; i < bounds; ++i) {
+      _promotionalAdmins[promotionalAdmins[i]] = hasAdmin;
     }
   }
 

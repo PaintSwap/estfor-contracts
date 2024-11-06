@@ -107,8 +107,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     if (length != 0) {
       uint256 totalBrushForItem = _totalBrushForItem();
       prices = new uint256[](length);
-      for (uint256 iter; iter < length; iter++) {
-        prices[iter] = _liquidatePrice(tokenIds[iter], totalBrushForItem);
+      for (uint256 i; i < length; ++i) {
+        prices[i] = _liquidatePrice(tokenIds[i], totalBrushForItem);
       }
     }
   }
@@ -127,17 +127,15 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
-    uint256 iter = tokenIds.length;
-    require(iter != 0, LengthEmpty());
-    require(iter == quantities.length, LengthMismatch());
+    require(tokenIds.length != 0, LengthEmpty());
+    require(tokenIds.length == quantities.length, LengthMismatch());
     uint256 tokenCost;
-    uint256[] memory prices = new uint256[](iter);
-    while (iter != 0) {
-      iter--;
-      uint256 price = _shopItems[uint16(tokenIds[iter])];
+    uint256[] memory prices = new uint256[](tokenIds.length);
+    for (uint256 i = 0; i < tokenIds.length; ++i) {
+      uint256 price = _shopItems[uint16(tokenIds[i])];
       require(price != 0, ItemCannotBeBought());
-      tokenCost += price * quantities[iter];
-      prices[iter] = price;
+      tokenCost += price * quantities[i];
+      prices[i] = price;
     }
 
     // Pay
@@ -161,20 +159,18 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
     // check array lengths
-    uint256 iter = tokenIds.length;
-    require(iter != 0, LengthEmpty());
-    require(iter == quantities.length, LengthMismatch());
+    require(tokenIds.length != 0, LengthEmpty());
+    require(tokenIds.length == quantities.length, LengthMismatch());
 
     uint256 totalBrush;
-    uint256[] memory prices = new uint256[](iter);
+    uint256[] memory prices = new uint256[](tokenIds.length);
     uint256 totalBrushForItem = _totalBrushForItem();
-    do {
-      iter--;
-      uint256 sellPrice = _liquidatePrice(uint16(tokenIds[iter]), totalBrushForItem);
-      totalBrush = totalBrush + (sellPrice * quantities[iter]);
-      prices[iter] = sellPrice;
-      _sell(tokenIds[iter], quantities[iter], prices[iter]);
-    } while (iter != 0);
+    for (uint256 i = 0; i < tokenIds.length; ++i) {
+      uint256 sellPrice = _liquidatePrice(uint16(tokenIds[i]), totalBrushForItem);
+      totalBrush += sellPrice * quantities[i];
+      prices[i] = sellPrice;
+      _sell(tokenIds[i], quantities[i], prices[i]);
+    }
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
     address sender = _msgSender();
     _treasury.spend(sender, totalBrush);
