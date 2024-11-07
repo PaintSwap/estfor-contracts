@@ -20,7 +20,11 @@ async function main() {
   await tx.wait();
   */
 
-  const actionIds = new Set([EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW]);
+  const actionIds = new Set([
+    EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW,
+    EstforConstants.ACTION_COMBAT_NIGHTMARE_UFFINCH,
+    EstforConstants.ACTION_COMBAT_NIGHTMARE_GROG_TOAD,
+  ]);
   const actions = allActions.filter((action) => actionIds.has(action.actionId));
 
   if (actions.length !== actionIds.size) {
