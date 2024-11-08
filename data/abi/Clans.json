@@ -2172,19 +2172,6 @@
   {
     "inputs": [
       {
-        "internalType": "contract IBankFactory",
-        "name": "bankFactory",
-        "type": "address"
-      }
-    ],
-    "name": "setBankFactory",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint8",
         "name": "brushBurntPercentage",
         "type": "uint8"
@@ -2275,32 +2262,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "paintswapMarketplaceWhitelist",
-        "type": "address"
-      }
-    ],
-    "name": "setPaintSwapMarketplaceWhitelist",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IPlayers",
-        "name": "players",
-        "type": "address"
-      }
-    ],
-    "name": "setPlayers",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "itemCount",
         "type": "uint256"
@@ -2312,24 +2273,6 @@
       }
     ],
     "name": "setReservedClanNames",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IClanMemberLeftCB",
-        "name": "territories",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IClanMemberLeftCB",
-        "name": "lockedBankVaults",
-        "type": "address"
-      }
-    ],
-    "name": "setTerritoriesAndLockedBankVaults",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
