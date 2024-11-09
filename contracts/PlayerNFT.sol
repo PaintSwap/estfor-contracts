@@ -70,6 +70,8 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   struct PlayerInfo {
     uint24 avatarId;
     uint24 originalAvatarId;
+    uint40 mintedTimestamp;
+    uint40 upgradedTimestamp;
   }
 
   uint256 constant EVOLVED_OFFSET = 10000;
@@ -158,6 +160,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     emit NewPlayer(playerId, avatarId, trimmedName, from, discord, twitter, telegram, upgrade);
     _checkMintingAvatar(avatarId);
     _playerInfos[playerId].originalAvatarId = uint24(avatarId);
+    _playerInfos[playerId].mintedTimestamp = uint40(block.timestamp);
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, avatarId, makeActive);
     if (upgrade) {
@@ -175,6 +178,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
   function _upgradePlayer(uint256 playerId, uint24 newAvatarId) private {
     _playerInfos[playerId].avatarId = newAvatarId;
+    _playerInfos[playerId].upgradedTimestamp = uint40(block.timestamp);
     _players.upgradePlayer(playerId);
     uint256 tokenCost = _upgradePlayerCost;
     _pay(tokenCost);
@@ -404,6 +408,21 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
+  }
+
+  function tempSetHeroAndUpgradedTimestamps(
+    uint256[] calldata playerIds,
+    uint40[] calldata mintedTimestamps,
+    uint40[] calldata upgradedTimestamps
+  ) external onlyOwner {
+    require(
+      playerIds.length == mintedTimestamps.length && playerIds.length == upgradedTimestamps.length,
+      LengthMismatch()
+    );
+    for (uint256 i; i < playerIds.length; ++i) {
+      _playerInfos[playerIds[i]].mintedTimestamp = mintedTimestamps[i];
+      _playerInfos[playerIds[i]].upgradedTimestamp = upgradedTimestamps[i];
+    }
   }
 
   // solhint-disable-next-line no-empty-blocks

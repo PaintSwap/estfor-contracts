@@ -902,6 +902,16 @@
             "internalType": "uint24",
             "name": "originalAvatarId",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "mintedTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint40",
+            "name": "upgradedTimestamp",
+            "type": "uint40"
           }
         ],
         "internalType": "struct PlayerNFT.PlayerInfo",
@@ -1387,6 +1397,29 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "playerIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint40[]",
+        "name": "mintedTimestamps",
+        "type": "uint40[]"
+      },
+      {
+        "internalType": "uint40[]",
+        "name": "upgradedTimestamps",
+        "type": "uint40[]"
+      }
+    ],
+    "name": "tempSetHeroAndUpgradedTimestamps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

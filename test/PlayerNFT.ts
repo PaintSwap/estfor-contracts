@@ -6,7 +6,7 @@ import {createPlayer} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
-import {parseEther} from "ethers";
+import {Block, parseEther} from "ethers";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
@@ -63,11 +63,14 @@ describe("PlayerNFT", function () {
     const name = "A123";
     const avatarId = 1;
     const makeActive = true;
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await createPlayer(playerNFT, avatarId, alice, name, makeActive);
 
     // Check avatar ids are as expected
     expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(1);
     expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
+    expect((await playerNFT.getPlayerInfo(playerId)).mintedTimestamp).to.eq(NOW);
+    expect((await playerNFT.getPlayerInfo(playerId)).upgradedTimestamp).to.eq(0);
   });
 
   it("Minting with an upgrade should cost brush", async function () {
@@ -160,12 +163,16 @@ describe("PlayerNFT", function () {
     await brush.connect(alice).approve(playerNFT, brushAmount);
     await brush.mint(alice, brushAmount);
 
+    const prevMintedTimestamp = (await playerNFT.getPlayerInfo(playerId)).mintedTimestamp;
+    expect(prevMintedTimestamp).to.not.eq(0);
+
     const newName = "new name";
     await expect(playerNFT.connect(alice).editPlayer(playerId, newName, discord, twitter, telegram, true))
       .to.emit(playerNFT, "EditPlayer")
       .withArgs(playerId, alice, newName, editNameBrushPrice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001, upgradePlayerBrushPrice);
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
     expect(await brush.balanceOf(alice)).to.eq(brushAmount - (editNameBrushPrice + upgradePlayerBrushPrice));
 
@@ -185,6 +192,8 @@ describe("PlayerNFT", function () {
     // Check avatar ids are as expected
     expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(10001);
     expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
+    expect((await playerNFT.getPlayerInfo(playerId)).mintedTimestamp).to.eq(prevMintedTimestamp);
+    expect((await playerNFT.getPlayerInfo(playerId)).upgradedTimestamp).to.eq(NOW);
   });
 
   it("Upgrading from mint should cost brush", async function () {
@@ -213,6 +222,7 @@ describe("PlayerNFT", function () {
       .withArgs(playerId, 1, "name", alice, discord, twitter, telegram, true)
       .and.to.emit(playerNFT, "UpgradePlayerAvatar")
       .withArgs(playerId, 10001, upgradePlayerBrushPrice);
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
     expect(await brush.balanceOf(alice)).to.eq(0);
 
@@ -227,6 +237,8 @@ describe("PlayerNFT", function () {
     // Check avatar ids are as expected
     expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(10001);
     expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
+    expect((await playerNFT.getPlayerInfo(playerId)).mintedTimestamp).to.eq(NOW);
+    expect((await playerNFT.getPlayerInfo(playerId)).upgradedTimestamp).to.eq(NOW);
   });
 
   it("uri", async function () {
