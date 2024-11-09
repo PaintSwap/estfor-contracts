@@ -2746,7 +2746,7 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_NATUOW,
     info: {
       skill: Skill.COMBAT,
-      isAvailable: true,
+      isAvailable: false,
       isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 200,
@@ -2777,7 +2777,7 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_GROG_TOAD,
     info: {
       skill: Skill.COMBAT,
-      isAvailable: true,
+      isAvailable: false,
       isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 350,
@@ -2809,7 +2809,7 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_UFFINCH,
     info: {
       skill: Skill.COMBAT,
-      isAvailable: true,
+      isAvailable: false,
       isDynamic: false,
       actionChoiceRequired: true,
       xpPerHour: 550,
