@@ -92,11 +92,11 @@ library PlayersLibrary {
   }
 
   function getBalanceUsingCheckpoint(
-    uint itemId,
+    uint256 itemId,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
     CheckpointEquipments calldata checkpointEquipments
-  ) private pure returns (uint balance) {
-    for (uint i; i < checkpointEquipments.itemTokenIds.length; ++i) {
+  ) private pure returns (uint256 balance) {
+    for (uint256 i; i < checkpointEquipments.itemTokenIds.length; ++i) {
       if (checkpointEquipments.itemTokenIds[i] == itemId) {
         return _getRealBalance(checkpointEquipments.balances[i], itemId, pendingQueuedActionEquipmentStates);
       }
@@ -110,10 +110,10 @@ library PlayersLibrary {
   ) private pure returns (uint256[] memory balances) {
     balances = new uint256[](itemIds.length);
 
-    for (uint i; i < checkpointEquipments.itemTokenIds.length; ++i) {
-      uint itemTokenId = checkpointEquipments.itemTokenIds[i];
-      uint checkpointBalance = checkpointEquipments.balances[i];
-      for (uint j; j < itemIds.length; ++j) {
+    for (uint256 i; i < checkpointEquipments.itemTokenIds.length; ++i) {
+      uint256 itemTokenId = checkpointEquipments.itemTokenIds[i];
+      uint256 checkpointBalance = checkpointEquipments.balances[i];
+      for (uint256 j; j < itemIds.length; ++j) {
         if (itemIds[j] == itemTokenId) {
           balances[j] = _getRealBalance(checkpointBalance, itemIds[j], pendingQueuedActionEquipmentStates);
           break;
@@ -126,10 +126,10 @@ library PlayersLibrary {
   // as those cannot affect the blockchain state with balanceOf
   function getBalanceUsingCurrentBalance(
     address from,
-    uint itemId,
+    uint256 itemId,
     address itemNFT,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
-  ) public view returns (uint balance) {
+  ) public view returns (uint256 balance) {
     balance = _getRealBalance(IItemNFT(itemNFT).balanceOf(from, itemId), itemId, pendingQueuedActionEquipmentStates);
   }
 
@@ -1014,7 +1014,7 @@ library PlayersLibrary {
     Attire memory attire,
     bool skipNonFullAttire
   ) public pure returns (uint16[] memory itemTokenIds) {
-    uint attireLength;
+    uint256 attireLength;
     itemTokenIds = new uint16[](7);
     if (attire.head != NONE) {
       itemTokenIds[attireLength++] = attire.head;

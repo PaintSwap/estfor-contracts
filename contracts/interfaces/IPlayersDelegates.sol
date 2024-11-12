@@ -43,7 +43,7 @@ interface IPlayersMiscDelegate {
 
   function mintedPlayer(
     address from,
-    uint playerId,
+    uint256 playerId,
     Skill[2] calldata startSkills,
     uint256[] calldata startingItemTokenIds,
     uint256[] calldata startingAmounts

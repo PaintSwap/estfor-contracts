@@ -15,7 +15,7 @@ contract Treasury is UUPSUpgradeable, OwnableUpgradeable {
   error OnlyTerritories();
   error OnlySpenders();
   error LengthMismatch();
-  error TotalPercentageNot100(uint percent);
+  error TotalPercentageNot100(uint256 percent);
 
   EnumerableMap.AddressToUintMap private _accountsToPercentage;
   IBrushToken private _brush;

@@ -102,7 +102,7 @@ library ClanBattleLibrary {
             bytesB = bytes2(uint16(randomWords[4] >> (i * 16)));
           } else {
             // For players 16-31, use the second word of each pair
-            uint j = i - 16;
+            uint256 j = i - 16;
             bytesA = bytes2(uint16(randomWords[2] >> (j * 16)));
             bytesB = bytes2(uint16(randomWords[5] >> (j * 16)));
           }

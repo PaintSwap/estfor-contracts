@@ -322,7 +322,7 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _getClanIdFromPlayer(uint256 playerId) private view returns (uint256) {
-    uint clanId = _clans.getClanIdFromPlayer(playerId);
+    uint256 clanId = _clans.getClanIdFromPlayer(playerId);
     require(clanId != 0, PlayerNotInClan());
     return clanId;
   }

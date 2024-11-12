@@ -9,17 +9,17 @@ struct Route {
 
 interface ISolidlyRouter {
   function swapExactETHForTokens(
-    uint amountOutMin,
+    uint256 amountOutMin,
     Route[] calldata routes,
     address to,
-    uint deadline
+    uint256 deadline
   ) external payable returns (uint256[] memory amounts);
 
   function swapETHForExactTokens(
-    uint amountOut,
+    uint256 amountOut,
     Route[] calldata routes,
     address to,
-    uint deadline
+    uint256 deadline
   ) external payable returns (uint256[] memory amounts);
 
   function swapExactTokensForETH(
@@ -31,10 +31,10 @@ interface ISolidlyRouter {
   ) external returns (uint256[] memory amounts);
 
   function swapTokensForExactETH(
-    uint amountOut,
-    uint amountInMax,
+    uint256 amountOut,
+    uint256 amountInMax,
     Route[] calldata routes,
     address to,
-    uint deadline
+    uint256 deadline
   ) external returns (uint256[] memory amounts);
 }

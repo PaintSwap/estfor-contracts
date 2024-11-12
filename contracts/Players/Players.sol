@@ -308,7 +308,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function _processActionsAndSetState(uint256 playerId) private {
     // Read current actions which are completed
     Player storage player = _players[playerId];
-    uint existingActionQueueLength = player.actionQueue.length;
+    uint256 existingActionQueueLength = player.actionQueue.length;
 
     bytes memory data = _delegatecall(
       _implProcessActions,
