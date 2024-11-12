@@ -1192,6 +1192,11 @@
             "internalType": "uint24",
             "name": "reserved",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "petId",
+            "type": "uint40"
           }
         ],
         "indexed": false,
@@ -1252,19 +1257,6 @@
         "internalType": "uint256",
         "name": "startTime",
         "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint40",
-            "name": "petId",
-            "type": "uint40"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct QueuedActionExtra[]",
-        "name": "queuedActionsExtra",
-        "type": "tuple[]"
       }
     ],
     "name": "SetActionQueue",

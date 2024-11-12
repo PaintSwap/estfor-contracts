@@ -25,8 +25,7 @@ abstract contract PlayersBase {
     uint256 playerId,
     QueuedAction[] queuedActions,
     Attire[] attire,
-    uint256 startTime,
-    QueuedActionExtra[] queuedActionsExtra
+    uint256 startTime
   );
   event AddXP(address from, uint256 playerId, Skill skill, uint256 points);
   event ConsumeBoostVial(address from, uint256 playerId, BoostInfo playerBoostInfo);
@@ -148,7 +147,7 @@ abstract contract PlayersBase {
   }
 
   uint32 internal constant MAX_TIME = 1 days;
-  uint256 internal constant START_XP = 374;
+  uint256 internal constant START_XP = 374; // Needs to be an even number as could be divided by 2 for the start skills
   // 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
   uint256 internal constant MAX_SUCCESS_PERCENT_CHANCE = 90;
   // The random chance where the odds are increased when there are dice roll overflows.
@@ -185,7 +184,7 @@ abstract contract PlayersBase {
 
   PlayerBoostInfo internal _globalBoost; // A boost shared by everyone
 
-  mapping(address user => uint256 playerId) internal _activePlayers;
+  mapping(address user => ActivePlayerInfo playerInfo) internal _activePlayerInfos;
   mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal _activeBoosts;
   mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
   mapping(uint256 playerId => Player player) internal _players;
@@ -198,7 +197,7 @@ abstract contract PlayersBase {
   mapping(Skill skill => FullAttireBonus) internal _fullAttireBonus;
   mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
   mapping(address user => WalletDailyInfo walletDailyInfo) internal _walletDailyInfo;
-  mapping(uint256 queueId => QueuedActionExtra queuedActionExtra) internal _queuedActionsExtra;
+  mapping(uint256 playerId => CheckpointEquipments[3] checkpointEquipments) internal _checkpointEquipments;
 
   modifier onlyPlayerNFT() {
     require(msg.sender == address(_playerNFT), NotPlayerNFT());
@@ -252,17 +251,36 @@ abstract contract PlayersBase {
     }
   }
 
+  function _setInitialCheckpoints(
+    address from,
+    uint256 playerId,
+    uint256 existingActionQueueLength,
+    QueuedAction[] memory queuedActions,
+    Attire[] memory attire
+  ) internal {
+    _delegatecall(
+      _implQueueActions,
+      abi.encodeWithSelector(
+        IPlayersQueuedActionsDelegate.setInitialCheckpoints.selector,
+        from,
+        playerId,
+        existingActionQueueLength,
+        queuedActions,
+        attire
+      )
+    );
+  }
+
   function _setActionQueue(
     address from,
     uint256 playerId,
     QueuedAction[] memory queuedActions,
-    QueuedActionExtra[] memory queuedActionsExtra,
     Attire[] memory attire,
     uint256 startTime
   ) internal {
     Player storage player = _players[playerId];
 
-    // If ids are the same as existing, then just change the first one. Optimization when just claiming loot
+    // If ids are the same as existing, then just change the first one. Optimization when only claiming loot
     bool sameQueueIds = true;
     if (player.actionQueue.length == queuedActions.length) {
       for (uint256 i = 0; i < queuedActions.length; ++i) {
@@ -281,7 +299,7 @@ abstract contract PlayersBase {
         _attire[playerId][player.actionQueue[i].queueId] = attire[i];
       }
     }
-    emit SetActionQueue(from, playerId, queuedActions, attire, startTime, queuedActionsExtra);
+    emit SetActionQueue(from, playerId, queuedActions, attire, startTime);
   }
 
   // This does not update player.totalXP!!

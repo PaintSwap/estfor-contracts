@@ -78,6 +78,187 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "head",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "neck",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "body",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "arms",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "legs",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "feet",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "ring",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "reserved1",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct Attire",
+        "name": "attire",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bool",
+        "name": "skipNonFullAttire",
+        "type": "bool"
+      }
+    ],
+    "name": "getAttireTokenIds",
+    "outputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "itemTokenIds",
+        "type": "uint16[]"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "head",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "neck",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "body",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "arms",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "legs",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "feet",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "ring",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "reserved1",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct Attire",
+        "name": "attire",
+        "type": "tuple"
+      },
+      {
+        "internalType": "bool",
+        "name": "skipNonFullAttire",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16[16]",
+            "name": "itemTokenIds",
+            "type": "uint16[16]"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "balances",
+            "type": "uint16[16]"
+          }
+        ],
+        "internalType": "struct CheckpointEquipments",
+        "name": "checkpointEquipments",
+        "type": "tuple"
+      }
+    ],
+    "name": "getAttireWithBalance",
+    "outputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "itemTokenIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "balances",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "from",
         "type": "address"
@@ -138,6 +319,40 @@
         "internalType": "bool",
         "name": "skipNonFullAttire",
         "type": "bool"
+      }
+    ],
+    "name": "getAttireWithCurrentBalance",
+    "outputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "itemTokenIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "balances",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "itemId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "itemNFT",
+        "type": "address"
       },
       {
         "components": [
@@ -167,13 +382,64 @@
         "type": "tuple[]"
       }
     ],
-    "name": "getAttireWithBalance",
+    "name": "getBalanceUsingCurrentBalance",
     "outputs": [
       {
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
         "internalType": "uint16[]",
-        "name": "itemTokenIds",
+        "name": "itemIds",
         "type": "uint16[]"
       },
+      {
+        "internalType": "address",
+        "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getBalanceUsingCurrentBalances",
+    "outputs": [
       {
         "internalType": "uint256[]",
         "name": "balances",
@@ -422,6 +688,11 @@
             "internalType": "uint24",
             "name": "reserved",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "petId",
+            "type": "uint40"
           }
         ],
         "internalType": "struct QueuedAction",
@@ -786,118 +1057,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "itemId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "itemNFT",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "consumedItemTokenIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "consumedAmounts",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "producedItemTokenIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "producedAmounts",
-            "type": "uint256[]"
-          }
-        ],
-        "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "pendingQueuedActionEquipmentStates",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "getRealBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "balance",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint16[]",
-        "name": "itemIds",
-        "type": "uint16[]"
-      },
-      {
-        "internalType": "address",
-        "name": "itemNFT",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "consumedItemTokenIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "consumedAmounts",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "producedItemTokenIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "producedAmounts",
-            "type": "uint256[]"
-          }
-        ],
-        "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "pendingQueuedActionEquipmentStates",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "getRealBalances",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "balances",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256[]",
         "name": "newIds",
         "type": "uint256[]"
@@ -1164,11 +1323,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "itemNFT",
         "type": "address"
       },
@@ -1252,120 +1406,25 @@
         "type": "tuple[]"
       },
       {
+        "internalType": "uint16",
+        "name": "handItemTokenIdRangeMin",
+        "type": "uint16"
+      },
+      {
         "components": [
           {
-            "internalType": "uint8",
-            "name": "skill",
-            "type": "uint8"
+            "internalType": "uint16[16]",
+            "name": "itemTokenIds",
+            "type": "uint16[16]"
           },
           {
-            "internalType": "uint32",
-            "name": "minXP",
-            "type": "uint32"
-          },
-          {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "rate",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint24",
-            "name": "xpPerHour",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "inputTokenId1",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "inputAmount1",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "inputTokenId2",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "inputAmount2",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "inputTokenId3",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "inputAmount3",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "outputTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint8",
-            "name": "outputAmount",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "successPercent",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "minSkill2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "minXP2",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint8",
-            "name": "minSkill3",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "minXP3",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint16",
-            "name": "handItemTokenIdRangeMin",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "handItemTokenIdRangeMax",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "questPrerequisiteId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "bytes1",
-            "name": "packedData",
-            "type": "bytes1"
+            "internalType": "uint16[16]",
+            "name": "balances",
+            "type": "uint16[16]"
           }
         ],
-        "internalType": "struct ActionChoice",
-        "name": "actionChoice",
+        "internalType": "struct CheckpointEquipments",
+        "name": "checkpointEquipments",
         "type": "tuple"
       }
     ],

@@ -8,6 +8,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
+import {IPlayers} from "./interfaces/IPlayers.sol";
 import {ItemNFTLibrary} from "./ItemNFTLibrary.sol";
 import {IBankFactory} from "./interfaces/IBankFactory.sol";
 import {AdminAccess} from "./AdminAccess.sol";
@@ -22,7 +23,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   error IdTooHigh();
   error ItemNotTransferable();
-  error InvalidChainId();
   error InvalidTokenId();
   error ItemAlreadyExists();
   error ItemDoesNotExist(uint16);
@@ -42,6 +42,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   AdminAccess private _adminAccess;
   bool private _isBeta;
   IBankFactory private _bankFactory;
+  IPlayers private _players;
 
   // Royalties
   address private _royaltyReceiver;
@@ -191,24 +192,24 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     for (uint256 i = 0; i < ids.length; ++i) {
       if (exists(ids[i]) && !_items[ids[i]].isTransferable) {
         anyNonTransferable = true;
+        break;
       }
     }
 
-    // Check if this is from a bank, that's the only place it's allowed to withdraw non-transferable items
-    require(
-      !anyNonTransferable || (address(_bankFactory) != address(0) && _bankFactory.getCreatedHere(from)),
-      ItemNotTransferable()
-    );
+    // Check if this is from a bank, that's the only place it's allowed to transfer non-transferable items
+    require(!anyNonTransferable || _bankFactory.getCreatedHere(from), ItemNotTransferable());
   }
 
   function _update(address from, address to, uint256[] memory ids, uint256[] memory amounts) internal virtual override {
-    if (from != address(0) && amounts.length != 0 && from != to) {
-      bool isBurnt = to == address(0) || to == 0x000000000000000000000000000000000000dEaD;
+    if (amounts.length != 0 && from != to) {
+      bool isBurnt = to == address(0) || to == address(0xdEaD);
+      bool isMinted = from == address(0);
       if (isBurnt) {
         _removeAnyBurntFromTotal(ids, amounts);
-      } else {
+      } else if (!isMinted) {
         _checkIsTransferable(from, ids);
       }
+      _players.beforeItemNFTTransfer(from, to, ids, amounts);
     }
     super._update(from, to, ids, amounts);
   }
@@ -318,6 +319,16 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     }
   }
 
+  function balanceOfs10(
+    address account,
+    uint16[10] memory ids
+  ) external view override returns (uint256[] memory batchBalances) {
+    batchBalances = new uint256[](ids.length);
+    for (uint256 i = 0; i < ids.length; ++i) {
+      batchBalances[i] = balanceOf(account, ids[i]);
+    }
+  }
+
   function balanceOf(address account, uint256 id) public view override(IItemNFT, ERC1155Upgradeable) returns (uint256) {
     return ERC1155Upgradeable.balanceOf(account, id);
   }
@@ -386,8 +397,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     emit RemoveItems(itemTokenIds);
   }
 
-  function initializeAddresses(IBankFactory bankFactory) external onlyOwner {
+  function initializeAddresses(IBankFactory bankFactory, IPlayers players) external onlyOwner {
     _bankFactory = bankFactory;
+    _players = players;
   }
 
   function setApproved(address[] calldata accounts, bool isApproved) external onlyOwner {
@@ -400,13 +412,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     _baseURI = baseURI;
   }
 
-  // solhint-disable-next-line no-empty-blocks
-  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
-
   function airdrop(address[] calldata tos, uint256 tokenId, uint256[] calldata amounts) external onlyOwner {
     require(tos.length == amounts.length, LengthMismatch());
     for (uint256 i = 0; i < tos.length; ++i) {
       _mintItem(tos[i], tokenId, amounts[i]);
     }
   }
+
+  // solhint-disable-next-line no-empty-blocks
+  function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

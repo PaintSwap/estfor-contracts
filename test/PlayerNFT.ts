@@ -385,7 +385,7 @@ describe("PlayerNFT", function () {
       }
     );
 
-    await itemNFT.initializeAddresses(bankFactory);
+    await itemNFT.initializeAddresses(bankFactory, players);
     await itemNFT.setApproved([shop, players], true);
 
     await playerNFTNotBeta.setPlayers(await players.getAddress());

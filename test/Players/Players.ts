@@ -11,6 +11,7 @@ import {
   GUAR_MUL,
   NO_DONATION_AMOUNT,
   RATE_MUL,
+  requestAndFulfillRandomWords,
   SPAWN_MUL,
   START_XP,
   timeTravel,
@@ -29,6 +30,8 @@ import {
 import {Players} from "../../typechain-types";
 import {ACTION_FISHING_MINNUS} from "@paintswap/estfor-definitions/constants";
 import {Block, ContractTransactionReceipt} from "ethers";
+import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
+import {FullAttireBonusInputStruct} from "../../typechain-types/contracts/Players/Players";
 
 const actionIsAvailable = true;
 
@@ -1151,7 +1154,6 @@ describe("Players", function () {
           [queuedActionFiremaking, queuedAction, queuedActionFishing],
           EstforTypes.ActionQueueStrategy.NONE
         );
-      await players.connect(alice).processActions(playerId);
 
       // Completely finish first one
       await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan]);
@@ -1184,7 +1186,6 @@ describe("Players", function () {
           [queuedActionFiremaking, queuedAction, queuedActionFishing],
           EstforTypes.ActionQueueStrategy.NONE
         );
-      await players.connect(alice).processActions(playerId);
 
       // Completely finish first one and go into the second one a bit
       await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan + 1]);
@@ -1212,97 +1213,118 @@ describe("Players", function () {
     it("Have no items, partial start the last action", async function () {
       const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
       const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
       const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
       await players
         .connect(alice)
         .startActions(
           playerId,
-          [queuedActionFiremaking, queuedAction, queuedActionFishing],
+          [queuedActionFiremaking, queuedActionWoodcutting, queuedActionFishing],
           EstforTypes.ActionQueueStrategy.NONE
         );
-      await players.connect(alice).processActions(playerId);
 
-      // Completely finish first one and go into the second one a bit
-      await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan + queuedAction.timespan + 1]);
+      await itemNFT.mint(alice, EstforConstants.LOG, 10000);
+
+      // Completely finish first and second one and go into the third one a bit
+      await ethers.provider.send("evm_increaseTime", [
+        queuedActionFiremaking.timespan + queuedActionWoodcutting.timespan + 1
+      ]);
       await ethers.provider.send("evm_mine", []);
       // Remove required items
-      await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.MAGIC_FIRE_STARTER, 1, "0x");
-      await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.BRONZE_AXE, 1, "0x");
-      await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.NET_STICK, 1, "0x");
-      await players.connect(alice).processActions(playerId);
+      await itemNFT
+        .connect(alice)
+        .safeBatchTransferFrom(
+          alice,
+          owner,
+          [EstforConstants.MAGIC_FIRE_STARTER, EstforConstants.BRONZE_AXE, EstforConstants.NET_STICK],
+          [1, 1, 1],
+          "0x"
+        );
       // Should remove all actions
       await players.connect(alice).processActions(playerId);
       const actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
       await expectRemovedCurrentAction(players, playerId, 0);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(3600);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(3600);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
     });
 
-    it("Have no items, finish all actions", async function () {
+    it("Have no items at the end, but do at all checkpoints", async function () {
       const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
       const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
       const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
       await players
         .connect(alice)
         .startActions(
           playerId,
-          [queuedActionFiremaking, queuedAction, queuedActionFishing],
+          [queuedActionFiremaking, queuedActionWoodcutting, queuedActionFishing],
           EstforTypes.ActionQueueStrategy.NONE
         );
       await players.connect(alice).processActions(playerId);
 
       // Completely finish first all
       await ethers.provider.send("evm_increaseTime", [
-        queuedActionFiremaking.timespan + queuedAction.timespan + queuedActionFishing.timespan
+        queuedActionFiremaking.timespan + queuedActionWoodcutting.timespan + queuedActionFishing.timespan
       ]);
       await ethers.provider.send("evm_mine", []);
       // Remove required items
-      await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.MAGIC_FIRE_STARTER, 1, "0x");
-      await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.BRONZE_AXE, 1, "0x");
-      await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.NET_STICK, 1, "0x");
-      await players.connect(alice).processActions(playerId);
+      await itemNFT
+        .connect(alice)
+        .safeBatchTransferFrom(
+          alice,
+          owner,
+          [EstforConstants.MAGIC_FIRE_STARTER, EstforConstants.BRONZE_AXE, EstforConstants.NET_STICK],
+          [1, 1, 1],
+          "0x"
+        );
       // Should remove all actions
       await players.connect(alice).processActions(playerId);
       const actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
       await expectRemovedCurrentAction(players, playerId, 0);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+        queuedActionWoodcutting.timespan
+      );
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(queuedActionFishing.timespan);
     });
 
     it("Missing middle item, 3 fully finished actions, checking consumed/produced is correct", async function () {
       const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
       const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
       const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, world);
       await players
         .connect(alice)
         .startActions(
           playerId,
-          [queuedAction, queuedActionFiremaking, queuedActionFishing],
+          [queuedActionWoodcutting, queuedActionFiremaking, queuedActionFishing],
           EstforTypes.ActionQueueStrategy.NONE
         );
 
-      // Remove required items
+      // Remove required item for firemaking
       await itemNFT.connect(alice).safeTransferFrom(alice, owner, EstforConstants.MAGIC_FIRE_STARTER, 1, "0x");
 
       // Completely finish all
       await ethers.provider.send("evm_increaseTime", [
-        queuedAction.timespan + queuedActionFiremaking.timespan + queuedActionFishing.timespan
+        queuedActionWoodcutting.timespan + queuedActionFiremaking.timespan + queuedActionFishing.timespan
       ]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       expect(pendingQueuedActionState.equipmentStates.length).to.eq(2);
       expect(pendingQueuedActionState.equipmentStates[0].producedItemTokenIds[0]).to.eq(EstforConstants.LOG);
       expect(pendingQueuedActionState.equipmentStates[1].producedItemTokenIds[0]).to.eq(EstforConstants.RAW_MINNUS);
+
+      await players.connect(alice).processActions(playerId);
+
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(3600);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(0);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FISHING)).to.eq(3600);
     });
   });
 
@@ -2418,5 +2440,524 @@ describe("Players", function () {
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+  });
+
+  describe("Checkpoints", function () {
+    it("Checkpoints should be cleared when making a character inactive", async function () {
+      const {players, playerId, itemNFT, playerNFT, avatarId, world, alice} = await loadFixture(playersFixture);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+      // Check checkpoints
+      let activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.gt(0);
+      // Make a new player active, checkpoint should be cleared
+      await createPlayer(playerNFT, avatarId, alice, "New name", true);
+      activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.eq(0);
+    });
+
+    describe("Right hand equipment", function () {
+      it("Transfer away required equipment after action starts but before ends should invalidate it entirely", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(0);
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+        await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this should have no effect
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(0);
+      });
+
+      it("Transfer away required equipment after processing an action, should invalidate the rest even if transferring back", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        console.info("\nBefore start actions");
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+        console.info("\nIncrease time half way, and before process actions");
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
+        console.info("\nBefore transferring item away");
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        console.info("\nBefore minting");
+        await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this should have no effect for the rest of the action
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+        console.info("\nBefore process actions after all time has passed");
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
+      });
+
+      it("Transfer away required equipment before an action starts and back after an action starts should invalidate it all", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 2]); // Right before next action starts
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+          queuedAction.timespan - queuedAction.timespan / 100
+        );
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+        await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this should have no effect for the whole action
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+          queuedAction.timespan - queuedAction.timespan / 100
+        );
+      });
+
+      it("Transfer away required equipment before an action starts and back before an action starts should be fine", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+        await players
+          .connect(alice)
+          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 2]); // Right before next action starts
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+          queuedAction.timespan - queuedAction.timespan / 100
+        );
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
+        await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this should have no effect for the whole action
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2 + queuedAction.timespan]);
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
+          queuedAction.timespan - queuedAction.timespan / 100 + queuedAction.timespan
+        );
+      });
+
+      it("Test multiple burning/transferring on a checkpoint", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+        await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 100); // Start with a ton more
+
+        await players
+          .connect(alice)
+          .startActions(playerId, [queuedActionFiremaking, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 80);
+        await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 5);
+        await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan / 2]);
+        await players.connect(alice).processActions(playerId);
+
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 5, "0x");
+        await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan / 4]);
+        await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 5);
+        await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 5);
+        expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(1); // Have 1 left
+        await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan / 4 + queuedAction.timespan]); // Finish both actions
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      });
+
+      it("Have more than 65535 and reduce it, before action starts", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+        await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 70000); // Start with a ton more
+        await players
+          .connect(alice)
+          .startActions(playerId, [queuedActionFiremaking, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan - 3]);
+
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 70000, "0x");
+        await ethers.provider.send("evm_increaseTime", [3]);
+        expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(1); // Have 1 left
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // Finish both actions
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      });
+
+      it("Have more than 65535 and reduce it while action is ongoing", async function () {
+        const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+        const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+
+        await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 70000); // Start with a ton more
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 40000, "0x");
+        await itemNFT
+          .connect(alice)
+          .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 29000, "0x");
+        await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 999);
+        expect(await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_AXE)).to.eq(2); // Have 2 left
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]); // Finish action
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      });
+    });
+
+    describe("Attire", function () {
+      //
+      it("Full attire bonus, checks removing attire", async function () {
+        const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+        const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, world);
+        await itemNFT.addItems([
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATURE_MASK,
+            equipPosition: EstforTypes.EquipPosition.HEAD
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATURE_BODY,
+            equipPosition: EstforTypes.EquipPosition.BODY
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATURE_BRACERS,
+            equipPosition: EstforTypes.EquipPosition.ARMS
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATURE_TROUSERS,
+            equipPosition: EstforTypes.EquipPosition.LEGS
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATURE_BOOTS,
+            equipPosition: EstforTypes.EquipPosition.FEET
+          }
+        ]);
+
+        await players.addFullAttireBonuses([
+          allFullAttireBonuses.find(
+            (attireBonus) => attireBonus.skill == Skill.WOODCUTTING
+          ) as FullAttireBonusInputStruct
+        ]);
+
+        const queuedAction = {
+          ...queuedActionWoodcutting,
+          attire: {
+            head: EstforConstants.NATURE_MASK,
+            neck: EstforConstants.NONE,
+            body: EstforConstants.NATURE_BODY,
+            arms: EstforConstants.NATURE_BRACERS,
+            legs: EstforConstants.NATURE_TROUSERS,
+            feet: EstforConstants.NATURE_BOOTS,
+            ring: EstforConstants.NONE, // Always NONE for now
+            reserved1: EstforConstants.NONE // Always NONE for now
+          }
+        };
+
+        await itemNFT.mintBatch(
+          alice.address,
+          [
+            EstforConstants.NATURE_MASK,
+            EstforConstants.NATURE_BODY,
+            EstforConstants.NATURE_BRACERS,
+            EstforConstants.NATURE_TROUSERS,
+            EstforConstants.NATURE_BOOTS
+          ],
+          [1, 1, 1, 1, 1]
+        );
+
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+        await itemNFT.connect(alice).burn(alice.address, EstforConstants.NATURE_MASK, 1); // Remove a bit of the attire
+        await itemNFT.mint(alice.address, EstforConstants.NATURE_MASK, 1); // Minting again does nothing
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+        const balanceExpected = Math.floor((queuedAction.timespan * rate) / (3600 * GUAR_MUL));
+        await players.connect(alice).processActions(playerId);
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+        // Check the drops are as expected
+        expect(await itemNFT.balanceOf(alice.address, EstforConstants.LOG)).to.eq(balanceExpected);
+      });
+
+      it("Pending reward full attire bonus", async function () {
+        // Thieving
+        const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+
+        const randomChanceFraction = 1 / 100; // 1% chance
+        const randomChance = Math.floor(65536 * randomChanceFraction);
+
+        const xpPerHour = 50;
+        let tx = await world.addActions([
+          {
+            actionId: 1,
+            info: {
+              skill: EstforTypes.Skill.THIEVING,
+              xpPerHour,
+              minXP: 0,
+              worldLocation: 0,
+              isFullModeOnly: false,
+              numSpawned: 0,
+              handItemTokenIdRangeMin: EstforConstants.NONE,
+              handItemTokenIdRangeMax: EstforConstants.NONE,
+              isAvailable: actionIsAvailable,
+              questPrerequisiteId: 0,
+              actionChoiceRequired: false,
+              successPercent: 0
+            },
+            guaranteedRewards: [],
+            randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
+            combatStats: EstforTypes.emptyCombatStats
+          }
+        ]);
+
+        const actionId = await getActionId(tx, world);
+
+        const numHours = 2;
+
+        // Make sure it passes the next checkpoint so there are no issues running
+        const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
+        const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
+        const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
+        await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+        await requestAndFulfillRandomWords(world, mockVRF);
+
+        const timespan = 3600 * numHours;
+        const queuedAction: EstforTypes.QueuedActionInput = {
+          attire: {
+            head: EstforConstants.NATUOW_HOOD,
+            neck: EstforConstants.NONE,
+            body: EstforConstants.NATUOW_BODY,
+            arms: EstforConstants.NATUOW_BRACERS,
+            legs: EstforConstants.NATUOW_TASSETS,
+            feet: EstforConstants.NATUOW_BOOTS,
+            ring: EstforConstants.NONE, // Always NONE for now
+            reserved1: EstforConstants.NONE // Always NONE for now
+          },
+          actionId,
+          combatStyle: EstforTypes.CombatStyle.NONE,
+          choiceId: EstforConstants.NONE,
+          regenerateId: EstforConstants.NONE,
+          timespan,
+          rightHandEquipmentTokenId: EstforConstants.NONE,
+          leftHandEquipmentTokenId: EstforConstants.NONE,
+          petId: 0
+        };
+
+        await itemNFT.mintBatch(
+          alice.address,
+          [
+            EstforConstants.NATUOW_HOOD,
+            EstforConstants.NATUOW_BODY,
+            EstforConstants.NATUOW_BRACERS,
+            EstforConstants.NATUOW_TASSETS,
+            EstforConstants.NATUOW_BOOTS
+          ],
+          [1, 1, 1, 1, 1]
+        );
+        await itemNFT.addItems([
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATUOW_HOOD,
+            equipPosition: EstforTypes.EquipPosition.HEAD
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATUOW_BODY,
+            equipPosition: EstforTypes.EquipPosition.BODY
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATUOW_BRACERS,
+            equipPosition: EstforTypes.EquipPosition.ARMS
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATUOW_TASSETS,
+            equipPosition: EstforTypes.EquipPosition.LEGS
+          },
+          {
+            ...EstforTypes.defaultItemInput,
+            tokenId: EstforConstants.NATUOW_BOOTS,
+            equipPosition: EstforTypes.EquipPosition.FEET
+          }
+        ]);
+
+        await players.addFullAttireBonuses([
+          {
+            skill: Skill.THIEVING,
+            itemTokenIds: [
+              EstforConstants.NATUOW_HOOD,
+              EstforConstants.NATUOW_BODY,
+              EstforConstants.NATUOW_BRACERS,
+              EstforConstants.NATUOW_TASSETS,
+              EstforConstants.NATUOW_BOOTS
+            ],
+            bonusXPPercent: 3,
+            bonusRewardsPercent: 100
+          }
+        ]);
+
+        const numRepeats = 10; // Should get it at least once
+        for (let i = 0; i < numRepeats; ++i) {
+          await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+          await itemNFT.connect(alice).burn(alice.address, EstforConstants.NATUOW_HOOD, 1); // Remove a bit of the attire
+          await itemNFT.mint(alice.address, EstforConstants.NATUOW_HOOD, 1); // Minting again does nothing
+          await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+          await requestAndFulfillRandomWords(world, mockVRF);
+          await players.connect(alice).processActions(playerId);
+        }
+
+        await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+        await requestAndFulfillRandomWords(world, mockVRF);
+        await players.connect(alice).processActions(playerId);
+
+        expect(await players.getPlayerXP(playerId, EstforTypes.Skill.THIEVING)).to.eq(
+          Math.floor(xpPerHour * numRepeats * numHours)
+        ); // No bonus
+
+        const balance = await itemNFT.balanceOf(alice.address, EstforConstants.BRONZE_ARROW);
+        // Have 2 queued actions so twice as much
+        expect(balance).to.eq(0); // Only a 1% chance of getting it as the bonus does not apply
+      });
+    });
+
+    it("Output from 1 action should be allowed as the input to another", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction, queuedActionFiremaking], EstforTypes.ActionQueueStrategy.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedActionFiremaking.timespan / 2]);
+      await players.connect(alice).processActions(playerId);
+
+      // TODO Read checkpoint balance
+      await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan / 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
+    });
+
+    it("TODO: More checkpoint balance checks", async function () {});
+
+    it("Output from 1 action should be allowed as the input to another, with no process in-between", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction: queuedActionFiremaking} = await setupBasicFiremaking(itemNFT, world);
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction, queuedActionFiremaking], EstforTypes.ActionQueueStrategy.NONE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedActionFiremaking.timespan]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FIREMAKING)).to.eq(queuedActionFiremaking.timespan);
+    });
+
+    it("Multiple checkpoints", async function () {
+      const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const queuedAction1 = {...queuedAction, timespan: queuedAction.timespan / 2};
+      const queuedAction2 = {...queuedAction, timespan: queuedAction.timespan / 4};
+      // 3 checkpoints
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction, queuedAction1, queuedAction2], EstforTypes.ActionQueueStrategy.NONE);
+
+      // Get current time
+      const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
+      let activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.eq(NOW);
+      expect(activePlayerInfo.timespan).to.eq(queuedAction.timespan);
+      expect(activePlayerInfo.timespan1).to.eq(queuedAction1.timespan);
+      expect(activePlayerInfo.timespan2).to.eq(queuedAction2.timespan);
+      await players.connect(alice).processActions(playerId);
+      activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.eq(NOW);
+      expect(activePlayerInfo.timespan).to.eq(queuedAction.timespan);
+      expect(activePlayerInfo.timespan1).to.eq(queuedAction1.timespan);
+      expect(activePlayerInfo.timespan2).to.eq(queuedAction2.timespan);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await players.connect(alice).processActions(playerId);
+      activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.eq(NOW);
+      expect(activePlayerInfo.timespan).to.eq(queuedAction.timespan);
+      expect(activePlayerInfo.timespan1).to.eq(queuedAction1.timespan);
+      expect(activePlayerInfo.timespan2).to.eq(queuedAction2.timespan);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2 + 2]);
+      await players.connect(alice).processActions(playerId);
+      activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.eq(NOW + queuedAction.timespan);
+      expect(activePlayerInfo.timespan).to.eq(queuedAction1.timespan);
+      expect(activePlayerInfo.timespan1).to.eq(queuedAction2.timespan);
+      expect(activePlayerInfo.timespan2).to.eq(queuedAction2.timespan); // Is left unchanged
+
+      // Add one to the end
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.APPEND);
+      activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.eq(NOW + queuedAction.timespan);
+      expect(activePlayerInfo.timespan).to.eq(queuedAction1.timespan);
+      expect(activePlayerInfo.timespan1).to.eq(queuedAction2.timespan);
+      expect(activePlayerInfo.timespan2).to.eq(queuedAction.timespan);
+
+      await players
+        .connect(alice)
+        .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.KEEP_LAST_IN_PROGRESS);
+      activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.eq(NOW + queuedAction.timespan);
+      expect(activePlayerInfo.timespan).to.eq(queuedAction1.timespan);
+      expect(activePlayerInfo.timespan1).to.eq(queuedAction.timespan);
+      expect(activePlayerInfo.timespan2).to.eq(queuedAction.timespan);
+
+      // Replace whole thing
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
+      activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.eq(NOW1);
+      expect(activePlayerInfo.timespan).to.eq(queuedAction.timespan);
+      expect(activePlayerInfo.timespan1).to.eq(queuedAction.timespan);
+      expect(activePlayerInfo.timespan2).to.eq(queuedAction.timespan);
+    });
+
+    it("Checkpoints should always start from the beginning of the first action regardless of it being in-progress", async function () {
+      const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      let activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+      expect(activePlayerInfo.checkpoint).to.be.gt(0);
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
+      await players.connect(alice).processActions(playerId);
+      // Check checkpoint time is the same
+      expect((await players.getActivePlayerInfo(alice.address)).checkpoint).to.be.gt(activePlayerInfo.checkpoint);
+    });
   });
 });

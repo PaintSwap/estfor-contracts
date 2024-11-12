@@ -89,11 +89,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint256 totalLength = remainingQueuedActions.length + queuedActionInputs.length;
     QueuedAction[] memory queuedActions = new QueuedAction[](totalLength);
 
-    QueuedActionExtra[] memory queuedActionsExtra = new QueuedActionExtra[](totalLength);
-
     for (uint256 i; i != remainingQueuedActions.length; ++i) {
       queuedActions[i] = remainingQueuedActions[i];
-      queuedActionsExtra[i] = _queuedActionsExtra[i];
     }
 
     uint256 startTimeNewActions = block.timestamp - totalTimespan;
@@ -112,7 +109,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         queuedActionInputs[i].timespan = uint24(MAX_TIME + remainder - totalTimespan);
       }
 
-      (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) = _addToQueue(
+      QueuedAction memory queuedAction = _addToQueue(
         from,
         playerId,
         queuedActionInputs[i],
@@ -120,7 +117,6 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
         uint40(startTimeNewActions)
       );
       queuedActions[remainingQueuedActions.length + i] = queuedAction;
-      _queuedActionsExtra[remainingQueuedActions.length + i] = queuedActionExtra;
 
       ++queueId;
       totalTimespan += queuedActionInputs[i].timespan;
@@ -137,7 +133,8 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       attire[i + remainingQueuedActions.length] = queuedActionInputs[i].attire;
     }
 
-    emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTime, queuedActionsExtra);
+    setInitialCheckpoints(from, playerId, 0, player.actionQueue, attire);
+    emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTime);
 
     assert(totalTimespan < MAX_TIME + 1 hours); // Should never happen
     _nextQueueId = uint56(queueId);
@@ -354,7 +351,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QueuedActionInput memory queuedActionInput,
     uint64 queueId,
     uint40 startTime
-  ) private returns (QueuedAction memory queuedAction, QueuedActionExtra memory queuedActionExtra) {
+  ) private returns (QueuedAction memory queuedAction) {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed; // Empty
     QuestState memory pendingQuestState; // Empty
 
@@ -382,8 +379,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Only set variables in the second storage slot if it's necessary
     if (queuedActionInput.petId != 0) {
       packed |= bytes1(uint8(1 << HAS_PET_BIT));
-      queuedActionExtra.petId = queuedActionInput.petId;
-      _queuedActionsExtra[queueId] = queuedActionExtra;
+      queuedAction.petId = queuedActionInput.petId;
       _petNFT.assignPet(from, playerId, queuedActionInput.petId, startTime);
     }
     queuedAction.packed = packed;
@@ -483,13 +479,11 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     _checkEquipPosition(attire);
 
     bool skipNonFullAttire;
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
-    (uint16[] memory itemTokenIds, uint256[] memory balances) = PlayersLibrary.getAttireWithBalance(
+    (uint16[] memory itemTokenIds, uint256[] memory balances) = PlayersLibrary.getAttireWithCurrentBalance(
       from,
       attire,
       address(_itemNFT),
-      skipNonFullAttire,
-      pendingQueuedActionEquipmentStates
+      skipNonFullAttire
     );
     if (itemTokenIds.length != 0) {
       (Skill[] memory skills, uint32[] memory minXPs, bool[] memory isItemFullModeOnly) = _itemNFT.getMinRequirements(
@@ -572,10 +566,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
 
   function _clearActionQueue(address from, uint256 playerId) private {
     QueuedAction[] memory queuedActions;
-    QueuedActionExtra[] memory queuedActionsExtra;
     Attire[] memory attire;
     uint256 startTime = 0;
-    _setActionQueue(from, playerId, queuedActions, queuedActionsExtra, attire, startTime);
+    _setActionQueue(from, playerId, queuedActions, attire, startTime);
   }
 
   function _clearCurrentActionProcessed(uint256 playerId) private {
@@ -611,6 +604,75 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       if (activeBoost.startTime > block.timestamp) {
         // Mint it if it hasn't been consumed yet
         _itemNFT.mint(from, activeBoost.itemTokenId, 1);
+      }
+    }
+  }
+
+  function setInitialCheckpoints(
+    address from,
+    uint256 playerId,
+    uint256 existingActionQueueLength,
+    QueuedAction[] memory queuedActions,
+    Attire[] memory attire
+  ) public {
+    uint256 checkpoint = _players[playerId].currentActionStartTime;
+    if (queuedActions.length > 0) {
+      checkpoint -= queuedActions[0].prevProcessedTime;
+    }
+    if (checkpoint == 0) {
+      checkpoint = block.timestamp;
+    }
+    _activePlayerInfos[from].checkpoint = uint40(checkpoint);
+
+    uint256 numActionsFinished = existingActionQueueLength > queuedActions.length
+      ? existingActionQueueLength - queuedActions.length
+      : 0;
+
+    if (numActionsFinished > 0) {
+      for (uint256 i; i < 3; ++i) {
+        if (i + numActionsFinished < 3) {
+          _checkpointEquipments[playerId][i] = _checkpointEquipments[playerId][i + numActionsFinished];
+        } else {
+          delete _checkpointEquipments[playerId][i];
+        }
+      }
+    }
+
+    for (uint256 i; i < 3; ++i) {
+      if (i < queuedActions.length) {
+        if (queuedActions[i].prevProcessedTime == 0) {
+          // Set the checkpoints
+          uint16[10] memory itemTokenIds; // attire, left/right hand equipment
+          itemTokenIds[0] = attire[i].head;
+          itemTokenIds[1] = attire[i].neck;
+          itemTokenIds[2] = attire[i].body;
+          itemTokenIds[3] = attire[i].arms;
+          itemTokenIds[4] = attire[i].legs;
+          itemTokenIds[5] = attire[i].feet;
+          itemTokenIds[6] = attire[i].ring;
+          itemTokenIds[7] = attire[i].reserved1;
+          itemTokenIds[8] = queuedActions[i].leftHandEquipmentTokenId;
+          itemTokenIds[9] = queuedActions[i].rightHandEquipmentTokenId;
+
+          uint[] memory balances = _itemNFT.balanceOfs10(from, itemTokenIds);
+          // Only store up to 16 bits for storage efficiency
+          uint16[10] memory cappedBalances;
+          for (uint256 j = 0; j < cappedBalances.length; ++j) {
+            cappedBalances[j] = balances[j] > type(uint16).max ? type(uint16).max : uint16(balances[j]);
+          }
+          _checkpointEquipments[playerId][i].itemTokenIds = itemTokenIds;
+          _checkpointEquipments[playerId][i].balances = cappedBalances;
+        }
+
+        if (i == 0) {
+          _activePlayerInfos[from].timespan = queuedActions[i].timespan + queuedActions[i].prevProcessedTime;
+        } else if (i == 1) {
+          _activePlayerInfos[from].timespan1 = queuedActions[i].timespan + queuedActions[i].prevProcessedTime;
+        } else if (i == 2) {
+          _activePlayerInfos[from].timespan2 = queuedActions[i].timespan + queuedActions[i].prevProcessedTime;
+        } else {
+          assert(false);
+        }
       }
     }
   }

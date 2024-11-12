@@ -886,7 +886,7 @@ async function main() {
   await tx.wait();
   console.log("shop.setItemNFT");
 
-  tx = await itemNFT.initializeAddresses(bankFactory);
+  tx = await itemNFT.initializeAddresses(bankFactory, players);
   await tx.wait();
   console.log("itemNFT.initializeAddresses");
 

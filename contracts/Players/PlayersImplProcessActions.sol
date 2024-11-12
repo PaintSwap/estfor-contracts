@@ -18,11 +18,11 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     _checkStartSlot();
   }
 
-  function processActionsAndSetState(uint256 playerId) external {
-    (
-      QueuedAction[] memory remainingQueuedActions,
-      PendingQueuedActionData memory currentActionProcessed
-    ) = processActions(msg.sender, playerId);
+  function processActionsAndSetState(
+    uint256 playerId
+  ) external returns (QueuedAction[] memory remainingQueuedActions, Attire[] memory remainingAttire) {
+    PendingQueuedActionData memory currentActionProcessed;
+    (remainingQueuedActions, currentActionProcessed) = processActions(msg.sender, playerId);
 
     Player storage player = _players[playerId];
     if (remainingQueuedActions.length != 0) {
@@ -32,26 +32,11 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
     _setPrevPlayerState(player, currentActionProcessed);
 
-    Attire[] memory remainingAttire = new Attire[](remainingQueuedActions.length);
+    remainingAttire = new Attire[](remainingQueuedActions.length);
     for (uint256 i = 0; i < remainingQueuedActions.length; ++i) {
       remainingAttire[i] = _attire[playerId][remainingQueuedActions[i].queueId];
     }
-
-    QueuedActionExtra[] memory remainingQueuedActionsExtra = new QueuedActionExtra[](remainingQueuedActions.length);
-    for (uint256 i; i < remainingQueuedActions.length; ++i) {
-      if (_hasPet(remainingQueuedActions[i].packed)) {
-        remainingQueuedActionsExtra[i] = _queuedActionsExtra[remainingQueuedActions[i].queueId];
-      }
-    }
-
-    _setActionQueue(
-      msg.sender,
-      playerId,
-      remainingQueuedActions,
-      remainingQueuedActionsExtra,
-      remainingAttire,
-      block.timestamp
-    );
+    _setActionQueue(msg.sender, playerId, remainingQueuedActions, remainingAttire, block.timestamp);
   }
 
   function processActions(
@@ -144,7 +129,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
             _attire[playerId][actionMetadata.queueId],
             skill,
             actionMetadata.rolls,
-            pendingQueuedActionState.equipmentStates
+            pendingQueuedActionState.equipmentStates,
+            _checkpointEquipments[playerId][actionMetadata.checkpoint]
           );
         }
       }
@@ -431,7 +417,8 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     Attire storage attire,
     Skill skill,
     uint256 rolls,
-    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
+    CheckpointEquipments storage checkpointEquipments
   ) private {
     PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     BoostType boostType;
@@ -454,12 +441,11 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     // Special case where thieving gives you a bonus if wearing full equipment
     uint8 bonusRewardsPercent = _fullAttireBonus[skill].bonusRewardsPercent;
     uint8 fullAttireBonusRewardsPercent = PlayersLibrary.getFullAttireBonusRewardsPercent(
-      from,
       attire,
-      address(_itemNFT),
       pendingQueuedActionEquipmentStates,
       bonusRewardsPercent,
-      _fullAttireBonus[skill].itemTokenIds
+      _fullAttireBonus[skill].itemTokenIds,
+      checkpointEquipments
     );
 
     // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)

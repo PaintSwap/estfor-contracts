@@ -93,6 +93,10 @@ describe("ItemNFT", function () {
       }
     )) as unknown as ItemNFT;
 
+    const bankFactory = await ethers.deployContract("MockBankFactory");
+    const mockPlayers = await ethers.deployContract("MockPlayers");
+    await itemNFT.initializeAddresses(bankFactory, mockPlayers);
+
     return {
       itemNFT,
       brush,

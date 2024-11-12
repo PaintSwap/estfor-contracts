@@ -16,7 +16,7 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IPlayersDelegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
+import {IPlayersDelegate, IPlayersMiscDelegate, IPlayersMisc1Delegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -165,13 +165,25 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _delegatecall(
       _implMisc,
       abi.encodeWithSelector(
-        IPlayersDelegate.mintedPlayer.selector,
+        IPlayersMiscDelegate.mintedPlayer.selector,
         from,
         playerId,
         startSkills,
         startingItemTokenIds,
         startingAmounts
       )
+    );
+  }
+
+  function beforeItemNFTTransfer(
+    address from,
+    address to,
+    uint[] memory ids,
+    uint[] memory amounts
+  ) external override onlyItemNFT {
+    _delegatecall(
+      _implMisc1,
+      abi.encodeWithSelector(IPlayersMisc1Delegate.beforeItemNFTTransfer.selector, from, to, ids, amounts)
     );
   }
 
@@ -221,9 +233,9 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function clearEverythingBeforeTokenTransfer(address from, uint256 playerId) external override onlyPlayerNFT {
     _clearEverything(from, playerId, true);
     // If it was the active player, then clear it
-    uint256 existingActivePlayerId = _activePlayers[from];
+    uint256 existingActivePlayerId = _activePlayerInfos[from].playerId;
     if (existingActivePlayerId == playerId) {
-      delete _activePlayers[from];
+      delete _activePlayerInfos[from];
       emit SetActivePlayer(from, existingActivePlayerId, 0);
     }
   }
@@ -294,17 +306,27 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function _processActionsAndSetState(uint256 playerId) private {
-    _delegatecall(
+    // Read current actions which are completed
+    Player storage player = _players[playerId];
+    uint existingActionQueueLength = player.actionQueue.length;
+
+    bytes memory data = _delegatecall(
       _implProcessActions,
       abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActionsAndSetState.selector, playerId)
     );
+    (QueuedAction[] memory remainingQueuedActions, Attire[] memory remainingAttire) = abi.decode(
+      data,
+      (QueuedAction[], Attire[])
+    );
+    // Put here due to stack too deep error if doing it inside processActionsAndSetState
+    _setInitialCheckpoints(msg.sender, playerId, existingActionQueueLength, remainingQueuedActions, remainingAttire);
   }
 
   function _setActivePlayer(address from, uint256 playerId) private {
     require(block.timestamp >= _activeBoosts[playerId].cooldown, PlayerLocked());
 
-    uint256 existingActivePlayerId = _activePlayers[from];
-    _activePlayers[from] = playerId;
+    uint256 existingActivePlayerId = _activePlayerInfos[from].playerId;
+    _activePlayerInfos[from] = ActivePlayerInfo(uint64(playerId), 0, 0, 0, 0);
     require(existingActivePlayerId != playerId, PlayerAlreadyActive());
 
     if (existingActivePlayerId != 0) {
@@ -350,7 +372,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   function isOwnerOfPlayerAndActive(address from, uint256 playerId) public view override returns (bool) {
-    return _playerNFT.balanceOf(from, playerId) == 1 && _activePlayers[from] == playerId;
+    return _playerNFT.balanceOf(from, playerId) == 1 && _activePlayerInfos[from].playerId == playerId;
   }
 
   function getPendingRandomRewards(uint256 playerId) external view returns (PendingRandomReward[] memory) {
@@ -384,18 +406,22 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
 
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function getPendingQueuedActionState(
-    address owner_,
+    address owner,
     uint256 playerId
   ) public view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, owner_, playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, owner, playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function getActivePlayer(address playerOwner) external view override returns (uint256 playerId) {
-    return _activePlayers[playerOwner];
+  function getActivePlayer(address owner) external view override returns (uint256 playerId) {
+    return _activePlayerInfos[owner].playerId; // TODO: Can use activePlayerInfo?
+  }
+
+  function getActivePlayerInfo(address owner) external view returns (ActivePlayerInfo memory) {
+    return _activePlayerInfos[owner];
   }
 
   function getPlayerXP(uint256 playerId, Skill skill) external view override returns (uint256) {
@@ -418,15 +444,17 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return _players[playerId];
   }
 
-  // Only used by a test, could remove and replace with getStorageAt like another test uses
+  // Only used by tests, could remove and replace with getStorageAt like another test uses
   function getActiveBoost(uint256 playerId) external view override returns (PlayerBoostInfo memory) {
     return _activeBoosts[playerId];
   }
 
+  // Only used by tests, could remove and replace with getStorageAt like another test uses
   function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory) {
     return _clanBoosts[clanId];
   }
 
+  // Only used by tests, could remove and replace with getStorageAt like another test uses
   function getGlobalBoost() external view returns (PlayerBoostInfo memory) {
     return _globalBoost;
   }

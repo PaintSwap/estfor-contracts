@@ -1988,7 +1988,6 @@ describe("Combat Actions", function () {
 
       // Check no more food is consumed as this is an excess
       expect(await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS)).to.eq(1000 - 9);
-      // Kill 4 more
       expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(
         Math.floor(((queuedAction.timespan / 5) * dropRate * numSpawned) / (3600 * GUAR_MUL * SPAWN_MUL)) + 5
       );

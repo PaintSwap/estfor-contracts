@@ -22,11 +22,6 @@ struct QueuedActionInput {
   uint40 petId; // id of the pet (can be empty)
 }
 
-struct QueuedActionExtra {
-  uint40 petId; // id of the pet (can be empty)
-}
-
-// Can't extend this due to the actionQueue variable in Player struct
 struct QueuedAction {
   uint16 actionId;
   uint16 regenerateId; // Food (combat), maybe something for non-combat later
@@ -40,6 +35,8 @@ struct QueuedAction {
   uint64 queueId; // id of this queued action
   bytes1 packed; // isValid first bit (not used yet) and hasPet 2nd bit
   uint24 reserved;
+  // Next storage slot
+  uint40 petId; // id of the pet (can be empty)
 }
 
 // This is only used as an input arg (and events)

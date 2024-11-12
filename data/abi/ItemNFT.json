@@ -150,11 +150,6 @@
   },
   {
     "inputs": [],
-    "name": "InvalidChainId",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "InvalidInitialization",
     "type": "error"
   },
@@ -911,6 +906,30 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16[10]",
+        "name": "ids",
+        "type": "uint16[10]"
+      }
+    ],
+    "name": "balanceOfs10",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "batchBalances",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -1493,6 +1512,11 @@
       {
         "internalType": "contract IBankFactory",
         "name": "bankFactory",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IPlayers",
+        "name": "players",
         "type": "address"
       }
     ],

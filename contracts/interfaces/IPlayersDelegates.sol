@@ -31,14 +31,6 @@ interface IPlayersDelegate {
 
   function addFullAttireBonuses(FullAttireBonusInput[] calldata fullAttireBonuses) external;
 
-  function mintedPlayer(
-    address from,
-    uint256 playerId,
-    Skill[2] calldata startSkills,
-    uint256[] calldata startingItemTokenIds,
-    uint256[] calldata startingAmounts
-  ) external;
-
   function clearEverything(address from, uint256 playerId, bool processTheTransactions) external;
 
   function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external;
@@ -48,12 +40,26 @@ interface IPlayersDelegate {
 
 interface IPlayersMiscDelegate {
   function handleDailyRewards(address from, uint256 playerId) external;
+
+  function mintedPlayer(
+    address from,
+    uint playerId,
+    Skill[2] calldata startSkills,
+    uint[] calldata startingItemTokenIds,
+    uint[] calldata startingAmounts
+  ) external;
+}
+
+interface IPlayersMisc1Delegate {
+  function beforeItemNFTTransfer(address from, address to, uint[] memory ids, uint[] memory amounts) external;
 }
 
 interface IPlayersProcessActionsDelegate {
   function processActions(address from, uint256 playerId) external;
 
-  function processActionsAndSetState(uint256 playerId) external;
+  function processActionsAndSetState(
+    uint256 playerId
+  ) external returns (QueuedAction[] memory remainingQueuedActions, Attire[] memory remainingAttire);
 
   function donate(address from, uint256 playerId, uint256 amount) external;
 }
@@ -118,6 +124,16 @@ interface IPlayersRewardsDelegateView {
     address owner,
     uint256 playerId
   ) external view returns (PendingQueuedActionState memory pendingQueuedActionState);
+}
+
+interface IPlayersQueuedActionsDelegate {
+  function setInitialCheckpoints(
+    address from,
+    uint256 playerId,
+    uint256 existingActionQueueLength,
+    QueuedAction[] memory queuedActions,
+    Attire[] memory attire
+  ) external;
 }
 
 interface IPlayersQueuedActionsDelegateView {

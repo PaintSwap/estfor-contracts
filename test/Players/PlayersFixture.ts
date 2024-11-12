@@ -508,7 +508,7 @@ export const playersFixture = async function () {
 
   await bankRelay.setBankFactory(bankFactory);
 
-  await itemNFT.initializeAddresses(bankFactory);
+  await itemNFT.initializeAddresses(bankFactory, players);
   await itemNFT.setApproved(
     [players, shop, promotions, instantActions, territories, lockedBankVaults, instantVRFActions, passiveActions],
     true

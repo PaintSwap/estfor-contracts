@@ -1371,6 +1371,11 @@
             "internalType": "uint24",
             "name": "reserved",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "petId",
+            "type": "uint40"
           }
         ],
         "indexed": false,
@@ -1431,19 +1436,6 @@
         "internalType": "uint256",
         "name": "startTime",
         "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint40",
-            "name": "petId",
-            "type": "uint40"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct QueuedActionExtra[]",
-        "name": "queuedActionsExtra",
-        "type": "tuple[]"
       }
     ],
     "name": "SetActionQueue",
@@ -1659,6 +1651,34 @@
       }
     ],
     "name": "addXPThresholdRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "beforeItemNFTTransfer",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1898,6 +1918,11 @@
             "internalType": "uint24",
             "name": "reserved",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "petId",
+            "type": "uint40"
           }
         ],
         "internalType": "struct QueuedAction[]",
@@ -1988,7 +2013,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "playerOwner",
+        "name": "owner",
         "type": "address"
       }
     ],
@@ -1998,6 +2023,52 @@
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "getActivePlayerInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "playerId",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint40",
+            "name": "checkpoint",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "timespan",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "timespan1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "timespan2",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct ActivePlayerInfo",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -2303,7 +2374,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner_",
+        "name": "owner",
         "type": "address"
       },
       {
@@ -2379,6 +2450,11 @@
                 "internalType": "uint24",
                 "name": "xpElapsedTime",
                 "type": "uint24"
+              },
+              {
+                "internalType": "uint8",
+                "name": "checkpoint",
+                "type": "uint8"
               }
             ],
             "internalType": "struct PendingQueuedActionMetadata[]",
@@ -2446,6 +2522,11 @@
                 "internalType": "uint24",
                 "name": "reserved",
                 "type": "uint24"
+              },
+              {
+                "internalType": "uint40",
+                "name": "petId",
+                "type": "uint40"
               }
             ],
             "internalType": "struct QueuedAction[]",
@@ -2926,6 +3007,11 @@
                 "internalType": "uint24",
                 "name": "reserved",
                 "type": "uint24"
+              },
+              {
+                "internalType": "uint40",
+                "name": "petId",
+                "type": "uint40"
               }
             ],
             "internalType": "struct QueuedAction[]",

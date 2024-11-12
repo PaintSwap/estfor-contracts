@@ -96,6 +96,10 @@ describe("Shop", function () {
 
     await shop.setItemNFT(itemNFT);
 
+    const bankFactory = alice;
+    const mockPlayers = await ethers.deployContract("MockPlayers");
+    await itemNFT.initializeAddresses(bankFactory, mockPlayers);
+
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
