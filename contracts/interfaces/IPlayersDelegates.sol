@@ -45,13 +45,13 @@ interface IPlayersMiscDelegate {
     address from,
     uint playerId,
     Skill[2] calldata startSkills,
-    uint[] calldata startingItemTokenIds,
-    uint[] calldata startingAmounts
+    uint256[] calldata startingItemTokenIds,
+    uint256[] calldata startingAmounts
   ) external;
 }
 
 interface IPlayersMisc1Delegate {
-  function beforeItemNFTTransfer(address from, address to, uint[] memory ids, uint[] memory amounts) external;
+  function beforeItemNFTTransfer(address from, address to, uint256[] memory ids, uint256[] memory amounts) external;
 }
 
 interface IPlayersProcessActionsDelegate {

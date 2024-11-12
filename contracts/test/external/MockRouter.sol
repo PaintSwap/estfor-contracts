@@ -22,7 +22,7 @@ contract MockRouter is ISolidlyRouter {
     Route[] calldata routes,
     address to,
     uint256 /* deadline */
-  ) external payable returns (uint[] memory amounts) {
+  ) external payable returns (uint256[] memory amounts) {
     amounts = new uint256[](2);
     amounts[0] = msg.value;
     amounts[1] = amountOut;
@@ -50,7 +50,7 @@ contract MockRouter is ISolidlyRouter {
     Route[] calldata routes,
     address to,
     uint256 /* deadline */
-  ) external returns (uint[] memory amounts) {
+  ) external returns (uint256[] memory amounts) {
     MockBrushToken(routes[0].from).transferFrom(msg.sender, address(this), amountInMax);
     MockBrushToken(routes[0].from).burn(amountInMax);
     amounts = new uint256[](2);

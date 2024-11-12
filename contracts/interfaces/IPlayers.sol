@@ -42,5 +42,5 @@ interface IPlayers {
 
   function getActiveBoost(uint256 playerId) external view returns (PlayerBoostInfo memory);
 
-  function beforeItemNFTTransfer(address from, address to, uint[] calldata ids, uint[] calldata amounts) external;
+  function beforeItemNFTTransfer(address from, address to, uint256[] calldata ids, uint256[] calldata amounts) external;
 }

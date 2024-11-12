@@ -654,7 +654,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
           itemTokenIds[8] = queuedActions[i].leftHandEquipmentTokenId;
           itemTokenIds[9] = queuedActions[i].rightHandEquipmentTokenId;
 
-          uint[] memory balances = _itemNFT.balanceOfs10(from, itemTokenIds);
+          uint256[] memory balances = _itemNFT.balanceOfs10(from, itemTokenIds);
           // Only store up to 16 bits for storage efficiency
           uint16[10] memory cappedBalances;
           for (uint256 j = 0; j < cappedBalances.length; ++j) {

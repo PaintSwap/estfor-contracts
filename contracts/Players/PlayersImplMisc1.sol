@@ -151,8 +151,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
   function _fromBeforeItemNFTTransfer(
     address from,
     uint256 playerId,
-    uint[] memory ids,
-    uint[] memory amounts,
+    uint256[] memory ids,
+    uint256[] memory amounts,
     uint256 nextCheckpointTimestamp,
     uint256 queuedIndex
   ) private {
@@ -192,8 +192,8 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
 
   function _toBeforeItemNFTTransfer(
     uint256 playerId,
-    uint[] memory ids,
-    uint[] memory amounts,
+    uint256[] memory ids,
+    uint256[] memory amounts,
     uint256 checkpointTimestamp,
     uint256 queuedIndex
   ) private {
@@ -220,7 +220,7 @@ contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1Delegate
     }
   }
 
-  function beforeItemNFTTransfer(address from, address to, uint[] memory ids, uint[] memory amounts) external {
+  function beforeItemNFTTransfer(address from, address to, uint256[] memory ids, uint256[] memory amounts) external {
     bool isMinting = from == address(0);
     if (!isMinting) {
       uint256 playerId = _activePlayerInfos[from].playerId;

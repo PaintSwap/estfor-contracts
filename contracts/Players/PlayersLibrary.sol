@@ -107,8 +107,8 @@ library PlayersLibrary {
     uint16[] memory itemIds,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
     CheckpointEquipments calldata checkpointEquipments
-  ) private pure returns (uint[] memory balances) {
-    balances = new uint[](itemIds.length);
+  ) private pure returns (uint256[] memory balances) {
+    balances = new uint256[](itemIds.length);
 
     for (uint i; i < checkpointEquipments.itemTokenIds.length; ++i) {
       uint itemTokenId = checkpointEquipments.itemTokenIds[i];
@@ -138,7 +138,7 @@ library PlayersLibrary {
     uint16[] memory itemIds,
     address itemNFT,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
-  ) public view returns (uint[] memory balances) {
+  ) public view returns (uint256[] memory balances) {
     balances = IItemNFT(itemNFT).balanceOfs(from, itemIds);
     uint256 bounds = balances.length;
     for (uint256 i; i < bounds; ++i) {
@@ -1047,7 +1047,7 @@ library PlayersLibrary {
     Attire memory attire,
     address itemNFT,
     bool skipNonFullAttire
-  ) external view returns (uint16[] memory itemTokenIds, uint[] memory balances) {
+  ) external view returns (uint16[] memory itemTokenIds, uint256[] memory balances) {
     itemTokenIds = getAttireTokenIds(attire, skipNonFullAttire);
     if (itemTokenIds.length != 0) {
       balances = IItemNFT(itemNFT).balanceOfs(from, itemTokenIds);

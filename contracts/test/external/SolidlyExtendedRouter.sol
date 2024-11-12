@@ -261,9 +261,9 @@ contract SolidlyExtendedRouter is IRouter {
   }
 
   /// @dev performs chained getAmountOut calculations on any number of pairs
-  function getAmountsOut(uint amountIn, Route[] memory routes) public view returns (uint[] memory amounts) {
+  function getAmountsOut(uint amountIn, Route[] memory routes) public view returns (uint256[] memory amounts) {
     require(routes.length >= 1, "Equalizer Router: INVALID_PATH");
-    amounts = new uint[](routes.length + 1);
+    amounts = new uint256[](routes.length + 1);
     amounts[0] = amountIn;
     for (uint256 i = 0; i < routes.length; ++i) {
       address pair = pairFor(routes[i].from, routes[i].to, routes[i].stable);
@@ -518,7 +518,7 @@ contract SolidlyExtendedRouter is IRouter {
 
   // **** SWAP ****
   /// @dev requires the initial amount to have already been sent to the first pair
-  function _swap(uint[] memory amounts, Route[] memory routes, address _to) internal virtual {
+  function _swap(uint256[] memory amounts, Route[] memory routes, address _to) internal virtual {
     for (uint256 i = 0; i < routes.length; ++i) {
       (address token0, ) = sortTokens(routes[i].from, routes[i].to);
       uint amountOut = amounts[i + 1];
@@ -536,7 +536,7 @@ contract SolidlyExtendedRouter is IRouter {
     bool stable,
     address to,
     uint deadline
-  ) external ensure(deadline) returns (uint[] memory amounts) {
+  ) external ensure(deadline) returns (uint256[] memory amounts) {
     Route[] memory routes = new Route[](1);
     routes[0].from = tokenFrom;
     routes[0].to = tokenTo;
@@ -553,7 +553,7 @@ contract SolidlyExtendedRouter is IRouter {
     Route[] calldata routes,
     address to,
     uint deadline
-  ) external ensure(deadline) returns (uint[] memory amounts) {
+  ) external ensure(deadline) returns (uint256[] memory amounts) {
     amounts = getAmountsOut(amountIn, routes);
     require(amounts[amounts.length - 1] >= amountOutMin, "Equalizer Router: INSUFFICIENT_OUTPUT_AMOUNT");
     _safeTransferFrom(routes[0].from, msg.sender, pairFor(routes[0].from, routes[0].to, routes[0].stable), amounts[0]);
@@ -565,7 +565,7 @@ contract SolidlyExtendedRouter is IRouter {
     Route[] calldata routes,
     address to,
     uint deadline
-  ) external payable ensure(deadline) returns (uint[] memory amounts) {
+  ) external payable ensure(deadline) returns (uint256[] memory amounts) {
     require(routes[0].from == address(weth), "Equalizer Router: INVALID_PATH");
     amounts = getAmountsOut(msg.value, routes);
     require(amounts[amounts.length - 1] >= amountOutMin, "Equalizer Router: INSUFFICIENT_OUTPUT_AMOUNT");
@@ -580,7 +580,7 @@ contract SolidlyExtendedRouter is IRouter {
     Route[] calldata routes,
     address to,
     uint deadline
-  ) external ensure(deadline) returns (uint[] memory amounts) {
+  ) external ensure(deadline) returns (uint256[] memory amounts) {
     require(routes[routes.length - 1].to == address(weth), "Equalizer Router: INVALID_PATH");
     amounts = getAmountsOut(amountIn, routes);
     require(amounts[amounts.length - 1] >= amountOutMin, "Equalizer Router: INSUFFICIENT_OUTPUT_AMOUNT");
@@ -591,11 +591,11 @@ contract SolidlyExtendedRouter is IRouter {
   }
 
   function UNSAFE_swapExactTokensForTokens(
-    uint[] memory amounts,
+    uint256[] memory amounts,
     Route[] calldata routes,
     address to,
     uint deadline
-  ) external ensure(deadline) returns (uint[] memory) {
+  ) external ensure(deadline) returns (uint256[] memory) {
     _safeTransferFrom(routes[0].from, msg.sender, pairFor(routes[0].from, routes[0].to, routes[0].stable), amounts[0]);
     _swap(amounts, routes, to);
     return amounts;

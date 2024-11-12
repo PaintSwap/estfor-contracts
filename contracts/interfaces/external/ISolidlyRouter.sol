@@ -13,14 +13,14 @@ interface ISolidlyRouter {
     Route[] calldata routes,
     address to,
     uint deadline
-  ) external payable returns (uint[] memory amounts);
+  ) external payable returns (uint256[] memory amounts);
 
   function swapETHForExactTokens(
     uint amountOut,
     Route[] calldata routes,
     address to,
     uint deadline
-  ) external payable returns (uint[] memory amounts);
+  ) external payable returns (uint256[] memory amounts);
 
   function swapExactTokensForETH(
     uint256 amountIn,
@@ -36,5 +36,5 @@ interface ISolidlyRouter {
     Route[] calldata routes,
     address to,
     uint deadline
-  ) external returns (uint[] memory amounts);
+  ) external returns (uint256[] memory amounts);
 }

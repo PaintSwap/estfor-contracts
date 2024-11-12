@@ -178,8 +178,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   function beforeItemNFTTransfer(
     address from,
     address to,
-    uint[] memory ids,
-    uint[] memory amounts
+    uint256[] memory ids,
+    uint256[] memory amounts
   ) external override onlyItemNFT {
     _delegatecall(
       _implMisc1,
