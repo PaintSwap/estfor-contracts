@@ -412,9 +412,9 @@ describe("Bank", function () {
 
     const bank = (await Bank.attach(clanBankAddress)) as Bank;
 
-    const erc1155 = await ethers.deployContract("MockERC1155");
+    const erc1155 = await ethers.deployContract("TestERC1155NoRoyalty");
     const tokenId = 1;
-    await erc1155.mintSpecific(clanBankAddress, tokenId, 1000);
+    await erc1155.mintSpecificId(clanBankAddress, tokenId, 1000);
 
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
     await expect(bankRelay.connect(alice).withdrawNFT(playerId, bob, bobPlayerId, erc1155, tokenId, 400))
@@ -425,7 +425,7 @@ describe("Bank", function () {
     expect(await erc1155.balanceOf(bank, tokenId)).to.eq(600);
 
     // Cannot send erc721s, so there's nothing to withdraw there
-    const erc721 = await ethers.deployContract("MockERC721");
+    const erc721 = await ethers.deployContract("TestERC721");
     await expect(erc721.mint(bank)).to.be.reverted;
 
     await expect(

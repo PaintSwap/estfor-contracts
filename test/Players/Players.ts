@@ -2478,21 +2478,16 @@ describe("Players", function () {
         const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
 
         const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
-        console.info("\nBefore start actions");
         await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
         await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
-        console.info("\nIncrease time half way, and before process actions");
         await players.connect(alice).processActions(playerId);
         expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
-        console.info("\nBefore transferring item away");
         await itemNFT
           .connect(alice)
           .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
-        console.info("\nBefore minting");
         await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this should have no effect for the rest of the action
         await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
-        console.info("\nBefore process actions after all time has passed");
         await players.connect(alice).processActions(playerId);
         expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
       });

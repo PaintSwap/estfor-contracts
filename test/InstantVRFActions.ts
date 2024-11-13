@@ -20,7 +20,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createAndDoPurseStringsQuest, fulfillRandomWords} from "./utils";
 import {AbiCoder, ZeroAddress} from "ethers"; // ethers v6
 import {ethers} from "hardhat";
-import {ERC1155HolderRogue} from "../typechain-types";
+import {TestERC1155HolderRogue} from "../typechain-types";
 
 const abiCoder = new AbiCoder();
 
@@ -622,7 +622,7 @@ describe("Instant VRF actions", function () {
 
       await instantVRFActions.addActions([instantVRFActionInput]);
 
-      const erc1155HolderRogue = (await ethers.deployContract("ERC1155HolderRogue")) as ERC1155HolderRogue;
+      const erc1155HolderRogue = (await ethers.deployContract("TestERC1155HolderRogue")) as TestERC1155HolderRogue;
       await playerNFT
         .connect(alice)
         .safeTransferFrom(alice, await erc1155HolderRogue.getAddress(), playerId, 1, "0x00");

@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
-contract ERC1155HolderRogue is ERC1155Holder {
+contract TestERC1155HolderRogue is ERC1155Holder {
   event DoInstantVRFAction(bytes data);
 
   error NotAcceptingERC1155();
