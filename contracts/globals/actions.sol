@@ -29,12 +29,11 @@ struct QueuedAction {
   uint16 rightHandEquipmentTokenId; // Axe/Sword/bow, can be empty
   uint16 leftHandEquipmentTokenId; // Shield, can be empty
   uint24 timespan; // How long to queue the action for
-  uint8 combatStyle; // CombatStyle specific style of combat
   uint24 prevProcessedTime; // How long the action has been processed for previously
   uint24 prevProcessedXPTime; // How much XP has been gained for this action so far
   uint64 queueId; // id of this queued action
-  bytes1 packed; // isValid first bit (not used yet) and hasPet 2nd bit
-  uint24 reserved;
+  bytes1 packed; // 1st & 2nd bits are for the combatStyle. 3rd bit is isValid (not used yet), 4th bit is for hasPet (decides if the 2nd storage slot is read)
+  uint32 reserved;
   // Next storage slot
   uint40 petId; // id of the pet (can be empty)
 }

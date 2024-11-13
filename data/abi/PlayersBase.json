@@ -1164,11 +1164,6 @@
             "type": "uint24"
           },
           {
-            "internalType": "uint8",
-            "name": "combatStyle",
-            "type": "uint8"
-          },
-          {
             "internalType": "uint24",
             "name": "prevProcessedTime",
             "type": "uint24"
@@ -1189,9 +1184,9 @@
             "type": "bytes1"
           },
           {
-            "internalType": "uint24",
+            "internalType": "uint32",
             "name": "reserved",
-            "type": "uint24"
+            "type": "uint32"
           },
           {
             "internalType": "uint40",

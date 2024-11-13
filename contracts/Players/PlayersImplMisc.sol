@@ -17,7 +17,7 @@ import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPla
 import "../globals/all.sol";
 
 contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, IPlayersMiscDelegateView {
-  using CombatStyleLibrary for uint8;
+  using CombatStyleLibrary for bytes1;
   using CombatStyleLibrary for CombatStyle;
 
   constructor() {
@@ -329,7 +329,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   {
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    bool isCombat = _queuedAction.combatStyle._isCombatStyle();
+    bool isCombat = _queuedAction.packed._isCombatStyle();
     if (isCombat) {
       // Fetch the requirements for it
       CombatStats memory enemyCombatStats = _world.getCombatStats(_queuedAction.actionId);

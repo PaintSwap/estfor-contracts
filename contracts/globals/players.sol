@@ -325,4 +325,8 @@ uint256 constant IS_FULL_MODE_BIT = 7;
 uint256 constant IS_AVAILABLE_BIT = 6;
 
 // Queued action
-uint256 constant HAS_PET_BIT = 1;
+uint256 constant HAS_PET_BIT = 4;
+
+uint256 constant IS_VALID_BIT = 3;
+
+// 1 & 2 are for the combatStyle

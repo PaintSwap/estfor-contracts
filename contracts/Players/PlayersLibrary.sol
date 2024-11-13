@@ -16,7 +16,7 @@ import {RATE_MUL, SPAWN_MUL} from "../globals/actions.sol";
 
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayersLibrary {
-  using CombatStyleLibrary for uint8;
+  using CombatStyleLibrary for bytes1;
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
@@ -1186,7 +1186,7 @@ library PlayersLibrary {
     CheckpointEquipments calldata checkpointEquipments
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     Skill skill = skillId._asSkill();
-    bool isCombatSkill = queuedAction.combatStyle._isCombatStyle();
+    bool isCombatSkill = queuedAction.packed._isCombatStyle();
     uint24 xpPerHour = IWorld(world).getXPPerHour(queuedAction.actionId, isCombatSkill ? NONE : queuedAction.choiceId);
     pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
     // Normal Player specific boosts

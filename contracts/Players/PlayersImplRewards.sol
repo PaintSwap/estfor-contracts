@@ -14,7 +14,7 @@ import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 import "../globals/all.sol";
 
 contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDelegateView {
-  using CombatStyleLibrary for uint8;
+  using CombatStyleLibrary for bytes1;
   using CombatStyleLibrary for CombatStyle;
   using SkillLibrary for Skill;
 
@@ -134,7 +134,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint256 prevProcessedTime = queuedAction.prevProcessedTime;
       uint256 veryStartTime = startTime - prevProcessedTime;
 
-      bool isCombat = queuedAction.combatStyle._isCombatStyle();
+      bool isCombat = queuedAction.packed._isCombatStyle();
       ActionChoice memory actionChoice;
       if (queuedAction.choiceId != 0) {
         actionChoice = _world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
@@ -154,7 +154,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
         // Update combat stats from the pet if it is still valid.
         // The pet enhancements only take into account base hero stats, not any bonuses from equipment.
-        if (_hasPet(queuedAction.packed)) {
+        if (queuedAction.petId != 0) {
           Pet memory pet = _petNFT.getPet(queuedAction.petId);
           if (pet.owner == from && pet.lastAssignmentTimestamp <= veryStartTime) {
             combatStats = PlayersLibrary.updateCombatStatsFromPet(
@@ -362,7 +362,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint256 pointsAccruedExclBaseBoost;
       uint256 prevPointsAccrued;
       uint256 prevPointsAccruedExclBaseBoost;
-      CombatStyle combatStyle = queuedAction.combatStyle._asCombatStyle();
+      CombatStyle combatStyle = queuedAction.packed._asCombatStyle();
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, combatStyle, queuedAction.actionId);
       (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
         playerId,

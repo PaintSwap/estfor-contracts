@@ -19,6 +19,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
   using CombatStyleLibrary for uint8;
+  using CombatStyleLibrary for bytes1;
 
   constructor() {
     _checkStartSlot();
@@ -373,9 +374,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     queuedAction.choiceId = queuedActionInput.choiceId;
     queuedAction.rightHandEquipmentTokenId = queuedActionInput.rightHandEquipmentTokenId;
     queuedAction.leftHandEquipmentTokenId = queuedActionInput.leftHandEquipmentTokenId;
-    queuedAction.combatStyle = queuedActionInput.combatStyle;
 
-    bytes1 packed = bytes1(uint8(1)); // isValid
+    bytes1 packed = bytes1(queuedActionInput.combatStyle);
+    packed |= bytes1(uint8(1 << IS_VALID_BIT));
     // Only set variables in the second storage slot if it's necessary
     if (queuedActionInput.petId != 0) {
       packed |= bytes1(uint8(1 << HAS_PET_BIT));
