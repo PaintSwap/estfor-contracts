@@ -88,6 +88,11 @@
   },
   {
     "inputs": [],
+    "name": "InsufficientCost",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidEmissionPercentage",
     "type": "error"
   },
@@ -140,11 +145,6 @@
   {
     "inputs": [],
     "name": "NotAdminAndBeta",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotEnoughFTM",
     "type": "error"
   },
   {

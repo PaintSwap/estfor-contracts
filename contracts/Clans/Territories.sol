@@ -108,7 +108,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   error CannotAttackWhileStillAttacking();
   error AmountTooLow();
   error ClanCombatantsChangeCooldown();
-  error NotEnoughFTM();
+  error InsufficientCost();
   error RequestIdNotKnown();
   error ClanIsBlockingAttacks();
   error NotATerritoryDefenceItem();
@@ -150,7 +150,6 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   }
 
   uint256 private constant NUM_WORDS = 7;
-  uint256 private constant CALLBACK_GAS_LIMIT = 3_000_000;
   uint256 public constant MAX_DAILY_EMISSIONS = 10000 ether;
   uint256 public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
   uint256 public constant PERCENTAGE_EMISSION_MUL = 10;
@@ -258,7 +257,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
-    setExpectedGasLimitFulfill(1_500_000);
+    setExpectedGasLimitFulfill(3_000_000);
     setComparableSkills(comparableSkills);
     setMaxClanCombatants(maxClanCombatants);
     addTerritories(territories);
@@ -288,7 +287,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _checkCanAttackTerritory(clanId, clanIdOccupier, territoryId);
 
     // Check they are paying enough
-    require(msg.value >= getAttackCost(), NotEnoughFTM());
+    require(msg.value >= getAttackCost(), InsufficientCost());
 
     (bool success, ) = _oracle.call{value: msg.value}("");
     require(success, TransferFailed());
@@ -363,10 +362,12 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
 
       randomSkills = new uint8[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
       for (uint256 i; i < randomSkills.length; ++i) {
-        randomSkills[i] = uint8(_comparableSkills[uint8(randomWords[6] >> (i * 8)) % _comparableSkills.length]);
+        randomSkills[i] = uint8(
+          _comparableSkills[uint8(randomWords[NUM_WORDS - 1] >> (i * 8)) % _comparableSkills.length]
+        );
       }
 
-      (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary._doBattle(
+      (battleResults, attackingRolls, defendingRolls, didAttackersWin) = ClanBattleLibrary._determineBattleOutcome(
         _players,
         attackingPlayerIds,
         defendingPlayerIds,
@@ -501,7 +502,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   }
 
   function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
+    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, _expectedGasLimitFulfill);
   }
 
   function _claimTerritory(uint256 territoryId, uint256 attackingClanId) private {

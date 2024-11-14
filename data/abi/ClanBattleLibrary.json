@@ -52,7 +52,7 @@
         "type": "uint256"
       }
     ],
-    "name": "doBattle",
+    "name": "determineBattleOutcome",
     "outputs": [
       {
         "internalType": "uint8[]",
@@ -76,30 +76,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint48[]",
-        "name": "array",
-        "type": "uint48[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "randomNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "shuffleArray",
-    "outputs": [
-      {
-        "internalType": "uint48[]",
-        "name": "output",
-        "type": "uint48[]"
-      }
-    ],
-    "stateMutability": "pure",
     "type": "function"
   }
 ]

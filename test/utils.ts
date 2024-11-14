@@ -127,5 +127,11 @@ export const createAndDoPurseStringsQuest = async (
   await players.connect(signer).buyBrushQuest(signer, playerId, 0, true, {value: 10});
 };
 
+export enum BattleResult {
+  DRAW,
+  WIN,
+  LOSE
+}
+
 // see Initilizable.sol. keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Initializable")) - 1)) & ~bytes32(uint256(0xff))
 export const initializerSlot = "0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00";

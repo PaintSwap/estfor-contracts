@@ -58,7 +58,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   error PlayerNotUpgraded();
   error TooManyActionAmounts();
   error RequestDoesNotExist();
-  error NotEnoughFTM();
+  error InsufficientCost();
   error TransferFailed();
   error NotDoingAnyActions();
   error InvalidStrategy();
@@ -179,7 +179,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     // Mainly to keep response gas within block gas limits
     require(totalAmount <= _maxActionAmount, TooManyActionAmounts());
     // // Check they are paying enough
-    require(msg.value >= requestCost(totalAmount), NotEnoughFTM());
+    require(msg.value >= requestCost(totalAmount), InsufficientCost());
 
     (bool success, ) = _oracle.call{value: msg.value}("");
     require(success, TransferFailed());

@@ -1,7 +1,6 @@
 import {ethers, upgrades} from "hardhat";
 import {
   ClanBattleLibrary,
-  ClanBattleLibrary__factory,
   EstforLibrary,
   LockedBankVaultsLibrary,
   OrderBook,
@@ -44,7 +43,8 @@ import {
   CLAN_BATTLE_LIBRARY_ADDRESS,
   BANK_RELAY_ADDRESS,
   BANK_FACTORY_ADDRESS,
-  BAZAAR_ADDRESS
+  BAZAAR_ADDRESS,
+  PVP_BATTLEGROUND_ADDRESS
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -324,6 +324,14 @@ async function main() {
   });
   await vrfRequestInfo.waitForDeployment();
   console.log(`vrfRequestInfo = "${(await vrfRequestInfo.getAddress()).toLowerCase()}"`);
+
+  const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
+  const pvpBattleground = await upgrades.upgradeProxy(PVP_BATTLEGROUND_ADDRESS, PVPBattleground, {
+    kind: "uups",
+    timeout
+  });
+  await pvpBattleground.waitForDeployment();
+  console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`);
 
   // ClanBattleLibrary
   const newClanBattleLibrary = false;

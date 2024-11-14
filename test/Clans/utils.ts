@@ -71,7 +71,8 @@ export async function clanFixture() {
     playerNFT,
     itemNFT,
     players,
-    lockedBankVaults
+    lockedBankVaults,
+    isBeta
   } = fixture;
 
   // Add basic tier
@@ -119,7 +120,6 @@ export async function clanFixture() {
   const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
   // All these must match the constants inside LockedBankVaults.sol
   // This must match the constructor of LockedBankVaults.sol
-  const isBeta = true;
   const attackingCooldown = isBeta ? 1.5 * 60 : 4 * 3600;
   const reattackingCooldown = isBeta ? 3 * 60 : 24 * 3600;
   const combatantChangeCooldown = isBeta ? 5 * 60 : 3 * 86400;
@@ -142,10 +142,4 @@ export async function clanFixture() {
     reattackingCooldown,
     combatantChangeCooldown
   };
-}
-
-export enum BattleResult {
-  DRAW,
-  WIN,
-  LOSE
 }

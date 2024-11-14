@@ -493,10 +493,9 @@ describe("LockedBankVaults", function () {
     const bigZero = 0n;
     expect(movingAverageGasPrice).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
 
-    attackCost = await lockedBankVaults.getAttackCost();
-
     const expectedGasLimit = 1_500_000n;
     await lockedBankVaults.setExpectedGasLimitFulfill(expectedGasLimit);
+    attackCost = await lockedBankVaults.getAttackCost();
     expect(attackCost).to.eq(baseAttackCost + movingAverageGasPrice * expectedGasLimit);
 
     await lockedBankVaults.setAttackInProgress(requestId);

@@ -233,4 +233,16 @@ library EstforLibrary {
   function binarySearch(uint48[] storage array, uint256 target) external view returns (uint256) {
     return _binarySearch(array, target);
   }
+
+  function _shuffleArray(uint48[] memory array, uint256 randomNumber) internal pure returns (uint48[] memory output) {
+    for (uint256 i; i < array.length; ++i) {
+      uint256 n = i + (randomNumber % (array.length - i));
+      if (i != n) {
+        uint48 temp = array[n];
+        array[n] = array[i];
+        array[i] = temp;
+      }
+    }
+    return array;
+  }
 }

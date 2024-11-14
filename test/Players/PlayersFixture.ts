@@ -34,7 +34,8 @@ import {
   World,
   WorldLibrary,
   Treasury,
-  BankRelay
+  BankRelay,
+  PVPBattleground
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -352,6 +353,28 @@ export const playersFixture = async function () {
   const brushPerSecond = parseEther("2");
   const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
+  const pvpAttackingCooldown = 3600; // 1 hour
+  const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
+  const pvpBattleground = (await upgrades.deployProxy(
+    PVPBattleground,
+    [
+      await players.getAddress(),
+      await playerNFT.getAddress(),
+      await brush.getAddress(),
+      await itemNFT.getAddress(),
+      oracleAddress,
+      await mockVRF.getAddress(),
+      await vrfRequestInfo.getAddress(),
+      allBattleSkills,
+      pvpAttackingCooldown,
+      await adminAccess.getAddress(),
+      isBeta
+    ],
+    {
+      kind: "uups"
+    }
+  )) as unknown as PVPBattleground;
+
   const decorator = await ethers.deployContract("TestPaintSwapDecorator", [
     await brush.getAddress(),
     await wftm.getAddress(),
@@ -517,7 +540,7 @@ export const playersFixture = async function () {
   await royaltyReceiver.setTerritories(territories);
   await territories.setCombatantsHelper(combatantsHelper);
   await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
-  await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories], true);
+  await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories, pvpBattleground], true);
 
   await players.setAlphaCombatHealing(0); // This was introduced later, so to not mess up existing tests reset this to 0
 
@@ -603,6 +626,9 @@ export const playersFixture = async function () {
     maxLockedVaults,
     sellingCutoffDuration,
     maxInstantVRFActionAmount,
-    minHarvestInterval
+    minHarvestInterval,
+    isBeta,
+    pvpBattleground,
+    pvpAttackingCooldown
   };
 };

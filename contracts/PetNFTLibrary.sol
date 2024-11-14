@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {Skill} from "./globals/players.sol";
+import {Skill} from "./globals/misc.sol";
 import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.sol";
 
 // This file contains methods for interacting with the pet NFT, used to decrease implementation deployment bytecode code.

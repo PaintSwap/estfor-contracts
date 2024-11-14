@@ -93,6 +93,11 @@
   },
   {
     "inputs": [],
+    "name": "InsufficientCost",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidInitialization",
     "type": "error"
   },
@@ -114,11 +119,6 @@
   {
     "inputs": [],
     "name": "NotDoingAnyActions",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotEnoughFTM",
     "type": "error"
   },
   {

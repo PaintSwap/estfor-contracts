@@ -35,7 +35,8 @@ import {
   Bank,
   BankRegistry,
   SolidlyExtendedRouter,
-  FakeDecoratorBrush
+  FakeDecoratorBrush,
+  PVPBattleground
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -640,6 +641,31 @@ async function main() {
   await bankRelay.waitForDeployment();
   console.log(`bankRelay = "${(await bankRelay.getAddress()).toLowerCase()}"`);
 
+  const pvpAttackingCooldown = 10 * 60; // 10 minutes
+  const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
+  const pvpBattleground = (await upgrades.deployProxy(
+    PVPBattleground,
+    [
+      await players.getAddress(),
+      await playerNFT.getAddress(),
+      await brush.getAddress(),
+      await itemNFT.getAddress(),
+      oracleAddress,
+      await vrf.getAddress(),
+      await vrfRequestInfo.getAddress(),
+      allBattleSkills,
+      pvpAttackingCooldown,
+      await adminAccess.getAddress(),
+      isBeta
+    ],
+    {
+      kind: "uups",
+      timeout
+    }
+  )) as unknown as PVPBattleground;
+  await pvpBattleground.waitForDeployment();
+  console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`);
+
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
   console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
 
@@ -941,9 +967,13 @@ async function main() {
   await tx.wait();
   console.log("bankRelay.setBankFactory");
 
-  tx = await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories], true);
+  tx = await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories, pvpBattleground], true);
   await tx.wait();
   console.log("vrfRequestInfo.setUpdaters");
+
+  tx = await pvpBattleground.setPreventAttacks(true);
+  await tx.wait();
+  console.log("pvpBattleground.setPreventAttacks");
 
   tx = await instantVRFActions.addStrategies(
     [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],

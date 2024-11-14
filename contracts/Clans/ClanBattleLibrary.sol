@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {PlayersLibrary} from "../Players/PlayersLibrary.sol";
+import {EstforLibrary} from "../EstforLibrary.sol";
 
 import {IPlayers} from "../interfaces/IPlayers.sol";
 
@@ -15,19 +16,7 @@ library ClanBattleLibrary {
   error TooManyDefenders();
   error NotEnoughRandomWords();
 
-  function shuffleArray(uint48[] memory array, uint256 randomNumber) public pure returns (uint48[] memory output) {
-    for (uint256 i; i < array.length; ++i) {
-      uint256 n = i + (randomNumber % (array.length - i));
-      if (i != n) {
-        uint48 temp = array[n];
-        array[n] = array[i];
-        array[i] = temp;
-      }
-    }
-    return array;
-  }
-
-  function doBattle(
+  function determineBattleOutcome(
     address players,
     uint48[] memory clanMembersA,
     uint48[] memory clanMembersB,
@@ -40,10 +29,10 @@ library ClanBattleLibrary {
     view
     returns (uint8[] memory battleResults, uint256[] memory rollsA, uint256[] memory rollsB, bool didAWin)
   {
-    return _doBattle(players, clanMembersA, clanMembersB, skills, randomWords, extraRollsA, extraRollsB);
+    return _determineBattleOutcome(players, clanMembersA, clanMembersB, skills, randomWords, extraRollsA, extraRollsB);
   }
 
-  function _doBattle(
+  function _determineBattleOutcome(
     address players,
     uint48[] memory clanMembersA, // [In/Out] gets shuffled
     uint48[] memory clanMembersB, // [In/Out] gets shuffled
@@ -60,8 +49,8 @@ library ClanBattleLibrary {
     require(clanMembersB.length <= 32, TooManyDefenders());
     require(randomWords.length >= 6, NotEnoughRandomWords());
 
-    shuffleArray(clanMembersA, randomWords[0]);
-    shuffleArray(clanMembersB, randomWords[3]);
+    EstforLibrary._shuffleArray(clanMembersA, randomWords[0]);
+    EstforLibrary._shuffleArray(clanMembersB, randomWords[3]);
 
     uint256 baseClanMembersCount = clanMembersA.length > clanMembersB.length
       ? clanMembersB.length

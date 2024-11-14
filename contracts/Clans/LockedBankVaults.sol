@@ -104,7 +104,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   error TransferFailed();
   error CannotChangeCombatantsDuringAttack();
   error NotAdminAndBeta();
-  error NotEnoughFTM();
+  error InsufficientCost();
   error RequestIdNotKnown();
   error CallerNotSamWitchVRF();
   error AttacksPrevented();
@@ -119,7 +119,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   uint256 private constant NUM_WORDS = 7;
-  uint256 private constant CALLBACK_GAS_LIMIT = 3_500_000;
   uint256 private constant NUM_PACKED_VAULTS = 2;
 
   Skill[] private _comparableSkills;
@@ -259,7 +258,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _vrfRequestInfo = vrfRequestInfo;
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
-    setExpectedGasLimitFulfill(1_500_000);
+    setExpectedGasLimitFulfill(3_500_000);
     setKValues(32, 32);
     setMaxClanCombatants(maxClanCombatants);
     setComparableSkills(comparableSkills);
@@ -307,7 +306,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isAtLeastLeaderOfClan(clanId, leaderPlayerId) {
     require(!_preventAttacks, AttacksPrevented());
     // Check they are paying enough
-    require(msg.value >= getAttackCost(), NotEnoughFTM());
+    require(msg.value >= getAttackCost(), InsufficientCost());
 
     (bool success, ) = _oracle.call{value: msg.value}("");
     require(success, TransferFailed());
@@ -404,7 +403,9 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
     uint8[] memory randomSkills = new uint8[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
     for (uint256 i; i < randomSkills.length; ++i) {
-      randomSkills[i] = uint8(_comparableSkills[uint8(randomWords[6] >> (i * 8)) % _comparableSkills.length]);
+      randomSkills[i] = uint8(
+        _comparableSkills[uint8(randomWords[NUM_WORDS - 1] >> (i * 8)) % _comparableSkills.length]
+      );
     }
 
     (
@@ -412,7 +413,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       uint256[] memory attackingRolls,
       uint256[] memory defendingRolls,
       bool didAttackersWin
-    ) = ClanBattleLibrary.doBattle(
+    ) = ClanBattleLibrary.determineBattleOutcome(
         address(_players),
         attackingPlayerIds,
         defendingPlayerIds,
@@ -580,7 +581,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT);
+    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, _expectedGasLimitFulfill);
   }
 
   function getAttackCost() public view returns (uint256) {

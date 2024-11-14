@@ -38,7 +38,8 @@ import {
   LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
   TREASURY_ADDRESS,
   BANK_RELAY_ADDRESS,
-  BAZAAR_ADDRESS
+  BAZAAR_ADDRESS,
+  PVP_BATTLEGROUND_ADDRESS
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -83,7 +84,8 @@ async function main() {
     PET_NFT_ADDRESS,
     PET_NFT_LIBRARY_ADDRESS,
     PASSIVE_ACTIONS_ADDRESS,
-    TREASURY_ADDRESS
+    TREASURY_ADDRESS,
+    PVP_BATTLEGROUND_ADDRESS
   ];
 
   await verifyContracts(addresses);

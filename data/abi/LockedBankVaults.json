@@ -53,6 +53,11 @@
   },
   {
     "inputs": [],
+    "name": "InsufficientCost",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidInitialization",
     "type": "error"
   },
@@ -75,11 +80,6 @@
   {
     "inputs": [],
     "name": "NotAdminAndBeta",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotEnoughFTM",
     "type": "error"
   },
   {
