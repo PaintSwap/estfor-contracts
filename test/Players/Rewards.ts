@@ -934,7 +934,7 @@ describe("Rewards", function () {
         {
           const actionQueue = await players.getActionQueue(playerId);
           expect(actionQueue.length).to.eq(1);
-          endTime = (await players.getPlayers(playerId)).currentActionStartTime + actionQueue[0].timespan;
+          endTime = (await players.getPlayers(playerId)).currentActionStartTimestamp + actionQueue[0].timespan;
         }
 
         expect(await world.hasRandomWord(endTime)).to.be.false;
@@ -1067,7 +1067,7 @@ describe("Rewards", function () {
           const actionQueue = await players.getActionQueue(playerId);
           expect(actionQueue.length).to.eq(2);
           endTime =
-            (await players.getPlayers(playerId)).currentActionStartTime +
+            (await players.getPlayers(playerId)).currentActionStartTimestamp +
             actionQueue[0].timespan +
             actionQueue[1].timespan;
         }

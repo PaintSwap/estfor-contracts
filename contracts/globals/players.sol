@@ -38,7 +38,7 @@ enum EquipPosition {
 }
 
 struct Player {
-  uint40 currentActionStartTime; // The in-progress start time of the first queued action
+  uint40 currentActionStartTimestamp; // The in-progress start time of the first queued action
   Skill currentActionProcessedSkill1; // The skill that the queued action has already gained XP in
   uint24 currentActionProcessedXPGained1; // The amount of XP that the queued action has already gained
   Skill currentActionProcessedSkill2;

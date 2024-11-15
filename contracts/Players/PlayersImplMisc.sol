@@ -221,7 +221,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
   function _getConsumablesEquipment(
     uint256 playerId,
-    uint256 currentActionStartTime,
+    uint256 currentActionStartTimestamp,
     uint256 xpElapsedTime,
     ActionChoice calldata actionChoice,
     uint16 regenerateId,
@@ -285,7 +285,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         // Check for any gathering boosts
         PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
         uint256 boostedTime = PlayersLibrary.getBoostedTime(
-          currentActionStartTime,
+          currentActionStartTimestamp,
           xpElapsedTime,
           activeBoost.startTime,
           activeBoost.duration
@@ -309,7 +309,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     address from,
     uint256 playerId,
     QueuedAction calldata _queuedAction,
-    uint256 currentActionStartTime,
+    uint256 currentActionStartTimestamp,
     uint256 elapsedTime,
     CombatStats calldata combatStats,
     ActionChoice calldata actionChoice,
@@ -363,7 +363,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
     (consumedEquipment, producedEquipment) = _getConsumablesEquipment(
       playerId,
-      currentActionStartTime,
+      currentActionStartTimestamp,
       xpElapsedTime,
       actionChoice,
       _queuedAction.regenerateId,

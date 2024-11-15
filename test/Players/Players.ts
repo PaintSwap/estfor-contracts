@@ -1102,7 +1102,7 @@ describe("Players", function () {
   describe("Missing required equipment right hand equipment", async function () {
     async function expectRemovedCurrentAction(players: Players, playerId: bigint, now: number) {
       const player = await players.getPlayers(playerId);
-      expect(player.currentActionStartTime).to.eq(now);
+      expect(player.currentActionStartTimestamp).to.eq(now);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
       expect(player.currentActionProcessedXPGained1).to.eq(0);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.NONE);
@@ -1341,7 +1341,7 @@ describe("Players", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players.connect(alice).processActions(playerId);
     const player = await players.getPlayers(playerId);
-    expect(player.currentActionStartTime).to.eq(NOW + 1);
+    expect(player.currentActionStartTimestamp).to.eq(NOW + 1);
     expect(player.currentActionProcessedSkill1).to.eq(Skill.WOODCUTTING);
     expect(player.currentActionProcessedXPGained1).to.eq((queuedAction.timespan * 10) / rate);
     expect(player.currentActionProcessedSkill2).to.eq(Skill.NONE);

@@ -26,9 +26,9 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
     Player storage player = _players[playerId];
     if (remainingQueuedActions.length != 0) {
-      player.currentActionStartTime = uint40(block.timestamp);
+      player.currentActionStartTimestamp = uint40(block.timestamp);
     } else {
-      player.currentActionStartTime = 0;
+      player.currentActionStartTimestamp = 0;
     }
     _setPrevPlayerState(player, currentActionProcessed);
 
@@ -64,7 +64,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
     currentActionProcessed = pendingQueuedActionProcessed.currentAction;
     uint256 skillIndex;
-    uint256 startTime = _players[playerId].currentActionStartTime;
+    uint256 startTime = _players[playerId].currentActionStartTimestamp;
     for (uint256 i = 0; i < pendingQueuedActionState.equipmentStates.length; ++i) {
       PendingQueuedActionEquipmentState memory equipmentState = pendingQueuedActionState.equipmentStates[i];
       PendingQueuedActionMetadata memory actionMetadata = pendingQueuedActionState.actionMetadatas[i];

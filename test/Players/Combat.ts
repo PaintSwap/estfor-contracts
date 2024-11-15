@@ -1886,7 +1886,7 @@ describe("Combat Actions", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
 
       let player = await players.getPlayers(playerId);
-      expect(player.currentActionStartTime).to.eq(NOW + 1);
+      expect(player.currentActionStartTimestamp).to.eq(NOW + 1);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
       expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
@@ -1902,7 +1902,7 @@ describe("Combat Actions", function () {
       NOW = NOW1;
       await players.connect(alice).processActions(playerId);
       player = await players.getPlayers(playerId);
-      expect(player.currentActionStartTime).to.eq(NOW + 1);
+      expect(player.currentActionStartTimestamp).to.eq(NOW + 1);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
       expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
@@ -1922,7 +1922,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
       player = await players.getPlayers(playerId);
-      expect(player.currentActionStartTime).to.eq(0);
+      expect(player.currentActionStartTimestamp).to.eq(0);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
       expect(player.currentActionProcessedXPGained1).to.eq(0);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.NONE);

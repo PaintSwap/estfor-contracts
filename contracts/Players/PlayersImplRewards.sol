@@ -90,7 +90,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256 previousTotalXP = player.totalXP;
     uint256 totalXPGained;
     uint256 pendingQueuedActionStateLength;
-    uint256 startTime = _players[playerId].currentActionStartTime;
+    uint256 startTime = _players[playerId].currentActionStartTimestamp;
     Skill firstRemainingActionSkill; // Might also be the non-actual skills Skill.COMBAT or Skill.TRAVELING
     uint256 numActionsSkipped;
     for (uint256 i; i < actionQueueLength; ++i) {

@@ -244,9 +244,9 @@ describe("Fuzz testing", async function () {
         // Check if the first action has finished
         const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         const firstAction = (await players.getActionQueue(playerId))[0];
-        if ((await players.getPlayers(playerId)).currentActionStartTime + firstAction.timespan >= NOW) {
+        if ((await players.getPlayers(playerId)).currentActionStartTimestamp + firstAction.timespan >= NOW) {
           await ethers.provider.send("evm_increaseTime", [
-            (await players.getPlayers(playerId)).currentActionStartTime + firstAction.timespan - BigInt(NOW)
+            (await players.getPlayers(playerId)).currentActionStartTimestamp + firstAction.timespan - BigInt(NOW)
           ]);
           await ethers.provider.send("evm_mine", []);
         }

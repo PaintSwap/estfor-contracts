@@ -82,9 +82,9 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     uint256 queuedActionsLength = queuedActionInputs.length;
 
     if (remainingQueuedActions.length != 0 || queuedActionInputs.length != 0) {
-      player.currentActionStartTime = uint40(block.timestamp);
+      player.currentActionStartTimestamp = uint40(block.timestamp);
     } else {
-      player.currentActionStartTime = 0;
+      player.currentActionStartTimestamp = 0;
     }
 
     uint256 totalLength = remainingQueuedActions.length + queuedActionInputs.length;
@@ -135,7 +135,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     setInitialCheckpoints(from, playerId, 0, player.actionQueue, attire);
-    emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTime);
+    emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTimestamp);
 
     assert(totalTimespan < MAX_TIME + 1 hours); // Should never happen
     _nextQueueId = uint56(queueId);
@@ -594,7 +594,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     // Ensure player info is cleared
     _clearCurrentActionProcessed(playerId);
     Player storage player = _players[playerId];
-    player.currentActionStartTime = 0;
+    player.currentActionStartTimestamp = 0;
 
     emit ClearAll(from, playerId);
     _clearActionQueue(from, playerId);
@@ -616,7 +616,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     QueuedAction[] memory queuedActions,
     Attire[] memory attire
   ) public {
-    uint256 checkpoint = _players[playerId].currentActionStartTime;
+    uint256 checkpoint = _players[playerId].currentActionStartTimestamp;
     if (queuedActions.length > 0) {
       checkpoint -= queuedActions[0].prevProcessedTime;
     }
