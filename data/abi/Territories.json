@@ -691,6 +691,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "attackCooldown",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetAttackCooldown",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "enum Skill[]",
         "name": "skills",
         "type": "uint8[]"
@@ -1333,6 +1346,11 @@
         "type": "uint8"
       },
       {
+        "internalType": "uint24",
+        "name": "attackingCooldown",
+        "type": "uint24"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "adminAccess",
         "type": "address"
@@ -1414,6 +1432,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24",
+        "name": "attackCooldown",
+        "type": "uint24"
+      }
+    ],
+    "name": "setAttackCooldown",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

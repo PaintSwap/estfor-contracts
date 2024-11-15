@@ -713,6 +713,7 @@ async function main() {
   console.log(`lockedBankVaults = "${(await lockedBankVaults.getAddress()).toLowerCase()}"`);
 
   const maxClanCombatantsTerritories = 20;
+  const attackingCooldownTerritories = 24 * 3600; // 1 day
   const Territories = await ethers.getContractFactory("Territories");
   const territories = (await upgrades.deployProxy(
     Territories,
@@ -728,6 +729,7 @@ async function main() {
       await vrfRequestInfo.getAddress(),
       allBattleSkills,
       maxClanCombatantsTerritories,
+      attackingCooldownTerritories,
       await adminAccess.getAddress(),
       isBeta
     ],

@@ -87,7 +87,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
 
   IPlayers private _players;
   uint64 private _nextPendingAttackId;
-  uint24 private _attackCooldown;
+  uint24 private _attackingCooldown;
   bool private _preventAttacks;
   PlayerNFT private _playerNFT;
   AdminAccess private _adminAccess;
@@ -175,7 +175,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
     require(success, TransferFailed());
 
     uint64 nextPendingAttackId = _nextPendingAttackId++;
-    uint40 attackingCooldownTimestamp = uint40(block.timestamp + _attackCooldown);
+    uint40 attackingCooldownTimestamp = uint40(block.timestamp + _attackingCooldown);
     PlayerInfo storage playerInfo = _playerInfos[playerId];
     playerInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
     playerInfo.currentlyAttacking = true;
@@ -384,7 +384,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function setAttackCooldown(uint24 attackCooldown) public onlyOwner {
-    _attackCooldown = attackCooldown;
+    _attackingCooldown = attackCooldown;
     emit SetAttackCooldown(attackCooldown);
   }
 

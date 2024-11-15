@@ -2525,7 +2525,7 @@ describe("Players", function () {
           .connect(alice)
           .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
-        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 2]); // Right before next action starts
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 3]); // Right before next action starts
         await players.connect(alice).processActions(playerId);
         expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
           queuedAction.timespan - queuedAction.timespan / 100
@@ -2534,7 +2534,7 @@ describe("Players", function () {
           .connect(alice)
           .safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x");
         await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this should have no effect for the whole action
-        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2 + queuedAction.timespan]);
+        await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 3 + queuedAction.timespan]);
         await players.connect(alice).processActions(playerId);
         expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(
           queuedAction.timespan - queuedAction.timespan / 100 + queuedAction.timespan

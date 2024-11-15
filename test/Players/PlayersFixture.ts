@@ -385,7 +385,6 @@ export const playersFixture = async function () {
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   const mmrAttackDistance = 4;
   const lockedFundsPeriod = 7 * 86400; // 7 days
-  const maxClanCombatantsTerritories = 20;
   const maxClanComabtantsLockedBankVaults = 20;
   const maxLockedVaults = 100;
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
@@ -425,6 +424,8 @@ export const playersFixture = async function () {
   // Set K values to 3, 3 to make it easier to get consistent values close to each for same MMR testing
   await lockedBankVaults.setKValues(3, 3);
 
+  const maxClanCombatantsTerritories = 20;
+  const attackingCooldownTerritories = 24 * 3600; // 1 day
   const minHarvestInterval = BigInt(3.75 * 3600); // 3 hours 45 minutes;
   const Territories = await ethers.getContractFactory("Territories");
   const territories = (await upgrades.deployProxy(
@@ -441,6 +442,7 @@ export const playersFixture = async function () {
       await vrfRequestInfo.getAddress(),
       allBattleSkills,
       maxClanCombatantsTerritories,
+      attackingCooldownTerritories,
       await adminAccess.getAddress(),
       isBeta
     ],

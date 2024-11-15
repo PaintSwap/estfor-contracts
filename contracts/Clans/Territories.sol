@@ -85,6 +85,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint256 blockAttacksTimestamp,
     uint256 blockAttacksCooldownTimestamp
   );
+  event SetAttackCooldown(uint256 attackCooldown);
 
   error InvalidTerritory();
   error InvalidTerritoryId();
@@ -160,7 +161,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   mapping(uint256 territoryId => Territory territory) private _territories;
   address private _players;
   uint16 private _nextTerritoryId;
-  uint64 private _nextPendingAttackId;
+  uint24 private _attackingCooldown;
+  uint56 private _nextPendingAttackId;
   IClans private _clans;
   AdminAccess private _adminAccess;
   bool private _isBeta;
@@ -235,6 +237,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     VRFRequestInfo vrfRequestInfo,
     Skill[] calldata comparableSkills,
     uint8 maxClanCombatants,
+    uint24 attackingCooldown,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -257,6 +260,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
+    setAttackCooldown(attackingCooldown);
     setExpectedGasLimitFulfill(3_000_000);
     setComparableSkills(comparableSkills);
     setMaxClanCombatants(maxClanCombatants);
@@ -292,8 +296,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     (bool success, ) = _oracle.call{value: msg.value}("");
     require(success, TransferFailed());
 
-    uint64 nextPendingAttackId = _nextPendingAttackId++;
-    uint40 attackingCooldownTimestamp = uint40(block.timestamp + TERRITORY_ATTACKED_COOLDOWN_PLAYER);
+    uint56 nextPendingAttackId = _nextPendingAttackId++;
+    uint40 attackingCooldownTimestamp = uint40(block.timestamp + _attackingCooldown);
     ClanInfo storage clanInfo = _clanInfos[clanId];
     clanInfo.attackingCooldownTimestamp = attackingCooldownTimestamp;
 
@@ -645,6 +649,11 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
     _maxClanCombatants = maxClanCombatants;
     emit SetMaxClanCombatants(maxClanCombatants);
+  }
+
+  function setAttackCooldown(uint24 attackCooldown) public onlyOwner {
+    _attackingCooldown = attackCooldown;
+    emit SetAttackCooldown(attackCooldown);
   }
 
   function clearCooldowns(uint256 clanId) external isAdminAndBeta {
