@@ -94,7 +94,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   error PlayerOnTerritory();
   error TooManyCombatants();
   error NotOwnerOfPlayerAndActive();
-  error NotLeader();
+  error RankNotHighEnough();
   error InvalidSkill(Skill skill);
   error NotMemberOfClan();
   error LengthMismatch();
@@ -169,8 +169,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 playerId) {
-    require(_clans.getRank(clanId, playerId) >= ClanRank.LEADER, NotLeader());
+  modifier isMinimumRank(uint256 clanId, uint256 playerId, ClanRank clanRank) {
+    require(_clans.getRank(clanId, playerId) >= clanRank, RankNotHighEnough());
     _;
   }
 
@@ -303,7 +303,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint256 defendingClanId,
     uint16 itemTokenId,
     uint256 leaderPlayerId
-  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isAtLeastLeaderOfClan(clanId, leaderPlayerId) {
+  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
     require(!_preventAttacks, AttacksPrevented());
     // Check they are paying enough
     require(msg.value >= getAttackCost(), InsufficientCost());

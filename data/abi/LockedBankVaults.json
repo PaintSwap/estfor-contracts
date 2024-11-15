@@ -89,11 +89,6 @@
   },
   {
     "inputs": [],
-    "name": "NotLeader",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotMemberOfClan",
     "type": "error"
   },
@@ -147,6 +142,11 @@
   {
     "inputs": [],
     "name": "PlayerOnTerritory",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RankNotHighEnough",
     "type": "error"
   },
   {

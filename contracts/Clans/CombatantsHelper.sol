@@ -20,7 +20,7 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 // as the same player cannot be in both
 contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   error NotOwnerOfPlayerAndActive();
-  error NotLeader();
+  error RankNotHighEnough();
   error PlayerOnTerritoryAndLockedVault();
   error PlayerAlreadyExistingCombatant();
   error SetCombatantsIncorrectly();
@@ -48,8 +48,8 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 playerId) {
-    require(_clans.getRank(clanId, playerId) >= ClanRank.LEADER, NotLeader());
+  modifier isMinimumRank(uint256 clanId, uint256 playerId, ClanRank clanRank) {
+    require(_clans.getRank(clanId, playerId) >= clanRank, RankNotHighEnough());
     _;
   }
 
@@ -92,7 +92,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     bool setLockedVaultCombatants,
     uint48[] calldata lockedVaultPlayerIds,
     uint256 leaderPlayerId
-  ) external isOwnerOfPlayerAndActive(leaderPlayerId) isAtLeastLeaderOfClan(clanId, leaderPlayerId) {
+  ) external isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
     require(setTerritoryCombatants || setLockedVaultCombatants, NotSettingCombatants());
 
     _checkAndSetAssignCombatants(

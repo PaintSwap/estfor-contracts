@@ -487,7 +487,7 @@ describe("Territories", function () {
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerIdsNotSortedOrDuplicates");
   });
 
-  it("Must be a leader to attack a territory", async () => {
+  it("Must be a colonel to attack a territory", async () => {
     const {playerNFT, avatarId, clans, clanId, playerId, territories, combatantsHelper, owner, alice, origName} =
       await loadFixture(clanFixture);
 
@@ -495,15 +495,15 @@ describe("Territories", function () {
     const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
-    await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.TREASURER, playerId);
+    await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.SCOUT, playerId);
 
     await combatantsHelper
       .connect(alice)
       .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], playerId);
     await expect(
       territories.attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()})
-    ).to.be.revertedWithCustomError(territories, "NotLeader");
-    await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.LEADER, playerId);
+    ).to.be.revertedWithCustomError(territories, "RankNotHighEnough");
+    await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.COLONEL, playerId);
     await territories.attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()});
   });
 

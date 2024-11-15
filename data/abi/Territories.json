@@ -170,11 +170,6 @@
   },
   {
     "inputs": [],
-    "name": "NotLeader",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotMemberOfClan",
     "type": "error"
   },
@@ -218,6 +213,11 @@
   {
     "inputs": [],
     "name": "PlayerDefendingLockedVaults",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RankNotHighEnough",
     "type": "error"
   },
   {

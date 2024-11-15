@@ -7,6 +7,7 @@ enum ClanRank {
   NONE, // Not in a clan
   COMMONER, // Member of the clan
   SCOUT, // Invite and kick commoners
+  COLONEL, // Can launch attacks and assign combatants
   TREASURER, // Can withdraw from bank
   LEADER, // Can edit clan details
   OWNER // Can do everything and transfer ownership

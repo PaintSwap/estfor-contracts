@@ -90,7 +90,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   error InvalidTerritoryId();
   error InvalidEmissionPercentage();
   error TransferFailed();
-  error NotLeader();
+  error RankNotHighEnough();
   error ClanAttackingCooldown();
   error NotMemberOfClan();
   error InvalidSkill(Skill skill);
@@ -187,8 +187,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _;
   }
 
-  modifier isAtLeastLeaderOfClan(uint256 clanId, uint256 playerId) {
-    require(_clans.getRank(clanId, playerId) >= ClanRank.LEADER, NotLeader());
+  modifier isMinimumRank(uint256 clanId, uint256 playerId, ClanRank clanRank) {
+    require(_clans.getRank(clanId, playerId) >= clanRank, RankNotHighEnough());
     _;
   }
 
@@ -281,7 +281,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint256 clanId,
     uint256 territoryId,
     uint256 leaderPlayerId
-  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isAtLeastLeaderOfClan(clanId, leaderPlayerId) {
+  ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
     uint256 clanIdOccupier = _territories[territoryId].clanIdOccupier;
 
     _checkCanAttackTerritory(clanId, clanIdOccupier, territoryId);
