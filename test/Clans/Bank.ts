@@ -12,8 +12,7 @@ describe("Bank", function () {
   async function bankFixture() {
     const fixture = await loadFixture(playersFixture);
 
-    const {bankFactory, clans, bank, bankRegistry, bankRelay, playerNFT, itemNFT, players, lockedBankVaults, raids} =
-      fixture;
+    const {bankFactory, clans, bank} = fixture;
 
     // Add basic tier
     await clans.addTiers([
@@ -36,15 +35,7 @@ describe("Bank", function () {
     const clanBankAddress = await calculateClanBankAddress(
       clanId,
       await bankFactory.getAddress(),
-      await clans.getAddress(),
-      await bank.getAddress(),
-      await bankRegistry.getAddress(),
-      await bankRelay.getAddress(),
-      await playerNFT.getAddress(),
-      await itemNFT.getAddress(),
-      await players.getAddress(),
-      await lockedBankVaults.getAddress(),
-      await raids.getAddress()
+      await bank.getAddress()
     );
 
     return {...fixture, clanId, clanBankAddress, clans, clanName, discord, telegram, twitter};

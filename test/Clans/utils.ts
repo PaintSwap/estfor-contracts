@@ -6,42 +6,16 @@ import {expect} from "chai";
 export async function calculateClanBankAddress(
   clanId: number,
   bankFactoryAddress: string,
-  clansAddress: string,
-  bankBeaconAddress: string,
-  bankRegistryAddress: string,
-  bankRelayAddress: string,
-  playerNFTAddress: string,
-  itemNFTAddress: string,
-  playersAddress: string,
-  lockedBankVaultsAddress: string,
-  raidsAddress: string
+  bankBeaconAddress: string
 ): Promise<string> {
   // Combine `clanId` into a `salt`
   const salt = ethers.zeroPadValue(ethers.toBeHex(clanId), 32);
 
   // Get the `initialize` selector
-  const initializeSelector = ethers
-    .id("initialize(uint256,address,address,address,address,address,address,address,address)")
-    .slice(0, 10);
-
-  // Encode the data for `initialize` function parameters
-  const data = ethers.AbiCoder.defaultAbiCoder().encode(
-    ["uint256", "address", "address", "address", "address", "address", "address", "address", "address"],
-    [
-      clanId,
-      bankRegistryAddress,
-      bankRelayAddress,
-      playerNFTAddress,
-      itemNFTAddress,
-      clansAddress,
-      playersAddress,
-      lockedBankVaultsAddress,
-      raidsAddress
-    ]
-  );
+  const initializeSelector = ethers.id("initialize()").slice(0, 10);
 
   // Combine `initializeSelector` and encoded `data`
-  const initializeCalldata = initializeSelector.concat(data.slice(2));
+  const initializeCalldata = initializeSelector;
 
   // Encode the constructor arguments for the `BeaconProxy` (beacon address + initialize calldata)
   const encodedArgs = ethers.AbiCoder.defaultAbiCoder().encode(
@@ -62,21 +36,7 @@ export async function calculateClanBankAddress(
 
 export async function clanFixture() {
   const fixture = await loadFixture(playersFixture);
-  const {
-    clans,
-    playerId,
-    alice,
-    bank,
-    bankRegistry,
-    bankFactory,
-    bankRelay,
-    playerNFT,
-    itemNFT,
-    players,
-    lockedBankVaults,
-    raids,
-    isBeta
-  } = fixture;
+  const {clans, playerId, alice, bank, bankFactory, isBeta} = fixture;
 
   // Add basic tier
   await clans.addTiers([
@@ -101,19 +61,7 @@ export async function clanFixture() {
 
   const tier = await clans.getTier(tierId);
 
-  const bankAddress = await calculateClanBankAddress(
-    clanId,
-    await bankFactory.getAddress(),
-    await clans.getAddress(),
-    await bank.getAddress(),
-    await bankRegistry.getAddress(),
-    await bankRelay.getAddress(),
-    await playerNFT.getAddress(),
-    await itemNFT.getAddress(),
-    await players.getAddress(),
-    await lockedBankVaults.getAddress(),
-    await raids.getAddress()
-  );
+  const bankAddress = await calculateClanBankAddress(clanId, await bankFactory.getAddress(), await bank.getAddress());
 
   await expect(clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, imageId, tierId))
     .to.emit(clans, "ClanCreated")

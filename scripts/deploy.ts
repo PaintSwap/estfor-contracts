@@ -1292,13 +1292,9 @@ async function main() {
       clans,
       bankFactory,
       bank,
-      bankRegistry,
-      bankRelay,
-      lockedBankVaults,
       minItemQuantityBeforeSellsAllowed,
       orderBook,
-      quests,
-      raids
+      quests
     );
   }
 }

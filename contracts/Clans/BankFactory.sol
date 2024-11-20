@@ -78,21 +78,20 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
 
     // Create new Bank contract with EIP 1167 beacon proxy
     address proxy = address(
-      new BeaconProxy{salt: bytes32(clanId)}(
-        _bankBeacon,
-        abi.encodeWithSelector(
-          IBank.initialize.selector,
-          clanId,
-          _bankRegistry,
-          _bankRelay,
-          _playerNFT,
-          _itemNFT,
-          _clans,
-          _players,
-          _lockedBankVaults,
-          _raids
-        )
-      )
+      new BeaconProxy{salt: bytes32(clanId)}(_bankBeacon, abi.encodeWithSelector(IBank.initialize.selector))
+    );
+
+    // Cannot just update this after deployment as other banks won't have the extra things set, need to use the bankRegistry.
+    IBank(proxy).initializeAddresses(
+      clanId,
+      _bankRegistry,
+      _bankRelay,
+      _playerNFT,
+      _itemNFT,
+      _clans,
+      _players,
+      _lockedBankVaults,
+      _raids
     );
 
     _createdHere[proxy] = true;

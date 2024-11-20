@@ -33,13 +33,9 @@ export const addTestData = async (
   clans: Clans,
   bankFactory: BankFactory,
   bank: Bank,
-  bankRegistry: BankRegistry,
-  bankRelay: BankRelay,
-  lockedBankVaults: LockedBankVaults,
   minItemQuantityBeforeSellsAllowed: bigint,
   orderBook: OrderBook,
-  quests: Quests,
-  raids: Raids
+  quests: Quests
 ) => {
   const [owner, alice] = await ethers.getSigners();
 
@@ -267,15 +263,7 @@ export const addTestData = async (
   const clanBankAddress = await calculateClanBankAddress(
     clanId,
     await bankFactory.getAddress(),
-    await clans.getAddress(),
-    await bank.getAddress(),
-    await bankRegistry.getAddress(),
-    await bankRelay.getAddress(),
-    await playerNFT.getAddress(),
-    await itemNFT.getAddress(),
-    await players.getAddress(),
-    await lockedBankVaults.getAddress(),
-    await raids.getAddress()
+    await bank.getAddress()
   );
 
   // Send some item to the bank

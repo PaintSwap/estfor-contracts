@@ -6,6 +6,11 @@
   },
   {
     "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "DepositFailed",
     "type": "error"
   },
@@ -559,6 +564,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -606,7 +618,7 @@
         "type": "address"
       }
     ],
-    "name": "initialize",
+    "name": "initializeAddresses",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

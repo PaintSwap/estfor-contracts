@@ -58,6 +58,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   error UseWithdrawItemsForNFT();
   error NFTTypeNotSupported();
   error NotForceItemDepositor();
+  error AlreadyInitialized();
 
   uint40 private _clanId;
   BankRegistry private _bankRegistry;
@@ -70,11 +71,17 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   address private _lockedBankVaults;
   address private _raids;
   bool private _allowBreachedCapacity; // Be nice if this is transient storage
+  bool private _initialized;
 
   BitMaps.BitMap private _uniqueItems; // itemTokenId => bool hasAny
 
   modifier onlyBankRelay() {
     require(_msgSender() == _bankRelay, OnlyBankRelay());
+    _;
+  }
+
+  modifier notInitialized() {
+    require(!_initialized, AlreadyInitialized());
     _;
   }
 
@@ -98,7 +105,11 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     _disableInitializers();
   }
 
-  function initialize(
+  function initialize() external override initializer {
+    __ReentrancyGuard_init();
+  }
+
+  function initializeAddresses(
     uint256 clanId,
     address bankRegistry,
     address bankRelay,
@@ -108,8 +119,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     address players,
     address lockedBankVaults,
     address raids
-  ) external override initializer {
-    __ReentrancyGuard_init();
+  ) external notInitialized {
+    _initialized = true;
     _clanId = clanId.toUint40();
     _bankRegistry = BankRegistry(bankRegistry);
     _bankRelay = bankRelay;
@@ -167,7 +178,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
     _itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
 
-    // Update uniqueItemCount after trasnferring the items
+    // Update uniqueItemCount after transferring the items
     _withdraw(ids);
     emit WithdrawItems(sender, to, playerId, ids, amounts);
   }
@@ -179,7 +190,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) canWithdraw(playerId) nonReentrant {
     _itemNFT.safeBulkTransfer(nftsInfo);
 
-    // Update uniqueItemCount after trasnferring the items
+    // Update uniqueItemCount after transferring the items
     uint256 uniqueItemsToRemove;
     for (uint256 i; i < nftsInfo.length; ++i) {
       uniqueItemsToRemove += _withdraw(nftsInfo[i].tokenIds);

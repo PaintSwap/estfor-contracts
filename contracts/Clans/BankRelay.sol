@@ -13,11 +13,11 @@ import {PlayerNFT} from "../PlayerNFT.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 
 contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
+  error PlayerNotInClan();
+
   Clans private _clans;
   BankFactory private _bankFactory;
   PlayerNFT private _playerNFT;
-
-  error PlayerNotInClan();
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {

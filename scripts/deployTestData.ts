@@ -9,27 +9,19 @@ import {
   BANK_FACTORY_ADDRESS,
   BAZAAR_ADDRESS,
   QUESTS_ADDRESS,
-  BANK_RELAY_ADDRESS,
-  LOCKED_BANK_VAULTS_ADDRESS,
-  BANK_ADDRESS,
-  BANK_REGISTRY_ADDRESS,
-  RAIDS_ADDRESS
+  BANK_ADDRESS
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {
   Bank,
   BankFactory,
-  BankRegistry,
-  BankRelay,
   Clans,
   ItemNFT,
-  LockedBankVaults,
   MockBrushToken,
   OrderBook,
   PlayerNFT,
   Players,
   Quests,
-  Raids,
   Shop
 } from "../typechain-types";
 
@@ -44,15 +36,7 @@ async function main() {
   const minItemQuantityBeforeSellsAllowed = 500n;
   const orderBook = (await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS)) as unknown as OrderBook;
   const quests = (await ethers.getContractAt("Quests", QUESTS_ADDRESS)) as unknown as Quests;
-
   const bank = (await ethers.getContractAt("Bank", BANK_ADDRESS)) as unknown as Bank;
-  const bankRegistry = (await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS)) as unknown as BankRegistry;
-  const bankRelay = (await ethers.getContractAt("BankRelay", BANK_RELAY_ADDRESS)) as unknown as BankRelay;
-  const lockedBankVaults = (await ethers.getContractAt(
-    "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS
-  )) as unknown as LockedBankVaults;
-  const raids = (await ethers.getContractAt("Raids", RAIDS_ADDRESS)) as unknown as Raids;
 
   await addTestData(
     itemNFT,
@@ -63,13 +47,9 @@ async function main() {
     clans,
     bankFactory,
     bank,
-    bankRegistry,
-    bankRelay,
-    lockedBankVaults,
     minItemQuantityBeforeSellsAllowed,
     orderBook,
-    quests,
-    raids
+    quests
   );
 }
 

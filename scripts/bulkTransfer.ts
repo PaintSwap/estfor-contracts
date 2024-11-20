@@ -1,16 +1,5 @@
 import {ethers} from "hardhat";
-import {
-  BANK_ADDRESS,
-  BANK_FACTORY_ADDRESS,
-  BANK_REGISTRY_ADDRESS,
-  BANK_RELAY_ADDRESS,
-  CLANS_ADDRESS,
-  ITEM_NFT_ADDRESS,
-  LOCKED_BANK_VAULTS_ADDRESS,
-  PLAYER_NFT_ADDRESS,
-  PLAYERS_ADDRESS,
-  RAIDS_ADDRESS
-} from "./contractAddresses";
+import {BANK_ADDRESS, BANK_FACTORY_ADDRESS, BANK_RELAY_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {getChainId} from "./utils";
 import {calculateClanBankAddress} from "../test/Clans/utils";
@@ -57,19 +46,7 @@ async function main() {
 
   // From clan
   const clanId = 1;
-  const clanBankAddress = await calculateClanBankAddress(
-    clanId,
-    BANK_FACTORY_ADDRESS,
-    CLANS_ADDRESS,
-    BANK_ADDRESS,
-    BANK_REGISTRY_ADDRESS,
-    BANK_RELAY_ADDRESS,
-    PLAYER_NFT_ADDRESS,
-    ITEM_NFT_ADDRESS,
-    PLAYERS_ADDRESS,
-    LOCKED_BANK_VAULTS_ADDRESS,
-    RAIDS_ADDRESS
-  );
+  const clanBankAddress = await calculateClanBankAddress(clanId, BANK_FACTORY_ADDRESS, BANK_ADDRESS);
 
   // Send directly
   tx = await itemNFT.mintBatch(clanBankAddress, [EstforConstants.TITANIUM_AXE, EstforConstants.IRON_AXE], [2, 2]);

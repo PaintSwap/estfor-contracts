@@ -2535,11 +2535,11 @@ describe("Rewards", function () {
         health: 0
       };
 
-      const randomChance = 40; // Very low chance
+      const randomChance = 50; // Very low chance
       const numSpawned = 100 * SPAWN_MUL; // per hour
 
       const numHours = 23;
-      // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 40) / 65535) a 2.67% chance and each roll hitting, and there are 64 dice.
+      // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 50) / 65535) a 2.67% chance and each roll hitting, and there are 64 dice.
 
       let tx = await world.addActions([
         {

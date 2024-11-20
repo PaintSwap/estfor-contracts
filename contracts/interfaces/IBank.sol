@@ -2,7 +2,9 @@
 pragma solidity ^0.8.28;
 
 interface IBank {
-  function initialize(
+  function initialize() external;
+
+  function initializeAddresses(
     uint256 clanId,
     address bankRegistry,
     address bankRelay,

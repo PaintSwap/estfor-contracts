@@ -22,6 +22,7 @@ import {BattleResultEnum} from "./globals/clans.sol";
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {PlayersLibrary} from "./Players/PlayersLibrary.sol";
 
+// For battling a single player vs player
 contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   using SafeCast for uint256;
 

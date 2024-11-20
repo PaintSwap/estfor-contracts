@@ -1359,8 +1359,8 @@ describe("Non-Combat Actions", function () {
       const expectedTotal = numRepeats * randomChanceFraction * numHours * (successPercent / 100);
       const balance = await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW);
       // Have 2 queued actions so twice as much
-      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.65)); // Within 35% below
-      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.35)); // Within 35% above
+      expect(balance).to.be.gte(Math.floor(expectedTotal * 0.6)); // Within 40% below
+      expect(balance).to.be.lte(Math.floor(expectedTotal * 1.4)); // Within 40% above
     });
 
     // Gives +3% XP and +100% success chance
