@@ -131,6 +131,7 @@ export const allBattleSkills = [
   Skill.FIREMAKING,
   Skill.ALCHEMY,
   Skill.FLETCHING,
-  Skill.FORGING
+  Skill.FORGING,
+  Skill.FARMING
   //  Skill.FARMING, TODO: Add this when farming is added
 ];

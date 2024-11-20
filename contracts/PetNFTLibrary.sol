@@ -209,6 +209,8 @@ library PetNFTLibrary {
       return "Fletching";
     } else if (skill == Skill.FORGING) {
       return "Forging";
+    } else if (skill == Skill.FARMING) {
+      return "Farming";
     } else {
       return "None";
     }

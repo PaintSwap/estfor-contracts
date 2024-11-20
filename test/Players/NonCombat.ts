@@ -21,7 +21,8 @@ import {
   checkPendingQueuedActionState,
   setupBasicAlchemy,
   setupBasicFletching,
-  setupBasicForging
+  setupBasicForging,
+  setupBasicFarming
 } from "./utils";
 import {timeTravelToNextCheckpoint, timeTravel, timeTravel24Hours} from "../utils";
 import {Block} from "ethers";
@@ -2187,6 +2188,43 @@ describe("Non-Combat Actions", function () {
       );
       expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(
         Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+    });
+  });
+
+  // Very similar to crafting, but has very long actions (8 hours long)
+  describe("Farming", function () {
+    it("Finish 1 item", async function () {
+      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+
+      const {queuedAction, rate} = await setupBasicFarming(itemNFT, world);
+
+      const startingAmount = 200;
+      await itemNFT.mintBatch(
+        alice,
+        [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT], // TODO: Update
+        [startingAmount, startingAmount]
+      );
+
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+
+      expect(queuedAction.timespan).to.eq(8 * 3600); // 8 hours
+      await timeTravel(queuedAction.timespan - 10);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(0);
+      await timeTravel(10);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(queuedAction.timespan);
+
+      // Check the inputs/output are as expected
+      expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW_HEAD)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
+      );
+      expect(await itemNFT.balanceOf(alice, EstforConstants.ARROW_SHAFT)).to.eq(
+        startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL)) * 20
+      );
+      expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(
+        Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL)) * 13
       );
     });
   });

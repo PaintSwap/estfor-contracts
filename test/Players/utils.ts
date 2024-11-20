@@ -739,7 +739,6 @@ export const setupBasicForging = async function (
   ]);
   const actionId = await getActionId(tx, world);
 
-  // Create Small Lump
   tx = await world.addActionChoices(
     actionId,
     [1],
@@ -747,7 +746,6 @@ export const setupBasicForging = async function (
       {
         ...defaultActionChoice,
         skill: EstforTypes.Skill.FORGING,
-
         xpPerHour: 3600,
         rate,
         inputTokenIds: [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT, EstforConstants.FEATHER],
@@ -786,6 +784,88 @@ export const setupBasicForging = async function (
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.FEATHER,
+      equipPosition: EstforTypes.EquipPosition.NONE
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.BRONZE_ARROW,
+      equipPosition: EstforTypes.EquipPosition.NONE
+    }
+  ]);
+
+  return {queuedAction, rate, choiceId};
+};
+
+export const setupBasicFarming = async function (
+  itemNFT: ItemNFT,
+  world: World,
+  rate = 0.125 * RATE_MUL,
+  outputAmount: number = 13
+) {
+  let tx = await world.addActions([
+    {
+      actionId: 1,
+      info: {
+        skill: EstforTypes.Skill.FARMING,
+        xpPerHour: 0,
+        minXP: 0,
+        worldLocation: 0,
+        isFullModeOnly: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.NONE,
+        handItemTokenIdRangeMax: EstforConstants.NONE,
+        isAvailable: true,
+        questPrerequisiteId: 0,
+        actionChoiceRequired: true,
+        successPercent: 100
+      },
+      guaranteedRewards: [],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats
+    }
+  ]);
+  const actionId = await getActionId(tx, world);
+
+  tx = await world.addActionChoices(
+    actionId,
+    [1],
+    [
+      {
+        ...defaultActionChoice,
+        skill: EstforTypes.Skill.FARMING,
+        xpPerHour: 3600,
+        rate,
+        inputTokenIds: [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT], // TODO: Update these
+        inputAmounts: [1, 20],
+        outputTokenId: EstforConstants.BRONZE_ARROW,
+        outputAmount
+      }
+    ]
+  );
+  const choiceId = await getActionChoiceId(tx, world);
+
+  const timespan = (3600 / rate) * RATE_MUL;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.NONE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
+  };
+
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.BRONZE_ARROW_HEAD,
+      equipPosition: EstforTypes.EquipPosition.NONE
+    },
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.ARROW_SHAFT,
       equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
