@@ -11,6 +11,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
+import {IWorld} from "./interfaces/IWorld.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {PetNFTLibrary} from "./PetNFTLibrary.sol";
@@ -114,6 +115,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   uint8 private _brushDevPercentage;
   address private _territories;
   address private _players;
+  IWorld private _world;
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
@@ -154,6 +156,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     address dev,
     uint72 editNameCost,
     address treasury,
+    IWorld world,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -176,6 +179,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     _isBeta = isBeta;
     _nextPetId = 1;
     _treasury = treasury;
+    _world = world;
     setEditNameCost(editNameCost);
   }
 

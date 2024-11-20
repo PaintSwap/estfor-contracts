@@ -134,7 +134,9 @@ describe("PetNFT", function () {
   });
 
   it("external_url when not in beta", async function () {
-    const {adminAccess, brush, treasury, dev, royaltyReceiver, alice, PetNFT} = await loadFixture(deployContracts);
+    const {adminAccess, brush, treasury, dev, royaltyReceiver, alice, world, PetNFT} = await loadFixture(
+      deployContracts
+    );
 
     // Confirm that external_url points to main estfor site
     const isBeta = false;
@@ -149,6 +151,7 @@ describe("PetNFT", function () {
         dev.address,
         editNameCost,
         await treasury.getAddress(),
+        await world.getAddress(),
         await adminAccess.getAddress(),
         isBeta
       ],
@@ -196,7 +199,9 @@ describe("PetNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {petNFT, adminAccess, brush, dev, royaltyReceiver, treasury, PetNFT} = await loadFixture(deployContracts);
+    const {petNFT, adminAccess, brush, dev, royaltyReceiver, treasury, world, PetNFT} = await loadFixture(
+      deployContracts
+    );
     expect(await petNFT.name()).to.be.eq("Estfor Pets (Beta)");
     expect(await petNFT.symbol()).to.be.eq("EK_PETS_B");
 
@@ -212,6 +217,7 @@ describe("PetNFT", function () {
         dev.address,
         editNameCost,
         await treasury.getAddress(),
+        await world.getAddress(),
         await adminAccess.getAddress(),
         isBeta
       ],

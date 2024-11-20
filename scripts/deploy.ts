@@ -475,6 +475,7 @@ async function main() {
       DEV_ADDRESS,
       editPetNameBrushPrice,
       await treasury.getAddress(),
+      await world.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],

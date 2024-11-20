@@ -1382,6 +1382,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract IWorld",
+        "name": "world",
+        "type": "address"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "adminAccess",
         "type": "address"

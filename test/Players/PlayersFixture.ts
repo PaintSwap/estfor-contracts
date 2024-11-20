@@ -213,6 +213,7 @@ export const playersFixture = async function () {
       dev.address,
       editNameBrushPrice,
       await treasury.getAddress(),
+      await world.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
