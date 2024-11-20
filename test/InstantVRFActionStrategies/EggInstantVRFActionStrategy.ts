@@ -56,7 +56,6 @@ describe("EggInstantVRFActionStrategy", function () {
     expect(res.producedItemTokenIds).to.be.deep.eq([]);
     expect(res.producedItemsAmounts).to.be.deep.eq([]);
     expect(res.producedPetBaseIds).to.be.deep.eq([rewardBasePetIdMin + 1]);
-    expect(res.producedPetRandomWords).to.be.deep.eq([randomWord]);
 
     // Modulus of num should give the same output
     const oldNum = num;
@@ -111,14 +110,9 @@ describe("EggInstantVRFActionStrategy", function () {
       startIndex
     );
 
-    let bytes = keccak256(secondWord);
-    const firstPetRandomWord = parseInt(bytes.slice(2, 6), 16);
-    const secondPetRandomWord = parseInt(bytes.slice(6, 10), 16);
-
     expect(res.producedItemTokenIds).to.be.deep.equal([]);
     expect(res.producedItemsAmounts).to.be.deep.equal([]);
     expect(res.producedPetBaseIds).to.be.deep.equal([rewardBasePetIdMin + 1, rewardBasePetIdMin + 2]);
-    expect(res.producedPetRandomWords).to.be.deep.equal([firstPetRandomWord, secondPetRandomWord]);
   });
 
   const leftAlignAsBytes2 = (n: number) => {

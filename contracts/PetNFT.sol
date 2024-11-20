@@ -34,6 +34,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   event AddBasePets(BasePetInput[] basePetInputs);
   event EditBasePets(BasePetInput[] basePetInputs);
   event EditNameCost(uint256 newCost);
+  event Train(uint256 playerId, uint256 petId);
 
   error PetAlreadyExists();
   error PetDoesNotExist();
@@ -67,6 +68,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   error IllegalNameStart();
   error SameName();
   error CannotTransferThisPet(uint256 petId);
+  error TrainOnCooldown();
 
   struct BasePetInput {
     string description;
@@ -90,12 +92,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   uint40 private _nextPetId;
   address private _instantVRFActions;
 
-  // What about the different skins?
   mapping(uint256 basePetId => BasePetMetadata metadata) private _basePetMetadatas;
   mapping(uint256 petId => Pet pet) private _pets;
   mapping(uint256 petId => string name) private _names;
   mapping(string name => bool exists) private _lowercaseNames;
-  mapping(uint256 petId => uint40 lastAssignmentTimestamp) private _lastAssignmentTimestamps;
   string private _imageBaseUri;
 
   // Royalties
@@ -241,10 +241,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   function mintBatch(
     address to,
     uint256[] calldata basePetIds,
-    uint256[] calldata randomWords
+    uint256 randomWord
   ) external onlyMinters returns (uint256[] memory tokenIds) {
-    require(basePetIds.length == randomWords.length, LengthMismatch());
-
     tokenIds = new uint256[](basePetIds.length);
     uint256[] memory amounts = new uint256[](basePetIds.length);
     string[] memory names = new string[](basePetIds.length);
@@ -252,8 +250,9 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
 
     uint256 startPetId = _nextPetId;
     for (uint256 i = 0; i < pets.length; ++i) {
+      randomWord = uint256(keccak256(abi.encodePacked(randomWord))); // Get a new random word for each pet
       uint256 petId = startPetId + i;
-      Pet memory pet = _createPet(petId, basePetIds[i], uint16(randomWords[i]));
+      Pet memory pet = _createPet(petId, basePetIds[i], randomWord);
       pets[i] = pet;
       tokenIds[i] = petId;
       amounts[i] = 1;
@@ -274,18 +273,45 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     _burn(from, tokenId, 1);
   }
 
-  function _createPet(uint256 petId, uint256 _basePetId, uint16 randomWord) private returns (Pet memory pet) {
+  // Not used yet
+  function requestTrain(
+    uint256 playerId,
+    uint256 petId,
+    uint256 timestamp
+  ) external isOwnerOfPlayer(playerId) isOwnerOfPet(petId) {
+    assert(false);
+    uint256 lastTrainedDay = _pets[petId].lastTrainedTimestamp / 1 days;
+    uint256 currentDay = timestamp / 1 days;
+    require(lastTrainedDay < currentDay, TrainOnCooldown());
+
+    // Still possible to train up? Harder to train up higher level pets? Requires multiple days?
+    uint64 currentXP = _pets[petId].xp;
+    _pets[petId].xp = currentXP + 100; // TODO:
+    _pets[petId].lastTrainedTimestamp = uint40(timestamp);
+    emit Train(playerId, petId);
+  }
+
+  function _createPet(uint256 petId, uint256 _basePetId, uint256 randomWord) private returns (Pet memory pet) {
     require(_basePetMetadatas[_basePetId].skillEnhancement1 != Skill.NONE, PetDoesNotExist());
 
     // Fixed enhancement for skill 1
     uint256 skillFixedMin1 = _basePetMetadatas[_basePetId].skillFixedMin1;
     uint256 skillFixedMax1 = _basePetMetadatas[_basePetId].skillFixedMax1;
     uint256 skillFixedEnhancement1 = skillFixedMin1;
+
+    uint256 skillFixedEnhancementMax1;
+    uint256 skillPercentageEnhancementMax1;
     if (skillFixedMax1 != skillFixedMin1) {
       skillFixedEnhancement1 =
-        ((randomWord >> 8) %
+        (uint8(randomWord) %
           (((skillFixedMax1 - skillFixedMin1 + 1) / _basePetMetadatas[_basePetId].skillFixedIncrement1))) +
         skillFixedMin1;
+
+      skillFixedEnhancementMax1 =
+        skillFixedEnhancement1 +
+        (uint8(randomWord >> 8) % (skillFixedMax1 - skillFixedEnhancement1 + 1));
+    } else {
+      skillFixedEnhancementMax1 = skillFixedMin1;
     }
 
     // Percentage enhancement for skill 1
@@ -294,29 +320,42 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     uint256 skillPercentageEnhancement1 = skillPercentageMin1;
     if (skillPercentageMax1 != skillPercentageMin1) {
       skillPercentageEnhancement1 =
-        (randomWord %
+        (uint8(randomWord >> 16) %
           (
             ((skillPercentageMax1 - skillPercentageMin1 + 1) / _basePetMetadatas[_basePetId].skillPercentageIncrement1)
           )) +
         skillPercentageMin1;
+
+      skillPercentageEnhancementMax1 =
+        skillPercentageEnhancement1 +
+        (uint8(randomWord >> 24) % (skillPercentageMax1 - skillPercentageEnhancement1 + 1));
+    } else {
+      skillPercentageEnhancementMax1 = skillPercentageMin1;
     }
 
     // Skill 2
     Skill skillEnhancement2 = _basePetMetadatas[_basePetId].skillEnhancement2;
     uint256 skillFixedEnhancement2;
     uint256 skillPercentageEnhancement2;
+    uint256 skillFixedEnhancementMax2;
+    uint256 skillPercentageEnhancementMax2;
     if (skillEnhancement2 != Skill.NONE) {
-      uint256 otherRandomWord = uint256(keccak256(abi.encodePacked(randomWord)));
       // Fixed enhancement
       uint256 skillFixedMin2 = _basePetMetadatas[_basePetId].skillFixedMin2;
       uint256 skillFixedMax2 = _basePetMetadatas[_basePetId].skillFixedMax2;
+
       if (skillFixedMax2 != skillFixedMin2) {
         skillFixedEnhancement2 =
-          (otherRandomWord %
+          (uint8(randomWord >> 32) %
             (((skillFixedMax2 - skillFixedMin2 + 1) / _basePetMetadatas[_basePetId].skillFixedIncrement2))) +
           skillFixedMin2;
+
+        skillFixedEnhancementMax2 =
+          skillFixedEnhancement2 +
+          (uint8(randomWord >> 40) % (skillFixedMax2 - skillFixedEnhancement2 + 1));
       } else {
         skillFixedEnhancement2 = skillFixedMin2;
+        skillFixedEnhancementMax2 = skillFixedMin2;
       }
 
       // Percentage enhancement
@@ -324,14 +363,19 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       uint256 skillPercentageMax2 = _basePetMetadatas[_basePetId].skillPercentageMax2;
       if (skillPercentageMax2 != skillPercentageMin2) {
         skillPercentageEnhancement2 =
-          ((otherRandomWord >> 8) %
+          (uint8(randomWord >> 48) %
             (
               ((skillPercentageMax2 - skillPercentageMin2 + 1) /
                 _basePetMetadatas[_basePetId].skillPercentageIncrement2)
             )) +
           skillPercentageMin2;
+
+        skillPercentageEnhancementMax2 =
+          skillPercentageEnhancement2 +
+          (uint8(randomWord >> 56) % (skillPercentageMax2 - skillPercentageEnhancement2 + 1));
       } else {
         skillPercentageEnhancement2 = skillPercentageMin2;
+        skillPercentageEnhancementMax2 = skillPercentageMin2;
       }
     }
 
@@ -343,11 +387,18 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       uint8(skillFixedEnhancement2),
       uint8(skillPercentageEnhancement2),
       type(uint40).max,
-      address(0), // Will be updated in _mint
-      uint24(_basePetId)
+      address(0), // Will be updated in _mintBatch
+      uint24(_basePetId),
+      0, // lastTrainedTimestamp
+      uint8(skillFixedEnhancementMax1),
+      uint8(skillFixedEnhancementMax2),
+      uint8(skillPercentageEnhancementMax1),
+      uint8(skillPercentageEnhancementMax2),
+      0 // xp
     );
 
     _pets[petId] = pet;
+    return pet;
   }
 
   function _setName(

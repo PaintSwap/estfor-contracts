@@ -36,6 +36,13 @@ struct Pet {
   address owner; // Will be used as an optimzation to avoid having to look up the owner of the pet in another storage slot
   // 1 byte left in this storage slot
   uint24 baseId;
+  // New storage slot. These are used when training a pet
+  uint40 lastTrainedTimestamp;
+  uint8 skillFixedEnhancementMax1; // The maximum possible value for skillFixedEnhancement1 when training
+  uint8 skillFixedEnhancementMax2;
+  uint8 skillPercentageEnhancementMax1;
+  uint8 skillPercentageEnhancementMax2;
+  uint64 xp;
 }
 
 struct BasePetMetadata {

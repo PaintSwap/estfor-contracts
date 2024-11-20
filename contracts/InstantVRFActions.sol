@@ -233,12 +233,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     address from = _requestIdToPlayer[requestId].owner; // Might not be actual owner due to async nature so don't rely on that
     require(from != address(0), RequestDoesNotExist());
 
-    (
-      uint256[] memory itemTokenIds,
-      uint256[] memory itemAmounts,
-      uint256[] memory petBaseIds,
-      uint256[] memory random
-    ) = _getRewards(playerId, randomWords);
+    (uint256[] memory itemTokenIds, uint256[] memory itemAmounts, uint256[] memory petBaseIds) = _getRewards(
+      playerId,
+      randomWords
+    );
 
     _vrfRequestInfo.updateAverageGasPrice();
 
@@ -257,7 +255,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
     uint256[] memory petTokenIds;
     if (petBaseIds.length != 0) {
-      try _petNFT.mintBatch(from, petBaseIds, random) returns (uint256[] memory newPetTokenIds) {
+      try _petNFT.mintBatch(from, petBaseIds, randomWords[0]) returns (uint256[] memory newPetTokenIds) {
         petTokenIds = newPetTokenIds;
       } catch {
         // If it fails, then it means it was sent to a contract which can not handle erc1155 or is malicious
@@ -278,23 +276,13 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   function _getRewards(
     uint256 playerId,
     uint256[] calldata randomWords
-  )
-    private
-    view
-    returns (
-      uint256[] memory itemTokenIds,
-      uint256[] memory itemAmounts,
-      uint256[] memory petBaseIds,
-      uint256[] memory petRandomWords
-    )
-  {
+  ) private view returns (uint256[] memory itemTokenIds, uint256[] memory itemAmounts, uint256[] memory petBaseIds) {
     uint16[10] storage playerActionInfos = _playerActionInfos[playerId].actionIdAmountPairs;
     uint256 playerActionInfoLength = playerActionInfos.length;
     uint8 maxActionAmount = _maxActionAmount;
     itemTokenIds = new uint256[](maxActionAmount);
     itemAmounts = new uint256[](maxActionAmount);
     petBaseIds = new uint256[](maxActionAmount);
-    petRandomWords = new uint256[](maxActionAmount);
 
     uint256 actualItemLength;
     uint256 actualPetLength;
@@ -309,8 +297,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       (
         uint256[] memory producedItemTokenIds,
         uint256[] memory producedItemsAmounts,
-        uint256[] memory producedPetBaseIds,
-        uint256[] memory producedPetRandomWords
+        uint256[] memory producedPetBaseIds
       ) = IInstantVRFActionStrategy(_actions[actionId].strategy).getRandomRewards(
           actionId,
           actionAmount,
@@ -325,7 +312,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       }
       for (uint256 j; j < producedPetBaseIds.length; ++j) {
         petBaseIds[actualPetLength] = producedPetBaseIds[j];
-        petRandomWords[actualPetLength++] = producedPetRandomWords[j];
       }
 
       randomWordStartIndex += actionAmount / 16 + (actionAmount % 16) == 0 ? 0 : 1;
@@ -335,7 +321,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       mstore(itemTokenIds, actualItemLength)
       mstore(itemAmounts, actualItemLength)
       mstore(petBaseIds, actualPetLength)
-      mstore(petRandomWords, actualPetLength)
     }
   }
 

@@ -453,7 +453,7 @@
       {
         "indexed": false,
         "internalType": "uint40",
-        "name": "raidId",
+        "name": "startRaidId",
         "type": "uint40"
       },
       {

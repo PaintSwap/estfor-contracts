@@ -38,7 +38,7 @@ describe("PetNFT", function () {
 
   it("Must be a minter to mint", async function () {
     const {petNFT, frank} = await loadFixture(deployContracts);
-    await expect(petNFT.connect(frank).mintBatch(frank, [1], [1])).to.be.revertedWithCustomError(petNFT, "NotMinter");
+    await expect(petNFT.connect(frank).mintBatch(frank, [1], 1)).to.be.revertedWithCustomError(petNFT, "NotMinter");
   });
 
   it("Mint a standard pet", async function () {
@@ -46,7 +46,7 @@ describe("PetNFT", function () {
 
     const randomWord = 1;
     await petNFT.addBasePets([pet]);
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
     expect(await petNFT.getNextPetId()).to.eq(2);
     expect(await petNFT.balanceOf(alice, petId)).to.eq(1);
   });
@@ -55,7 +55,7 @@ describe("PetNFT", function () {
     const {petNFT, alice} = await loadFixture(deployContracts);
     const randomWord = 1;
     await petNFT.addBasePets([pet]);
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
     const uri = await petNFT.uri(petId);
 
     const skin = "OG";
@@ -69,7 +69,7 @@ describe("PetNFT", function () {
     expect(metadata.image).to.eq(`ipfs://${skin}_${tier}_${enhancementType}.jpg`);
     expect(metadata).to.have.property("attributes");
     expect(metadata.attributes).to.be.an("array");
-    expect(metadata.attributes).to.have.length(11);
+    expect(metadata.attributes).to.have.length(15);
     expect(metadata.attributes[0]).to.have.property("trait_type");
     expect(metadata.attributes[0].trait_type).to.equal("Skin");
     expect(metadata.attributes[0]).to.have.property("value");
@@ -89,24 +89,36 @@ describe("PetNFT", function () {
     expect(metadata.attributes[4].trait_type).to.equal("Fixed increase #1");
     expect(metadata.attributes[4]).to.have.property("value");
     expect(metadata.attributes[4].value).to.equal(0);
-    expect(metadata.attributes[5].trait_type).to.equal("Percent increase #1");
+    expect(metadata.attributes[5].trait_type).to.equal("Fixed max #1");
     expect(metadata.attributes[5]).to.have.property("value");
-    expect(metadata.attributes[5].value).to.equal(pet.skillPercentageMins[0] + randomWord);
-    expect(metadata.attributes[6].trait_type).to.equal("Skill bonus #2");
+    expect(metadata.attributes[5].value).to.equal(0);
+    expect(metadata.attributes[6].trait_type).to.equal("Percent increase #1");
     expect(metadata.attributes[6]).to.have.property("value");
-    expect(metadata.attributes[6].value).to.equal("Defence");
-    expect(metadata.attributes[7].trait_type).to.equal("Fixed increase #2");
+    expect(metadata.attributes[6].value).to.equal(9);
+    expect(metadata.attributes[7].trait_type).to.equal("Percent max #1");
     expect(metadata.attributes[7]).to.have.property("value");
-    expect(metadata.attributes[7].value).to.equal(0);
-    expect(metadata.attributes[8].trait_type).to.equal("Percent increase #2");
+    expect(metadata.attributes[7].value).to.equal(10);
+    expect(metadata.attributes[8].trait_type).to.equal("Skill bonus #2");
     expect(metadata.attributes[8]).to.have.property("value");
-    expect(metadata.attributes[8].value).to.equal(10);
-    expect(metadata.attributes[9].trait_type).to.equal("Fixed Star");
+    expect(metadata.attributes[8].value).to.equal("Defence");
+    expect(metadata.attributes[9].trait_type).to.equal("Fixed increase #2");
     expect(metadata.attributes[9]).to.have.property("value");
-    expect(metadata.attributes[9].value).to.equal("false");
-    expect(metadata.attributes[10].trait_type).to.equal("Percent Star");
+    expect(metadata.attributes[9].value).to.equal(0);
+    expect(metadata.attributes[10].trait_type).to.equal("Fixed max #2");
     expect(metadata.attributes[10]).to.have.property("value");
-    expect(metadata.attributes[10].value).to.equal("true");
+    expect(metadata.attributes[10].value).to.equal(0);
+    expect(metadata.attributes[11].trait_type).to.equal("Percent increase #2");
+    expect(metadata.attributes[11]).to.have.property("value");
+    expect(metadata.attributes[11].value).to.equal(15);
+    expect(metadata.attributes[12].trait_type).to.equal("Percent max #2");
+    expect(metadata.attributes[12]).to.have.property("value");
+    expect(metadata.attributes[12].value).to.equal(18);
+    expect(metadata.attributes[13].trait_type).to.equal("Fixed Star");
+    expect(metadata.attributes[13]).to.have.property("value");
+    expect(metadata.attributes[13].value).to.equal("false");
+    expect(metadata.attributes[14].trait_type).to.equal("Percent Star");
+    expect(metadata.attributes[14]).to.have.property("value");
+    expect(metadata.attributes[14].value).to.equal("true");
 
     expect(metadata).to.have.property("external_url");
     expect(metadata.external_url).to.eq(`https://beta.estfor.com`);
@@ -115,7 +127,7 @@ describe("PetNFT", function () {
   it("Mint non-existent pet", async function () {
     const {petNFT, alice} = await loadFixture(deployContracts);
     const randomWord = 1;
-    await expect(petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord])).to.be.revertedWithCustomError(
+    await expect(petNFT.connect(alice).mintBatch(alice, [baseId], randomWord)).to.be.revertedWithCustomError(
       petNFT,
       "PetDoesNotExist"
     );
@@ -148,13 +160,13 @@ describe("PetNFT", function () {
 
     const randomWord = 1;
     await petNFTNotBeta.addBasePets([pet]);
-    await expect(petNFTNotBeta.mintBatch(alice, [baseId], [randomWord])).to.be.revertedWithCustomError(
+    await expect(petNFTNotBeta.mintBatch(alice, [baseId], randomWord)).to.be.revertedWithCustomError(
       petNFTNotBeta,
       "NotMinter"
     );
     await petNFTNotBeta.initializeAddresses(alice, alice, alice);
 
-    await petNFTNotBeta.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFTNotBeta.connect(alice).mintBatch(alice, [baseId], randomWord);
 
     const uriNotBeta = await petNFTNotBeta.uri(petId);
     const metadataNotBeta = JSON.parse(Buffer.from(uriNotBeta.split(";base64,")[1], "base64").toString());
@@ -229,7 +241,7 @@ describe("PetNFT", function () {
     const modifiedPet = deepClonePet(pet);
     modifiedPet.skillMinLevels[0] = 2;
     await petNFT.addBasePets([modifiedPet]);
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
 
     await expect(petNFT.connect(alice).assignPet(alice, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
@@ -246,7 +258,7 @@ describe("PetNFT", function () {
     const randomWord = 0;
     const modifiedPet = deepClonePet(pet);
     await petNFT.addBasePets([modifiedPet]);
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
 
     await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.revertedWithCustomError(
       petNFT,
@@ -283,7 +295,7 @@ describe("PetNFT", function () {
     modifiedPet.skillFixedMaxs[0] = 0;
     await petNFT.addBasePets([modifiedPet]);
 
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
     await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
   });
 
@@ -293,7 +305,7 @@ describe("PetNFT", function () {
     const randomWord = 0;
     const modifiedPet = deepClonePet(pet);
     await petNFT.addBasePets([modifiedPet]);
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
     await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
 
     // 0 percentage min/max is fine
@@ -333,7 +345,7 @@ describe("PetNFT", function () {
 
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
 
       await expect(petNFT.connect(alice).editPet(playerId, petId, name)).to.be.revertedWithCustomError(
         brush,
@@ -356,7 +368,7 @@ describe("PetNFT", function () {
         .to.emit(petNFT, "EditPlayerPet")
         .withArgs(playerId, petId, alice, name);
 
-      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
       await expect(petNFT.connect(alice).editPet(playerId, petId + 1, name)).to.be.revertedWithCustomError(
         petNFT,
         "NameAlreadyExists"
@@ -369,7 +381,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
       await brush.mint(alice, editNameBrushPrice * 3n);
 
       const newName = "CHOO CHOO";
@@ -384,7 +396,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
       await brush.mint(alice, editNameBrushPrice * 3n);
 
       const newName = "CHOO CHOO";
@@ -401,7 +413,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
       await brush.mint(alice, editNameBrushPrice * 3n);
 
       let newName = "1234567890123456";
@@ -420,7 +432,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
       await brush.mint(alice, editNameBrushPrice * 3n);
 
       let illegalName = "Pet sdfs";
@@ -442,7 +454,7 @@ describe("PetNFT", function () {
       await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
       const randomWord = 0;
       await petNFT.addBasePets([pet]);
-      await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+      await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
       await brush.mint(alice, editNameBrushPrice * 3n);
 
       const newName = "New name";
@@ -467,8 +479,8 @@ describe("PetNFT", function () {
     expect(await petNFT["totalSupply()"]()).to.be.eq(0);
     const randomWord = 1;
     await petNFT.addBasePets([pet]);
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
-    await petNFT.connect(alice).mintBatch(alice, [baseId], [randomWord]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
     expect(await petNFT["totalSupply()"]()).to.be.eq(2);
     expect(await petNFT["totalSupply(uint256)"](1)).to.be.eq(1);
     expect(await petNFT["totalSupply(uint256)"](2)).to.be.eq(1);
@@ -478,6 +490,11 @@ describe("PetNFT", function () {
     await petNFT.connect(alice).burn(alice, 2);
     expect(await petNFT["totalSupply()"]()).to.be.eq(0);
     expect(await petNFT["totalSupply(uint256)"](2)).to.be.eq(0);
+  });
+
+  // Training not done yet
+  it.skip("Train", async function () {
+    const {petNFT, alice} = await loadFixture(deployContracts);
   });
 
   // TODO: mintBatch and check random words are used correctly

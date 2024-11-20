@@ -37,6 +37,30 @@ library PetNFTLibrary {
       abi.encodePacked(imageBaseUri, skin, "_", tier.toString(), "_", petEnhancementType, ".jpg")
     );
 
+    string memory bothSkillAttributes = string(
+      abi.encodePacked(
+        _getTraitStringJSON("Skill bonus #1", _skillToString(pet.skillEnhancement1)),
+        ",",
+        _getTraitNumberJSON("Fixed increase #1", pet.skillFixedEnhancement1),
+        ",",
+        _getTraitNumberJSON("Fixed max #1", pet.skillFixedEnhancementMax1),
+        ",",
+        _getTraitNumberJSON("Percent increase #1", pet.skillPercentageEnhancement1),
+        ",",
+        _getTraitNumberJSON("Percent max #1", pet.skillPercentageEnhancementMax1),
+        ",",
+        _getTraitStringJSON("Skill bonus #2", _skillToString(pet.skillEnhancement2)),
+        ",",
+        _getTraitNumberJSON("Fixed increase #2", pet.skillFixedEnhancement2),
+        ",",
+        _getTraitNumberJSON("Fixed max #2", pet.skillFixedEnhancementMax2),
+        ",",
+        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2),
+        ",",
+        _getTraitNumberJSON("Percent max #2", pet.skillPercentageEnhancementMax2)
+      )
+    );
+
     string memory attributes = string(
       abi.encodePacked(
         _getTraitStringJSON("Skin", skin),
@@ -45,17 +69,7 @@ library PetNFTLibrary {
         ",",
         _getTraitStringJSON("Enhancement type", petEnhancementType),
         ",",
-        _getTraitStringJSON("Skill bonus #1", _skillToString(pet.skillEnhancement1)),
-        ",",
-        _getTraitNumberJSON("Fixed increase #1", pet.skillFixedEnhancement1),
-        ",",
-        _getTraitNumberJSON("Percent increase #1", pet.skillPercentageEnhancement1),
-        ",",
-        _getTraitStringJSON("Skill bonus #2", _skillToString(pet.skillEnhancement2)),
-        ",",
-        _getTraitNumberJSON("Fixed increase #2", pet.skillFixedEnhancement2),
-        ",",
-        _getTraitNumberJSON("Percent increase #2", pet.skillPercentageEnhancement2),
+        bothSkillAttributes,
         ",",
         _getTraitStringJSON("Fixed Star", hasFixedStar ? "true" : "false"),
         ",",

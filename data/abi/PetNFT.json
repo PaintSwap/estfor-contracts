@@ -354,6 +354,11 @@
   },
   {
     "inputs": [],
+    "name": "TrainOnCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "UUPSUnauthorizedCallContext",
     "type": "error"
   },
@@ -685,6 +690,36 @@
             "internalType": "uint24",
             "name": "baseId",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastTrainedTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
           }
         ],
         "indexed": false,
@@ -750,6 +785,25 @@
       }
     ],
     "name": "SetBrushDistributionPercentages",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "petId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Train",
     "type": "event"
   },
   {
@@ -1255,6 +1309,36 @@
             "internalType": "uint24",
             "name": "baseId",
             "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastTrainedTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
           }
         ],
         "internalType": "struct Pet",
@@ -1373,9 +1457,9 @@
         "type": "uint256[]"
       },
       {
-        "internalType": "uint256[]",
-        "name": "randomWords",
-        "type": "uint256[]"
+        "internalType": "uint256",
+        "name": "randomWord",
+        "type": "uint256"
       }
     ],
     "name": "mintBatch",
@@ -1450,6 +1534,29 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "petId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestTrain",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

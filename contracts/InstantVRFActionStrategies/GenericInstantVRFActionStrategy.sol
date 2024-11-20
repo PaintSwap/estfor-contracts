@@ -61,8 +61,7 @@ contract GenericInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable,
     returns (
       uint256[] memory producedItemTokenIds,
       uint256[] memory producedItemsAmounts,
-      uint256[] memory producedPetBaseIds,
-      uint256[] memory producedPetRandomWords
+      uint256[] memory producedPetBaseIds
     )
   {
     producedItemTokenIds = new uint256[](actionAmount);

@@ -58,20 +58,14 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
     returns (
       uint256[] memory producedItemTokenIds,
       uint256[] memory producedItemsAmounts,
-      uint256[] memory producedPetBaseIds,
-      uint256[] memory producedPetRandomWords
+      uint256[] memory producedPetBaseIds
     )
   {
     producedPetBaseIds = new uint256[](actionAmount);
-    producedPetRandomWords = new uint256[](actionAmount);
 
     uint256 numWords = actionAmount / 16 + ((actionAmount % 16) == 0 ? 0 : 1);
     bytes memory randomBytes = abi.encodePacked(randomWords[randomWordStartIndex:randomWordStartIndex + numWords]);
 
-    bytes memory randomBytes1;
-    for (uint256 i = 0; i < numWords; ++i) {
-      randomBytes1 = abi.encodePacked(randomBytes1, keccak256(abi.encodePacked(randomWords[randomWordStartIndex + i])));
-    }
     for (uint256 i; i < actionAmount; ++i) {
       uint16 slice = _getSlice(randomBytes, i);
 
@@ -81,7 +75,6 @@ contract EggInstantVRFActionStrategy is UUPSUpgradeable, OwnableUpgradeable, IIn
 
       uint16 producedPetBaseId = rewardBasePetIdMin + (slice % (rewardBasePetIdMax - rewardBasePetIdMin + 1));
       producedPetBaseIds[i] = producedPetBaseId;
-      producedPetRandomWords[i] = _getSlice(randomBytes1, i);
     }
   }
 
