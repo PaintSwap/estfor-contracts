@@ -8,7 +8,7 @@ async function main() {
   console.log(`Set callback gas limit using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const world = (await ethers.getContractAt("World", WORLD_ADDRESS)) as World;
-  await world.setCallbackGasLimit(400_000);
+  await world.setExpectedGasLimitFulfill(400_000);
 }
 
 main().catch((error) => {

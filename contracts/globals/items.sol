@@ -72,6 +72,10 @@ uint16 constant SECRET_EGG_1_TIER1 = EGG_BASE;
 uint16 constant SECRET_EGG_2_TIER1 = EGG_BASE + 1;
 uint16 constant EGG_MAX = 12799;
 
+// Miscs
+uint16 constant MISC_BASE = 65535;
+uint16 constant RAID_PASS = MISC_BASE - 1;
+
 struct BulkTransferInfo {
   uint256[] tokenIds;
   uint256[] amounts;

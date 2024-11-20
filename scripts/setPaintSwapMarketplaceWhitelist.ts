@@ -5,7 +5,8 @@ import {
   LOCKED_BANK_VAULTS_ADDRESS,
   PAINTSWAP_MARKETPLACE_WHITELIST,
   PLAYERS_ADDRESS,
-  TERRITORIES_ADDRESS
+  TERRITORIES_ADDRESS,
+  RAIDS_ADDRESS
 } from "./contractAddresses";
 import {getChainId} from "./utils";
 import {Clans} from "../typechain-types";
@@ -22,6 +23,7 @@ async function main() {
     BANK_FACTORY_ADDRESS,
     TERRITORIES_ADDRESS,
     LOCKED_BANK_VAULTS_ADDRESS,
+    RAIDS_ADDRESS,
     PAINTSWAP_MARKETPLACE_WHITELIST
   );
   await tx.wait();

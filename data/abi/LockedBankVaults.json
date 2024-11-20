@@ -191,9 +191,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "playerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "indexed": false,
@@ -289,15 +289,15 @@
       },
       {
         "indexed": false,
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "attackingPlayerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "indexed": false,
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "defendingPlayerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "indexed": false,
@@ -677,6 +677,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "bool",
+        "name": "preventAttacks",
+        "type": "bool"
+      }
+    ],
+    "name": "SetPreventAttacks",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "clanId",
         "type": "uint256"
@@ -750,9 +763,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "playerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "internalType": "uint256",
@@ -982,9 +995,9 @@
             "type": "uint40"
           },
           {
-            "internalType": "uint48[]",
+            "internalType": "uint64[]",
             "name": "playerIds",
-            "type": "uint48[]"
+            "type": "uint64[]"
           },
           {
             "components": [

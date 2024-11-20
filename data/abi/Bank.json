@@ -36,6 +36,11 @@
   },
   {
     "inputs": [],
+    "name": "NotForceItemDepositor",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -594,6 +599,11 @@
         "internalType": "address",
         "name": "lockedBankVaults",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "raids",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -676,6 +686,19 @@
         "type": "bytes4"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "allow",
+        "type": "bool"
+      }
+    ],
+    "name": "setAllowBreachedCapacity",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

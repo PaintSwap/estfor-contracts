@@ -35,11 +35,13 @@ import {
   WorldLibrary,
   Treasury,
   BankRelay,
-  PVPBattleground
+  PVPBattleground,
+  Raids
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {Block, parseEther} from "ethers";
+import {EstforConstants} from "@paintswap/estfor-definitions";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
@@ -345,8 +347,6 @@ export const playersFixture = async function () {
     kind: "uups"
   })) as unknown as BankRelay;
 
-  const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
-
   const WrappedNative = await ethers.getContractFactory("WrappedNative");
   const wftm = await WrappedNative.deploy();
 
@@ -374,6 +374,62 @@ export const playersFixture = async function () {
       kind: "uups"
     }
   )) as unknown as PVPBattleground;
+
+  const spawnRaidCooldown = 8 * 3600; // 8 hours
+  const maxRaidCombatants = 20;
+  const raidCombatActionIds = [
+    EstforConstants.ACTION_COMBAT_NATUOW,
+    EstforConstants.ACTION_COMBAT_GROG_TOAD,
+    EstforConstants.ACTION_COMBAT_UFFINCH,
+    EstforConstants.ACTION_COMBAT_NATURARACNID,
+    EstforConstants.ACTION_COMBAT_DRAGON_FROG,
+    EstforConstants.ACTION_COMBAT_ELDER_BURGOF,
+    EstforConstants.ACTION_COMBAT_GRAND_TREE_IMP,
+    EstforConstants.ACTION_COMBAT_BANOXNID,
+    EstforConstants.ACTION_COMBAT_ARCANE_DRAGON,
+    EstforConstants.ACTION_COMBAT_SNAPPER_BUG,
+    EstforConstants.ACTION_COMBAT_SNUFFLEQUARG,
+    EstforConstants.ACTION_COMBAT_OBGORA,
+    EstforConstants.ACTION_COMBAT_LOSSUTH,
+    EstforConstants.ACTION_COMBAT_SQUIGGLE_EGG,
+    EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE,
+    EstforConstants.ACTION_COMBAT_DWELLER_BAT,
+    EstforConstants.ACTION_COMBAT_ANCIENT_ENT,
+    EstforConstants.ACTION_COMBAT_ROCKHAWK,
+    EstforConstants.ACTION_COMBAT_QRAKUR,
+    EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON,
+    EstforConstants.ACTION_COMBAT_ERKAD,
+    EstforConstants.ACTION_COMBAT_EMBER_WHELP,
+    EstforConstants.ACTION_COMBAT_JUVENILE_CAVE_FAIRY,
+    EstforConstants.ACTION_COMBAT_CAVE_FAIRY,
+    EstforConstants.ACTION_COMBAT_ICE_TROLL,
+    EstforConstants.ACTION_COMBAT_BLAZING_MONTANITE,
+    EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
+    EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN
+  ];
+  const Raids = await ethers.getContractFactory("Raids");
+  const raids = (await upgrades.deployProxy(
+    Raids,
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await clans.getAddress(),
+      oracleAddress,
+      await mockVRF.getAddress(),
+      await vrfRequestInfo.getAddress(),
+      spawnRaidCooldown,
+      await brush.getAddress(),
+      await world.getAddress(),
+      maxRaidCombatants,
+      raidCombatActionIds,
+      isBeta
+    ],
+    {
+      kind: "uups"
+    }
+  )) as unknown as Raids;
+
+  const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
   const decorator = await ethers.deployContract("TestPaintSwapDecorator", [
     await brush.getAddress(),
@@ -462,6 +518,7 @@ export const playersFixture = async function () {
       await clans.getAddress(),
       await territories.getAddress(),
       await lockedBankVaults.getAddress(),
+      await raids.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -502,7 +559,8 @@ export const playersFixture = async function () {
       await itemNFT.getAddress(),
       await clans.getAddress(),
       await players.getAddress(),
-      await lockedBankVaults.getAddress()
+      await lockedBankVaults.getAddress(),
+      await raids.getAddress()
     ],
     {
       kind: "uups"
@@ -517,7 +575,14 @@ export const playersFixture = async function () {
 
   await petNFT.initializeAddresses(instantVRFActions, players, territories);
 
-  await clans.initializeAddresses(players, bankFactory, territories, lockedBankVaults, paintSwapMarketplaceWhitelist);
+  await clans.initializeAddresses(
+    players,
+    bankFactory,
+    territories,
+    lockedBankVaults,
+    raids,
+    paintSwapMarketplaceWhitelist
+  );
 
   await playerNFT.setBrushDistributionPercentages(25, 50, 25);
   await petNFT.setBrushDistributionPercentages(25, 50, 25);
@@ -535,16 +600,27 @@ export const playersFixture = async function () {
 
   await itemNFT.initializeAddresses(bankFactory, players);
   await itemNFT.setApproved(
-    [players, shop, promotions, instantActions, territories, lockedBankVaults, instantVRFActions, passiveActions],
+    [
+      players,
+      shop,
+      promotions,
+      instantActions,
+      territories,
+      lockedBankVaults,
+      instantVRFActions,
+      passiveActions,
+      raids
+    ],
     true
   );
 
   await royaltyReceiver.setTerritories(territories);
   await territories.setCombatantsHelper(combatantsHelper);
+  await raids.initializeAddresses(combatantsHelper, bankFactory);
   await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories, pvpBattleground], true);
 
-  await players.setAlphaCombatHealing(0); // This was introduced later, so to not mess up existing tests reset this to 0
+  await players.setAlphaCombatParams(1, 1, 0); // Alpha combat healing was introduced later, so to not mess up existing tests set this to 0
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -631,6 +707,9 @@ export const playersFixture = async function () {
     minHarvestInterval,
     isBeta,
     pvpBattleground,
-    pvpAttackingCooldown
+    pvpAttackingCooldown,
+    raids,
+    spawnRaidCooldown,
+    maxRaidCombatants
   };
 };

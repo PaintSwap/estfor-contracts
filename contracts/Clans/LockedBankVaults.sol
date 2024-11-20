@@ -44,8 +44,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   event SetComparableSkills(Skill[] skills);
   event BattleResult(
     uint256 requestId,
-    uint48[] attackingPlayerIds,
-    uint48[] defendingPlayerIds,
+    uint64[] attackingPlayerIds,
+    uint64[] defendingPlayerIds,
     uint256[] attackingRolls,
     uint256[] defendingRolls,
     uint8[] battleResults, // BattleResultEnum
@@ -60,7 +60,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
   event AssignCombatants(
     uint256 clanId,
-    uint48[] playerIds,
+    uint64[] playerIds,
     address from,
     uint256 leaderPlayerId,
     uint256 cooldownTimestamp
@@ -90,6 +90,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
+  event SetPreventAttacks(bool preventAttacks);
 
   error PlayerOnTerritory();
   error TooManyCombatants();
@@ -205,16 +206,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _;
   }
 
-  modifier approveBankAddress(uint256 clanId) {
-    address bankAddress = address(_clanInfos[clanId].bank);
-    if (bankAddress == address(0)) {
-      bankAddress = _bankFactory.getBankAddress(clanId);
-      _brush.approve(bankAddress, type(uint256).max);
-      _clanInfos[clanId].bank = IBank(bankAddress);
-    }
-    _;
-  }
-
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -269,7 +260,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
   function assignCombatants(
     uint256 clanId,
-    uint48[] calldata playerIds,
+    uint64[] calldata playerIds,
     uint256 combatantCooldownTimestamp,
     uint256 leaderPlayerId
   ) external override onlyCombatantsHelper {
@@ -398,8 +389,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     require(pendingAttack.attackInProgress, RequestIdNotKnown());
 
     (uint40 attackingClanId, uint256 defendingClanId) = (pendingAttack.clanId, pendingAttack.defendingClanId);
-    uint48[] memory attackingPlayerIds = _clanInfos[attackingClanId].playerIds;
-    uint48[] memory defendingPlayerIds = _clanInfos[defendingClanId].playerIds;
+    uint64[] memory attackingPlayerIds = _clanInfos[attackingClanId].playerIds;
+    uint64[] memory defendingPlayerIds = _clanInfos[defendingClanId].playerIds;
 
     uint8[] memory randomSkills = new uint8[](Math.max(attackingPlayerIds.length, defendingPlayerIds.length));
     for (uint256 i; i < randomSkills.length; ++i) {
@@ -488,11 +479,16 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     }
   }
 
-  function claimFunds(
-    uint256 clanId,
-    uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) approveBankAddress(clanId) {
+  function claimFunds(uint256 clanId, uint256 playerId) external isOwnerOfPlayerAndActive(playerId) {
     VaultClanInfo storage clanInfo = _clanInfos[clanId];
+
+    address bankAddress = address(_clanInfos[clanId].bank);
+    if (bankAddress == address(0)) {
+      bankAddress = _bankFactory.getBankAddress(clanId);
+      _brush.approve(bankAddress, type(uint256).max);
+      clanInfo.bank = IBank(bankAddress);
+    }
+
     (uint256 total, uint256 numLocksClaimed) = LockedBankVaultsLibrary.claimFunds(_sortedClansByMMR, clanInfo, clanId);
     address sender = _msgSender();
     emit ClaimFunds(clanId, sender, playerId, total, numLocksClaimed);
@@ -594,7 +590,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   function isCombatant(uint256 clanId, uint256 playerId) external view override returns (bool) {
-    uint48[] storage playerIds = _clanInfos[clanId].playerIds;
+    uint64[] storage playerIds = _clanInfos[clanId].playerIds;
     if (playerIds.length == 0) {
       return false;
     }
@@ -666,6 +662,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   // TODO: Can delete if necessary
   function setPreventAttacks(bool preventAttacks) external onlyOwner {
     _preventAttacks = preventAttacks;
+    emit SetPreventAttacks(preventAttacks);
   }
 
   // TODO Can delete after setting initial MMR

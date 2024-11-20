@@ -979,9 +979,9 @@
         "type": "string"
       },
       {
-        "internalType": "uint48",
+        "internalType": "uint64",
         "name": "startPlayerId",
-        "type": "uint48"
+        "type": "uint64"
       },
       {
         "internalType": "bool",

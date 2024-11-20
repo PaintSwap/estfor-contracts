@@ -45,8 +45,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   );
   event BattleResult(
     uint256 requestId,
-    uint48[] attackingPlayerIds,
-    uint48[] defendingPlayerIds,
+    uint64[] attackingPlayerIds,
+    uint64[] defendingPlayerIds,
     uint256[] attackingRolls,
     uint256[] defendingRolls,
     uint8[] battleResults, // BattleResultEnum[]
@@ -68,7 +68,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   );
   event AssignCombatants(
     uint256 clanId,
-    uint48[] playerIds,
+    uint64[] playerIds,
     address from,
     uint256 leaderPlayerId,
     uint256 cooldownTimestamp
@@ -139,7 +139,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     bool currentlyAttacking;
     uint40 blockAttacksTimestamp;
     uint8 blockAttacksCooldownHours; // Have many hours after blockAttacksTimestamp there is a cooldown for
-    uint48[] playerIds;
+    uint64[] playerIds;
   }
 
   struct PendingAttack {
@@ -269,7 +269,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
 
   function assignCombatants(
     uint256 clanId,
-    uint48[] calldata playerIds,
+    uint64[] calldata playerIds,
     uint256 combatantCooldownTimestamp,
     uint256 leaderPlayerId
   ) external override onlyCombatantsHelper {
@@ -353,8 +353,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     }
 
     // If the defenders happened to apply a block attacks item before the attack was fulfilled, then the attack is cancelled
-    uint48[] memory attackingPlayerIds;
-    uint48[] memory defendingPlayerIds;
+    uint64[] memory attackingPlayerIds;
+    uint64[] memory defendingPlayerIds;
     uint8[] memory battleResults;
     uint256[] memory attackingRolls;
     uint256[] memory defendingRolls;
@@ -483,7 +483,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     }
   }
 
-  function _checkCanAssignCombatants(uint256 clanId, uint48[] calldata playerIds) private view {
+  function _checkCanAssignCombatants(uint256 clanId, uint64[] calldata playerIds) private view {
     require(playerIds.length <= _maxClanCombatants, TooManyCombatants());
     // Can only change combatants every so often
     require(_clanInfos[clanId].assignCombatantsCooldownTimestamp <= block.timestamp, ClanCombatantsChangeCooldown());

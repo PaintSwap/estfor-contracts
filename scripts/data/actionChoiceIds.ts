@@ -8,7 +8,7 @@ export const allActionChoiceIdsFiremaking: number[] = [
   EstforConstants.ACTIONCHOICE_FIREMAKING_MAGICAL,
   EstforConstants.ACTIONCHOICE_FIREMAKING_ASH,
   EstforConstants.ACTIONCHOICE_FIREMAKING_ENCHANTED,
-  EstforConstants.ACTIONCHOICE_FIREMAKING_LIVING,
+  EstforConstants.ACTIONCHOICE_FIREMAKING_LIVING
 ];
 export const allActionChoiceIdsSmithing: number[] = [
   EstforConstants.ACTIONCHOICE_SMITHING_BRONZE_BAR,
@@ -73,7 +73,7 @@ export const allActionChoiceIdsSmithing: number[] = [
   EstforConstants.ACTIONCHOICE_SMITHING_ADAMANTINE_ARROW_HEAD,
   EstforConstants.ACTIONCHOICE_SMITHING_RUNITE_ARROW_HEAD,
   EstforConstants.ACTIONCHOICE_SMITHING_TITANIUM_ARROW_HEAD,
-  EstforConstants.ACTIONCHOICE_SMITHING_ORICHALCUM_ARROW_HEAD,
+  EstforConstants.ACTIONCHOICE_SMITHING_ORICHALCUM_ARROW_HEAD
 ];
 export const allActionChoiceIdsCooking: number[] = [
   EstforConstants.ACTIONCHOICE_COOKING_MINNUS,
@@ -95,7 +95,7 @@ export const allActionChoiceIdsCooking: number[] = [
   EstforConstants.ACTIONCHOICE_COOKING_CRUSKAN,
   EstforConstants.ACTIONCHOICE_COOKING_CHODFISH,
   EstforConstants.ACTIONCHOICE_COOKING_DOUBTFISH,
-  EstforConstants.ACTIONCHOICE_COOKING_ROSEFIN,
+  EstforConstants.ACTIONCHOICE_COOKING_ROSEFIN
 ];
 export const allActionChoiceIdsMelee: number[] = [EstforConstants.ACTIONCHOICE_MELEE_MONSTER];
 export const allActionChoiceIdsMagic: number[] = [
@@ -109,7 +109,7 @@ export const allActionChoiceIdsMagic: number[] = [
   EstforConstants.ACTIONCHOICE_MAGIC_AIR_BALL,
   EstforConstants.ACTIONCHOICE_MAGIC_FURY_FISTS,
   EstforConstants.ACTIONCHOICE_MAGIC_CONCUSSION_BEAMS,
-  EstforConstants.ACTIONCHOICE_MAGIC_ICE_SPIKES,
+  EstforConstants.ACTIONCHOICE_MAGIC_ICE_SPIKES
 ];
 export const allActionChoiceIdsCrafting: number[] = [
   EstforConstants.ACTIONCHOICE_CRAFTING_SAPPHIRE_AMULET,
@@ -210,7 +210,7 @@ export const allActionChoiceIdsCrafting: number[] = [
   EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_BODY,
   EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_CHAPS,
   EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_BRACERS,
-  EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_BOOTS,
+  EstforConstants.ACTIONCHOICE_CRAFTING_REAVER_BOOTS
 ];
 export const allActionChoiceIdsAlchemy: number[] = [
   EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER_FROM_LOG,
@@ -255,7 +255,7 @@ export const allActionChoiceIdsAlchemy: number[] = [
   EstforConstants.ACTIONCHOICE_ALCHEMY_ASH_LOG,
   EstforConstants.ACTIONCHOICE_ALCHEMY_ENCHANTED_LOG,
   EstforConstants.ACTIONCHOICE_ALCHEMY_LIVING_LOG,
-  EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER,
+  EstforConstants.ACTIONCHOICE_ALCHEMY_PAPER
 ];
 export const allActionChoiceIdsFletching: number[] = [
   EstforConstants.ACTIONCHOICE_FLETCHING_ARROW_SHAFT_FROM_LOG,
@@ -279,7 +279,7 @@ export const allActionChoiceIdsFletching: number[] = [
   EstforConstants.ACTIONCHOICE_FLETCHING_EXPERT_BOW,
   EstforConstants.ACTIONCHOICE_FLETCHING_SPECTRAL_BOW,
   EstforConstants.ACTIONCHOICE_FLETCHING_ICY_BOW,
-  EstforConstants.ACTIONCHOICE_FLETCHING_GLITTERING_BOW,
+  EstforConstants.ACTIONCHOICE_FLETCHING_GLITTERING_BOW
 ];
 export const allActionChoiceIdsRanged: number[] = [
   EstforConstants.ACTIONCHOICE_RANGED_BASIC_BOW,
@@ -302,7 +302,7 @@ export const allActionChoiceIdsRanged: number[] = [
   EstforConstants.ACTIONCHOICE_RANGED_GLITTERING_BOW_POISON,
   EstforConstants.ACTIONCHOICE_RANGED_GLITTERING_BOW_FIRE,
   EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_POISON,
-  EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_FIRE,
+  EstforConstants.ACTIONCHOICE_RANGED_GODLY_BOW_FIRE
 ];
 export const allActionChoiceIdsForging: number[] = [
   EstforConstants.ACTIONCHOICE_FORGING_MERGE_TINY_ELIXIUM,
@@ -328,5 +328,5 @@ export const allActionChoiceIdsForging: number[] = [
   EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_BODY,
   EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_CHAPS,
   EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_BRACERS,
-  EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_BOOTS,
+  EstforConstants.ACTIONCHOICE_FORGING_SCORCHING_BOOTS
 ];

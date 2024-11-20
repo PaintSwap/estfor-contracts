@@ -76,9 +76,9 @@ struct Attire {
 
 struct CombatStats {
   // From skill points
-  int16 melee;
-  int16 magic;
-  int16 ranged;
+  int16 meleeAttack;
+  int16 magicAttack;
+  int16 rangedAttack;
   int16 health;
   // These include equipment
   int16 meleeDefence;

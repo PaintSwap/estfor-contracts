@@ -150,6 +150,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   address private _paintswapMarketplaceWhitelist;
   IClanMemberLeftCB private _territories;
   IClanMemberLeftCB private _lockedBankVaults;
+  IClanMemberLeftCB private _raids;
   mapping(uint256 clanId => Clan clan) private _clans;
   mapping(uint256 playerId => PlayerInfo) private _playerInfo;
   mapping(uint256 id => Tier tier) private _tiers;
@@ -716,6 +717,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     _territories.clanMemberLeft(clanId, playerId);
     _lockedBankVaults.clanMemberLeft(clanId, playerId);
+    _raids.clanMemberLeft(clanId, playerId);
   }
 
   function _claimOwnership(uint256 clanId, uint256 playerId) private {
@@ -865,6 +867,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     IBankFactory bankFactory,
     IClanMemberLeftCB territories,
     IClanMemberLeftCB lockedBankVaults,
+    IClanMemberLeftCB raids,
     address paintswapMarketplaceWhitelist
   ) external onlyOwner {
     require(address(_bankFactory) == address(0) || _bankFactory == bankFactory, BankFactoryAlreadySet());
@@ -873,6 +876,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _bankFactory = bankFactory;
     _territories = territories;
     _lockedBankVaults = lockedBankVaults;
+    _raids = raids;
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
   }
 

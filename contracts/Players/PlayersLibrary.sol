@@ -11,8 +11,9 @@ import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 
 import {Skill, CombatStats, CombatStyle, BoostType, Attire} from "../globals/misc.sol";
 import {PendingQueuedActionEquipmentState, QueuedAction, ActionChoice, PlayerBoostInfo, PackedXP, PendingQueuedActionProcessed, Item, Player, Player, XP_BYTES, IS_FULL_MODE_BIT, CheckpointEquipments} from "../globals/players.sol";
+import {ActionRewards} from "../globals/rewards.sol";
 import {NONE} from "../globals/items.sol";
-import {RATE_MUL, SPAWN_MUL} from "../globals/actions.sol";
+import {RATE_MUL, SPAWN_MUL, GUAR_MUL} from "../globals/actions.sol";
 
 // This file contains methods for interacting with the player that is used to decrease implementation deployment bytecode code.
 library PlayersLibrary {
@@ -67,7 +68,7 @@ library PlayersLibrary {
   function _getRealBalance(
     uint256 originalBalance,
     uint256 itemId,
-    PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   ) private pure returns (uint256 balance) {
     balance = originalBalance;
     for (uint256 i; i < pendingQueuedActionEquipmentStates.length; ++i) {
@@ -128,7 +129,7 @@ library PlayersLibrary {
     address from,
     uint256 itemId,
     address itemNFT,
-    PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   ) public view returns (uint256 balance) {
     balance = _getRealBalance(IItemNFT(itemNFT).balanceOf(from, itemId), itemId, pendingQueuedActionEquipmentStates);
   }
@@ -151,7 +152,7 @@ library PlayersLibrary {
     ActionChoice memory actionChoice,
     uint16 baseInputItemsConsumedNum,
     IItemNFT itemNFT,
-    PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   ) private view returns (uint256 maxRequiredRatio) {
     maxRequiredRatio = baseInputItemsConsumedNum;
 
@@ -195,7 +196,7 @@ library PlayersLibrary {
     uint256 inputAmount,
     uint256 prevConsumeMaxRatio,
     IItemNFT itemNFT,
-    PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   ) private view returns (uint256 maxRequiredRatio) {
     uint256 balance = getBalanceUsingCurrentBalance(
       from,
@@ -236,15 +237,15 @@ library PlayersLibrary {
   }
 
   function _fullDmg(
-    CombatStats calldata combatStats,
+    CombatStats memory combatStats,
     CombatStats memory enemyCombatStats,
     uint8 alphaCombat,
     uint8 betaCombat,
     uint256 elapsedTime
   ) private pure returns (uint32 fullDmg) {
-    fullDmg = dmg(combatStats.melee, enemyCombatStats.meleeDefence, alphaCombat, betaCombat, elapsedTime);
-    fullDmg += dmg(combatStats.ranged, enemyCombatStats.rangedDefence, alphaCombat, betaCombat, elapsedTime);
-    fullDmg += dmg(combatStats.magic, enemyCombatStats.magicDefence, alphaCombat, betaCombat, elapsedTime);
+    fullDmg = dmg(combatStats.meleeAttack, enemyCombatStats.meleeDefence, alphaCombat, betaCombat, elapsedTime);
+    fullDmg += dmg(combatStats.rangedAttack, enemyCombatStats.rangedDefence, alphaCombat, betaCombat, elapsedTime);
+    fullDmg += dmg(combatStats.magicAttack, enemyCombatStats.magicDefence, alphaCombat, betaCombat, elapsedTime);
   }
 
   function _timeToKill(
@@ -267,9 +268,14 @@ library PlayersLibrary {
     uint8 betaCombat,
     int health
   ) private pure returns (uint256) {
-    uint256 dmgPerMinute = _dmgPerMinute(enemyCombatStats.melee, combatStats.meleeDefence, alphaCombat, betaCombat);
-    dmgPerMinute += _dmgPerMinute(enemyCombatStats.ranged, combatStats.rangedDefence, alphaCombat, betaCombat);
-    dmgPerMinute += _dmgPerMinute(enemyCombatStats.magic, combatStats.magicDefence, alphaCombat, betaCombat);
+    uint256 dmgPerMinute = _dmgPerMinute(
+      enemyCombatStats.meleeAttack,
+      combatStats.meleeDefence,
+      alphaCombat,
+      betaCombat
+    );
+    dmgPerMinute += _dmgPerMinute(enemyCombatStats.rangedAttack, combatStats.rangedDefence, alphaCombat, betaCombat);
+    dmgPerMinute += _dmgPerMinute(enemyCombatStats.magicAttack, combatStats.magicDefence, alphaCombat, betaCombat);
     return Math.ceilDiv(uint256(health) * 60, dmgPerMinute);
   }
 
@@ -284,13 +290,14 @@ library PlayersLibrary {
     int16 attack;
     int16 defence;
     if (skill == Skill.MELEE) {
-      attack = combatStats.melee;
+      attack = combatStats.meleeAttack;
       defence = enemyCombatStats.meleeDefence;
     } else if (skill == Skill.RANGED) {
-      attack = combatStats.ranged;
+      attack = combatStats.rangedAttack;
       defence = enemyCombatStats.rangedDefence;
     } else if (skill == Skill.MAGIC || skill == Skill.DEFENCE || skill == Skill.HEALTH) {
-      attack = combatStats.magic;
+      // TODO: What's this doing again
+      attack = combatStats.magicAttack;
       defence = enemyCombatStats.magicDefence;
     } else {
       assert(false);
@@ -300,34 +307,33 @@ library PlayersLibrary {
   }
 
   function _getDmgDealtByPlayer(
-    ActionChoice calldata actionChoice,
+    ActionChoice memory actionChoice,
     CombatStats memory combatStats,
-    CombatStats calldata enemyCombatStats,
+    CombatStats memory enemyCombatStats,
     uint8 alphaCombat,
     uint8 betaCombat,
     uint256 elapsedTime
   ) private pure returns (uint32 dmgDealt) {
     Skill skill = actionChoice.skill._asSkill();
     if (skill == Skill.MELEE) {
-      dmgDealt = dmg(combatStats.melee, enemyCombatStats.meleeDefence, alphaCombat, betaCombat, elapsedTime);
+      dmgDealt = dmg(combatStats.meleeAttack, enemyCombatStats.meleeDefence, alphaCombat, betaCombat, elapsedTime);
     } else if (skill == Skill.RANGED) {
-      dmgDealt = dmg(combatStats.ranged, enemyCombatStats.rangedDefence, alphaCombat, betaCombat, elapsedTime);
+      dmgDealt = dmg(combatStats.rangedAttack, enemyCombatStats.rangedDefence, alphaCombat, betaCombat, elapsedTime);
     } else if (skill == Skill.MAGIC || skill == Skill.DEFENCE || skill == Skill.HEALTH) {
       // Assumes this is a magic action
-      dmgDealt = dmg(combatStats.magic, enemyCombatStats.magicDefence, alphaCombat, betaCombat, elapsedTime);
+      dmgDealt = dmg(combatStats.magicAttack, enemyCombatStats.magicDefence, alphaCombat, betaCombat, elapsedTime);
     } else {
       assert(false);
     }
   }
 
-  function getCombatAdjustedElapsedTimes(
+  function determineBattleOutcome(
     address from,
     address itemNFT,
-    address world,
     uint256 elapsedTime,
     ActionChoice calldata actionChoice,
     uint16 regenerateId,
-    QueuedAction calldata queuedAction,
+    uint256 numSpawnedPerHour,
     CombatStats memory combatStats,
     CombatStats calldata enemyCombatStats,
     uint8 alphaCombat,
@@ -346,14 +352,13 @@ library PlayersLibrary {
     )
   {
     return
-      _getCombatAdjustedElapsedTimes(
+      _determineBattleOutcome(
         from,
         itemNFT,
-        world,
         elapsedTime,
         actionChoice,
         regenerateId,
-        queuedAction,
+        numSpawnedPerHour,
         combatStats,
         enemyCombatStats,
         alphaCombat,
@@ -363,22 +368,21 @@ library PlayersLibrary {
       );
   }
 
-  function _getCombatAdjustedElapsedTimes(
+  function _determineBattleOutcome(
     address from,
     address itemNFT,
-    address world,
     uint256 elapsedTime,
-    ActionChoice calldata actionChoice,
+    ActionChoice memory actionChoice,
     uint16 regenerateId,
-    QueuedAction calldata queuedAction,
+    uint256 numSpawnedPerHour,
     CombatStats memory combatStats,
-    CombatStats calldata enemyCombatStats,
+    CombatStats memory enemyCombatStats,
     uint8 alphaCombat,
     uint8 betaCombat,
     uint8 alphaCombatHealing,
-    PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   )
-    private
+    internal
     view
     returns (
       uint256 xpElapsedTime,
@@ -388,7 +392,6 @@ library PlayersLibrary {
       bool died
     )
   {
-    uint256 numSpawnedPerHour = IWorld(world).getNumSpawn(queuedAction.actionId);
     uint256 respawnTime = (3600 * SPAWN_MUL) / numSpawnedPerHour;
     uint32 dmgDealt = _getDmgDealtByPlayer(
       actionChoice,
@@ -606,7 +609,7 @@ library PlayersLibrary {
     uint32 totalHealthPlayer,
     uint256 alphaCombatHealing,
     address itemNFT,
-    PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
   ) private view returns (uint16 foodConsumed, uint256 totalFoodRequiredKilling, bool died) {
     uint256 healthRestoredFromItem;
     if (regenerateId != NONE) {
@@ -845,13 +848,13 @@ library PlayersLibrary {
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed,
     PackedXP storage packedXP
   ) external view returns (CombatStats memory combatStats) {
-    combatStats.melee = int16(
+    combatStats.meleeAttack = int16(
       _getLevel(_getAbsoluteActionStartXP(Skill.MELEE, pendingQueuedActionProcessed, packedXP))
     );
-    combatStats.ranged = int16(
+    combatStats.rangedAttack = int16(
       _getLevel(_getAbsoluteActionStartXP(Skill.RANGED, pendingQueuedActionProcessed, packedXP))
     );
-    combatStats.magic = int16(
+    combatStats.magicAttack = int16(
       _getLevel(_getAbsoluteActionStartXP(Skill.MAGIC, pendingQueuedActionProcessed, packedXP))
     );
     combatStats.health = int16(
@@ -878,9 +881,9 @@ library PlayersLibrary {
   ) internal pure returns (CombatStats memory statsOut) {
     statsOut = combatStats;
     if (skill == Skill.MELEE) {} else if (skill == Skill.RANGED) {
-      statsOut.ranged += skillDiff; // Extra/Reduced ranged damage
+      statsOut.rangedAttack += skillDiff; // Extra/Reduced ranged damage
     } else if (skill == Skill.MAGIC) {
-      statsOut.magic += skillDiff; // Extra/Reduced magic damage
+      statsOut.magicAttack += skillDiff; // Extra/Reduced magic damage
     } else if (skill == Skill.DEFENCE) {
       statsOut.meleeDefence += skillDiff;
       statsOut.rangedDefence += skillDiff;
@@ -932,11 +935,17 @@ library PlayersLibrary {
     if (skill1 == Skill.HEALTH) {
       statsOut.health += int16(skillFixedEnhancement1 + (uint16(statsOut.health) * skillPercentageEnhancement1) / 100);
     } else if (skill1 == Skill.MELEE) {
-      statsOut.melee += int16(skillFixedEnhancement1 + (uint16(statsOut.melee) * skillPercentageEnhancement1) / 100);
+      statsOut.meleeAttack += int16(
+        skillFixedEnhancement1 + (uint16(statsOut.meleeAttack) * skillPercentageEnhancement1) / 100
+      );
     } else if (skill1 == Skill.RANGED) {
-      statsOut.ranged += int16(skillFixedEnhancement1 + (uint16(statsOut.ranged) * skillPercentageEnhancement1) / 100);
+      statsOut.rangedAttack += int16(
+        skillFixedEnhancement1 + (uint16(statsOut.rangedAttack) * skillPercentageEnhancement1) / 100
+      );
     } else if (skill1 == Skill.MAGIC) {
-      statsOut.magic += int16(skillFixedEnhancement1 + (uint16(statsOut.magic) * skillPercentageEnhancement1) / 100);
+      statsOut.magicAttack += int16(
+        skillFixedEnhancement1 + (uint16(statsOut.magicAttack) * skillPercentageEnhancement1) / 100
+      );
     } else if (skill1 == Skill.DEFENCE) {
       statsOut.meleeDefence += int16(
         skillFixedEnhancement1 + (uint16(statsOut.meleeDefence) * skillPercentageEnhancement1) / 100
@@ -1134,9 +1143,9 @@ library PlayersLibrary {
   }
 
   function _updateCombatStatsFromItem(CombatStats memory combatStats, Item memory item) private pure {
-    combatStats.melee += item.melee;
-    combatStats.ranged += item.ranged;
-    combatStats.magic += item.magic;
+    combatStats.meleeAttack += item.meleeAttack;
+    combatStats.rangedAttack += item.rangedAttack;
+    combatStats.magicAttack += item.magicAttack;
     combatStats.meleeDefence += item.meleeDefence;
     combatStats.rangedDefence += item.rangedDefence;
     combatStats.magicDefence += item.magicDefence;
@@ -1284,6 +1293,78 @@ library PlayersLibrary {
 
     if (hasFullAttire) {
       fullAttireBonusRewardsPercent = bonusRewardsPercent;
+    }
+  }
+
+  function _appendGuaranteedRewards(
+    uint256[] memory ids,
+    uint256[] memory amounts,
+    uint256 elapsedTime,
+    ActionRewards memory actionRewards,
+    uint16 monstersKilled,
+    bool isCombat,
+    uint8 successPercent
+  ) internal pure returns (uint256 length) {
+    length = _appendGuaranteedReward(
+      ids,
+      amounts,
+      elapsedTime,
+      actionRewards.guaranteedRewardTokenId1,
+      actionRewards.guaranteedRewardRate1,
+      length,
+      monstersKilled,
+      isCombat,
+      successPercent
+    );
+    length = _appendGuaranteedReward(
+      ids,
+      amounts,
+      elapsedTime,
+      actionRewards.guaranteedRewardTokenId2,
+      actionRewards.guaranteedRewardRate2,
+      length,
+      monstersKilled,
+      isCombat,
+      successPercent
+    );
+    length = _appendGuaranteedReward(
+      ids,
+      amounts,
+      elapsedTime,
+      actionRewards.guaranteedRewardTokenId3,
+      actionRewards.guaranteedRewardRate3,
+      length,
+      monstersKilled,
+      isCombat,
+      successPercent
+    );
+  }
+
+  function _appendGuaranteedReward(
+    uint256[] memory ids,
+    uint256[] memory amounts,
+    uint256 elapsedTime,
+    uint16 rewardTokenId,
+    uint24 rewardRate,
+    uint256 oldLength,
+    uint16 monstersKilled,
+    bool isCombat,
+    uint8 successPercent
+  ) internal pure returns (uint256 length) {
+    length = oldLength;
+    if (rewardTokenId != NONE) {
+      uint256 numRewards;
+      if (isCombat) {
+        numRewards = (monstersKilled * rewardRate) / GUAR_MUL; // rate is per kill
+      } else {
+        numRewards = (elapsedTime * rewardRate * successPercent) / (3600 * GUAR_MUL * 100);
+      }
+
+      if (numRewards != 0) {
+        ids[length] = rewardTokenId;
+        amounts[length] = numRewards;
+        length++;
+      }
     }
   }
 }

@@ -13,19 +13,20 @@ export async function calculateClanBankAddress(
   playerNFTAddress: string,
   itemNFTAddress: string,
   playersAddress: string,
-  lockedBankVaultsAddress: string
+  lockedBankVaultsAddress: string,
+  raidsAddress: string
 ): Promise<string> {
   // Combine `clanId` into a `salt`
   const salt = ethers.zeroPadValue(ethers.toBeHex(clanId), 32);
 
   // Get the `initialize` selector
   const initializeSelector = ethers
-    .id("initialize(uint256,address,address,address,address,address,address,address)")
+    .id("initialize(uint256,address,address,address,address,address,address,address,address)")
     .slice(0, 10);
 
   // Encode the data for `initialize` function parameters
   const data = ethers.AbiCoder.defaultAbiCoder().encode(
-    ["uint256", "address", "address", "address", "address", "address", "address", "address"],
+    ["uint256", "address", "address", "address", "address", "address", "address", "address", "address"],
     [
       clanId,
       bankRegistryAddress,
@@ -34,7 +35,8 @@ export async function calculateClanBankAddress(
       itemNFTAddress,
       clansAddress,
       playersAddress,
-      lockedBankVaultsAddress
+      lockedBankVaultsAddress,
+      raidsAddress
     ]
   );
 
@@ -72,6 +74,7 @@ export async function clanFixture() {
     itemNFT,
     players,
     lockedBankVaults,
+    raids,
     isBeta
   } = fixture;
 
@@ -108,7 +111,8 @@ export async function clanFixture() {
     await playerNFT.getAddress(),
     await itemNFT.getAddress(),
     await players.getAddress(),
-    await lockedBankVaults.getAddress()
+    await lockedBankVaults.getAddress(),
+    await raids.getAddress()
   );
 
   await expect(clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, imageId, tierId))

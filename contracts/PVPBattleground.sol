@@ -47,6 +47,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   event SetComparableSkills(Skill[] skills, uint256 numSkillsToCompare);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
   event SetAttackCooldown(uint256 attackCooldown);
+  event SetPreventAttacks(bool preventAttacks);
 
   error TransferFailed();
   error PlayerAttackingCooldown();
@@ -78,8 +79,8 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   struct PendingAttack {
-    uint48 playerId;
-    uint48 defendingPlayerId;
+    uint64 playerId;
+    uint64 defendingPlayerId;
     bool attackInProgress;
   }
 
@@ -204,8 +205,8 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
     PendingAttack storage pendingAttack = _pendingAttacks[_requestToPendingAttackIds[requestId]];
     require(pendingAttack.defendingPlayerId != 0, RequestIdNotKnown());
 
-    uint48 attackingPlayerId = pendingAttack.playerId;
-    uint48 defendingPlayerId = pendingAttack.defendingPlayerId;
+    uint64 attackingPlayerId = pendingAttack.playerId;
+    uint64 defendingPlayerId = pendingAttack.defendingPlayerId;
 
     _vrfRequestInfo.updateAverageGasPrice();
     _playerInfos[attackingPlayerId].currentlyAttacking = false;
@@ -290,8 +291,8 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function determineBattleOutcome(
-    uint48 playerId, // [In/Out] gets shuffled
-    uint48 defendingPlayerId, // [In/Out] gets shuffled
+    uint64 playerId, // [In/Out] gets shuffled
+    uint64 defendingPlayerId, // [In/Out] gets shuffled
     Skill[] memory skills,
     uint256[] memory randomWords, // [1] is for the dice rolls for the attacker, [2] is for the dice rolls for the defender, [0] isn't used here. It's for the skills
     uint256 extraRollsA,
@@ -391,6 +392,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   // TODO: Can delete if necessary
   function setPreventAttacks(bool preventAttacks) external onlyOwner {
     _preventAttacks = preventAttacks;
+    emit SetPreventAttacks(preventAttacks);
   }
 
   function clearCooldowns(uint256 playerId) external isAdminAndBeta {

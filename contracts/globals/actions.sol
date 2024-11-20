@@ -62,6 +62,10 @@ struct ActionInfo {
   uint16 questPrerequisiteId;
 }
 
+uint16 constant ACTIONCHOICE_MELEE_BASIC_SWORD = 1500;
+uint16 constant ACTIONCHOICE_MAGIC_SHADOW_BLAST = 2000;
+uint16 constant ACTIONCHOICE_RANGED_BASIC_BOW = 3000;
+
 // Allows for 2, 4 or 8 hour respawn time
 uint256 constant SPAWN_MUL = 1000;
 uint256 constant RATE_MUL = 1000;

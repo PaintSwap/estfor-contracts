@@ -22,14 +22,14 @@
         "type": "address"
       },
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "clanMembersA",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "clanMembersB",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "internalType": "uint8[]",

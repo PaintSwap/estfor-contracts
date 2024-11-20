@@ -435,7 +435,7 @@ describe("WishingWell", function () {
     expect(await wishingWell.getNextClanThreshold(clanId)).to.eq(raffleEntryCost * 11n);
   });
 
-  it("Check claiming previous claims works up to 3 other lotteries ago", async function () {
+  it("Check claiming previous claims works up to 2 other lotteries ago", async function () {
     const {
       wishingWell,
       players,
@@ -457,7 +457,7 @@ describe("WishingWell", function () {
 
     await brush.mint(owner.address, totalBrush);
     await brush.approve(wishingWell, totalBrush);
-    for (let i = 0; i < 3; ++i) {
+    for (let i = 0; i < 2; ++i) {
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser" + i, false);
@@ -465,8 +465,7 @@ describe("WishingWell", function () {
     }
 
     // Should no longer be claimable
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel24Hours();
     await requestAndFulfillRandomWords(world, mockVRF);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
@@ -474,51 +473,46 @@ describe("WishingWell", function () {
     await players.connect(alice).processActions(playerId);
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false); // Still unclaimed
 
-    // Now do the same but only with 2 more winners which should leave this one claimable
+    // Now do the same but only with 1 more winner which should leave this one claimable
     await players.connect(alice).donate(playerId, raffleEntryCost);
     lotteryId = await wishingWell.getLastLotteryId();
-    for (let i = 0; i < 2; ++i) {
-      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-      await ethers.provider.send("evm_mine", []);
+    for (let i = 0; i < 1; ++i) {
+      await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "should work now" + i, false);
       await players.donate(newPlayerId, raffleEntryCost);
     }
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel24Hours();
     await requestAndFulfillRandomWords(world, mockVRF);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
     await players.connect(alice).processActions(playerId);
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(true);
     // Check elements are removed at the end as expected
-
-    expect(await wishingWell.getLastUnclaimedWinner(4));
+    expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(0);
 
     // Do a claim in-between, check getLastUnclaimedWinner array is updated as expected
     await players.connect(alice).donate(playerId, raffleEntryCost);
     lotteryId = await wishingWell.getLastLotteryId();
 
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    expect(await wishingWell.getLastUnclaimedWinner(4)).to.eq(playerId);
-    expect(await wishingWell.getLastUnclaimedWinner(5)).to.eq(lotteryId);
-    const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
-    await players.donate(newPlayerId, raffleEntryCost);
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel24Hours();
     await requestAndFulfillRandomWords(world, mockVRF);
     expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(lotteryId);
+    const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
+    await players.donate(newPlayerId, raffleEntryCost);
+    await timeTravel24Hours();
+    await requestAndFulfillRandomWords(world, mockVRF);
+    expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(playerId);
+    expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(lotteryId);
 
     await players.connect(alice).processActions(playerId); // claim the rewards
 
-    expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(newPlayerId);
-    expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(lotteryId + 1n);
+    expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(newPlayerId);
+    expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(lotteryId + 1n);
 
-    expect(await wishingWell.getLastUnclaimedWinner(4)).to.eq(0);
-    expect(await wishingWell.getLastUnclaimedWinner(5)).to.eq(0);
+    expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(0);
+    expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(0);
   });
 
   it("Multiple unclaimed wins should be claimed after each other", async function () {
@@ -531,48 +525,33 @@ describe("WishingWell", function () {
 
     await brush.mint(owner.address, totalBrush);
     await brush.approve(wishingWell, totalBrush);
-    for (let i = 0; i < 2; ++i) {
+    for (let i = 0; i < 1; ++i) {
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).donate(playerId, raffleEntryCost);
     }
-    await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-    await ethers.provider.send("evm_mine", []);
+    await timeTravel24Hours();
     await requestAndFulfillRandomWords(world, mockVRF);
 
     expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(lotteryId);
     expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(lotteryId + 1n);
-    expect(await wishingWell.getLastUnclaimedWinner(4)).to.eq(playerId);
-    expect(await wishingWell.getLastUnclaimedWinner(5)).to.eq(lotteryId + 2n);
 
     await players.connect(alice).processActions(playerId);
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.be.true;
     expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(lotteryId + 1n);
-    expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(playerId);
-    expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(lotteryId + 2n);
-    expect(await wishingWell.getLastUnclaimedWinner(4)).to.eq(0);
-    expect(await wishingWell.getLastUnclaimedWinner(5)).to.eq(0);
+    expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(0);
+    expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(0);
 
     await players.connect(alice).processActions(playerId);
     expect(await wishingWell.hasClaimedReward(lotteryId + 1n)).to.be.true;
-    expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(playerId);
-    expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(lotteryId + 2n);
-    expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(0);
-    expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(0);
-    expect(await wishingWell.getLastUnclaimedWinner(4)).to.eq(0);
-    expect(await wishingWell.getLastUnclaimedWinner(5)).to.eq(0);
-
-    await players.connect(alice).processActions(playerId);
-    expect(await wishingWell.hasClaimedReward(lotteryId + 2n)).to.be.true;
     expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(0);
     expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(0);
     expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(0);
     expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(0);
-    expect(await wishingWell.getLastUnclaimedWinner(4)).to.eq(0);
-    expect(await wishingWell.getLastUnclaimedWinner(5)).to.eq(0);
+    expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(0);
   });
 
   it("Get extra XP boost as part of queueing a donation", async function () {

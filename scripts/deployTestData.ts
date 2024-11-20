@@ -12,7 +12,8 @@ import {
   BANK_RELAY_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
   BANK_ADDRESS,
-  BANK_REGISTRY_ADDRESS
+  BANK_REGISTRY_ADDRESS,
+  RAIDS_ADDRESS
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {
@@ -28,6 +29,7 @@ import {
   PlayerNFT,
   Players,
   Quests,
+  Raids,
   Shop
 } from "../typechain-types";
 
@@ -50,6 +52,7 @@ async function main() {
     "LockedBankVaults",
     LOCKED_BANK_VAULTS_ADDRESS
   )) as unknown as LockedBankVaults;
+  const raids = (await ethers.getContractAt("Raids", RAIDS_ADDRESS)) as unknown as Raids;
 
   await addTestData(
     itemNFT,
@@ -65,7 +68,8 @@ async function main() {
     lockedBankVaults,
     minItemQuantityBeforeSellsAllowed,
     orderBook,
-    quests
+    quests,
+    raids
   );
 }
 

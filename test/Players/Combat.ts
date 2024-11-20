@@ -286,9 +286,9 @@ describe("Combat Actions", function () {
       } = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 80,
-        magic: 80,
-        ranged: 80,
+        meleeAttack: 80,
+        magicAttack: 80,
+        rangedAttack: 80,
         meleeDefence: 80,
         magicDefence: 80,
         rangedDefence: 80,
@@ -343,9 +343,9 @@ describe("Combat Actions", function () {
       const {playerId, players, alice, queuedAction: meleeQueuedAction, world} = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 10,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 10,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 10,
         magicDefence: 0,
         rangedDefence: 0,
@@ -400,9 +400,9 @@ describe("Combat Actions", function () {
       const {playerId, players, alice, queuedAction: meleeQueuedAction, world} = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 1,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 80,
         magicDefence: 0,
         rangedDefence: 0,
@@ -465,9 +465,9 @@ describe("Combat Actions", function () {
         itemNFT
       } = await loadFixture(playersFixtureMelee);
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 15000,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 15000,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -527,12 +527,12 @@ describe("Combat Actions", function () {
         itemNFT
       } = await loadFixture(playersFixtureMelee);
 
-      await players.setAlphaCombatHealing(8);
+      await players.setAlphaCombatParams(1, 1, 8);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 15000,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 15000,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -591,9 +591,9 @@ describe("Combat Actions", function () {
         itemNFT
       } = await loadFixture(playersFixtureMelee);
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 15000,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 15000,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -1171,9 +1171,9 @@ describe("Combat Actions", function () {
       const {playerId, players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 3,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 3,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -1436,9 +1436,9 @@ describe("Combat Actions", function () {
       const {players, playerId, itemNFT, alice, world} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 1,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -1592,9 +1592,9 @@ describe("Combat Actions", function () {
       const {players, playerId, itemNFT, alice, world} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 1,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2063,9 +2063,9 @@ describe("Combat Actions", function () {
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 15000,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 15000,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2135,9 +2135,9 @@ describe("Combat Actions", function () {
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 15000,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 15000,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2198,9 +2198,9 @@ describe("Combat Actions", function () {
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 50,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 50,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2303,9 +2303,9 @@ describe("Combat Actions", function () {
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 0,
-        magic: 5,
-        ranged: 0,
+        meleeAttack: 0,
+        magicAttack: 5,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 5,
         rangedDefence: 0,
@@ -2401,9 +2401,9 @@ describe("Combat Actions", function () {
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 0,
-        magic: 3,
-        ranged: 0,
+        meleeAttack: 0,
+        magicAttack: 3,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2483,9 +2483,9 @@ describe("Combat Actions", function () {
       const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 3,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 3,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2794,9 +2794,9 @@ describe("Combat Actions", function () {
       } = await loadFixture(playersFixtureRanged);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 0,
-        magic: 0,
-        ranged: 3,
+        meleeAttack: 0,
+        magicAttack: 0,
+        rangedAttack: 3,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2860,9 +2860,9 @@ describe("Combat Actions", function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {
-      melee: 3,
-      magic: 0,
-      ranged: 0,
+      meleeAttack: 3,
+      magicAttack: 0,
+      rangedAttack: 0,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -2981,9 +2981,9 @@ describe("Combat Actions", function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {
-      melee: 30,
-      magic: 0,
-      ranged: 0,
+      meleeAttack: 30,
+      magicAttack: 0,
+      rangedAttack: 0,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -3095,9 +3095,9 @@ describe("Combat Actions", function () {
     const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {
-      melee: 3,
-      magic: 0,
-      ranged: 0,
+      meleeAttack: 3,
+      magicAttack: 0,
+      rangedAttack: 0,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,

@@ -47,7 +47,7 @@ struct VaultClanInfo {
   uint8 blockAttacksCooldownHours;
   bool isInMMRArray;
   uint40 superAttackCooldownTimestamp;
-  uint48[] playerIds;
+  uint64[] playerIds;
   Vault[] defendingVaults; // Append only, and use defendingVaultsOffset to decide where the real start is
 }
 

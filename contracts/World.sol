@@ -17,7 +17,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
-  event RequestSent(uint256 requestId, uint32 numWords, uint256 lastRandomWordsUpdatedTime);
+  event RequestSent(uint256 requestId, uint256 numWords, uint256 lastRandomWordsUpdatedTime);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
   event AddActions(Action[] actions);
   event EditActions(Action[] actions);
@@ -46,9 +46,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   error CallbackGasLimitTooHigh();
   error CallerNotSamWitchVRF();
 
-  uint32 public constant NUM_WORDS = 1;
-  uint32 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
-  uint32 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
+  uint256 private constant NUM_WORDS = 1;
+  uint256 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
+  uint256 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
 
   uint256[] private _requestIds; // Each one is a set of random words for 1 day
   mapping(uint256 requestId => uint256 randomWord) private _randomWords;
@@ -56,7 +56,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
   uint40 private _startTime;
   uint40 private _weeklyRewardCheckpoint;
   bytes8 private _thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
-  uint24 private _callbackGasLimit;
+  uint24 private _expectedGasLimitFulfill;
   ISamWitchVRF private _samWitchVRF;
   IOracleRewardCB private _wishingWell;
 
@@ -94,7 +94,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     _startTime = startTime; // Floor to the nearest day 00:00 UTC
     _lastRandomWordsUpdatedTime = uint40(startTime + NUM_DAYS_RANDOM_WORDS_INITIALIZED * 1 days);
     _weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
-    _callbackGasLimit = 600_000;
+    _expectedGasLimitFulfill = 600_000;
     _samWitchVRF = ISamWitchVRF(vrf);
 
     // Initialize a few days worth of random words so that we have enough data to fetch the first day
@@ -132,13 +132,13 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
       _requestIds.length == 0 || _randomWords[_requestIds[_requestIds.length - 1]] != 0,
       RandomWordsCannotBeUpdatedYet()
     );
-    uint40 newLastRandomWordsUpdatedTime = _lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME;
+    uint40 newLastRandomWordsUpdatedTime = uint40(_lastRandomWordsUpdatedTime + MIN_RANDOM_WORDS_UPDATE_TIME);
     require(
       newLastRandomWordsUpdatedTime <= block.timestamp,
       CanOnlyRequestAfterTheNextCheckpoint(block.timestamp, newLastRandomWordsUpdatedTime)
     );
 
-    requestId = uint256(_samWitchVRF.requestRandomWords(NUM_WORDS, _callbackGasLimit));
+    requestId = uint256(_samWitchVRF.requestRandomWords(NUM_WORDS, _expectedGasLimitFulfill));
     _requestIds.push(requestId);
     _lastRandomWordsUpdatedTime = newLastRandomWordsUpdatedTime;
     emit RequestSent(requestId, NUM_WORDS, newLastRandomWordsUpdatedTime);
@@ -238,11 +238,14 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     return _actions[actionId].numSpawned;
   }
 
-  function getCombatStats(uint16 actionId) external view returns (CombatStats memory stats) {
+  function getCombatStats(uint16 actionId) external view override returns (CombatStats memory stats) {
     stats = _actionCombatStats[actionId];
   }
 
-  function getActionChoice(uint16 actionId, uint16 choiceId) external view returns (ActionChoice memory choice) {
+  function getActionChoice(
+    uint16 actionId,
+    uint16 choiceId
+  ) external view override returns (ActionChoice memory choice) {
     return _actionChoices[actionId][choiceId];
   }
 
@@ -534,9 +537,9 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     }
   }
 
-  function setCallbackGasLimit(uint256 gasLimit) external onlyOwner {
+  function setExpectedGasLimitFulfill(uint256 gasLimit) external onlyOwner {
     require(gasLimit <= 3_000_000, CallbackGasLimitTooHigh());
-    _callbackGasLimit = uint24(gasLimit);
+    _expectedGasLimitFulfill = uint24(gasLimit);
   }
 
   // solhint-disable-next-line no-empty-blocks

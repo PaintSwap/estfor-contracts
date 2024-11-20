@@ -79,7 +79,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
   IBrushToken private _brush;
   IPlayers private _players;
-  uint48 private _nextPlayerId;
+  uint64 private _nextPlayerId;
   address private _treasury;
   address private _royaltyReceiver;
   uint8 private _royaltyFee; // base 1000, highest is 25.5
@@ -123,7 +123,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint72 editNameCost,
     uint72 upgradePlayerCost,
     string calldata imageBaseUri,
-    uint48 startPlayerId,
+    uint64 startPlayerId,
     bool isBeta
   ) external initializer {
     __SamWitchERC1155UpgradeableSinglePerToken_init("");

@@ -1859,6 +1859,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract IClanMemberLeftCB",
+        "name": "raids",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "paintswapMarketplaceWhitelist",
         "type": "address"

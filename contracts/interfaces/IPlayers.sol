@@ -32,6 +32,8 @@ interface IPlayers {
 
   function isOwnerOfPlayerAndActive(address from, uint256 playerId) external view returns (bool);
 
+  function getAlphaCombatParams() external view returns (uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing);
+
   function getActivePlayer(address owner) external view returns (uint256 playerId);
 
   function getPlayerXP(uint256 playerId, Skill skill) external view returns (uint256 xp);

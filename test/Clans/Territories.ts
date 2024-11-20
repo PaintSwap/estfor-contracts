@@ -26,7 +26,7 @@ describe("Territories", function () {
     const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -56,7 +56,7 @@ describe("Territories", function () {
     const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -74,7 +74,7 @@ describe("Territories", function () {
     const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -118,7 +118,7 @@ describe("Territories", function () {
 
     const territoryId = 1;
 
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -136,7 +136,9 @@ describe("Territories", function () {
       await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
-    await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(clanId + 1, true, [bobPlayerId], false, [], false, [], bobPlayerId);
     await territories
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
@@ -176,7 +178,7 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -194,7 +196,9 @@ describe("Territories", function () {
       await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
-    await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(clanId + 1, true, [bobPlayerId], false, [], false, [], bobPlayerId);
     await territories
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
@@ -244,7 +248,7 @@ describe("Territories", function () {
 
     await combatantsHelper
       .connect(alice)
-      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], playerId);
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -286,11 +290,11 @@ describe("Territories", function () {
 
     // Free to attack another territory as you are no longer a defender (but only after player cooldown timestamp)
     await expect(
-      combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId)
+      combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], false, [], ownerPlayerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
     await ethers.provider.send("evm_mine", []);
-    await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], ownerPlayerId);
+    await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
       value: await territories.getAttackCost()
     });
@@ -301,7 +305,16 @@ describe("Territories", function () {
     // Bob should always beat alice's clan as she only has 1 defender
     await combatantsHelper
       .connect(bob)
-      .assignCombatants(bobClanId, true, [bobPlayerId, charliePlayerId, erinPlayerId], false, [], bobPlayerId);
+      .assignCombatants(
+        bobClanId,
+        true,
+        [bobPlayerId, charliePlayerId, erinPlayerId],
+        false,
+        [],
+        false,
+        [],
+        bobPlayerId
+      );
     await territories
       .connect(bob)
       .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
@@ -334,7 +347,7 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -351,7 +364,9 @@ describe("Territories", function () {
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
-    await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [charliePlayerId], false, [], bobPlayerId);
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(bobClanId, true, [charliePlayerId], false, [], false, [], bobPlayerId);
     await territories
       .connect(bob)
       .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
@@ -392,7 +407,7 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -402,7 +417,9 @@ describe("Territories", function () {
     const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
-    await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(bobClanId, true, [bobPlayerId], false, [], false, [], bobPlayerId);
     await territories
       .connect(bob)
       .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
@@ -444,7 +461,7 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -457,7 +474,9 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = 2;
-    await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(bobClanId, true, [bobPlayerId], false, [], false, [], bobPlayerId);
     await territories
       .connect(bob)
       .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
@@ -479,11 +498,15 @@ describe("Territories", function () {
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId, playerId], false, [], playerId)
+      combatantsHelper
+        .connect(alice)
+        .assignCombatants(clanId, true, [playerId, playerId], false, [], false, [], playerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerIdsNotSortedOrDuplicates");
 
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId, playerId], false, [], playerId)
+      combatantsHelper
+        .connect(alice)
+        .assignCombatants(clanId, true, [ownerPlayerId, playerId], false, [], false, [], playerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerIdsNotSortedOrDuplicates");
   });
 
@@ -499,7 +522,7 @@ describe("Territories", function () {
 
     await combatantsHelper
       .connect(alice)
-      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], playerId);
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
     await expect(
       territories.attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()})
     ).to.be.revertedWithCustomError(territories, "RankNotHighEnough");
@@ -522,7 +545,7 @@ describe("Territories", function () {
       await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -554,7 +577,7 @@ describe("Territories", function () {
     const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -601,7 +624,7 @@ describe("Territories", function () {
     } = await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -628,23 +651,23 @@ describe("Territories", function () {
       clanFixture
     );
 
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     // Clear player id part so we can hit the custom error we want
     await combatantsHelper.clearCooldowns([playerId]);
 
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId)
     ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
 
     // Update time by combatantChangeCooldown
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown - 5]);
     await ethers.provider.send("evm_mine", []);
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId)
     ).to.be.revertedWithCustomError(territories, "ClanCombatantsChangeCooldown");
     await ethers.provider.send("evm_increaseTime", [5]);
     await ethers.provider.send("evm_mine", []);
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
   });
 
   it("Add new territory", async () => {
@@ -734,7 +757,7 @@ describe("Territories", function () {
 
     const territoryId = 1;
 
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -748,7 +771,9 @@ describe("Territories", function () {
       await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
     }
 
-    await combatantsHelper.connect(bob).assignCombatants(clanId + 1, true, [bobPlayerId], false, [], bobPlayerId);
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(clanId + 1, true, [bobPlayerId], false, [], false, [], bobPlayerId);
     const tx = await territories
       .connect(bob)
       .attackTerritory(clanId + 1, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
@@ -799,7 +824,7 @@ describe("Territories", function () {
       await loadFixture(clanFixture);
 
     const territoryId = 1;
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -811,8 +836,9 @@ describe("Territories", function () {
     expect(clanInfo.ownsTerritoryId).eq(territoryId);
     await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
     await ethers.provider.send("evm_mine", []);
-    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)).to.not
-      .be.reverted;
+    await expect(
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId)
+    ).to.not.be.reverted;
   });
 
   it("Blocking attacks with item", async () => {
@@ -839,7 +865,7 @@ describe("Territories", function () {
 
     const territoryId = 1;
 
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await territories
       .connect(alice)
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
@@ -852,7 +878,9 @@ describe("Territories", function () {
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
-    await combatantsHelper.connect(bob).assignCombatants(bobClanId, true, [bobPlayerId], false, [], bobPlayerId);
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(bobClanId, true, [bobPlayerId], false, [], false, [], bobPlayerId);
 
     const items = allItems.filter(
       (inputItem) =>
@@ -959,7 +987,7 @@ describe("Territories", function () {
 
     await combatantsHelper
       .connect(alice)
-      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], playerId);
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
 
     // Must be minimum clan MMR to attack this territory
     await territories.setMinimumMMRs([territoryId], [initialMMR + 1]);

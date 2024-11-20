@@ -6,7 +6,7 @@ interface ICombatants {
 
   function assignCombatants(
     uint256 clanId,
-    uint48[] calldata playerIds,
+    uint64[] calldata playerIds,
     uint256 combatantCooldownTimestamp,
     uint256 leaderPlayerId
   ) external;

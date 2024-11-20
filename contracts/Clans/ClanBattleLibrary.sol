@@ -18,8 +18,8 @@ library ClanBattleLibrary {
 
   function determineBattleOutcome(
     address players,
-    uint48[] memory clanMembersA,
-    uint48[] memory clanMembersB,
+    uint64[] memory clanMembersA,
+    uint64[] memory clanMembersB,
     uint8[] memory skills,
     uint256[] memory randomWords, // 0 is for shuffling attacker, 1 & 2 for the dice rolls, 3 is for shuffling the defenders, 4 & 5 for the dice rolls
     uint256 extraRollsA,
@@ -34,8 +34,8 @@ library ClanBattleLibrary {
 
   function _determineBattleOutcome(
     address players,
-    uint48[] memory clanMembersA, // [In/Out] gets shuffled
-    uint48[] memory clanMembersB, // [In/Out] gets shuffled
+    uint64[] memory clanMembersA, // [In/Out] gets shuffled
+    uint64[] memory clanMembersB, // [In/Out] gets shuffled
     uint8[] memory skills,
     uint256[] memory randomWords,
     uint256 extraRollsA,

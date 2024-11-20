@@ -642,9 +642,9 @@
             "type": "bool"
           },
           {
-            "internalType": "uint40",
+            "internalType": "uint64",
             "name": "playerId",
-            "type": "uint40"
+            "type": "uint64"
           }
         ],
         "internalType": "struct LotteryWinnerInfo",
@@ -693,9 +693,9 @@
             "type": "bool"
           },
           {
-            "internalType": "uint40",
+            "internalType": "uint64",
             "name": "playerId",
-            "type": "uint40"
+            "type": "uint64"
           }
         ],
         "internalType": "struct LotteryWinnerInfo",

@@ -49,6 +49,7 @@ let petNFTLibrary;
 let petNFT;
 let passiveActions;
 let pvpBattleground;
+let raids;
 
 if (!isBeta) {
   brush = "0x85dec8c4B2680793661bCA91a8F129607571863d";
@@ -100,6 +101,7 @@ if (!isBeta) {
   petNFT = "0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3";
   passiveActions = "0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4";
   pvpBattleground = "";
+  raids = "";
 } else {
   brush = "0x812e6844779eaade4bc2be26bc968570ce09caab";
   wftm = "0x591e027153ed4e536275984e1b7573367e11dac4";
@@ -150,6 +152,7 @@ if (!isBeta) {
   bankRegistry = "0xcb6881bf1ba6aa14990b02f3bca830eb8a3a0ed8";
   bankFactory = "0xa2d9052a7f2b833646dd209dd78824a5ddfb6f26";
   pvpBattleground = "";
+  raids = "";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -199,6 +202,7 @@ export const PET_NFT_ADDRESS = petNFT;
 export const PASSIVE_ACTIONS_ADDRESS = passiveActions;
 export const BAZAAR_ADDRESS = bazaar;
 export const PVP_BATTLEGROUND_ADDRESS = pvpBattleground;
+export const RAIDS_ADDRESS = raids;
 
 export const WFTM_ADDRESS = wftm;
 export const BRUSH_ADDRESS = brush;

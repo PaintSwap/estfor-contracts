@@ -2,9 +2,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "array",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "internalType": "uint256",

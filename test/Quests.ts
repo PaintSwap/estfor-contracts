@@ -505,9 +505,9 @@ describe("Quests", function () {
     let queuedAction = {...queuedActionCooking, timespan: 100};
 
     const monsterCombatStats: EstforTypes.CombatStats = {
-      melee: 100,
-      magic: 0,
-      ranged: 0,
+      meleeAttack: 100,
+      magicAttack: 0,
+      rangedAttack: 0,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,

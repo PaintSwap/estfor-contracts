@@ -36,7 +36,8 @@ import {
   BankRegistry,
   SolidlyExtendedRouter,
   FakeDecoratorBrush,
-  PVPBattleground
+  PVPBattleground,
+  Raids
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -97,6 +98,7 @@ import {allBasePets} from "./data/pets";
 import {parseEther} from "ethers";
 import {allPassiveActions} from "./data/passiveActions";
 import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
+import {allBaseRaidIds, allBaseRaids} from "./data/raids";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -666,6 +668,63 @@ async function main() {
   await pvpBattleground.waitForDeployment();
   console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`);
 
+  const spawnRaidCooldown = 8 * 3600; // 8 hours
+  const maxRaidCombatants = 20;
+  const raidCombatActionIds = [
+    EstforConstants.ACTION_COMBAT_NATUOW,
+    EstforConstants.ACTION_COMBAT_GROG_TOAD,
+    EstforConstants.ACTION_COMBAT_UFFINCH,
+    EstforConstants.ACTION_COMBAT_NATURARACNID,
+    EstforConstants.ACTION_COMBAT_DRAGON_FROG,
+    EstforConstants.ACTION_COMBAT_ELDER_BURGOF,
+    EstforConstants.ACTION_COMBAT_GRAND_TREE_IMP,
+    EstforConstants.ACTION_COMBAT_BANOXNID,
+    EstforConstants.ACTION_COMBAT_ARCANE_DRAGON,
+    EstforConstants.ACTION_COMBAT_SNAPPER_BUG,
+    EstforConstants.ACTION_COMBAT_SNUFFLEQUARG,
+    EstforConstants.ACTION_COMBAT_OBGORA,
+    EstforConstants.ACTION_COMBAT_LOSSUTH,
+    EstforConstants.ACTION_COMBAT_SQUIGGLE_EGG,
+    EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE,
+    EstforConstants.ACTION_COMBAT_DWELLER_BAT,
+    EstforConstants.ACTION_COMBAT_ANCIENT_ENT,
+    EstforConstants.ACTION_COMBAT_ROCKHAWK,
+    EstforConstants.ACTION_COMBAT_QRAKUR,
+    EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON,
+    EstforConstants.ACTION_COMBAT_ERKAD,
+    EstforConstants.ACTION_COMBAT_EMBER_WHELP,
+    EstforConstants.ACTION_COMBAT_JUVENILE_CAVE_FAIRY,
+    EstforConstants.ACTION_COMBAT_CAVE_FAIRY,
+    EstforConstants.ACTION_COMBAT_ICE_TROLL,
+    EstforConstants.ACTION_COMBAT_BLAZING_MONTANITE,
+    EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
+    EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN
+  ];
+  const Raids = await ethers.getContractFactory("Raids");
+  const raids = (await upgrades.deployProxy(
+    Raids,
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await clans.getAddress(),
+      oracleAddress,
+      await vrf.getAddress(),
+      await vrfRequestInfo.getAddress(),
+      spawnRaidCooldown,
+      await brush.getAddress(),
+      await world.getAddress(),
+      maxRaidCombatants,
+      raidCombatActionIds,
+      isBeta
+    ],
+    {
+      kind: "uups",
+      timeout
+    }
+  )) as unknown as Raids;
+  await raids.waitForDeployment();
+  console.log(`raids = "${(await raids.getAddress()).toLowerCase()}"`);
+
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
   console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
 
@@ -752,6 +811,7 @@ async function main() {
       await clans.getAddress(),
       await territories.getAddress(),
       await lockedBankVaults.getAddress(),
+      await raids.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -798,7 +858,8 @@ async function main() {
       await itemNFT.getAddress(),
       await clans.getAddress(),
       await players.getAddress(),
-      await lockedBankVaults.getAddress()
+      await lockedBankVaults.getAddress(),
+      await raids.getAddress()
     ],
     {
       kind: "uups",
@@ -881,6 +942,7 @@ async function main() {
     bankFactory,
     territories,
     lockedBankVaults,
+    raids,
     paintSwapMarketplaceWhitelist
   );
   await tx.wait();
@@ -928,7 +990,8 @@ async function main() {
       lockedBankVaults,
       orderBook,
       instantVRFActions,
-      passiveActions
+      passiveActions,
+      raids
     ],
     true
   );
@@ -938,6 +1001,10 @@ async function main() {
   tx = await royaltyReceiver.setTerritories(territories);
   await tx.wait();
   console.log("royaltyReceiver.setTerritories");
+
+  tx = await raids.initializeAddresses(combatantsHelper, bankFactory);
+  await tx.wait();
+  console.log("raids.initializeAddresses");
 
   tx = await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await tx.wait();
@@ -973,9 +1040,14 @@ async function main() {
   await tx.wait();
   console.log("vrfRequestInfo.setUpdaters");
 
+  // Disable PVP and raids for now
   tx = await pvpBattleground.setPreventAttacks(true);
   await tx.wait();
   console.log("pvpBattleground.setPreventAttacks");
+
+  tx = await raids.setPreventRaids(true);
+  await tx.wait();
+  console.log("raids.setPreventRaids");
 
   tx = await instantVRFActions.addStrategies(
     [InstantVRFActionType.GENERIC, InstantVRFActionType.FORGING, InstantVRFActionType.EGG],
@@ -1132,6 +1204,11 @@ async function main() {
     console.log("Add base pets chunk ", i);
   }
 
+  // Add base raids
+  tx = await raids.addBaseRaids(allBaseRaidIds, allBaseRaids);
+  await tx.wait();
+  console.log("Add base raids");
+
   // Add unsellable items
   const items = [
     EstforConstants.INFUSED_ORICHALCUM_HELMET,
@@ -1214,7 +1291,8 @@ async function main() {
       lockedBankVaults,
       minItemQuantityBeforeSellsAllowed,
       orderBook,
-      quests
+      quests,
+      raids
     );
   }
 }

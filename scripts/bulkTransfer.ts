@@ -8,7 +8,8 @@ import {
   ITEM_NFT_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
   PLAYER_NFT_ADDRESS,
-  PLAYERS_ADDRESS
+  PLAYERS_ADDRESS,
+  RAIDS_ADDRESS
 } from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {getChainId} from "./utils";
@@ -66,7 +67,8 @@ async function main() {
     PLAYER_NFT_ADDRESS,
     ITEM_NFT_ADDRESS,
     PLAYERS_ADDRESS,
-    LOCKED_BANK_VAULTS_ADDRESS
+    LOCKED_BANK_VAULTS_ADDRESS,
+    RAIDS_ADDRESS
   );
 
   // Send directly

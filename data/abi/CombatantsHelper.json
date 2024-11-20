@@ -95,17 +95,17 @@
   },
   {
     "inputs": [],
+    "name": "PlayerCannotBeInAssignedMoreThanOnce",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PlayerCombatantCooldownTimestamp",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "PlayerIdsNotSortedOrDuplicates",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "PlayerOnTerritoryAndLockedVault",
     "type": "error"
   },
   {
@@ -205,9 +205,9 @@
         "type": "bool"
       },
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "territoryPlayerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "internalType": "bool",
@@ -215,9 +215,19 @@
         "type": "bool"
       },
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "lockedVaultPlayerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "setRaidCombatants",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "raidPlayerIds",
+        "type": "uint64[]"
       },
       {
         "internalType": "uint256",
@@ -233,9 +243,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "playerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       }
     ],
     "name": "clearCooldowns",
@@ -263,6 +273,11 @@
       {
         "internalType": "contract ICombatants",
         "name": "lockedVaults",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ICombatants",
+        "name": "raids",
         "type": "address"
       },
       {

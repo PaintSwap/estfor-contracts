@@ -72,7 +72,7 @@ async function main() {
   console.log("SetTerritories");
 
   // Claim the territory
-  tx = await combatantsHelper.assignCombatants(1, true, [1], false, [], 1);
+  tx = await combatantsHelper.assignCombatants(1, true, [1], false, [], false, [], 1);
   await tx.wait();
   console.log("assign combatants for territories");
   let territoryAttackCost = await territories.getAttackCost();
@@ -86,7 +86,7 @@ async function main() {
 
   const aliceClanId = 26;
 
-  tx = await combatantsHelper.connect(alice).assignCombatants(aliceClanId, true, [532], true, [2], 2);
+  tx = await combatantsHelper.connect(alice).assignCombatants(aliceClanId, true, [532], true, [2], false, [], 2);
   await tx.wait();
   console.log("assign combatants for territories & locked bank vaults");
 

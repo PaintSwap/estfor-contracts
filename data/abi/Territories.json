@@ -313,9 +313,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "playerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "indexed": false,
@@ -399,15 +399,15 @@
       },
       {
         "indexed": false,
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "attackingPlayerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "indexed": false,
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "defendingPlayerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "indexed": false,
@@ -881,9 +881,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint48[]",
+        "internalType": "uint64[]",
         "name": "playerIds",
-        "type": "uint48[]"
+        "type": "uint64[]"
       },
       {
         "internalType": "uint256",
@@ -1077,9 +1077,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint48[]",
+            "internalType": "uint64[]",
             "name": "playerIds",
-            "type": "uint48[]"
+            "type": "uint64[]"
           }
         ],
         "internalType": "struct Territories.ClanInfo",

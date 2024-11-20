@@ -69,9 +69,9 @@ struct Item {
   uint16 boostValue; // Varies, could be the % increase
   uint24 boostDuration; // How long the effect of the boost last
   // Combat stats
-  int16 melee;
-  int16 magic;
-  int16 ranged;
+  int16 meleeAttack;
+  int16 magicAttack;
+  int16 rangedAttack;
   int16 meleeDefence;
   int16 magicDefence;
   int16 rangedDefence;
@@ -251,7 +251,7 @@ struct LotteryWinnerInfo {
   uint16 itemTokenId;
   uint16 amount;
   bool instantConsume;
-  uint40 playerId;
+  uint64 playerId;
 }
 
 struct PendingQueuedActionState {

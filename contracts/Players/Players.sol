@@ -98,10 +98,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _isBeta = isBeta;
 
     _nextQueueId = 1;
-    _alphaCombat = 1;
-    _betaCombat = 1;
-    _alphaCombatHealing = 8;
-    emit SetCombatParams(1, 1, 8);
+    setAlphaCombatParams(1, 1, 8);
   }
 
   /// @notice Start actions for a player
@@ -463,6 +460,15 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return _isPlayerFullMode(playerId);
   }
 
+  function getAlphaCombatParams()
+    external
+    view
+    override
+    returns (uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing)
+  {
+    return (_alphaCombat, _betaCombat, _alphaCombatHealing);
+  }
+
   function setImpls(
     address implQueueActions,
     address implProcessActions,
@@ -477,9 +483,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _implMisc1 = implMisc1;
   }
 
-  // TODO: Can remove after integrated on live contracts
-  function setAlphaCombatHealing(uint8 alphaCombatHealing) external onlyOwner {
+  function setAlphaCombatParams(uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing) public onlyOwner {
+    _alphaCombat = alphaCombat;
+    _betaCombat = betaCombat;
     _alphaCombatHealing = alphaCombatHealing;
+    emit SetCombatParams(alphaCombat, betaCombat, alphaCombatHealing);
   }
 
   function addXPThresholdRewards(XPThresholdReward[] calldata xpThresholdRewards) external onlyOwner {

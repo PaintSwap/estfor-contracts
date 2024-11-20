@@ -39,6 +39,308 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "elapsedTime",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount2",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount3",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "minSkill2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP2",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "minSkill3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          }
+        ],
+        "internalType": "struct ActionChoice",
+        "name": "actionChoice",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint16",
+        "name": "regenerateId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numSpawnedPerHour",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "meleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "combatStats",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "meleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "enemyCombatStats",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint8",
+        "name": "alphaCombat",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "betaCombat",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "alphaCombatHealing",
+        "type": "uint8"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "determineBattleOutcome",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "xpElapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "combatElapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "baseInputItemsConsumedNum",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "foodConsumed",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bool",
+        "name": "died",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "int256",
         "name": "attack",
         "type": "int256"
@@ -486,375 +788,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "itemNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "world",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "elapsedTime",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint8",
-            "name": "skill",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "minXP",
-            "type": "uint32"
-          },
-          {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "rate",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint24",
-            "name": "xpPerHour",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "inputTokenId1",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "inputAmount1",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "inputTokenId2",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "inputAmount2",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "inputTokenId3",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "inputAmount3",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint16",
-            "name": "outputTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint8",
-            "name": "outputAmount",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "successPercent",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "minSkill2",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "minXP2",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint8",
-            "name": "minSkill3",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint32",
-            "name": "minXP3",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint16",
-            "name": "handItemTokenIdRangeMin",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "handItemTokenIdRangeMax",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "questPrerequisiteId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "bytes1",
-            "name": "packedData",
-            "type": "bytes1"
-          }
-        ],
-        "internalType": "struct ActionChoice",
-        "name": "actionChoice",
-        "type": "tuple"
-      },
-      {
-        "internalType": "uint16",
-        "name": "regenerateId",
-        "type": "uint16"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint16",
-            "name": "actionId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "regenerateId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "choiceId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "rightHandEquipmentTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "leftHandEquipmentTokenId",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint24",
-            "name": "timespan",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint24",
-            "name": "prevProcessedTime",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint24",
-            "name": "prevProcessedXPTime",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint64",
-            "name": "queueId",
-            "type": "uint64"
-          },
-          {
-            "internalType": "bytes1",
-            "name": "packed",
-            "type": "bytes1"
-          },
-          {
-            "internalType": "uint32",
-            "name": "reserved",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint40",
-            "name": "petId",
-            "type": "uint40"
-          }
-        ],
-        "internalType": "struct QueuedAction",
-        "name": "queuedAction",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "int16",
-            "name": "melee",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magic",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "ranged",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "health",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "meleeDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedDefence",
-            "type": "int16"
-          }
-        ],
-        "internalType": "struct CombatStats",
-        "name": "combatStats",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "int16",
-            "name": "melee",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magic",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "ranged",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "health",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "meleeDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedDefence",
-            "type": "int16"
-          }
-        ],
-        "internalType": "struct CombatStats",
-        "name": "enemyCombatStats",
-        "type": "tuple"
-      },
-      {
-        "internalType": "uint8",
-        "name": "alphaCombat",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "betaCombat",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "alphaCombatHealing",
-        "type": "uint8"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256[]",
-            "name": "consumedItemTokenIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "consumedAmounts",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "producedItemTokenIds",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "producedAmounts",
-            "type": "uint256[]"
-          }
-        ],
-        "internalType": "struct PendingQueuedActionEquipmentState[]",
-        "name": "pendingQueuedActionEquipmentStates",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "getCombatAdjustedElapsedTimes",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "xpElapsedTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "combatElapsedTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint16",
-        "name": "baseInputItemsConsumedNum",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "foodConsumed",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bool",
-        "name": "died",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "xp",
         "type": "uint256"
@@ -1094,17 +1027,17 @@
         "components": [
           {
             "internalType": "int16",
-            "name": "melee",
+            "name": "meleeAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "magic",
+            "name": "magicAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "ranged",
+            "name": "rangedAttack",
             "type": "int16"
           },
           {
@@ -1169,17 +1102,17 @@
         "components": [
           {
             "internalType": "int16",
-            "name": "melee",
+            "name": "meleeAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "magic",
+            "name": "magicAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "ranged",
+            "name": "rangedAttack",
             "type": "int16"
           },
           {
@@ -1217,17 +1150,17 @@
         "components": [
           {
             "internalType": "int16",
-            "name": "melee",
+            "name": "meleeAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "magic",
+            "name": "magicAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "ranged",
+            "name": "rangedAttack",
             "type": "int16"
           },
           {
@@ -1272,17 +1205,17 @@
         "components": [
           {
             "internalType": "int16",
-            "name": "melee",
+            "name": "meleeAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "magic",
+            "name": "magicAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "ranged",
+            "name": "rangedAttack",
             "type": "int16"
           },
           {
@@ -1330,17 +1263,17 @@
         "components": [
           {
             "internalType": "int16",
-            "name": "melee",
+            "name": "meleeAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "magic",
+            "name": "magicAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "ranged",
+            "name": "rangedAttack",
             "type": "int16"
           },
           {
@@ -1434,17 +1367,17 @@
         "components": [
           {
             "internalType": "int16",
-            "name": "melee",
+            "name": "meleeAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "magic",
+            "name": "magicAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "ranged",
+            "name": "rangedAttack",
             "type": "int16"
           },
           {

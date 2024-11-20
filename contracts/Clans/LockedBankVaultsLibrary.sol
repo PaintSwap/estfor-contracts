@@ -579,7 +579,7 @@ library LockedBankVaultsLibrary {
 
   function checkCanAssignCombatants(
     VaultClanInfo storage clanInfo,
-    uint48[] calldata playerIds,
+    uint64[] calldata playerIds,
     uint8 maxClanCombatants
   ) external view {
     require(!clanInfo.currentlyAttacking, CannotChangeCombatantsDuringAttack());

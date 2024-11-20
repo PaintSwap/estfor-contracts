@@ -175,7 +175,7 @@ library EstforLibrary {
   }
 
   // This should match the one below, useful when a calldata array is needed and for external testing
-  function _binarySearchMemory(uint48[] calldata array, uint256 target) internal pure returns (uint256) {
+  function _binarySearchMemory(uint64[] calldata array, uint256 target) internal pure returns (uint256) {
     uint256 low = 0;
     uint256 high = array.length - 1;
 
@@ -200,12 +200,12 @@ library EstforLibrary {
     return type(uint256).max; // Element not found
   }
 
-  function binarySearchMemory(uint48[] calldata array, uint256 target) external pure returns (uint256) {
+  function binarySearchMemory(uint64[] calldata array, uint256 target) external pure returns (uint256) {
     return _binarySearchMemory(array, target);
   }
 
   // This should match the one above
-  function _binarySearch(uint48[] storage array, uint256 target) internal view returns (uint256) {
+  function _binarySearch(uint64[] storage array, uint256 target) internal view returns (uint256) {
     uint256 low = 0;
     uint256 high = array.length - 1;
 
@@ -230,19 +230,53 @@ library EstforLibrary {
     return type(uint256).max; // Element not found
   }
 
-  function binarySearch(uint48[] storage array, uint256 target) external view returns (uint256) {
+  function binarySearch(uint64[] storage array, uint256 target) external view returns (uint256) {
     return _binarySearch(array, target);
   }
 
-  function _shuffleArray(uint48[] memory array, uint256 randomNumber) internal pure returns (uint48[] memory output) {
+  function _shuffleArray(uint64[] memory array, uint256 randomNumber) internal pure returns (uint64[] memory output) {
     for (uint256 i; i < array.length; ++i) {
       uint256 n = i + (randomNumber % (array.length - i));
       if (i != n) {
-        uint48 temp = array[n];
+        uint64 temp = array[n];
         array[n] = array[i];
         array[i] = temp;
       }
     }
     return array;
+  }
+
+  function _getRandomInRange16(
+    uint256 randomWord,
+    uint256 shift,
+    int16 minValue,
+    int16 maxValue
+  ) internal pure returns (int16) {
+    return int16(minValue + (int16(int256((randomWord >> shift) & 0xFFFF) % (maxValue - minValue + 1))));
+  }
+
+  function _getRandomFromArray16(
+    uint256 randomWord,
+    uint256 shift,
+    uint16[] storage arr,
+    uint256 arrLength
+  ) internal view returns (uint16) {
+    return arr[_getRandomIndexFromArray16(randomWord, shift, arrLength)];
+  }
+
+  function _getRandomFrom3ElementArray16(
+    uint256 randomWord,
+    uint256 shift,
+    uint16[3] memory arr
+  ) internal pure returns (uint16) {
+    return arr[_getRandomIndexFromArray16(randomWord, shift, arr.length)];
+  }
+
+  function _getRandomIndexFromArray16(
+    uint256 randomWord,
+    uint256 shift,
+    uint256 arrLength
+  ) internal pure returns (uint16) {
+    return uint16(((randomWord >> shift) & 0xFFFF) % arrLength);
   }
 }

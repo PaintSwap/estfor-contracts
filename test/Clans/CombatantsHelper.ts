@@ -13,48 +13,52 @@ describe("CombatantsHelper", function () {
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [playerId], playerId);
+    await combatantsHelper
+      .connect(alice)
+      .assignCombatants(clanId, true, [ownerPlayerId], true, [playerId], false, [], playerId);
   });
 
   it("Cannot assign same player to both, fresh", async function () {
     const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], true, [playerId], playerId)
-    ).to.be.revertedWithCustomError(combatantsHelper, "PlayerOnTerritoryAndLockedVault");
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], true, [playerId], false, [], playerId)
+    ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCannotBeInAssignedMoreThanOnce");
   });
 
   it("Cannot assign same player to both, after assigning to one side already (first territory)", async function () {
     const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId)
+      combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerAlreadyExistingCombatant");
   });
 
   it("Cannot assign same player to both, after assigning to one side already (first territory)", async function () {
     const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
-    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], playerId);
+    await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
     await expect(
-      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], playerId)
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerAlreadyExistingCombatant");
   });
 
   it("Assigning 0 combatants is ok", async function () {
     const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
-    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [], true, [], playerId)).to.not.be
-      .reverted;
+    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [], true, [], false, [], playerId)).to
+      .not.be.reverted;
   });
 
   it("Assigning 0 combatants while the other is set, territory not set, locked vaults set", async function () {
     const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
-    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [], true, [playerId], playerId)).not.to
-      .be.reverted;
+    await expect(
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [], true, [playerId], false, [], playerId)
+    ).not.to.be.reverted;
   });
 
   it("Assigning 0 combatants while the other is set, territory set, locked vaults not set", async function () {
     const {combatantsHelper, clanId, playerId, alice} = await loadFixture(clanFixture);
-    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], true, [], playerId)).not.to
-      .be.reverted;
+    await expect(
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], true, [], false, [], playerId)
+    ).not.to.be.reverted;
   });
 
   it("Assigning 0 combatants after having some set, while the other is still set", async function () {
@@ -76,13 +80,16 @@ describe("CombatantsHelper", function () {
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
-    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [playerId], playerId);
+    await combatantsHelper
+      .connect(alice)
+      .assignCombatants(clanId, true, [ownerPlayerId], true, [playerId], false, [], playerId);
 
     await combatantsHelper.clearCooldowns([ownerPlayerId]);
     await territories.clearCooldowns(clanId);
     await lockedBankVaults.clearCooldowns(clanId, []);
 
-    await expect(combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [], playerId)).to
-      .not.be.reverted;
+    await expect(
+      combatantsHelper.connect(alice).assignCombatants(clanId, true, [ownerPlayerId], true, [], false, [], playerId)
+    ).to.not.be.reverted;
   });
 });

@@ -285,6 +285,11 @@
         "internalType": "address",
         "name": "lockedBankVaults",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "raids",
+        "type": "address"
       }
     ],
     "name": "initialize",

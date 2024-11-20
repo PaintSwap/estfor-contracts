@@ -61,9 +61,9 @@ export const fulfillRandomWordsSeeded = async (
 };
 
 export const bronzeHelmetStats: EstforTypes.CombatStats = {
-  melee: 1,
-  magic: 0,
-  ranged: 0,
+  meleeAttack: 1,
+  magicAttack: 0,
+  rangedAttack: 0,
   meleeDefence: 4,
   magicDefence: 0,
   rangedDefence: 1,

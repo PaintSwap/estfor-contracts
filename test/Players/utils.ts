@@ -199,9 +199,9 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
   const [owner, alice] = await ethers.getSigners();
 
   const monsterCombatStats: EstforTypes.CombatStats = {
-    melee: 1,
-    magic: 0,
-    ranged: 0,
+    meleeAttack: 1,
+    magicAttack: 0,
+    rangedAttack: 0,
     meleeDefence: 0,
     magicDefence: 0,
     rangedDefence: 0,
@@ -266,7 +266,7 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, world: Wo
       ...EstforTypes.defaultItemInput,
       combatStats: {
         ...EstforTypes.emptyCombatStats,
-        melee: 5
+        meleeAttack: 5
       },
       tokenId: EstforConstants.BRONZE_SWORD,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
@@ -297,9 +297,9 @@ export const setupBasicPetMeleeCombat = async (itemNFT: ItemNFT, world: World, p
   const [owner, alice] = await ethers.getSigners();
 
   const monsterCombatStats: EstforTypes.CombatStats = {
-    melee: 1,
-    magic: 0,
-    ranged: 0,
+    meleeAttack: 1,
+    magicAttack: 0,
+    rangedAttack: 0,
     meleeDefence: 0,
     magicDefence: 0,
     rangedDefence: 0,

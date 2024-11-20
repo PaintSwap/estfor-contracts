@@ -57,6 +57,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   error ToIsNotOwnerOfPlayer();
   error UseWithdrawItemsForNFT();
   error NFTTypeNotSupported();
+  error NotForceItemDepositor();
 
   uint40 private _clanId;
   BankRegistry private _bankRegistry;
@@ -67,6 +68,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   IClans private _clans;
   IPlayers private _players;
   address private _lockedBankVaults;
+  address private _raids;
+  bool private _allowBreachedCapacity; // Be nice if this is transient storage
 
   BitMaps.BitMap private _uniqueItems; // itemTokenId => bool hasAny
 
@@ -85,6 +88,11 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     _;
   }
 
+  modifier onlyForceItemDepositor() {
+    require(_isForceItemDepositor(_msgSender()), NotForceItemDepositor());
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -98,7 +106,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     address itemNFT,
     address clans,
     address players,
-    address lockedBankVaults
+    address lockedBankVaults,
+    address raids
   ) external override initializer {
     __ReentrancyGuard_init();
     _clanId = clanId.toUint40();
@@ -109,6 +118,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     _clans = IClans(clans);
     _players = IPlayers(players);
     _lockedBankVaults = lockedBankVaults;
+    _raids = raids;
   }
 
   function depositItems(
@@ -119,9 +129,17 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   ) external onlyBankRelay isOwnerOfPlayer(sender, playerId) {
     uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
     uint256 bounds = ids.length;
+    uint16 newUniqueItemCount = _uniqueItemCount;
+    bool isForceItemDepositor = false;
     for (uint256 i; i < bounds; ++i) {
-      _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
+      (newUniqueItemCount, isForceItemDepositor) = _receivedItemUpdateUniqueItems(
+        ids[i],
+        maxCapacity,
+        newUniqueItemCount,
+        isForceItemDepositor
+      );
     }
+    _uniqueItemCount = newUniqueItemCount;
     _itemNFT.safeBatchTransferFrom(sender, address(this), ids, values, "");
     emit DepositItems(sender, playerId, ids, values);
   }
@@ -255,15 +273,6 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     emit WithdrawNFT(sender, playerId, to, toPlayerId, nft, tokenId, amount);
   }
 
-  function _receivedItemUpdateUniqueItems(uint256 id, uint256 maxCapacity) private {
-    bool isNewItem = !_uniqueItems.get(id);
-    if (isNewItem) {
-      require(_uniqueItemCount < maxCapacity, MaxBankCapacityReached());
-      ++_uniqueItemCount;
-      _uniqueItems.set(id);
-    }
-  }
-
   function onERC1155Received(
     address operator,
     address from,
@@ -274,7 +283,14 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     // Only care about itemNFTs sent from outside the bank here
     if (_msgSender() == address(_itemNFT) && operator != address(this)) {
       uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
-      _receivedItemUpdateUniqueItems(id, maxCapacity);
+      bool dummyIsForceItemDepositor = false;
+      (uint16 newUniqueItemCount, ) = _receivedItemUpdateUniqueItems(
+        id,
+        maxCapacity,
+        _uniqueItemCount,
+        dummyIsForceItemDepositor
+      );
+      _uniqueItemCount = newUniqueItemCount;
       uint256 activePlayerId = _players.getActivePlayer(from);
       emit DepositItem(from, activePlayerId, id, value);
     }
@@ -292,13 +308,50 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
     if (_msgSender() == address(_itemNFT) && operator != address(this)) {
       uint256 maxCapacity = _clans.maxBankCapacity(_clanId);
       uint256 bounds = ids.length;
+      uint16 newUniqueItemCount = _uniqueItemCount;
+      bool isForceItemDepositor = false;
       for (uint256 i; i < bounds; ++i) {
-        _receivedItemUpdateUniqueItems(ids[i], maxCapacity);
+        (newUniqueItemCount, isForceItemDepositor) = _receivedItemUpdateUniqueItems(
+          ids[i],
+          maxCapacity,
+          newUniqueItemCount,
+          isForceItemDepositor
+        );
       }
+      _uniqueItemCount = newUniqueItemCount;
       uint256 activePlayerId = _players.getActivePlayer(from);
       emit DepositItems(from, activePlayerId, ids, values);
     }
     return super.onERC1155BatchReceived(operator, from, ids, values, data);
+  }
+
+  function _receivedItemUpdateUniqueItems(
+    uint256 id,
+    uint256 maxCapacity,
+    uint16 uniqueItemCount,
+    bool isForceItemDepositor
+  ) private returns (uint16 newUniqueItemCount, bool isForceItemDepositor_) {
+    bool isNewItem = !_uniqueItems.get(id);
+    isForceItemDepositor_ = isForceItemDepositor;
+    if (isNewItem) {
+      if (uniqueItemCount >= maxCapacity && !isForceItemDepositor) {
+        // Only a force depositor is able to extend the bank capacity, stuff like raid loot
+        require(_allowBreachedCapacity, MaxBankCapacityReached());
+        isForceItemDepositor_ = true;
+      }
+      _uniqueItems.set(id);
+      newUniqueItemCount = uniqueItemCount + 1;
+    } else {
+      newUniqueItemCount = uniqueItemCount;
+    }
+  }
+
+  function _isForceItemDepositor(address account) private view returns (bool) {
+    return account == _raids;
+  }
+
+  function setAllowBreachedCapacity(bool allow) external override onlyForceItemDepositor {
+    _allowBreachedCapacity = allow;
   }
 
   // Untested

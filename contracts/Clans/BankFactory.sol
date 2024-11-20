@@ -28,6 +28,7 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
   address private _clans;
   address private _players;
   address private _lockedBankVaults;
+  address private _raids;
 
   modifier onlyClans() {
     require(address(_clans) == _msgSender(), OnlyClans());
@@ -47,7 +48,8 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     address itemNFT,
     address clans,
     address players,
-    address lockedBankVaults
+    address lockedBankVaults,
+    address raids
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
@@ -60,6 +62,7 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
     _clans = clans;
     _players = players;
     _lockedBankVaults = lockedBankVaults;
+    _raids = raids;
   }
 
   function getBankAddress(uint256 clanId) external view override returns (address) {
@@ -86,7 +89,8 @@ contract BankFactory is UUPSUpgradeable, OwnableUpgradeable, IBankFactory {
           _itemNFT,
           _clans,
           _players,
-          _lockedBankVaults
+          _lockedBankVaults,
+          _raids
         )
       )
     );

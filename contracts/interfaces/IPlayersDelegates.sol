@@ -94,6 +94,7 @@ interface IPlayersMiscDelegateView {
     CombatStats memory combatStats,
     uint256 elapsedTime,
     uint256 startTime,
+    uint256 numSpawnedPerHour,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed
   )

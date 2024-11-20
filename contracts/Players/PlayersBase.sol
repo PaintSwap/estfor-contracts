@@ -158,18 +158,18 @@ abstract contract PlayersBase {
   uint256 internal _startSlot;
 
   World internal _world;
+  bool internal _dailyRewardsEnabled;
+  ItemNFT internal _itemNFT;
   // Constants for the damage formula
   uint8 internal _alphaCombat;
   uint8 internal _betaCombat;
-  uint56 internal _nextQueueId; // Global queued action id
   uint8 internal _alphaCombatHealing; // Healing formula constants
-  bool internal _dailyRewardsEnabled;
-  bool internal _isBeta;
-
-  ItemNFT internal _itemNFT;
   PlayerNFT internal _playerNFT;
+  uint64 internal _nextQueueId; // Global queued action id
+
   bool internal _gamePaused;
   AdminAccess internal _adminAccess;
+  bool internal _isBeta;
 
   address internal _implQueueActions;
   address internal _implProcessActions;

@@ -232,6 +232,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           combatStats,
           elapsedTime,
           startTime,
+          numSpawnedPerHour,
           pendingQueuedActionState.equipmentStates,
           pendingQueuedActionState.processedData
         );
@@ -664,8 +665,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
 
     uint256 veryStartTime = startTime - prevProcessedTime;
     // Full
-    uint256 length;
-    (ids, amounts, length) = _getGuaranteedRewards(
+    (ids, amounts) = _getGuaranteedRewards(
       playerId,
       uint40(veryStartTime),
       prevXPElapsedTime + xpElapsedTime,
@@ -678,10 +678,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256[] memory prevNewIds;
     uint256[] memory prevNewAmounts;
     if (prevXPElapsedTime != 0) {
-      uint256 prevLength;
       uint16 monstersKilled = uint16((numSpawnedPerHour * prevXPElapsedTime) / (SPAWN_MUL * 3600));
 
-      (prevNewIds, prevNewAmounts, prevLength) = _getGuaranteedRewards(
+      (prevNewIds, prevNewAmounts) = _getGuaranteedRewards(
         playerId,
         uint40(veryStartTime),
         prevXPElapsedTime,
@@ -746,11 +745,11 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint16 monstersKilled,
     bool isCombat,
     uint8 successPercent
-  ) private view returns (uint256[] memory ids, uint256[] memory amounts, uint256 length) {
+  ) private view returns (uint256[] memory ids, uint256[] memory amounts) {
     ids = new uint256[](MAX_GUARANTEED_REWARDS_PER_ACTION);
     amounts = new uint256[](MAX_GUARANTEED_REWARDS_PER_ACTION);
 
-    length = _appendGuaranteedRewards(
+    uint256 length = PlayersLibrary._appendGuaranteedRewards(
       ids,
       amounts,
       xpElapsedTime,
@@ -935,78 +934,6 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     remainingQueuedActions[length] = remainingAction;
   }
 
-  function _appendGuaranteedReward(
-    uint256[] memory ids,
-    uint256[] memory amounts,
-    uint256 elapsedTime,
-    uint16 rewardTokenId,
-    uint24 rewardRate,
-    uint256 oldLength,
-    uint16 monstersKilled,
-    bool isCombat,
-    uint8 successPercent
-  ) private pure returns (uint256 length) {
-    length = oldLength;
-    if (rewardTokenId != NONE) {
-      uint256 numRewards;
-      if (isCombat) {
-        numRewards = (monstersKilled * rewardRate) / GUAR_MUL; // rate is per kill
-      } else {
-        numRewards = (elapsedTime * rewardRate * successPercent) / (3600 * GUAR_MUL * 100);
-      }
-
-      if (numRewards != 0) {
-        ids[length] = rewardTokenId;
-        amounts[length] = numRewards;
-        length++;
-      }
-    }
-  }
-
-  function _appendGuaranteedRewards(
-    uint256[] memory ids,
-    uint256[] memory amounts,
-    uint256 elapsedTime,
-    ActionRewards memory actionRewards,
-    uint16 monstersKilled,
-    bool isCombat,
-    uint8 successPercent
-  ) private pure returns (uint256 length) {
-    length = _appendGuaranteedReward(
-      ids,
-      amounts,
-      elapsedTime,
-      actionRewards.guaranteedRewardTokenId1,
-      actionRewards.guaranteedRewardRate1,
-      length,
-      monstersKilled,
-      isCombat,
-      successPercent
-    );
-    length = _appendGuaranteedReward(
-      ids,
-      amounts,
-      elapsedTime,
-      actionRewards.guaranteedRewardTokenId2,
-      actionRewards.guaranteedRewardRate2,
-      length,
-      monstersKilled,
-      isCombat,
-      successPercent
-    );
-    length = _appendGuaranteedReward(
-      ids,
-      amounts,
-      elapsedTime,
-      actionRewards.guaranteedRewardTokenId3,
-      actionRewards.guaranteedRewardRate3,
-      length,
-      monstersKilled,
-      isCombat,
-      successPercent
-    );
-  }
-
   function _getRandomRewards(
     uint256 playerId,
     uint40 startTime,
@@ -1040,6 +967,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     CombatStats memory combatStats,
     uint256 elapsedTime,
     uint256 startTime,
+    uint256 numSpawnedPerHour,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed
   )
@@ -1065,6 +993,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         combatStats,
         elapsedTime,
         startTime,
+        numSpawnedPerHour,
         pendingQueuedActionEquipmentStates,
         pendingQueuedActionProcessed
       )

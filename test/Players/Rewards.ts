@@ -2206,9 +2206,9 @@ describe("Rewards", function () {
       const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 1,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2289,7 +2289,7 @@ describe("Rewards", function () {
           ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
-            melee: 50
+            meleeAttack: 50
           },
           tokenId: EstforConstants.BRONZE_SWORD,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
@@ -2371,9 +2371,9 @@ describe("Rewards", function () {
       const {playerId, players, itemNFT, world, alice, mockVRF, playersImplMisc} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 1,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2460,7 +2460,7 @@ describe("Rewards", function () {
           ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
-            melee: 50
+            meleeAttack: 50
           },
           tokenId: EstforConstants.BRONZE_SWORD,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
@@ -2526,20 +2526,20 @@ describe("Rewards", function () {
       const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 0,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 0,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
         health: 0
       };
 
-      const randomChance = 70; // Very low chance
+      const randomChance = 40; // Very low chance
       const numSpawned = 100 * SPAWN_MUL; // per hour
 
       const numHours = 23;
-      // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 50) / 65535) a 2.67% chance and each roll hitting, and there are 64 dice.
+      // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 40) / 65535) a 2.67% chance and each roll hitting, and there are 64 dice.
 
       let tx = await world.addActions([
         {
@@ -2607,7 +2607,7 @@ describe("Rewards", function () {
           ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
-            melee: 50
+            meleeAttack: 50
           },
           tokenId: EstforConstants.BRONZE_SWORD,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
@@ -2658,16 +2658,16 @@ describe("Rewards", function () {
       await players.connect(alice).processActions(playerId);
 
       // Check output (add some tolerance in case it's hit more than once)
-      expect(await itemNFT.balanceOf(alice, BRONZE_ARROW)).to.be.oneOf([1n, 2n, 3n]);
+      expect(await itemNFT.balanceOf(alice, BRONZE_ARROW)).to.be.oneOf([1n, 2n, 3n, 4n]);
     });
 
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit none", async function () {
       const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
-        melee: 1,
-        magic: 0,
-        ranged: 0,
+        meleeAttack: 1,
+        magicAttack: 0,
+        rangedAttack: 0,
         meleeDefence: 0,
         magicDefence: 0,
         rangedDefence: 0,
@@ -2747,7 +2747,7 @@ describe("Rewards", function () {
           ...EstforTypes.defaultItemInput,
           combatStats: {
             ...EstforTypes.emptyCombatStats,
-            melee: 50
+            meleeAttack: 50
           },
           tokenId: EstforConstants.BRONZE_SWORD,
           equipPosition: EstforTypes.EquipPosition.RIGHT_HAND

@@ -381,6 +381,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "preventAttacks",
+        "type": "bool"
+      }
+    ],
+    "name": "SetPreventAttacks",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -437,14 +450,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint48",
+        "internalType": "uint64",
         "name": "playerId",
-        "type": "uint48"
+        "type": "uint64"
       },
       {
-        "internalType": "uint48",
+        "internalType": "uint64",
         "name": "defendingPlayerId",
-        "type": "uint48"
+        "type": "uint64"
       },
       {
         "internalType": "enum Skill[]",
@@ -550,14 +563,14 @@
       {
         "components": [
           {
-            "internalType": "uint48",
+            "internalType": "uint64",
             "name": "playerId",
-            "type": "uint48"
+            "type": "uint64"
           },
           {
-            "internalType": "uint48",
+            "internalType": "uint64",
             "name": "defendingPlayerId",
-            "type": "uint48"
+            "type": "uint64"
           },
           {
             "internalType": "bool",

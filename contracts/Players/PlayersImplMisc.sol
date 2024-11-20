@@ -308,18 +308,19 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   function _processConsumablesView(
     address from,
     uint256 playerId,
-    QueuedAction calldata _queuedAction,
+    QueuedAction calldata queuedAction,
     uint256 currentActionStartTimestamp,
     uint256 elapsedTime,
     CombatStats calldata combatStats,
     ActionChoice calldata actionChoice,
-    PendingQueuedActionEquipmentState[] memory _pendingQueuedActionEquipmentStates,
+    uint256 numSpawnedPerHour,
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed
   )
     private
     view
     returns (
-      Equipment[] memory consumedEquipment,
+      Equipment[] memory consumedEquipments,
       Equipment memory producedEquipment,
       uint256 xpElapsedTime,
       bool died,
@@ -329,27 +330,26 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
   {
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    bool isCombat = _queuedAction.packed._isCombatStyle();
+    bool isCombat = queuedAction.packed._isCombatStyle();
     if (isCombat) {
       // Fetch the requirements for it
-      CombatStats memory enemyCombatStats = _world.getCombatStats(_queuedAction.actionId);
+      CombatStats memory enemyCombatStats = _world.getCombatStats(queuedAction.actionId);
 
       uint256 combatElapsedTime;
       (xpElapsedTime, combatElapsedTime, baseInputItemsConsumedNum, foodConsumed, died) = PlayersLibrary
-        .getCombatAdjustedElapsedTimes(
+        .determineBattleOutcome(
           from,
           address(_itemNFT),
-          address(_world),
           elapsedTime,
           actionChoice,
-          _queuedAction.regenerateId,
-          _queuedAction,
+          queuedAction.regenerateId,
+          numSpawnedPerHour,
           combatStats,
           enemyCombatStats,
           _alphaCombat,
           _betaCombat,
           _alphaCombatHealing,
-          _pendingQueuedActionEquipmentStates
+          pendingQueuedActionEquipmentStates
         );
     } else {
       (xpElapsedTime, baseInputItemsConsumedNum) = PlayersLibrary.getNonCombatAdjustedElapsedTime(
@@ -357,16 +357,16 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         address(_itemNFT),
         elapsedTime,
         actionChoice,
-        _pendingQueuedActionEquipmentStates
+        pendingQueuedActionEquipmentStates
       );
     }
 
-    (consumedEquipment, producedEquipment) = _getConsumablesEquipment(
+    (consumedEquipments, producedEquipment) = _getConsumablesEquipment(
       playerId,
       currentActionStartTimestamp,
       xpElapsedTime,
       actionChoice,
-      _queuedAction.regenerateId,
+      queuedAction.regenerateId,
       foodConsumed,
       pendingQueuedActionProcessed,
       baseInputItemsConsumedNum
@@ -381,6 +381,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     CombatStats calldata combatStats,
     uint256 elapsedTime,
     uint256 startTime,
+    uint256 numSpawnedPerHour,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates, // Memory as it is modified
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed
   )
@@ -456,6 +457,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         elapsedTime + prevProcessedTime,
         combatStats,
         actionChoice,
+        numSpawnedPerHour,
         pendingQueuedActionEquipmentStates,
         pendingQueuedActionProcessed
       );
@@ -534,6 +536,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
         elapsedTime + prevProcessedTime,
         combatStats,
         actionChoice,
+        numSpawnedPerHour,
         pendingQueuedActionEquipmentStates,
         pendingQueuedActionProcessed
       );

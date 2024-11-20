@@ -439,17 +439,17 @@
             "components": [
               {
                 "internalType": "int16",
-                "name": "melee",
+                "name": "meleeAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "magic",
+                "name": "magicAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "ranged",
+                "name": "rangedAttack",
                 "type": "int16"
               },
               {
@@ -714,17 +714,17 @@
             "components": [
               {
                 "internalType": "int16",
-                "name": "melee",
+                "name": "meleeAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "magic",
+                "name": "magicAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "ranged",
+                "name": "rangedAttack",
                 "type": "int16"
               },
               {
@@ -843,9 +843,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "numWords",
-        "type": "uint32"
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -875,9 +875,9 @@
     "name": "MIN_RANDOM_WORDS_UPDATE_TIME",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -888,22 +888,9 @@
     "name": "NUM_DAYS_RANDOM_WORDS_INITIALIZED",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "NUM_WORDS",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1227,17 +1214,17 @@
             "components": [
               {
                 "internalType": "int16",
-                "name": "melee",
+                "name": "meleeAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "magic",
+                "name": "magicAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "ranged",
+                "name": "rangedAttack",
                 "type": "int16"
               },
               {
@@ -1605,17 +1592,17 @@
             "components": [
               {
                 "internalType": "int16",
-                "name": "melee",
+                "name": "meleeAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "magic",
+                "name": "magicAttack",
                 "type": "int16"
               },
               {
                 "internalType": "int16",
-                "name": "ranged",
+                "name": "rangedAttack",
                 "type": "int16"
               },
               {
@@ -2074,17 +2061,17 @@
         "components": [
           {
             "internalType": "int16",
-            "name": "melee",
+            "name": "meleeAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "magic",
+            "name": "magicAttack",
             "type": "int16"
           },
           {
             "internalType": "int16",
-            "name": "ranged",
+            "name": "rangedAttack",
             "type": "int16"
           },
           {
@@ -2637,19 +2624,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "gasLimit",
-        "type": "uint256"
-      }
-    ],
-    "name": "setCallbackGasLimit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "tier",
         "type": "uint256"
       },
@@ -2672,6 +2646,19 @@
       }
     ],
     "name": "setDailyRewardPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gasLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "setExpectedGasLimitFulfill",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

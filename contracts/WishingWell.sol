@@ -64,7 +64,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   uint40 private _lastOracleRandomWordTimestamp;
   uint16 private _raffleEntryCost; // In BRUSH ether (no wei decimals)
   uint24 private _globalThresholdIncrement;
-  uint40[6] private _lastUnclaimedWinners; // 1 storage slot to keep track of the last 3 winning playerId & lotteryId, stored as [playerId, lotteryId, playerId, lotteryId, playerId, lotteryId]
+  uint64[4] private _lastUnclaimedWinners; // 1 storage slot to keep track of the last 2 winning playerId & lotteryId, stored as [playerId, lotteryId, playerId, lotteryId]
   Clans private _clans;
   uint24 private _clanThresholdIncrement;
   uint16[3] private _globalBoostRewardItemTokenIds;
@@ -254,7 +254,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
       // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId & nextLotteryWinnerRewardInstantConsume;
       emit WinnerAndNewLottery(lastLotteryId, _raffleIdWinner, _nextLotteryWinnerRewardItemTokenId, 1);
 
-      // Add to the last 3 unclaimed winners queue
+      // Add to the last unclaimed winners queue
       bool added;
       for (uint256 i = 0; i < _lastUnclaimedWinners.length; i += 2) {
         if (_lastUnclaimedWinners[i] == 0) {

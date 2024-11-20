@@ -21,7 +21,7 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   error NotOwnerOfPlayerAndActive();
   error RankNotHighEnough();
-  error PlayerOnTerritoryAndLockedVault();
+  error PlayerCannotBeInAssignedMoreThanOnce();
   error PlayerAlreadyExistingCombatant();
   error SetCombatantsIncorrectly();
   error NotSettingCombatants();
@@ -42,6 +42,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   ICombatants private _territories;
   uint24 private _combatantChangeCooldown;
   ICombatants private _lockedVaults;
+  ICombatants private _raids;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -68,6 +69,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     IClans clans,
     ICombatants territories,
     ICombatants lockedVaults,
+    ICombatants raids,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -78,6 +80,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     _clans = clans;
     _territories = territories;
     _lockedVaults = lockedVaults;
+    _raids = raids;
 
     _adminAccess = AdminAccess(adminAccess);
     _isBeta = isBeta;
@@ -88,12 +91,14 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   function assignCombatants(
     uint256 clanId,
     bool setTerritoryCombatants,
-    uint48[] calldata territoryPlayerIds,
+    uint64[] calldata territoryPlayerIds,
     bool setLockedVaultCombatants,
-    uint48[] calldata lockedVaultPlayerIds,
+    uint64[] calldata lockedVaultPlayerIds,
+    bool setRaidCombatants,
+    uint64[] calldata raidPlayerIds,
     uint256 leaderPlayerId
   ) external isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
-    require(setTerritoryCombatants || setLockedVaultCombatants, NotSettingCombatants());
+    require(setTerritoryCombatants || setLockedVaultCombatants || setRaidCombatants, NotSettingCombatants());
 
     _checkAndSetAssignCombatants(
       _territories,
@@ -102,10 +107,29 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
       _lockedVaults,
       setLockedVaultCombatants,
       lockedVaultPlayerIds,
+      _raids,
+      setRaidCombatants,
+      raidPlayerIds,
       clanId,
       leaderPlayerId
     );
     _checkAndSetAssignCombatants(
+      _lockedVaults,
+      setLockedVaultCombatants,
+      lockedVaultPlayerIds,
+      _territories,
+      setTerritoryCombatants,
+      territoryPlayerIds,
+      _raids,
+      setRaidCombatants,
+      raidPlayerIds,
+      clanId,
+      leaderPlayerId
+    );
+    _checkAndSetAssignCombatants(
+      _raids,
+      setRaidCombatants,
+      raidPlayerIds,
       _lockedVaults,
       setLockedVaultCombatants,
       lockedVaultPlayerIds,
@@ -120,26 +144,38 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   function _checkAndSetAssignCombatants(
     ICombatants combatants,
     bool setCombatants,
-    uint48[] calldata playerIds,
+    uint64[] calldata playerIds,
     ICombatants otherCombatants,
     bool setOtherCombatants,
-    uint48[] calldata otherPlayerIds,
+    uint64[] calldata otherPlayerIds,
+    ICombatants otherCombatants1,
+    bool setOtherCombatants1,
+    uint64[] calldata otherPlayerIds1,
     uint256 clanId,
     uint256 leaderPlayerId
   ) private {
     if (setCombatants) {
       uint256 newCombatantCooldownTimestamp = block.timestamp + _combatantChangeCooldown;
-      // Check they are not being placed as a locked vault combatant
+      // Check they are not being placed as a warrior in another  a locked vault combatant
       IClans clans = _clans;
       for (uint256 i; i < playerIds.length; ++i) {
-        uint48 playerId = playerIds[i];
+        uint64 playerId = playerIds[i];
         if (setOtherCombatants) {
           if (otherPlayerIds.length != 0) {
             uint256 searchIndex = EstforLibrary.binarySearchMemory(otherPlayerIds, playerId);
-            require(searchIndex == type(uint256).max, PlayerOnTerritoryAndLockedVault());
+            require(searchIndex == type(uint256).max, PlayerCannotBeInAssignedMoreThanOnce());
           }
         } else {
           require(!otherCombatants.isCombatant(clanId, playerId), PlayerAlreadyExistingCombatant());
+        }
+
+        if (setOtherCombatants1) {
+          if (otherPlayerIds1.length != 0) {
+            uint256 searchIndex = EstforLibrary.binarySearchMemory(otherPlayerIds1, playerId);
+            require(searchIndex == type(uint256).max, PlayerCannotBeInAssignedMoreThanOnce());
+          }
+        } else {
+          require(!otherCombatants1.isCombatant(clanId, playerId), PlayerAlreadyExistingCombatant());
         }
 
         PlayerInfo storage playerInfo = _playerInfos[playerId];
@@ -163,7 +199,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function clearCooldowns(uint48[] calldata playerIds) public isAdminAndBeta {
+  function clearCooldowns(uint64[] calldata playerIds) public isAdminAndBeta {
     for (uint256 i; i < playerIds.length; ++i) {
       _playerInfos[playerIds[i]].combatantCooldownTimestamp = 0;
     }

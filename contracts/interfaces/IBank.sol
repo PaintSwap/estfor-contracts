@@ -10,8 +10,11 @@ interface IBank {
     address itemNFT,
     address clans,
     address players,
-    address lockedBankVaults
+    address lockedBankVaults,
+    address raids
   ) external;
 
   function depositToken(address sender, address from, uint256 playerId, address token, uint256 amount) external;
+
+  function setAllowBreachedCapacity(bool allow) external;
 }

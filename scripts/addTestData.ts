@@ -15,6 +15,7 @@ import {
   PlayerNFT,
   Players,
   Quests,
+  Raids,
   Shop
 } from "../typechain-types";
 import {createPlayer, isDevNetwork} from "./utils";
@@ -37,7 +38,8 @@ export const addTestData = async (
   lockedBankVaults: LockedBankVaults,
   minItemQuantityBeforeSellsAllowed: bigint,
   orderBook: OrderBook,
-  quests: Quests
+  quests: Quests,
+  raids: Raids
 ) => {
   const [owner, alice] = await ethers.getSigners();
 
@@ -272,7 +274,8 @@ export const addTestData = async (
     await playerNFT.getAddress(),
     await itemNFT.getAddress(),
     await players.getAddress(),
-    await lockedBankVaults.getAddress()
+    await lockedBankVaults.getAddress(),
+    await raids.getAddress()
   );
 
   // Send some item to the bank

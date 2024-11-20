@@ -1,0 +1,1402 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "name": "AddressEmptyCode",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerNotSamWitchVRF",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ClanCombatantsChangeCooldown",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1967InvalidImplementation",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1967NonPayable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FailedCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "skill",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidSkillId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoCombatants",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInRange",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyClans",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyCombatantsHelper",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PreviousRaidNotSpawnedYet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RaidAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RaidDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RaidInProgress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RaidsPrevented",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RankNotHighEnough",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RequestDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyCombatants",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UUPSUnauthorizedCallContext",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "slot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "baseRaidIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "minHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomLootTokenIds",
+            "type": "uint16[16]"
+          },
+          {
+            "internalType": "uint32[16]",
+            "name": "randomLootTokenAmounts",
+            "type": "uint32[16]"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomChances",
+            "type": "uint16[16]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Raids.BaseRaid[]",
+        "name": "baseRaids",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddBaseRaids",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64[]",
+        "name": "playerIds",
+        "type": "uint64[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "leaderPlayerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "cooldownTimestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "AssignCombatants",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "baseRaidIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "minHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomLootTokenIds",
+            "type": "uint16[16]"
+          },
+          {
+            "internalType": "uint32[16]",
+            "name": "randomLootTokenAmounts",
+            "type": "uint32[16]"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomChances",
+            "type": "uint16[16]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Raids.BaseRaid[]",
+        "name": "baseRaids",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "EditBaseRaids",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "version",
+        "type": "uint64"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint40",
+        "name": "raidId",
+        "type": "uint40"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "baseRaidId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16[5]",
+            "name": "combatActionIds",
+            "type": "uint16[5]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Raids.RaidInfo[]",
+        "name": "raidInfos",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "NewRaidsSpawned",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "raidId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "regenerateId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "regenerateAmountUsed",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "choiceIds",
+        "type": "uint16[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "bossChoiceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "defeatedRaid",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "lootTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "lootTokenAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "RaidBattleOutcome",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RemoveCombatant",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint56",
+        "name": "clanId",
+        "type": "uint56"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "raidId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RequestFightRaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "combatActionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "SetCombatActions",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "expectedGasLimitFulfill",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetExpectedGasLimitFulfill",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxClanCombatants",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMaxClanCombatants",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "preventRaids",
+        "type": "bool"
+      }
+    ],
+    "name": "SetPreventRaids",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "spawnRaidCooldown",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetSpawnRaidCooldown",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "SpawnRaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "baseRaidIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "minHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomLootTokenIds",
+            "type": "uint16[16]"
+          },
+          {
+            "internalType": "uint32[16]",
+            "name": "randomLootTokenAmounts",
+            "type": "uint32[16]"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomChances",
+            "type": "uint16[16]"
+          }
+        ],
+        "internalType": "struct Raids.BaseRaid[]",
+        "name": "baseRaids",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addBaseRaids",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "playerIds",
+        "type": "uint64[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "combatantCooldownTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "leaderPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "assignCombatants",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "clanMemberLeft",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "baseRaidIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "int16",
+            "name": "minHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxHealth",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMeleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxMagicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "minRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "maxRangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomLootTokenIds",
+            "type": "uint16[16]"
+          },
+          {
+            "internalType": "uint32[16]",
+            "name": "randomLootTokenAmounts",
+            "type": "uint32[16]"
+          },
+          {
+            "internalType": "uint16[16]",
+            "name": "randomChances",
+            "type": "uint16[16]"
+          }
+        ],
+        "internalType": "struct Raids.BaseRaid[]",
+        "name": "baseRaids",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editBaseRaids",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "playerId",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint40",
+        "name": "clanId",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "raidId",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint16",
+        "name": "regenerateId",
+        "type": "uint16"
+      }
+    ],
+    "name": "fightRaid",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requestId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "randomWords",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "fulfillRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raidId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRaidInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "baseRaidId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16[5]",
+            "name": "combatActionIds",
+            "type": "uint16[5]"
+          }
+        ],
+        "internalType": "struct Raids.RaidInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPlayers",
+        "name": "players",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IClans",
+        "name": "clans",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "oracle",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ISamWitchVRF",
+        "name": "samWitchVRF",
+        "type": "address"
+      },
+      {
+        "internalType": "contract VRFRequestInfo",
+        "name": "vrfRequestInfo",
+        "type": "address"
+      },
+      {
+        "internalType": "uint24",
+        "name": "spawnRaidCooldown",
+        "type": "uint24"
+      },
+      {
+        "internalType": "contract IBrushToken",
+        "name": "brush",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IWorld",
+        "name": "world",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "maxClanCombatants",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "combatActionIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "isBeta",
+        "type": "bool"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "combatantsHelper",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IBankFactory",
+        "name": "bankFactory",
+        "type": "address"
+      }
+    ],
+    "name": "initializeAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isCombatant",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "combatActionIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "setCombatActions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24",
+        "name": "expectedGasLimitFulfill",
+        "type": "uint24"
+      }
+    ],
+    "name": "setExpectedGasLimitFulfill",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "maxClanCombatants",
+        "type": "uint8"
+      }
+    ],
+    "name": "setMaxClanCombatants",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "preventRaids",
+        "type": "bool"
+      }
+    ],
+    "name": "setPreventRaids",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24",
+        "name": "spawnRaidCooldown",
+        "type": "uint24"
+      }
+    ],
+    "name": "setSpawnRaidCooldown",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "playerId",
+        "type": "uint64"
+      }
+    ],
+    "name": "spawnRaid",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]

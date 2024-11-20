@@ -83,7 +83,7 @@ GenericInstantVRFActionStrategy [0x6270b82049724ff6d7a78b71f2273bba03bfcdfc](htt
 EggInstantVRFActionStrategy [0x7797fd3904fc399184d2a549dff025210d62e645](https://ftmscan.com/address/0x7797fd3904fc399184d2a549dff025210d62e645)  
 VRFRequestInfo [0x8c3dcf7b09ea620b265d9daab237f29f485f725b](https://ftmscan.com/address/0x8c3dcf7b09ea620b265d9daab237f29f485f725b)
 
-ClanBattleLibrary [](https://ftmscan.com/address]()
+ClanBattleLibrary [](https://ftmscan.com/address/)
 LockedBankVaults [0x65e944795d00cc287bdace77d57571fc4deff3e0](https://ftmscan.com/address/0x65e944795d00cc287bdace77d57571fc4deff3e0)  
 LockedBankVaultsLibrary [0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8](https://ftmscan.com/address/0xd5a209d7fa6bc485b3c4120aaec75b2912cfe4e8)  
 Territories [0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170](https://ftmscan.com/address/0x2cfd3b9f8b595200d6b4b7f667b2a1bcc6d0c170)  
@@ -94,6 +94,7 @@ PetNFTLibrary [0x5a134487df2d8e216e34bf9407bd63cd80e76957](https://ftmscan.com/a
 PetNFT [0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3](https://ftmscan.com/address/0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3)  
 PassiveActions [0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4](https://ftmscan.com/address/0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4)  
 PVPBattleground [](https://ftmscan.com/address/)
+Raids [](https://ftmscan.com/address/)
 
 Oracle [0x28ade840602d0363a2ab675479f1b590b23b0490](https://ftmscan.com/address/0x28ade840602d0363a2ab675479f1b590b23b0490)  
 VRF [0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2](https://ftmscan.com/address/0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2)  
@@ -146,6 +147,7 @@ PetNFTLibrary [0x04a11e4afd667ca55b10d834a7367c4bed107750](https://ftmscan.com/a
 PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/0xa6489181b24e966402891225c65f8e2d136ddd2e)  
 PassiveActions [0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6](https://ftmscan.com/address/0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6)  
 PVPBattleground [](https://ftmscan.com/address/)
+Raids [](https://ftmscan.com/address/)
 
 Oracle [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)  
 VRF [0xB9E3CF6639123C00752849C40BEa43E63e107354](https://ftmscan.com/address/0xB9E3CF6639123C00752849C40BEa43E63e107354)  
