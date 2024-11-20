@@ -513,6 +513,12 @@
         "internalType": "struct Raids.RaidInfo[]",
         "name": "raidInfos",
         "type": "tuple[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
       }
     ],
     "name": "NewRaidsSpawned",
@@ -659,6 +665,25 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RequestSpawnRaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint16[]",
         "name": "combatActionIds",
         "type": "uint16[]"
@@ -717,25 +742,6 @@
       }
     ],
     "name": "SetSpawnRaidCooldown",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      }
-    ],
-    "name": "SpawnRaid",
     "type": "event"
   },
   {
@@ -1033,34 +1039,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "playerId",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint40",
-        "name": "clanId",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint40",
-        "name": "raidId",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint16",
-        "name": "regenerateId",
-        "type": "uint16"
-      }
-    ],
-    "name": "fightRaid",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "requestId",
         "type": "bytes32"
@@ -1293,6 +1271,47 @@
   {
     "inputs": [
       {
+        "internalType": "uint64",
+        "name": "playerId",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint40",
+        "name": "clanId",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "raidId",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint16",
+        "name": "regenerateId",
+        "type": "uint16"
+      }
+    ],
+    "name": "requestFightRaid",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "playerId",
+        "type": "uint64"
+      }
+    ],
+    "name": "requestSpawnRaid",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint16[]",
         "name": "combatActionIds",
         "type": "uint16[]"
@@ -1351,19 +1370,6 @@
       }
     ],
     "name": "setSpawnRaidCooldown",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "playerId",
-        "type": "uint64"
-      }
-    ],
-    "name": "spawnRaid",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

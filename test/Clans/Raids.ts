@@ -104,28 +104,33 @@ describe("Raids", function () {
     it("Can spawn a raid", async function () {
       const {raids, playerId, alice} = await loadFixture(raidFixture);
 
-      await expect(raids.connect(alice).spawnRaid(playerId)).to.emit(raids, "SpawnRaid").withArgs(playerId, 1);
+      await expect(raids.connect(alice).requestSpawnRaid(playerId))
+        .to.emit(raids, "RequestSpawnRaid")
+        .withArgs(playerId, 1);
     });
 
     it("Cannot spawn raid while previous raid not finished", async function () {
       const {raids, playerId, alice, mockVRF} = await loadFixture(raidFixture);
 
-      await raids.connect(alice).spawnRaid(playerId);
-      await expect(raids.connect(alice).spawnRaid(playerId)).to.be.revertedWithCustomError(
+      await raids.connect(alice).requestSpawnRaid(playerId);
+      await expect(raids.connect(alice).requestSpawnRaid(playerId)).to.be.revertedWithCustomError(
         raids,
         "PreviousRaidNotSpawnedYet"
       );
 
       await raids.addBaseRaids([1], [basicRaid]);
       await fulfillRandomWords(1, raids, mockVRF);
-      await expect(raids.connect(alice).spawnRaid(playerId)).to.be.revertedWithCustomError(raids, "RaidInProgress");
+      await expect(raids.connect(alice).requestSpawnRaid(playerId)).to.be.revertedWithCustomError(
+        raids,
+        "RaidInProgress"
+      );
     });
 
     it("Spawns raid with random stats in valid ranges", async function () {
       const {raids, playerId, alice, mockVRF} = await loadFixture(raidFixture);
 
       await raids.addBaseRaids([1], [basicRaid]);
-      await raids.connect(alice).spawnRaid(playerId);
+      await raids.connect(alice).requestSpawnRaid(playerId);
       await fulfillRandomWords(1, raids, mockVRF);
 
       const raidInfo = await raids.getRaidInfo(1);
@@ -168,7 +173,7 @@ describe("Raids", function () {
         ]
       );
 
-      await raids.connect(alice).spawnRaid(playerId);
+      await raids.connect(alice).requestSpawnRaid(playerId);
       await fulfillRandomWords(1, raids, mockVRF);
 
       const raidInfo = await raids.getRaidInfo(1);
@@ -194,13 +199,13 @@ describe("Raids", function () {
       const bankAddress = await bankFactory.getBankAddress(clanId);
       await itemNFT.mint(bankAddress, EstforConstants.RAID_PASS, 1);
 
-      await raids.connect(alice).spawnRaid(playerId);
+      await raids.connect(alice).requestSpawnRaid(playerId);
       await fulfillRandomWords(1, raids, mockVRF);
 
       const raidId = 1;
       const regenerateId = 0;
       let requestId = 2;
-      await expect(raids.connect(alice).fightRaid(playerId, clanId, raidId, regenerateId))
+      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId))
         .to.emit(raids, "RequestFightRaid")
         .withArgs(clanId, playerId, raidId, requestId);
 
@@ -230,14 +235,14 @@ describe("Raids", function () {
       const bankAddress = await bankFactory.getBankAddress(clanId);
       await itemNFT.mint(bankAddress, EstforConstants.RAID_PASS, 1);
 
-      await raids.connect(alice).spawnRaid(playerId);
+      await raids.connect(alice).requestSpawnRaid(playerId);
       await fulfillRandomWords(1, raids, mockVRF);
 
       const raidId = 1;
       const regenerateId = EstforConstants.COOKED_MINNUS;
       await itemNFT.mint(bankAddress, regenerateId, 100_000);
       let requestId = 2;
-      await expect(raids.connect(alice).fightRaid(playerId, clanId, raidId, regenerateId))
+      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId))
         .to.emit(raids, "RequestFightRaid")
         .withArgs(clanId, playerId, raidId, requestId);
 
@@ -313,14 +318,14 @@ describe("Raids", function () {
       const bankAddress = await bankFactory.getBankAddress(clanId);
       await itemNFT.mint(bankAddress, EstforConstants.RAID_PASS, 1);
 
-      await raids.connect(alice).spawnRaid(playerId);
+      await raids.connect(alice).requestSpawnRaid(playerId);
       await fulfillRandomWords(1, raids, mockVRF);
 
       const raidId = 1;
       const regenerateId = EstforConstants.COOKED_MINNUS;
       await itemNFT.mint(bankAddress, regenerateId, 100_000);
       let requestId = 2;
-      await expect(raids.connect(alice).fightRaid(playerId, clanId, raidId, regenerateId))
+      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId))
         .to.emit(raids, "RequestFightRaid")
         .withArgs(clanId, playerId, raidId, requestId);
 
@@ -339,11 +344,11 @@ describe("Raids", function () {
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);
 
-      await raids.connect(alice).spawnRaid(playerId);
+      await raids.connect(alice).requestSpawnRaid(playerId);
       await fulfillRandomWords(1, raids, mockVRF);
 
       // No raid passes, underflow revert
-      await expect(raids.connect(alice).fightRaid(playerId, clanId, 1, 0)).to.be.revertedWithPanic(0x11);
+      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, 1, 0)).to.be.revertedWithPanic(0x11);
     });
 
     it("Awards loot based on tier and number of monsters killed", async function () {
@@ -386,13 +391,13 @@ describe("Raids", function () {
       const bankAddress = await bankFactory.getBankAddress(clanId);
       await itemNFT.mint(bankAddress, EstforConstants.RAID_PASS, 1);
 
-      await raids.connect(alice).spawnRaid(playerId);
+      await raids.connect(alice).requestSpawnRaid(playerId);
       await fulfillRandomWords(1, raids, mockVRF);
 
       const raidId = 1;
       const regenerateId = EstforConstants.COOKED_MINNUS;
       await itemNFT.mint(bankAddress, regenerateId, 100_000);
-      await raids.connect(alice).fightRaid(playerId, clanId, raidId, regenerateId);
+      await raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId);
       const tx = await fulfillRandomWords(2, raids, mockVRF);
 
       const log = await getEventLog(tx, raids, "RaidBattleOutcome");

@@ -42,11 +42,11 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
   event RequestFightRaid(uint256 playerId, uint56 clanId, uint256 raidId, uint256 requestId);
   event SetExpectedGasLimitFulfill(uint256 expectedGasLimitFulfill);
   event SetSpawnRaidCooldown(uint256 spawnRaidCooldown);
-  event SpawnRaid(uint256 playerId, uint256 requestId);
+  event RequestSpawnRaid(uint256 playerId, uint256 requestId);
   event AddBaseRaids(uint256[] baseRaidIds, BaseRaid[] baseRaids);
   event EditBaseRaids(uint256[] baseRaidIds, BaseRaid[] baseRaids);
   event RemoveCombatant(uint256 playerId, uint256 clanId);
-  event NewRaidsSpawned(uint40 raidId, RaidInfo[] raidInfos);
+  event NewRaidsSpawned(uint40 startRaidId, RaidInfo[] raidInfos, uint256 requestId);
   event RaidBattleOutcome(
     uint256 clanId,
     uint256 raidId,
@@ -223,7 +223,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     setCombatActions(combatActionIds);
   }
 
-  function spawnRaid(uint64 playerId) external isOwnerOfPlayerAndActive(playerId) {
+  function requestSpawnRaid(uint64 playerId) external isOwnerOfPlayerAndActive(playerId) {
     // Spawn a random monster
     // Must be after the last raid is finished
     require(_raidSpawnRequestId == 0, PreviousRaidNotSpawnedYet());
@@ -233,10 +233,10 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     _raidSpawnRequestId = uint256(_samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT_SPAWN));
     _currentRaidExpireTime = uint40(block.timestamp + _spawnRaidCooldown);
 
-    emit SpawnRaid(playerId, _raidSpawnRequestId);
+    emit RequestSpawnRaid(playerId, _raidSpawnRequestId);
   }
 
-  function fightRaid(
+  function requestFightRaid(
     uint64 playerId,
     uint40 clanId,
     uint40 raidId,
@@ -264,309 +264,317 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     emit RequestFightRaid(playerId, clanId, raidId, uint256(requestId));
   }
 
+  function _spawnRaid(bytes32 requestId, uint256[] calldata randomWords) private {
+    uint40 currentRaidId = _nextRaidId;
+
+    // Spawn A few raid monsters
+    RaidInfo[] memory raidInfos = new RaidInfo[](NUM_WORDS);
+    uint16 maxBaseRaidId = _maxBaseRaidId;
+    for (uint256 i; i < NUM_WORDS; ++i) {
+      // Spawn a raid monster (first 2 bytes for the base raid id)
+      uint256 randomWord = randomWords[i];
+      uint16 baseRaidId = uint16(randomWord % maxBaseRaidId) + 1;
+      BaseRaid storage baseRaid = _baseRaids[baseRaidId];
+
+      uint256 combatActionIdsLength = _combatActionIds.length;
+      uint16[5] memory combatActionIds = [
+        EstforLibrary._getRandomFromArray16(randomWord, 128, _combatActionIds, combatActionIdsLength),
+        EstforLibrary._getRandomFromArray16(randomWord, 144, _combatActionIds, combatActionIdsLength),
+        EstforLibrary._getRandomFromArray16(randomWord, 160, _combatActionIds, combatActionIdsLength),
+        EstforLibrary._getRandomFromArray16(randomWord, 176, _combatActionIds, combatActionIdsLength),
+        EstforLibrary._getRandomFromArray16(randomWord, 192, _combatActionIds, combatActionIdsLength)
+      ];
+
+      RaidInfo memory raidInfo = RaidInfo({
+        baseRaidId: baseRaidId,
+        health: EstforLibrary._getRandomInRange16(randomWord, 16, baseRaid.minHealth, baseRaid.maxHealth),
+        meleeAttack: EstforLibrary._getRandomInRange16(
+          randomWord,
+          32,
+          baseRaid.minMeleeAttack,
+          baseRaid.maxMeleeAttack
+        ),
+        magicAttack: EstforLibrary._getRandomInRange16(
+          randomWord,
+          48,
+          baseRaid.minMagicAttack,
+          baseRaid.maxMagicAttack
+        ),
+        rangedAttack: EstforLibrary._getRandomInRange16(
+          randomWord,
+          64,
+          baseRaid.minRangedAttack,
+          baseRaid.maxRangedAttack
+        ),
+        meleeDefence: EstforLibrary._getRandomInRange16(
+          randomWord,
+          80,
+          baseRaid.minMeleeDefence,
+          baseRaid.maxMeleeDefence
+        ),
+        magicDefence: EstforLibrary._getRandomInRange16(
+          randomWord,
+          96,
+          baseRaid.minMagicDefence,
+          baseRaid.maxMagicDefence
+        ),
+        rangedDefence: EstforLibrary._getRandomInRange16(
+          randomWord,
+          112,
+          baseRaid.minRangedDefence,
+          baseRaid.maxRangedDefence
+        ),
+        combatActionIds: combatActionIds,
+        tier: baseRaid.tier
+      });
+
+      _raidInfos[uint40(currentRaidId + i)] = raidInfo;
+      raidInfos[i] = raidInfo;
+    }
+
+    _nextRaidId = uint40(currentRaidId + NUM_WORDS);
+
+    delete _raidSpawnRequestId;
+    emit NewRaidsSpawned(currentRaidId, raidInfos, uint256(requestId)); // These raids are spawned for everyone
+  }
+
+  function _fightRaid(bytes32 requestId, uint256[] calldata randomWords) private {
+    // Actually doing the raid
+    uint256 clanId = _requestIdToPendingRaidAttack[requestId].clanId;
+    require(clanId != 0, RequestDoesNotExist());
+
+    uint256 raidId = _requestIdToPendingRaidAttack[requestId].raidId;
+
+    uint256 randomWord = randomWords[0];
+
+    // Food to use
+    uint16 regenerateId = _requestIdToPendingRaidAttack[requestId].regenerateId;
+
+    uint256 lootLength;
+    bool defeatedRaid = true;
+
+    address bank = address(_clanInfos[clanId].bank);
+    uint256 elapsedTime = 7 hours; // of combat with the small monsters
+
+    CombatStats memory combatStats; // All combatants
+    ClanInfo storage clanInfo = _clanInfos[clanId];
+    uint64[] memory playerIds = clanInfo.playerIds;
+    for (uint256 i; i < playerIds.length; ++i) {
+      uint64 playerId = playerIds[i];
+      combatStats.health += int16(int256(_players.getLevel(playerId, Skill.HEALTH)));
+      combatStats.meleeAttack += int16(int256(_players.getLevel(playerId, Skill.MELEE)));
+      combatStats.magicAttack += int16(int256(_players.getLevel(playerId, Skill.MAGIC)));
+      combatStats.rangedAttack += int16(int256(_players.getLevel(playerId, Skill.RANGED)));
+      int16 defence = int16(int256(_players.getLevel(playerId, Skill.DEFENCE)));
+      combatStats.meleeDefence += defence;
+      combatStats.magicDefence += defence;
+      combatStats.rangedDefence += defence;
+    }
+
+    PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
+
+    (uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing) = _players.getAlphaCombatParams();
+
+    // Pick a random actionChoice, if you aren't high enough you don't count
+    // Pick a random one of these
+    uint16[3] memory actionChoiceIds = [
+      ACTIONCHOICE_MELEE_BASIC_SWORD,
+      ACTIONCHOICE_RANGED_BASIC_BOW,
+      ACTIONCHOICE_MAGIC_SHADOW_BLAST
+    ];
+
+    RaidInfo storage raidInfo = _raidInfos[raidId];
+    uint16[5] memory combatActionIds = raidInfo.combatActionIds;
+    uint256 numRaidBossRolls = 32;
+    uint256 maxLootLength = MAX_GUARANTEED_REWARDS_PER_ACTION * combatActionIds.length + numRaidBossRolls;
+
+    uint256[] memory lootTokenIds = new uint256[](maxLootLength);
+    uint256[] memory lootTokenAmounts = new uint256[](maxLootLength);
+
+    uint256 totalFoodConsumed;
+    uint256 choiceIdsLength = combatActionIds.length;
+    uint16[] memory choiceIds = new uint16[](choiceIdsLength);
+    uint16 bossChoiceId;
+    for (uint256 i = 0; i < choiceIdsLength; ++i) {
+      // Random actionChoiceIds
+      uint16 actionId = combatActionIds[i];
+      uint16 choiceId = EstforLibrary._getRandomFrom3ElementArray16(randomWord, i * 16, actionChoiceIds);
+      choiceIds[i] = choiceId;
+
+      CombatStats memory enemyCombatStats = _world.getCombatStats(actionId);
+      ActionChoice memory actionChoice = _world.getActionChoice(NONE, choiceId);
+
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
+        actionId
+      );
+
+      numSpawnedPerHour *= 5 ** raidInfo.tier; // 5, 25, 125
+
+      // Fight the smaller monsters
+      (
+        uint256 xpElapsedTime,
+        uint256 combatElapsedTime,
+        uint16 baseInputItemsConsumedNum,
+        uint16 foodConsumed,
+        bool died
+      ) = PlayersLibrary._determineBattleOutcome(
+          bank,
+          address(_itemNFT),
+          elapsedTime,
+          actionChoice,
+          regenerateId,
+          numSpawnedPerHour,
+          combatStats,
+          enemyCombatStats,
+          alphaCombat,
+          betaCombat,
+          alphaCombatHealing,
+          pendingQueuedActionEquipmentStates
+        );
+
+      totalFoodConsumed += foodConsumed;
+
+      if (died) {
+        defeatedRaid = false;
+        break;
+      }
+
+      bool isCombat = true; //
+      uint16 monstersKilled = uint16((numSpawnedPerHour * xpElapsedTime) / (SPAWN_MUL * 3600));
+      uint8 successPercent = 100;
+      (uint256[] memory newIds, uint256[] memory newAmounts) = _getGuaranteedRewards(
+        xpElapsedTime,
+        actionRewards,
+        monstersKilled,
+        isCombat,
+        successPercent
+      );
+
+      for (uint256 j = 0; j < newIds.length; ++j) {
+        lootTokenIds[lootLength] = newIds[j];
+        lootTokenAmounts[lootLength++] = newAmounts[j];
+      }
+    }
+
+    if (defeatedRaid) {
+      // Now do raid boss battle
+      uint256 numSpawnedPerHour = 1 * SPAWN_MUL; // 1 per hour
+      bossChoiceId = EstforLibrary._getRandomFrom3ElementArray16(randomWord, 0, actionChoiceIds);
+
+      CombatStats memory enemyCombatStats = CombatStats({
+        health: raidInfo.health,
+        meleeAttack: raidInfo.meleeAttack,
+        magicAttack: raidInfo.magicAttack,
+        rangedAttack: raidInfo.rangedAttack,
+        meleeDefence: raidInfo.meleeDefence,
+        magicDefence: raidInfo.magicDefence,
+        rangedDefence: raidInfo.rangedDefence
+      });
+
+      uint256 elapsedTimeBoss = 1 hours; // of combat
+      ActionChoice memory actionChoice = _world.getActionChoice(NONE, bossChoiceId);
+      // Fight the raid boss (must kill within 1 hour)
+      (
+        uint256 xpElapsedTime,
+        uint256 combatElapsedTime,
+        uint16 baseInputItemsConsumedNum,
+        uint16 foodConsumed,
+        bool died
+      ) = PlayersLibrary._determineBattleOutcome(
+          bank,
+          address(_itemNFT),
+          elapsedTimeBoss,
+          actionChoice,
+          regenerateId,
+          numSpawnedPerHour,
+          combatStats,
+          enemyCombatStats,
+          alphaCombat,
+          betaCombat,
+          alphaCombatHealing,
+          pendingQueuedActionEquipmentStates
+        );
+
+      totalFoodConsumed += foodConsumed;
+      defeatedRaid = !died;
+      if (defeatedRaid) {
+        uint16 raidBossesKilled = uint16((numSpawnedPerHour * xpElapsedTime) / (SPAWN_MUL * 3600));
+        defeatedRaid = !died && raidBossesKilled == 1;
+        if (defeatedRaid) {
+          // Give 32 rolls for the raid boss and get the random rewards
+          BaseRaid storage baseRaid = _baseRaids[raidInfo.baseRaidId];
+          uint256 numWords = numRaidBossRolls / 16; // 16 per word
+          uint256 length = baseRaid.randomLootTokenIds.length;
+          bytes memory randomBytes = abi.encodePacked(randomWords[1:1 + numWords]); // we use randomWords[0] above already
+          for (uint256 i; i < numRaidBossRolls; ++i) {
+            uint16 rand = _getSlice(randomBytes, i);
+            uint16 itemTokenId;
+            uint32 amount;
+            uint16[16] memory randomLootTokenIds = baseRaid.randomLootTokenIds;
+            uint32[16] memory randomLootTokenAmounts = baseRaid.randomLootTokenAmounts;
+            uint16[16] memory randomChances = baseRaid.randomChances;
+            for (uint256 j; j < length; ++j) {
+              if (rand > randomChances[j]) {
+                break;
+              }
+              itemTokenId = randomLootTokenIds[j];
+              amount = randomLootTokenAmounts[j];
+            }
+
+            lootTokenIds[lootLength] = itemTokenId;
+            lootTokenAmounts[lootLength++] = amount;
+          }
+        }
+      }
+    }
+
+    defeatedRaid = defeatedRaid && _itemNFT.balanceOf(bank, regenerateId) >= totalFoodConsumed;
+
+    if (!defeatedRaid) {
+      lootLength = 0;
+    } else {
+      // If they don't have enough in the bank then use the maximum possible
+      totalFoodConsumed = Math.min(totalFoodConsumed, _itemNFT.balanceOf(bank, regenerateId));
+    }
+
+    assembly ("memory-safe") {
+      mstore(lootTokenIds, lootLength)
+      mstore(lootTokenAmounts, lootLength)
+    }
+
+    if (totalFoodConsumed != 0) {
+      _itemNFT.burn(bank, regenerateId, totalFoodConsumed);
+    }
+
+    // Mint to the bank
+    if (lootTokenIds.length != 0) {
+      IBank(bank).setAllowBreachedCapacity(true);
+      _itemNFT.mintBatch(bank, lootTokenIds, lootTokenAmounts);
+      IBank(bank).setAllowBreachedCapacity(false);
+    }
+
+    emit RaidBattleOutcome(
+      clanId,
+      _requestIdToPendingRaidAttack[requestId].raidId,
+      uint256(requestId),
+      regenerateId,
+      totalFoodConsumed,
+      choiceIds,
+      bossChoiceId,
+      defeatedRaid,
+      lootTokenIds,
+      lootTokenAmounts
+    );
+  }
+
   /// @notice Called by the SamWitchVRF contract to fulfill the request
   function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
     require(randomWords.length == NUM_WORDS, LengthMismatch());
 
     if (_raidSpawnRequestId == uint256(requestId)) {
-      uint40 currentRaidId = _nextRaidId;
-
-      // Spawn A few raid monsters
-      RaidInfo[] memory raidInfos = new RaidInfo[](NUM_WORDS);
-      uint16 maxBaseRaidId = _maxBaseRaidId;
-      for (uint256 i; i < NUM_WORDS; ++i) {
-        // Spawn a raid monster (first 2 bytes for the base raid id)
-        uint256 randomWord = randomWords[i];
-        uint16 baseRaidId = uint16(randomWord % maxBaseRaidId) + 1;
-        BaseRaid storage baseRaid = _baseRaids[baseRaidId];
-
-        uint256 combatActionIdsLength = _combatActionIds.length;
-        uint16[5] memory combatActionIds = [
-          EstforLibrary._getRandomFromArray16(randomWord, 128, _combatActionIds, combatActionIdsLength),
-          EstforLibrary._getRandomFromArray16(randomWord, 144, _combatActionIds, combatActionIdsLength),
-          EstforLibrary._getRandomFromArray16(randomWord, 160, _combatActionIds, combatActionIdsLength),
-          EstforLibrary._getRandomFromArray16(randomWord, 176, _combatActionIds, combatActionIdsLength),
-          EstforLibrary._getRandomFromArray16(randomWord, 192, _combatActionIds, combatActionIdsLength)
-        ];
-
-        RaidInfo memory raidInfo = RaidInfo({
-          baseRaidId: baseRaidId,
-          health: EstforLibrary._getRandomInRange16(randomWord, 16, baseRaid.minHealth, baseRaid.maxHealth),
-          meleeAttack: EstforLibrary._getRandomInRange16(
-            randomWord,
-            32,
-            baseRaid.minMeleeAttack,
-            baseRaid.maxMeleeAttack
-          ),
-          magicAttack: EstforLibrary._getRandomInRange16(
-            randomWord,
-            48,
-            baseRaid.minMagicAttack,
-            baseRaid.maxMagicAttack
-          ),
-          rangedAttack: EstforLibrary._getRandomInRange16(
-            randomWord,
-            64,
-            baseRaid.minRangedAttack,
-            baseRaid.maxRangedAttack
-          ),
-          meleeDefence: EstforLibrary._getRandomInRange16(
-            randomWord,
-            80,
-            baseRaid.minMeleeDefence,
-            baseRaid.maxMeleeDefence
-          ),
-          magicDefence: EstforLibrary._getRandomInRange16(
-            randomWord,
-            96,
-            baseRaid.minMagicDefence,
-            baseRaid.maxMagicDefence
-          ),
-          rangedDefence: EstforLibrary._getRandomInRange16(
-            randomWord,
-            112,
-            baseRaid.minRangedDefence,
-            baseRaid.maxRangedDefence
-          ),
-          combatActionIds: combatActionIds,
-          tier: baseRaid.tier
-        });
-
-        _raidInfos[uint40(currentRaidId + i)] = raidInfo;
-        raidInfos[i] = raidInfo;
-      }
-
-      _nextRaidId = uint40(currentRaidId + NUM_WORDS);
-
-      delete _raidSpawnRequestId;
-      emit NewRaidsSpawned(currentRaidId, raidInfos); // These raids are spawned for everyone
+      _spawnRaid(requestId, randomWords);
     } else {
-      // Actually doing the raid
-      uint256 clanId = _requestIdToPendingRaidAttack[requestId].clanId;
-      require(clanId != 0, RequestDoesNotExist());
-
-      uint256 raidId = _requestIdToPendingRaidAttack[requestId].raidId;
-
-      uint256 randomWord = randomWords[0];
-
-      // Food to use
-      uint16 regenerateId = _requestIdToPendingRaidAttack[requestId].regenerateId;
-
-      uint256 lootLength;
-      bool defeatedRaid = true;
-
-      address bank = address(_clanInfos[clanId].bank);
-      uint256 elapsedTime = 7 hours; // of combat with the small monsters
-
-      CombatStats memory combatStats; // All combatants
-      ClanInfo storage clanInfo = _clanInfos[clanId];
-      uint64[] memory playerIds = clanInfo.playerIds;
-      for (uint256 i; i < playerIds.length; ++i) {
-        uint64 playerId = playerIds[i];
-        combatStats.health += int16(int256(_players.getLevel(playerId, Skill.HEALTH)));
-        combatStats.meleeAttack += int16(int256(_players.getLevel(playerId, Skill.MELEE)));
-        combatStats.magicAttack += int16(int256(_players.getLevel(playerId, Skill.MAGIC)));
-        combatStats.rangedAttack += int16(int256(_players.getLevel(playerId, Skill.RANGED)));
-        int16 defence = int16(int256(_players.getLevel(playerId, Skill.DEFENCE)));
-        combatStats.meleeDefence += defence;
-        combatStats.magicDefence += defence;
-        combatStats.rangedDefence += defence;
-      }
-
-      PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates;
-
-      (uint8 alphaCombat, uint8 betaCombat, uint8 alphaCombatHealing) = _players.getAlphaCombatParams();
-
-      // Pick a random actionChoice, if you aren't high enough you don't count
-      // Pick a random one of these
-      uint16[3] memory actionChoiceIds = [
-        ACTIONCHOICE_MELEE_BASIC_SWORD,
-        ACTIONCHOICE_RANGED_BASIC_BOW,
-        ACTIONCHOICE_MAGIC_SHADOW_BLAST
-      ];
-
-      RaidInfo storage raidInfo = _raidInfos[raidId];
-      uint16[5] memory combatActionIds = raidInfo.combatActionIds;
-      uint256 numRaidBossRolls = 32;
-      uint256 maxLootLength = MAX_GUARANTEED_REWARDS_PER_ACTION * combatActionIds.length + numRaidBossRolls;
-
-      uint256[] memory lootTokenIds = new uint256[](maxLootLength);
-      uint256[] memory lootTokenAmounts = new uint256[](maxLootLength);
-
-      uint256 totalFoodConsumed;
-      uint256 choiceIdsLength = combatActionIds.length;
-      uint16[] memory choiceIds = new uint16[](choiceIdsLength);
-      uint16 bossChoiceId;
-      for (uint256 i = 0; i < choiceIdsLength; ++i) {
-        // Random actionChoiceIds
-        uint16 actionId = combatActionIds[i];
-        uint16 choiceId = EstforLibrary._getRandomFrom3ElementArray16(randomWord, i * 16, actionChoiceIds);
-        choiceIds[i] = choiceId;
-
-        CombatStats memory enemyCombatStats = _world.getCombatStats(actionId);
-        ActionChoice memory actionChoice = _world.getActionChoice(NONE, choiceId);
-
-        (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
-          actionId
-        );
-
-        numSpawnedPerHour *= 5 ** raidInfo.tier; // 5, 25, 125
-
-        // Fight the smaller monsters
-        (
-          uint256 xpElapsedTime,
-          uint256 combatElapsedTime,
-          uint16 baseInputItemsConsumedNum,
-          uint16 foodConsumed,
-          bool died
-        ) = PlayersLibrary._determineBattleOutcome(
-            bank,
-            address(_itemNFT),
-            elapsedTime,
-            actionChoice,
-            regenerateId,
-            numSpawnedPerHour,
-            combatStats,
-            enemyCombatStats,
-            alphaCombat,
-            betaCombat,
-            alphaCombatHealing,
-            pendingQueuedActionEquipmentStates
-          );
-
-        totalFoodConsumed += foodConsumed;
-
-        if (died) {
-          defeatedRaid = false;
-          break;
-        }
-
-        bool isCombat = true; //
-        uint16 monstersKilled = uint16((numSpawnedPerHour * xpElapsedTime) / (SPAWN_MUL * 3600));
-        uint8 successPercent = 100;
-        (uint256[] memory newIds, uint256[] memory newAmounts) = _getGuaranteedRewards(
-          xpElapsedTime,
-          actionRewards,
-          monstersKilled,
-          isCombat,
-          successPercent
-        );
-
-        for (uint256 j = 0; j < newIds.length; ++j) {
-          lootTokenIds[lootLength] = newIds[j];
-          lootTokenAmounts[lootLength++] = newAmounts[j];
-        }
-      }
-
-      if (defeatedRaid) {
-        // Now do raid boss battle
-        uint256 numSpawnedPerHour = 1 * SPAWN_MUL; // 1 per hour
-        bossChoiceId = EstforLibrary._getRandomFrom3ElementArray16(randomWord, 0, actionChoiceIds);
-
-        CombatStats memory enemyCombatStats = CombatStats({
-          health: raidInfo.health,
-          meleeAttack: raidInfo.meleeAttack,
-          magicAttack: raidInfo.magicAttack,
-          rangedAttack: raidInfo.rangedAttack,
-          meleeDefence: raidInfo.meleeDefence,
-          magicDefence: raidInfo.magicDefence,
-          rangedDefence: raidInfo.rangedDefence
-        });
-
-        uint256 elapsedTimeBoss = 1 hours; // of combat
-        ActionChoice memory actionChoice = _world.getActionChoice(NONE, bossChoiceId);
-        // Fight the raid boss (must kill within 1 hour)
-        (
-          uint256 xpElapsedTime,
-          uint256 combatElapsedTime,
-          uint16 baseInputItemsConsumedNum,
-          uint16 foodConsumed,
-          bool died
-        ) = PlayersLibrary._determineBattleOutcome(
-            bank,
-            address(_itemNFT),
-            elapsedTimeBoss,
-            actionChoice,
-            regenerateId,
-            numSpawnedPerHour,
-            combatStats,
-            enemyCombatStats,
-            alphaCombat,
-            betaCombat,
-            alphaCombatHealing,
-            pendingQueuedActionEquipmentStates
-          );
-
-        totalFoodConsumed += foodConsumed;
-        defeatedRaid = !died;
-        if (defeatedRaid) {
-          uint16 raidBossesKilled = uint16((numSpawnedPerHour * xpElapsedTime) / (SPAWN_MUL * 3600));
-          defeatedRaid = !died && raidBossesKilled == 1;
-          if (defeatedRaid) {
-            // Give 32 rolls for the raid boss and get the random rewards
-            BaseRaid storage baseRaid = _baseRaids[raidInfo.baseRaidId];
-            uint256 numWords = numRaidBossRolls / 16; // 16 per word
-            uint256 length = baseRaid.randomLootTokenIds.length;
-            bytes memory randomBytes = abi.encodePacked(randomWords[1:1 + numWords]); // we use randomWords[0] above already
-            for (uint256 i; i < numRaidBossRolls; ++i) {
-              uint16 rand = _getSlice(randomBytes, i);
-              uint16 itemTokenId;
-              uint32 amount;
-              uint16[16] memory randomLootTokenIds = baseRaid.randomLootTokenIds;
-              uint32[16] memory randomLootTokenAmounts = baseRaid.randomLootTokenAmounts;
-              uint16[16] memory randomChances = baseRaid.randomChances;
-              for (uint256 j; j < length; ++j) {
-                if (rand > randomChances[j]) {
-                  break;
-                }
-                itemTokenId = randomLootTokenIds[j];
-                amount = randomLootTokenAmounts[j];
-              }
-
-              lootTokenIds[lootLength] = itemTokenId;
-              lootTokenAmounts[lootLength++] = amount;
-            }
-          }
-        }
-      }
-
-      defeatedRaid = defeatedRaid && _itemNFT.balanceOf(bank, regenerateId) >= totalFoodConsumed;
-
-      if (!defeatedRaid) {
-        lootLength = 0;
-      } else {
-        // If they don't have enough in the bank then use the maximum possible
-        totalFoodConsumed = Math.min(totalFoodConsumed, _itemNFT.balanceOf(bank, regenerateId));
-      }
-
-      assembly ("memory-safe") {
-        mstore(lootTokenIds, lootLength)
-        mstore(lootTokenAmounts, lootLength)
-      }
-
-      if (totalFoodConsumed != 0) {
-        _itemNFT.burn(bank, regenerateId, totalFoodConsumed);
-      }
-
-      // Mint to the bank
-      if (lootTokenIds.length != 0) {
-        IBank(bank).setAllowBreachedCapacity(true);
-        _itemNFT.mintBatch(bank, lootTokenIds, lootTokenAmounts);
-        IBank(bank).setAllowBreachedCapacity(false);
-      }
-
-      emit RaidBattleOutcome(
-        clanId,
-        _requestIdToPendingRaidAttack[requestId].raidId,
-        uint256(requestId),
-        regenerateId,
-        totalFoodConsumed,
-        choiceIds,
-        bossChoiceId,
-        defeatedRaid,
-        lootTokenIds,
-        lootTokenAmounts
-      );
+      _fightRaid(requestId, randomWords);
     }
   }
 
