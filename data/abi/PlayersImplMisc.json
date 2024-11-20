@@ -1,0 +1,2166 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ActionChoiceIdNotRequired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionChoiceIdRequired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionChoiceMinimumXPNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionChoiceNotAvailable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionMinimumXPNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionNotAvailable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionTimespanExceedsMaxTime",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ActionTimespanZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyUpgraded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArgumentLengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AttireMinimumXPNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BoostTimeAlreadyStarted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BuyBrushFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotCallInitializerOnImplementation",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CannotEquipTwoHandedAndOtherEquipment",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ConsumableMinimumXPNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DependentQuestNotCompleted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EmptyTimespan",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EquipSameItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "HasQueuedActions",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "IncorrectEquippedItem",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "equippedItemTokenId",
+        "type": "uint16"
+      }
+    ],
+    "name": "IncorrectLeftHandEquipment",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "equippedItemTokenId",
+        "type": "uint16"
+      }
+    ],
+    "name": "IncorrectRightHandEquipment",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidCombatStyle",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "combatStyle",
+        "type": "uint8"
+      }
+    ],
+    "name": "InvalidCombatStyleId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidEquipPosition",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      }
+    ],
+    "name": "InvalidHandEquipment",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidItemTokenId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidReward",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidStartSlot",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidTravellingTimespan",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidXPSkill",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ItemDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ItemMinimumXPNotReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoActionsToProcess",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoActiveBoost",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      }
+    ],
+    "name": "NoItemBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NonInstanceConsumeNotSupportedYet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotABoostVial",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAdminAndBeta",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotEquipped",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotItemNFT",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotPlayerNFT",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PetNotOwned",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerAlreadyActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PlayerNotUpgraded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StartTimeTooFarInTheFuture",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TestInvalidXP",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyActionsQueued",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyActionsQueuedSomeAlreadyExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedAttire",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedChoiceId",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnsupportedRegenerateItem",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "XPThresholdAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "XPThresholdDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "XPThresholdNotFound",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ActionAborted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ActionFinished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "elapsedTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "ActionPartiallyFinished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[5]",
+        "name": "itemTokenIds",
+        "type": "uint16[5]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "bonusXPPercent",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "bonusRewardsPercent",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddFullAttireBonus",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "elapsed",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rolls",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddPendingRandomReward",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "points",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddXP",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "xpThreshold",
+            "type": "uint32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint24",
+                "name": "amount",
+                "type": "uint24"
+              }
+            ],
+            "internalType": "struct Equipment[]",
+            "name": "rewards",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct XPThresholdReward",
+        "name": "xpThresholdReward",
+        "type": "tuple"
+      }
+    ],
+    "name": "AdminAddThresholdReward",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "xpThreshold",
+            "type": "uint32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint24",
+                "name": "amount",
+                "type": "uint24"
+              }
+            ],
+            "internalType": "struct Equipment[]",
+            "name": "rewards",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct XPThresholdReward",
+        "name": "xpThresholdReward",
+        "type": "tuple"
+      }
+    ],
+    "name": "AdminEditThresholdReward",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "BoostFinished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "ClaimedXPThresholdRewards",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClearAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "playerBoostInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "ConsumeBoostVial",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "clanBoost",
+        "type": "tuple"
+      }
+    ],
+    "name": "ConsumeClanBoostVial",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "playerBoostInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "ConsumeExtraBoostVial",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "globalBoost",
+        "type": "tuple"
+      }
+    ],
+    "name": "ConsumeGlobalBoostVial",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "Consumes",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "itemTokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "DailyReward",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Died",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ExtraBoostFinished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldLevel",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newLevel",
+        "type": "uint256"
+      }
+    ],
+    "name": "LevelUp",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "numRemoved",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "queueIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "PendingRandomRewardsClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "rewardItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "rewardAmounts",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "consumedItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "consumedAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "QuestRewardConsumes",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "queueId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "Rewards",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "regenerateId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "choiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rightHandEquipmentTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "leftHandEquipmentTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "timespan",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "prevProcessedTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "prevProcessedXPTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint64",
+            "name": "queueId",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packed",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "uint32",
+            "name": "reserved",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint40",
+            "name": "petId",
+            "type": "uint40"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct QueuedAction[]",
+        "name": "queuedActions",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "head",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "neck",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "body",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "arms",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "legs",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "feet",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "ring",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "reserved1",
+            "type": "uint16"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Attire[]",
+        "name": "attire",
+        "type": "tuple[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetActionQueue",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldPlayerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newPlayerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetActivePlayer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "alphaCombat",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "betaCombat",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "alphaCombatHealing",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetCombatParams",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "itemTokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "WeeklyReward",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "xpThreshold",
+            "type": "uint32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint24",
+                "name": "amount",
+                "type": "uint24"
+              }
+            ],
+            "internalType": "struct Equipment[]",
+            "name": "rewards",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct XPThresholdReward[]",
+        "name": "xpThresholdRewards",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addXPThresholdRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "useExactETH",
+        "type": "bool"
+      }
+    ],
+    "name": "buyBrushQuest",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "oldTotalXP",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newTotalXP",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimableXPThresholdRewardsImpl",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "dailyClaimedRewardsImpl",
+    "outputs": [
+      {
+        "internalType": "bool[7]",
+        "name": "claimed",
+        "type": "bool[7]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "dailyRewardsViewImpl",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "itemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "dailyRewardMask",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "xpThreshold",
+            "type": "uint32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "itemTokenId",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint24",
+                "name": "amount",
+                "type": "uint24"
+              }
+            ],
+            "internalType": "struct Equipment[]",
+            "name": "rewards",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct XPThresholdReward[]",
+        "name": "xpThresholdRewards",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editXPThresholdRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRandomRewardChanceMultiplierCutoff",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint40",
+        "name": "startTimestamp",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "skillSentinelTime",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numTickets",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "guaranteedRewardRate3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardTokenId4",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "randomRewardChance4",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "randomRewardAmount4",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct ActionRewards",
+        "name": "actionRewards",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint8",
+        "name": "successPercent",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "fullAttireBonusRewardsPercent",
+        "type": "uint8"
+      }
+    ],
+    "name": "getRandomRewards",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "hasRandomWord",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "handleDailyRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum Skill[2]",
+        "name": "startSkills",
+        "type": "uint8[2]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "startingItemTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "startingAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "mintedPlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "actionId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "regenerateId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "choiceId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "rightHandEquipmentTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "leftHandEquipmentTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "timespan",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "prevProcessedTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "prevProcessedXPTime",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint64",
+            "name": "queueId",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packed",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "uint32",
+            "name": "reserved",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint40",
+            "name": "petId",
+            "type": "uint40"
+          }
+        ],
+        "internalType": "struct QueuedAction",
+        "name": "queuedAction",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "skill",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "rate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint24",
+            "name": "xpPerHour",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId1",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount1",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId2",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount2",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "inputTokenId3",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "inputAmount3",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "outputTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "outputAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "successPercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "minSkill2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP2",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "minSkill3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "minXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMin",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "handItemTokenIdRangeMax",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          }
+        ],
+        "internalType": "struct ActionChoice",
+        "name": "actionChoice",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int16",
+            "name": "meleeAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedAttack",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "health",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "meleeDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "magicDefence",
+            "type": "int16"
+          },
+          {
+            "internalType": "int16",
+            "name": "rangedDefence",
+            "type": "int16"
+          }
+        ],
+        "internalType": "struct CombatStats",
+        "name": "combatStats",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "elapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numSpawnedPerHour",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "consumedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "consumedAmounts",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedItemTokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "producedAmounts",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionEquipmentState[]",
+        "name": "pendingQueuedActionEquipmentStates",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill[]",
+            "name": "skills",
+            "type": "uint8[]"
+          },
+          {
+            "internalType": "uint32[]",
+            "name": "xpGainedSkills",
+            "type": "uint32[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum Skill",
+                "name": "skill1",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpGained1",
+                "type": "uint24"
+              },
+              {
+                "internalType": "enum Skill",
+                "name": "skill2",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpGained2",
+                "type": "uint24"
+              },
+              {
+                "internalType": "enum Skill",
+                "name": "skill3",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint24",
+                "name": "xpGained3",
+                "type": "uint24"
+              },
+              {
+                "internalType": "uint16",
+                "name": "foodConsumed",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "baseInputItemsConsumedNum",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct PendingQueuedActionData",
+            "name": "currentAction",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct PendingQueuedActionProcessed",
+        "name": "pendingQueuedActionProcessed",
+        "type": "tuple"
+      }
+    ],
+    "name": "processConsumablesView",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment[]",
+        "name": "consumedEquipments",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment",
+        "name": "producedEquipment",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "xpElapsedTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "died",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint16",
+        "name": "foodConsumed",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "baseInputItemsConsumedNum",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

@@ -417,7 +417,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
         uint16 baseInputItemsConsumedNum,
         uint16 foodConsumed,
         bool died
-      ) = PlayersLibrary._determineBattleOutcome(
+      ) = PlayersLibrary.determineBattleOutcome(
           bank,
           address(_itemNFT),
           elapsedTime,
@@ -480,7 +480,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
         uint16 baseInputItemsConsumedNum,
         uint16 foodConsumed,
         bool died
-      ) = PlayersLibrary._determineBattleOutcome(
+      ) = PlayersLibrary.determineBattleOutcome(
           bank,
           address(_itemNFT),
           elapsedTimeBoss,

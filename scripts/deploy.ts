@@ -700,7 +700,11 @@ async function main() {
     EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
     EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN
   ];
-  const Raids = await ethers.getContractFactory("Raids");
+  const Raids = await ethers.getContractFactory("Raids", {
+    libraries: {
+      PlayersLibrary: await playersLibrary.getAddress()
+    }
+  });
   const raids = (await upgrades.deployProxy(
     Raids,
     [
@@ -719,6 +723,7 @@ async function main() {
     ],
     {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
       timeout
     }
   )) as unknown as Raids;

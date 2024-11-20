@@ -89,12 +89,13 @@ const config: HardhatUserConfig = {
       "contracts/Clans/Clans.sol": lowRunsConfig,
       "contracts/Clans/LockedBankVaults.sol": lowRunsConfig,
       "contracts/Clans/Territories.sol": mediumRunsConfig,
-      "contracts/Players/Players.sol": lowRunsConfig,
+      "contracts/Players/Players.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
-      "contracts/Players/PlayersImplQueueActions.sol": lowRunsConfig,
-      "contracts/Players/PlayersImplRewards.sol": lowRunsConfig,
+      "contracts/Players/PlayersImplQueueActions.sol": lowestRunsConfig,
+      "contracts/Players/PlayersImplRewards.sol": lowestRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
+      "contracts/Clans/Raids.sol": lowRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
       "contracts/PetNFT.sol": lowRunsConfig,
@@ -125,7 +126,7 @@ const config: HardhatUserConfig = {
     fantom: {
       url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("150", "gwei"))
+      gasPrice: Number(parseUnits("15", "gwei"))
     }
   },
   mocha: {
@@ -155,7 +156,6 @@ const config: HardhatUserConfig = {
       "/debug",
       "/legacy",
       "SamWitchVRFConsumerUpgradeable",
-      "PlayersImpl*",
       "@openzeppelin"
     ]
   },

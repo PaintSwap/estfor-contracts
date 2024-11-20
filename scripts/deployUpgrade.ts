@@ -44,7 +44,9 @@ import {
   BANK_RELAY_ADDRESS,
   BANK_FACTORY_ADDRESS,
   BAZAAR_ADDRESS,
-  PVP_BATTLEGROUND_ADDRESS
+  PVP_BATTLEGROUND_ADDRESS,
+  RAIDS_ADDRESS,
+  PLAYERS_LIBRARY_ADDRESS
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -419,6 +421,16 @@ async function main() {
   });
   await passiveActions.waitForDeployment();
   console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`);
+
+  const Raids = await ethers.getContractFactory("Raids", {
+    libraries: {PlayersLibrary: await PLAYERS_LIBRARY_ADDRESS}
+  });
+  const raids = await upgrades.upgradeProxy(RAIDS_ADDRESS, Raids, {
+    kind: "uups",
+    timeout
+  });
+  await raids.waitForDeployment();
+  console.log(`raids = "${(await raids.getAddress()).toLowerCase()}"`);
 
   if (network.chainId == 250n) {
     await verifyContracts([await players.getAddress()]);
