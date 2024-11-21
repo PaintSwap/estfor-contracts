@@ -72,7 +72,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16[] inputTokenIds;
     uint24[] inputAmounts;
     Skill[] minSkills;
-    uint16[] minLevels;
+    uint8[] minLevels;
     uint8 skipSuccessPercent; // 0-100 (% chance of skipping a day)
     uint8 worldLocation; // 0 is the main starting world
     bool isFullModeOnly;
@@ -89,14 +89,13 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16 inputTokenId3;
     uint24 inputAmount3;
     Skill minSkill1;
-    uint16 minLevel1;
+    uint8 minLevel1;
     Skill minSkill2;
-    uint16 minLevel2;
+    uint8 minLevel2;
     Skill minSkill3;
-    uint16 minLevel3;
+    uint8 minLevel3;
     uint8 skipSuccessPercent;
-    bool hasRandomRewards;
-    bytes1 packedData; // worldLocation first bit, 7th bit isAvailable, last bit isFullModeOnly
+    bytes1 packedData; // worldLocation first bit, 6bit is has random rewards, 7th bit isAvailable, last bit isFullModeOnly
     uint16 questPrerequisiteId;
   }
 
@@ -363,18 +362,19 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   {
     // Check random reward results which may lower the time remaining (e.g. oracle speed boost)
     ActivePassiveInfo storage passiveAction = _activePassiveActions[playerId];
-    if (passiveAction.actionId == NONE) {
+    uint256 actionId = passiveAction.actionId;
+    if (actionId == NONE) {
       return (false, false, false, 0, false);
     }
 
-    PassiveAction storage action = _actions[passiveAction.actionId];
+    PassiveAction storage action = _actions[actionId];
     uint256 duration = action.durationDays * 1 days;
 
     uint256 startTime = _activePassiveActions[playerId].startTime;
     uint256 timespan = Math.min(duration, (block.timestamp - startTime));
     uint256 numDays = timespan / 1 days;
 
-    hasRandomRewards = action.hasRandomRewards;
+    hasRandomRewards = _hasRandomRewards(actionId);
     // Special case
     if (duration == 0) {
       finished = true;
@@ -405,7 +405,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       if ((startTime + duration - numWinners * 1 days <= block.timestamp)) {
         finished = true;
         // Actually check if it has the random word for this day
-        if (action.hasRandomRewards && timestamp != startTime + duration - numWinners * 1 days - 1 days) {
+        if (_hasRandomRewards(actionId) && timestamp != startTime + duration - numWinners * 1 days - 1 days) {
           oracleCalled = world.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
         }
         break;
@@ -486,6 +486,10 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     }
   }
 
+  function _hasRandomRewards(uint256 actionId) private view returns (bool) {
+    return uint8(_actions[actionId].packedData >> HAS_RANDOM_REWARDS_BIT) & 1 == 1;
+  }
+
   function _isActionFullMode(uint16 actionId) private view returns (bool) {
     return uint8(_actions[actionId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
@@ -502,6 +506,9 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     if (actionInfo.isAvailable) {
       packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));
     }
+    if (hasRandomRewards) {
+      packedData |= bytes1(uint8(1 << HAS_RANDOM_REWARDS_BIT));
+    }
     passiveAction = PassiveAction({
       durationDays: actionInfo.durationDays,
       minSkill1: actionInfo.minSkills.length != 0 ? actionInfo.minSkills[0] : Skill.NONE,
@@ -517,7 +524,6 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       inputTokenId3: actionInfo.inputTokenIds.length > 2 ? actionInfo.inputTokenIds[2] : NONE,
       inputAmount3: actionInfo.inputAmounts.length > 2 ? actionInfo.inputAmounts[2] : 0,
       skipSuccessPercent: actionInfo.skipSuccessPercent,
-      hasRandomRewards: hasRandomRewards,
       packedData: packedData,
       questPrerequisiteId: actionInfo.questPrerequisiteId
     });
@@ -564,7 +570,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
     // Check minimum xp
     Skill[] calldata minSkills = actionInfo.minSkills;
-    uint16[] calldata minLevels = actionInfo.minLevels;
+    uint8[] calldata minLevels = actionInfo.minLevels;
 
     require(minSkills.length <= 3, TooManyMinSkills());
     require(minSkills.length == minLevels.length, LengthMismatch());

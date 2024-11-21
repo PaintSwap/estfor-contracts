@@ -33,7 +33,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
 
   struct ItemInfo {
     uint40 timestampFirstMint;
-    uint216 balance; // can possibly be smaller if we want to pack more data
+    uint216 balance; // can be smaller if we want to pack more data
   }
 
   uint16 private _totalSupplyAll;

@@ -264,9 +264,9 @@
                 "type": "uint8[]"
               },
               {
-                "internalType": "uint16[]",
+                "internalType": "uint8[]",
                 "name": "minLevels",
-                "type": "uint16[]"
+                "type": "uint8[]"
               },
               {
                 "internalType": "uint8",
@@ -448,9 +448,9 @@
                 "type": "uint8[]"
               },
               {
-                "internalType": "uint16[]",
+                "internalType": "uint8[]",
                 "name": "minLevels",
-                "type": "uint16[]"
+                "type": "uint8[]"
               },
               {
                 "internalType": "uint8",
@@ -658,9 +658,9 @@
                 "type": "uint8[]"
               },
               {
-                "internalType": "uint16[]",
+                "internalType": "uint8[]",
                 "name": "minLevels",
-                "type": "uint16[]"
+                "type": "uint8[]"
               },
               {
                 "internalType": "uint8",
@@ -787,9 +787,9 @@
                 "type": "uint8[]"
               },
               {
-                "internalType": "uint16[]",
+                "internalType": "uint8[]",
                 "name": "minLevels",
-                "type": "uint16[]"
+                "type": "uint8[]"
               },
               {
                 "internalType": "uint8",
@@ -976,9 +976,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint8",
             "name": "minLevel1",
-            "type": "uint16"
+            "type": "uint8"
           },
           {
             "internalType": "enum Skill",
@@ -986,9 +986,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint8",
             "name": "minLevel2",
-            "type": "uint16"
+            "type": "uint8"
           },
           {
             "internalType": "enum Skill",
@@ -996,19 +996,14 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint8",
             "name": "minLevel3",
-            "type": "uint16"
+            "type": "uint8"
           },
           {
             "internalType": "uint8",
             "name": "skipSuccessPercent",
             "type": "uint8"
-          },
-          {
-            "internalType": "bool",
-            "name": "hasRandomRewards",
-            "type": "bool"
           },
           {
             "internalType": "bytes1",

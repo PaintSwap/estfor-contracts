@@ -316,7 +316,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function _checkInputs(InstantActionInput calldata actionInput) private pure {
-    (uint16[] calldata inputTokenIds, uint16[] calldata amounts) = (
+    (uint16[] calldata inputTokenIds, uint24[] calldata amounts) = (
       actionInput.inputTokenIds,
       actionInput.inputAmounts
     );

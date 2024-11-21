@@ -322,14 +322,17 @@ struct ActivePlayerInfo {
 }
 
 uint256 constant MAX_UNIQUE_TICKETS = 64;
+// Used in a bunch of places
 uint256 constant IS_FULL_MODE_BIT = 7;
 
 // Passive/Instant/InstantVRF/Actions/ActionChoices/Item action
 uint256 constant IS_AVAILABLE_BIT = 6;
 
+// Passive actions
+uint256 constant HAS_RANDOM_REWARDS_BIT = 5;
+
 // Queued action
 uint256 constant HAS_PET_BIT = 4;
-
 uint256 constant IS_VALID_BIT = 3;
 
 // 1 & 2 are for the combatStyle
