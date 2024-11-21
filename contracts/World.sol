@@ -19,8 +19,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
   event RequestSent(uint256 requestId, uint256 numWords, uint256 lastRandomWordsUpdatedTime);
   event RequestFulfilled(uint256 requestId, uint256 randomWord);
-  event AddActions(Action[] actions);
-  event EditActions(Action[] actions);
+  event AddActions(ActionInput[] actions);
+  event EditActions(ActionInput[] actions);
   event AddActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event EditActionChoices(uint16 actionId, uint16[] actionChoiceIds, ActionChoiceInput[] choices);
   event RemoveActionChoices(uint16 actionId, uint16[] actionChoiceIds);
@@ -122,7 +122,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     return _lastRandomWordsUpdatedTime;
   }
 
-  function actions(uint256 actionId) external view returns (ActionInfo memory) {
+  function getAction(uint256 actionId) external view returns (ActionInfo memory) {
     return _actions[actionId];
   }
 
@@ -298,7 +298,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     }
   }
 
-  function _addAction(Action calldata action) private {
+  function _addAction(ActionInput calldata action) private {
     require(_actions[action.actionId].skill._asSkill() == Skill.NONE, ActionAlreadyExists(action.actionId));
     _setAction(action);
   }
@@ -312,7 +312,7 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     return uint256(keccak256(abi.encodePacked(randomWord, playerId)) >> (day * 8)) % length;
   }
 
-  function _setAction(Action calldata action) private {
+  function _setAction(ActionInput calldata action) private {
     require(action.actionId != 0, ActionIdZeroNotAllowed());
     require(action.info.handItemTokenIdRangeMin <= action.info.handItemTokenIdRangeMax, MinCannotBeGreaterThanMax());
 
@@ -435,19 +435,19 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
     }
   }
 
-  function addActions(Action[] calldata actionsToAdd) external onlyOwner {
-    for (uint256 i = 0; i < actionsToAdd.length; ++i) {
-      _addAction(actionsToAdd[i]);
+  function addActions(ActionInput[] calldata actions) external onlyOwner {
+    for (uint256 i = 0; i < actions.length; ++i) {
+      _addAction(actions[i]);
     }
-    emit AddActions(actionsToAdd);
+    emit AddActions(actions);
   }
 
-  function editActions(Action[] calldata actionsToEdit) external onlyOwner {
-    for (uint256 i = 0; i < actionsToEdit.length; ++i) {
-      require(_actions[actionsToEdit[i].actionId].skill._asSkill() != Skill.NONE, ActionDoesNotExist());
-      _setAction(actionsToEdit[i]);
+  function editActions(ActionInput[] calldata actions) external onlyOwner {
+    for (uint256 i = 0; i < actions.length; ++i) {
+      require(_actions[actions[i].actionId].skill._asSkill() != Skill.NONE, ActionDoesNotExist());
+      _setAction(actions[i]);
     }
-    emit EditActions(actionsToEdit);
+    emit EditActions(actions);
   }
 
   function addActionChoices(

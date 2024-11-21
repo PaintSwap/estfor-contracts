@@ -39,7 +39,7 @@ struct QueuedAction {
 }
 
 // This is only used as an input arg (and events)
-struct Action {
+struct ActionInput {
   uint16 actionId;
   ActionInfo info;
   GuaranteedReward[] guaranteedRewards;

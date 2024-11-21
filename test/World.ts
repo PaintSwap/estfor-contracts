@@ -248,7 +248,7 @@ describe("World", function () {
         }
       ]);
       const actionId = await getActionId(tx, world);
-      const {skill} = await world.actions(actionId);
+      const {skill} = await world.getAction(actionId);
       expect(skill).to.eq(BigInt(EstforTypes.Skill.COMBAT));
 
       actionInfo.xpPerHour = 20;
@@ -261,8 +261,8 @@ describe("World", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      expect((await world.actions(actionId)).xpPerHour).to.eq(20);
-      expect((await world.actions(actionId)).isAvailable).to.be.false;
+      expect((await world.getAction(actionId)).xpPerHour).to.eq(20);
+      expect((await world.getAction(actionId)).isAvailable).to.be.false;
       actionInfo.isAvailable = true;
       await world.editActions([
         {
@@ -273,7 +273,7 @@ describe("World", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      expect((await world.actions(actionId)).isAvailable).to.be.true;
+      expect((await world.getAction(actionId)).isAvailable).to.be.true;
       actionInfo.isAvailable = false;
       await world.editActions([
         {
@@ -284,7 +284,7 @@ describe("World", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      expect((await world.actions(actionId)).isAvailable).to.be.false;
+      expect((await world.getAction(actionId)).isAvailable).to.be.false;
     });
 
     it("Edit to have less guarenteed & random rewards", async function () {
@@ -316,7 +316,7 @@ describe("World", function () {
         }
       ]);
       const actionId = await getActionId(tx, world);
-      expect((await world.actions(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
+      expect((await world.getAction(actionId)).skill).to.eq(EstforTypes.Skill.COMBAT);
 
       await world.editActions([
         {
