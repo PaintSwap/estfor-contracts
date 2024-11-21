@@ -127,6 +127,34 @@ export const createAndDoPurseStringsQuest = async (
   await players.connect(signer).buyBrushQuest(signer, playerId, 0, true, {value: 10});
 };
 
+/**
+ * Generates unique bit positions for each item in the Bloom filter.
+ * @param items Array of items to add to the Bloom filter (strings).
+ * @param existing Set of unique bit positions for the Bloom filter.
+ * @param bitCount Number of bits in the Bloom filter.
+ * @returns Set of unique bit positions for the Bloom filter.
+ */
+export function generateUniqueBitPositions(
+  items: string[],
+  existing: bigint[] = [],
+  bitCount: bigint = 65536n
+): bigint[] {
+  const positions = new Set<bigint>(existing);
+  const calculatedHashCount = (bitCount * 144n) / (BigInt(items.length) * 100n) + 1n;
+  const hashCount = calculatedHashCount < 256n ? calculatedHashCount : 255n;
+
+  for (const item of items) {
+    const itemHash = ethers.solidityPackedKeccak256(["string"], [item.trim().toLowerCase()]);
+
+    for (let i = 0n; i < hashCount; i++) {
+      const position = BigInt(ethers.solidityPackedKeccak256(["bytes32", "uint8"], [itemHash, i])) % bitCount;
+      positions.add(position); // Automatically prevents duplicate entries
+    }
+  }
+
+  return [...positions];
+}
+
 export enum BattleResult {
   DRAW,
   WIN,
