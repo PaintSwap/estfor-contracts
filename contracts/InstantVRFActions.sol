@@ -72,15 +72,14 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   struct InstantVRFAction {
     // Storage slot 1
     uint16 inputTokenId1;
-    uint8 inputAmount1;
+    uint24 inputAmount1;
     uint16 inputTokenId2;
-    uint8 inputAmount2;
+    uint24 inputAmount2;
     uint16 inputTokenId3;
     uint24 inputAmount3;
-    bytes1 packedData; // worldLocation first bit, second bit isAvailable, last bit isFullModeOnly
-    address strategy;
-    // Second storage slot
     uint16 questPrerequisiteId;
+    InstantVRFActionType actionType;
+    bytes1 packedData; // worldLocation first bit, second bit isAvailable, last bit isFullModeOnly
   }
 
   struct Player {
@@ -105,7 +104,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint256 playerId => PlayerActionInfo) private _playerActionInfos;
   mapping(uint256 actionId => InstantVRFAction action) private _actions;
   mapping(bytes32 requestId => Player player) private _requestIdToPlayer;
-  mapping(InstantVRFActionType actionType => address strategy) private _strategies;
+  mapping(InstantVRFActionType actionType => IInstantVRFActionStrategy strategy) private _strategies;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -269,7 +268,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     return _actions[actionId];
   }
 
-  function getStrategy(InstantVRFActionType actionType) external view returns (address) {
+  function getStrategy(InstantVRFActionType actionType) public view returns (IInstantVRFActionStrategy) {
     return _strategies[actionType];
   }
 
@@ -294,11 +293,13 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       if (actionId == 0 || !_actionExists(actionId)) {
         continue;
       }
+
+      IInstantVRFActionStrategy strategy = getStrategy(_actions[actionId].actionType);
       (
         uint256[] memory producedItemTokenIds,
         uint256[] memory producedItemsAmounts,
         uint256[] memory producedPetBaseIds
-      ) = IInstantVRFActionStrategy(_actions[actionId].strategy).getRandomRewards(
+      ) = IInstantVRFActionStrategy(strategy).getRandomRewards(
           actionId,
           actionAmount,
           randomWords,
@@ -334,7 +335,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _checkInputs(instantVRFActionInput);
     _actions[instantVRFActionInput.actionId] = _packAction(instantVRFActionInput);
 
-    IInstantVRFActionStrategy(_strategies[instantVRFActionInput.actionType]).setAction(instantVRFActionInput);
+    _strategies[instantVRFActionInput.actionType].setAction(instantVRFActionInput);
   }
 
   function _requestRandomWords(uint256 numRandomWords, uint256 numActions) private returns (bytes32 requestId) {
@@ -366,13 +367,13 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     }
     instantVRFAction = InstantVRFAction({
       inputTokenId1: actionInput.inputTokenIds.length != 0 ? actionInput.inputTokenIds[0] : NONE,
-      inputAmount1: actionInput.inputAmounts.length != 0 ? uint8(actionInput.inputAmounts[0]) : 0,
+      inputAmount1: actionInput.inputAmounts.length != 0 ? actionInput.inputAmounts[0] : 0,
       inputTokenId2: actionInput.inputTokenIds.length > 1 ? actionInput.inputTokenIds[1] : NONE,
-      inputAmount2: actionInput.inputAmounts.length > 1 ? uint8(actionInput.inputAmounts[1]) : 0,
+      inputAmount2: actionInput.inputAmounts.length > 1 ? actionInput.inputAmounts[1] : 0,
       inputTokenId3: actionInput.inputTokenIds.length > 2 ? actionInput.inputTokenIds[2] : NONE,
       inputAmount3: actionInput.inputAmounts.length > 2 ? actionInput.inputAmounts[2] : 0,
       packedData: packedData,
-      strategy: _strategies[actionInput.actionType],
+      actionType: actionInput.actionType,
       questPrerequisiteId: actionInput.questPrerequisiteId
     });
   }
@@ -404,7 +405,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       }
     }
 
-    require(_strategies[actionInput.actionType] != address(0), InvalidStrategy());
+    require(address(_strategies[actionInput.actionType]) != address(0), InvalidStrategy());
   }
 
   function requestCost(uint256 actionAmounts) public view returns (uint256) {
@@ -419,9 +420,9 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     require(instantVRFActionTypes.length == strategies.length, LengthMismatch());
     for (uint256 i; i < instantVRFActionTypes.length; ++i) {
       require(instantVRFActionTypes[i] != InstantVRFActionType.NONE && strategies[i] != address(0), InvalidStrategy());
-      require(_strategies[instantVRFActionTypes[i]] == address(0), StrategyAlreadyExists());
+      require(address(_strategies[instantVRFActionTypes[i]]) == address(0), StrategyAlreadyExists());
 
-      _strategies[instantVRFActionTypes[i]] = strategies[i];
+      _strategies[instantVRFActionTypes[i]] = IInstantVRFActionStrategy(strategies[i]);
     }
     emit AddStrategies(instantVRFActionTypes, strategies);
   }

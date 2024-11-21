@@ -704,9 +704,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint8",
+            "internalType": "uint24",
             "name": "inputAmount1",
-            "type": "uint8"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -714,9 +714,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint8",
+            "internalType": "uint24",
             "name": "inputAmount2",
-            "type": "uint8"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -729,19 +729,19 @@
             "type": "uint24"
           },
           {
-            "internalType": "bytes1",
-            "name": "packedData",
-            "type": "bytes1"
-          },
-          {
-            "internalType": "address",
-            "name": "strategy",
-            "type": "address"
-          },
-          {
             "internalType": "uint16",
             "name": "questPrerequisiteId",
             "type": "uint16"
+          },
+          {
+            "internalType": "enum InstantVRFActionType",
+            "name": "actionType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
           }
         ],
         "internalType": "struct InstantVRFActions.InstantVRFAction",
@@ -763,7 +763,7 @@
     "name": "getStrategy",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IInstantVRFActionStrategy",
         "name": "",
         "type": "address"
       }

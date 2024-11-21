@@ -259,7 +259,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     }
 
     if (hasBoost) {
-      // The account this player is being transferred to has a boost, so lock the player for 1 day.
+      // The account this player is being transferred to has a boost nft, so lock the player for 1 day, prevents sharing boosts so easily.
       uint40 cooldownTimestamp = uint40(block.timestamp + 1 days);
       _activeBoosts[playerId].cooldown = cooldownTimestamp;
       emit LockPlayer(playerId, cooldownTimestamp);

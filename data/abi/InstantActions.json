@@ -720,9 +720,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "inputAmount1",
-            "type": "uint16"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -730,9 +730,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "inputAmount2",
-            "type": "uint16"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -740,8 +740,23 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "inputAmount3",
+            "type": "uint24"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "reserved",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "uint16",
+            "name": "questPrerequisiteId",
             "type": "uint16"
           },
           {
@@ -750,19 +765,9 @@
             "type": "uint16"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "outputAmount",
-            "type": "uint16"
-          },
-          {
-            "internalType": "bytes1",
-            "name": "packedData",
-            "type": "bytes1"
-          },
-          {
-            "internalType": "uint16",
-            "name": "questPrerequisiteId",
-            "type": "uint16"
+            "type": "uint24"
           }
         ],
         "internalType": "struct InstantActions.InstantAction",

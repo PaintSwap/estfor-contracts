@@ -66,7 +66,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint8[] minSkills;
     uint32[] minXPs;
     uint16[] inputTokenIds;
-    uint16[] inputAmounts;
+    uint24[] inputAmounts;
     uint16 outputTokenId;
     uint16 outputAmount;
     uint16 questPrerequisiteId;
@@ -83,16 +83,17 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint8 minSkill3;
     uint32 minXP3;
     uint16 inputTokenId1;
-    uint16 inputAmount1;
+    uint24 inputAmount1;
     uint16 inputTokenId2;
-    uint16 inputAmount2;
+    uint24 inputAmount2;
     uint16 inputTokenId3;
-    uint16 inputAmount3;
-    uint16 outputTokenId;
-    uint16 outputAmount;
+    uint24 inputAmount3;
     bytes1 packedData; // last bit is full mode only
+    bytes1 reserved;
     // Second storage slot
     uint16 questPrerequisiteId;
+    uint16 outputTokenId;
+    uint24 outputAmount;
   }
 
   struct InstantActionState {
@@ -301,6 +302,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       inputAmount2: actionInput.inputAmounts.length > 1 ? actionInput.inputAmounts[1] : 0,
       inputTokenId3: actionInput.inputTokenIds.length > 2 ? actionInput.inputTokenIds[2] : NONE,
       inputAmount3: actionInput.inputAmounts.length > 2 ? actionInput.inputAmounts[2] : 0,
+      reserved: 0,
       outputTokenId: actionInput.outputTokenId,
       outputAmount: actionInput.outputAmount,
       packedData: packedData,
