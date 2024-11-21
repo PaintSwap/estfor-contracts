@@ -295,8 +295,7 @@ library PlayersLibrary {
     } else if (skill == Skill.RANGED) {
       attack = combatStats.rangedAttack;
       defence = enemyCombatStats.rangedDefence;
-    } else if (skill == Skill.MAGIC || skill == Skill.DEFENCE || skill == Skill.HEALTH) {
-      // TODO: What's this doing again
+    } else if (skill == Skill.MAGIC) {
       attack = combatStats.magicAttack;
       defence = enemyCombatStats.magicDefence;
     } else {
@@ -319,7 +318,7 @@ library PlayersLibrary {
       dmgDealt = dmg(combatStats.meleeAttack, enemyCombatStats.meleeDefence, alphaCombat, betaCombat, elapsedTime);
     } else if (skill == Skill.RANGED) {
       dmgDealt = dmg(combatStats.rangedAttack, enemyCombatStats.rangedDefence, alphaCombat, betaCombat, elapsedTime);
-    } else if (skill == Skill.MAGIC || skill == Skill.DEFENCE || skill == Skill.HEALTH) {
+    } else if (skill == Skill.MAGIC) {
       // Assumes this is a magic action
       dmgDealt = dmg(combatStats.magicAttack, enemyCombatStats.magicDefence, alphaCombat, betaCombat, elapsedTime);
     } else {

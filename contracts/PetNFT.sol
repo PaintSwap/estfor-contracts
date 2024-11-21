@@ -82,6 +82,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     PetSkin skin;
     PetEnhancementType enhancementType;
     uint24 baseId;
+    bool isTransferable;
     Skill[2] skillEnhancements;
     uint8[2] skillFixedMins;
     uint8[2] skillFixedMaxs;
@@ -400,6 +401,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       uint8(skillPercentageEnhancement2),
       type(uint40).max,
       address(0), // Will be updated in _mintBatch
+      _basePetMetadatas[_basePetId].isTransferable,
       uint24(_basePetId),
       0, // lastTrainedTimestamp
       uint8(skillFixedEnhancementMax1),
@@ -465,11 +467,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       // Burnt
       delete _pets[id];
     } else {
-      // Cannot transfer anniversary pets
-      require(
-        from == address(0) || _basePetMetadatas[_pets[id].baseId].skin != PetSkin.ANNIV1,
-        CannotTransferThisPet(id)
-      );
+      // Cannot transfer some pets like anniversary
+      require(from == address(0) || _pets[id].isTransferable, CannotTransferThisPet(id));
       _pets[id].owner = to;
       _pets[id].lastAssignmentTimestamp = uint40(block.timestamp);
     }
@@ -511,7 +510,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       basePetInput.skillPercentageIncrements[1],
       basePetInput.skillMinLevels[1],
       basePetInput.fixedStarThreshold,
-      basePetInput.percentageStarThreshold
+      basePetInput.percentageStarThreshold,
+      basePetInput.isTransferable
     );
   }
 

@@ -1224,10 +1224,12 @@ describe("Combat Actions", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2]
+            inputAmounts: [1, 2],
+            skills: [EstforTypes.Skill.MAGIC],
+            skillDiffs: [2],
+            skillMinXPs: [0]
           }
         ]
       );
@@ -1339,11 +1341,13 @@ describe("Combat Actions", function () {
         [
           {
             ...defaultActionChoice,
-            skill: EstforTypes.Skill.DEFENCE,
-            skillDiff: 100,
+            skill: EstforTypes.Skill.MAGIC,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2]
+            inputAmounts: [1, 2],
+            skills: [EstforTypes.Skill.DEFENCE],
+            skillDiffs: [100],
+            skillMinXPs: [0]
           }
         ]
       );
@@ -1390,8 +1394,10 @@ describe("Combat Actions", function () {
         [
           {
             ...defaultActionChoice,
-            skill: EstforTypes.Skill.HEALTH,
-            skillDiff: 100,
+            skill: EstforTypes.Skill.MAGIC,
+            skills: [EstforTypes.Skill.HEALTH],
+            skillMinXPs: [0],
+            skillDiffs: [100],
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
             inputAmounts: [1, 2]
@@ -1490,10 +1496,12 @@ describe("Combat Actions", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 5,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2]
+            inputAmounts: [1, 2],
+            skills: [EstforTypes.Skill.MAGIC],
+            skillDiffs: [5],
+            skillMinXPs: [0]
           }
         ]
       );
@@ -1646,10 +1654,12 @@ describe("Combat Actions", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 5,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2]
+            inputAmounts: [1, 2],
+            skills: [EstforTypes.Skill.MAGIC],
+            skillDiffs: [5],
+            skillMinXPs: [0]
           }
         ]
       );
@@ -2025,18 +2035,22 @@ describe("Combat Actions", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.AIR_SCROLL, EstforConstants.SHADOW_SCROLL],
-            inputAmounts: [1, 1]
+            inputAmounts: [1, 1],
+            skills: [EstforTypes.Skill.MAGIC],
+            skillDiffs: [2],
+            skillMinXPs: [0]
           },
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 3]
+            inputAmounts: [1, 3],
+            skills: [EstforTypes.Skill.MAGIC],
+            skillDiffs: [2],
+            skillMinXPs: [0]
           }
         ]
       );
@@ -2352,10 +2366,12 @@ describe("Combat Actions", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             rate: scrollsConsumedRate,
             inputTokenIds: [EstforConstants.SHADOW_SCROLL, EstforConstants.AIR_SCROLL],
-            inputAmounts: [1, 2]
+            inputAmounts: [1, 2],
+            skills: [EstforTypes.Skill.MAGIC],
+            skillDiffs: [2],
+            skillMinXPs: [0]
           }
         ]
       );
@@ -2536,12 +2552,14 @@ describe("Combat Actions", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.RANGED,
-            skillDiff: 2,
             rate: arrowsConsumedRate,
             inputTokenIds: [EstforConstants.BRONZE_ARROW],
             inputAmounts: [1],
             handItemTokenIdRangeMin: EstforConstants.BASIC_BOW,
-            handItemTokenIdRangeMax: EstforConstants.BASIC_BOW
+            handItemTokenIdRangeMax: EstforConstants.BASIC_BOW,
+            skills: [EstforTypes.Skill.RANGED],
+            skillDiffs: [2],
+            skillMinXPs: [0]
           }
         ]
       );
@@ -2686,12 +2704,14 @@ describe("Combat Actions", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.RANGED,
-            skillDiff: 2,
             rate: arrowsConsumedRate,
             inputTokenIds: [EstforConstants.BRONZE_ARROW],
             inputAmounts: [1],
             handItemTokenIdRangeMin: EstforConstants.GODLY_BOW,
-            handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_4
+            handItemTokenIdRangeMax: EstforConstants.GODLY_BOW_4,
+            skills: [EstforTypes.Skill.RANGED],
+            skillDiffs: [5],
+            skillMinXPs: [0]
           }
         ]
       );

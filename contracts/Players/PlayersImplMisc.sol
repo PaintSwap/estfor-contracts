@@ -264,16 +264,17 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
       uint8 successPercent = 100;
       // Some might be burnt when cooking for instance
       if (actionChoice.successPercent != 100) {
-        uint256 minLevel = PlayersLibrary.getLevel(actionChoice.minXP);
+        // Only does the first skill
+
+        uint256 minLevel = PlayersLibrary.getLevel(actionChoice.skillMinXP1);
         uint256 skillLevel = PlayersLibrary.getLevel(
           PlayersLibrary.getAbsoluteActionStartXP(
-            uint8(actionChoice.skill),
+            actionChoice.skill1,
             pendingQueuedActionProcessed,
             _playerXP[playerId]
           )
         );
         uint256 extraBoost = skillLevel - minLevel;
-
         successPercent = uint8(Math.min(MAX_SUCCESS_PERCENT_CHANCE, actionChoice.successPercent + extraBoost));
       }
 

@@ -18,7 +18,7 @@ library WorldLibrary {
   error InputItemNoDuplicates();
   error InvalidSkill();
   error MinimumSkillsNoDuplicates();
-  error TooManyMinSkills();
+  error TooManySkills();
   error OutputAmountCannotBeZero();
   error OutputSpecifiedWithoutAmount();
   error OutputTokenIdCannotBeEmpty();
@@ -28,7 +28,6 @@ library WorldLibrary {
   error NotAFactorOf3600();
   error TooManyGuaranteedRewards();
   error TooManyRandomRewards();
-  error FirstMinSkillMustBeActionChoiceSkill();
 
   function checkActionChoice(ActionChoiceInput calldata actionChoiceInput) external pure {
     uint16[] calldata inputTokenIds = actionChoiceInput.inputTokenIds;
@@ -59,22 +58,19 @@ library WorldLibrary {
     }
 
     // Check minimum xp
-    uint8[] calldata minSkills = actionChoiceInput.minSkills;
-    uint32[] calldata minXPs = actionChoiceInput.minXPs;
+    uint8[] calldata skills = actionChoiceInput.skills;
 
     // First minSkill must be the same as the action choice skill
-    require(minSkills.length == 0 || minSkills[0] == actionChoiceInput.skill, FirstMinSkillMustBeActionChoiceSkill());
-    require(minSkills.length <= 3, TooManyMinSkills());
-    require(minSkills.length == minXPs.length, LengthMismatch());
+    require(skills.length <= 3, TooManySkills());
+    require(skills.length == actionChoiceInput.skillMinXPs.length, LengthMismatch());
+    require(skills.length == actionChoiceInput.skillDiffs.length, LengthMismatch());
 
-    for (uint256 i; i < minSkills.length; ++i) {
-      require(!minSkills[i]._isSkillNone(), InvalidSkill());
-      // Can only be 0 if it's the first one and there is more than one
-      require(!(minXPs[i] == 0 && (i != 0 || minSkills.length == 1)), InputSpecifiedWithoutAmount());
+    for (uint256 i; i < skills.length; ++i) {
+      require(!skills[i]._isSkillNone(), InvalidSkill());
 
-      if (i != minSkills.length - 1) {
-        for (uint256 j; j < minSkills.length; ++j) {
-          require(j == i || minSkills[i] != minSkills[j], MinimumSkillsNoDuplicates());
+      if (i != skills.length - 1) {
+        for (uint256 j; j < skills.length; ++j) {
+          require(j == i || skills[i] != skills[j], MinimumSkillsNoDuplicates());
         }
       }
     }

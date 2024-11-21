@@ -754,8 +754,9 @@ describe("Players", function () {
             rate,
             inputTokenIds: [EstforConstants.LOG],
             inputAmounts: [1],
-            minSkills: [EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.FIREMAKING],
-            minXPs: [minXP1, minXP2]
+            skills: [EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.FIREMAKING],
+            skillMinXPs: [minXP1, minXP2],
+            skillDiffs: [0, 0]
           }
         ]
       );
@@ -795,8 +796,9 @@ describe("Players", function () {
             rate,
             inputTokenIds: [EstforConstants.LOG],
             inputAmounts: [1],
-            minSkills: [EstforTypes.Skill.FIREMAKING, EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.COOKING],
-            minXPs: [minXP2, minXP1, minXP3]
+            skills: [EstforTypes.Skill.FIREMAKING, EstforTypes.Skill.ALCHEMY, EstforTypes.Skill.COOKING],
+            skillMinXPs: [minXP2, minXP1, minXP3],
+            skillDiffs: [0, 0, 0]
           }
         ]
       );
@@ -1993,8 +1995,8 @@ describe("Players", function () {
           outputTokenId: EstforConstants.COOKED_MINNUS,
           outputAmount: 1,
           successPercent,
-          minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
-          minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
+          skills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
+          skillMinXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
           isFullModeOnly: true
         }
       ]
@@ -2055,8 +2057,8 @@ describe("Players", function () {
           outputTokenId: EstforConstants.COOKED_MINNUS,
           outputAmount: 1,
           successPercent,
-          minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
-          minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
+          skills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
+          skillMinXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
           isFullModeOnly: true
         }
       ]

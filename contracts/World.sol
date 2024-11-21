@@ -383,8 +383,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
 
     actionChoice = ActionChoice({
       skill: actionChoiceInput.skill,
-      minXP: actionChoiceInput.minXPs.length != 0 ? actionChoiceInput.minXPs[0] : 0,
-      skillDiff: actionChoiceInput.skillDiff,
       rate: actionChoiceInput.rate,
       xpPerHour: actionChoiceInput.xpPerHour,
       inputTokenId1: actionChoiceInput.inputTokenIds.length != 0 ? actionChoiceInput.inputTokenIds[0] : NONE,
@@ -398,10 +396,15 @@ contract World is UUPSUpgradeable, OwnableUpgradeable, IWorld {
       successPercent: actionChoiceInput.successPercent,
       handItemTokenIdRangeMin: actionChoiceInput.handItemTokenIdRangeMin,
       handItemTokenIdRangeMax: actionChoiceInput.handItemTokenIdRangeMax,
-      minSkill2: actionChoiceInput.minSkills.length > 1 ? actionChoiceInput.minSkills[1] : Skill.NONE._asUint8(),
-      minXP2: actionChoiceInput.minXPs.length > 1 ? actionChoiceInput.minXPs[1] : 0,
-      minSkill3: actionChoiceInput.minSkills.length > 2 ? actionChoiceInput.minSkills[2] : Skill.NONE._asUint8(),
-      minXP3: actionChoiceInput.minXPs.length > 2 ? actionChoiceInput.minXPs[2] : 0,
+      skill1: actionChoiceInput.skills.length != 0 ? actionChoiceInput.skills[0] : Skill.NONE._asUint8(),
+      skillMinXP1: actionChoiceInput.skills.length != 0 ? actionChoiceInput.skillMinXPs[0] : 0,
+      skillDiff1: actionChoiceInput.skillDiffs.length != 0 ? actionChoiceInput.skillDiffs[0] : int16(0),
+      skill2: actionChoiceInput.skills.length > 1 ? actionChoiceInput.skills[1] : Skill.NONE._asUint8(),
+      skillMinXP2: actionChoiceInput.skillDiffs.length > 1 ? actionChoiceInput.skillMinXPs[1] : 0,
+      skillDiff2: actionChoiceInput.skillDiffs.length > 1 ? actionChoiceInput.skillDiffs[1] : int16(0),
+      skill3: actionChoiceInput.skills.length > 2 ? actionChoiceInput.skills[2] : Skill.NONE._asUint8(),
+      skillMinXP3: actionChoiceInput.skillDiffs.length > 2 ? actionChoiceInput.skillMinXPs[2] : 0,
+      skillDiff3: actionChoiceInput.skillDiffs.length > 2 ? actionChoiceInput.skillDiffs[2] : int16(0),
       questPrerequisiteId: actionChoiceInput.questPrerequisiteId,
       packedData: _packedData
     });

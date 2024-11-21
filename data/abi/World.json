@@ -235,11 +235,6 @@
             "type": "uint8"
           },
           {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
             "internalType": "uint24",
             "name": "rate",
             "type": "uint24"
@@ -301,13 +296,18 @@
           },
           {
             "internalType": "uint8[]",
-            "name": "minSkills",
+            "name": "skills",
             "type": "uint8[]"
           },
           {
             "internalType": "uint32[]",
-            "name": "minXPs",
+            "name": "skillMinXPs",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "int16[]",
+            "name": "skillDiffs",
+            "type": "int16[]"
           }
         ],
         "indexed": false,
@@ -510,11 +510,6 @@
             "type": "uint8"
           },
           {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
             "internalType": "uint24",
             "name": "rate",
             "type": "uint24"
@@ -576,13 +571,18 @@
           },
           {
             "internalType": "uint8[]",
-            "name": "minSkills",
+            "name": "skills",
             "type": "uint8[]"
           },
           {
             "internalType": "uint32[]",
-            "name": "minXPs",
+            "name": "skillMinXPs",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "int16[]",
+            "name": "skillDiffs",
+            "type": "int16[]"
           }
         ],
         "indexed": false,
@@ -1010,11 +1010,6 @@
             "type": "uint8"
           },
           {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
             "internalType": "uint24",
             "name": "rate",
             "type": "uint24"
@@ -1076,13 +1071,18 @@
           },
           {
             "internalType": "uint8[]",
-            "name": "minSkills",
+            "name": "skills",
             "type": "uint8[]"
           },
           {
             "internalType": "uint32[]",
-            "name": "minXPs",
+            "name": "skillMinXPs",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "int16[]",
+            "name": "skillDiffs",
+            "type": "int16[]"
           }
         ],
         "internalType": "struct ActionChoiceInput[]",
@@ -1283,11 +1283,6 @@
             "type": "uint8"
           },
           {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
             "internalType": "uint24",
             "name": "rate",
             "type": "uint24"
@@ -1349,13 +1344,18 @@
           },
           {
             "internalType": "uint8[]",
-            "name": "minSkills",
+            "name": "skills",
             "type": "uint8[]"
           },
           {
             "internalType": "uint32[]",
-            "name": "minXPs",
+            "name": "skillMinXPs",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "int16[]",
+            "name": "skillDiffs",
+            "type": "int16[]"
           }
         ],
         "internalType": "struct ActionChoiceInput[][]",
@@ -1388,11 +1388,6 @@
             "type": "uint8"
           },
           {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
             "internalType": "uint24",
             "name": "rate",
             "type": "uint24"
@@ -1454,13 +1449,18 @@
           },
           {
             "internalType": "uint8[]",
-            "name": "minSkills",
+            "name": "skills",
             "type": "uint8[]"
           },
           {
             "internalType": "uint32[]",
-            "name": "minXPs",
+            "name": "skillMinXPs",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "int16[]",
+            "name": "skillDiffs",
+            "type": "int16[]"
           }
         ],
         "internalType": "struct ActionChoiceInput[]",
@@ -1682,16 +1682,6 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint32",
-            "name": "minXP",
-            "type": "uint32"
-          },
-          {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
-          },
-          {
             "internalType": "uint24",
             "name": "rate",
             "type": "uint24"
@@ -1748,23 +1738,48 @@
           },
           {
             "internalType": "uint8",
-            "name": "minSkill2",
+            "name": "skill1",
             "type": "uint8"
           },
           {
             "internalType": "uint32",
-            "name": "minXP2",
+            "name": "skillMinXP1",
             "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff1",
+            "type": "int16"
           },
           {
             "internalType": "uint8",
-            "name": "minSkill3",
+            "name": "skill2",
             "type": "uint8"
           },
           {
             "internalType": "uint32",
-            "name": "minXP3",
+            "name": "skillMinXP2",
             "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff2",
+            "type": "int16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skill3",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "skillMinXP3",
+            "type": "uint32"
+          },
+          {
+            "internalType": "int16",
+            "name": "skillDiff3",
+            "type": "int16"
           },
           {
             "internalType": "uint16",

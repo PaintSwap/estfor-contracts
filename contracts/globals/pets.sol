@@ -34,7 +34,7 @@ struct Pet {
   uint8 skillPercentageEnhancement2;
   uint40 lastAssignmentTimestamp;
   address owner; // Will be used as an optimzation to avoid having to look up the owner of the pet in another storage slot
-  // 1 byte left in this storage slot
+  bool isTransferable;
   uint24 baseId;
   // New storage slot. These are used when training a pet
   uint40 lastTrainedTimestamp;
@@ -68,4 +68,5 @@ struct BasePetMetadata {
   uint8 skillMinLevel2;
   uint16 fixedStarThreshold;
   uint16 percentageStarThreshold;
+  bool isTransferable;
 }

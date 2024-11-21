@@ -109,7 +109,6 @@ struct PlayerBoostInfo {
 // Available choices that can be undertaken for an action
 struct ActionChoiceInput {
   uint8 skill; // Skill that this action choice is related to
-  int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
   uint16[] inputTokenIds;
@@ -122,14 +121,13 @@ struct ActionChoiceInput {
   bool isFullModeOnly;
   bool isAvailable;
   uint16 questPrerequisiteId;
-  uint8[] minSkills; // Skills required to do this action choice
-  uint32[] minXPs; // Min XP in the corresponding skills to be able to do this action choice
+  uint8[] skills; // Skills required to do this action choice
+  uint32[] skillMinXPs; // Min XP in the corresponding skills to be able to do this action choice
+  int16[] skillDiffs; // How much the skill is increased/decreased by this action choice
 }
 
 struct ActionChoice {
   uint8 skill; // Skill that this action choice is related to
-  uint32 minXP; // Min XP in the skill to be able to do this action choice
-  int16 skillDiff; // How much the skill is increased/decreased by this action choice
   uint24 rate; // Rate of output produced per hour (base 1000) 3 decimals
   uint24 xpPerHour;
   uint16 inputTokenId1;
@@ -141,10 +139,15 @@ struct ActionChoice {
   uint16 outputTokenId;
   uint8 outputAmount;
   uint8 successPercent; // 0-100
-  uint8 minSkill2;
-  uint32 minXP2;
-  uint8 minSkill3;
-  uint32 minXP3;
+  uint8 skill1; // Skills required to do this action choice, commonly the same as skill
+  uint32 skillMinXP1; // Min XP in the skill to be able to do this action choice
+  int16 skillDiff1; // How much the skill is increased/decreased by this action choice
+  uint8 skill2;
+  uint32 skillMinXP2;
+  int16 skillDiff2;
+  uint8 skill3;
+  uint32 skillMinXP3;
+  int16 skillDiff3;
   uint16 handItemTokenIdRangeMin; // Inclusive
   uint16 handItemTokenIdRangeMax; // Inclusive
   uint16 questPrerequisiteId;

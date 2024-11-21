@@ -33,7 +33,8 @@ describe("PetNFT", function () {
     skillPercentageIncrements: [1, 1],
     skillMinLevels: [1, 0],
     fixedStarThreshold: 1,
-    percentageStarThreshold: 1
+    percentageStarThreshold: 1,
+    isTransferable: true
   };
 
   it("Must be a minter to mint", async function () {
@@ -477,6 +478,24 @@ describe("PetNFT", function () {
       expect(await brush.balanceOf(dev)).to.eq((editNameBrushPrice * brushDevPercentage) / 100n);
       expect(await brush.amountBurnt()).to.eq((editNameBrushPrice * brushBurntPercentage) / 100n);
     });
+  });
+
+  it("A non-transferable pet cannot be transferred", async function () {
+    const {petNFT, brush, editNameBrushPrice, alice, dev} = await loadFixture(deployContracts);
+
+    await brush.connect(alice).approve(petNFT, editNameBrushPrice * 3n);
+    const randomWord = 0;
+    await petNFT.addBasePets([{...pet, isTransferable: false}]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
+
+    await expect(petNFT.connect(alice).safeTransferFrom(alice, dev, petId, 1, "0x")).to.be.revertedWithCustomError(
+      petNFT,
+      "CannotTransferThisPet"
+    );
+    // Try one that is transferable
+    await petNFT.addBasePets([{...pet, baseId: baseId + 1, isTransferable: true}]);
+    await petNFT.connect(alice).mintBatch(alice, [baseId + 1], randomWord);
+    await expect(petNFT.connect(alice).safeTransferFrom(alice, dev, petId + 1, 1, "0x")).to.not.be.reverted;
   });
 
   it("totalSupply", async function () {

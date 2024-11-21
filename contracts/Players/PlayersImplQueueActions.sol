@@ -227,36 +227,38 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
       actionChoice = _world.getActionChoice(isCombat ? NONE : queuedActionInput.actionId, queuedActionInput.choiceId);
 
       require(
-        _getRealXP(
-          actionChoice.skill._asSkill(),
-          _playerXP[playerId],
-          pendingQueuedActionProcessed,
-          pendingQuestState
-        ) >= actionChoice.minXP,
-        ActionChoiceMinimumXPNotReached()
-      );
-
-      require(
-        actionChoice.minSkill2._asSkill() == Skill.NONE ||
+        actionChoice.skill1._asSkill() == Skill.NONE ||
           _getRealXP(
-            actionChoice.minSkill2._asSkill(),
+            actionChoice.skill1._asSkill(),
             _playerXP[playerId],
             pendingQueuedActionProcessed,
             pendingQuestState
           ) >=
-          actionChoice.minXP2,
+          actionChoice.skillMinXP1,
         ActionChoiceMinimumXPNotReached()
       );
 
       require(
-        actionChoice.minSkill3._asSkill() == Skill.NONE ||
+        actionChoice.skill2._asSkill() == Skill.NONE ||
           _getRealXP(
-            actionChoice.minSkill3._asSkill(),
+            actionChoice.skill2._asSkill(),
             _playerXP[playerId],
             pendingQueuedActionProcessed,
             pendingQuestState
           ) >=
-          actionChoice.minXP3,
+          actionChoice.skillMinXP2,
+        ActionChoiceMinimumXPNotReached()
+      );
+
+      require(
+        actionChoice.skill3._asSkill() == Skill.NONE ||
+          _getRealXP(
+            actionChoice.skill3._asSkill(),
+            _playerXP[playerId],
+            pendingQueuedActionProcessed,
+            pendingQuestState
+          ) >=
+          actionChoice.skillMinXP3,
         ActionChoiceMinimumXPNotReached()
       );
 

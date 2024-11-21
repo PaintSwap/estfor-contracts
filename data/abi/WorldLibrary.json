@@ -1,11 +1,6 @@
 [
   {
     "inputs": [],
-    "name": "FirstMinSkillMustBeActionChoiceSkill",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "GuaranteedRewardsNoDuplicates",
     "type": "error"
   },
@@ -108,12 +103,12 @@
   },
   {
     "inputs": [],
-    "name": "TooManyMinSkills",
+    "name": "TooManyRandomRewards",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "TooManyRandomRewards",
+    "name": "TooManySkills",
     "type": "error"
   },
   {
@@ -124,11 +119,6 @@
             "internalType": "uint8",
             "name": "skill",
             "type": "uint8"
-          },
-          {
-            "internalType": "int16",
-            "name": "skillDiff",
-            "type": "int16"
           },
           {
             "internalType": "uint24",
@@ -192,13 +182,18 @@
           },
           {
             "internalType": "uint8[]",
-            "name": "minSkills",
+            "name": "skills",
             "type": "uint8[]"
           },
           {
             "internalType": "uint32[]",
-            "name": "minXPs",
+            "name": "skillMinXPs",
             "type": "uint32[]"
+          },
+          {
+            "internalType": "int16[]",
+            "name": "skillDiffs",
+            "type": "int16[]"
           }
         ],
         "internalType": "struct ActionChoiceInput",

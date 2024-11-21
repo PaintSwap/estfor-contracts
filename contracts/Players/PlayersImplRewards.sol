@@ -145,11 +145,27 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       if (isCombat) {
         combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, _playerXP[playerId]);
         if (queuedAction.choiceId != 0) {
-          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
-            combatStats,
-            uint8(actionChoice.skill),
-            actionChoice.skillDiff
-          );
+          if (actionChoice.skill1 != 0) {
+            combatStats = PlayersLibrary.updateCombatStatsFromSkill(
+              combatStats,
+              actionChoice.skill1,
+              actionChoice.skillDiff1
+            );
+          }
+          if (actionChoice.skill2 != 0) {
+            combatStats = PlayersLibrary.updateCombatStatsFromSkill(
+              combatStats,
+              actionChoice.skill2,
+              actionChoice.skillDiff2
+            );
+          }
+          if (actionChoice.skill3 != 0) {
+            combatStats = PlayersLibrary.updateCombatStatsFromSkill(
+              combatStats,
+              actionChoice.skill3,
+              actionChoice.skillDiff3
+            );
+          }
         }
 
         // Update combat stats from the pet if it is still valid.

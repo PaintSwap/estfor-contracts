@@ -2202,7 +2202,7 @@ describe("Non-Combat Actions", function () {
       const startingAmount = 200;
       await itemNFT.mintBatch(
         alice,
-        [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT], // TODO: Update
+        [EstforConstants.PLOT_001_SMALL, EstforConstants.SEED_001_WILD],
         [startingAmount, startingAmount]
       );
 
@@ -2217,13 +2217,13 @@ describe("Non-Combat Actions", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(queuedAction.timespan);
 
       // Check the inputs/output are as expected
-      expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW_HEAD)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.PLOT_001_SMALL)).to.eq(
         startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL))
       );
-      expect(await itemNFT.balanceOf(alice, EstforConstants.ARROW_SHAFT)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.SEED_001_WILD)).to.eq(
         startingAmount - Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL)) * 20
       );
-      expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(
+      expect(await itemNFT.balanceOf(alice, EstforConstants.SEED_001_WILD_HARVESTABLE)).to.eq(
         Math.floor((queuedAction.timespan * rate) / (3600 * RATE_MUL)) * 13
       );
     });

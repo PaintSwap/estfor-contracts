@@ -361,7 +361,6 @@ describe("World", function () {
             {
               ...defaultActionChoice,
               skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
               inputAmounts: [1]
@@ -381,7 +380,6 @@ describe("World", function () {
             {
               ...defaultActionChoice,
               skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
               inputAmounts: [1]
@@ -391,7 +389,6 @@ describe("World", function () {
             {
               ...defaultActionChoice,
               skill: EstforTypes.Skill.ALCHEMY,
-              skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
               inputAmounts: [1]
@@ -399,7 +396,6 @@ describe("World", function () {
             {
               ...defaultActionChoice,
               skill: EstforTypes.Skill.ALCHEMY,
-              skillDiff: 2,
               rate: 1 * RATE_MUL,
               inputTokenIds: [EstforConstants.AIR_SCROLL],
               inputAmounts: [1]
@@ -425,7 +421,6 @@ describe("World", function () {
       const actionChoiceInput: ActionChoiceInput = {
         ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 2,
         xpPerHour: 0,
         rate: 1 * RATE_MUL,
         inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.ADAMANTINE_ARROW],
@@ -460,7 +455,6 @@ describe("World", function () {
       const actionChoiceInput: ActionChoiceInput = {
         ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 2,
         xpPerHour: 0,
         rate: 1 * RATE_MUL,
         inputTokenIds: [
@@ -498,25 +492,25 @@ describe("World", function () {
       const actionChoiceInput: ActionChoiceInput = {
         ...defaultActionChoice,
         skill: EstforTypes.Skill.WOODCUTTING,
-        skillDiff: 2,
         xpPerHour: 0,
         rate: 1 * RATE_MUL,
         inputTokenIds: [EstforConstants.BRONZE_ARROW],
         inputAmounts: [1],
-        minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING, Skill.ALCHEMY],
-        minXPs: [1, 1, 1]
+        skills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING, Skill.ALCHEMY],
+        skillMinXPs: [1, 1, 1],
+        skillDiffs: [2, 0, 0]
       };
 
       await expect(
         world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
-      ).to.be.revertedWithCustomError(worldLibrary, "TooManyMinSkills");
+      ).to.be.revertedWithCustomError(worldLibrary, "TooManySkills");
 
-      actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING];
+      actionChoiceInput.skills = [Skill.WOODCUTTING, Skill.FIREMAKING];
       await expect(
         world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "LengthMismatch");
 
-      actionChoiceInput.minSkills = [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.WOODCUTTING];
+      actionChoiceInput.skills = [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.WOODCUTTING];
       await expect(
         world.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
       ).to.be.revertedWithCustomError(worldLibrary, "MinimumSkillsNoDuplicates");
@@ -529,7 +523,6 @@ describe("World", function () {
       const actionChoiceInput: ActionChoiceInput = {
         ...defaultActionChoice,
         skill: EstforTypes.Skill.MAGIC,
-        skillDiff: 2,
         xpPerHour: 0,
         rate: 1 * RATE_MUL,
         inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.ADAMANTINE_ARROW],
@@ -560,7 +553,6 @@ describe("World", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             xpPerHour: 0,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.AIR_SCROLL],
@@ -576,7 +568,6 @@ describe("World", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.AIR_SCROLL],
             inputAmounts: [2]
@@ -595,7 +586,6 @@ describe("World", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.AIR_SCROLL],
             inputAmounts: [10]
@@ -604,50 +594,6 @@ describe("World", function () {
       );
       actionChoice = await world.getActionChoice(EstforConstants.NONE, choiceId);
       expect(actionChoice.inputAmount1).to.eq(10);
-    });
-
-    it("First minimum skill should match skill of action choice", async function () {
-      const {world, worldLibrary} = await loadFixture(deployContracts);
-      const choiceId = 1;
-      await expect(
-        world.addActionChoices(
-          EstforConstants.NONE,
-          [choiceId],
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.MAGIC,
-              skillDiff: 2,
-              xpPerHour: 0,
-              rate: 1 * RATE_MUL,
-              inputTokenIds: [EstforConstants.BRONZE_ARROW],
-              inputAmounts: [1],
-              minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-              minXPs: [1, 2, 3]
-            }
-          ]
-        )
-      ).to.be.revertedWithCustomError(worldLibrary, "FirstMinSkillMustBeActionChoiceSkill");
-
-      await expect(
-        world.addActionChoices(
-          EstforConstants.NONE,
-          [choiceId],
-          [
-            {
-              ...defaultActionChoice,
-              skill: EstforTypes.Skill.WOODCUTTING,
-              skillDiff: 2,
-              xpPerHour: 0,
-              rate: 1 * RATE_MUL,
-              inputTokenIds: [EstforConstants.BRONZE_ARROW],
-              inputAmounts: [1],
-              minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.CRAFTING],
-              minXPs: [1, 2, 3]
-            }
-          ]
-        )
-      ).to.not.be.reverted;
     });
 
     it("Packed data checks when it's available & not available", async function () {
@@ -660,7 +606,6 @@ describe("World", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             xpPerHour: 0,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.BRONZE_ARROW],
@@ -681,7 +626,6 @@ describe("World", function () {
           {
             ...defaultActionChoice,
             skill: EstforTypes.Skill.MAGIC,
-            skillDiff: 2,
             xpPerHour: 0,
             rate: 1 * RATE_MUL,
             inputTokenIds: [EstforConstants.BRONZE_ARROW],

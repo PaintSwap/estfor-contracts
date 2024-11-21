@@ -420,6 +420,11 @@
             "type": "uint24"
           },
           {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
             "internalType": "enum Skill[2]",
             "name": "skillEnhancements",
             "type": "uint8[2]"
@@ -533,6 +538,11 @@
             "internalType": "uint24",
             "name": "baseId",
             "type": "uint24"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
           },
           {
             "internalType": "enum Skill[2]",
@@ -701,6 +711,11 @@
             "internalType": "address",
             "name": "owner",
             "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
           },
           {
             "internalType": "uint24",
@@ -971,6 +986,11 @@
             "type": "uint24"
           },
           {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
             "internalType": "enum Skill[2]",
             "name": "skillEnhancements",
             "type": "uint8[2]"
@@ -1173,6 +1193,11 @@
             "type": "uint24"
           },
           {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
             "internalType": "enum Skill[2]",
             "name": "skillEnhancements",
             "type": "uint8[2]"
@@ -1320,6 +1345,11 @@
             "internalType": "address",
             "name": "owner",
             "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
           },
           {
             "internalType": "uint24",

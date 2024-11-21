@@ -157,8 +157,9 @@ export const setupBasicFiremaking = async function (itemNFT: ItemNFT, world: Wor
         rate,
         inputTokenIds: [EstforConstants.LOG],
         inputAmounts: [1],
-        minSkills: minXP > 0 ? [EstforTypes.Skill.FIREMAKING] : [],
-        minXPs: minXP > 0 ? [minXP] : []
+        skills: minXP > 0 ? [EstforTypes.Skill.FIREMAKING] : [],
+        skillMinXPs: minXP > 0 ? [minXP] : [],
+        skillDiffs: minXP > 0 ? [0] : []
       }
     ]
   );
@@ -416,8 +417,9 @@ export const setupBasicCooking = async function (
         outputTokenId: EstforConstants.COOKED_MINNUS,
         outputAmount: 1,
         successPercent,
-        minSkills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
-        minXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : []
+        skills: minLevel > 1 ? [EstforTypes.Skill.COOKING] : [],
+        skillMinXPs: minLevel > 1 ? [getXPFromLevel(minLevel)] : [],
+        skillDiffs: minLevel > 1 ? [0] : []
       }
     ]
   );
@@ -835,9 +837,9 @@ export const setupBasicFarming = async function (
         skill: EstforTypes.Skill.FARMING,
         xpPerHour: 3600,
         rate,
-        inputTokenIds: [EstforConstants.BRONZE_ARROW_HEAD, EstforConstants.ARROW_SHAFT], // TODO: Update these
+        inputTokenIds: [EstforConstants.PLOT_001_SMALL, EstforConstants.SEED_001_WILD],
         inputAmounts: [1, 20],
-        outputTokenId: EstforConstants.BRONZE_ARROW,
+        outputTokenId: EstforConstants.SEED_001_WILD_HARVESTABLE,
         outputAmount
       }
     ]
@@ -860,17 +862,17 @@ export const setupBasicFarming = async function (
   await itemNFT.addItems([
     {
       ...EstforTypes.defaultItemInput,
-      tokenId: EstforConstants.BRONZE_ARROW_HEAD,
+      tokenId: EstforConstants.PLOT_001_SMALL,
       equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
-      tokenId: EstforConstants.ARROW_SHAFT,
+      tokenId: EstforConstants.SEED_001_WILD,
       equipPosition: EstforTypes.EquipPosition.NONE
     },
     {
       ...EstforTypes.defaultItemInput,
-      tokenId: EstforConstants.BRONZE_ARROW,
+      tokenId: EstforConstants.SEED_001_WILD_HARVESTABLE,
       equipPosition: EstforTypes.EquipPosition.NONE
     }
   ]);
