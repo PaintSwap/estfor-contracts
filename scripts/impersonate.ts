@@ -191,7 +191,7 @@ async function main() {
     timeout: 100000
   })) as unknown as unknown as unknown as InstantVRFActions;
   */
-  //  await players.connect(player).testModifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, true);
+  //  await players.connect(player).modifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796);
   const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
   console.log(pendingQueuedActionState);
   /* When trying to fix a VRF issue

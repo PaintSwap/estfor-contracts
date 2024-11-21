@@ -30,7 +30,7 @@ describe("PVPBattleground", function () {
 
       const extraRollsA = 0;
       const extraRollsB = 0;
-      await players.testModifyXP(alice, playerId, skills[0], 1000, true);
+      await players.modifyXP(alice, playerId, skills[0], 1000);
 
       let res = await pvpBattleground.determineBattleOutcome(
         playerId,
@@ -87,7 +87,7 @@ describe("PVPBattleground", function () {
       const extraRollsA = 0;
       const extraRollsB = 0;
 
-      await players.testModifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(20), true);
+      await players.modifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(20));
       let res = await pvpBattleground.determineBattleOutcome(
         playerId,
         defendingPlayerId,
@@ -124,7 +124,7 @@ describe("PVPBattleground", function () {
       let extraRollsA = 0;
       const extraRollsB = 0;
 
-      await players.testModifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(20), true);
+      await players.modifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(20));
       let res = await pvpBattleground.determineBattleOutcome(
         playerId,
         defendingPlayerId,
@@ -157,7 +157,7 @@ describe("PVPBattleground", function () {
       const randomWords = [1, 3];
       const extraRollsA = 0;
       const extraRollsB = 0;
-      await players.testModifyXP(alice, playerId, skills[0], getXPFromLevel(20), true);
+      await players.modifyXP(alice, playerId, skills[0], getXPFromLevel(20));
       let res = await pvpBattleground.determineBattleOutcome(
         playerId,
         invalidDefendingPlayerId, // no defender
@@ -168,7 +168,7 @@ describe("PVPBattleground", function () {
       );
 
       expect(res.didAWin).to.be.true;
-      await players.testModifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(20), true);
+      await players.modifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(20));
       res = await pvpBattleground.determineBattleOutcome(
         0, // even 0 still gets a roll
         defendingPlayerId,
@@ -189,7 +189,7 @@ describe("PVPBattleground", function () {
       const randomWords = [1, 3];
       const extraRollsA = 0;
       const extraRollsB = 0;
-      await players.testModifyXP(alice, playerId, skills[0], 1000, true);
+      await players.modifyXP(alice, playerId, skills[0], 1000);
       let res = await pvpBattleground.determineBattleOutcome(
         invalidAttackingPlayerId,
         invalidDefendingPlayerId,
@@ -207,7 +207,7 @@ describe("PVPBattleground", function () {
       );
 
       const skills = [Skill.FISHING, Skill.WOODCUTTING];
-      await players.testModifyXP(owner, defendingPlayerId, Skill.WOODCUTTING, getXPFromLevel(20), true); // Get 3 rolls
+      await players.modifyXP(owner, defendingPlayerId, Skill.WOODCUTTING, getXPFromLevel(20)); // Get 3 rolls
       let randomWords = [0b11_00000000_00000011, 0b11_00000000_00000011];
       const extraRollsA = 0;
       const extraRollsB = 0;
@@ -223,7 +223,7 @@ describe("PVPBattleground", function () {
       expect(res.battleResults[1]).to.eq(BattleResult.LOSE);
       expect(res.didAWin).to.be.false;
 
-      await players.testModifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(20), true); // Get 3 rolls
+      await players.modifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(20)); // Get 3 rolls
 
       res = await pvpBattleground.determineBattleOutcome(
         playerId,
@@ -244,8 +244,8 @@ describe("PVPBattleground", function () {
       );
 
       const skills = [Skill.FISHING];
-      await players.testModifyXP(alice, playerId, skills[0], getXPFromLevel(60), true); // Get 4 rolls each
-      await players.testModifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(60), true); // Get 4 rolls each
+      await players.modifyXP(alice, playerId, skills[0], getXPFromLevel(60)); // Get 4 rolls each
+      await players.modifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(60)); // Get 4 rolls each
 
       let numWinsA = 0;
       let numWinsB = 0;
@@ -279,8 +279,8 @@ describe("PVPBattleground", function () {
       );
 
       const skills = [Skill.FISHING];
-      await players.testModifyXP(alice, playerId, skills[0], getXPFromLevel(40), true);
-      await players.testModifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(40), true);
+      await players.modifyXP(alice, playerId, skills[0], getXPFromLevel(40));
+      await players.modifyXP(owner, defendingPlayerId, skills[0], getXPFromLevel(40));
 
       let randomWords = [0b1_00000000, 0b0_00000001];
       const extraRollsA = 8; // 9 rolls

@@ -133,7 +133,7 @@ describe("Territories", function () {
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     await combatantsHelper
@@ -193,7 +193,7 @@ describe("Territories", function () {
 
     // Make the defending players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     await combatantsHelper
@@ -258,8 +258,8 @@ describe("Territories", function () {
 
     // The other clan will have 3 players, so if you only have 1 defender you will you lose by default
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
-      await players.testModifyXP(owner, ownerPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(owner, ownerPlayerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     // Create a clan of 3 players
@@ -768,7 +768,7 @@ describe("Territories", function () {
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     await combatantsHelper

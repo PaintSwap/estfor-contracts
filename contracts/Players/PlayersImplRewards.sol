@@ -143,6 +143,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       CheckpointEquipments storage checkpointEquipments = _checkpointEquipments[playerId][i];
       CombatStats memory combatStats;
       if (isCombat) {
+        // This takes into account
         combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, _playerXP[playerId]);
         if (actionChoice.skill1 != 0) {
           combatStats = PlayersLibrary.updateCombatStatsFromSkill(
@@ -597,9 +598,9 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       questState.activeQuestInfo
     ) = _quests.processQuestsView(playerId, actionIds, actionAmounts, choiceIds, choiceAmounts, burnedAmountOwned);
 
+    // Add to currentActionProcessed so this XP can be removed later if this is for an action that is not fully finished yet
     for (uint256 i = 0; i < questState.xpGainedSkills.length; ++i) {
       totalXPGained += questState.xpGainedSkills[i];
-
       if (remainingQueuedActionsLength != 0) {
         Skill questSkill = questState.skills[i];
         uint24 xpGainedSkill = uint24(questState.xpGainedSkills[i]);
@@ -608,7 +609,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         } else if (currentActionProcessed.skill2 == questSkill) {
           currentActionProcessed.xpGained2 += xpGainedSkill;
         } else if (firstRemainingActionSkill._isSkillCombat() && questSkill._isSkill(Skill.DEFENCE)) {
-          // Special case for combat where you are training attack
+          // Special case for combat where you are training attack and get defence xp, the other skill is health gained
           currentActionProcessed.skill3 = questSkill;
           currentActionProcessed.xpGained3 += xpGainedSkill;
         }

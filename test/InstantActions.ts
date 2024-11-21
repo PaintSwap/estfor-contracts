@@ -389,13 +389,13 @@ describe("Instant actions", function () {
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
-      await players.testModifyXP(alice, playerId, Skill.WOODCUTTING, 1, true);
+      await players.modifyXP(alice, playerId, Skill.WOODCUTTING, 1);
 
       await expect(
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
-      await players.testModifyXP(alice, playerId, Skill.FIREMAKING, 2, true);
+      await players.modifyXP(alice, playerId, Skill.FIREMAKING, 2);
 
       await expect(
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)

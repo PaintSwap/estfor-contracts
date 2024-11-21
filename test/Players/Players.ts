@@ -712,7 +712,7 @@ describe("Players", function () {
     ).to.be.revertedWithCustomError(players, "ActionMinimumXPNotReached");
 
     // Update to level 70, check it works
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, getXPFromLevel(70), false);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, getXPFromLevel(70));
     expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
       .not.be.reverted;
   });
@@ -729,7 +729,7 @@ describe("Players", function () {
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update firemaking level, check it works
-      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP, false);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
         .to.not.be.reverted;
     });
@@ -769,18 +769,18 @@ describe("Players", function () {
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update alchemy level, should not work yet
-      await players.testModifyXP(alice, playerId, EstforTypes.Skill.ALCHEMY, minXP1, false);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.ALCHEMY, minXP1);
       await expect(
         players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update firemaking but not to correct level
-      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP1, false);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP1);
       await expect(
         players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
-      await players.testModifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP2, false);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP2);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
         .to.not.be.reverted;
 
@@ -809,7 +809,7 @@ describe("Players", function () {
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update cooking to correct level
-      await players.testModifyXP(alice, playerId, EstforTypes.Skill.COOKING, minXP3, true);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, minXP3);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
         .to.not.be.reverted;
     });
@@ -939,7 +939,7 @@ describe("Players", function () {
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
     ).to.be.revertedWithCustomError(players, "ConsumableMinimumXPNotReached");
 
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.HEALTH, minXP, false);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.HEALTH, minXP);
 
     // Update health level, check it works
     expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
@@ -1030,7 +1030,7 @@ describe("Players", function () {
       await expect(
         players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
       ).to.be.revertedWithCustomError(players, "AttireMinimumXPNotReached");
-      await players.testModifyXP(alice, playerId, attireEquipped[i].skill, minXP, true);
+      await players.modifyXP(alice, playerId, attireEquipped[i].skill, minXP);
       expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
         .to.not.be.reverted;
     }
@@ -1096,7 +1096,7 @@ describe("Players", function () {
     ).to.be.revertedWithCustomError(players, "ItemMinimumXPNotReached");
 
     // Update to level 70, check it works
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, minXP, false);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, minXP);
     expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
       .not.be.reverted;
   });
@@ -1391,7 +1391,7 @@ describe("Players", function () {
     };
 
     const minXP = getXPFromLevel(98);
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, minXP, false);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, minXP);
 
     await itemNFT.addItems([
       {
@@ -1661,26 +1661,17 @@ describe("Players", function () {
     );
   });
 
-  it("testModifyXP should revert if there are actions queued", async function () {
-    const {players, playerId, itemNFT, world, alice} = await loadFixture(playersFixture);
-    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
-    await expect(
-      players.testModifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, 100, false)
-    ).to.be.revertedWithCustomError(players, "HasQueuedActions");
-  });
-
   it("Check max level packed XP", async function () {
     const {players, playerId, alice} = await loadFixture(playersFixture);
 
     let packedXP = await players.getPackedXP(playerId);
     const xp = await getXPFromLevel(MAX_LEVEL); // First Max level
 
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.MELEE, xp, false);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, xp);
     packedXP = await players.getPackedXP(playerId);
     let maxDataAsNum = Number(packedXP.packedDataIsMaxed);
 
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.MAGIC, xp, false);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.MAGIC, xp);
     packedXP = await players.getPackedXP(playerId);
 
     maxDataAsNum = Number(packedXP.packedDataIsMaxed);
@@ -1725,17 +1716,17 @@ describe("Players", function () {
     expect((maxDataAsNum >> FLETCHING_OFFSET) & 0b11).to.eq(0);
     expect((maxDataAsNum >> FORGING_OFFSET) & 0b11).to.eq(0);
 
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.CRAFTING, xp - 1, false); // 1 below max
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.CRAFTING, xp - 1); // 1 below max
     packedXP = await players.getPackedXP(playerId);
     expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(0);
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.CRAFTING, xp, false); // Now max
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.CRAFTING, xp); // Now max
     packedXP = await players.getPackedXP(playerId);
     expect((Number(packedXP.packedDataIsMaxed1) >> CRAFTING_OFFSET) & 0b11).to.eq(1);
 
     // Set a few more and check the rest
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.SMITHING, xp, false);
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, xp, false);
-    await players.testModifyXP(alice, playerId, EstforTypes.Skill.FORGING, xp, false);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.SMITHING, xp);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, xp);
+    await players.modifyXP(alice, playerId, EstforTypes.Skill.FORGING, xp);
 
     packedXP = await players.getPackedXP(playerId);
     maxDataAsNum = Number(packedXP.packedDataIsMaxed);

@@ -276,11 +276,11 @@ describe("LockedBankVaults", function () {
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
     // Increase odds of winning
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     // Attack
@@ -768,7 +768,7 @@ describe("LockedBankVaults", function () {
     const bobClanId = 2;
 
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     // Attack
@@ -1197,8 +1197,8 @@ describe("LockedBankVaults", function () {
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-      await players.testModifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
     }
 
     // Lock
@@ -1548,10 +1548,10 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       await combatantsHelper
@@ -1711,7 +1711,7 @@ describe("LockedBankVaults", function () {
       await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
 
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId]);
@@ -1752,9 +1752,9 @@ describe("LockedBankVaults", function () {
           bobPlayerId
         );
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
         value: await lockedBankVaults.getAttackCost()
@@ -1872,7 +1872,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       await lockedBankVaults
@@ -1940,7 +1940,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       await lockedBankVaults
@@ -2155,10 +2155,10 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
-        await players.testModifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       await combatantsHelper
@@ -2280,7 +2280,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       // Attacker wins (most likely)
@@ -2475,7 +2475,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       let clear = true;
@@ -2531,7 +2531,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       let clear = true;
@@ -2585,7 +2585,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       let clear = false;
@@ -2640,7 +2640,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       let clear = false;
@@ -2696,7 +2696,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       let clear = true;
@@ -2750,7 +2750,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.testModifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), true);
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
       }
 
       // Attacker loses (most likely)

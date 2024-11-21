@@ -229,7 +229,7 @@ describe("Raids", function () {
       await raids.addBaseRaids([1, 2, 3], [trashMonsterBaseRaid, trashMonsterBaseRaid, trashMonsterBaseRaid]);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);
       for (const skill of [Skill.MELEE, Skill.RANGED, Skill.MAGIC, Skill.HEALTH, Skill.DEFENCE]) {
-        await players.testModifyXP(alice, playerId, skill, getXPFromLevel(135), true);
+        await players.modifyXP(alice, playerId, skill, getXPFromLevel(135));
       }
 
       const bankAddress = await bankFactory.getBankAddress(clanId);
@@ -312,7 +312,7 @@ describe("Raids", function () {
       await raids.addBaseRaids([1, 2, 3], [trashMonsterBaseRaid, trashMonsterBaseRaid, trashMonsterBaseRaid]);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);
       for (const skill of [Skill.MELEE, Skill.RANGED, Skill.MAGIC, Skill.HEALTH, Skill.DEFENCE]) {
-        await players.testModifyXP(alice, playerId, skill, getXPFromLevel(135), true);
+        await players.modifyXP(alice, playerId, skill, getXPFromLevel(135));
       }
 
       const bankAddress = await bankFactory.getBankAddress(clanId);
@@ -384,7 +384,7 @@ describe("Raids", function () {
 
       // Max out player stats to ensure victory
       for (const skill of allBattleSkills) {
-        await players.testModifyXP(alice, playerId, skill, getXPFromLevel(100), true);
+        await players.modifyXP(alice, playerId, skill, getXPFromLevel(100));
       }
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);

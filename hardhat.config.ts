@@ -91,7 +91,7 @@ const config: HardhatUserConfig = {
       "contracts/Clans/Territories.sol": mediumRunsConfig,
       "contracts/Players/Players.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
-      "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
+      "contracts/Players/PlayersImplProcessActions.sol": lowRunsConfig,
       "contracts/Players/PlayersImplQueueActions.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplRewards.sol": lowestRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,

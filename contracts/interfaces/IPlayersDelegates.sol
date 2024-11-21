@@ -33,7 +33,7 @@ interface IPlayersDelegate {
 
   function clearEverything(address from, uint256 playerId, bool processTheTransactions) external;
 
-  function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external;
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external;
 
   function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external;
 }

@@ -1404,6 +1404,34 @@
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
+      },
+      {
+        "internalType": "enum Skill",
+        "name": "skill",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint56",
+        "name": "xp",
+        "type": "uint56"
+      }
+    ],
+    "name": "modifyXP",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
       }
     ],
     "name": "processActions",
@@ -1651,39 +1679,6 @@
         "type": "tuple[]"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "skill",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint56",
-        "name": "xp",
-        "type": "uint56"
-      },
-      {
-        "internalType": "bool",
-        "name": "force",
-        "type": "bool"
-      }
-    ],
-    "name": "testModifyXP",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

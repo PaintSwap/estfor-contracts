@@ -34,7 +34,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.testModifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), true);
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
@@ -67,7 +67,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.testModifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), true);
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
@@ -112,7 +112,7 @@ describe("Pets", function () {
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
-    await players.testModifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), true);
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
@@ -157,7 +157,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.testModifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), true);
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
@@ -198,7 +198,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.testModifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), true);
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 
@@ -236,7 +236,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.testModifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), true);
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
 

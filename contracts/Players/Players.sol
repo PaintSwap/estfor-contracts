@@ -51,6 +51,11 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _;
   }
 
+  modifier isXPModifier() {
+    require(_xpModifiers[msg.sender] || (_isBeta && _adminAccess.isAdmin(msg.sender)));
+    _;
+  }
+
   modifier gameNotPaused() {
     require(!_gamePaused, GameIsPaused());
     _;
@@ -469,6 +474,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     return (_alphaCombat, _betaCombat, _alphaCombatHealing);
   }
 
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external isXPModifier {
+    _delegatecall(
+      _implProcessActions,
+      abi.encodeWithSelector(IPlayersDelegate.modifyXP.selector, from, playerId, skill, xp)
+    );
+  }
+
   function setImpls(
     address implQueueActions,
     address implProcessActions,
@@ -520,11 +532,10 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     );
   }
 
-  function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external isAdminAndBeta {
-    _delegatecall(
-      _implProcessActions,
-      abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, from, playerId, skill, xp, force)
-    );
+  function setXPModifiers(address[] calldata accounts, bool isModifier) external onlyOwner {
+    for (uint256 i; i < accounts.length; ++i) {
+      _xpModifiers[accounts[i]] = isModifier;
+    }
   }
 
   // For the various view functions that require delegatecall

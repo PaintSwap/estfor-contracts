@@ -17,7 +17,7 @@ async function main() {
 
   const playerId = 1;
   const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
-  let tx = await players.testModifyXP(owner.address, playerId, EstforTypes.Skill.ALCHEMY, getXPFromLevel(20), true);
+  let tx = await players.modifyXP(owner.address, playerId, EstforTypes.Skill.ALCHEMY, getXPFromLevel(20));
   await tx.wait();
 
   const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;

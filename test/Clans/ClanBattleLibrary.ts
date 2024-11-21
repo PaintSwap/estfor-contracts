@@ -21,7 +21,7 @@ describe("ClanBattleLibrary", function () {
     let randomWordBs = [0, 1, 0];
     const extraRollsA = 0;
     const extraRollsB = 0;
-    await players.testModifyXP(alice, playerId, skills[0], 1000, true);
+    await players.modifyXP(alice, playerId, skills[0], 1000);
 
     let res = await clanBattleLibrary.determineBattleOutcome(
       players,
@@ -77,7 +77,7 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
 
     await createPlayer(playerNFT, avatarId, owner, "New name", true);
-    await players.testModifyXP(owner, playerId + 1n, skills[0], getXPFromLevel(20), true);
+    await players.modifyXP(owner, playerId + 1n, skills[0], getXPFromLevel(20));
     const clanMembersB = [playerId + 1n];
     let res = await clanBattleLibrary.determineBattleOutcome(
       players,
@@ -119,7 +119,7 @@ describe("ClanBattleLibrary", function () {
     const extraRollsB = 0;
 
     await createPlayer(playerNFT, avatarId, owner, "New name", true);
-    await players.testModifyXP(owner, playerId + 1n, skills[0], getXPFromLevel(20), true);
+    await players.modifyXP(owner, playerId + 1n, skills[0], getXPFromLevel(20));
     const clanMembersB = [playerId + 1n];
     let res = await clanBattleLibrary.determineBattleOutcome(
       players,
@@ -156,7 +156,7 @@ describe("ClanBattleLibrary", function () {
     const randomWordBs = [0, 3, 0];
     const extraRollsA = 0;
     const extraRollsB = 0;
-    await players.testModifyXP(alice, playerId, skills[0], 1000, true);
+    await players.modifyXP(alice, playerId, skills[0], 1000);
     let res = await clanBattleLibrary.determineBattleOutcome(
       players,
       clanMembersA,
@@ -196,7 +196,7 @@ describe("ClanBattleLibrary", function () {
     const randomWordBs = [0, 3, 0];
     const extraRollsA = 0;
     const extraRollsB = 0;
-    await players.testModifyXP(alice, playerId, skills[0], 1000, true);
+    await players.modifyXP(alice, playerId, skills[0], 1000);
     let res = await clanBattleLibrary.determineBattleOutcome(
       players,
       clanMembersA,
@@ -234,7 +234,7 @@ describe("ClanBattleLibrary", function () {
     let randomWordBs = [0, 1, 0];
     const extraRollsA = 0;
     const extraRollsB = 0;
-    await players.testModifyXP(alice, playerId, skills[0], getXPFromLevel(20), true); // Get 2 rolls each
+    await players.modifyXP(alice, playerId, skills[0], getXPFromLevel(20)); // Get 2 rolls each
 
     let res = await clanBattleLibrary.determineBattleOutcome(
       players,
@@ -250,7 +250,7 @@ describe("ClanBattleLibrary", function () {
     const avatarId = 1;
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
     // Need to be at least level 40
-    await players.testModifyXP(alice, newPlayerId, skills[0], getXPFromLevel(40), true);
+    await players.modifyXP(alice, newPlayerId, skills[0], getXPFromLevel(40));
 
     clanMembersA = [playerId, newPlayerId];
     res = await clanBattleLibrary.determineBattleOutcome(
@@ -290,7 +290,7 @@ describe("ClanBattleLibrary", function () {
     let clanMembersB = [newPlayerId, newPlayerId];
 
     const skills = [Skill.FISHING, Skill.WOODCUTTING];
-    await players.testModifyXP(alice, newPlayerId, Skill.WOODCUTTING, getXPFromLevel(20), true); // Get 3 rolls
+    await players.modifyXP(alice, newPlayerId, Skill.WOODCUTTING, getXPFromLevel(20)); // Get 3 rolls
     let randomWordAs = [0, 0b11_00000000_00000011, 0];
     let randomWordBs = [0, 0b11_00000000_00000011, 0];
     const extraRollsA = 0;
@@ -308,7 +308,7 @@ describe("ClanBattleLibrary", function () {
     expect(res.battleResults[1]).to.eq(BattleResult.LOSE);
     expect(res.didAWin).to.be.false;
 
-    await players.testModifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(20), true); // Get 3 rolls
+    await players.modifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(20)); // Get 3 rolls
 
     res = await clanBattleLibrary.determineBattleOutcome(
       players,
@@ -330,7 +330,7 @@ describe("ClanBattleLibrary", function () {
     let clanMembersA = [playerId, playerId];
     let clanMembersB = [playerId, playerId];
     const skills = Array(clanMembersA.length).fill(Skill.FISHING);
-    await players.testModifyXP(alice, playerId, skills[0], getXPFromLevel(60), true); // Get 4 rolls each
+    await players.modifyXP(alice, playerId, skills[0], getXPFromLevel(60)); // Get 4 rolls each
 
     let numWinsA = 0;
     let numWinsB = 0;
@@ -375,14 +375,14 @@ describe("ClanBattleLibrary", function () {
     const levelsA = [99, 5, 3, 3];
     for (let i = 0; i < numMembers; ++i) {
       clanMembersA.push(await createPlayer(playerNFT, avatarId, alice, "New name" + i, true));
-      await players.testModifyXP(alice, clanMembersA[i], skill, getXPFromLevel(levelsA[i]), true);
+      await players.modifyXP(alice, clanMembersA[i], skill, getXPFromLevel(levelsA[i]));
     }
 
     const clanMembersB = [];
     const levelsB = [6, 6, 4, 2];
     for (let i = 0; i < numMembers; ++i) {
       clanMembersB.push(await createPlayer(playerNFT, avatarId, alice, "New name" + i + clanMembersA.length, true));
-      await players.testModifyXP(alice, clanMembersB[i], skill, getXPFromLevel(levelsB[i]), true);
+      await players.modifyXP(alice, clanMembersB[i], skill, getXPFromLevel(levelsB[i]));
     }
 
     const skills = Array(clanMembersA.length).fill(skill);
@@ -428,7 +428,7 @@ describe("ClanBattleLibrary", function () {
     let clanMembersB = [playerId];
 
     const skills = [Skill.FISHING];
-    await players.testModifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(40), true);
+    await players.modifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(40));
 
     let randomWordAs = [0, 0b1_00000000, 0];
     let randomWordBs = [0, 0b0_00000001, 0];
@@ -587,7 +587,7 @@ describe("ClanBattleLibrary", function () {
     const skills = [Skill.FISHING, Skill.WOODCUTTING];
     let randomWordAs = [0, 5, 0];
     let randomWordBs = [0, 5, 0];
-    await players.testModifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(40), true); // Get 3 rolls for fishing
+    await players.modifyXP(alice, playerId, Skill.FISHING, getXPFromLevel(40)); // Get 3 rolls for fishing
 
     const extraRollsA = 0;
     const extraRollsB = 0;

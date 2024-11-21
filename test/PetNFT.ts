@@ -255,7 +255,7 @@ describe("PetNFT", function () {
       "LevelNotHighEnough"
     );
 
-    await players.connect(alice).testModifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(2), true);
+    await players.connect(alice).modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(2));
     await expect(petNFT.connect(alice).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
   });
 

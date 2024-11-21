@@ -1021,7 +1021,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [73318]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      await players.testModifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 250, true);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 250);
       await ethers.provider.send("evm_increaseTime", [240]);
       await ethers.provider.send("evm_mine", []);
       expect((await players.getActiveBoost(playerId)).boostType).to.not.eq(0);
@@ -2349,9 +2349,9 @@ describe("Combat Actions", function () {
       ]);
 
       // Set player combat stats
-      await players.testModifyXP(alice, playerId, Skill.MAGIC, 14500, true);
-      await players.testModifyXP(alice, playerId, Skill.HEALTH, 1600, true);
-      await players.testModifyXP(alice, playerId, Skill.DEFENCE, 250, true);
+      await players.modifyXP(alice, playerId, Skill.MAGIC, 14500);
+      await players.modifyXP(alice, playerId, Skill.HEALTH, 1600);
+      await players.modifyXP(alice, playerId, Skill.DEFENCE, 250);
 
       const items = [EstforConstants.COOKED_MINNUS, EstforConstants.AIR_SCROLL, EstforConstants.SHADOW_SCROLL];
       const balances = await itemNFT.balanceOfs(alice, items);

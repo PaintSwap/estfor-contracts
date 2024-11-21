@@ -198,6 +198,7 @@ abstract contract PlayersBase {
   mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
   mapping(address user => WalletDailyInfo walletDailyInfo) internal _walletDailyInfo;
   mapping(uint256 playerId => CheckpointEquipments[3] checkpointEquipments) internal _checkpointEquipments;
+  mapping(address account => bool isModifier) internal _xpModifiers;
 
   modifier onlyPlayerNFT() {
     require(msg.sender == address(_playerNFT), NotPlayerNFT());
@@ -206,11 +207,6 @@ abstract contract PlayersBase {
 
   modifier onlyItemNFT() {
     require(msg.sender == address(_itemNFT), NotItemNFT());
-    _;
-  }
-
-  modifier isAdminAndBeta() {
-    require(_adminAccess.isAdmin(msg.sender) && _isBeta, NotAdminAndBeta());
     _;
   }
 

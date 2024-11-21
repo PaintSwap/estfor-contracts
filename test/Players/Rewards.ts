@@ -175,7 +175,7 @@ describe("Rewards", function () {
       expect(pendingQueuedActionState.xpRewardAmounts[0]).is.eq(10);
     });
 
-    it("testModifyXP rewards", async function () {
+    it("modifyXP rewards", async function () {
       const {playerId, players, alice} = await loadFixture(playersFixture);
 
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
@@ -184,21 +184,21 @@ describe("Rewards", function () {
       await players.addXPThresholdRewards([{xpThreshold: 1000, rewards: rewards1}]);
 
       // Test max level works
-      await expect(players.testModifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2070952, false))
+      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2070952))
         .to.emit(players, "AddXP")
         .withArgs(alice, playerId, EstforTypes.Skill.MELEE, 2070952)
         .and.to.emit(players, "ClaimedXPThresholdRewards")
         .withArgs(alice, playerId, [EstforConstants.BRONZE_BAR, EstforConstants.BRONZE_HELMET], [3, 4]);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
 
-      await expect(players.testModifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2080952, false))
+      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2080952))
         .to.emit(players, "AddXP")
         .withArgs(alice, playerId, EstforTypes.Skill.MELEE, 10000)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2080952);
 
       // Check balance
-      await expect(players.testModifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 2070952, false))
+      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 2070952))
         .to.emit(players, "AddXP")
         .withArgs(alice, playerId, EstforTypes.Skill.DEFENCE, 2070952)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");
@@ -685,7 +685,7 @@ describe("Rewards", function () {
       // expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier2.itemTokenId);
 
       const tier3Start = 33913;
-      await players.testModifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, tier3Start, false);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, tier3Start);
 
       let balanceBefore = await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);

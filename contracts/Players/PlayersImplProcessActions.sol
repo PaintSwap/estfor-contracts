@@ -479,9 +479,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     }
   }
 
-  function testModifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool force) external {
-    require(force || _players[playerId].actionQueue.length == 0, HasQueuedActions());
-
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external {
     // Make sure it isn't less XP
     uint256 oldXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
     require(xp >= oldXP, TestInvalidXP());
@@ -491,6 +489,18 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     uint56 newTotalXP = uint56(_players[playerId].totalXP + gainedXP);
     _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
     _players[playerId].totalXP = newTotalXP;
+
+    // Update any in-progress actions. If things like passive actions give XP we want to make sure not to take it into account for any in-progress actions
+    if (gainedXP > type(uint24).max) {
+      Player storage player = _players[playerId];
+      if (player.currentActionProcessedSkill1 == skill) {
+        player.currentActionProcessedXPGained1 += uint24(gainedXP);
+      } else if (player.currentActionProcessedSkill2 == skill) {
+        player.currentActionProcessedXPGained2 += uint24(gainedXP);
+      } else if (player.currentActionProcessedSkill3 == skill) {
+        player.currentActionProcessedXPGained3 += uint24(gainedXP);
+      }
+    }
   }
 
   function _handleDailyRewards(address from, uint256 playerId) private {

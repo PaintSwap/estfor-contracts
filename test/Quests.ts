@@ -380,12 +380,12 @@ describe("Quests", function () {
         "InvalidMinimumRequirement"
       );
 
-      await players.connect(alice).testModifyXP(alice, playerId, Skill.HEALTH, 2999, true);
+      await players.connect(alice).modifyXP(alice, playerId, Skill.HEALTH, 2999);
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
         "InvalidMinimumRequirement"
       );
-      await players.connect(alice).testModifyXP(alice, playerId, Skill.HEALTH, 3000, true);
+      await players.connect(alice).modifyXP(alice, playerId, Skill.HEALTH, 3000);
       await players.connect(alice).activateQuest(playerId, questId);
     });
   });
