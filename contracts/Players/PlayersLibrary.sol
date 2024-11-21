@@ -919,9 +919,9 @@ library PlayersLibrary {
     }
   }
 
-  // none of the combat stats is allowed to be negative at this point
+  // none of the combat stats are allowed to be negative at this point
   function updateCombatStatsFromPet(
-    CombatStats memory combatStats2,
+    CombatStats memory combatStats,
     uint8 skillEnhancement1,
     uint8 skillFixedEnhancement1,
     uint8 skillPercentageEnhancement1,
@@ -929,7 +929,7 @@ library PlayersLibrary {
     uint8 skillFixedEnhancement2,
     uint8 skillPercentageEnhancement2
   ) external pure returns (CombatStats memory statsOut) {
-    statsOut = combatStats2;
+    statsOut = combatStats;
     Skill skill1 = skillEnhancement1._asSkill();
     if (skill1 == Skill.HEALTH) {
       statsOut.health += int16(skillFixedEnhancement1 + (uint16(statsOut.health) * skillPercentageEnhancement1) / 100);
@@ -1141,7 +1141,7 @@ library PlayersLibrary {
     }
   }
 
-  function _updateCombatStatsFromItem(CombatStats memory combatStats, Item memory item) private pure {
+  function _updateCombatStatsFromItem(CombatStats memory combatStats, Item memory item) internal pure {
     combatStats.meleeAttack += item.meleeAttack;
     combatStats.rangedAttack += item.rangedAttack;
     combatStats.magicAttack += item.magicAttack;

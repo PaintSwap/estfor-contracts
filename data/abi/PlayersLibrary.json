@@ -1092,7 +1092,7 @@
           }
         ],
         "internalType": "struct CombatStats",
-        "name": "combatStats2",
+        "name": "combatStats",
         "type": "tuple"
       },
       {

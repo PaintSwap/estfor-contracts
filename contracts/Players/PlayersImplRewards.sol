@@ -144,29 +144,40 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       CombatStats memory combatStats;
       if (isCombat) {
         combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, _playerXP[playerId]);
-        if (queuedAction.choiceId != 0) {
-          if (actionChoice.skill1 != 0) {
-            combatStats = PlayersLibrary.updateCombatStatsFromSkill(
-              combatStats,
-              actionChoice.skill1,
-              actionChoice.skillDiff1
-            );
-          }
-          if (actionChoice.skill2 != 0) {
-            combatStats = PlayersLibrary.updateCombatStatsFromSkill(
-              combatStats,
-              actionChoice.skill2,
-              actionChoice.skillDiff2
-            );
-          }
-          if (actionChoice.skill3 != 0) {
-            combatStats = PlayersLibrary.updateCombatStatsFromSkill(
-              combatStats,
-              actionChoice.skill3,
-              actionChoice.skillDiff3
-            );
-          }
+        if (actionChoice.skill1 != 0) {
+          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
+            combatStats,
+            actionChoice.skill1,
+            actionChoice.skillDiff1
+          );
         }
+        if (actionChoice.skill2 != 0) {
+          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
+            combatStats,
+            actionChoice.skill2,
+            actionChoice.skillDiff2
+          );
+        }
+        if (actionChoice.skill3 != 0) {
+          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
+            combatStats,
+            actionChoice.skill3,
+            actionChoice.skillDiff3
+          );
+        }
+
+        // Check for any boosts. Only gives combat stats if the boost is active from the start of the action.
+        // TODO: Not supported yet
+        /*
+        PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
+        if (activeBoost.boostType == BoostType.COMBAT_STATS) {
+          bool boostIsActiveFromStartOfAction = activeBoost.startTime <= veryStartTime;
+          bool boostIsActiveForTheWholeDuration = endTime <= (activeBoost.startTime + activeBoost.duration);
+          if (boostIsActiveFromStartOfAction && boostIsActiveForTheWholeDuration) {
+            Item memory item = _itemNFT.getItem(activeBoost.itemTokenId);
+            PlayersLibrary._updateCombatStatsFromItem(combatStats, item);
+          }
+        } */
 
         // Update combat stats from the pet if it is still valid.
         // The pet enhancements only take into account base hero stats, not any bonuses from equipment.

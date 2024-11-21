@@ -12,7 +12,9 @@ enum BoostType {
   // Clan wars
   PVP_BLOCK,
   PVP_REATTACK,
-  PVP_SUPER_ATTACK
+  PVP_SUPER_ATTACK,
+  // Combat stats
+  COMBAT_STATS
 }
 
 struct Equipment {

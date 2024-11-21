@@ -98,7 +98,7 @@ const config: HardhatUserConfig = {
       "contracts/Clans/Raids.sol": lowRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
-      "contracts/PetNFT.sol": lowRunsConfig,
+      "contracts/PetNFT.sol": lowestRunsConfig,
       "contracts/PlayerNFT.sol": mediumRunsConfig,
       "contracts/Bazaar/OrderBook.sol": lowRunsConfig
     }

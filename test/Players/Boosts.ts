@@ -1698,4 +1698,8 @@ describe("Boosts", function () {
     );
     expect(outputBalance).to.be.greaterThan(65535);
   });
+
+  it("TODO: Combat stats boost", async function () {
+    // Should only give boost to the whole actions, check where it ends in the middle of an action and that the next action does not receive it where the boost time ends exactly on it.
+  });
 });
