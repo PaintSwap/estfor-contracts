@@ -555,9 +555,9 @@ describe("WishingWell", function () {
   });
 
   it("Get extra XP boost as part of queueing a donation", async function () {
-    const {players, alice, playerId, itemNFT, world, raffleEntryCost} = await loadFixture(deployContracts);
+    const {players, alice, playerId, itemNFT, worldActions, raffleEntryCost} = await loadFixture(deployContracts);
 
-    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
     await players.connect(alice).startActionsExtra(
       playerId,
@@ -576,11 +576,10 @@ describe("WishingWell", function () {
   });
 
   it("Get extra XP boost as part of queueing a wishingWell, do not override lottery winnings", async function () {
-    const {players, alice, playerId, itemNFT, world, raffleEntryCost, mockVRF, wishingWell} = await loadFixture(
-      deployContracts
-    );
+    const {players, alice, playerId, itemNFT, worldActions, world, raffleEntryCost, mockVRF, wishingWell} =
+      await loadFixture(deployContracts);
 
-    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
     let lotteryId = await wishingWell.getLastLotteryId();
     expect(lotteryId).to.eq(1);

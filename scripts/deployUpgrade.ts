@@ -6,8 +6,7 @@ import {
   OrderBook,
   PetNFTLibrary,
   PromotionsLibrary,
-  RoyaltyReceiver,
-  WorldLibrary
+  RoyaltyReceiver
 } from "../typechain-types";
 import {
   ITEM_NFT_LIBRARY_ADDRESS,
@@ -19,7 +18,6 @@ import {
   CLANS_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
   WORLD_ADDRESS,
-  WORLD_LIBRARY_ADDRESS,
   ADMIN_ACCESS_ADDRESS,
   WISHING_WELL_ADDRESS,
   BANK_REGISTRY_ADDRESS,
@@ -195,23 +193,18 @@ async function main() {
   await bankFactory.waitForDeployment();
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 
-  // World
-  const newWorldLibrary = false;
-  const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
-  let worldLibrary: WorldLibrary;
-  if (newWorldLibrary) {
-    worldLibrary = await WorldLibrary.deploy();
-  } else {
-    worldLibrary = (await WorldLibrary.attach(WORLD_LIBRARY_ADDRESS)) as WorldLibrary;
-  }
-  console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
-
-  const World = await ethers.getContractFactory("World", {
-    libraries: {WorldLibrary: await worldLibrary.getAddress()}
+  const WorldActions = await ethers.getContractFactory("WorldActions");
+  const worldActions = await upgrades.upgradeProxy(WORLD_ADDRESS, WorldActions, {
+    kind: "uups",
+    timeout
   });
+  await worldActions.waitForDeployment();
+  console.log(`worldActions = "${(await worldActions.getAddress()).toLowerCase()}"`);
+
+  // World
+  const World = await ethers.getContractFactory("World");
   const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"],
     timeout
   });
   await world.waitForDeployment();
@@ -411,12 +404,9 @@ async function main() {
 
   console.log(`royaltyReceiver = "${(await royaltyReceiver.getAddress()).toLowerCase()}"`);
 
-  const PassiveActions = await ethers.getContractFactory("PassiveActions", {
-    libraries: {WorldLibrary: await worldLibrary.getAddress()}
-  });
+  const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = await upgrades.upgradeProxy(PASSIVE_ACTIONS_ADDRESS, PassiveActions, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"],
     timeout
   });
   await passiveActions.waitForDeployment();
@@ -439,8 +429,8 @@ async function main() {
     await verifyContracts([await shop.getAddress()]);
     await verifyContracts([await quests.getAddress()]);
     await verifyContracts([await clans.getAddress()]);
+    await verifyContracts([await worldActions.getAddress()]);
     await verifyContracts([await world.getAddress()]);
-    await verifyContracts([await worldLibrary.getAddress()]);
     await verifyContracts([await estforLibrary.getAddress()]);
     await verifyContracts([await adminAccess.getAddress()]);
     await verifyContracts([await wishingWell.getAddress()]);

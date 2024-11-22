@@ -8,9 +8,9 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Donating using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
+  const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
 
-  const wishingWell = (await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS)) as WishingWell;
+  const wishingWell = await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS);
   const raffleCost = await wishingWell.getRaffleEntryCost();
   const brush = await ethers.getContractAt("IERC20", BRUSH_ADDRESS);
   let tx = await brush.approve(wishingWell, parseEther("1000"));

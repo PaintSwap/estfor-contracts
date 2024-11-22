@@ -17,6 +17,7 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IPlayersDelegate, IPlayersMiscDelegate, IPlayersMisc1Delegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
+import {IWorldActions} from "../interfaces/IWorldActions.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -71,6 +72,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     ItemNFT itemNFT,
     PlayerNFT playerNFT,
     PetNFT petNFT,
+    IWorldActions worldActions,
     World world,
     AdminAccess adminAccess,
     Quests quests,
@@ -90,6 +92,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;
     _petNFT = petNFT;
+    _worldActions = worldActions;
     _world = world;
     _adminAccess = adminAccess;
     _quests = quests;

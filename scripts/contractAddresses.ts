@@ -7,7 +7,7 @@ let samWitchVRF;
 let router;
 let paintSwapMarketplaceWhitelist;
 let paintSwapDecorator;
-let worldLibrary;
+let worldActions;
 let world;
 let treasury;
 let shop;
@@ -59,7 +59,7 @@ if (!isBeta) {
   router = "0x000000000000000000000000000000000000dEaD";
   paintSwapDecorator = "0x000000000000000000000000000000000000dEaD";
   paintSwapMarketplaceWhitelist = "0x000000000000000000000000000000000000dEaD";
-  worldLibrary = "0xcba2273a46649cc0ce76e69eb0bb05d9b699ca38";
+  worldActions = "";
   world = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
   treasury = "0x000000000000000000000000000000000000dEaD";
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
@@ -110,7 +110,7 @@ if (!isBeta) {
   router = "0xf08413857af2cfbb6edb69a92475cc27ea51453b";
   paintSwapDecorator = "0xcd375b4aa427dcaf46ff79b1786c4ec7a59df623";
   paintSwapMarketplaceWhitelist = "0xe018ef943aa710d4a0a81788641ec1898aeb84d1";
-  worldLibrary = "0x173ebfdb24721317ef6afa47ec301d6e0432a0d5";
+  worldActions = "";
   world = "0x01b7e0b11c8592bf82e17b0983c2b63b1d6903f7";
   treasury = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
   shop = "0x575f595552132377d62e53701116d286f694b5e9";
@@ -155,7 +155,7 @@ if (!isBeta) {
   raids = "";
 }
 
-export const WORLD_LIBRARY_ADDRESS = worldLibrary;
+export const WORLD_ACTIONS_ADDRESS = worldActions;
 export const WORLD_ADDRESS = world;
 export const TREASURY_ADDRESS = treasury;
 export const SHOP_ADDRESS = shop;

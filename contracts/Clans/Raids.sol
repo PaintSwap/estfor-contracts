@@ -11,7 +11,8 @@ import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {ICombatants} from "../interfaces/ICombatants.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
-import {IWorld} from "../interfaces/IWorld.sol";
+import {IWorldActions} from "../interfaces/IWorldActions.sol";
+import {World} from "../World.sol";
 import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
@@ -151,7 +152,8 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
   uint24 private _spawnRaidCooldown;
   IBankFactory private _bankFactory;
   IBrushToken private _brush;
-  IWorld private _world;
+  IWorldActions private _worldActions;
+  World private _world;
 
   uint16[] private _combatActionIds; // Small monsters that might spawn
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanInfos;
@@ -199,7 +201,8 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     VRFRequestInfo vrfRequestInfo,
     uint24 spawnRaidCooldown,
     IBrushToken brush,
-    IWorld world,
+    IWorldActions worldActions,
+    World world,
     uint8 maxClanCombatants,
     uint16[] calldata combatActionIds,
     bool isBeta
@@ -215,6 +218,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     _samWitchVRF = samWitchVRF;
     _vrfRequestInfo = vrfRequestInfo;
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
+    _worldActions = worldActions;
     _world = world;
     _nextRaidId = 1;
     setMaxClanCombatants(maxClanCombatants);
@@ -401,12 +405,11 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
       uint16 choiceId = EstforLibrary._getRandomFrom3ElementArray16(randomWord, i * 16, actionChoiceIds);
       choiceIds[i] = choiceId;
 
-      CombatStats memory enemyCombatStats = _world.getCombatStats(actionId);
-      ActionChoice memory actionChoice = _world.getActionChoice(NONE, choiceId);
+      CombatStats memory enemyCombatStats = _worldActions.getCombatStats(actionId);
+      ActionChoice memory actionChoice = _worldActions.getActionChoice(NONE, choiceId);
 
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
-        actionId
-      );
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _worldActions
+        .getRewardsHelper(actionId);
 
       numSpawnedPerHour *= 5 ** raidInfo.tier; // 5, 25, 125
 
@@ -472,7 +475,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
       });
 
       uint256 elapsedTimeBoss = 1 hours; // of combat
-      ActionChoice memory actionChoice = _world.getActionChoice(NONE, bossChoiceId);
+      ActionChoice memory actionChoice = _worldActions.getActionChoice(NONE, bossChoiceId);
       // Fight the raid boss (must kill within 1 hour)
       (
         uint256 xpElapsedTime,

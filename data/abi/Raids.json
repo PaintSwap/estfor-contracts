@@ -1157,7 +1157,12 @@
         "type": "address"
       },
       {
-        "internalType": "contract IWorld",
+        "internalType": "contract IWorldActions",
+        "name": "worldActions",
+        "type": "address"
+      },
+      {
+        "internalType": "contract World",
         "name": "world",
         "type": "address"
       },

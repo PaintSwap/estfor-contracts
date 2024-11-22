@@ -1428,7 +1428,7 @@
         "type": "address"
       },
       {
-        "internalType": "contract IWorld",
+        "internalType": "contract World",
         "name": "world",
         "type": "address"
       },

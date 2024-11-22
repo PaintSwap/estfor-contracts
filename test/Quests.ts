@@ -28,9 +28,9 @@ import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, 
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
-  const {world, itemNFT} = fixture;
+  const {worldActions, itemNFT} = fixture;
 
-  const {queuedAction, choiceId, rate} = await setupBasicFiremaking(itemNFT, world, 0);
+  const {queuedAction, choiceId, rate} = await setupBasicFiremaking(itemNFT, worldActions, 0);
 
   const firemakingQuest: QuestInput = {
     questId: 1,
@@ -192,9 +192,9 @@ describe("Quests", function () {
     });
 
     it("Lowering amounts where amount completed is already above should not cause underflows (actionNum1)", async function () {
-      const {alice, playerId, quests, players, itemNFT, world} = await loadFixture(playersFixture);
+      const {alice, playerId, quests, players, itemNFT, worldActions} = await loadFixture(playersFixture);
       // Check that this is not marked as completed automatically
-      const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
       const quest: QuestInput = {
         questId: 1,
         dependentQuestId: 0,
@@ -285,13 +285,13 @@ describe("Quests", function () {
     });
 
     it("Check that quest is not completed after an action", async function () {
-      const {alice, playerId, quests, players, itemNFT, world} = await loadFixture(playersFixture);
+      const {alice, playerId, quests, players, itemNFT, worldActions} = await loadFixture(playersFixture);
       const quest = allQuests.find((q) => q.questId === QUEST_PURSE_STRINGS) as QuestInput;
       await quests.addQuests([quest], [defaultMinRequirements]);
       const questId = quest.questId;
       await players.connect(alice).activateQuest(playerId, questId);
       // Check that this is not marked as completed automatically
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -391,11 +391,11 @@ describe("Quests", function () {
   });
 
   it("Cooked food giving away quest", async function () {
-    const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice, quests} = await loadFixture(playersFixture);
 
     const successPercent = 100;
     const minLevel = 1;
-    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
@@ -426,11 +426,11 @@ describe("Quests", function () {
   });
 
   it("Cooked food giving away quest, check burn can happen before quest completed", async function () {
-    const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice, quests} = await loadFixture(playersFixture);
 
     const successPercent = 100;
     const minLevel = 1;
-    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
     // Activate a quest
@@ -492,13 +492,13 @@ describe("Quests", function () {
   });
 
   it("Cooked food giving away quest, check combat consuming the cooked food, before quest completed", async function () {
-    const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice, quests} = await loadFixture(playersFixture);
 
     const successPercent = 100;
     const minLevel = 1;
     const {queuedAction: queuedActionCooking, choiceId} = await setupBasicCooking(
       itemNFT,
-      world,
+      worldActions,
       successPercent,
       minLevel
     );
@@ -515,7 +515,7 @@ describe("Quests", function () {
     };
 
     const numSpawned = 100 * SPAWN_MUL;
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 2,
         info: {
@@ -537,9 +537,9 @@ describe("Quests", function () {
         combatStats: monsterCombatStats
       }
     ]);
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
-    tx = await world.addActionChoices(
+    tx = await worldActions.addActionChoices(
       EstforConstants.NONE,
       [2],
       [
@@ -554,7 +554,7 @@ describe("Quests", function () {
       attire: EstforTypes.noAttire,
       actionId,
       combatStyle: EstforTypes.CombatStyle.ATTACK,
-      choiceId: await getActionChoiceId(tx, world),
+      choiceId: await getActionChoiceId(tx, worldActions),
       regenerateId: EstforConstants.COOKED_MINNUS,
       timespan,
       rightHandEquipmentTokenId: EstforConstants.NONE,
@@ -604,10 +604,10 @@ describe("Quests", function () {
   });
 
   it("Thieving quest", async function () {
-    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(questsFixture);
+    const {players, playerId, alice, quests, worldActions, itemNFT} = await loadFixture(questsFixture);
 
     const xpPerHour = 2;
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 2,
         info: {
@@ -630,7 +630,7 @@ describe("Quests", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
     const numHours = 24;
     const timespan = 3600 * numHours;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -685,8 +685,8 @@ describe("Quests", function () {
   });
 
   it("Monsters killed", async function () {
-    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(playersFixture);
-    const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, world);
+    const {players, playerId, alice, quests, worldActions, itemNFT} = await loadFixture(playersFixture);
+    const {queuedAction, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as QuestInput;
@@ -743,12 +743,17 @@ describe("Quests", function () {
   });
 
   it("Fishing quest where fish get burnt and there is (cooking in-between)", async function () {
-    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(playersFixture);
+    const {players, playerId, alice, quests, worldActions, itemNFT} = await loadFixture(playersFixture);
 
-    const {queuedAction: queuedActionFishing, rate} = await setupBasicFishing(itemNFT, world);
+    const {queuedAction: queuedActionFishing, rate} = await setupBasicFishing(itemNFT, worldActions);
     const successPercent = 100;
     const minLevel = 1;
-    const {queuedAction: queuedActionCooking} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+    const {queuedAction: queuedActionCooking} = await setupBasicCooking(
+      itemNFT,
+      worldActions,
+      successPercent,
+      minLevel
+    );
 
     const quest1 = allQuests.find((q) => q.questId === QUEST_TOWN_COOKOUT) as QuestInput;
     const quest = {
@@ -792,8 +797,8 @@ describe("Quests", function () {
   });
 
   it("Dependent quest", async function () {
-    const {players, playerId, alice, quests, world, itemNFT} = await loadFixture(playersFixture);
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {players, playerId, alice, quests, worldActions, itemNFT} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     // Activate a quest
     const quest1 = allQuests.find((q) => q.questId === QUEST_SUPPLY_RUN) as QuestInput;
@@ -865,11 +870,11 @@ describe("Quests", function () {
   });
 
   it("XP gained", async function () {
-    const {playerId, players, itemNFT, world, alice, quests} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice, quests} = await loadFixture(playersFixture);
 
     const successPercent = 100;
     const minLevel = 1;
-    const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+    const {queuedAction, choiceId} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
@@ -1082,10 +1087,20 @@ describe("Quests", function () {
     });
 
     it("Can only start a full mode quest if hero is evolved", async function () {
-      const {playerId, players, playerNFT, itemNFT, world, alice, quests, brush, origName, upgradePlayerBrushPrice} =
-        await loadFixture(playersFixture);
+      const {
+        playerId,
+        players,
+        playerNFT,
+        itemNFT,
+        worldActions,
+        alice,
+        quests,
+        brush,
+        origName,
+        upgradePlayerBrushPrice
+      } = await loadFixture(playersFixture);
 
-      const {queuedAction, choiceId} = await setupBasicFletching(itemNFT, world);
+      const {queuedAction, choiceId} = await setupBasicFletching(itemNFT, worldActions);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
       await itemNFT.mintBatch(

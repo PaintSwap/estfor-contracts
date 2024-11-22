@@ -74,6 +74,11 @@
   },
   {
     "inputs": [],
+    "name": "GuaranteedRewardsNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InputAmountsMustBeInOrder",
     "type": "error"
   },
@@ -202,7 +207,33 @@
   },
   {
     "inputs": [],
+    "name": "RandomRewardNoDuplicates",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "chance1",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "chance2",
+        "type": "uint16"
+      }
+    ],
+    "name": "RandomRewardsMustBeInOrder",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyGuaranteedRewards",
     "type": "error"
   },
   {
@@ -213,6 +244,11 @@
   {
     "inputs": [],
     "name": "TooManyMinSkills",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TooManyRandomRewards",
     "type": "error"
   },
   {

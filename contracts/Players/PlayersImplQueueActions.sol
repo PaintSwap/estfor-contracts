@@ -207,7 +207,7 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     }
 
     uint16 actionId = queuedActionInput.actionId;
-    ActionInfo memory actionInfo = _world.getActionInfo(actionId);
+    ActionInfo memory actionInfo = _worldActions.getActionInfo(actionId);
     require(actionInfo.isAvailable, ActionNotAvailable());
 
     require(
@@ -224,7 +224,10 @@ contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
     ActionChoice memory actionChoice;
     if (actionInfo.actionChoiceRequired) {
       require(queuedActionInput.choiceId != NONE, ActionChoiceIdRequired());
-      actionChoice = _world.getActionChoice(isCombat ? NONE : queuedActionInput.actionId, queuedActionInput.choiceId);
+      actionChoice = _worldActions.getActionChoice(
+        isCombat ? NONE : queuedActionInput.actionId,
+        queuedActionInput.choiceId
+      );
 
       require(
         actionChoice.skill1._asSkill() == Skill.NONE ||

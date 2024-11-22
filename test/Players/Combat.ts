@@ -30,17 +30,15 @@ describe("Combat Actions", function () {
   describe("Melee", async function () {
     async function playersFixtureMelee() {
       const fixture = await loadFixture(playersFixture);
-      const {itemNFT, world} = fixture;
+      const {itemNFT, worldActions} = fixture;
 
-      const {queuedAction, rate, numSpawned, choiceId} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, rate, numSpawned, choiceId} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
       return {
         ...fixture,
-        itemNFT,
         queuedAction,
         rate,
         numSpawned,
-        world,
         choiceId
       };
     }
@@ -282,7 +280,7 @@ describe("Combat Actions", function () {
         itemNFT,
         alice,
         queuedAction: meleeQueuedAction,
-        world
+        worldActions
       } = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -296,7 +294,7 @@ describe("Combat Actions", function () {
       };
 
       const numSpawned = 10 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -316,7 +314,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const queuedAction = {...meleeQueuedAction};
       queuedAction.actionId = actionId;
@@ -340,7 +338,13 @@ describe("Combat Actions", function () {
     });
 
     it("Multi-hour respawn time, can kill all", async function () {
-      const {playerId, players, alice, queuedAction: meleeQueuedAction, world} = await loadFixture(playersFixtureMelee);
+      const {
+        playerId,
+        players,
+        alice,
+        queuedAction: meleeQueuedAction,
+        worldActions
+      } = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 10,
@@ -353,7 +357,7 @@ describe("Combat Actions", function () {
       };
 
       const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -373,7 +377,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const queuedAction = {...meleeQueuedAction};
       queuedAction.actionId = actionId;
@@ -397,7 +401,13 @@ describe("Combat Actions", function () {
     });
 
     it("Multi-hour respawn time, cannot kill", async function () {
-      const {playerId, players, alice, queuedAction: meleeQueuedAction, world} = await loadFixture(playersFixtureMelee);
+      const {
+        playerId,
+        players,
+        alice,
+        queuedAction: meleeQueuedAction,
+        worldActions
+      } = await loadFixture(playersFixtureMelee);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 1,
@@ -410,7 +420,7 @@ describe("Combat Actions", function () {
       };
 
       const numSpawned = 0.5 * SPAWN_MUL; // 1 every 2 hours
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -430,7 +440,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const queuedAction = {...meleeQueuedAction};
       queuedAction.actionId = actionId;
@@ -461,7 +471,7 @@ describe("Combat Actions", function () {
         players,
         alice,
         queuedAction: meleeQueuedAction,
-        world,
+        worldActions,
         itemNFT
       } = await loadFixture(playersFixtureMelee);
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -475,7 +485,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -523,7 +533,7 @@ describe("Combat Actions", function () {
         players,
         alice,
         queuedAction: meleeQueuedAction,
-        world,
+        worldActions,
         itemNFT
       } = await loadFixture(playersFixtureMelee);
 
@@ -540,7 +550,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -587,7 +597,7 @@ describe("Combat Actions", function () {
         players,
         alice,
         queuedAction: meleeQueuedAction,
-        world,
+        worldActions,
         itemNFT
       } = await loadFixture(playersFixtureMelee);
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -601,7 +611,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -655,7 +665,9 @@ describe("Combat Actions", function () {
 
     // Fix for user issue Snarf
     it("Take into account defence quest XP reward", async function () {
-      const {playerId, players, alice, world, itemNFT, choiceId, quests} = await loadFixture(playersFixtureMelee);
+      const {playerId, players, alice, worldActions, itemNFT, choiceId, quests} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await itemNFT.addItems([
         {
@@ -669,12 +681,12 @@ describe("Combat Actions", function () {
       const natuowAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
-      await world.addActions([natuowAction]);
+      await worldActions.addActions([natuowAction]);
 
       const grogAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
       ) as EstforTypes.ActionInput;
-      await world.addActions([grogAction]);
+      await worldActions.addActions([grogAction]);
 
       await itemNFT.mint(alice, EstforConstants.COOKED_BLEKK, 10000);
 
@@ -779,7 +791,9 @@ describe("Combat Actions", function () {
     });
 
     it("currentActionProcessedSkill for all 1/2/3", async function () {
-      const {playerId, players, alice, world, itemNFT, choiceId, quests} = await loadFixture(playersFixtureMelee);
+      const {playerId, players, alice, worldActions, itemNFT, choiceId, quests} = await loadFixture(
+        playersFixtureMelee
+      );
 
       await itemNFT.addItems([
         {
@@ -793,12 +807,12 @@ describe("Combat Actions", function () {
       const natuowAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
-      await world.addActions([natuowAction]);
+      await worldActions.addActions([natuowAction]);
 
       const grogAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_GROG_TOAD
       ) as EstforTypes.ActionInput;
-      await world.addActions([grogAction]);
+      await worldActions.addActions([grogAction]);
 
       await itemNFT.mint(alice, EstforConstants.COOKED_BLEKK, 10000);
 
@@ -947,7 +961,7 @@ describe("Combat Actions", function () {
     });
 
     it("clearEverything", async function () {
-      const {playerId, players, alice, world, itemNFT, choiceId, brush, wishingWell} = await loadFixture(
+      const {playerId, players, alice, worldActions, itemNFT, choiceId, brush, wishingWell} = await loadFixture(
         playersFixtureMelee
       );
 
@@ -985,7 +999,7 @@ describe("Combat Actions", function () {
       const natuowAction = allActions.find(
         (a) => a.actionId === EstforConstants.ACTION_COMBAT_NATUOW
       ) as EstforTypes.ActionInput;
-      await world.addActions([natuowAction]);
+      await worldActions.addActions([natuowAction]);
 
       await itemNFT.mint(alice, EstforConstants.COOKED_BLEKK, 10000);
 
@@ -1168,7 +1182,8 @@ describe("Combat Actions", function () {
 
   describe("Magic", function () {
     async function playersFixtureMagic() {
-      const {playerId, players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const fixture = await loadFixture(playersFixture);
+      const {playerId, players, playerNFT, itemNFT, worldActions, alice} = fixture;
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 3,
@@ -1182,7 +1197,7 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 10 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1202,7 +1217,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       await itemNFT.mintBatch(
         alice,
@@ -1217,7 +1232,7 @@ describe("Combat Actions", function () {
       );
 
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -1233,7 +1248,7 @@ describe("Combat Actions", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1283,12 +1298,7 @@ describe("Combat Actions", function () {
 
       const startXP = START_XP;
       return {
-        playerId,
-        players,
-        playerNFT,
-        itemNFT,
-        world,
-        alice,
+        ...fixture,
         timespan,
         actionId,
         dropRate,
@@ -1331,11 +1341,11 @@ describe("Combat Actions", function () {
     });
 
     it("Attack, use defensive scrolls ", async function () {
-      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned, world} =
+      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned, worldActions} =
         await loadFixture(playersFixtureMagic);
 
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
-      let tx = await world.addActionChoices(
+      let tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [2],
         [
@@ -1352,7 +1362,7 @@ describe("Combat Actions", function () {
         ]
       );
 
-      const choiceId = getActionChoiceId(tx, world);
+      const choiceId = getActionChoiceId(tx, worldActions);
       const queuedActionDefence: QueuedActionInput = {...queuedAction, choiceId};
 
       await players.connect(alice).startActions(playerId, [queuedActionDefence], EstforTypes.ActionQueueStrategy.NONE);
@@ -1384,11 +1394,11 @@ describe("Combat Actions", function () {
     });
 
     it("Attack, use health scrolls ", async function () {
-      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned, world} =
+      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned, worldActions} =
         await loadFixture(playersFixtureMagic);
 
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
-      let tx = await world.addActionChoices(
+      let tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [2],
         [
@@ -1405,7 +1415,7 @@ describe("Combat Actions", function () {
         ]
       );
 
-      const choiceId = getActionChoiceId(tx, world);
+      const choiceId = getActionChoiceId(tx, worldActions);
       const queuedActionDefence: QueuedActionInput = {...queuedAction, choiceId};
 
       await players.connect(alice).startActions(playerId, [queuedActionDefence], EstforTypes.ActionQueueStrategy.NONE);
@@ -1439,7 +1449,7 @@ describe("Combat Actions", function () {
     it("Have no scrolls first then process with them", async function () {});
 
     it("In-progress combat update", async function () {
-      const {players, playerId, itemNFT, alice, world} = await loadFixture(playersFixture);
+      const {players, playerId, itemNFT, alice, worldActions} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 1,
@@ -1453,7 +1463,7 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 100 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1473,7 +1483,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       await itemNFT.mintBatch(
         alice,
@@ -1489,7 +1499,7 @@ describe("Combat Actions", function () {
 
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -1505,7 +1515,7 @@ describe("Combat Actions", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1597,7 +1607,7 @@ describe("Combat Actions", function () {
     });
 
     it("In-progress combat updates (many)", async function () {
-      const {players, playerId, itemNFT, alice, world} = await loadFixture(playersFixture);
+      const {players, playerId, itemNFT, alice, worldActions} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 1,
@@ -1611,7 +1621,7 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 100 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1631,7 +1641,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       await itemNFT.mintBatch(
         alice,
@@ -1647,7 +1657,7 @@ describe("Combat Actions", function () {
 
       // Start with 5 magic
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -1663,7 +1673,7 @@ describe("Combat Actions", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -2022,13 +2032,19 @@ describe("Combat Actions", function () {
     });
 
     it("Add multi actionChoice", async function () {
-      const {playerId, players, alice, world, queuedAction: magicQueuedAction} = await loadFixture(playersFixtureMagic);
+      const {
+        playerId,
+        players,
+        alice,
+        worldActions,
+        queuedAction: magicQueuedAction
+      } = await loadFixture(playersFixtureMagic);
 
       const queuedAction = {...magicQueuedAction};
       const scrollsConsumedRate = 1 * RATE_MUL; // per hour
 
       let choiceId = 2;
-      const tx = await world.addActionChoices(
+      const tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [choiceId, choiceId + 1],
         [
@@ -2055,7 +2071,7 @@ describe("Combat Actions", function () {
         ]
       );
 
-      const choiceIds = await getActionChoiceIds(tx, world);
+      const choiceIds = await getActionChoiceIds(tx, worldActions);
       expect(choiceIds).to.eql([BigInt(choiceId), BigInt(choiceId + 1)]);
       queuedAction.choiceId = choiceId + 2;
 
@@ -2071,7 +2087,7 @@ describe("Combat Actions", function () {
         playerId,
         players,
         alice,
-        world,
+        worldActions,
         queuedAction: magicQueuedAction,
         itemNFT
       } = await loadFixture(playersFixtureMagic);
@@ -2087,7 +2103,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -2142,7 +2158,7 @@ describe("Combat Actions", function () {
         playerId,
         players,
         alice,
-        world,
+        worldActions,
         queuedAction: magicQueuedAction,
         itemNFT,
         startXP
@@ -2159,7 +2175,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -2205,7 +2221,7 @@ describe("Combat Actions", function () {
         playerId,
         players,
         alice,
-        world,
+        worldActions,
         queuedAction: magicQueuedAction,
         itemNFT,
         startXP
@@ -2222,7 +2238,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -2311,7 +2327,7 @@ describe("Combat Actions", function () {
         playerId,
         players,
         alice,
-        world,
+        worldActions,
         queuedAction: magicQueuedAction,
         itemNFT
       } = await loadFixture(playersFixtureMagic);
@@ -2327,7 +2343,7 @@ describe("Combat Actions", function () {
       };
 
       const dropRate = 1 * GUAR_MUL; // per hour
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -2359,7 +2375,7 @@ describe("Combat Actions", function () {
       await itemNFT.connect(alice).burnBatch(alice, [...items], [...balances]); // Ensure mutable arrays
 
       const scrollsConsumedRate = 100 * RATE_MUL; // per hour
-      await world.editActionChoices(
+      await worldActions.editActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -2413,7 +2429,7 @@ describe("Combat Actions", function () {
         timespan,
         queuedAction: queuedActionMonster,
         startXP,
-        world
+        worldActions
       } = await loadFixture(playersFixtureMagic);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2428,7 +2444,7 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 10 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -2448,7 +2464,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const queuedAction = {...queuedActionMonster, actionId};
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
@@ -2482,7 +2498,8 @@ describe("Combat Actions", function () {
   // Range is a subset of magic for the most part so only tests for basic things should be required
   describe("Ranged", function () {
     async function playersFixtureRanged() {
-      const {players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const fixture = await loadFixture(playersFixture);
+      const {playerNFT, itemNFT, worldActions, alice} = fixture;
 
       const avatarId = 1;
       const avatarInfo: AvatarInfo = {
@@ -2496,7 +2513,7 @@ describe("Combat Actions", function () {
       // Create player
       const origName = "0xSamWitch1";
       const makeActive = true;
-      const playerId = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
+      const playerIdRanged = await createPlayer(playerNFT, avatarId, alice, origName, makeActive);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 3,
@@ -2510,7 +2527,7 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 10 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -2530,7 +2547,7 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       await itemNFT.mintBatch(
         alice,
@@ -2544,7 +2561,7 @@ describe("Combat Actions", function () {
       );
 
       const arrowsConsumedRate = 1 * RATE_MUL; // per hour
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
 
@@ -2563,7 +2580,7 @@ describe("Combat Actions", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -2613,39 +2630,35 @@ describe("Combat Actions", function () {
 
       const startXP = START_XP;
       return {
-        playerId,
-        players,
-        playerNFT,
-        itemNFT,
-        world,
-        alice,
+        ...fixture,
         timespan,
         actionId,
         dropRate,
         queuedAction,
         startXP,
-        numSpawned
+        numSpawned,
+        playerIdRanged
       };
     }
 
     it("Attack", async function () {
-      const {playerId, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned} =
+      const {playerIdRanged, players, itemNFT, alice, timespan, dropRate, queuedAction, startXP, numSpawned} =
         await loadFixture(playersFixtureRanged);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
-      await players.connect(alice).processActions(playerId);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.RANGED)).to.eq(
+      await players.connect(alice).processActions(playerIdRanged);
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.RANGED)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
         BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice, EstforConstants.NATURE_SCROLL)).to.eq(
@@ -2662,7 +2675,7 @@ describe("Combat Actions", function () {
     it("Check expected bow is required for the actionChoice", async function () {
       // Bronze arrows can only be used with basic bow for instance
       const {
-        playerId,
+        playerIdRanged,
         players,
         itemNFT,
         alice,
@@ -2680,23 +2693,23 @@ describe("Combat Actions", function () {
       queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
     });
 
     it("Check expected bow is required for the actionChoice, forged godly bow", async function () {
       // Bronze arrows can only be used with basic bow for instance
       const {
-        playerId,
+        playerIdRanged,
         players,
         itemNFT,
         alice,
         queuedAction: rangedQueuedAction,
-        world
+        worldActions
       } = await loadFixture(playersFixtureRanged);
 
       const arrowsConsumedRate = 1 * RATE_MUL; // per hour
-      const tx = await world.addActionChoices(
+      const tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [2],
 
@@ -2716,7 +2729,7 @@ describe("Combat Actions", function () {
         ]
       );
 
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
@@ -2740,77 +2753,91 @@ describe("Combat Actions", function () {
       queuedAction.choiceId = choiceId;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
 
       // Cannot use INFUSED godly bow either
       await itemNFT.mint(alice, EstforConstants.INFUSED_GODLY_BOW, 1);
       queuedAction.rightHandEquipmentTokenId = EstforConstants.INFUSED_GODLY_BOW;
-      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
+      await expect(
+        players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      )
         .to.be.revertedWithCustomError(players, "IncorrectRightHandEquipment")
         .withArgs(EstforConstants.INFUSED_GODLY_BOW);
 
       await itemNFT.mint(alice, EstforConstants.GODLY_BOW_4, 1);
       queuedAction.rightHandEquipmentTokenId = EstforConstants.GODLY_BOW_4;
 
-      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
-        .to.not.be.reverted;
+      await expect(
+        players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      ).to.not.be.reverted;
     });
 
     it("Remove bow after queuing, combat should be skipped", async function () {
-      const {playerId, players, itemNFT, alice, queuedAction, startXP} = await loadFixture(playersFixtureRanged);
+      const {playerIdRanged, players, itemNFT, alice, queuedAction, startXP} = await loadFixture(playersFixtureRanged);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await itemNFT.connect(alice).burn(alice, EstforConstants.BASIC_BOW, 2);
       expect(await itemNFT.balanceOf(alice, EstforConstants.BASIC_BOW)).to.eq(0);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
-      await players.connect(alice).processActions(playerId);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.RANGED)).to.eq(startXP);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(0);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      await players.connect(alice).processActions(playerIdRanged);
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.RANGED)).to.eq(startXP);
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.HEALTH)).to.eq(0);
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // No arrows used
       expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(200);
     });
 
     it("No bow equipped, not allowed", async function () {
-      const {playerId, players, alice, queuedAction: rangedQueuedAction} = await loadFixture(playersFixtureRanged);
+      const {
+        playerIdRanged,
+        players,
+        alice,
+        queuedAction: rangedQueuedAction
+      } = await loadFixture(playersFixtureRanged);
 
       const queuedAction = {...rangedQueuedAction};
       queuedAction.rightHandEquipmentTokenId = EstforConstants.NONE;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
       ).to.be.revertedWithCustomError(players, "IncorrectEquippedItem");
     });
 
     it("Cannot equip shield with a bow", async function () {
-      const {playerId, players, alice, queuedAction: rangedQueuedAction} = await loadFixture(playersFixtureRanged);
+      const {
+        playerIdRanged,
+        players,
+        alice,
+        queuedAction: rangedQueuedAction
+      } = await loadFixture(playersFixtureRanged);
 
       const queuedAction = {...rangedQueuedAction};
       queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_SHIELD;
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
       ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
       queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
-      await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
-        .to.not.be.reverted;
+      await expect(
+        players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      ).to.not.be.reverted;
     });
 
     it("Enemy dealing ranged damage", async function () {
       const {
-        playerId,
+        playerIdRanged,
         players,
         itemNFT,
         alice,
         timespan,
         queuedAction: queuedActionMonster,
         startXP,
-        world
+        worldActions
       } = await loadFixture(playersFixtureRanged);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
@@ -2825,7 +2852,7 @@ describe("Combat Actions", function () {
 
       const dropRate = 1 * GUAR_MUL; // per monster
       const numSpawned = 10 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -2845,22 +2872,22 @@ describe("Combat Actions", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const queuedAction = {...queuedActionMonster, actionId};
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerIdRanged, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
-      await players.connect(alice).processActions(playerId);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.RANGED)).to.eq(
+      await players.connect(alice).processActions(playerIdRanged);
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.RANGED)).to.eq(
         startXP + BigInt(Math.floor(queuedAction.timespan * 1.1))
       );
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.HEALTH)).to.be.deep.oneOf([
         // This shouldn't be boosted by range boost
         BigInt(Math.floor(queuedAction.timespan / 3)),
         BigInt(Math.floor(queuedAction.timespan / 3) - 1)
       ]);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(0);
+      expect(await players.getPlayerXP(playerIdRanged, EstforTypes.Skill.DEFENCE)).to.eq(0);
 
       // Check the drops are as expected
       expect(await itemNFT.balanceOf(alice, EstforConstants.NATURE_SCROLL)).to.eq(
@@ -2877,7 +2904,7 @@ describe("Combat Actions", function () {
 
   it("Dead, kill all but don't have enough food", async function () {
     // Lose all the XP that would have been gained
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {
       meleeAttack: 3,
@@ -2890,7 +2917,7 @@ describe("Combat Actions", function () {
     };
 
     const rate = 6000 * GUAR_MUL; // per kill
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -2910,7 +2937,7 @@ describe("Combat Actions", function () {
         combatStats: monsterCombatStats
       }
     ]);
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const foodNum = 100;
     await itemNFT.mintBatch(
@@ -2928,7 +2955,7 @@ describe("Combat Actions", function () {
     ]);
 
     const timespan = 3600 * 3; // 3 hours
-    tx = await world.addActionChoices(
+    tx = await worldActions.addActionChoices(
       EstforConstants.NONE,
       [1],
       [
@@ -2938,7 +2965,7 @@ describe("Combat Actions", function () {
         }
       ]
     );
-    const choiceId = await getActionChoiceId(tx, world);
+    const choiceId = await getActionChoiceId(tx, worldActions);
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
       actionId,
@@ -2998,7 +3025,7 @@ describe("Combat Actions", function () {
 
   it("Dead, don't have enough food and requires over 65535 with a partial progress consuming some food", async function () {
     // Lose all the XP that would have been gained
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {
       meleeAttack: 30,
@@ -3011,7 +3038,7 @@ describe("Combat Actions", function () {
     };
 
     const rate = 6000 * GUAR_MUL; // per kill
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -3031,7 +3058,7 @@ describe("Combat Actions", function () {
         combatStats: monsterCombatStats
       }
     ]);
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const foodNum = 100;
     await itemNFT.mintBatch(
@@ -3049,7 +3076,7 @@ describe("Combat Actions", function () {
     ]);
 
     const timespan = 3600 * 24; // 3 hours
-    tx = await world.addActionChoices(
+    tx = await worldActions.addActionChoices(
       EstforConstants.NONE,
       [1],
       [
@@ -3059,7 +3086,7 @@ describe("Combat Actions", function () {
         }
       ]
     );
-    const choiceId = await getActionChoiceId(tx, world);
+    const choiceId = await getActionChoiceId(tx, worldActions);
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
       actionId,
@@ -3112,7 +3139,7 @@ describe("Combat Actions", function () {
 
   it("Dead, don't kill all", async function () {
     // Lose all the XP that would have been gained
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const monsterCombatStats: EstforTypes.CombatStats = {
       meleeAttack: 3,
@@ -3125,7 +3152,7 @@ describe("Combat Actions", function () {
     };
 
     const rate = 1 * GUAR_MUL; // per hour
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -3145,13 +3172,13 @@ describe("Combat Actions", function () {
         combatStats: monsterCombatStats
       }
     ]);
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const foodNum = 2;
     await itemNFT.mint(alice, EstforConstants.BRONZE_SWORD, 1);
     await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 2);
     const timespan = 3600 * 3; // 3 hours
-    tx = await world.addActionChoices(
+    tx = await worldActions.addActionChoices(
       EstforConstants.NONE,
       [1],
       [
@@ -3161,7 +3188,7 @@ describe("Combat Actions", function () {
         }
       ]
     );
-    const choiceId = await getActionChoiceId(tx, world);
+    const choiceId = await getActionChoiceId(tx, worldActions);
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
       actionId,

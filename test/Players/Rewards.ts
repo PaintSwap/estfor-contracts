@@ -25,9 +25,9 @@ const actionIsAvailable = true;
 describe("Rewards", function () {
   describe("XP threshold rewards", function () {
     it("Single", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, worldActions);
       const queuedAction = {...queuedActionWoodcutting};
       queuedAction.timespan = 500;
 
@@ -59,7 +59,7 @@ describe("Rewards", function () {
     });
 
     it("Multiple", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       await itemNFT.addItems([
         {
@@ -71,7 +71,7 @@ describe("Rewards", function () {
 
       const rate = 100 * GUAR_MUL; // per hour
 
-      const tx = await world.addActions([
+      const tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -94,7 +94,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
         actionId,
@@ -150,14 +150,14 @@ describe("Rewards", function () {
     });
 
     it("Editing an existing XP reward should work", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       let rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
       await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
       rewards = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 10}];
       await players.editXPThresholdRewards([{xpThreshold: 500, rewards}]);
 
-      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, worldActions);
       const queuedAction = {...queuedActionWoodcutting};
       queuedAction.timespan = 500;
 
@@ -207,9 +207,9 @@ describe("Rewards", function () {
 
     // This was for a reported bug by doughbender where multiple actions were giving the same xp rewards triggering
     it("Check that multiple actions only give 1 set of xp rewards", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction: queuedActionWoodcutting} = await setupBasicWoodcutting(itemNFT, worldActions);
       const queuedAction = {...queuedActionWoodcutting};
       queuedAction.timespan = 250;
 
@@ -245,7 +245,7 @@ describe("Rewards", function () {
 
   describe("Daily Rewards", function () {
     it("Daily & weekly reward when starting an action", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -286,7 +286,7 @@ describe("Rewards", function () {
       // Change reward else it conflicts with tiered daily rewards
       const {queuedAction} = await setupBasicWoodcutting(
         itemNFT,
-        world,
+        worldActions,
         100 * GUAR_MUL,
         20n,
         EstforConstants.MAGICAL_LOG
@@ -387,11 +387,11 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim per hero per day", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20n);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions, 100 * GUAR_MUL, 20n);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -424,13 +424,13 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim per wallet per day", async function () {
-      const {playerId, players, itemNFT, playerNFT, avatarId, world, alice, mockVRF} = await loadFixture(
+      const {playerId, players, itemNFT, playerNFT, avatarId, worldActions, world, alice, mockVRF} = await loadFixture(
         playersFixture
       );
 
       await players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20n);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions, 100 * GUAR_MUL, 20n);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -482,11 +482,11 @@ describe("Rewards", function () {
     });
 
     it("Update on process actions", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -512,11 +512,11 @@ describe("Rewards", function () {
 
     it("Can only get Monday's reward if the oracle has been called", async function () {
       // So that people can't get last Monday's daily reward
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -555,7 +555,9 @@ describe("Rewards", function () {
     });
 
     it("Clan tier bonus reward upgrades", async function () {
-      const {playerId, players, itemNFT, world, alice, clans, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, clans, mockVRF} = await loadFixture(
+        playersFixture
+      );
 
       // Be a member of a clan
       await clans.addTiers([
@@ -585,7 +587,7 @@ describe("Rewards", function () {
 
       const {queuedAction} = await setupBasicWoodcutting(
         itemNFT,
-        world,
+        worldActions,
         100 * GUAR_MUL,
         3600n,
         EstforConstants.HALLOWEEN_BONUS_1
@@ -639,11 +641,11 @@ describe("Rewards", function () {
     });
 
     it("Tiered rewards", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, 100 * GUAR_MUL, 20n);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions, 100 * GUAR_MUL, 20n);
 
       const oneDay = 24 * 3600;
       const oneWeek = oneDay * 7;
@@ -705,10 +707,10 @@ describe("Rewards", function () {
   });
 
   it("Non-combat guaranteed reward & Random rewards", async function () {
-    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100% chance
-    const tx = await world.addActions([
+    const tx = await worldActions.addActions([
       {
         actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
         info: {
@@ -731,7 +733,7 @@ describe("Rewards", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const timespan = 3600;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -783,10 +785,10 @@ describe("Rewards", function () {
   });
 
   it("Non-combat guaranteed reward & Random rewards, partial looting", async function () {
-    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100% chance
-    const tx = await world.addActions([
+    const tx = await worldActions.addActions([
       {
         actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
         info: {
@@ -809,7 +811,7 @@ describe("Rewards", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const timespan = 4800;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -861,7 +863,7 @@ describe("Rewards", function () {
 
   describe("Random rewards", function () {
     it("Random rewards (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       this.timeout(100000); // 100 seconds, this test can take a while on CI
 
@@ -881,7 +883,7 @@ describe("Rewards", function () {
       const randomChanceFraction = 50.0 / 100; // 50% chance
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -904,7 +906,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const numHours = 5;
 
       await timeTravelToNextCheckpoint();
@@ -979,7 +981,7 @@ describe("Rewards", function () {
     });
 
     it("Multiple random rewards (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       this.timeout(100000); // 100 seconds, this test can take a while on CI
 
@@ -1002,7 +1004,7 @@ describe("Rewards", function () {
       const randomChance2 = Math.floor(65535 * randomChanceFractions[2]);
       const randomChance3 = Math.floor(65535 * randomChanceFractions[3]);
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1030,7 +1032,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const numHours = 2;
 
       await timeTravelToNextCheckpoint();
@@ -1121,7 +1123,7 @@ describe("Rewards", function () {
     });
 
     it("No random rewards, check numPastRandomRewardInstancesToRemove is correct", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       await itemNFT.addItems([
         {
@@ -1134,7 +1136,7 @@ describe("Rewards", function () {
       const randomChanceFraction = 0;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1157,7 +1159,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const numHours = 4;
 
       // Make sure it passes the next checkpoint so there are no issues running
@@ -1208,15 +1210,15 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving), after 00:00 before oracle is called", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for thieving 19:00, dice given for combat 20:00, dice given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
-      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
 
       const randomChanceFraction = 1;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      await world.editActions([
+      await worldActions.editActions([
         {
           ...combatAction,
           guaranteedRewards: [],
@@ -1224,7 +1226,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1316,15 +1318,15 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving), after 00:00 before oracle is called, process after", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for thieving 19:00, dice given for combat 00:01, dice given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
-      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
 
       const randomChanceFraction = 1;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      await world.editActions([
+      await worldActions.editActions([
         {
           ...combatAction,
           guaranteedRewards: [],
@@ -1332,7 +1334,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1429,15 +1431,15 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving) after oracle is called", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 22:00. Looted at 00:02 (or whenever) after oracle is called. Loot given for thieving 19:00, dice given for combat 00:02, loot given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
-      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
 
       const randomChanceFraction = 1;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      await world.editActions([
+      await worldActions.editActions([
         {
           ...combatAction,
           guaranteedRewards: [],
@@ -1445,7 +1447,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1538,15 +1540,15 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (thieving, combat, thieving) looting before 00:00", async function () {
       // Thieving ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 23:59(or whenever). Loot given for thieving 19:00, combat 20:00 & thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
-      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
       const queuedActionCombat = {...queuedAction, timespan: 3600};
 
       const randomChanceFraction = 1;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      await world.editActions([
+      await worldActions.editActions([
         {
           ...combatAction,
           guaranteedRewards: [],
@@ -1554,7 +1556,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1658,14 +1660,14 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (combat, combat, thieving) looting after 00:00 but before oracle is called", async function () {
       // Combat ends 19:00, Combat ends 20:00, Thieving ends 23:00. Looted at 00:01 before oracle. Dice given for combat 19:00, dice given for combat 20:00, dice given for thieving 23:00
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
-      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
       const randomChanceFraction = 1;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      await world.editActions([
+      await worldActions.editActions([
         {
           ...combatAction,
           guaranteedRewards: [],
@@ -1673,7 +1675,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1770,14 +1772,14 @@ describe("Rewards", function () {
 
     it("Mixing combat/thieving over 48 hours, when queueing combat & thieving, then thieving in another 24 hours after first calling oracle.", async function () {
       // Combat starts 00:01 and ends 01:01, thieving ends 00:01 the following day. Looted at 00:02 after oracle by starting a new 24 hour thieving action
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
-      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
       const randomChanceFraction = 1;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      await world.editActions([
+      await worldActions.editActions([
         {
           ...combatAction,
           guaranteedRewards: [],
@@ -1785,7 +1787,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1882,14 +1884,14 @@ describe("Rewards", function () {
 
     it("Mixing thieving and combat random rolls (combat, thieving) looting after 00:00, before oracle is called", async function () {
       // Combat ends 19:00, Thieving ends 22:00. Looted at 00:01 before oracle. Dice given for combat 19:00, dice given for thieving 22:00
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
-      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, world);
+      const {queuedAction, numSpawned, combatAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
       const randomChanceFraction = 1;
       const randomChance = Math.floor(65535 * randomChanceFraction);
 
-      await world.editActions([
+      await worldActions.editActions([
         {
           ...combatAction,
           guaranteedRewards: [],
@@ -1897,7 +1899,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      await world.addActions([
+      await worldActions.addActions([
         {
           actionId: EstforConstants.ACTION_THIEVING_CHILD,
           info: {
@@ -1978,7 +1980,7 @@ describe("Rewards", function () {
     });
 
     it("Multiple random rewards", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       this.timeout(100000); // 100 seconds, this test can take a while on CI
 
@@ -1999,7 +2001,7 @@ describe("Rewards", function () {
       const randomChance = Math.floor(65535 * randomChanceFractions[0]);
       const randomChance1 = Math.floor(65535 * randomChanceFractions[1]);
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -2025,7 +2027,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const numHours = 23;
 
       await timeTravelToNextCheckpoint();
@@ -2054,10 +2056,10 @@ describe("Rewards", function () {
     });
 
     it("PendingRandomRewards should be added each time an action is processed", async function () {
-      const {playerId, players, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChance = 65535; // 100%
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -2079,7 +2081,7 @@ describe("Rewards", function () {
           combatStats: emptyCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const numHours = 5;
 
       // Set it 2 hours before the next checkpoint so that we can cross the boundary
@@ -2139,10 +2141,10 @@ describe("Rewards", function () {
     });
 
     it("Check past random rewards which are claimed the following day don't cause issues (many)", async function () {
-      const {playerId, players, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChance = 32000; // 50%
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: ACTION_THIEVING_CHILD,
           info: {
@@ -2164,7 +2166,7 @@ describe("Rewards", function () {
           combatStats: emptyCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const numHours = 3;
       const timespan = numHours * 3600;
@@ -2203,7 +2205,7 @@ describe("Rewards", function () {
     });
 
     it("Ticket excess uses a mint multiplier", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 1,
@@ -2217,7 +2219,7 @@ describe("Rewards", function () {
 
       const randomChance = 65535n; // 100%
       const numSpawned = 100 * SPAWN_MUL;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -2239,9 +2241,9 @@ describe("Rewards", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -2251,7 +2253,7 @@ describe("Rewards", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       await itemNFT.mint(alice, EstforConstants.BRONZE_SWORD, 1);
       await itemNFT.mint(alice, EstforConstants.BRONZE_HELMET, 1);
 
@@ -2368,7 +2370,9 @@ describe("Rewards", function () {
     });
 
     it("Ticket excess with rare items uses higher chance reward system", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF, playersImplMisc} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF, playersImplMisc} = await loadFixture(
+        playersFixture
+      );
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 1,
@@ -2390,7 +2394,7 @@ describe("Rewards", function () {
       const fractionChancePerRoll =
         ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65535;
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -2412,9 +2416,9 @@ describe("Rewards", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -2424,7 +2428,7 @@ describe("Rewards", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
@@ -2523,7 +2527,7 @@ describe("Rewards", function () {
 
     // Might fail as relies on random chance
     it("Ticket excess with rare items uses higher chance reward system, hit once", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 0,
@@ -2541,7 +2545,7 @@ describe("Rewards", function () {
       const numHours = 23;
       // 64 unique tickets. 100 * 23 = 2300. 2300 / 64 = 35 chance per raw roll. Which is ((35 * 50) / 65535) a 2.67% chance and each roll hitting, and there are 64 dice.
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -2563,9 +2567,9 @@ describe("Rewards", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -2575,7 +2579,7 @@ describe("Rewards", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
@@ -2662,7 +2666,7 @@ describe("Rewards", function () {
     });
 
     it("Ticket excess with rare items uses higher chance reward system, uses low chance, hit none", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 1,
@@ -2682,7 +2686,7 @@ describe("Rewards", function () {
       const fractionChancePerRoll =
         ((((numSpawned / SPAWN_MUL) * numHours) / MAX_UNIQUE_TICKETS) * randomChance) / 65535;
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -2704,9 +2708,9 @@ describe("Rewards", function () {
           combatStats: monsterCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         EstforConstants.NONE,
         [1],
         [
@@ -2716,7 +2720,7 @@ describe("Rewards", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
       await itemNFT.mintBatch(
         alice,
         [EstforConstants.BRONZE_SWORD, EstforConstants.BRONZE_HELMET, EstforConstants.COOKED_MINNUS],
@@ -2797,10 +2801,10 @@ describe("Rewards", function () {
 
   it("Rewards without XP", async function () {
     // Check that you can get guaranteed rewards even if you don't get XP (rewards rate >> XP rate)
-    const {playerId, players, alice, world, itemNFT} = await loadFixture(playersFixture);
+    const {playerId, players, alice, worldActions, world, itemNFT} = await loadFixture(playersFixture);
 
     const rate = 3600 * GUAR_MUL; // per hour
-    const tx = await world.addActions([
+    const tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -2822,7 +2826,7 @@ describe("Rewards", function () {
         combatStats: EstforTypes.emptyCombatStats
       }
     ]);
-    const actionId = getActionId(tx, world);
+    const actionId = getActionId(tx, worldActions);
 
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,

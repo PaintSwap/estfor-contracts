@@ -40,7 +40,7 @@ describe("Fuzz testing", async function () {
     const numActions = 1000;
 
     // Uses all sorts of random values to try and find bugs
-    const {playerId, players, playerNFT, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, playerNFT, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     await players.setDailyRewardsEnabled(true);
     await playerNFT.setAvatars(avatarIds, avatarInfos);
@@ -53,7 +53,7 @@ describe("Fuzz testing", async function () {
 
     // Add full equipment bonuses
     await players.addFullAttireBonuses(allFullAttireBonuses);
-    await world.addActions(allActions);
+    await worldActions.addActions(allActions);
 
     const fireMakingActionId = EstforConstants.ACTION_FIREMAKING_ITEM;
     const smithingActionId = EstforConstants.ACTION_SMITHING_ITEM;
@@ -61,7 +61,7 @@ describe("Fuzz testing", async function () {
     const craftingActionId = EstforConstants.ACTION_CRAFTING_ITEM;
     const genericCombatActionId = EstforConstants.NONE;
 
-    await world.addBulkActionChoices(
+    await worldActions.addBulkActionChoices(
       [
         fireMakingActionId,
         smithingActionId,
@@ -124,7 +124,7 @@ describe("Fuzz testing", async function () {
             ...allActionChoiceIdsMagic
           ];
           choiceId = choiceIds[Math.floor(Math.random() * choiceIds.length)];
-          actionChoice = await world.getActionChoice(NONE, choiceId);
+          actionChoice = await worldActions.getActionChoice(NONE, choiceId);
           minXP = actionChoice.skillMinXP1;
           // Sometimes equip food (or scrolls/arrows if magic/ranged)
         } else {

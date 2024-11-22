@@ -11,6 +11,7 @@ import {Clans} from "../Clans/Clans.sol";
 import {WishingWell} from "../WishingWell.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {SkillLibrary} from "../libraries/SkillLibrary.sol";
+import {IWorldActions} from "../interfaces/IWorldActions.sol";
 import "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
@@ -158,6 +159,7 @@ abstract contract PlayersBase {
   uint256 internal _startSlot;
 
   World internal _world;
+  IWorldActions internal _worldActions;
   bool internal _dailyRewardsEnabled;
   ItemNFT internal _itemNFT;
   // Constants for the damage formula
@@ -228,7 +230,7 @@ abstract contract PlayersBase {
         skill = choiceSkill;
       }
     } else {
-      skill = _world.getSkill(actionId);
+      skill = _worldActions.getSkill(actionId);
     }
   }
 

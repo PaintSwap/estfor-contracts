@@ -7,13 +7,13 @@ import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting, setupBasicCooking, setupBasicAlchemy} from "./utils";
 import {defaultActionInfo, noAttire} from "@paintswap/estfor-definitions/types";
 import {createPlayer} from "../../scripts/utils";
-import {Block, keccak256, parseEther, zeroPadBytes, zeroPadValue} from "ethers";
+import {Block, keccak256, parseEther, zeroPadValue} from "ethers";
 
 const abiCoder = new ethers.AbiCoder();
 
 describe("Boosts", function () {
   it("Add Boost, Full consume", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3300;
@@ -30,7 +30,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
 
     await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.XP_BOOST)).to.eq(1);
@@ -61,7 +61,7 @@ describe("Boosts", function () {
   });
 
   it("Add Boost, partial consume", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     await itemNFT.addItems([
@@ -77,7 +77,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
 
     await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.XP_BOOST)).to.eq(1);
@@ -110,7 +110,7 @@ describe("Boosts", function () {
   describe("Boost overlaps", function () {
     it("Expired boost", async function () {
       // Expired boost should not affect XP
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const boostValue = 50;
       await itemNFT.addItems([
@@ -126,7 +126,7 @@ describe("Boosts", function () {
         }
       ]);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
       await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -157,7 +157,7 @@ describe("Boosts", function () {
     });
 
     it("Boost end finishes in-between action start and end", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const boostValue = 50;
       await itemNFT.addItems([
@@ -173,7 +173,7 @@ describe("Boosts", function () {
         }
       ]);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       const queuedActionFinishAfterBoost = {...queuedAction};
       queuedActionFinishAfterBoost.timespan = 86400 - queuedAction.timespan;
 
@@ -209,7 +209,7 @@ describe("Boosts", function () {
     });
 
     it("Check boost is removed from being active when processing", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const boostValue = 50;
       await itemNFT.addItems([
@@ -225,7 +225,7 @@ describe("Boosts", function () {
         }
       ]);
 
-      const {queuedAction} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
       await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -242,7 +242,7 @@ describe("Boosts", function () {
         );
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
-      const slot = 16;
+      const slot = 17;
       const encoding = abiCoder.encode(["uint256", "uint256"], [playerId, slot]);
       const hash = keccak256(encoding);
       let boostInfoStorage = await getStorageAt(await players.getAddress(), hash);
@@ -255,7 +255,7 @@ describe("Boosts", function () {
   });
 
   it("Combat Boost", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 50;
     const boostDuration = 120;
@@ -272,7 +272,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     await itemNFT.mint(alice, EstforConstants.COMBAT_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -308,7 +308,7 @@ describe("Boosts", function () {
   });
 
   it("Any XP Boost (combat)", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 50;
     const boostDuration = 120;
@@ -325,7 +325,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -360,7 +360,7 @@ describe("Boosts", function () {
   });
 
   it("Any XP Boost (non combat)", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 50;
     const boostDuration = 120;
@@ -377,7 +377,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
 
     await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -409,7 +409,7 @@ describe("Boosts", function () {
   });
 
   it("Extra XP Boost", async function () {
-    const {playerId, players, itemNFT, world, wishingWell, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, wishingWell, brush, alice} = await loadFixture(playersFixture);
 
     const boostValue = 50;
     const boostDuration = 120;
@@ -426,7 +426,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -473,7 +473,7 @@ describe("Boosts", function () {
   });
 
   it("Global XP Boost", async function () {
-    const {playerId, players, itemNFT, world, wishingWell, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, wishingWell, brush, alice} = await loadFixture(playersFixture);
 
     const boostDuration = 120;
     const boostValue = 50;
@@ -490,7 +490,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -538,7 +538,7 @@ describe("Boosts", function () {
   });
 
   it("Clan XP Boost", async function () {
-    const {playerId, players, itemNFT, world, wishingWell, clans, brush, alice, playerNFT, avatarId, bob} =
+    const {playerId, players, itemNFT, worldActions, wishingWell, clans, brush, alice, playerNFT, avatarId, bob} =
       await loadFixture(playersFixture);
 
     const boostDuration = 120;
@@ -582,7 +582,7 @@ describe("Boosts", function () {
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -648,7 +648,9 @@ describe("Boosts", function () {
   });
 
   it("Normal, extra, clan & global XP Boosts", async function () {
-    const {playerId, players, itemNFT, world, wishingWell, clans, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, wishingWell, clans, brush, alice} = await loadFixture(
+      playersFixture
+    );
 
     const boostDuration = 120;
     const boostValue1 = 20;
@@ -717,7 +719,7 @@ describe("Boosts", function () {
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
     await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -776,7 +778,7 @@ describe("Boosts", function () {
   // If a clan boost is active, and another one comes it should still count for actions queued up to this time.
   // TODO: Use secondBoostValue like the global boost test does
   it("Clan boost override", async function () {
-    const {playerId, players, itemNFT, world, wishingWell, clans, brush, alice, playerNFT, avatarId, bob} =
+    const {playerId, players, itemNFT, worldActions, wishingWell, clans, brush, alice, playerNFT, avatarId, bob} =
       await loadFixture(playersFixture);
 
     const boostDuration = 720; // 2 kills worth
@@ -841,7 +843,7 @@ describe("Boosts", function () {
     const imageId = 1;
     await clans.connect(alice).createClan(playerId, "Clan name", "discord", "telegram", "twitter", imageId, tierId);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     await brush.mint(alice, parseEther("100000"));
     await brush.connect(alice).approve(wishingWell, parseEther("100000"));
@@ -947,7 +949,7 @@ describe("Boosts", function () {
   });
 
   it("Global boost override", async function () {
-    const {playerId, players, itemNFT, world, wishingWell, brush, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, wishingWell, brush, alice} = await loadFixture(playersFixture);
 
     const boostDuration = 720;
     const boostValue = 50;
@@ -996,7 +998,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, world);
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     // Currently only minted through donation thresholds
     await brush.mint(alice, parseEther("10000"));
@@ -1106,7 +1108,7 @@ describe("Boosts", function () {
 
   // XP boost for 1 hour, no XP boost (uses gathering boost) for 6 hours, XP boost for 1 hour.
   it("Any XP Boost, check multiple boost consumptions and period without XP boost", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 50;
     const boostDuration = 7200;
@@ -1133,7 +1135,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
     const queuedAction = {...queuedActionWoodcutting, timespan: 3600 * 8};
 
     await itemNFT.mintBatch(alice, [EstforConstants.XP_BOOST, EstforConstants.GATHERING_BOOST], [2, 2]);
@@ -1205,7 +1207,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3600;
@@ -1222,7 +1224,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
     await itemNFT.mint(alice, EstforConstants.GATHERING_BOOST, 1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -1253,7 +1255,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, cooking with successPercent", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3600;
@@ -1272,7 +1274,7 @@ describe("Boosts", function () {
 
     const successPercent = 50;
     const minLevel = 1;
-    const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+    const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
     await itemNFT.mint(alice, EstforConstants.GATHERING_BOOST, 1);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
@@ -1304,7 +1306,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, random rewards obtain same day", async function () {
-    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3600;
@@ -1324,7 +1326,7 @@ describe("Boosts", function () {
     const randomChance = 65535;
     const xpPerHour = 50;
     const amount = 100;
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -1345,7 +1347,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const numHours = 2;
 
@@ -1403,7 +1405,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, check boosted time over multiple queued actions is correct", async function () {
-    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 12600; // 3 hour 30 mins
@@ -1423,7 +1425,7 @@ describe("Boosts", function () {
     const randomChance = 65535;
     const xpPerHour = 50;
     const amount = 100;
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -1444,7 +1446,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     // Make sure it passes the next checkpoint so there are no issues running
     const {timestamp} = (await ethers.provider.getBlock("latest")) as Block;
@@ -1536,7 +1538,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, random rewards, obtain next day", async function () {
-    const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3600;
@@ -1556,7 +1558,7 @@ describe("Boosts", function () {
     const randomChance = 65535;
     const xpPerHour = 50;
     const amount = 100;
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -1577,7 +1579,7 @@ describe("Boosts", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const numHours = 2;
 
@@ -1638,7 +1640,7 @@ describe("Boosts", function () {
   });
 
   it("Gathering boost, output > 65535", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const boostValue = 10;
     const boostDuration = 3600;
@@ -1657,7 +1659,7 @@ describe("Boosts", function () {
 
     const outputAmount = 255;
     const rate = 300 * RATE_MUL;
-    const {queuedAction} = await setupBasicAlchemy(itemNFT, world, rate, outputAmount);
+    const {queuedAction} = await setupBasicAlchemy(itemNFT, worldActions, rate, outputAmount);
 
     const startingAmount = 1000000;
     await itemNFT.mintBatch(

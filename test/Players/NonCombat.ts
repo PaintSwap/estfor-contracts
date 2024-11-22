@@ -34,9 +34,9 @@ const actionIsAvailable = true;
 describe("Non-Combat Actions", function () {
   describe("Woodcutting", function () {
     it("Cut wood", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+      const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
@@ -57,8 +57,8 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Full nature equipment", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
-      const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, world);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
+      const {queuedAction: queuedActionWoodcutting, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
 
       await itemNFT.addItems([
         {
@@ -133,9 +133,9 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Multiple guaranteed rewards should be allowed", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const rate = 100 * GUAR_MUL; // per hour
-    const tx = await world.addActions([
+    const tx = await worldActions.addActions([
       {
         actionId: EstforConstants.ACTION_WOODCUTTING_LOG,
         info: {
@@ -160,7 +160,7 @@ describe("Non-Combat Actions", function () {
         combatStats: EstforTypes.emptyCombatStats
       }
     ]);
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     const timespan = 3600;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -194,9 +194,9 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Firemaking", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const rate = 100 * RATE_MUL; // per hour
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -218,10 +218,10 @@ describe("Non-Combat Actions", function () {
         combatStats: EstforTypes.emptyCombatStats
       }
     ]);
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     // Logs go in, nothing comes out
-    tx = await world.addActionChoices(
+    tx = await worldActions.addActionChoices(
       actionId,
       [1],
 
@@ -236,7 +236,7 @@ describe("Non-Combat Actions", function () {
         }
       ]
     );
-    const choiceId = await getActionChoiceId(tx, world);
+    const choiceId = await getActionChoiceId(tx, worldActions);
 
     const timespan = 3600;
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -281,11 +281,11 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Multi skill appending, woodcutting + firemaking", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
     const rate = 1200 * GUAR_MUL; // per hour
     {
-      const tx = await world.addActions([
+      const tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -307,7 +307,7 @@ describe("Non-Combat Actions", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
@@ -331,7 +331,7 @@ describe("Non-Combat Actions", function () {
       queuedActions.push(queuedAction);
     }
 
-    let tx = await world.addActions([
+    let tx = await worldActions.addActions([
       {
         actionId: 2,
         info: {
@@ -353,11 +353,11 @@ describe("Non-Combat Actions", function () {
         combatStats: EstforTypes.emptyCombatStats
       }
     ]);
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     // Logs go in, nothing comes out
     const firemakingRate = 1200 * RATE_MUL; // per hour
-    tx = await world.addActionChoices(
+    tx = await worldActions.addActionChoices(
       actionId,
       [1],
 
@@ -372,7 +372,7 @@ describe("Non-Combat Actions", function () {
         }
       ]
     );
-    const choiceId = await getActionChoiceId(tx, world);
+    const choiceId = await getActionChoiceId(tx, worldActions);
 
     await itemNFT.mint(alice, EstforConstants.MAGIC_FIRE_STARTER, 1);
     await itemNFT.addItems([
@@ -450,11 +450,11 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Multi skill, woodcutting + firemaking", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const queuedActions: EstforTypes.QueuedActionInput[] = [];
     const rate = 100 * GUAR_MUL; // per hour
     {
-      const tx = await world.addActions([
+      const tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -476,7 +476,7 @@ describe("Non-Combat Actions", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
@@ -500,7 +500,7 @@ describe("Non-Combat Actions", function () {
       queuedActions.push(queuedAction);
     }
     {
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 2,
           info: {
@@ -522,10 +522,10 @@ describe("Non-Combat Actions", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       // Logs go in, nothing comes out
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         actionId,
         [1],
 
@@ -540,7 +540,7 @@ describe("Non-Combat Actions", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
 
       await itemNFT.mint(alice, EstforConstants.MAGIC_FIRE_STARTER, 1);
       await itemNFT.addItems([
@@ -600,9 +600,9 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Mining", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-    const tx = await world.addActions([
+    const tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -625,7 +625,7 @@ describe("Non-Combat Actions", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
 
     await itemNFT.mint(alice, EstforConstants.BRONZE_PICKAXE, 1);
     const queuedAction: EstforTypes.QueuedActionInput = {
@@ -664,10 +664,10 @@ describe("Non-Combat Actions", function () {
 
   describe("Smithing", function () {
     it("Smith single item", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
       const rate = 100 * RATE_MUL; // per hour
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -689,10 +689,10 @@ describe("Non-Combat Actions", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       // Ores go in, bars come out
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         actionId,
         [1],
 
@@ -709,7 +709,7 @@ describe("Non-Combat Actions", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
+      const choiceId = await getActionChoiceId(tx, worldActions);
 
       const timespan = 3600;
 
@@ -760,10 +760,10 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Smith multiple queued items", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
       const rate = 100 * RATE_MUL; // per hour
 
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -785,10 +785,10 @@ describe("Non-Combat Actions", function () {
           combatStats: EstforTypes.emptyCombatStats
         }
       ]);
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       // Ores go in, bars come out
-      tx = await world.addActionChoices(
+      tx = await worldActions.addActionChoices(
         actionId,
         [1],
 
@@ -805,8 +805,8 @@ describe("Non-Combat Actions", function () {
           }
         ]
       );
-      const choiceId = await getActionChoiceId(tx, world);
-      tx = await world.addActionChoices(
+      const choiceId = await getActionChoiceId(tx, worldActions);
+      tx = await worldActions.addActionChoices(
         actionId,
         [2],
         [
@@ -822,7 +822,7 @@ describe("Non-Combat Actions", function () {
           }
         ]
       );
-      const choiceId1 = await getActionChoiceId(tx, world);
+      const choiceId1 = await getActionChoiceId(tx, worldActions);
       const timespan = 3600;
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -877,11 +877,11 @@ describe("Non-Combat Actions", function () {
 
   describe("Cooking", function () {
     it("Let's Cook!", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const successPercent = 100;
       const minLevel = 1;
-      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
 
@@ -900,11 +900,11 @@ describe("Non-Combat Actions", function () {
 
     // Changes based on level
     it("Burn some food", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const successPercent = 25;
       const minLevel = 65;
-      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
       await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
@@ -931,11 +931,11 @@ describe("Non-Combat Actions", function () {
     it("Burn food, in-progress processing (many)", async function () {
       this.timeout(100000); // 100 seconds, this test can take a while on CI
 
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const successPercent = 25;
       const minLevel = 65;
-      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
       await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
@@ -968,11 +968,11 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Burn food, check max 90% success upper bound", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const successPercent = 85;
       const minLevel = 65;
-      const {queuedAction, rate} = await setupBasicCooking(itemNFT, world, successPercent, minLevel);
+      const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
       await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
@@ -998,13 +998,13 @@ describe("Non-Combat Actions", function () {
     // All thieving rewards should be
     it("Steal Nothing", async function () {
       // Check pending rewards, also add a boost, make sure it is 0
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 0; // 0% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
 
       const xpPerHour = 2;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1030,7 +1030,7 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const numHours = 1;
 
       const timespan = 3600 * numHours;
@@ -1099,13 +1099,13 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Check pendingQueuedActionState().rolls", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChance = 65535;
       const successPercent = 100;
 
       const xpPerHour = 3600;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1128,7 +1128,7 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const numHours = 2;
       // Make sure it passes the next checkpoint so there are no issues running
@@ -1191,13 +1191,13 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Steal (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 50.0 / 100; // 50% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
 
       const xpPerHour = 2;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1220,7 +1220,7 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const numHours = 4;
 
@@ -1277,14 +1277,14 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Steal, success percent (many)", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 50.0 / 100; // 50% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
       const successPercent = 60; // Makes it 30% chance in total
 
       const xpPerHour = 2;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1307,7 +1307,7 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const numHours = 2;
 
@@ -1365,13 +1365,13 @@ describe("Non-Combat Actions", function () {
 
     // Gives +3% XP and +100% success chance
     it("Full natuow equipment", async function () {
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 1 / 100; // 1% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
 
       const xpPerHour = 50;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1394,7 +1394,7 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
 
       const numHours = 2;
 
@@ -1511,14 +1511,14 @@ describe("Non-Combat Actions", function () {
 
     it("successPercent not 100", async function () {
       // Check pending rewards, also add a boost, make sure it is 0
-      const {playerId, players, itemNFT, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
 
       const randomChanceFraction = 99 / 100; // 99% chance
       const randomChance = Math.floor(65536 * randomChanceFraction);
       const successPercent = 99;
 
       const xpPerHour = 2;
-      let tx = await world.addActions([
+      let tx = await worldActions.addActions([
         {
           actionId: 1,
           info: {
@@ -1544,7 +1544,7 @@ describe("Non-Combat Actions", function () {
         }
       ]);
 
-      const actionId = await getActionId(tx, world);
+      const actionId = await getActionId(tx, worldActions);
       const numHours = 5;
 
       const timespan = 3600 * numHours;
@@ -1588,8 +1588,8 @@ describe("Non-Combat Actions", function () {
     };
 
     it("Finish 1 item", async function () {
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const {queuedAction, rate} = await setupBasicCrafting(itemNFT, world);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
+      const {queuedAction, rate} = await setupBasicCrafting(itemNFT, worldActions);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -1617,8 +1617,8 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Queue enough time but there is a process in-between", async function () {
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const {queuedAction, rate} = await setupBasicCrafting(itemNFT, world);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
+      const {queuedAction, rate} = await setupBasicCrafting(itemNFT, worldActions);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -1680,9 +1680,9 @@ describe("Non-Combat Actions", function () {
     });
 
     it("More than 1 rate", async function () {
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
       const rate = 60 * RATE_MUL;
-      const {queuedAction} = await setupBasicCrafting(itemNFT, world, rate);
+      const {queuedAction} = await setupBasicCrafting(itemNFT, worldActions, rate);
 
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20 * 60, 1 * 60]);
 
@@ -1754,8 +1754,8 @@ describe("Non-Combat Actions", function () {
 
     it("Don't complete all (run out of id1 resource)", async function () {
       // Only get XP for the ones you did complete
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, worldActions);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       // Don't have enough rope (needs 2)
@@ -1788,8 +1788,8 @@ describe("Non-Combat Actions", function () {
 
     it("Don't complete all (run out of id2 resource)", async function () {
       // Only get XP for the ones you did complete
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, worldActions);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       // Don't have enough rope (needs 2)
@@ -1822,8 +1822,8 @@ describe("Non-Combat Actions", function () {
 
     it("In-progress update have enough, then don't have enough, then have enough", async function () {
       // Only get XP for the ones you did complete
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, worldActions);
       const queuedAction = {...queuedActionCrafting, timespan: 3600 * 3};
 
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [200, 10]);
@@ -1879,8 +1879,8 @@ describe("Non-Combat Actions", function () {
     });
 
     it("Don't have any of both, id1 or id2", async function () {
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, worldActions);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
@@ -1921,8 +1921,8 @@ describe("Non-Combat Actions", function () {
 
     it("Finish multiple items (multiple craft actions queued)", async function () {
       // Only get XP for the ones you did complete
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
-      const {queuedAction} = await setupBasicCrafting(itemNFT, world);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
+      const {queuedAction} = await setupBasicCrafting(itemNFT, worldActions);
 
       // Don't enough enough rope (needs 2)
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [60, 3]);
@@ -2012,10 +2012,10 @@ describe("Non-Combat Actions", function () {
 
     it("Craft, multiple output num", async function () {
       // Only get XP for the ones you did complete
-      const {players, alice, playerId, itemNFT, world} = await loadFixture(crafingFixture);
+      const {players, alice, playerId, itemNFT, worldActions} = await loadFixture(crafingFixture);
       const rate = 1 * RATE_MUL;
       const outputAmount = 3;
-      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, world, rate, outputAmount);
+      const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, worldActions, rate, outputAmount);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
       // Don't enough enough rope (needs 2)
@@ -2050,9 +2050,9 @@ describe("Non-Combat Actions", function () {
   // Very similar to crafting
   describe("Alchemy", function () {
     it("Finish 1 item", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction, rate} = await setupBasicAlchemy(itemNFT, world);
+      const {queuedAction, rate} = await setupBasicAlchemy(itemNFT, worldActions);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -2085,11 +2085,11 @@ describe("Non-Combat Actions", function () {
 
   // This test checks a bug found by Chopps where doing 24 hours of alchemizing enhanted logs was pruning the output
   it("Output amount is greater than 65535 should work", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const outputAmount = 255;
     const rate = 300 * RATE_MUL;
-    const {queuedAction} = await setupBasicAlchemy(itemNFT, world, rate, outputAmount);
+    const {queuedAction} = await setupBasicAlchemy(itemNFT, worldActions, rate, outputAmount);
 
     const startingAmount = 1000000;
     await itemNFT.mintBatch(
@@ -2123,9 +2123,9 @@ describe("Non-Combat Actions", function () {
   // Very similar to crafting
   describe("Fletching", function () {
     it("Finish 1 item", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction, rate} = await setupBasicFletching(itemNFT, world);
+      const {queuedAction, rate} = await setupBasicFletching(itemNFT, worldActions);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -2159,9 +2159,9 @@ describe("Non-Combat Actions", function () {
   // Very similar to crafting for the skill, but liquidaion is handled differently in InstantActions
   describe("Forging", function () {
     it("Finish 1 item", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction, rate} = await setupBasicForging(itemNFT, world);
+      const {queuedAction, rate} = await setupBasicForging(itemNFT, worldActions);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -2195,9 +2195,9 @@ describe("Non-Combat Actions", function () {
   // Very similar to crafting, but has very long actions (8 hours long)
   describe("Farming", function () {
     it("Finish 1 item", async function () {
-      const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
-      const {queuedAction, rate} = await setupBasicFarming(itemNFT, world);
+      const {queuedAction, rate} = await setupBasicFarming(itemNFT, worldActions);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -2230,9 +2230,9 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Set past max timespan", async function () {
-    const {playerId, players, itemNFT, world, alice, maxTime} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice, maxTime} = await loadFixture(playersFixture);
 
-    const {queuedAction: basicWoodcuttingQueuedAction, rate} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction: basicWoodcuttingQueuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
 
     const timespan = maxTime + 1n; // Exceed maximum
     const queuedAction = {...basicWoodcuttingQueuedAction};
@@ -2253,10 +2253,10 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Check refund time for actions", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const rate = 2 * GUAR_MUL;
-    const {queuedAction} = await setupBasicWoodcutting(itemNFT, world, rate);
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions, rate);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
     await ethers.provider.send("evm_increaseTime", [(queuedAction.timespan / 4) * 3]);
@@ -2276,7 +2276,7 @@ describe("Non-Combat Actions", function () {
   // TODO Rest of the actions
 
   it("Low rate action (more than 1 hour needed)", async function () {
-    const {playerId, players, itemNFT, world, alice} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
@@ -2286,7 +2286,7 @@ describe("Non-Combat Actions", function () {
     ]);
 
     const rate = 0.1 * GUAR_MUL; // 0.1 per hour
-    const tx = await world.addActions([
+    const tx = await worldActions.addActions([
       {
         actionId: 1,
         info: {
@@ -2309,7 +2309,7 @@ describe("Non-Combat Actions", function () {
       }
     ]);
 
-    const actionId = await getActionId(tx, world);
+    const actionId = await getActionId(tx, worldActions);
     const timespan = 3600 * 19; // Should make 1
     const queuedAction: EstforTypes.QueuedActionInput = {
       attire: EstforTypes.noAttire,
@@ -2332,9 +2332,9 @@ describe("Non-Combat Actions", function () {
   });
 
   it("Incorrect left/right hand equipment", async function () {
-    const {playerId, players, itemNFT, world, alice, owner} = await loadFixture(playersFixture);
+    const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
 
-    const {queuedAction: basicWoodcuttingAction} = await setupBasicWoodcutting(itemNFT, world);
+    const {queuedAction: basicWoodcuttingAction} = await setupBasicWoodcutting(itemNFT, worldActions);
     const queuedAction = {...basicWoodcuttingAction};
     queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_PICKAXE; // Incorrect
     await itemNFT.addItems([

@@ -360,7 +360,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
   function _packAction(
     InstantVRFActionInput calldata actionInput
-  ) private view returns (InstantVRFAction memory instantVRFAction) {
+  ) private pure returns (InstantVRFAction memory instantVRFAction) {
     bytes1 packedData = bytes1(uint8(actionInput.isFullModeOnly ? 1 << IS_FULL_MODE_BIT : 0));
     if (actionInput.isAvailable) {
       packedData |= bytes1(uint8(1 << IS_AVAILABLE_BIT));

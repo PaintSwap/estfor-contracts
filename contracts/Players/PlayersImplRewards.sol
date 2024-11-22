@@ -111,8 +111,12 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       uint32 pointsAccrued;
       uint256 endTime = startTime + queuedAction.timespan;
 
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, uint8 worldLocation) = _world
-        .getRewardsHelper(queuedAction.actionId);
+      (
+        ActionRewards memory actionRewards,
+        Skill actionSkill,
+        uint256 numSpawnedPerHour,
+        uint8 worldLocation
+      ) = _worldActions.getRewardsHelper(queuedAction.actionId);
 
       uint256 elapsedTime = _getElapsedTime(startTime, endTime);
       bool correctWorldLocation = worldLocation == pendingQueuedActionState.worldLocation;
@@ -137,7 +141,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       bool isCombat = queuedAction.packed._isCombatStyle();
       ActionChoice memory actionChoice;
       if (queuedAction.choiceId != 0) {
-        actionChoice = _world.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
+        actionChoice = _worldActions.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
       }
 
       CheckpointEquipments storage checkpointEquipments = _checkpointEquipments[playerId][i];
@@ -683,9 +687,8 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     view
     returns (uint256[] memory ids, uint256[] memory amounts, uint256[] memory randomIds, uint256[] memory randomAmounts)
   {
-    (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
-      actionId
-    );
+    (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _worldActions
+      .getRewardsHelper(actionId);
     bool isCombat = actionSkill._isSkillCombat();
 
     uint16 monstersKilledFull = uint16((numSpawnedPerHour * (prevXPElapsedTime + xpElapsedTime)) / (SPAWN_MUL * 3600));
@@ -818,7 +821,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
         uint8(actionSkill),
         isCombat,
         pendingQueuedActionProcessed,
-        address(_world),
+        address(_worldActions),
         MAX_SUCCESS_PERCENT_CHANCE,
         _playerXP[playerId]
       );
@@ -846,9 +849,8 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
     uint256 length;
     for (uint256 i; i < pendingRandomRewardsLength; ++i) {
       PendingRandomReward storage pendingRandomReward = pendingRandomRewards[i];
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _world.getRewardsHelper(
-        pendingRandomReward.actionId
-      );
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _worldActions
+        .getRewardsHelper(pendingRandomReward.actionId);
       bool isCombat = actionSkill._isSkillCombat();
       uint16 monstersKilled = uint16(
         uint256(numSpawnedPerHour * pendingRandomReward.xpElapsedTime) / (SPAWN_MUL * 3600)
@@ -938,7 +940,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
       _activeBoosts[playerId],
       _globalBoost,
       _clanBoosts[_clans.getClanId(playerId)],
-      address(_world),
+      address(_worldActions),
       _fullAttireBonus[skill].bonusXPPercent,
       _fullAttireBonus[skill].itemTokenIds,
       pendingQueuedActionEquipmentStates,

@@ -22,10 +22,7 @@ describe("ItemNFT", function () {
     }
 
     // Create the world
-    const worldLibrary = await ethers.deployContract("WorldLibrary");
-    const World = await ethers.getContractFactory("World", {
-      libraries: {WorldLibrary: await worldLibrary.getAddress()}
-    });
+    const World = await ethers.getContractFactory("World");
     const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
       kind: "uups",
       unsafeAllow: ["external-library-linking"]

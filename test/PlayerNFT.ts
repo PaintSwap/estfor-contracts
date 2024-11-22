@@ -349,6 +349,7 @@ describe("PlayerNFT", function () {
       dev,
       royaltyReceiver,
       itemNFT,
+      worldActions,
       world,
       alice,
       playersImplProcessActions,
@@ -364,12 +365,6 @@ describe("PlayerNFT", function () {
       wishingWell,
       bankFactory,
       petNFT,
-      promotions,
-      instantActions,
-      territories,
-      lockedBankVaults,
-      instantVRFActions,
-      passiveActions,
       estforLibrary
     } = await loadFixture(deployContracts);
 
@@ -407,6 +402,7 @@ describe("PlayerNFT", function () {
         await itemNFT.getAddress(),
         await playerNFTNotBeta.getAddress(),
         await petNFT.getAddress(),
+        await worldActions.getAddress(),
         await world.getAddress(),
         await adminAccess.getAddress(),
         await quests.getAddress(),

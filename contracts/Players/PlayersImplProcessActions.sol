@@ -90,7 +90,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
         );
       }
 
-      ActionRewards memory actionRewards = _world.getActionRewards(actionMetadata.actionId);
+      ActionRewards memory actionRewards = _worldActions.getActionRewards(actionMetadata.actionId);
 
       ActionChoice memory actionChoice;
       QueuedAction storage queuedAction = _players[playerId].actionQueue[i];
@@ -98,7 +98,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       bool isCombat = queuedAction.packed._isCombatStyle();
       if (queuedAction.choiceId != 0) {
         // Includes combat
-        actionChoice = _world.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
+        actionChoice = _worldActions.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);
       }
 
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, combatStyle, queuedAction.actionId);

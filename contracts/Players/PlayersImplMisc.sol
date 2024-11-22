@@ -334,7 +334,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     bool isCombat = queuedAction.packed._isCombatStyle();
     if (isCombat) {
       // Fetch the requirements for it
-      CombatStats memory enemyCombatStats = _world.getCombatStats(queuedAction.actionId);
+      CombatStats memory enemyCombatStats = _worldActions.getCombatStats(queuedAction.actionId);
 
       uint256 combatElapsedTime;
       (xpElapsedTime, combatElapsedTime, baseInputItemsConsumedNum, foodConsumed, died) = PlayersLibrary

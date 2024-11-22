@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {IItemNFT} from "../interfaces/IItemNFT.sol";
-import {IWorld} from "../interfaces/IWorld.sol";
+import {IWorldActions} from "../interfaces/IWorldActions.sol";
 
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import {SkillLibrary} from "../libraries/SkillLibrary.sol";
@@ -1187,7 +1187,7 @@ library PlayersLibrary {
     PlayerBoostInfo storage activeBoost,
     PlayerBoostInfo storage globalBoost,
     PlayerBoostInfo storage clanBoost,
-    address world,
+    address worldActions,
     uint8 bonusAttirePercent,
     uint16[5] calldata expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
@@ -1195,7 +1195,10 @@ library PlayersLibrary {
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     Skill skill = skillId._asSkill();
     bool isCombatSkill = queuedAction.packed._isCombatStyle();
-    uint24 xpPerHour = IWorld(world).getXPPerHour(queuedAction.actionId, isCombatSkill ? NONE : queuedAction.choiceId);
+    uint24 xpPerHour = IWorldActions(worldActions).getXPPerHour(
+      queuedAction.actionId,
+      isCombatSkill ? NONE : queuedAction.choiceId
+    );
     pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
     // Normal Player specific boosts
     pointsAccrued += _getXPFromBoost(isCombatSkill, startTime, xpElapsedTime, xpPerHour, activeBoost);
@@ -1250,12 +1253,12 @@ library PlayersLibrary {
     uint8 actionSkillId,
     bool isCombat,
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed,
-    address world,
+    address worldActions,
     uint256 maxSuccessPercentChange,
     PackedXP storage packedXP
   ) external view returns (uint8 successPercent) {
     successPercent = 100;
-    (uint8 actionSuccessPercent, uint32 minXP) = IWorld(world).getActionSuccessPercentAndMinXP(actionId);
+    (uint8 actionSuccessPercent, uint32 minXP) = IWorldActions(worldActions).getActionSuccessPercentAndMinXP(actionId);
     if (actionSuccessPercent != 100) {
       require(!isCombat, InvalidAction());
 

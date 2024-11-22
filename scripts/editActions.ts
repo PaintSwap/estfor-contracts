@@ -1,5 +1,5 @@
 import {ethers} from "hardhat";
-import {WORLD_ADDRESS} from "./contractAddresses";
+import {WORLD_ACTIONS_ADDRESS} from "./contractAddresses";
 import {allActions} from "./data/actions";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {World} from "../typechain-types";
@@ -9,7 +9,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit actions using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const world = (await ethers.getContractAt("World", WORLD_ADDRESS, owner)) as World;
+  const worldActions = await ethers.getContractAt("WorldActions", WORLD_ACTIONS_ADDRESS, owner);
 
   /*
   const actions = allActions.filter(
@@ -17,7 +17,7 @@ async function main() {
       action.info.skill === Skill.COMBAT || action.info.skill === Skill.FISHING || action.info.skill === Skill.MINING
   );
 
-  const tx = await world.editActions(actions);
+  const tx = await worldActions.editActions(actions);
   await tx.wait();
   */
 
@@ -25,14 +25,14 @@ async function main() {
     EstforConstants.ACTION_COMBAT_QUARTZ_EAGLE,
     EstforConstants.ACTION_COMBAT_ELEMENTAL_DRAGON,
     EstforConstants.ACTION_COMBAT_ERKAD,
-    EstforConstants.ACTION_THIEVING_NEST,
+    EstforConstants.ACTION_THIEVING_NEST
   ]);
   const actions = allActions.filter((action) => actionIds.has(action.actionId));
 
   if (actions.length !== actionIds.size) {
     console.log("Cannot find actions");
   } else {
-    const tx = await world.editActions(actions);
+    const tx = await worldActions.editActions(actions);
     await tx.wait();
   }
 }

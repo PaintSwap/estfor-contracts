@@ -32,11 +32,11 @@ import {
   VRFRequestInfo,
   WishingWell,
   World,
-  WorldLibrary,
   Treasury,
   BankRelay,
   PVPBattleground,
-  Raids
+  Raids,
+  WorldActions
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -59,11 +59,14 @@ export const playersFixture = async function () {
   }
 
   // Create the world
-  const worldLibrary = (await ethers.deployContract("WorldLibrary")) as WorldLibrary;
-  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: await worldLibrary.getAddress()}});
+  const WorldActions = await ethers.getContractFactory("WorldActions");
+  const worldActions = (await upgrades.deployProxy(WorldActions, [], {
+    kind: "uups"
+  })) as unknown as WorldActions;
+
+  const World = await ethers.getContractFactory("World");
   const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
-    kind: "uups",
-    unsafeAllow: ["external-library-linking"]
+    kind: "uups"
   })) as unknown as World;
 
   await setDailyAndWeeklyRewards(world);
@@ -248,6 +251,7 @@ export const playersFixture = async function () {
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
       await petNFT.getAddress(),
+      await worldActions.getAddress(),
       await world.getAddress(),
       await adminAccess.getAddress(),
       await quests.getAddress(),
@@ -424,6 +428,7 @@ export const playersFixture = async function () {
       await vrfRequestInfo.getAddress(),
       spawnRaidCooldown,
       await brush.getAddress(),
+      await worldActions.getAddress(),
       await world.getAddress(),
       maxRaidCombatants,
       raidCombatActionIds,
@@ -534,15 +539,12 @@ export const playersFixture = async function () {
     }
   )) as unknown as CombatantsHelper;
 
-  const PassiveActions = await ethers.getContractFactory("PassiveActions", {
-    libraries: {WorldLibrary: await worldLibrary.getAddress()}
-  });
+  const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
     [await players.getAddress(), await itemNFT.getAddress(), await world.getAddress()],
     {
-      kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      kind: "uups"
     }
   )) as unknown as PassiveActions;
 
@@ -650,8 +652,8 @@ export const playersFixture = async function () {
     brush,
     maxTime,
     owner,
+    worldActions,
     world,
-    worldLibrary,
     alice,
     bob,
     charlie,

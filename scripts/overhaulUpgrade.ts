@@ -10,7 +10,8 @@ import {
   ESTFOR_LIBRARY_ADDRESS,
   SHOP_ADDRESS,
   QUESTS_ADDRESS,
-  INSTANT_ACTIONS_ADDRESS
+  INSTANT_ACTIONS_ADDRESS,
+  WORLD_ACTIONS_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
 import {Players, World} from "../typechain-types";
@@ -26,6 +27,7 @@ import {allItems} from "./data/items";
 import {ShopItem, allShopItems} from "./data/shopItems";
 import {QuestInput, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
 import {parseEther} from "ethers";
+import {WorldActions} from "../typechain-types/contracts/WorldActions.sol";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -39,11 +41,10 @@ async function main() {
   const timeout = 600 * 1000; // 10 minutes
 
   /* Overhaul upgrade #1
-  const PlayersLibrary = await ethers.getContractFactory("PlayersLibrary");
-  const playersLibrary = await PlayersLibrary.deploy();
+  const playersLibrary = await ethers.deployContract("PlayersLibrary");
   console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
-  const Players = (await ethers.getContractFactory("Players"));
+  const Players = await ethers.getContractFactory("Players");
   let players = Players.attach(PLAYERS_ADDRESS);
   await players.pauseGame(true);
   players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
@@ -76,13 +77,7 @@ async function main() {
   console.log("editXPThresholdRewards");
 
   // Update daily reward pools
-  const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
-  const worldLibrary = await WorldLibrary.deploy();
-  console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
-
-  const World = (await ethers.getContractFactory("World", {libraries: {WorldLibrary: (await worldLibrary.getAddress())}})).connect(
-    owner
-  );
+  const World = await ethers.getContractFactory("World");
   const world = (await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -94,14 +89,11 @@ async function main() {
   console.log("setDailyAndWeeklyRewards");
 
   // ItemNFT
-  const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
-  const itemNFTLibrary = await ItemNFTLibrary.deploy();
+  const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
   await itemNFTLibrary.waitForDeployment();
   console.log(`itemNFTLibrary = "${(await itemNFTLibrary.getAddress()).toLowerCase()}"`);
 
-  const ItemNFT = (
-    await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: (await itemNFTLibrary.getAddress())}})
-  );
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {libraries: {ItemNFTLibrary: (await itemNFTLibrary.getAddress())}});
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -117,9 +109,7 @@ async function main() {
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
-  const Players = (
-    await ethers.getContractFactory("Players")
-  );
+  const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
@@ -141,11 +131,10 @@ async function main() {
   await tx.wait();
   console.log("setImpls");
 
-  const Clans = (
+  const Clans =
     await ethers.getContractFactory("Clans", {
       libraries: {EstforLibrary: (await estforLibrary.getAddress())},
-    })
-  );
+    });
   const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -159,11 +148,9 @@ async function main() {
   await tx.wait();
   console.log("setPaintSwapMarketplaceWhitelist");
 
-  const PlayerNFT = (
-    await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: (await estforLibrary.getAddress())},
-    })
-  );
+  const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+    libraries: {EstforLibrary: (await estforLibrary.getAddress())},
+  });
   const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
@@ -296,16 +283,11 @@ async function main() {
   tx = await instantActions.addActions(allInstantActions);
   await tx.wait();
 
-  const worldLibrary = await ethers.deployContract("WorldLibrary");
-  console.log(`worldLibrary = "${(await worldLibrary.getAddress()).toLowerCase()}"`);
-
-  const World = await ethers.getContractFactory("World", {libraries: {WorldLibrary: await worldLibrary.getAddress()}});
-  const world = (await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
+  const WorldActions = await ethers.getContractFactory("WorldActions");
+  const worldActions = (await upgrades.upgradeProxy(WORLD_ACTIONS_ADDRESS, WorldActions, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"],
-    unsafeSkipStorageCheck: true,
     timeout
-  })) as unknown as World;
+  })) as unknown as WorldActions;
 
   console.log("world upgraded");
 
@@ -315,7 +297,7 @@ async function main() {
     console.log("Cannot find actions");
     process.exit(1);
   } else {
-    await world.addActions(actions);
+    await worldActions.addActions(actions);
   }
   console.log("Add forging action");
 
@@ -329,7 +311,7 @@ async function main() {
       action.actionId === EstforConstants.ACTION_COMBAT_ERKAD
   );
 
-  tx = await world.editActions(actions);
+  tx = await worldActions.editActions(actions);
   await tx.wait();
   console.log("editActions");
 
@@ -371,7 +353,7 @@ async function main() {
 
   const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
   const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
-  tx = await world.addBulkActionChoices(
+  tx = await worldActions.addBulkActionChoices(
     [alchemyActionId, forgingActionId],
     [newActionChoiceIdsAlchemy, allActionChoiceIdsForging],
     [newActionChoicesAlchemy, allActionChoicesForging]
@@ -420,8 +402,7 @@ async function main() {
     await playersImplMisc1.getAddress(),
     await estforLibrary.getAddress(),
     await playersLibrary.getAddress(),
-    await world.getAddress(),
-    await worldLibrary.getAddress(),
+    await worldActions.getAddress(),
     await instantActions.getAddress()
   ]);
 }

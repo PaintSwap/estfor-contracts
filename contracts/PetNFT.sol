@@ -9,9 +9,9 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {AdminAccess} from "./AdminAccess.sol";
+import {World} from "./World.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
-import {IWorld} from "./interfaces/IWorld.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {PetNFTLibrary} from "./PetNFTLibrary.sol";
@@ -121,7 +121,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   uint8 private _brushDevPercentage;
   address private _territories;
   address private _players;
-  IWorld private _world;
+  World private _world;
   BloomFilter.Filter private _reservedPetNames; // TODO: remove 30 days after launch
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
@@ -163,7 +163,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     address dev,
     uint72 editNameCost,
     address treasury,
-    IWorld world,
+    World world,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {

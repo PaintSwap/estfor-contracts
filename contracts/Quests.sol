@@ -74,11 +74,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   address private _wNative; // wFTM
   address private _brush; // brush
 
-  modifier onlyWorld() {
-    require(_msgSender() == _world, NotWorld());
-    _;
-  }
-
   modifier onlyPlayers() {
     require(_msgSender() == address(_players), NotPlayers());
     _;

@@ -26,11 +26,7 @@ describe("Shop", function () {
     }
 
     // Create the world
-    const WorldLibrary = await ethers.getContractFactory("WorldLibrary");
-    const worldLibrary = await WorldLibrary.deploy();
-    const World = await ethers.getContractFactory("World", {
-      libraries: {WorldLibrary: await worldLibrary.getAddress()}
-    });
+    const World = await ethers.getContractFactory("World");
     const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
       kind: "uups",
       unsafeAllow: ["external-library-linking"]

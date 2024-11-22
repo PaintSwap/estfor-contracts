@@ -11,7 +11,7 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 import {World} from "./World.sol";
 
-import {WorldLibrary} from "./WorldLibrary.sol";
+import {EstforLibrary} from "./EstforLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
@@ -542,8 +542,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     // Set the rewards
     ActionRewards storage actionReward = _actionRewards[passiveActionInput.actionId];
     delete _actionRewards[passiveActionInput.actionId];
-    WorldLibrary.setActionGuaranteedRewards(passiveActionInput.guaranteedRewards, actionReward);
-    WorldLibrary.setActionRandomRewards(passiveActionInput.randomRewards, actionReward);
+    EstforLibrary._setActionGuaranteedRewards(passiveActionInput.guaranteedRewards, actionReward);
+    EstforLibrary._setActionRandomRewards(passiveActionInput.randomRewards, actionReward);
   }
 
   function _checkInfo(PassiveActionInfoInput calldata actionInfo) private pure {

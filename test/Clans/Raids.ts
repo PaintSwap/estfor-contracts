@@ -61,7 +61,7 @@ describe("Raids", function () {
   const raidFixture = async function () {
     const fixture = await loadFixture(clanFixture);
 
-    const {raids, world, itemNFT} = fixture;
+    const {raids, worldActions, itemNFT} = fixture;
 
     // Add all actions
     const raidCombatActionIds = [
@@ -73,7 +73,7 @@ describe("Raids", function () {
     ];
 
     // Add all the actions
-    await world.addActions(allActions);
+    await worldActions.addActions(allActions);
 
     await itemNFT.addItems([
       {
@@ -90,7 +90,7 @@ describe("Raids", function () {
     ]);
 
     const genericCombatActionId = EstforConstants.NONE;
-    await world.addBulkActionChoices(
+    await worldActions.addBulkActionChoices(
       [genericCombatActionId, genericCombatActionId, genericCombatActionId],
       [allActionChoiceIdsMelee, allActionChoiceIdsRanged, allActionChoiceIdsMagic],
       [allActionChoicesMelee, allActionChoicesRanged, allActionChoicesMagic]
@@ -269,7 +269,7 @@ describe("Raids", function () {
       // Edit all combat actions so that you get no loot from them
       const {
         raids,
-        world,
+        worldActions,
         raidCombatActionIds,
         combatantsHelper,
         playerId,
@@ -307,7 +307,7 @@ describe("Raids", function () {
         };
       });
 
-      await world.editActions(actionsToEdit);
+      await worldActions.editActions(actionsToEdit);
 
       await raids.addBaseRaids([1, 2, 3], [trashMonsterBaseRaid, trashMonsterBaseRaid, trashMonsterBaseRaid]);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);

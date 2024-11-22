@@ -11,10 +11,10 @@ import {Block} from "ethers";
 
 describe("Pets", function () {
   it("Queue a pet which you don't have a balance for", async function () {
-    const {players, playerId, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
+    const {players, playerId, itemNFT, worldActions, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
       await loadFixture(playersFixture);
     const petId = 1;
-    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
@@ -24,8 +24,18 @@ describe("Pets", function () {
   });
 
   it("Queue a pet with combat, should revert if you are not evolved", async function () {
-    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
-      await loadFixture(playersFixture);
+    const {
+      players,
+      playerId,
+      petNFT,
+      itemNFT,
+      worldActions,
+      brush,
+      playerNFT,
+      upgradePlayerBrushPrice,
+      origName,
+      alice
+    } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -36,7 +46,7 @@ describe("Pets", function () {
 
     await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
-    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
     await expect(
       players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
@@ -57,8 +67,18 @@ describe("Pets", function () {
   });
 
   it("Queue a pet with combat, partial action consumption", async function () {
-    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
-      await loadFixture(playersFixture);
+    const {
+      players,
+      playerId,
+      petNFT,
+      itemNFT,
+      worldActions,
+      brush,
+      playerNFT,
+      upgradePlayerBrushPrice,
+      origName,
+      alice
+    } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -69,7 +89,7 @@ describe("Pets", function () {
 
     await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
-    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
@@ -95,7 +115,7 @@ describe("Pets", function () {
       playerId,
       petNFT,
       itemNFT,
-      world,
+      worldActions,
       brush,
       playerNFT,
       upgradePlayerBrushPrice,
@@ -114,7 +134,7 @@ describe("Pets", function () {
 
     await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
-    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
@@ -141,7 +161,7 @@ describe("Pets", function () {
       playerId,
       petNFT,
       itemNFT,
-      world,
+      worldActions,
       brush,
       playerNFT,
       upgradePlayerBrushPrice,
@@ -159,7 +179,7 @@ describe("Pets", function () {
 
     await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
-    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
@@ -188,8 +208,18 @@ describe("Pets", function () {
   });
 
   it("Queue a pet with combat and startActionsExtra", async function () {
-    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
-      await loadFixture(playersFixture);
+    const {
+      players,
+      playerId,
+      petNFT,
+      itemNFT,
+      worldActions,
+      brush,
+      playerNFT,
+      upgradePlayerBrushPrice,
+      origName,
+      alice
+    } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [0, 0];
@@ -200,7 +230,7 @@ describe("Pets", function () {
 
     await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
-    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
@@ -225,8 +255,18 @@ describe("Pets", function () {
   });
 
   it("Queue a pet with combat, percentage + fixed", async function () {
-    const {players, playerId, petNFT, itemNFT, world, brush, playerNFT, upgradePlayerBrushPrice, origName, alice} =
-      await loadFixture(playersFixture);
+    const {
+      players,
+      playerId,
+      petNFT,
+      itemNFT,
+      worldActions,
+      brush,
+      playerNFT,
+      upgradePlayerBrushPrice,
+      origName,
+      alice
+    } = await loadFixture(playersFixture);
 
     const basePet = {...allBasePets[0]};
     basePet.skillFixedMins = [2, 0];
@@ -238,7 +278,7 @@ describe("Pets", function () {
 
     await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
     const petId = 1;
-    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, world, petId);
+    const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
