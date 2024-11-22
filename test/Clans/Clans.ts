@@ -16,7 +16,7 @@ describe("Clans", function () {
 
       // Check that the clan is created with the correct values
       const clan = await clans.getClan(clanId);
-      expect(clan.owner).to.eq(playerId);
+      expect(clan.ownerPlayerId).to.eq(playerId);
       expect(clan.memberCount).to.eq(1);
       expect(clan.imageId).to.eq(imageId);
       expect(clan.tierId).to.eq(tierId);
@@ -615,7 +615,7 @@ describe("Clans", function () {
       .to.emit(clans, "ClanOwnerLeft")
       .withArgs(clanId, playerId);
     let clan = await clans.connect(alice).getClan(clanId);
-    await expect(clan.owner).to.eq(0);
+    await expect(clan.ownerPlayerId).to.eq(0);
     await expect(clan.memberCount).to.eq(1);
 
     await expect(clans.connect(bob).claimOwnership(clanId, bobPlayerId)).to.be.revertedWithCustomError(
@@ -626,7 +626,7 @@ describe("Clans", function () {
     await clans.connect(bob).claimOwnership(clanId, bobPlayerId);
 
     clan = await clans.connect(alice).getClan(clanId);
-    await expect(clan.owner).to.eq(bobPlayerId);
+    await expect(clan.ownerPlayerId).to.eq(bobPlayerId);
     await expect(clan.memberCount).to.eq(2);
   });
 
@@ -1147,7 +1147,7 @@ describe("Clans", function () {
 
         // Check owner transferred to bob and other clan details
         const clan = await clans.connect(alice).getClan(clanId);
-        await expect(clan.owner).to.eq(bobPlayerId);
+        await expect(clan.ownerPlayerId).to.eq(bobPlayerId);
         await expect(clan.memberCount).to.eq(2);
 
         // Cannot renounce now as you aren't owner

@@ -287,7 +287,6 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
 
     for (uint16 i; i < actionChoiceLength; ++i) {
       _checkAddActionChoice(actionId, actionChoiceIds[i], actionChoicesToAdd[i]);
-      // TODO: Could set the first storage slot only in cases where appropriate (same as editing)
       _actionChoices[actionId][actionChoiceIds[i]] = _packActionChoice(actionChoicesToAdd[i]);
     }
   }

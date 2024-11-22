@@ -1500,9 +1500,9 @@
     "name": "getClan",
     "outputs": [
       {
-        "internalType": "uint80",
-        "name": "owner",
-        "type": "uint80"
+        "internalType": "uint64",
+        "name": "ownerPlayerId",
+        "type": "uint64"
       },
       {
         "internalType": "uint16",
@@ -2132,7 +2132,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "newOwner",
+        "name": "newOwnerPlayerId",
         "type": "uint256"
       },
       {

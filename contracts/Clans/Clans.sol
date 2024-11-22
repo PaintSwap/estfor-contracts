@@ -108,7 +108,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error ClanNameIsReserved(string name);
 
   struct Clan {
-    uint80 owner;
+    uint64 ownerPlayerId;
     uint16 imageId;
     uint16 memberCount;
     uint40 createdTimestamp;
@@ -235,7 +235,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint256 clanId = _nextClanId;
     _nextClanId++;
     Clan storage clan = _clans[clanId];
-    clan.owner = uint80(playerId);
+    clan.ownerPlayerId = uint64(playerId);
     clan.tierId = tierId;
     clan.imageId = imageId;
     clan.memberCount = 1;
@@ -451,22 +451,22 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function renounceOwnershipTo(
     uint256 clanId,
-    uint256 newOwner,
+    uint256 newOwnerPlayerId,
     ClanRank newRank
-  ) external isOwnerOfPlayer(_clans[clanId].owner) isMemberOfClan(clanId, newOwner) {
+  ) external isOwnerOfPlayer(_clans[clanId].ownerPlayerId) isMemberOfClan(clanId, newOwnerPlayerId) {
     Clan storage clan = _clans[clanId];
-    uint256 oldOwnerId = clan.owner;
+    uint256 oldOwnerPlayerId = clan.ownerPlayerId;
 
-    require(newOwner != oldOwnerId, CannotRenounceToSelf());
+    require(newOwnerPlayerId != oldOwnerPlayerId, CannotRenounceToSelf());
 
     if (newRank != ClanRank.NONE) {
       require(newRank < ClanRank.OWNER, RankMustBeLowerRenounce());
       // Change old owner to new rank
-      _updateRank(clanId, oldOwnerId, newRank, oldOwnerId);
+      _updateRank(clanId, oldOwnerPlayerId, newRank, oldOwnerPlayerId);
     } else {
-      _removeFromClan(clanId, oldOwnerId, oldOwnerId);
+      _removeFromClan(clanId, oldOwnerPlayerId, oldOwnerPlayerId);
     }
-    _claimOwnership(clanId, newOwner);
+    _claimOwnership(clanId, newOwnerPlayerId);
   }
 
   // Can claim a clan if there is no owner
@@ -475,7 +475,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint256 playerId
   ) external isOwnerOfPlayer(playerId) isMemberOfClan(clanId, playerId) {
     Clan storage clan = _clans[clanId];
-    require(clan.owner == 0, OwnerExists());
+    require(clan.ownerPlayerId == 0, OwnerExists());
 
     _claimOwnership(clanId, playerId);
   }
@@ -583,7 +583,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     external
     view
     returns (
-      uint80 owner,
+      uint64 ownerPlayerId,
       uint16 imageId,
       uint16 memberCount,
       uint40 createdTimestamp,
@@ -596,7 +596,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   {
     Clan storage clan = _clans[clanId];
     return (
-      clan.owner,
+      clan.ownerPlayerId,
       clan.imageId,
       clan.memberCount,
       clan.createdTimestamp,
@@ -688,10 +688,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _ownerCleared(uint256 clanId) private {
     Clan storage clan = _clans[clanId];
-    uint256 oldOwnerId = clan.owner;
-    clan.owner = 0;
+    uint256 oldOwnerPlayerId = clan.ownerPlayerId;
+    clan.ownerPlayerId = 0;
     _ownerlessClanTimestamps[clanId] = uint40(block.timestamp);
-    emit ClanOwnerLeft(clanId, oldOwnerId);
+    emit ClanOwnerLeft(clanId, oldOwnerPlayerId);
   }
 
   function _updateRank(uint256 clanId, uint256 memberId, ClanRank rank, uint256 playerId) private {
@@ -712,7 +712,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function _removeFromClan(uint256 clanId, uint256 playerId, uint256 removingPlayerId) private {
     Clan storage clan = _clans[clanId];
 
-    if (clan.owner == playerId) {
+    if (clan.ownerPlayerId == playerId) {
       _ownerCleared(clanId);
     }
 
@@ -733,7 +733,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function _claimOwnership(uint256 clanId, uint256 playerId) private {
     Clan storage clan = _clans[clanId];
-    clan.owner = uint80(playerId);
+    clan.ownerPlayerId = uint64(playerId);
     delete _ownerlessClanTimestamps[clanId];
     _playerInfo[playerId].rank = ClanRank.OWNER;
     emit ClanOwnershipTransferred(clanId, playerId);
