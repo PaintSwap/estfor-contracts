@@ -12,6 +12,9 @@ import {AdminAccess} from "./AdminAccess.sol";
 import {World} from "./World.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
+import {IBridgeable, BridgeableType} from "./Bridge/IBridgeable.sol";
+
+import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {PetNFTLibrary} from "./PetNFTLibrary.sol";
@@ -26,7 +29,15 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // It does not use the standard OZ _balances for tracking, instead it packs the owner
 // into the pet struct and avoid updating multiple to/from balances using
 // SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
-contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IERC2981 {
+contract PetNFT is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  SamWitchERC1155UpgradeableSinglePerToken,
+  IERC2981,
+  IBridgeable
+{
+  using SkillLibrary for Skill;
+
   using BloomFilter for BloomFilter.Filter;
 
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
@@ -51,6 +62,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   error InvalidTimestamp();
   error StorageSlotIncorrect();
   error NotMinter();
+  error NotBridge();
   error NotBurner();
   error NameAlreadyExists();
   error NameTooLong();
@@ -123,8 +135,14 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
   address private _players;
   World private _world;
   BloomFilter.Filter private _reservedPetNames; // TODO: remove 30 days after launch
+  address private _bridge;
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
+
+  modifier onlyBridge() {
+    require(_msgSender() == _bridge, NotBridge());
+    _;
+  }
 
   modifier onlyMinters() {
     require(_msgSender() == _instantVRFActions || (_adminAccess.isAdmin(_msgSender()) && _isBeta), NotMinter());
@@ -265,7 +283,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     for (uint256 i = 0; i < pets.length; ++i) {
       randomWord = uint256(keccak256(abi.encodePacked(randomWord))); // Get a new random word for each pet
       uint256 petId = startPetId + i;
-      Pet memory pet = _createPet(petId, basePetIds[i], randomWord);
+      Pet memory pet = _createRandomPet(petId, basePetIds[i], uint16(randomWord));
       pets[i] = pet;
       tokenIds[i] = petId;
       amounts[i] = 1;
@@ -275,6 +293,68 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     _mintBatch(to, tokenIds, amounts, "");
     _nextPetId = uint40(startPetId + pets.length);
     emit NewPets(startPetId, pets, names, to);
+  }
+
+  function mintBridged(
+    address petOwner,
+    uint256[] calldata petIds,
+    uint24[] calldata basePetIds,
+    string[] calldata petNames,
+    Skill[] calldata skillEnhancement1s,
+    uint8[] calldata skillFixedEnhancement1s,
+    uint8[] calldata skillPercentageEnhancement1,
+    Skill[] calldata skillEnhancement2s,
+    uint8[] calldata skillFixedEnhancement2s,
+    uint8[] calldata skillPercentageEnhancement2s,
+    uint40[] calldata lastAssignmentTimestamps
+  ) external onlyBridge {
+    uint256 length = petIds.length;
+    require(
+      length == basePetIds.length &&
+        length == skillEnhancement1s.length &&
+        length == skillFixedEnhancement1s.length &&
+        length == skillPercentageEnhancement1.length &&
+        length == skillEnhancement2s.length &&
+        length == skillFixedEnhancement2s.length &&
+        length == skillPercentageEnhancement2s.length &&
+        length == lastAssignmentTimestamps.length,
+      LengthMismatch()
+    );
+
+    Pet[] memory pets = new Pet[](basePetIds.length);
+    uint256[] memory amounts = new uint256[](basePetIds.length);
+    for (uint256 i = 0; i < length; ++i) {
+      pets[i] = _createPet(
+        petIds[i],
+        skillEnhancement1s[i],
+        skillFixedEnhancement1s[i],
+        skillPercentageEnhancement1[i],
+        skillEnhancement2s[i],
+        skillFixedEnhancement2s[i],
+        skillPercentageEnhancement2s[i],
+        lastAssignmentTimestamps[i],
+        petOwner,
+        basePetIds[i],
+        0, // TODO: skillFixedEnhancementMax1
+        0, // TODO: skillFixedEnhancementMax2
+        0, // TODO: skillPercentageEnhancementMax1
+        0 // TODO: skillPercentageEnhancementMax2
+      );
+      amounts[i] = 1;
+      _setName(petIds[i], petNames[i]);
+    }
+    _mintBatch(petOwner, petIds, amounts, "");
+    emit NewPets(petIds[0], pets, petNames, petOwner);
+  }
+
+  function getBridgeableType() external pure override returns (BridgeableType) {
+    return BridgeableType.Pet;
+  }
+
+  function getBridgeableBytes(uint256 petId) external view override returns (bytes memory) {
+    Pet memory pet = _pets[petId];
+    string memory petName = _names[petId];
+    return abi.encode(pet, pet.lastTrainedTimestamp, _names[petId]);
   }
 
   function burnBatch(address from, uint256[] memory tokenIds) external onlyBurners(from) {
@@ -304,7 +384,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
     emit Train(playerId, petId);
   }
 
-  function _createPet(uint256 petId, uint256 _basePetId, uint256 randomWord) private returns (Pet memory pet) {
+  function _createRandomPet(uint256 petId, uint256 _basePetId, uint256 randomWord) private returns (Pet memory pet) {
     require(_basePetMetadatas[_basePetId].skillEnhancement1 != Skill.NONE, PetDoesNotExist());
 
     // Fixed enhancement for skill 1
@@ -392,8 +472,45 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       }
     }
 
+    return
+      _createPet(
+        petId,
+        _basePetMetadatas[_basePetId].skillEnhancement1,
+        uint8(skillFixedEnhancement1),
+        uint8(skillPercentageEnhancement1),
+        skillEnhancement2,
+        uint8(skillFixedEnhancement2),
+        uint8(skillPercentageEnhancement2),
+        type(uint40).max,
+        address(0), // pet owner will be updated in _mintBatch
+        uint24(_basePetId),
+        uint8(skillFixedEnhancementMax1),
+        uint8(skillFixedEnhancementMax2),
+        uint8(skillPercentageEnhancementMax1),
+        uint8(skillPercentageEnhancementMax2)
+      );
+  }
+
+  function _createPet(
+    uint256 petId,
+    Skill skillEnhancement1,
+    uint8 skillFixedEnhancement1,
+    uint8 skillPercentageEnhancement1,
+    Skill skillEnhancement2,
+    uint8 skillFixedEnhancement2,
+    uint8 skillPercentageEnhancement2,
+    uint40 lastAssignmentTimestamp,
+    address petOwner,
+    uint24 basePetId,
+    uint8 skillFixedEnhancementMax1,
+    uint8 skillFixedEnhancementMax2,
+    uint8 skillPercentageEnhancementMax1,
+    uint8 skillPercentageEnhancementMax2
+  ) private returns (Pet memory pet) {
+    require(skillEnhancement1 != Skill.NONE, PetDoesNotExist());
+
     pet = Pet(
-      _basePetMetadatas[_basePetId].skillEnhancement1,
+      _basePetMetadatas[basePetId].skillEnhancement1,
       uint8(skillFixedEnhancement1),
       uint8(skillPercentageEnhancement1),
       skillEnhancement2,
@@ -401,8 +518,8 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       uint8(skillPercentageEnhancement2),
       type(uint40).max,
       address(0), // Will be updated in _mintBatch
-      _basePetMetadatas[_basePetId].isTransferable,
-      uint24(_basePetId),
+      _basePetMetadatas[basePetId].isTransferable,
+      uint24(basePetId),
       0, // lastTrainedTimestamp
       uint8(skillFixedEnhancementMax1),
       uint8(skillFixedEnhancementMax2),
@@ -411,6 +528,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgradeab
       0 // xp
     );
 
+    // store the pet by id
     _pets[petId] = pet;
     return pet;
   }
