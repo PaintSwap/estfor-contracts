@@ -55,7 +55,10 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint256 defendingClanId,
     uint256[] randomWords,
     uint256 percentageToTake,
-    uint256 brushLost
+    uint256 brushLost,
+    int256 attackingMMRDiff,
+    int256 defendingMMRDiff,
+    uint256 xpGained
   );
 
   event AssignCombatants(
@@ -82,7 +85,6 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   event SuperAttackCooldown(uint256 clanId, uint256 cooldownTimestamp);
   event SetMMRAttackDistance(uint256 mmrAttackDistance);
   event ForceMMRUpdate(uint256[] clanIdsToDelete);
-  event UpdateMMR(uint256 requestId, int256 attackingMMRDiff, int256 defendingMMRDiff);
   event SetMMRs(uint256[] clanIds, uint16[] mmrs);
   event SetKValues(uint256 Ka, uint256 Kd);
   event SetBrushDistributionPercentages(
@@ -121,6 +123,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
   uint256 private constant NUM_WORDS = 7;
   uint256 private constant NUM_PACKED_VAULTS = 2;
+  uint256 private constant XP_GAINED_WIN = 10;
 
   Skill[] private _comparableSkills;
   uint64 private _nextPendingAttackId;
@@ -456,6 +459,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       brushLost = totalWon;
     }
 
+    uint xpGained = didAttackersWin ? XP_GAINED_WIN : 0;
+
     emit BattleResult(
       uint256(requestId),
       attackingPlayerIds,
@@ -469,11 +474,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       defendingClanId,
       randomWords,
       percentageToTake,
-      brushLost
+      brushLost,
+      attackingMMRDiff,
+      defendingMMRDiff,
+      xpGained
     );
-
-    emit UpdateMMR(uint256(requestId), attackingMMRDiff, defendingMMRDiff);
-
     if (didAttackersWin) {
       _lockFunds(attackingClanId, address(0), 0, totalWon);
     }
