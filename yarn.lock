@@ -568,6 +568,25 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@layerzerolabs/lz-evm-protocol-v2@^3.0.12":
+  version "3.0.16"
+  resolved "https://registry.yarnpkg.com/@layerzerolabs/lz-evm-protocol-v2/-/lz-evm-protocol-v2-3.0.16.tgz#c8f10dc25977e8c53d4218f64c1ae779a9a76717"
+  integrity sha512-ZGR8iO3nmoXoj3HT6iktbXkNmbptNIfEyKIgdMVXmKuPczxg6o7LxtE6ekD+6ie+j9ZNVOFNYZyn23jmydB5Aw==
+
+"@layerzerolabs/oapp-evm-upgradeable@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@layerzerolabs/oapp-evm-upgradeable/-/oapp-evm-upgradeable-0.1.0.tgz#e59108e57739da7d66836bb350b35604523cd017"
+  integrity sha512-5BnewPvq/vDWuJvat5CT4zLMRNjZs7C8XEZs37JBAvF41th57dWjWmkUfD+LXzLHq5WcwYQTd7Xh0+35xKOJlQ==
+  dependencies:
+    ethers "^5.7.2"
+
+"@layerzerolabs/oapp-evm@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@layerzerolabs/oapp-evm/-/oapp-evm-0.1.0.tgz#48120427845f5d265b8afc110cd0e249746e482b"
+  integrity sha512-1+ylZShKGUZfkMTEJUtIqLSVlLijWX/LCOl33rpIjcRROh2Q7j0o4xR6MbMjYcrx28vnuHRl0MeDyZ3r5XmfFw==
+  dependencies:
+    ethers "^5.7.2"
+
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@metamask/eth-sig-util/-/eth-sig-util-4.0.1.tgz#3ad61f6ea9ad73ba5b19db780d40d9aae5157088"

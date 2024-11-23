@@ -25,6 +25,7 @@ enum PetEnhancementType {
   RANGED_AND_DEFENCE
 }
 
+// NOTE: This struct is bridged from Fantom -> Sonic
 struct Pet {
   Skill skillEnhancement1;
   uint8 skillFixedEnhancement1;
@@ -33,7 +34,7 @@ struct Pet {
   uint8 skillFixedEnhancement2;
   uint8 skillPercentageEnhancement2;
   uint40 lastAssignmentTimestamp;
-  address owner; // Will be used as an optimzation to avoid having to look up the owner of the pet in another storage slot
+  address owner; // Will be used as an optimization to avoid having to look up the owner of the pet in another storage slot
   bool isTransferable;
   uint24 baseId;
   // New storage slot. These are used when training a pet
