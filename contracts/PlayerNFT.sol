@@ -416,7 +416,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   }
 
   function addReservedHeroNames(string[] calldata names) external onlyOwner {
-    for (uint256 i = 0; i < names.length; i++) {
+    for (uint256 i = 0; i < names.length; ++i) {
       _reservedHeroNames._addString(EstforLibrary.toLower(names[i]));
     }
   }

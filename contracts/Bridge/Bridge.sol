@@ -174,7 +174,7 @@ contract Bridge is OAppUpgradeable {
     bool[] calldata isAuthorized
   ) external onlyOwner {
     require(senders.length == isAuthorized.length, InvalidInputLength());
-    for (uint256 i = 0; i < senders.length; i++) {
+    for (uint256 i = 0; i < senders.length; ++i) {
       _senderInfoByEID[eid][bytes32(uint256(uint160(senders[i])))].isAuthorized = isAuthorized[i];
     }
     emit UpdateAllowedSenders(eid, senders, isAuthorized);

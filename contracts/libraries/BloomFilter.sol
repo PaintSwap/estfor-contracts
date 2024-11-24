@@ -33,7 +33,7 @@ library BloomFilter {
   function _add(Filter storage filter, bytes32 item) internal {
     require(filter.hashCount != 0, ZeroHashCount());
     uint64 bitCount = filter.bitCount;
-    for (uint8 i = 0; i < filter.hashCount; i++) {
+    for (uint8 i = 0; i < filter.hashCount; ++i) {
       uint256 position = uint256(keccak256(abi.encodePacked(item, i))) % bitCount;
       filter.bitmap.set(position); // Set the bit in the bitmap at the calculated position
     }
@@ -57,7 +57,7 @@ library BloomFilter {
   function _remove(Filter storage filter, bytes32 item) internal {
     require(filter.hashCount != 0, ZeroHashCount());
     uint64 bitCount = filter.bitCount;
-    for (uint8 i = 0; i < filter.hashCount; i++) {
+    for (uint8 i = 0; i < filter.hashCount; ++i) {
       uint256 position = uint256(keccak256(abi.encodePacked(item, i))) % bitCount;
       filter.bitmap.unset(position); // Clear the bit in the bitmap at the calculated position
     }
@@ -82,7 +82,7 @@ library BloomFilter {
   function _probablyContains(Filter storage filter, bytes32 item) internal view returns (bool probablyPresent) {
     if (filter.hashCount == 0) revert ZeroHashCount();
     uint64 bitCount = filter.bitCount;
-    for (uint8 i = 0; i < filter.hashCount; i++) {
+    for (uint8 i = 0; i < filter.hashCount; ++i) {
       uint256 position = uint256(keccak256(abi.encodePacked(item, i))) % bitCount;
       if (!filter.bitmap.get(position)) return false; // If any bit is not set, item is not present
     }
@@ -147,7 +147,7 @@ library BloomFilter {
    */
   function _initialize(Filter storage filter, uint256 itemCount, uint256[] calldata positions) internal {
     _initialize(filter, itemCount);
-    for (uint256 i = 0; i < positions.length; i++) {
+    for (uint256 i = 0; i < positions.length; ++i) {
       filter.bitmap.set(positions[i]);
     }
   }
@@ -166,7 +166,7 @@ library BloomFilter {
     uint256[] calldata positions
   ) internal {
     _initialize(filter, itemCount, bitCount);
-    for (uint256 i = 0; i < positions.length; i++) {
+    for (uint256 i = 0; i < positions.length; ++i) {
       filter.bitmap.set(positions[i]);
     }
   }

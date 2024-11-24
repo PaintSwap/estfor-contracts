@@ -944,7 +944,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   function addReservedClanNames(string[] calldata names) external onlyOwner {
-    for (uint256 i = 0; i < names.length; i++) {
+    for (uint256 i = 0; i < names.length; ++i) {
       _reservedClanNames._addString(EstforLibrary.toLower(names[i]));
     }
   }
