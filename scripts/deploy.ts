@@ -38,7 +38,8 @@ import {
   FakeDecoratorBrush,
   PVPBattleground,
   Raids,
-  WorldActions
+  WorldActions,
+  DailyRewardsScheduler
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -279,6 +280,15 @@ async function main() {
 
   console.log(`world = "${(await world.getAddress()).toLowerCase()}"`);
 
+  const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
+  const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
+    kind: "uups",
+    timeout
+  })) as unknown as DailyRewardsScheduler;
+  await dailyRewardsScheduler.waitForDeployment();
+
+  console.log(`dailyRewardsScheduler = "${(await dailyRewardsScheduler.getAddress()).toLowerCase()}"`);
+
   const Treasury = await ethers.getContractFactory("Treasury");
   const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
     kind: "uups",
@@ -506,6 +516,7 @@ async function main() {
       await petNFT.getAddress(),
       await worldActions.getAddress(),
       await world.getAddress(),
+      await dailyRewardsScheduler.getAddress(),
       await adminAccess.getAddress(),
       await quests.getAddress(),
       await clans.getAddress(),
@@ -538,6 +549,7 @@ async function main() {
     [
       await players.getAddress(),
       await world.getAddress(),
+      await dailyRewardsScheduler.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
       await quests.getAddress(),
@@ -898,6 +910,7 @@ async function main() {
         await shop.getAddress(),
         await worldActions.getAddress(),
         await world.getAddress(),
+        await dailyRewardsScheduler.getAddress(),
         await royaltyReceiver.getAddress(),
         await clans.getAddress(),
         await quests.getAddress(),
@@ -926,9 +939,12 @@ async function main() {
     console.log("Skipping verifying contracts");
   }
 
-  tx = await world.setWishingWell(wishingWell);
+  tx = await world.initializeAddresses(wishingWell, dailyRewardsScheduler);
   await tx.wait();
-  console.log("world setWishingWell");
+  console.log("world initializeAddress");
+  tx = await world.initializeRandomWords();
+  await tx.wait();
+  console.log("worldActions initializeRandomWords");
   tx = await playerNFT.setPlayers(players);
   await tx.wait();
   console.log("playerNFT setPlayers");
@@ -1116,7 +1132,7 @@ async function main() {
   await tx.wait();
   console.log("Add full attire bonuses");
 
-  await setDailyAndWeeklyRewards(world);
+  await setDailyAndWeeklyRewards(dailyRewardsScheduler);
 
   tx = await worldActions.addActions(allActions);
   await tx.wait();
@@ -1135,7 +1151,7 @@ async function main() {
   const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
   const genericCombatActionId = EstforConstants.NONE;
 
-  tx = await world.addBulkActionChoices(
+  tx = await worldActions.addBulkActionChoices(
     [fireMakingActionId, smithingActionId, cookingActionId],
     [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking],
     [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking]
@@ -1145,7 +1161,7 @@ async function main() {
   console.log("Add action choices1");
 
   // Add new ones here for gas reasons
-  tx = await world.addBulkActionChoices(
+  tx = await worldActions.addBulkActionChoices(
     [craftingActionId, fletchingActionId],
     [allActionChoiceIdsCrafting, allActionChoiceIdsFletching],
     [allActionChoicesCrafting, allActionChoicesFletching]
@@ -1155,7 +1171,7 @@ async function main() {
   console.log("Add action choices2");
 
   // Add new ones here for gas reasons
-  tx = await world.addBulkActionChoices(
+  tx = await worldActions.addBulkActionChoices(
     [alchemyActionId, forgingActionId],
     [allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
     [allActionChoicesAlchemy, allActionChoicesForging]
@@ -1164,7 +1180,7 @@ async function main() {
   await tx.wait();
   console.log("Add action choices3");
 
-  tx = await world.addBulkActionChoices(
+  tx = await worldActions.addBulkActionChoices(
     [genericCombatActionId, genericCombatActionId, genericCombatActionId],
     [allActionChoiceIdsMelee, allActionChoiceIdsRanged, allActionChoiceIdsMagic],
     [allActionChoicesMelee, allActionChoicesRanged, allActionChoicesMagic]

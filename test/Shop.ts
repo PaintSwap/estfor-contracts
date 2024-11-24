@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {AdminAccess, ItemNFT, RoyaltyReceiver, Shop, Treasury, World} from "../typechain-types";
+import {AdminAccess, DailyRewardsScheduler, ItemNFT, RoyaltyReceiver, Shop, Treasury, World} from "../typechain-types";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
 import {Block, parseEther, ZeroAddress} from "ethers";
 import {timeTravel, timeTravel24Hours} from "./utils";
@@ -28,11 +28,19 @@ describe("Shop", function () {
     // Create the world
     const World = await ethers.getContractFactory("World");
     const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
-      kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      kind: "uups"
     })) as unknown as World;
 
-    await setDailyAndWeeklyRewards(world);
+    const mockOracleCB = await ethers.deployContract("MockOracleCB");
+    await world.initializeAddresses(mockOracleCB, mockOracleCB);
+    await world.initializeRandomWords();
+
+    const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
+    const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
+      kind: "uups"
+    })) as unknown as DailyRewardsScheduler;
+
+    await setDailyAndWeeklyRewards(dailyRewardsScheduler);
 
     const Treasury = await ethers.getContractFactory("Treasury");
     const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {

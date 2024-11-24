@@ -228,7 +228,7 @@ describe("Promotions", function () {
 
     // This test might fail if called around 00:00
     it("If an event starts at 00:00 it can use previous day's oracle", async function () {
-      const {promotions, playerId, alice, world, mockVRF} = await loadFixture(promotionFixture);
+      const {promotions, playerId, alice, world, dailyRewardsScheduler, mockVRF} = await loadFixture(promotionFixture);
 
       // Go to the next 00:00
       const oneDay = 24 * 3600;
@@ -372,7 +372,8 @@ describe("Promotions", function () {
       });
 
       it("Brush cost to enter promotion", async function () {
-        const {promotions, playerId, brush, alice, treasury, dev, world, mockVRF} = await loadFixture(playersFixture);
+        const {promotions, playerId, brush, alice, treasury, dev, world, dailyRewardsScheduler, mockVRF} =
+          await loadFixture(playersFixture);
         let promotion = await getBasicSingleMintPromotion();
         promotion = {...promotion, tokenCost: parseEther("1")};
         await promotions.addPromotions([promotion]);
@@ -441,7 +442,9 @@ describe("Promotions", function () {
 
     describe("Paying for missed days", function () {
       it("Pay for 1 missed day", async function () {
-        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
 
         const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         let promotion = await getBasicMultidayMintPromotion();
@@ -470,7 +473,9 @@ describe("Promotions", function () {
       });
 
       it("Pay for multiple missed days", async function () {
-        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
 
         const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         let promotion = await getBasicMultidayMintPromotion();
@@ -502,7 +507,9 @@ describe("Promotions", function () {
       });
 
       it("Paying for a previous day should use a different random word (give different rewards)", async function () {
-        const {playerId, promotions, brush, alice, world, mockVRF, itemNFT} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, dailyRewardsScheduler, mockVRF, itemNFT} = await loadFixture(
+          promotionFixture
+        );
 
         const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         let promotion = await getBasicMultidayMintPromotion();
@@ -516,7 +523,7 @@ describe("Promotions", function () {
         await brush.connect(alice).approve(promotions, parseEther("10") * 10n);
         await brush.mint(alice, parseEther("10") * 10n);
 
-        await world.setDailyRewardPool(2, [
+        await dailyRewardsScheduler.setDailyRewardPool(2, [
           {itemTokenId: EstforConstants.IRON_ARROW, amount: 10},
           {itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10}
         ]);
@@ -572,7 +579,9 @@ describe("Promotions", function () {
       });
 
       it("Cannot have duplicates or unsorted in the days array", async function () {
-        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
         const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
@@ -603,7 +612,9 @@ describe("Promotions", function () {
       });
 
       it("Cannot pay after the entire streak bonus deadline has passed", async function () {
-        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
         let promotion = await getBasicMultidayMintPromotion();
         promotion = {
           ...promotion,
@@ -624,7 +635,9 @@ describe("Promotions", function () {
       });
 
       it("Cannot pay in the future", async function () {
-        const {playerId, promotions, brush, alice, world, mockVRF} = await loadFixture(promotionFixture);
+        const {playerId, promotions, brush, alice, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
 
         const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         let promotion = await getBasicMultidayMintPromotion();
@@ -648,7 +661,9 @@ describe("Promotions", function () {
     });
 
     it("Check tiered minting is working correctly based on XP", async function () {
-      const {promotions, alice, playerId, players, itemNFT, world, mockVRF} = await loadFixture(promotionFixture);
+      const {promotions, alice, playerId, players, itemNFT, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+        promotionFixture
+      );
 
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       let promotion = await getBasicMultidayMintPromotion();
@@ -656,11 +671,11 @@ describe("Promotions", function () {
       await promotions.addPromotions([promotion]);
 
       await players.setDailyRewardsEnabled(true);
-      await world.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
-      await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.IRON_ARROW, amount: 10}]);
-      await world.setDailyRewardPool(3, [{itemTokenId: EstforConstants.MITHRIL_ARROW, amount: 10}]);
-      await world.setDailyRewardPool(4, [{itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10}]);
-      await world.setDailyRewardPool(5, [{itemTokenId: EstforConstants.RUNITE_ARROW, amount: 10}]);
+      await dailyRewardsScheduler.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+      await dailyRewardsScheduler.setDailyRewardPool(2, [{itemTokenId: EstforConstants.IRON_ARROW, amount: 10}]);
+      await dailyRewardsScheduler.setDailyRewardPool(3, [{itemTokenId: EstforConstants.MITHRIL_ARROW, amount: 10}]);
+      await dailyRewardsScheduler.setDailyRewardPool(4, [{itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10}]);
+      await dailyRewardsScheduler.setDailyRewardPool(5, [{itemTokenId: EstforConstants.RUNITE_ARROW, amount: 10}]);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -875,9 +890,8 @@ describe("Promotions", function () {
       });
 
       it("Check streak rewards are randomized", async function () {
-        const {promotions, playerNFT, players, itemNFT, alice, playerId, world, mockVRF} = await loadFixture(
-          promotionFixture
-        );
+        const {promotions, playerNFT, players, itemNFT, alice, playerId, world, dailyRewardsScheduler, mockVRF} =
+          await loadFixture(promotionFixture);
 
         const promotion = {...(await getOriginalPromotion())};
         promotion.isMultiday = true;
@@ -987,11 +1001,12 @@ describe("Promotions", function () {
       }
 
       it("Claim streak bonus", async function () {
-        const {players, promotions, itemNFT, alice, playerId, world, mockVRF} = await loadFixture(promotionFixture);
+        const {players, promotions, itemNFT, alice, playerId, world, dailyRewardsScheduler, mockVRF} =
+          await loadFixture(promotionFixture);
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
-        await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+        await dailyRewardsScheduler.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotions([promotion]);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
@@ -1032,11 +1047,13 @@ describe("Promotions", function () {
       });
 
       it("Cannot claim streak bonus twice", async function () {
-        const {players, playerId, alice, promotions, world, mockVRF} = await loadFixture(promotionFixture);
+        const {players, playerId, alice, promotions, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
-        await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+        await dailyRewardsScheduler.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotions([promotion]);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
@@ -1055,11 +1072,13 @@ describe("Promotions", function () {
       });
 
       it("Claim outside claim period", async function () {
-        const {players, playerId, alice, promotions, world, mockVRF} = await loadFixture(promotionFixture);
+        const {players, playerId, alice, promotions, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
-        await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+        await dailyRewardsScheduler.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotions([promotion]);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
@@ -1077,11 +1096,13 @@ describe("Promotions", function () {
       });
 
       it("Not claimed enough days to get streak bonus", async function () {
-        const {players, playerId, alice, promotions, world, mockVRF} = await loadFixture(promotionFixture);
+        const {players, playerId, alice, promotions, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+          promotionFixture
+        );
 
         const promotion = await getStreakBonusPromotion();
         await players.setDailyRewardsEnabled(true);
-        await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+        await dailyRewardsScheduler.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotions([promotion]);
         await ethers.provider.send("evm_increaseTime", [3600 * 24]);
@@ -1098,13 +1119,14 @@ describe("Promotions", function () {
       });
 
       it("The streak bonus rewards should not change during the claimable period", async function () {
-        const {players, playerId, alice, promotions, itemNFT, world, mockVRF} = await loadFixture(promotionFixture);
+        const {players, playerId, alice, promotions, itemNFT, world, dailyRewardsScheduler, mockVRF} =
+          await loadFixture(promotionFixture);
 
         let promotion = await getStreakBonusPromotion();
         promotion = {...promotion, numDaysClaimablePeriodStreakBonus: 10};
 
         await players.setDailyRewardsEnabled(true);
-        await world.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+        await dailyRewardsScheduler.setDailyRewardPool(2, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
 
         await promotions.addPromotions([promotion]);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);

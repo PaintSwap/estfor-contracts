@@ -17,28 +17,7 @@
   },
   {
     "inputs": [],
-    "name": "CallbackGasLimitTooHigh",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CallerNotSamWitchVRF",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "currentTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "checkpoint",
-        "type": "uint256"
-      }
-    ],
-    "name": "CanOnlyRequestAfterTheNextCheckpoint",
+    "name": "CanOnlyRequestAfter1DayHasPassed",
     "type": "error"
   },
   {
@@ -69,17 +48,17 @@
   },
   {
     "inputs": [],
-    "name": "LengthMismatch",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NoValidRandomWord",
+    "name": "InvalidReward",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyWorld",
     "type": "error"
   },
   {
@@ -106,17 +85,7 @@
   },
   {
     "inputs": [],
-    "name": "RandomWordsAlreadyInitialized",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "RandomWordsCannotBeUpdatedYet",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "RequestAlreadyFulfilled",
+    "name": "TooManyRewardsInPool",
     "type": "error"
   },
   {
@@ -171,50 +140,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "randomWord",
-        "type": "uint256"
-      }
-    ],
-    "name": "RequestFulfilled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "numWords",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "lastRandomWordsUpdatedTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "RequestSent",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -223,32 +148,6 @@
     ],
     "name": "Upgraded",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "MIN_RANDOM_WORDS_UPDATE_TIME",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "NUM_DAYS_RANDOM_WORDS_INITIALIZED",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -266,55 +165,8 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "requestId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "words",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "fulfillRandomWords",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      }
-    ],
-    "name": "getMultipleWords",
-    "outputs": [
-      {
-        "internalType": "uint256[4]",
-        "name": "words",
-        "type": "uint256[4]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "numTickets",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startTimestamp",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "endTimestamp",
+        "name": "tier",
         "type": "uint256"
       },
       {
@@ -323,12 +175,24 @@
         "type": "uint256"
       }
     ],
-    "name": "getRandomBytes",
+    "name": "getActiveDailyAndWeeklyRewards",
     "outputs": [
       {
-        "internalType": "bytes",
-        "name": "randomBytes",
-        "type": "bytes"
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment[8]",
+        "name": "rewards",
+        "type": "tuple[8]"
       }
     ],
     "stateMutability": "view",
@@ -338,18 +202,80 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "timestamp",
+        "name": "tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
-    "name": "getRandomWord",
+    "name": "getDailyReward",
     "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "itemTokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "day",
+        "type": "uint256"
+      },
       {
         "internalType": "uint256",
         "name": "randomWord",
         "type": "uint256"
       }
     ],
+    "name": "getSpecificDailyReward",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "amount",
+        "type": "uint24"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getThisWeeksRandomWordSegment",
+    "outputs": [
+      {
+        "internalType": "bytes8",
+        "name": "",
+        "type": "bytes8"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -357,16 +283,26 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "timestamp",
+        "name": "tier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
         "type": "uint256"
       }
     ],
-    "name": "hasRandomWord",
+    "name": "getWeeklyReward",
     "outputs": [
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint24",
+        "name": "amount",
+        "type": "uint24"
       }
     ],
     "stateMutability": "view",
@@ -376,7 +312,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "vrf",
+        "name": "world",
         "type": "address"
       }
     ],
@@ -388,39 +324,14 @@
   {
     "inputs": [
       {
-        "internalType": "contract IOracleCB",
-        "name": "wishingWell",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IOracleCB",
-        "name": "dailyRewardsScheduler",
-        "type": "address"
-      }
-    ],
-    "name": "initializeAddresses",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "initializeRandomWords",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lastRandomWordsUpdatedTime",
-    "outputs": [
-      {
         "internalType": "uint256",
-        "name": "",
+        "name": "randomWord",
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
+    "name": "newOracleRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -450,25 +361,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      }
-    ],
-    "name": "randomWords",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -479,31 +371,29 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "requestId",
+        "name": "tier",
         "type": "uint256"
-      }
-    ],
-    "name": "requestIds",
-    "outputs": [
+      },
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment[]",
+        "name": "dailyRewards",
+        "type": "tuple[]"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "requestRandomWords",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      }
-    ],
+    "name": "setDailyRewardPool",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -511,11 +401,28 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "gasLimit",
+        "name": "tier",
         "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint24",
+            "name": "amount",
+            "type": "uint24"
+          }
+        ],
+        "internalType": "struct Equipment[]",
+        "name": "weeklyRewards",
+        "type": "tuple[]"
       }
     ],
-    "name": "setExpectedGasLimitFulfill",
+    "name": "setWeeklyRewardPool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

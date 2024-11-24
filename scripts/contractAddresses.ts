@@ -9,6 +9,7 @@ let paintSwapMarketplaceWhitelist;
 let paintSwapDecorator;
 let worldActions;
 let world;
+let dailyRewardsScheduler;
 let treasury;
 let shop;
 let royaltyReceiver;
@@ -61,6 +62,7 @@ if (!isBeta) {
   paintSwapMarketplaceWhitelist = "0x000000000000000000000000000000000000dEaD";
   worldActions = "";
   world = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
+  dailyRewardsScheduler = "";
   treasury = "0x000000000000000000000000000000000000dEaD";
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
   royaltyReceiver = "0xc3d53b81042454aa5fcf5c4e95de3e796dddb28b";
@@ -112,6 +114,7 @@ if (!isBeta) {
   paintSwapMarketplaceWhitelist = "0xe018ef943aa710d4a0a81788641ec1898aeb84d1";
   worldActions = "";
   world = "0x01b7e0b11c8592bf82e17b0983c2b63b1d6903f7";
+  dailyRewardsScheduler = "";
   treasury = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
   shop = "0x575f595552132377d62e53701116d286f694b5e9";
   royaltyReceiver = "0x0053fa0665ee5f26d26325efb02295e448effc44";
@@ -157,6 +160,7 @@ if (!isBeta) {
 
 export const WORLD_ACTIONS_ADDRESS = worldActions;
 export const WORLD_ADDRESS = world;
+export const DAILY_REWARDS_SCHEDULER_ADDRESS = dailyRewardsScheduler;
 export const TREASURY_ADDRESS = treasury;
 export const SHOP_ADDRESS = shop;
 export const ROYALTY_RECEIVER_ADDRESS = royaltyReceiver;

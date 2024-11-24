@@ -7,7 +7,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
-import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
+import {IOracleCB} from "./interfaces/IOracleCB.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {Clans} from "./Clans/Clans.sol";
@@ -16,7 +16,7 @@ import {Clans} from "./Clans/Clans.sol";
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
 import {XP_EMITTED_ELSEWHERE} from "./globals/clans.sol";
 
-contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
+contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   using BitMaps for BitMaps.BitMap;
 
   event Donate(address from, uint256 playerId, uint256 amount, uint256 lotteryId, uint256 raffleId);
@@ -236,7 +236,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     }
   }
 
-  function newOracleRandomWords(uint256 randomWord) external onlyWorld {
+  function newOracleRandomWords(uint256 randomWord) external override onlyWorld {
     uint16 lastLotteryId = _lastLotteryId;
     uint24 lastRaffleId = _lastRaffleId;
     bool _hasDonations = lastRaffleId != 0;

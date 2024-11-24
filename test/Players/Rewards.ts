@@ -245,7 +245,8 @@ describe("Rewards", function () {
 
   describe("Daily Rewards", function () {
     it("Daily & weekly reward when starting an action", async function () {
-      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, dailyRewardsScheduler, alice, mockVRF} =
+        await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -266,7 +267,7 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      let dailyRewards = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(1, playerId);
       let equipments = dailyRewards.slice(1, 6); // skip first and last
       let equipmentCache = new Map<bigint, bigint>();
       for (let i = 0; i < equipments.length; ++i) {
@@ -343,7 +344,7 @@ describe("Rewards", function () {
 
       expect(await players.dailyClaimedRewards(playerId)).to.eql([false, false, false, false, false, false, false]);
 
-      dailyRewards = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      dailyRewards = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(1, playerId);
       equipments = dailyRewards.slice(0, 7);
       equipmentCache = new Map<bigint, bigint>();
       for (let i = 0; i < equipments.length; ++i) {
@@ -387,7 +388,8 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim per hero per day", async function () {
-      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, dailyRewardsScheduler, alice, mockVRF} =
+        await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -408,7 +410,7 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      let equipments = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(1, playerId);
       let equipment = equipments[0];
 
       let balanceBefore = await itemNFT.balanceOf(alice, equipment.itemTokenId);
@@ -424,9 +426,18 @@ describe("Rewards", function () {
     });
 
     it("Only 1 claim per wallet per day", async function () {
-      const {playerId, players, itemNFT, playerNFT, avatarId, worldActions, world, alice, mockVRF} = await loadFixture(
-        playersFixture
-      );
+      const {
+        playerId,
+        players,
+        itemNFT,
+        playerNFT,
+        avatarId,
+        worldActions,
+        world,
+        dailyRewardsScheduler,
+        alice,
+        mockVRF
+      } = await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -448,7 +459,7 @@ describe("Rewards", function () {
 
       // Get the new equipments for the next week
       const tier = 1;
-      let equipments = await world.getActiveDailyAndWeeklyRewards(tier, playerId);
+      let equipments = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(tier, playerId);
       let equipment = equipments[0];
 
       let balanceBefore = await itemNFT.balanceOf(alice, equipment.itemTokenId);
@@ -459,7 +470,7 @@ describe("Rewards", function () {
       // Using another hero, shouldn't get any more rewards
       const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "alice1", true);
 
-      equipments = await world.getActiveDailyAndWeeklyRewards(tier, newPlayerId);
+      equipments = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(tier, newPlayerId);
       equipment = equipments[0];
 
       balanceBefore = await itemNFT.balanceOf(alice, equipment.itemTokenId);
@@ -469,10 +480,12 @@ describe("Rewards", function () {
     });
 
     it("Check daily rewards not given when making a new hero", async function () {
-      const {players, playerNFT, itemNFT, alice, world, mockVRF} = await loadFixture(playersFixture);
+      const {players, playerNFT, itemNFT, alice, world, dailyRewardsScheduler, mockVRF} = await loadFixture(
+        playersFixture
+      );
 
       await players.setDailyRewardsEnabled(true);
-      await world.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
+      await dailyRewardsScheduler.setDailyRewardPool(1, [{itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10}]);
       await requestAndFulfillRandomWords(world, mockVRF); // Add this to that if test is run on Monday the streak start condition is fulfilled
       await createPlayer(playerNFT, 1, alice, "name1", true);
       expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(10);
@@ -512,7 +525,8 @@ describe("Rewards", function () {
 
     it("Can only get Monday's reward if the oracle has been called", async function () {
       // So that people can't get last Monday's daily reward
-      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, dailyRewardsScheduler, alice, mockVRF} =
+        await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -536,7 +550,7 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      let equipments = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(1, playerId);
       let mondayEquipment = equipments[0];
 
       let balanceBeforeMondayReward = await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId);
@@ -547,7 +561,7 @@ describe("Rewards", function () {
       await requestAndFulfillRandomWords(world, mockVRF);
       await players.connect(alice).processActions(playerId);
 
-      equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      equipments = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(1, playerId);
       mondayEquipment = equipments[0];
       expect(balanceBeforeMondayReward + mondayEquipment.amount).eq(
         await itemNFT.balanceOf(alice, mondayEquipment.itemTokenId)
@@ -555,9 +569,8 @@ describe("Rewards", function () {
     });
 
     it("Clan tier bonus reward upgrades", async function () {
-      const {playerId, players, itemNFT, worldActions, world, alice, clans, mockVRF} = await loadFixture(
-        playersFixture
-      );
+      const {playerId, players, itemNFT, worldActions, world, dailyRewardsScheduler, alice, clans, mockVRF} =
+        await loadFixture(playersFixture);
 
       // Be a member of a clan
       await clans.addTiers([
@@ -608,7 +621,7 @@ describe("Rewards", function () {
         await requestAndFulfillRandomWords(world, mockVRF);
       }
 
-      const equipments = await world.getActiveDailyAndWeeklyRewards(1, playerId);
+      const equipments = await dailyRewardsScheduler.getActiveDailyAndWeeklyRewards(1, playerId);
 
       let baseEquipment = equipments[0];
       expect(await itemNFT.balanceOf(alice, baseEquipment.itemTokenId)).to.be.eq(0);
@@ -641,7 +654,8 @@ describe("Rewards", function () {
     });
 
     it("Tiered rewards", async function () {
-      const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, world, dailyRewardsScheduler, alice, mockVRF} =
+        await loadFixture(playersFixture);
 
       await players.setDailyRewardsEnabled(true);
 
@@ -662,29 +676,29 @@ describe("Rewards", function () {
       }
 
       // Get the new equipments for the next week
-      let mondayEquipment = await world.getSpecificDailyReward(
+      let mondayEquipment = await dailyRewardsScheduler.getSpecificDailyReward(
         3,
         playerId,
         0,
-        await world.getThisWeeksRandomWordSegment()
+        await dailyRewardsScheduler.getThisWeeksRandomWordSegment()
       );
 
       // Double check it is different to the other tiers
-      let dailyRewardsTier1 = await world.getSpecificDailyReward(
+      let dailyRewardsTier1 = await dailyRewardsScheduler.getSpecificDailyReward(
         1,
         playerId,
         0,
-        await world.getThisWeeksRandomWordSegment()
+        await dailyRewardsScheduler.getThisWeeksRandomWordSegment()
       );
-      let dailyRewardsTier2 = await world.getSpecificDailyReward(
+      let dailyRewardsTier2 = await dailyRewardsScheduler.getSpecificDailyReward(
         2,
         playerId,
         0,
-        await world.getThisWeeksRandomWordSegment()
+        await dailyRewardsScheduler.getThisWeeksRandomWordSegment()
       );
       // TODO: Fix this - what should it be checking?
-      // expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1.itemTokenId);
-      // expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier2.itemTokenId);
+      expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier1.itemTokenId);
+      expect(mondayEquipment.itemTokenId).to.not.eq(dailyRewardsTier2.itemTokenId);
 
       const tier3Start = 33913;
       await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, tier3Start);

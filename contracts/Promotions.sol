@@ -13,6 +13,7 @@ import {PlayerNFT} from "./PlayerNFT.sol";
 import {World} from "./World.sol";
 import {Quests} from "./Quests.sol";
 import {PromotionsLibrary} from "./PromotionsLibrary.sol";
+import {DailyRewardsScheduler} from "./DailyRewardsScheduler.sol";
 
 import "./globals/items.sol";
 import "./globals/rewards.sol";
@@ -71,6 +72,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   PlayerNFT private _playerNFT;
   IBrushToken private _brush;
   World private _world;
+  DailyRewardsScheduler private _dailyRewardsScheduler;
   Quests private _quests;
   address private _dev;
   address private _treasury;
@@ -102,6 +104,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   function initialize(
     IPlayers players,
     World world,
+    DailyRewardsScheduler dailyRewardsScheduler,
     ItemNFT itemNFT,
     PlayerNFT playerNFT,
     Quests quests,
@@ -116,6 +119,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
     _players = players;
     _world = world;
+    _dailyRewardsScheduler = dailyRewardsScheduler;
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;
     _quests = quests;
@@ -457,7 +461,12 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     if (!world.hasRandomWord(oracleTime)) {
       promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
     } else {
-      (itemTokenId, amount) = world.getSpecificDailyReward(playerTier, playerId, 0, world.getRandomWord(oracleTime));
+      (itemTokenId, amount) = _dailyRewardsScheduler.getSpecificDailyReward(
+        playerTier,
+        playerId,
+        0,
+        world.getRandomWord(oracleTime)
+      );
     }
   }
 

@@ -7,7 +7,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Request random words using account: ${owner.address} for chain id ${await getChainId(owner)}`);
 
-  const world = (await ethers.getContractAt("World", WORLD_ADDRESS)) as World;
+  const world = await ethers.getContractAt("World", WORLD_ADDRESS);
   // Keep requesting (useful to clear a backlog on beta)
   while (true) {
     const lastRandomWordsUpdatedTime = await world.lastRandomWordsUpdatedTime();

@@ -3121,6 +3121,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract DailyRewardsScheduler",
+        "name": "dailyRewardsScheduler",
+        "type": "address"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "adminAccess",
         "type": "address"

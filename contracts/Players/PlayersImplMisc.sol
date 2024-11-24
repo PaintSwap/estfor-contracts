@@ -158,7 +158,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
           playerTier = 1;
         }
 
-        (uint256 itemTokenId, uint256 amount) = _world.getDailyReward(playerTier, playerId);
+        (uint256 itemTokenId, uint256 amount) = _dailyRewardsScheduler.getDailyReward(playerTier, playerId);
         // Can only get the daily reward on an account once per day regardless of how many heros claim
         uint256 lastWalletTimestamp = _walletDailyInfo[from].lastDailyRewardClaimedTimestamp;
         if (itemTokenId != NONE && lastWalletTimestamp < (block.timestamp / 1 days) * 1 days) {
@@ -176,7 +176,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
 
           // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
           if (canClaimWeeklyRewards) {
-            (itemTokenIds[1], amounts[1]) = _world.getWeeklyReward(playerTier, playerId);
+            (itemTokenIds[1], amounts[1]) = _dailyRewardsScheduler.getWeeklyReward(playerTier, playerId);
           }
         }
       }

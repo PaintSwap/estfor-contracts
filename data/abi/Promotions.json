@@ -1301,6 +1301,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract DailyRewardsScheduler",
+        "name": "dailyRewardsScheduler",
+        "type": "address"
+      },
+      {
         "internalType": "contract ItemNFT",
         "name": "itemNFT",
         "type": "address"

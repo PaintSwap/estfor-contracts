@@ -77,15 +77,14 @@ async function main() {
   console.log("editXPThresholdRewards");
 
   // Update daily reward pools
-  const World = await ethers.getContractFactory("World");
-  const world = (await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
+  const DailyRewardsScheduler = await ethers.getContractFactory("dailyRewardsScheduler");
+  const dailyRewardsScheduler = (await upgrades.upgradeProxy(DAILY_REWARDS_SCHEDULER_ADDRESS, World, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"],
-  })) as World;
-  await world.waitForDeployment();
-  console.log("world upgraded");
+  })) as DailyRewardsScheduler;
+  await dailyRewardsScheduler.waitForDeployment();
+  console.log("dailyRewardsScheduler upgraded");
 
-  await setDailyAndWeeklyRewards(world);
+  await setDailyAndWeeklyRewards(dailyRewardsScheduler);
   console.log("setDailyAndWeeklyRewards");
 
   // ItemNFT

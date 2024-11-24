@@ -36,7 +36,8 @@ import {
   BankRelay,
   PVPBattleground,
   Raids,
-  WorldActions
+  WorldActions,
+  DailyRewardsScheduler
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -69,7 +70,12 @@ export const playersFixture = async function () {
     kind: "uups"
   })) as unknown as World;
 
-  await setDailyAndWeeklyRewards(world);
+  const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
+  const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
+    kind: "uups"
+  })) as unknown as DailyRewardsScheduler;
+
+  await setDailyAndWeeklyRewards(dailyRewardsScheduler);
 
   const Treasury = await ethers.getContractFactory("Treasury");
   const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
@@ -253,6 +259,7 @@ export const playersFixture = async function () {
       await petNFT.getAddress(),
       await worldActions.getAddress(),
       await world.getAddress(),
+      await dailyRewardsScheduler.getAddress(),
       await adminAccess.getAddress(),
       await quests.getAddress(),
       await clans.getAddress(),
@@ -279,6 +286,7 @@ export const playersFixture = async function () {
     [
       await players.getAddress(),
       await world.getAddress(),
+      await dailyRewardsScheduler.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
       await quests.getAddress(),
@@ -575,7 +583,8 @@ export const playersFixture = async function () {
     }
   )) as unknown as BankFactory;
 
-  await world.setWishingWell(wishingWell);
+  await world.initializeAddresses(wishingWell, dailyRewardsScheduler);
+  await world.initializeRandomWords();
 
   await playerNFT.setPlayers(players);
   await quests.setPlayers(players);
@@ -654,6 +663,7 @@ export const playersFixture = async function () {
     owner,
     worldActions,
     world,
+    dailyRewardsScheduler,
     alice,
     bob,
     charlie,

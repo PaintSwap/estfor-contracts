@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {AdminAccess, ItemNFT, RoyaltyReceiver, Treasury, World} from "../typechain-types";
+import {AdminAccess, DailyRewardsScheduler, ItemNFT, RoyaltyReceiver, Shop, Treasury, World} from "../typechain-types";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
@@ -24,11 +24,19 @@ describe("ItemNFT", function () {
     // Create the world
     const World = await ethers.getContractFactory("World");
     const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
-      kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      kind: "uups"
     })) as unknown as World;
 
-    await setDailyAndWeeklyRewards(world);
+    const mockOracleCB = await ethers.deployContract("MockOracleCB");
+    await world.initializeAddresses(mockOracleCB, mockOracleCB);
+    await world.initializeRandomWords();
+
+    const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
+    const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
+      kind: "uups"
+    })) as unknown as DailyRewardsScheduler;
+
+    await setDailyAndWeeklyRewards(dailyRewardsScheduler);
 
     const Treasury = await ethers.getContractFactory("Treasury");
     const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
@@ -38,7 +46,7 @@ describe("ItemNFT", function () {
     const minItemQuantityBeforeSellsAllowed = 500n;
     const sellingCutoffDuration = 48 * 3600; // 48 hours
     const Shop = await ethers.getContractFactory("Shop");
-    const shop = await upgrades.deployProxy(
+    const shop = (await upgrades.deployProxy(
       Shop,
       [
         await brush.getAddress(),
@@ -50,7 +58,7 @@ describe("ItemNFT", function () {
       {
         kind: "uups"
       }
-    );
+    )) as unknown as Shop;
 
     const router = await ethers.deployContract("MockRouter");
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");

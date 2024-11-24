@@ -6,6 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import {World} from "../World.sol";
+import {DailyRewardsScheduler} from "../DailyRewardsScheduler.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PetNFT} from "../PetNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
@@ -14,10 +15,11 @@ import {Clans} from "../Clans/Clans.sol";
 import {WishingWell} from "../WishingWell.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PlayersBase} from "./PlayersBase.sol";
-import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IPlayersDelegate, IPlayersMiscDelegate, IPlayersMisc1Delegate, IPlayersMiscDelegateView, IPlayersRewardsDelegateView, IPlayersQueuedActionsDelegateView, IPlayersProcessActionsDelegate, IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 import {IWorldActions} from "../interfaces/IWorldActions.sol";
+
+import {PlayersLibrary} from "./PlayersLibrary.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -74,6 +76,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     PetNFT petNFT,
     IWorldActions worldActions,
     World world,
+    DailyRewardsScheduler dailyRewardsScheduler,
     AdminAccess adminAccess,
     Quests quests,
     Clans clans,
@@ -94,6 +97,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _petNFT = petNFT;
     _worldActions = worldActions;
     _world = world;
+    _dailyRewardsScheduler = dailyRewardsScheduler;
     _adminAccess = adminAccess;
     _quests = quests;
     _clans = clans;

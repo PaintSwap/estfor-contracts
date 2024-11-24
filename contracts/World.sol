@@ -5,7 +5,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
-import {IOracleRewardCB} from "./interfaces/IOracleRewardCB.sol";
+import {IOracleCB} from "./interfaces/IOracleCB.sol";
 import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 import {IWorldActions} from "./interfaces/IWorldActions.sol";
 
@@ -23,39 +23,25 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
   error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
   error RequestAlreadyFulfilled();
   error NoValidRandomWord();
-  error CanOnlyRequestAfter1DayHasPassed();
-  error ActionIdZeroNotAllowed();
-  error MinCannotBeGreaterThanMax();
-  error ActionAlreadyExists(uint16 actionId);
-  error ActionDoesNotExist();
-  error ActionChoiceIdZeroNotAllowed();
   error LengthMismatch();
-  error NoActionChoices();
-  error ActionChoiceAlreadyExists();
-  error ActionChoiceDoesNotExist();
-  error NotAFactorOf3600();
-  error NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards();
-  error InvalidReward();
-  error TooManyRewardsInPool();
   error CallbackGasLimitTooHigh();
   error CallerNotSamWitchVRF();
+  error RandomWordsAlreadyInitialized();
 
   uint256 private constant NUM_WORDS = 1;
   uint256 public constant MIN_RANDOM_WORDS_UPDATE_TIME = 1 days;
   uint256 public constant NUM_DAYS_RANDOM_WORDS_INITIALIZED = 3;
 
-  uint256[] private _requestIds; // Each one is a set of random words for 1 day
-  mapping(uint256 requestId => uint256 randomWord) private _randomWords;
   uint40 private _lastRandomWordsUpdatedTime;
   uint40 private _startTime;
-  uint40 private _weeklyRewardCheckpoint;
-  bytes8 private _thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
   uint24 private _expectedGasLimitFulfill;
   ISamWitchVRF private _samWitchVRF;
-  IOracleRewardCB private _wishingWell;
+  IOracleCB private _wishingWell;
+  IOracleCB private _dailyRewardsScheduler;
+  uint256 private _isRandomWordsInitialized; // Doesn't need to be packed with anything, only called on initialization
 
-  mapping(uint256 tier => Equipment[]) private _dailyRewardPool;
-  mapping(uint256 tier => Equipment[]) private _weeklyRewardPool;
+  uint256[] private _requestIds; // Each one is a set of random words for 1 day
+  mapping(uint256 requestId => uint256 randomWord) private _randomWords;
 
   /// @dev Reverts if the caller is not the SamWitchVRF contract.
   modifier onlySamWitchVRF() {
@@ -80,21 +66,8 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     );
     _startTime = startTime; // Floor to the nearest day 00:00 UTC
     _lastRandomWordsUpdatedTime = uint40(startTime + NUM_DAYS_RANDOM_WORDS_INITIALIZED * 1 days);
-    _weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
     _expectedGasLimitFulfill = 600_000;
     _samWitchVRF = ISamWitchVRF(vrf);
-
-    // Initialize a few days worth of random words so that we have enough data to fetch the first day
-    for (uint256 i; i < NUM_DAYS_RANDOM_WORDS_INITIALIZED; ++i) {
-      uint256 requestId = 200 + i;
-      _requestIds.push(requestId);
-      emit RequestSent(requestId, NUM_WORDS, startTime + (i * 1 days) + 1 days);
-      uint256[] memory words = new uint256[](1);
-      words[0] = uint256(keccak256(abi.encodePacked(block.chainid == 31337 ? address(31337) : address(this), i)));
-      _fulfillRandomWords(requestId, words);
-    }
-
-    _thisWeeksRandomWordSegment = bytes8(uint64(_randomWords[0]));
   }
 
   function requestIds(uint256 requestId) external view returns (uint256) {
@@ -132,45 +105,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     _fulfillRandomWords(uint256(requestId), words);
   }
 
-  function getWeeklyReward(uint256 tier, uint256 playerId) public view returns (uint16 itemTokenId, uint24 amount) {
-    uint256 day = 7;
-    uint256 index = _getRewardIndex(playerId, day, uint64(_thisWeeksRandomWordSegment), _weeklyRewardPool[tier].length);
-    Equipment storage equipment = _weeklyRewardPool[tier][index];
-    return (equipment.itemTokenId, equipment.amount);
-  }
-
-  function getSpecificDailyReward(
-    uint256 tier,
-    uint256 playerId,
-    uint256 day,
-    uint256 randomWord
-  ) public view returns (uint16 itemTokenId, uint24 amount) {
-    uint256 _index = _getRewardIndex(playerId, day, randomWord, _dailyRewardPool[tier].length);
-    Equipment storage _equipment = _dailyRewardPool[tier][_index];
-    return (_equipment.itemTokenId, _equipment.amount);
-  }
-
-  function getDailyReward(uint256 tier, uint256 playerId) external view returns (uint256 itemTokenId, uint256 amount) {
-    uint256 _checkpoint = ((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days;
-    uint256 _day = ((block.timestamp / 1 days) * 1 days - _checkpoint) / 1 days;
-    return getSpecificDailyReward(tier, playerId, _day, uint64(_thisWeeksRandomWordSegment));
-  }
-
-  function getActiveDailyAndWeeklyRewards(
-    uint256 tier,
-    uint256 playerId
-  ) external view returns (Equipment[8] memory rewards) {
-    for (uint256 i; i < 7; ++i) {
-      (rewards[i].itemTokenId, rewards[i].amount) = getSpecificDailyReward(
-        tier,
-        playerId,
-        i,
-        uint64(_thisWeeksRandomWordSegment)
-      );
-    }
-    (rewards[7].itemTokenId, rewards[7].amount) = getWeeklyReward(tier, playerId);
-  }
-
   function _getRandomWordOffset(uint256 timestamp) private view returns (int) {
     if (timestamp < _startTime) {
       return -1;
@@ -201,10 +135,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function getThisWeeksRandomWordSegment() external view returns (bytes8) {
-    return _thisWeeksRandomWordSegment;
-  }
-
   function getRandomBytes(
     uint256 numTickets,
     uint256 startTimestamp,
@@ -233,15 +163,6 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _getRewardIndex(
-    uint256 playerId,
-    uint256 day,
-    uint256 randomWord,
-    uint256 length
-  ) private pure returns (uint256) {
-    return uint256(keccak256(abi.encodePacked(randomWord, playerId)) >> (day * 8)) % length;
-  }
-
   function _getRandomComponent(
     bytes32 word,
     uint256 startTimestamp,
@@ -255,53 +176,29 @@ contract World is UUPSUpgradeable, OwnableUpgradeable {
     require(_randomWords[requestId] == 0, RequestAlreadyFulfilled());
     require(fulfilledRandomWords.length == NUM_WORDS, LengthMismatch());
 
-    uint256 _randomWord = fulfilledRandomWords[0];
-    if (_randomWord == 0) {
-      // Not sure if 0 can be selected, but in case use previous block hash as pseudo random number
-      _randomWord = uint256(blockhash(block.number - 1));
-    }
-
-    _randomWords[requestId] = _randomWord;
-    if (address(_wishingWell) != address(0)) {
-      _wishingWell.newOracleRandomWords(_randomWord);
-    }
-    emit RequestFulfilled(requestId, _randomWord);
-
-    // Are we at the threshold for a new week
-    if (_weeklyRewardCheckpoint <= ((block.timestamp) / 1 days) * 1 days) {
-      // Issue new daily rewards for each tier based on the new random words
-      _thisWeeksRandomWordSegment = bytes8(uint64(_randomWord));
-
-      _weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
-    }
+    uint256 randomWord = fulfilledRandomWords[0];
+    _randomWords[requestId] = randomWord;
+    _wishingWell.newOracleRandomWords(randomWord);
+    _dailyRewardsScheduler.newOracleRandomWords(randomWord);
+    emit RequestFulfilled(requestId, randomWord);
   }
 
-  function setWishingWell(IOracleRewardCB iOracleRewardCB) external onlyOwner {
-    _wishingWell = iOracleRewardCB;
+  function initializeAddresses(IOracleCB wishingWell, IOracleCB dailyRewardsScheduler) external onlyOwner {
+    _wishingWell = IOracleCB(wishingWell);
+    _dailyRewardsScheduler = IOracleCB(dailyRewardsScheduler);
   }
 
-  function setDailyRewardPool(uint256 tier, Equipment[] calldata dailyRewards) external onlyOwner {
-    require(dailyRewards.length <= 255, TooManyRewardsInPool());
-    delete _dailyRewardPool[tier];
-
-    for (uint256 i = 0; i < dailyRewards.length; ++i) {
-      // Amount should be divisible by 10 to allow percentage increases to be applied (like clan bonuses)
-      require(
-        dailyRewards[i].itemTokenId != 0 && dailyRewards[i].amount != 0 && dailyRewards[i].amount % 10 == 0,
-        InvalidReward()
-      );
-      _dailyRewardPool[tier].push(dailyRewards[i]);
-    }
-  }
-
-  function setWeeklyRewardPool(uint256 tier, Equipment[] calldata weeklyRewards) external onlyOwner {
-    require(weeklyRewards.length <= 255, TooManyRewardsInPool());
-
-    delete _weeklyRewardPool[tier];
-
-    for (uint256 i = 0; i < weeklyRewards.length; ++i) {
-      require(weeklyRewards[i].itemTokenId != NONE && weeklyRewards[i].amount != 0, InvalidReward());
-      _weeklyRewardPool[tier].push(weeklyRewards[i]);
+  function initializeRandomWords() external onlyOwner {
+    // Initialize a few days worth of random words so that we have enough data to fetch the first day
+    require(_isRandomWordsInitialized == 0, RandomWordsAlreadyInitialized());
+    _isRandomWordsInitialized = 1;
+    for (uint256 i; i < NUM_DAYS_RANDOM_WORDS_INITIALIZED; ++i) {
+      uint256 requestId = 200 + i;
+      _requestIds.push(requestId);
+      emit RequestSent(requestId, NUM_WORDS, _startTime + (i * 1 days) + 1 days);
+      uint256[] memory words = new uint256[](1);
+      words[0] = uint256(keccak256(abi.encodePacked(block.chainid == 31337 ? address(31337) : address(this), i)));
+      _fulfillRandomWords(requestId, words);
     }
   }
 

@@ -12,6 +12,7 @@ import {WishingWell} from "../WishingWell.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 import {IWorldActions} from "../interfaces/IWorldActions.sol";
+import {DailyRewardsScheduler} from "../DailyRewardsScheduler.sol";
 import "../interfaces/IPlayersDelegates.sol";
 
 // solhint-disable-next-line no-global-import
@@ -160,12 +161,13 @@ abstract contract PlayersBase {
 
   World internal _world;
   IWorldActions internal _worldActions;
+  DailyRewardsScheduler internal _dailyRewardsScheduler;
   bool internal _dailyRewardsEnabled;
   ItemNFT internal _itemNFT;
-  // Constants for the damage formula
+  // Combat formula constants
   uint8 internal _alphaCombat;
   uint8 internal _betaCombat;
-  uint8 internal _alphaCombatHealing; // Healing formula constants
+  uint8 internal _alphaCombatHealing;
   PlayerNFT internal _playerNFT;
   uint64 internal _nextQueueId; // Global queued action id
 

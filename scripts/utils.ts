@@ -11,7 +11,8 @@ import {
   PlayersImplQueueActions,
   PlayersImplRewards,
   TestPaintSwapDecorator,
-  World
+  World,
+  DailyRewardsScheduler
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
@@ -61,18 +62,18 @@ export const isDevNetwork = (network: Network): boolean => {
   return network.chainId == 31337n || network.chainId == 1337n;
 };
 
-export const setDailyAndWeeklyRewards = async (world: World) => {
+export const setDailyAndWeeklyRewards = async (dailyRewardsScheduler: DailyRewardsScheduler) => {
   // Set up daily rewards
   for (let i = 0; i < allDailyRewards.length; ++i) {
     const tier = i + 1;
-    const tx = await world.setDailyRewardPool(tier, allDailyRewards[i]);
+    const tx = await dailyRewardsScheduler.setDailyRewardPool(tier, allDailyRewards[i]);
     await tx.wait();
   }
 
   // Set up weekly rewards
   for (let i = 0; i < allWeeklyRewards.length; ++i) {
     const tier = i + 1;
-    const tx = await world.setWeeklyRewardPool(tier, allWeeklyRewards[i]);
+    const tx = await dailyRewardsScheduler.setWeeklyRewardPool(tier, allWeeklyRewards[i]);
     await tx.wait();
   }
 };
