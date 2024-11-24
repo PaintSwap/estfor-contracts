@@ -237,6 +237,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotBurner",
     "type": "error"
   },
@@ -262,7 +267,7 @@
   },
   {
     "inputs": [],
-    "name": "NotPlayersOrAdminAndBeta",
+    "name": "NotPlayers",
     "type": "error"
   },
   {
@@ -1279,6 +1284,38 @@
     "name": "editPet",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "petId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBridgeableBytes",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBridgeableType",
+    "outputs": [
+      {
+        "internalType": "enum BridgeableType",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {

@@ -19,7 +19,7 @@ import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
-import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE} from "../globals/clans.sol";
+import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, XP_EMITTED_ELSEWHERE} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
 import {BoostType, Skill} from "../globals/misc.sol";
 import {BattleResultEnum} from "../globals/clans.sol";
@@ -55,7 +55,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint256 attackingClanId,
     uint256 defendingClanId,
     uint256[] randomWords,
-    uint256 territoryId
+    uint256 territoryId,
+    uint256 clanXPGainedWinner
   );
   event Deposit(uint256 amount);
   event SetComparableSkills(Skill[] skills);
@@ -155,6 +156,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   uint256 public constant TERRITORY_ATTACKED_COOLDOWN_PLAYER = 24 * 3600;
   uint256 public constant PERCENTAGE_EMISSION_MUL = 10;
   uint256 public constant HARVESTING_COOLDOWN = 8 hours;
+  uint40 private constant CLAN_XP_GAINED_ON_TERRITORY_WIN = 10;
 
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
   mapping(bytes32 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
@@ -382,6 +384,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
       );
     }
 
+    uint40 clanXPGainedWinner = didAttackersWin ? CLAN_XP_GAINED_ON_TERRITORY_WIN : 0;
+
     emit BattleResult(
       uint256(requestId),
       attackingPlayerIds,
@@ -394,13 +398,15 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
       attackingClanId,
       defendingClanId,
       randomWords,
-      territoryId
+      territoryId,
+      clanXPGainedWinner
     );
 
     if (didAttackersWin) {
       _claimTerritory(territoryId, attackingClanId);
       // Update old clan
       _clanInfos[defendingClanId].ownsTerritoryId = 0;
+      _clans.addXP(attackingClanId, clanXPGainedWinner, XP_EMITTED_ELSEWHERE);
     }
   }
 

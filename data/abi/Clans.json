@@ -243,6 +243,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "NotXPModifier",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -398,6 +403,31 @@
       }
     ],
     "name": "AddTiers",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "xp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "xpEmittedElsewhere",
+        "type": "bool"
+      }
+    ],
+    "name": "AddXP",
     "type": "event"
   },
   {
@@ -1180,6 +1210,29 @@
       }
     ],
     "name": "addTiers",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint40",
+        "name": "xp",
+        "type": "uint40"
+      },
+      {
+        "internalType": "bool",
+        "name": "xpEmittedElsewhere",
+        "type": "bool"
+      }
+    ],
+    "name": "addXP",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2273,6 +2326,24 @@
       }
     ],
     "name": "setReservedClanNames",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "accounts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "isModifier",
+        "type": "bool"
+      }
+    ],
+    "name": "setXPModifiers",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -37,7 +37,6 @@ contract PetNFT is
   IBridgeable
 {
   using SkillLibrary for Skill;
-
   using BloomFilter for BloomFilter.Filter;
 
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
@@ -81,7 +80,7 @@ contract PetNFT is
   error LevelNotHighEnough(Skill skill, uint256 level);
   error SkillFixedIncrementCannotBeZero();
   error SkillFixedMustBeAFactorOfIncrement();
-  error NotPlayersOrAdminAndBeta();
+  error NotPlayers();
   error IllegalNameStart();
   error SameName();
   error CannotTransferThisPet(uint256 petId);
@@ -155,7 +154,7 @@ contract PetNFT is
   }
 
   modifier onlyPlayersOrAdminAndBeta() {
-    require(_msgSender() == _players || (_adminAccess.isAdmin(_msgSender()) && _isBeta), NotPlayersOrAdminAndBeta());
+    require(_msgSender() == _players, NotPlayers());
     _;
   }
 
@@ -283,7 +282,7 @@ contract PetNFT is
     for (uint256 i = 0; i < pets.length; ++i) {
       randomWord = uint256(keccak256(abi.encodePacked(randomWord))); // Get a new random word for each pet
       uint256 petId = startPetId + i;
-      Pet memory pet = _createRandomPet(petId, basePetIds[i], uint16(randomWord));
+      Pet memory pet = _createRandomPet(petId, basePetIds[i], randomWord);
       pets[i] = pet;
       tokenIds[i] = petId;
       amounts[i] = 1;
@@ -295,6 +294,7 @@ contract PetNFT is
     emit NewPets(startPetId, pets, names, to);
   }
 
+  /*
   function mintBridged(
     address petOwner,
     uint256[] calldata petIds,
@@ -345,7 +345,7 @@ contract PetNFT is
     }
     _mintBatch(petOwner, petIds, amounts, "");
     emit NewPets(petIds[0], pets, petNames, petOwner);
-  }
+  } */
 
   function getBridgeableType() external pure override returns (BridgeableType) {
     return BridgeableType.Pet;

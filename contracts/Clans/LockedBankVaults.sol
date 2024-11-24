@@ -19,7 +19,7 @@ import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
-import {BattleResultEnum, ClanRank, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, VaultClanInfo, Vault, ClanBattleInfo} from "../globals/clans.sol";
+import {BattleResultEnum, ClanRank, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, VaultClanInfo, Vault, ClanBattleInfo, XP_EMITTED_ELSEWHERE} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
 import {BoostType, Skill} from "../globals/misc.sol";
 import {NONE} from "../globals/items.sol";
@@ -58,7 +58,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint256 brushLost,
     int256 attackingMMRDiff,
     int256 defendingMMRDiff,
-    uint256 xpGained
+    uint256 clanXPGainedWinner
   );
 
   event AssignCombatants(
@@ -123,7 +123,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
 
   uint256 private constant NUM_WORDS = 7;
   uint256 private constant NUM_PACKED_VAULTS = 2;
-  uint256 private constant XP_GAINED_WIN = 10;
+  uint40 private constant CLAN_XP_GAINED_WIN = 10;
 
   Skill[] private _comparableSkills;
   uint64 private _nextPendingAttackId;
@@ -459,7 +459,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       brushLost = totalWon;
     }
 
-    uint xpGained = didAttackersWin ? XP_GAINED_WIN : 0;
+    uint40 clanXPGainedWinner = didAttackersWin ? CLAN_XP_GAINED_WIN : 0;
 
     emit BattleResult(
       uint256(requestId),
@@ -477,9 +477,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       brushLost,
       attackingMMRDiff,
       defendingMMRDiff,
-      xpGained
+      clanXPGainedWinner
     );
+
     if (didAttackersWin) {
+      _clans.addXP(attackingClanId, clanXPGainedWinner, XP_EMITTED_ELSEWHERE);
       _lockFunds(attackingClanId, address(0), 0, totalWon);
     }
   }

@@ -17,4 +17,6 @@ interface IClans {
   function setMMR(uint256 clanId, uint16 mmr) external;
 
   function getMMR(uint256 clanId) external view returns (uint16);
+
+  function addXP(uint256 clanId, uint40 xp, bool xpEmittedElsewhere) external;
 }

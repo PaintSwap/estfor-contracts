@@ -18,7 +18,7 @@ import {HardhatNetworkAccountUserConfig, SolcUserConfig} from "hardhat/types";
 const defaultConfig: SolcUserConfig = {
   version: "0.8.28",
   settings: {
-    evmVersion: "shanghai",
+    evmVersion: "paris",
     optimizer: {
       enabled: true,
       runs: 9999999,
@@ -86,16 +86,16 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, lowestRunsConfig],
     overrides: {
-      "contracts/Clans/Clans.sol": lowRunsConfig,
+      "contracts/Clans/Clans.sol": lowestRunsConfig,
       "contracts/Clans/LockedBankVaults.sol": lowRunsConfig,
       "contracts/Clans/Territories.sol": mediumRunsConfig,
+      "contracts/Clans/Raids.sol": lowRunsConfig,
       "contracts/Players/Players.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": lowRunsConfig,
       "contracts/Players/PlayersImplQueueActions.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplRewards.sol": lowestRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
-      "contracts/Clans/Raids.sol": lowRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
       "contracts/PetNFT.sol": lowestRunsConfig,

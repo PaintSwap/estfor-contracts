@@ -627,7 +627,7 @@ export const playersFixture = async function () {
   await raids.initializeAddresses(combatantsHelper, bankFactory);
   await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories, pvpBattleground], true);
-
+  await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
   await players.setAlphaCombatParams(1, 1, 0); // Alpha combat healing was introduced later, so to not mess up existing tests set this to 0
 
   const avatarId = 1;

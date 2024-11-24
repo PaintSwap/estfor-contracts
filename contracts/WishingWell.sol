@@ -14,10 +14,13 @@ import {Clans} from "./Clans/Clans.sol";
 
 // solhint-disable-next-line no-global-import
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
+import {XP_EMITTED_ELSEWHERE} from "./globals/clans.sol";
 
 contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
+  using BitMaps for BitMaps.BitMap;
+
   event Donate(address from, uint256 playerId, uint256 amount, uint256 lotteryId, uint256 raffleId);
-  event DonateToClan(address from, uint256 playerId, uint256 amount, uint256 clanId);
+  event DonateToClan(address from, uint256 playerId, uint256 amount, uint256 clanId, uint256 clanXPGained);
   event WinnerAndNewLottery(uint256 lotteryId, uint256 raffleId, uint16 rewardItemTokenId, uint256 rewardAmount);
   event SetRaffleEntryCost(uint256 brushAmount);
   event GlobalDonationThreshold(uint256 thresholdIncrement);
@@ -40,7 +43,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     uint16 nextReward;
   }
 
-  using BitMaps for BitMaps.BitMap;
+  uint40 private constant CLAN_XP_GAINED_ON_RAFFLE_ENTRY = 1;
 
   IBrushToken private _brush;
   PlayerNFT private _playerNFT;
@@ -190,9 +193,14 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
           );
           _clanDonationInfo[clanId].nextReward = nextReward;
         }
+        uint40 clanXPGained;
+        if (isRaffleDonation) {
+          clanXPGained = CLAN_XP_GAINED_ON_RAFFLE_ENTRY;
+          _clans.addXP(clanId, clanXPGained, XP_EMITTED_ELSEWHERE);
+        }
 
         _clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
-        emit DonateToClan(from, playerId, flooredAmountWei, clanId);
+        emit DonateToClan(from, playerId, flooredAmountWei, clanId, clanXPGained);
       }
     }
 

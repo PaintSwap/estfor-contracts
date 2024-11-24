@@ -1122,6 +1122,10 @@ async function main() {
   await tx.wait();
   console.log("Add actions");
 
+  tx = await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
+  await tx.wait();
+  console.log("clans.setXPModifiers");
+
   const fireMakingActionId = EstforConstants.ACTION_FIREMAKING_ITEM;
   const smithingActionId = EstforConstants.ACTION_SMITHING_ITEM;
   const cookingActionId = EstforConstants.ACTION_COOKING_ITEM;

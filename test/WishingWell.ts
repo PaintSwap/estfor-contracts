@@ -2,17 +2,11 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {playersFixture} from "./Players/PlayersFixture";
-import {
-  initializerSlot,
-  requestAndFulfillRandomWords,
-  timeTravel,
-  timeTravel24Hours,
-  timeTravelToNextCheckpoint
-} from "./utils";
+import {initializerSlot, requestAndFulfillRandomWords, timeTravel24Hours, timeTravelToNextCheckpoint} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {setupBasicWoodcutting} from "./Players/utils";
-import {Block, parseEther} from "ethers";
+import {parseEther} from "ethers";
 
 describe("WishingWell", function () {
   async function deployContracts() {
@@ -244,11 +238,12 @@ describe("WishingWell", function () {
 
     let lotteryId = await wishingWell.getLastLotteryId();
     expect(lotteryId).to.eq(1);
+    const clanXP = 0;
     await expect(players.connect(alice).donate(playerId, parseEther("1.1")))
       .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, parseEther("1"), 0, 0)
       .and.to.emit(wishingWell, "DonateToClan")
-      .withArgs(alice.address, playerId, parseEther("1"), clanId);
+      .withArgs(alice.address, playerId, parseEther("1"), clanId, clanXP);
 
     // But it takes 1.1 brush from you
     expect(await brush.balanceOf(alice)).to.eq(beforeBalance - parseEther("1.1"));
@@ -260,7 +255,7 @@ describe("WishingWell", function () {
       .to.emit(wishingWell, "Donate")
       .withArgs(alice.address, playerId, parseEther("1"), 0, 0)
       .and.to.emit(wishingWell, "DonateToClan")
-      .withArgs(alice.address, playerId, parseEther("1"), clanId);
+      .withArgs(alice.address, playerId, parseEther("1"), clanId, clanXP);
 
     expect(await wishingWell.getTotalDonated()).to.eq(parseEther("2"));
     expect(await wishingWell.getClanTotalDonated(clanId)).to.eq(parseEther("2"));
@@ -395,12 +390,13 @@ describe("WishingWell", function () {
 
     await wishingWell.setClanDonationThresholdIncrement(raffleEntryCost);
 
+    const clanXP = 1;
     await expect(players.connect(alice).donate(playerId, raffleEntryCost))
       .to.emit(wishingWell, "LastClanDonationThreshold")
       .withArgs(clanId, raffleEntryCost, EstforConstants.CLAN_BOOSTER_2)
       .and.to.emit(players, "ConsumeClanBoostVial")
       .and.to.emit(wishingWell, "DonateToClan")
-      .withArgs(alice.address, playerId, raffleEntryCost, clanId);
+      .withArgs(alice.address, playerId, raffleEntryCost, clanId, clanXP);
 
     expect((await players.getActiveBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await players.getClanBoost(clanId)).itemTokenId).to.eq(EstforConstants.CLAN_BOOSTER);

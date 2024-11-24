@@ -4,7 +4,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 import {BasePetInput, PetEnhancementType, PetSkin, Skill} from "@paintswap/estfor-definitions/types";
 import {upgrades} from "hardhat";
 import {PetNFT} from "../typechain-types";
-import {getXPFromLevel} from "./Players/utils";
+import {getXPFromLevel, makeSigner} from "./Players/utils";
 import {parseEther} from "ethers";
 
 describe("PetNFT", function () {
@@ -233,9 +233,10 @@ describe("PetNFT", function () {
   });
 
   it("Must own pet to assign", async function () {
-    const {petNFT, playerId, alice} = await loadFixture(deployContracts);
+    const {petNFT, playerId, players, alice} = await loadFixture(deployContracts);
 
-    await expect(petNFT.connect(alice).assignPet(alice, playerId, petId, 0)).to.be.revertedWithCustomError(
+    const playersSigner = await makeSigner(players);
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
       "PlayerDoesNotOwnPet"
     );
@@ -250,42 +251,32 @@ describe("PetNFT", function () {
     await petNFT.addBasePets([modifiedPet]);
     await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
 
-    await expect(petNFT.connect(alice).assignPet(alice, playerId, petId, 0)).to.be.revertedWithCustomError(
+    const playersSigner = await makeSigner(players);
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.be.revertedWithCustomError(
       petNFT,
       "LevelNotHighEnough"
     );
 
     await players.connect(alice).modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(2));
-    await expect(petNFT.connect(alice).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
   });
 
-  it("Must be players or admin and beta to call assign pet", async function () {
-    const {petNFT, playerId, alice, bob} = await loadFixture(deployContracts);
+  it("Must be players to call assign pet", async function () {
+    const {petNFT, playerId, alice, players} = await loadFixture(deployContracts);
 
     const randomWord = 0;
     const modifiedPet = deepClonePet(pet);
     await petNFT.addBasePets([modifiedPet]);
     await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
 
-    await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.revertedWithCustomError(
-      petNFT,
-      "NotPlayersOrAdminAndBeta"
-    );
+    await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.be.revertedWithCustomError(petNFT, "NotPlayers");
 
-    await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.revertedWithCustomError(
-      petNFT,
-      "NotPlayersOrAdminAndBeta"
-    );
-
-    await petNFT.initializeAddresses(bob, bob, bob);
-    await expect(petNFT.connect(bob).assignPet(alice, playerId, petId, 0)).to.not.be.revertedWithCustomError(
-      petNFT,
-      "NotPlayersOrAdminAndBeta"
-    );
+    const playersSigner = await makeSigner(players);
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
   });
 
   it("Check 0 for both percentage and fixed reverts", async function () {
-    const {petNFT, playerId, alice} = await loadFixture(deployContracts);
+    const {petNFT, playerId, players, alice} = await loadFixture(deployContracts);
 
     const randomWord = 0;
     const modifiedPet = deepClonePet(pet);
@@ -303,24 +294,27 @@ describe("PetNFT", function () {
     await petNFT.addBasePets([modifiedPet]);
 
     await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
-    await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
+    const playersSigner = await makeSigner(players);
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
   });
 
   it("Check 0 for fixed or percentage does not revert", async function () {
-    const {petNFT, playerId, alice} = await loadFixture(deployContracts);
+    const {petNFT, playerId, players, alice} = await loadFixture(deployContracts);
+
+    const playersSigner = await makeSigner(players);
 
     const randomWord = 0;
     const modifiedPet = deepClonePet(pet);
     await petNFT.addBasePets([modifiedPet]);
     await petNFT.connect(alice).mintBatch(alice, [baseId], randomWord);
-    await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
 
     // 0 percentage min/max is fine
     modifiedPet.skillPercentageMins[0] = 0;
     modifiedPet.skillPercentageMaxs[0] = 0;
     modifiedPet.skillFixedMaxs[0] = 1;
     await petNFT.editBasePets([modifiedPet]);
-    await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
 
     // Check second enhancement too
     modifiedPet.skillFixedMaxs[1] = 1;
@@ -340,7 +334,7 @@ describe("PetNFT", function () {
 
     modifiedPet.skillPercentageIncrements[1] = 1;
     await petNFT.editBasePets([modifiedPet]);
-    await expect(petNFT.assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
+    await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
   });
 
   describe("Editing", function () {

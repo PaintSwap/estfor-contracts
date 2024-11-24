@@ -53,6 +53,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
+  event AddXP(uint256 clanId, uint256 xp, bool xpEmittedElsewhere);
 
   error AlreadyInClan();
   error NotOwnerOfPlayer();
@@ -106,6 +107,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error PlayersAlreadySet();
   error BankFactoryAlreadySet();
   error ClanNameIsReserved(string name);
+  error NotXPModifier();
 
   struct Clan {
     uint64 ownerPlayerId;
@@ -115,6 +117,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint8 tierId;
     bool disableJoinRequests;
     uint16 mmr;
+    uint40 xp;
     string name;
     mapping(uint256 playerId => bool invited) inviteRequests;
     NFTInfo[] gateKeptNFTs;
@@ -161,6 +164,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(uint256 id => Tier tier) private _tiers;
   mapping(string name => bool exists) private _lowercaseNames;
   mapping(uint256 clanId => uint40 timestampLeft) private _ownerlessClanTimestamps; // timestamp
+  mapping(address account => bool isModifier) private _xpModifiers;
   BloomFilter.Filter private _reservedClanNames; // TODO: remove 30 days after launch
 
   modifier isOwnerOfPlayer(uint256 playerId) {
@@ -182,6 +186,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   modifier isMemberOfClan(uint256 clanId, uint256 playerId) {
     require(_playerInfo[playerId].clanId == clanId, NotMemberOfClan());
+    _;
+  }
+
+  modifier isXPModifier() {
+    require(_xpModifiers[_msgSender()], NotXPModifier());
     _;
   }
 
@@ -503,109 +512,46 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit PinMessage(clanId, message, playerId);
   }
 
+  function gateKeep(
+    uint256 clanId,
+    NFTInfo[] calldata nftInfos,
+    uint256 playerId
+  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
+    require(nftInfos.length <= 5, TooManyNFTs());
+
+    address[] memory nfts = new address[](nftInfos.length);
+    IMarketplaceWhitelist paintswapMarketplaceWhitelist = IMarketplaceWhitelist(_paintswapMarketplaceWhitelist);
+    for (uint256 i; i < nftInfos.length; ++i) {
+      // This must be whitelisted by the PaintSwapMarketplace marketplace
+      address nft = nftInfos[i].nft;
+      require(paintswapMarketplaceWhitelist.isWhitelisted(nft), NFTNotWhitelistedOnMarketplace());
+      // Must be a supported NFT standard
+      uint256 nftType = nftInfos[i].nftType;
+
+      // Checks supportsInterface is correct
+      if (nftType == 721) {
+        require(IERC721(nft).supportsInterface(type(IERC721).interfaceId), InvalidNFTType());
+      } else if (nftType == 1155) {
+        require(IERC1155(nft).supportsInterface(type(IERC1155).interfaceId), InvalidNFTType());
+      } else {
+        revert UnsupportedNFTType();
+      }
+
+      nfts[i] = nft;
+    }
+
+    _clans[clanId].gateKeptNFTs = nftInfos;
+    emit GateKeepNFTs(clanId, nfts, playerId);
+  }
+
+  // The flag is for cases where XP is added in the future and not part of those events
+  function addXP(uint256 clanId, uint40 xp, bool xpEmittedElsewhere) external isXPModifier {
+    _clans[clanId].xp += xp;
+    emit AddXP(clanId, xp, xpEmittedElsewhere);
+  }
+
   function setMMR(uint256 clanId, uint16 mmr) external onlyMMRSetter {
     _clans[clanId].mmr = mmr;
-  }
-
-  function getClanIdFromPlayer(uint256 playerId) external view returns (uint256) {
-    return _playerInfo[playerId].clanId;
-  }
-
-  function getClanNameOfPlayer(uint256 playerId) external view returns (string memory) {
-    uint256 clanId = _playerInfo[playerId].clanId;
-    return _clans[clanId].name;
-  }
-
-  function canWithdraw(uint256 clanId, uint256 playerId) external view override returns (bool) {
-    return _playerInfo[playerId].clanId == clanId && _playerInfo[playerId].rank >= ClanRank.TREASURER;
-  }
-
-  function isClanMember(uint256 clanId, uint256 playerId) external view returns (bool) {
-    return _playerInfo[playerId].clanId == clanId;
-  }
-
-  function isMemberOfAnyClan(uint256 playerId) public view returns (bool) {
-    return _playerInfo[playerId].clanId != 0;
-  }
-
-  function getClanTierMembership(uint256 playerId) external view returns (uint8) {
-    return _clans[_playerInfo[playerId].clanId].tierId;
-  }
-
-  function getClanId(uint256 playerId) external view returns (uint256) {
-    return _playerInfo[playerId].clanId;
-  }
-
-  function getMMR(uint256 clanId) external view returns (uint16 mmr) {
-    mmr = _clans[clanId].mmr;
-  }
-
-  function hasInviteRequest(uint256 clanId, uint256 playerId) external view returns (bool) {
-    return _clans[clanId].inviteRequests[playerId];
-  }
-
-  function maxBankCapacity(uint256 clanId) external view override returns (uint16) {
-    Tier storage tier = _tiers[_clans[clanId].tierId];
-    return tier.maxBankCapacity;
-  }
-
-  function maxMemberCapacity(uint256 clanId) external view override returns (uint16) {
-    Tier storage tier = _tiers[_clans[clanId].tierId];
-    return tier.maxMemberCapacity;
-  }
-
-  function getRank(uint256 clanId, uint256 playerId) external view returns (ClanRank rank) {
-    if (_playerInfo[playerId].clanId == clanId) {
-      return _playerInfo[playerId].rank;
-    }
-    return ClanRank.NONE;
-  }
-
-  function getEditNameCost() external view returns (uint80) {
-    return _editNameCost;
-  }
-
-  function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
-    return _playerInfo[playerId];
-  }
-
-  function getLowercaseNames(string calldata name) external view returns (bool) {
-    return _lowercaseNames[name];
-  }
-
-  function getTier(uint256 tierId) external view returns (Tier memory) {
-    return _tiers[tierId];
-  }
-
-  function getClan(
-    uint256 clanId
-  )
-    external
-    view
-    returns (
-      uint64 ownerPlayerId,
-      uint16 imageId,
-      uint16 memberCount,
-      uint40 createdTimestamp,
-      uint8 tierId,
-      bool disableJoinRequests,
-      uint16 mmr,
-      string memory name,
-      NFTInfo[] memory gateKeptNFTs
-    )
-  {
-    Clan storage clan = _clans[clanId];
-    return (
-      clan.ownerPlayerId,
-      clan.imageId,
-      clan.memberCount,
-      clan.createdTimestamp,
-      clan.tierId,
-      clan.disableJoinRequests,
-      clan.mmr,
-      clan.name,
-      clan.gateKeptNFTs
-    );
   }
 
   function _checkClanImage(uint256 imageId, uint256 maxImageId) private pure {
@@ -825,6 +771,111 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     player.rank = ClanRank.COMMONER;
   }
 
+  function getClanIdFromPlayer(uint256 playerId) external view returns (uint256) {
+    return _playerInfo[playerId].clanId;
+  }
+
+  function getClanNameOfPlayer(uint256 playerId) external view returns (string memory) {
+    uint256 clanId = _playerInfo[playerId].clanId;
+    return _clans[clanId].name;
+  }
+
+  function canWithdraw(uint256 clanId, uint256 playerId) external view override returns (bool) {
+    return _playerInfo[playerId].clanId == clanId && _playerInfo[playerId].rank >= ClanRank.TREASURER;
+  }
+
+  function isClanMember(uint256 clanId, uint256 playerId) external view returns (bool) {
+    return _playerInfo[playerId].clanId == clanId;
+  }
+
+  function isMemberOfAnyClan(uint256 playerId) public view returns (bool) {
+    return _playerInfo[playerId].clanId != 0;
+  }
+
+  function getClanTierMembership(uint256 playerId) external view returns (uint8) {
+    return _clans[_playerInfo[playerId].clanId].tierId;
+  }
+
+  function getClanId(uint256 playerId) external view returns (uint256) {
+    return _playerInfo[playerId].clanId;
+  }
+
+  function getMMR(uint256 clanId) external view returns (uint16 mmr) {
+    mmr = _clans[clanId].mmr;
+  }
+
+  function hasInviteRequest(uint256 clanId, uint256 playerId) external view returns (bool) {
+    return _clans[clanId].inviteRequests[playerId];
+  }
+
+  function maxBankCapacity(uint256 clanId) external view override returns (uint16) {
+    Tier storage tier = _tiers[_clans[clanId].tierId];
+    return tier.maxBankCapacity;
+  }
+
+  function maxMemberCapacity(uint256 clanId) external view override returns (uint16) {
+    Tier storage tier = _tiers[_clans[clanId].tierId];
+    return tier.maxMemberCapacity;
+  }
+
+  function getRank(uint256 clanId, uint256 playerId) external view returns (ClanRank rank) {
+    if (_playerInfo[playerId].clanId == clanId) {
+      return _playerInfo[playerId].rank;
+    }
+    return ClanRank.NONE;
+  }
+
+  function getEditNameCost() external view returns (uint80) {
+    return _editNameCost;
+  }
+
+  function getPlayerInfo(uint256 playerId) external view returns (PlayerInfo memory) {
+    return _playerInfo[playerId];
+  }
+
+  function getLowercaseNames(string calldata name) external view returns (bool) {
+    return _lowercaseNames[name];
+  }
+
+  function getTier(uint256 tierId) external view returns (Tier memory) {
+    return _tiers[tierId];
+  }
+
+  function getClan(
+    uint256 clanId
+  )
+    external
+    view
+    returns (
+      uint64 ownerPlayerId,
+      uint16 imageId,
+      uint16 memberCount,
+      uint40 createdTimestamp,
+      uint8 tierId,
+      bool disableJoinRequests,
+      uint16 mmr,
+      string memory name,
+      NFTInfo[] memory gateKeptNFTs
+    )
+  {
+    Clan storage clan = _clans[clanId];
+    return (
+      clan.ownerPlayerId,
+      clan.imageId,
+      clan.memberCount,
+      clan.createdTimestamp,
+      clan.tierId,
+      clan.disableJoinRequests,
+      clan.mmr,
+      clan.name,
+      clan.gateKeptNFTs
+    );
+  }
+
+  function isClanNameReserved(string calldata clanName) public view returns (bool) {
+    return _reservedClanNames._probablyContainsString(EstforLibrary.toLower(clanName));
+  }
+
   function addTiers(Tier[] calldata tiers) external onlyOwner {
     for (uint256 i; i < tiers.length; ++i) {
       require(tiers[i].id != 0 && _tiers[tiers[i].id].id == 0, TierAlreadyExists());
@@ -839,38 +890,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       _setTier(tiers[i]);
     }
     emit EditTiers(tiers);
-  }
-
-  function gateKeep(
-    uint256 clanId,
-    NFTInfo[] calldata nftInfos,
-    uint256 playerId
-  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.LEADER) {
-    require(nftInfos.length <= 5, TooManyNFTs());
-
-    address[] memory nfts = new address[](nftInfos.length);
-    IMarketplaceWhitelist paintswapMarketplaceWhitelist = IMarketplaceWhitelist(_paintswapMarketplaceWhitelist);
-    for (uint256 i; i < nftInfos.length; ++i) {
-      // This must be whitelisted by the PaintSwapMarketplace marketplace
-      address nft = nftInfos[i].nft;
-      require(paintswapMarketplaceWhitelist.isWhitelisted(nft), NFTNotWhitelistedOnMarketplace());
-      // Must be a supported NFT standard
-      uint256 nftType = nftInfos[i].nftType;
-
-      // Checks supportsInterface is correct
-      if (nftType == 721) {
-        require(IERC721(nft).supportsInterface(type(IERC721).interfaceId), InvalidNFTType());
-      } else if (nftType == 1155) {
-        require(IERC1155(nft).supportsInterface(type(IERC1155).interfaceId), InvalidNFTType());
-      } else {
-        revert UnsupportedNFTType();
-      }
-
-      nfts[i] = nft;
-    }
-
-    _clans[clanId].gateKeptNFTs = nftInfos;
-    emit GateKeepNFTs(clanId, nfts, playerId);
   }
 
   function initializeAddresses(
@@ -889,6 +908,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _lockedBankVaults = lockedBankVaults;
     _raids = raids;
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
+  }
+
+  function setXPModifiers(address[] calldata accounts, bool isModifier) external onlyOwner {
+    for (uint256 i; i < accounts.length; ++i) {
+      _xpModifiers[accounts[i]] = isModifier;
+    }
   }
 
   function setEditNameCost(uint80 editNameCost) public onlyOwner {
@@ -916,10 +941,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
   function setReservedClanNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
     _reservedClanNames._initialize(itemCount, positions);
-  }
-
-  function isClanNameReserved(string calldata clanName) public view returns (bool) {
-    return _reservedClanNames._probablyContainsString(EstforLibrary.toLower(clanName));
   }
 
   function addReservedClanNames(string[] calldata names) external onlyOwner {

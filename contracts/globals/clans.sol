@@ -53,3 +53,5 @@ struct VaultClanInfo {
 
 uint256 constant MAX_CLAN_COMBATANTS = 20;
 uint256 constant CLAN_WARS_GAS_PRICE_WINDOW_SIZE = 4;
+
+bool constant XP_EMITTED_ELSEWHERE = true;

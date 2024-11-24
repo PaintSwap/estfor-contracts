@@ -358,6 +358,24 @@
         "internalType": "uint256",
         "name": "brushLost",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "attackingMMRDiff",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "defendingMMRDiff",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanXPGainedWinner",
+        "type": "uint256"
       }
     ],
     "name": "BattleResult",
@@ -702,31 +720,6 @@
       }
     ],
     "name": "SuperAttackCooldown",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "int256",
-        "name": "attackingMMRDiff",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
-        "internalType": "int256",
-        "name": "defendingMMRDiff",
-        "type": "int256"
-      }
-    ],
-    "name": "UpdateMMR",
     "type": "event"
   },
   {
