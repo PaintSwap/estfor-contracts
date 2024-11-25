@@ -132,9 +132,9 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint64 startPlayerId,
     bool isBeta
   ) external initializer {
-    __SamWitchERC1155UpgradeableSinglePerToken_init("");
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __SamWitchERC1155UpgradeableSinglePerToken_init("");
 
     _brush = brush;
     _nextPlayerId = startPlayerId;

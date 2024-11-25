@@ -86,6 +86,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+
     _brush = brush;
     _treasury = treasury;
     _dev = dev;

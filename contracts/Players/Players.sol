@@ -24,7 +24,7 @@ import {PlayersLibrary} from "./PlayersLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, PlayersBase, IPlayers {
+contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IPlayers {
   event GamePaused(bool gamePaused);
   event LockPlayer(uint256 playerId, uint256 cooldownTimestamp);
   event UnlockPlayer(uint256 playerId);
@@ -88,8 +88,8 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     address implMisc1,
     bool isBeta
   ) external initializer {
-    __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
+    __Ownable_init(_msgSender());
     __ReentrancyGuard_init();
 
     _itemNFT = itemNFT;

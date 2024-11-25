@@ -6,9 +6,9 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract TestSamWitchERC1155UpgradeableSinglePerToken is
+  SamWitchERC1155UpgradeableSinglePerToken,
   UUPSUpgradeable,
-  OwnableUpgradeable,
-  SamWitchERC1155UpgradeableSinglePerToken
+  OwnableUpgradeable
 {
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {

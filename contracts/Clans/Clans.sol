@@ -215,6 +215,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+
     _brush = brush;
     _playerNFT = playerNFT;
     _treasury = pool;

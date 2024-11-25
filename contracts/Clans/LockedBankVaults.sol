@@ -235,6 +235,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+
     _players = players;
     _clans = clans;
     _brush = brush;

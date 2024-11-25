@@ -134,6 +134,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+
     _players = players;
     _itemNFT = itemNFT;
     _petNFT = petNFT;

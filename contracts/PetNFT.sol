@@ -30,9 +30,9 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // into the pet struct and avoid updating multiple to/from balances using
 // SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
 contract PetNFT is
+  SamWitchERC1155UpgradeableSinglePerToken,
   UUPSUpgradeable,
   OwnableUpgradeable,
-  SamWitchERC1155UpgradeableSinglePerToken,
   IERC2981,
   IBridgeable
 {
@@ -184,9 +184,9 @@ contract PetNFT is
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
-    __SamWitchERC1155UpgradeableSinglePerToken_init("");
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __SamWitchERC1155UpgradeableSinglePerToken_init("");
 
     bool storageSlotCorrect;
     assembly ("memory-safe") {

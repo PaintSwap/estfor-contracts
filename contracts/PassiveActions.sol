@@ -138,6 +138,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
     __ReentrancyGuard_init();
+
     _players = players;
     _itemNFT = itemNFT;
     _randomnessBeacon = randomnessBeacon;

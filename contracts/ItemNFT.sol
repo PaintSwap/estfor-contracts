@@ -78,9 +78,9 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
-    __ERC1155_init("");
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __ERC1155_init("");
 
     _baseURI = baseURI;
     _royaltyFee = 30; // 3%

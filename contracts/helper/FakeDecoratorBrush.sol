@@ -5,15 +5,15 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract FakeDecoratorBrush is ERC20Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
+contract FakeDecoratorBrush is UUPSUpgradeable, ERC20Upgradeable, OwnableUpgradeable {
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
   function initialize() external initializer {
-    __ERC20_init("FakeDecoratorBrush", "FAKEBRUSH");
     __UUPSUpgradeable_init();
+    __ERC20_init("FakeDecoratorBrush", "FAKEBRUSH");
     __Ownable_init(_msgSender());
   }
 

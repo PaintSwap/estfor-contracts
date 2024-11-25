@@ -145,6 +145,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+
     _players = players;
     _playerNFT = playerNFT;
     _brush = brush;
