@@ -267,7 +267,7 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
       expect(await erc1155UpgradeableSinglePerToken.balanceOf(owner, secondTokenId)).to.eq(0);
     });
 
-    it("Burning with dead address should also remove from totalSupply and remove balance", async function () {
+    it("Burning with dead address should not remove from totalSupply and remove balance", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 

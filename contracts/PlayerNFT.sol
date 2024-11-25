@@ -74,12 +74,12 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
   struct PlayerInfo {
     uint24 avatarId;
-    uint24 originalAvatarId;
+    uint24 originalAvatarId; // The base avatar id that you were born with
     uint40 mintedTimestamp;
-    uint40 upgradedTimestamp;
+    uint40 upgradedTimestamp; // What time you upgraded your avatar
   }
 
-  uint256 constant EVOLVED_OFFSET = 10000;
+  uint256 private constant EVOLVED_OFFSET = 10000;
   uint256 public constant NUM_BASE_AVATARS = 8;
 
   IBrushToken private _brush;
@@ -138,7 +138,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
     _brush = brush;
     _nextPlayerId = startPlayerId;
-    setInitialLevel(16);
+    setInitialLevel(17);
     _imageBaseUri = imageBaseUri;
     _treasury = treasury;
     _dev = dev;
@@ -186,8 +186,9 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   }
 
   function _upgradePlayer(uint256 playerId, uint24 newAvatarId) private {
-    _playerInfos[playerId].avatarId = newAvatarId;
-    _playerInfos[playerId].upgradedTimestamp = uint40(block.timestamp);
+    PlayerInfo storage playerInfo = _playerInfos[playerId];
+    playerInfo.avatarId = newAvatarId;
+    playerInfo.upgradedTimestamp = uint40(block.timestamp);
     _players.upgradePlayer(playerId);
     uint256 tokenCost = _upgradePlayerCost;
     _pay(tokenCost);
@@ -213,9 +214,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     }
 
     if (upgrade) {
-      if (_playerInfos[playerId].originalAvatarId == 0) {
-        _playerInfos[playerId].originalAvatarId = _playerInfos[playerId].avatarId;
-      }
+      _playerInfos[playerId].originalAvatarId = _playerInfos[playerId].avatarId;
       uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + _playerInfos[playerId].avatarId);
       _upgradePlayer(playerId, evolvedAvatarId);
     }
@@ -298,11 +297,11 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
       for (uint256 i = 0; i < ids.length; ++i) {
         uint256 playerId = ids[i];
         players.clearEverythingBeforeTokenTransfer(from, playerId);
-        if (to == address(0) || to == 0x000000000000000000000000000000000000dEaD) {
+        if (to == address(0)) {
           // Burning
           string memory oldName = EstforLibrary.toLower(_names[playerId]);
           delete _lowercaseNames[oldName];
-          burned++;
+          ++burned;
         } else if (from != address(0)) {
           // Not minting
           players.beforeTokenTransferTo(to, playerId);

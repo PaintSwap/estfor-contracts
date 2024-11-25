@@ -7,13 +7,49 @@ import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
 import {Block, parseEther} from "ethers";
-import {generateUniqueBitPositions} from "./utils";
+import {generateUniqueBitPositions, initializerSlot} from "./utils";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
     const baseFixture = await loadFixture(playersFixture);
     return {...baseFixture};
   }
+
+  it("Check initialization params", async function () {
+    const {brush, shop, dev, royaltyReceiver, estforLibrary} = await loadFixture(deployContracts);
+
+    const playerNFT = await ethers.deployContract("PlayerNFT", {
+      libraries: {EstforLibrary: await estforLibrary.getAddress()}
+    });
+
+    await ethers.provider.send("hardhat_setStorageAt", [
+      await playerNFT.getAddress(),
+      initializerSlot,
+      ethers.ZeroHash
+    ]);
+
+    const startPlayerId = 1;
+    const isBeta = false;
+    const editNameBrushPrice = parseEther("1");
+    const upgradePlayerBrushPrice = parseEther("2");
+    const imageBaseUri = "ipfs://";
+
+    await expect(
+      playerNFT.initialize(
+        await brush.getAddress(),
+        await shop.getAddress(),
+        dev.address,
+        await royaltyReceiver.getAddress(),
+        editNameBrushPrice,
+        upgradePlayerBrushPrice,
+        imageBaseUri,
+        startPlayerId,
+        isBeta
+      )
+    )
+      .to.emit(playerNFT, "SetInitialLevel")
+      .withArgs(17);
+  });
 
   it("Empty name", async function () {
     const {playerNFT, alice} = await loadFixture(deployContracts);
