@@ -1,11 +1,10 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers} from "hardhat";
 import {
   COMBATANTS_HELPER_ADDRESS,
   ITEM_NFT_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
   TERRITORIES_ADDRESS
 } from "./contractAddresses";
-import {CombatantsHelper, ItemNFT, LockedBankVaults, Territories} from "../typechain-types";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {getChainId} from "./utils";
 
@@ -15,17 +14,10 @@ async function main() {
   // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
   // const alice = await ethers.getImpersonatedSigner("0xBa00694692267ed0B5154d48Fcb4D435D0B24d3F");
 
-  const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
-  const lockedBankVaults = (await ethers.getContractAt(
-    "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS
-  )) as LockedBankVaults;
-  const combatantsHelper = (await ethers.getContractAt(
-    "CombatantsHelper",
-    COMBATANTS_HELPER_ADDRESS
-  )) as CombatantsHelper;
-
-  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
+  const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS);
+  const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);
+  const combatantsHelper = await ethers.getContractAt("CombatantsHelper", COMBATANTS_HELPER_ADDRESS);
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
   const clanId = 1;
   const playerId = 1;

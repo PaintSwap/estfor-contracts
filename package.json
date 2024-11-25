@@ -130,7 +130,6 @@
     "requestRandomWords": "npx hardhat run scripts/requestRandomWords.ts",
     "forceMMRUpdate": "npx hardhat run scripts/forceMMRUpdate.ts",
     "bulkTransfer": "npx hardhat run scripts/bulkTransfer.ts",
-    "pendingQueuedActionState": "npx hardhat run scripts/pendingQueuedActionState.ts",
     "prettier": "node_modules/.bin/prettier --write contracts/**/*.sol",
     "precommit": "pretty-quick --staged",
     "prepare": "husky install .husky"

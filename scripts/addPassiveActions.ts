@@ -1,6 +1,5 @@
 import {ethers} from "hardhat";
 import {PASSIVE_ACTIONS_ADDRESS} from "./contractAddresses";
-import {PassiveActions} from "../typechain-types";
 import {allPassiveActions} from "./data/passiveActions";
 import {isBeta} from "./utils";
 import {EstforConstants} from "@paintswap/estfor-definitions";
@@ -10,15 +9,13 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Add passive actions using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)).connect(
-    owner,
-  ) as PassiveActions;
+  const passiveActions = await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS);
 
   const actionsToReduce = [
     EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER2,
     EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER3,
     EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4,
-    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER5,
+    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER5
   ];
 
   const values = [0, 0, 0, 0];
@@ -37,8 +34,8 @@ async function main() {
           ...passiveAction,
           info: {
             ...passiveAction.info,
-            durationDays,
-          },
+            durationDays
+          }
         };
       })
     : actions;

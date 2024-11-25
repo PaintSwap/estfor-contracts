@@ -6,7 +6,7 @@ import {getChainId} from "./utils";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(
-    `Add instant VRF action strategies using account: ${owner.address} on chain id ${await getChainId(owner)}`,
+    `Add instant VRF action strategies using account: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
   const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
@@ -17,7 +17,7 @@ async function main() {
     {
       kind: "uups",
     }
-  )) as EggInstantVRFActionStrategy;
+  )) as unknown as EggInstantVRFActionStrategy;
 */
   await instantVRFActions.addStrategies([InstantVRFActionType.GENERIC], [GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS]);
 }

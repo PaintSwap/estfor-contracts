@@ -8,14 +8,6 @@ import {
   TERRITORIES_ADDRESS,
   BANK_FACTORY_ADDRESS
 } from "./contractAddresses";
-import {
-  CombatantsHelper,
-  LockedBankVaults,
-  MockBrushToken,
-  Territories,
-  TerritoryTreasury,
-  TestPaintSwapDecorator
-} from "../typechain-types";
 import {getChainId} from "./utils";
 import {parseEther} from "ethers";
 
@@ -25,23 +17,13 @@ async function main() {
   // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
   // const alice = await ethers.getImpersonatedSigner("0xBa00694692267ed0B5154d48Fcb4D435D0B24d3F");
 
-  const brush = (await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS)) as MockBrushToken;
+  const brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
 
-  const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
-  const lockedBankVaults = (await ethers.getContractAt(
-    "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS
-  )) as LockedBankVaults;
-  const decorator = (await ethers.getContractAt("TestPaintSwapDecorator", DECORATOR_ADDRESS)) as TestPaintSwapDecorator;
-  const combatantsHelper = (await ethers.getContractAt(
-    "CombatantsHelper",
-    COMBATANTS_HELPER_ADDRESS
-  )) as CombatantsHelper;
-
-  const territoryTreasury = (await ethers.getContractAt(
-    "TerritoryTreasury",
-    TERRITORY_TREASURY_ADDRESS
-  )) as TerritoryTreasury;
+  const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS);
+  const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);
+  const decorator = await ethers.getContractAt("TestPaintSwapDecorator", DECORATOR_ADDRESS);
+  const combatantsHelper = await ethers.getContractAt("CombatantsHelper", COMBATANTS_HELPER_ADDRESS);
+  const territoryTreasury = await ethers.getContractAt("TerritoryTreasury", TERRITORY_TREASURY_ADDRESS);
 
   const pid = 22;
   const playerId = 1;

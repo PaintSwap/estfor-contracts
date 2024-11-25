@@ -156,11 +156,11 @@ async function main() {
       console.log("Send brush to an account");
       await tx.wait();
 
-      wftm = (await ethers.getContractAt("WrappedNative", WFTM_ADDRESS)) as WrappedNative;
+      wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
       oracleAddress = ORACLE_ADDRESS;
-      vrf = (await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS)) as MockVRF;
+      vrf = await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS);
       console.log("attached wftm and vrf");
-      router = (await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS)) as SolidlyExtendedRouter;
+      router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS);
       console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
 
       const factory = await ethers.getContractAt("ISolidlyFactory", await router.factory());

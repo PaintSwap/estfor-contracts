@@ -1,7 +1,6 @@
 import {ethers} from "hardhat";
 import {ITEM_NFT_ADDRESS, PASSIVE_ACTIONS_ADDRESS, PLAYERS_ADDRESS} from "./contractAddresses";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {ItemNFT, PassiveActions, Players} from "../typechain-types";
 import {getXPFromLevel} from "../test/Players/utils";
 import {getChainId} from "./utils";
 
@@ -11,16 +10,13 @@ async function main() {
     `Deploying passive action test data using account: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
-  const passiveActions = (await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS)).connect(
-    owner
-  ) as PassiveActions;
-
+  const passiveActions = await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS);
   const playerId = 1;
-  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
+  const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
   let tx = await players.modifyXP(owner.address, playerId, EstforTypes.Skill.ALCHEMY, getXPFromLevel(20));
   await tx.wait();
 
-  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
   tx = await itemNFT.mintBatch(
     owner.address,
     [EstforConstants.PAPER, EstforConstants.BONEMEAL, EstforConstants.ASH],

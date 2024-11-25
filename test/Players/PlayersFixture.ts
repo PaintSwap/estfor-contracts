@@ -47,8 +47,8 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
 
-  const brush = (await ethers.deployContract("MockBrushToken")) as MockBrushToken;
-  const mockVRF = (await ethers.deployContract("MockVRF")) as MockVRF;
+  const brush = await ethers.deployContract("MockBrushToken");
+  const mockVRF = await ethers.deployContract("MockVRF");
 
   // Add some dummy blocks so that randomness beacon can access previous blocks for random numbers
   for (let i = 0; i < 5; ++i) {
@@ -285,7 +285,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as Players;
 
-  const promotionsLibrary = (await ethers.deployContract("PromotionsLibrary")) as PromotionsLibrary;
+  const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
   const Promotions = await ethers.getContractFactory("Promotions", {
     libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
   });

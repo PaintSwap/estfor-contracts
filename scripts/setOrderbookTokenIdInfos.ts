@@ -1,7 +1,6 @@
 import {ethers} from "hardhat";
 import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {OrderBook} from "../typechain-types";
 import {BAZAAR_ADDRESS} from "./contractAddresses";
 
 async function main() {
@@ -12,7 +11,7 @@ async function main() {
     }`
   );
 
-  const orderBook = (await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS)) as OrderBook;
+  const orderBook = await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS);
   const chunkSize = 100;
 
   const newTokenIds = new Set([

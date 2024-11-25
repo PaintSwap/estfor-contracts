@@ -3,14 +3,13 @@ import {ITEM_NFT_ADDRESS} from "./contractAddresses";
 
 import {allItems} from "./data/items";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ItemNFT} from "../typechain-types";
 import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Mint items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
   const chunkSize = 100;
   for (let i = 0; i < allItems.length; i += chunkSize) {

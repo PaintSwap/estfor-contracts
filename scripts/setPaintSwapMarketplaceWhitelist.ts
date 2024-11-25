@@ -9,7 +9,6 @@ import {
   RAIDS_ADDRESS
 } from "./contractAddresses";
 import {getChainId} from "./utils";
-import {Clans} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -17,7 +16,7 @@ async function main() {
     `Set PaintSwapMarketplaceWhitelist on Clans using account: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
-  const clans = (await ethers.getContractAt("Clans", CLANS_ADDRESS)) as Clans;
+  const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);
   const tx = await clans.initializeAddresses(
     PLAYERS_ADDRESS,
     BANK_FACTORY_ADDRESS,

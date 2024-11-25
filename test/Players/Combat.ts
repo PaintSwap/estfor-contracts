@@ -1180,7 +1180,7 @@ describe("Combat Actions", function () {
   describe("Magic", function () {
     async function playersFixtureMagic() {
       const fixture = await loadFixture(playersFixture);
-      const {playerId, players, playerNFT, itemNFT, worldActions, alice} = fixture;
+      const {itemNFT, worldActions, alice} = fixture;
 
       const monsterCombatStats: EstforTypes.CombatStats = {
         meleeAttack: 3,

@@ -56,16 +56,14 @@ async function main() {
   const timeout = 600 * 1000; // 10 minutes
 
   const newEstforLibrary = false;
-  const EstforLibrary = await ethers.getContractFactory("EstforLibrary");
   let estforLibrary: EstforLibrary;
   if (newEstforLibrary) {
-    estforLibrary = await EstforLibrary.deploy();
-
+    estforLibrary = await ethers.deployContract("EstforLibrary");
     if (network.chainId == 250n) {
       await verifyContracts([await estforLibrary.getAddress()]);
     }
   } else {
-    estforLibrary = (await EstforLibrary.attach(ESTFOR_LIBRARY_ADDRESS)) as EstforLibrary;
+    estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
   }
   console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
 
@@ -220,16 +218,14 @@ async function main() {
   console.log(`adminAccess = "${(await adminAccess.getAddress()).toLowerCase()}"`);
 
   const newPromotionsLibrary = false;
-  const PromotionsLibrary = await ethers.getContractFactory("PromotionsLibrary");
   let promotionsLibrary: PromotionsLibrary;
   if (newPromotionsLibrary) {
-    promotionsLibrary = await PromotionsLibrary.deploy();
-
+    promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
     if (network.chainId == 250n) {
       await verifyContracts([await promotionsLibrary.getAddress()]);
     }
   } else {
-    promotionsLibrary = (await PromotionsLibrary.attach(PROMOTIONS_LIBRARY_ADDRESS)) as PromotionsLibrary;
+    promotionsLibrary = await ethers.getContractAt("PromotionsLibrary", PROMOTIONS_LIBRARY_ADDRESS);
   }
   console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`);
 
@@ -295,9 +291,9 @@ async function main() {
   const newPetNFTLibrary = false;
   let petNFTLibrary: PetNFTLibrary;
   if (newPetNFTLibrary) {
-    petNFTLibrary = (await ethers.deployContract("PetNFTLibrary")) as PetNFTLibrary;
+    petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   } else {
-    petNFTLibrary = (await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS)) as PetNFTLibrary;
+    petNFTLibrary = await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS);
   }
   console.log(`petNFTLibrary = "${(await petNFTLibrary.getAddress()).toLowerCase()}"`);
 
@@ -330,25 +326,21 @@ async function main() {
 
   // ClanBattleLibrary
   const newClanBattleLibrary = false;
-  const ClanBattleLibrary = await ethers.getContractFactory("ClanBattleLibrary");
   let clanBattleLibrary: ClanBattleLibrary;
   if (newClanBattleLibrary) {
-    clanBattleLibrary = await ClanBattleLibrary.deploy();
+    clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary");
   } else {
-    clanBattleLibrary = (await ClanBattleLibrary.attach(CLAN_BATTLE_LIBRARY_ADDRESS)) as ClanBattleLibrary;
+    clanBattleLibrary = await ethers.getContractAt("ClanBattleLibrary", CLAN_BATTLE_LIBRARY_ADDRESS);
   }
   console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
 
   // LockedBankVaults
   const newLockedBankVaultsLibrary = false;
-  const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
   let lockedBankVaultsLibrary: LockedBankVaultsLibrary;
   if (newLockedBankVaultsLibrary) {
-    lockedBankVaultsLibrary = await LockedBankVaultsLibrary.deploy();
+    lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   } else {
-    lockedBankVaultsLibrary = (await LockedBankVaultsLibrary.attach(
-      LOCKED_BANK_VAULTS_LIBRARY_ADDRESS
-    )) as LockedBankVaultsLibrary;
+    lockedBankVaultsLibrary = await ethers.getContractAt("LockedBankVaultsLibrary", LOCKED_BANK_VAULTS_LIBRARY_ADDRESS);
   }
   console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
 

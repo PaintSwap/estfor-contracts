@@ -1,16 +1,12 @@
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS, LOCKED_BANK_VAULTS_ADDRESS} from "./contractAddresses";
-import {LockedBankVaults} from "../typechain-types";
 import {getChainId, isBeta} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Initialize clan MMRs using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const lockedBankVaults = (await ethers.getContractAt(
-    "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS,
-  )) as LockedBankVaults;
+  const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);
 
   const clanIds = [
     1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
@@ -26,7 +22,7 @@ async function main() {
     306, 307, 308, 309, 310, 311, 312, 313, 315, 316, 327, 328, 329, 330, 341, 342, 343, 344, 345, 346, 348, 349, 350,
     351, 352, 353, 355, 357, 359, 360, 361, 362, 363, 364, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377,
     378, 380, 381, 382, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402,
-    403, 404, 405,
+    403, 404, 405
   ];
 
   const mmrs = [
@@ -43,7 +39,7 @@ async function main() {
     500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
     500, 500, 500, 500, 500, 500, 514, 514, 898, 510, 517, 500, 500, 500, 568, 500, 508, 500, 509, 507, 501, 503, 500,
     500, 500, 502, 501, 500, 500, 501, 501, 500, 500, 500, 500, 500, 501, 500, 500, 500, 500, 500, 746, 568, 500, 500,
-    500, 500, 500, 500, 500, 664, 500, 500, 500, 500, 500, 660, 500, 500, 500, 500, 500, 500, 500, 500, 504, 500, 500,
+    500, 500, 500, 500, 500, 664, 500, 500, 500, 500, 500, 660, 500, 500, 500, 500, 500, 500, 500, 500, 504, 500, 500
   ];
 
   if (clanIds.length != mmrs.length) {

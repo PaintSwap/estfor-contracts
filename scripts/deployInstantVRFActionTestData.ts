@@ -1,17 +1,13 @@
 import {ethers} from "hardhat";
 import {INSTANT_VRF_ACTIONS_ADDRESS, ITEM_NFT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {InstantVRFActions} from "../typechain-types";
 import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Deploying instant VRF test data using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const instantVRFActions = (await ethers.getContractAt(
-    "InstantVRFActions",
-    INSTANT_VRF_ACTIONS_ADDRESS
-  )) as InstantVRFActions;
+  const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
 
   const amount = 64;
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);

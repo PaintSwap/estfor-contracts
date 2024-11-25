@@ -1,6 +1,5 @@
 import {ethers} from "hardhat";
 import {LOCKED_BANK_VAULTS_ADDRESS} from "./contractAddresses";
-import {LockedBankVaults} from "../typechain-types";
 import {getChainId} from "./utils";
 
 async function main() {
@@ -11,10 +10,7 @@ async function main() {
     )}`
   );
 
-  const lockedBankVaults = (await ethers.getContractAt(
-    "LockedBankVaults",
-    LOCKED_BANK_VAULTS_ADDRESS
-  )) as LockedBankVaults;
+  const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);
   const tx = await lockedBankVaults.setExpectedGasLimitFulfill(1_000_000);
   tx.wait();
 }

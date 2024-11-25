@@ -1,6 +1,5 @@
 import {ethers} from "hardhat";
 import {TERRITORIES_ADDRESS} from "./contractAddresses";
-import {Territories} from "../typechain-types";
 import {getChainId} from "./utils";
 
 async function main() {
@@ -9,7 +8,7 @@ async function main() {
     `Set expected gas limit fulfillment on territories with: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
-  const territories = (await ethers.getContractAt("Territories", TERRITORIES_ADDRESS)) as Territories;
+  const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS);
   const tx = await territories.setExpectedGasLimitFulfill(1_000_000);
   await tx.wait();
 }

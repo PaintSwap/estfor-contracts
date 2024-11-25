@@ -14,7 +14,7 @@ import {
   WORLD_ACTIONS_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
-import {Players, World} from "../typechain-types";
+import {Players} from "../typechain-types";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {ActionChoiceInput, Skill} from "@paintswap/estfor-definitions/types";
 import {allInstantActions} from "./data/instantActions";
@@ -47,10 +47,10 @@ async function main() {
   const Players = await ethers.getContractFactory("Players");
   let players = Players.attach(PLAYERS_ADDRESS);
   await players.pauseGame(true);
-  players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
+  players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
-  })) as Players;
+  });
   await players.waitForDeployment();
   console.log("Deployed Players");
 
@@ -78,9 +78,9 @@ async function main() {
 
   // Update daily reward pools
   const DailyRewardsScheduler = await ethers.getContractFactory("dailyRewardsScheduler");
-  const dailyRewardsScheduler = (await upgrades.upgradeProxy(DAILY_REWARDS_SCHEDULER_ADDRESS, RandomnessBeacon, {
+  const dailyRewardsScheduler = await upgrades.upgradeProxy(DAILY_REWARDS_SCHEDULER_ADDRESS, RandomnessBeacon, {
     kind: "uups",
-  })) as DailyRewardsScheduler;
+  });
   await dailyRewardsScheduler.waitForDeployment();
   console.log("dailyRewardsScheduler upgraded");
 
@@ -109,11 +109,11 @@ async function main() {
   console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
   const Players = await ethers.getContractFactory("Players");
-  const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
+  const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
     timeout,
-  })) as Players;
+  });
   await players.waitForDeployment();
   console.log("Deployed Players");
 

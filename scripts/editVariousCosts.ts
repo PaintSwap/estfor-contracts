@@ -1,16 +1,13 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers} from "hardhat";
 import {
   CLANS_ADDRESS,
-  ESTFOR_LIBRARY_ADDRESS,
   PET_NFT_ADDRESS,
-  PET_NFT_LIBRARY_ADDRESS,
   PLAYER_NFT_ADDRESS,
   SHOP_ADDRESS,
-  WISHING_WELL_ADDRESS,
+  WISHING_WELL_ADDRESS
 } from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
-import {WishingWell} from "../typechain-types";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {getChainId} from "./utils";
 import {parseEther} from "ethers";
@@ -32,7 +29,7 @@ async function main() {
     EstforConstants.XP_BOOST,
     EstforConstants.GATHERING_BOOST,
     EstforConstants.SKILL_BOOST,
-    EstforConstants.FLUX,
+    EstforConstants.FLUX
   ]);
 
   const allShopItems_ = isBeta ? allShopItemsBeta : allShopItems;
@@ -42,7 +39,7 @@ async function main() {
 
   // Wishing well
   const wishingWellCost = isBeta ? parseEther("4") : parseEther("10");
-  const wishingWell = (await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS)) as WishingWell;
+  const wishingWell = await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS);
   tx = await wishingWell.setRaffleEntryCost(wishingWellCost);
   console.log("Update wishing well raffle cost");
 

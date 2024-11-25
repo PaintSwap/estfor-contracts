@@ -5,7 +5,7 @@ import {
   TERRITORIES_ADDRESS,
   VRF_REQUEST_INFO_ADDRESS
 } from "./contractAddresses";
-import {LockedBankVaults, Territories, VRFRequestInfo} from "../typechain-types";
+import {LockedBankVaults, Territories} from "../typechain-types";
 import {getChainId, verifyContracts} from "./utils";
 import {parseEther} from "ethers";
 
@@ -13,8 +13,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Upgrading VRF using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  // TODO: Add libraries#
-  const vrfRequestInfo = (await ethers.getContractAt("VRFRequestInfo", VRF_REQUEST_INFO_ADDRESS)) as VRFRequestInfo;
+  const vrfRequestInfo = await ethers.getContractAt("VRFRequestInfo", VRF_REQUEST_INFO_ADDRESS);
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults");
   const Territories = await ethers.getContractFactory("Territories");
   let tx = await vrfRequestInfo.setBaseAttackCost(parseEther("300000000"));

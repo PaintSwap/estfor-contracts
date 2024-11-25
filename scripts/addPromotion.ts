@@ -1,7 +1,6 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ethers} from "hardhat";
 import {PROMOTIONS_ADDRESS} from "./contractAddresses";
-import {Promotions} from "../typechain-types";
 import {Promotion} from "@paintswap/estfor-definitions/types";
 import {getChainId} from "./utils";
 import {parseEther} from "ethers";
@@ -10,7 +9,7 @@ async function main() {
   const [owner] = await ethers.getSigners();
 
   console.log(`Add a promotion using account: ${owner.address} on chain id: ${await getChainId(owner)}`);
-  const promotions = (await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS)) as Promotions;
+  const promotions = await ethers.getContractAt("Promotions", PROMOTIONS_ADDRESS);
 
   /*
   await promotions.addPromotion({

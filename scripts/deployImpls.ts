@@ -1,5 +1,5 @@
 import {ethers, upgrades} from "hardhat";
-import {Players, PlayersLibrary, Raids} from "../typechain-types";
+import {PlayersLibrary, Raids} from "../typechain-types";
 import {
   PLAYERS_ADDRESS,
   PLAYERS_IMPL_MISC_ADDRESS,
@@ -71,7 +71,7 @@ async function main() {
     PLAYERS_IMPL_MISC_ADDRESS,
     PLAYERS_IMPL_MISC1_ADDRESS
   */
-  const players = (await ethers.getContractAt("Players", PLAYERS_ADDRESS)) as Players;
+  const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
   const tx = await players.setImpls(
     await playersImplQueueActions.getAddress(),
     await playersImplProcessActions.getAddress(),

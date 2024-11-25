@@ -1,15 +1,15 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {MockVRF, World} from "../typechain-types";
 import {Block} from "ethers";
+import {RandomnessBeacon} from "../typechain-types";
 
 describe("RandomnessBeacon", function () {
   const deployContracts = async function () {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice] = await ethers.getSigners();
 
-    const mockVRF = (await ethers.deployContract("MockVRF")) as MockVRF;
+    const mockVRF = await ethers.deployContract("MockVRF");
 
     // Add some dummy blocks so that randomness beacon can access them
     for (let i = 0; i < 5; ++i) {
@@ -23,7 +23,7 @@ describe("RandomnessBeacon", function () {
     const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
     const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
       kind: "uups"
-    })) as unknown as World;
+    })) as unknown as RandomnessBeacon;
 
     const minRandomWordsUpdateTime = await randomnessBeacon.MIN_RANDOM_WORDS_UPDATE_TIME();
     const numDaysRandomWordsInitialized = await randomnessBeacon.NUM_DAYS_RANDOM_WORDS_INITIALIZED();

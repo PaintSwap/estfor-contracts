@@ -48,16 +48,15 @@ async function main() {
 
   const player = await ethers.getImpersonatedSigner("0x8ca12fb5438252ab8efa25d3fb34166eda1c17ed");
   const playerId = 3;
-  const estforLibrary = (await ethers.deployContract("EstforLibrary")) as unknown as EstforLibrary;
+  const estforLibrary = await ethers.deployContract("EstforLibrary");
   // Players
-
-  const playersLibrary = (await ethers.deployContract("PlayersLibrary")) as unknown as PlayersLibrary;
+  const playersLibrary = await ethers.deployContract("PlayersLibrary");
 
   const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"]
-  })) as unknown as unknown as unknown as Players;
+  })) as unknown as Players;
   /*
   // Set the implementations
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
@@ -175,7 +174,7 @@ async function main() {
   const instantVRFActions = (await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
     kind: "uups",
     timeout: 100000
-  })) as unknown as unknown as unknown as InstantVRFActions;
+  })) as unknown as InstantVRFActions;
 */
   //  await players.connect(player).modifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796);
   const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
