@@ -3,7 +3,7 @@ import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {requestAndFulfillRandomWords, timeTravelToNextCheckpoint} from "./utils";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {DailyRewardsScheduler, MockVRF, World} from "../typechain-types";
+import {DailyRewardsScheduler, MockVRF, RandomnessBeacon} from "../typechain-types";
 import {Block} from "ethers";
 
 describe("DailyRewardsScheduler", function () {
@@ -25,7 +25,8 @@ describe("DailyRewardsScheduler", function () {
     const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
     const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
       kind: "uups"
-    })) as unknown as World;
+    })) as unknown as RandomnessBeacon;
+
     // Create the daily rewards scheduler
     const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
     const dailyRewardsScheduler = (await upgrades.deployProxy(

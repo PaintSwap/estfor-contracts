@@ -3,7 +3,15 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
-import {AdminAccess, DailyRewardsScheduler, ItemNFT, RoyaltyReceiver, Shop, Treasury, World} from "../typechain-types";
+import {
+  AdminAccess,
+  DailyRewardsScheduler,
+  ItemNFT,
+  RandomnessBeacon,
+  RoyaltyReceiver,
+  Shop,
+  Treasury
+} from "../typechain-types";
 
 describe("ItemNFT", function () {
   async function deployContracts() {
@@ -25,7 +33,7 @@ describe("ItemNFT", function () {
     const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
     const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
       kind: "uups"
-    })) as unknown as World;
+    })) as unknown as RandomnessBeacon;
 
     const mockOracleCB = await ethers.deployContract("MockOracleCB");
     await randomnessBeacon.initializeAddresses(mockOracleCB, mockOracleCB);
