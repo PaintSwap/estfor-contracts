@@ -1,6 +1,6 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BaseContract, Block, ContractTransactionReceipt, ContractTransactionResponse} from "ethers";
-import {MockVRF, Players, Quests, World} from "../typechain-types";
+import {MockVRF, Players, Quests, RandomnessBeacon} from "../typechain-types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, QuestInput} from "../scripts/data/quests";
@@ -25,12 +25,12 @@ export const getActionChoiceIds = async (
   return (await getEventLog(tx, contract, "AddActionChoices")).actionChoiceIds;
 };
 
-export const requestAndFulfillRandomWords = async (world: World, mockVRF: MockVRF) => {
-  const tx = await world.requestRandomWords();
-  let requestId = await getRequestId(tx, world);
+export const requestAndFulfillRandomWords = async (randomnessBeacon: RandomnessBeacon, mockVRF: MockVRF) => {
+  const tx = await randomnessBeacon.requestRandomWords();
+  let requestId = await getRequestId(tx, randomnessBeacon);
   expect(requestId).to.not.eq(null);
   expect(requestId).to.not.eq(0);
-  return fulfillRandomWords(requestId as number, world, mockVRF);
+  return fulfillRandomWords(requestId as number, randomnessBeacon, mockVRF);
 };
 
 export const fulfillRandomWords = async (
@@ -42,12 +42,16 @@ export const fulfillRandomWords = async (
   return mockVRF.fulfill(requestId, contract, {gasPrice});
 };
 
-export const requestAndFulfillRandomWordsSeeded = async (world: World, mockVRF: MockVRF, seed: bigint) => {
-  const tx = await world.requestRandomWords();
-  let requestId = await getRequestId(tx, world);
+export const requestAndFulfillRandomWordsSeeded = async (
+  randomnessBeacon: RandomnessBeacon,
+  mockVRF: MockVRF,
+  seed: bigint
+) => {
+  const tx = await randomnessBeacon.requestRandomWords();
+  let requestId = await getRequestId(tx, randomnessBeacon);
   expect(requestId).to.not.eq(null);
   expect(requestId).to.not.eq(0);
-  return fulfillRandomWordsSeeded(requestId as number, world, mockVRF, seed, 0n);
+  return fulfillRandomWordsSeeded(requestId as number, randomnessBeacon, mockVRF, seed, 0n);
 };
 
 export const fulfillRandomWordsSeeded = async (

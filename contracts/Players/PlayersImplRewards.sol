@@ -559,7 +559,7 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           );
           pendingQueuedActionMetadata.rolls = uint32(monstersKilled);
         } else {
-          bool hasRandomWord = _world.hasRandomWord(startTime + elapsedTime);
+          bool hasRandomWord = _randomnessBeacon.hasRandomWord(startTime + elapsedTime);
           if (!hasRandomWord) {
             uint256 prevRolls = prevXPElapsedTime / 3600;
             pendingQueuedActionMetadata.rolls = uint32((xpElapsedTime + prevXPElapsedTime) / 3600 - prevRolls);

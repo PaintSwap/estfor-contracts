@@ -50,7 +50,7 @@ struct Player {
   Skill skillBoosted1; // The first skill that is boosted
   Skill skillBoosted2; // The second skill that is boosted (if applicable)
   uint56 totalXP;
-  bytes1 packedData; // Contains worldLocation in first 6 bits (0 is the main starting world), and full mode unlocked in the upper most bit
+  bytes1 packedData; // Contains worldLocation in first 6 bits (0 is the main starting randomnessBeacon), and full mode unlocked in the upper most bit
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
   string name; // Raw name

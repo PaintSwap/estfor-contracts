@@ -1228,7 +1228,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "world",
+        "name": "randomnessBeacon",
         "type": "address"
       },
       {

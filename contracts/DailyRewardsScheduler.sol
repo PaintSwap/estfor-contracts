@@ -13,9 +13,9 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
   error CanOnlyRequestAfter1DayHasPassed();
   error InvalidReward();
   error TooManyRewardsInPool();
-  error OnlyWorld();
+  error OnlyRandomnessBeacon();
 
-  address private _world;
+  address private _randomnessBeacon;
   uint40 private _weeklyRewardCheckpoint;
   bytes8 private _thisWeeksRandomWordSegment; // Every 8 bits is a random segment for the day
 
@@ -23,7 +23,7 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
   mapping(uint256 tier => Equipment[]) private _weeklyRewardPool;
 
   modifier onlyWorld() {
-    require(_world == _msgSender(), OnlyWorld());
+    require(_randomnessBeacon == _msgSender(), OnlyRandomnessBeacon());
     _;
   }
 
@@ -32,11 +32,11 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
     _disableInitializers();
   }
 
-  function initialize(address world) external initializer {
+  function initialize(address randomnessBeacon) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     _weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;
   }
 

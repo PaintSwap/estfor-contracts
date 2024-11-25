@@ -42,7 +42,7 @@ describe("Players", function () {
       playerNFT,
       petNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       dailyRewardsScheduler,
       adminAccess,
       quests,
@@ -65,7 +65,7 @@ describe("Players", function () {
         await playerNFT.getAddress(),
         await petNFT.getAddress(),
         await worldActions.getAddress(),
-        await world.getAddress(),
+        await randomnessBeacon.getAddress(),
         await dailyRewardsScheduler.getAddress(),
         await adminAccess.getAddress(),
         await quests.getAddress(),
@@ -1892,7 +1892,7 @@ describe("Players", function () {
       playerNFT,
       itemNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       brush,
       upgradePlayerBrushPrice,
       origName,
@@ -1929,7 +1929,7 @@ describe("Players", function () {
       playerNFT,
       itemNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       brush,
       upgradePlayerBrushPrice,
       origName,
@@ -1972,7 +1972,7 @@ describe("Players", function () {
       playerNFT,
       itemNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       brush,
       upgradePlayerBrushPrice,
       origName,
@@ -2008,7 +2008,7 @@ describe("Players", function () {
       players,
       itemNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       alice,
       playerNFT,
       brush,
@@ -2057,7 +2057,7 @@ describe("Players", function () {
       players,
       itemNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       alice,
       playerNFT,
       brush,
@@ -2129,7 +2129,7 @@ describe("Players", function () {
       players,
       itemNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       alice,
       playerNFT,
       brush,
@@ -2224,7 +2224,7 @@ describe("Players", function () {
       playerNFT,
       itemNFT,
       worldActions,
-      world,
+      randomnessBeacon,
       brush,
       upgradePlayerBrushPrice,
       origName,
@@ -2766,7 +2766,9 @@ describe("Players", function () {
 
       it("Pending reward full attire bonus", async function () {
         // Thieving
-        const {playerId, players, itemNFT, worldActions, world, alice, mockVRF} = await loadFixture(playersFixture);
+        const {playerId, players, itemNFT, worldActions, randomnessBeacon, alice, mockVRF} = await loadFixture(
+          playersFixture
+        );
 
         const randomChanceFraction = 1 / 100; // 1% chance
         const randomChance = Math.floor(65536 * randomChanceFraction);
@@ -2804,9 +2806,9 @@ describe("Players", function () {
         const nextCheckpoint = Math.floor(timestamp / 86400) * 86400 + 86400;
         const durationToNextCheckpoint = nextCheckpoint - timestamp + 1;
         await ethers.provider.send("evm_increaseTime", [durationToNextCheckpoint]);
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
         const timespan = 3600 * numHours;
         const queuedAction: EstforTypes.QueuedActionInput = {
@@ -2890,12 +2892,12 @@ describe("Players", function () {
           await itemNFT.connect(alice).burn(alice.address, EstforConstants.NATUOW_HOOD, 1); // Remove a bit of the attire
           await itemNFT.mint(alice.address, EstforConstants.NATUOW_HOOD, 1); // Minting again does nothing
           await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-          await requestAndFulfillRandomWords(world, mockVRF);
+          await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
           await players.connect(alice).processActions(playerId);
         }
 
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
         await players.connect(alice).processActions(playerId);
 
         expect(await players.getPlayerXP(playerId, EstforTypes.Skill.THIEVING)).to.eq(

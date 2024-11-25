@@ -31,7 +31,7 @@ import {
   Territories,
   VRFRequestInfo,
   WishingWell,
-  World,
+  RandomnessBeacon,
   Treasury,
   BankRelay,
   PVPBattleground,
@@ -50,7 +50,7 @@ export const playersFixture = async function () {
   const brush = (await ethers.deployContract("MockBrushToken")) as MockBrushToken;
   const mockVRF = (await ethers.deployContract("MockVRF")) as MockVRF;
 
-  // Add some dummy blocks so that world can access previous blocks for random numbers
+  // Add some dummy blocks so that randomness beacon can access previous blocks for random numbers
   for (let i = 0; i < 5; ++i) {
     await owner.sendTransaction({
       to: owner.address,
@@ -65,15 +65,19 @@ export const playersFixture = async function () {
     kind: "uups"
   })) as unknown as WorldActions;
 
-  const World = await ethers.getContractFactory("World");
-  const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
     kind: "uups"
-  })) as unknown as World;
+  })) as unknown as RandomnessBeacon;
 
   const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
-  const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
-    kind: "uups"
-  })) as unknown as DailyRewardsScheduler;
+  const dailyRewardsScheduler = (await upgrades.deployProxy(
+    DailyRewardsScheduler,
+    [await randomnessBeacon.getAddress()],
+    {
+      kind: "uups"
+    }
+  )) as unknown as DailyRewardsScheduler;
 
   await setDailyAndWeeklyRewards(dailyRewardsScheduler);
 
@@ -164,9 +168,13 @@ export const playersFixture = async function () {
 
   const buyPath: [string, string] = [alice.address, await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
-  const quests = (await upgrades.deployProxy(Quests, [await world.getAddress(), await router.getAddress(), buyPath], {
-    kind: "uups"
-  })) as unknown as Quests;
+  const quests = (await upgrades.deployProxy(
+    Quests,
+    [await randomnessBeacon.getAddress(), await router.getAddress(), buyPath],
+    {
+      kind: "uups"
+    }
+  )) as unknown as Quests;
 
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
   const initialMMR = 500;
@@ -198,7 +206,7 @@ export const playersFixture = async function () {
       await brush.getAddress(),
       await playerNFT.getAddress(),
       await shop.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await clans.getAddress(),
       parseEther("5"),
       parseEther("1000"),
@@ -222,7 +230,7 @@ export const playersFixture = async function () {
       dev.address,
       editNameBrushPrice,
       await treasury.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -258,7 +266,7 @@ export const playersFixture = async function () {
       await playerNFT.getAddress(),
       await petNFT.getAddress(),
       await worldActions.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await dailyRewardsScheduler.getAddress(),
       await adminAccess.getAddress(),
       await quests.getAddress(),
@@ -285,7 +293,7 @@ export const playersFixture = async function () {
     Promotions,
     [
       await players.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await dailyRewardsScheduler.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
@@ -437,7 +445,7 @@ export const playersFixture = async function () {
       spawnRaidCooldown,
       await brush.getAddress(),
       await worldActions.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       maxRaidCombatants,
       raidCombatActionIds,
       isBeta
@@ -550,7 +558,7 @@ export const playersFixture = async function () {
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
-    [await players.getAddress(), await itemNFT.getAddress(), await world.getAddress()],
+    [await players.getAddress(), await itemNFT.getAddress(), await randomnessBeacon.getAddress()],
     {
       kind: "uups"
     }
@@ -583,8 +591,8 @@ export const playersFixture = async function () {
     }
   )) as unknown as BankFactory;
 
-  await world.initializeAddresses(wishingWell, dailyRewardsScheduler);
-  await world.initializeRandomWords();
+  await randomnessBeacon.initializeAddresses(wishingWell, dailyRewardsScheduler);
+  await randomnessBeacon.initializeRandomWords();
 
   await playerNFT.setPlayers(players);
   await quests.setPlayers(players);
@@ -662,7 +670,7 @@ export const playersFixture = async function () {
     maxTime,
     owner,
     worldActions,
-    world,
+    randomnessBeacon,
     dailyRewardsScheduler,
     alice,
     bob,

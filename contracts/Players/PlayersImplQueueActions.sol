@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 
-import {World} from "../World.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {World} from "../World.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PetNFT} from "../PetNFT.sol";
@@ -159,7 +159,7 @@ abstract contract PlayersBase {
   // *IMPORTANT* keep as the first non-constant state variable
   uint256 internal _startSlot;
 
-  World internal _world;
+  RandomnessBeacon internal _randomnessBeacon;
   IWorldActions internal _worldActions;
   DailyRewardsScheduler internal _dailyRewardsScheduler;
   bool internal _dailyRewardsEnabled;

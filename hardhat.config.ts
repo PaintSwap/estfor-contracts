@@ -96,7 +96,7 @@ const config: HardhatUserConfig = {
       "contracts/Players/PlayersImplQueueActions.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplRewards.sol": lowestRunsConfig,
       "contracts/Promotions.sol": mediumRunsConfig,
-      "contracts/World.sol": lowRunsConfig,
+      "contracts/RandomnessBeacon.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
       "contracts/PetNFT.sol": lowestRunsConfig,
       "contracts/PlayerNFT.sol": mediumRunsConfig,

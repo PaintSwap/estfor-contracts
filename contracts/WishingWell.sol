@@ -34,7 +34,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   error OracleNotCalledYet();
   error MinimumOneBrush();
   error NotPlayers();
-  error OnlyWorld();
+  error OnlyRandomnessBeacon();
   error NoDecimalsAllowed(uint256 invalidAmount);
 
   struct ClanInfo {
@@ -53,7 +53,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   mapping(uint256 lotteryId => LotteryWinnerInfo winner) private _winners;
   BitMaps.BitMap private _claimedRewards;
   IPlayers private _players;
-  address private _world;
+  address private _randomnessBeacon;
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanDonationInfo;
   uint16 private _donationRewardItemTokenId;
   uint40 private _totalDonated; // In BRUSH ether (no wei decimals)
@@ -79,7 +79,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   }
 
   modifier onlyWorld() {
-    require(_world == _msgSender(), OnlyWorld());
+    require(_randomnessBeacon == _msgSender(), OnlyRandomnessBeacon());
     _;
   }
 
@@ -92,7 +92,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     IBrushToken brush,
     PlayerNFT playerNFT,
     address shop,
-    address world,
+    address randomnessBeacon,
     Clans clans,
     uint256 raffleEntryCost,
     uint256 globalThresholdIncrement,
@@ -104,7 +104,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     _brush = brush;
     _playerNFT = playerNFT;
     _shop = shop;
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     _clans = clans;
 
     // Note: _clanBoostRewardItemTokenIds must be set before setClanDonationThresholdIncrement is called as it reads from them

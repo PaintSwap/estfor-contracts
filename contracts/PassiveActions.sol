@@ -9,7 +9,7 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/ut
 
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {ItemNFT} from "./ItemNFT.sol";
-import {World} from "./World.sol";
+import {RandomnessBeacon} from "./RandomnessBeacon.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 
@@ -118,7 +118,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   IPlayers private _players;
   ItemNFT private _itemNFT;
-  World private _world;
+  RandomnessBeacon private _randomnessBeacon;
   uint80 private _lastQueueId;
   mapping(uint256 actionId => PassiveAction action) private _actions;
   mapping(uint256 actionId => ActionRewards) private _actionRewards;
@@ -134,13 +134,13 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     _disableInitializers();
   }
 
-  function initialize(IPlayers players, ItemNFT itemNFT, World world) external initializer {
+  function initialize(IPlayers players, ItemNFT itemNFT, RandomnessBeacon randomnessBeacon) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
     __ReentrancyGuard_init();
     _players = players;
     _itemNFT = itemNFT;
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     _lastQueueId = 1;
   }
 
@@ -253,7 +253,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     if (oracleCalled) {
       RandomReward[] memory randomRewards = _setupRandomRewards(reward);
       uint256 endTime = passiveAction.startTime + (action.durationDays - numWinners) * 1 days - 1 days;
-      bytes memory randomBytes = _world.getRandomBytes(numIterations, passiveAction.startTime, endTime, playerId);
+      bytes memory randomBytes = _randomnessBeacon.getRandomBytes(
+        numIterations,
+        passiveAction.startTime,
+        endTime,
+        playerId
+      );
 
       _pendingPassiveActionState.producedRandomRewardItemTokenIds = new uint256[](randomRewards.length);
       _pendingPassiveActionState.producedRandomRewardAmounts = new uint256[](randomRewards.length);
@@ -342,7 +347,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16 boostIncrease,
     uint8 skipSuccessPercent
   ) private view returns (bool winner) {
-    bytes memory randomBytes = _world.getRandomBytes(1, startTimestamp, endTimestamp, playerId);
+    bytes memory randomBytes = _randomnessBeacon.getRandomBytes(1, startTimestamp, endTimestamp, playerId);
     uint16 word = _getSlice(randomBytes, 0);
     return word < ((type(uint16).max * (uint256(skipSuccessPercent) + boostIncrease)) / 100);
   }
@@ -380,7 +385,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       finished = true;
     }
 
-    World world = _world;
+    RandomnessBeacon randomnessBeacon = _randomnessBeacon;
     for (uint256 timestamp = startTime; timestamp <= startTime + numDays * 1 days; timestamp += 1 days) {
       // Work out how many days we can skip
       if (action.skipSuccessPercent != 0 && timestamp < startTime + numDays * 1 days) {
@@ -389,7 +394,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
           boostIncrease = _itemNFT.getItem(passiveAction.boostItemTokenId).boostValue;
         }
 
-        oracleCalled = world.hasRandomWord(timestamp);
+        oracleCalled = randomnessBeacon.hasRandomWord(timestamp);
 
         if (oracleCalled && _isWinner(playerId, startTime, timestamp, boostIncrease, action.skipSuccessPercent)) {
           ++numWinners;
@@ -406,7 +411,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         finished = true;
         // Actually check if it has the random word for this day
         if (_hasRandomRewards(actionId) && timestamp != startTime + duration - numWinners * 1 days - 1 days) {
-          oracleCalled = world.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
+          oracleCalled = randomnessBeacon.hasRandomWord(startTime + duration - numWinners * 1 days - 1 days);
         }
         break;
       }

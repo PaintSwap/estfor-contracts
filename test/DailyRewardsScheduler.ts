@@ -22,27 +22,31 @@ describe("DailyRewardsScheduler", function () {
       });
     }
     // Create the world
-    const World = await ethers.getContractFactory("World");
-    const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
+    const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+    const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
       kind: "uups"
     })) as unknown as World;
     // Create the daily rewards scheduler
     const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
-    const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
-      kind: "uups"
-    })) as unknown as DailyRewardsScheduler;
+    const dailyRewardsScheduler = (await upgrades.deployProxy(
+      DailyRewardsScheduler,
+      [await randomnessBeacon.getAddress()],
+      {
+        kind: "uups"
+      }
+    )) as unknown as DailyRewardsScheduler;
 
     const mockOracleCB = await ethers.deployContract("MockOracleCB");
-    await world.initializeAddresses(mockOracleCB, dailyRewardsScheduler);
-    await world.initializeRandomWords();
+    await randomnessBeacon.initializeAddresses(mockOracleCB, dailyRewardsScheduler);
+    await randomnessBeacon.initializeRandomWords();
 
     await setDailyAndWeeklyRewards(dailyRewardsScheduler);
 
-    const minRandomWordsUpdateTime = await world.MIN_RANDOM_WORDS_UPDATE_TIME();
-    const numDaysRandomWordsInitialized = await world.NUM_DAYS_RANDOM_WORDS_INITIALIZED();
+    const minRandomWordsUpdateTime = await randomnessBeacon.MIN_RANDOM_WORDS_UPDATE_TIME();
+    const numDaysRandomWordsInitialized = await randomnessBeacon.NUM_DAYS_RANDOM_WORDS_INITIALIZED();
 
     return {
-      world,
+      randomnessBeacon,
       dailyRewardsScheduler,
       mockVRF,
       minRandomWordsUpdateTime,
@@ -53,7 +57,7 @@ describe("DailyRewardsScheduler", function () {
   };
 
   it("Test new random rewards", async function () {
-    const {world, dailyRewardsScheduler, mockVRF} = await loadFixture(deployContracts);
+    const {randomnessBeacon, dailyRewardsScheduler, mockVRF} = await loadFixture(deployContracts);
 
     const playerId = 1;
 
@@ -71,7 +75,7 @@ describe("DailyRewardsScheduler", function () {
     let error = false;
     while (!error) {
       try {
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       } catch {
         error = true;
       }
@@ -85,7 +89,7 @@ describe("DailyRewardsScheduler", function () {
     error = false;
     while (!error) {
       try {
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       } catch {
         error = true;
       }
@@ -96,7 +100,7 @@ describe("DailyRewardsScheduler", function () {
   });
 
   it("Tiered random rewards", async function () {
-    const {world, dailyRewardsScheduler, mockVRF} = await loadFixture(deployContracts);
+    const {randomnessBeacon, dailyRewardsScheduler, mockVRF} = await loadFixture(deployContracts);
 
     const playerId = 1;
     const oneDay = 24 * 3600;
@@ -105,7 +109,7 @@ describe("DailyRewardsScheduler", function () {
     // Keep requesting
     while (true) {
       try {
-        await requestAndFulfillRandomWords(world, mockVRF);
+        await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       } catch {
         break;
       }

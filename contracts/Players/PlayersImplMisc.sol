@@ -7,7 +7,7 @@ import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
-import {World} from "../World.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
@@ -129,7 +129,7 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256 playerId
   ) public view returns (uint256[] memory itemTokenIds, uint256[] memory amounts, bytes32 dailyRewardMask) {
     uint256 streakStart = (((block.timestamp - 4 days) / 1 weeks) * 1 weeks) + 4 days;
-    bool hasRandomWordLastSunday = _world.lastRandomWordsUpdatedTime() >= streakStart;
+    bool hasRandomWordLastSunday = _randomnessBeacon.lastRandomWordsUpdatedTime() >= streakStart;
     if (hasRandomWordLastSunday) {
       uint256 streakStartIndex = streakStart / 1 weeks;
       bytes32 mask = _dailyRewardMasks[playerId];
@@ -598,11 +598,16 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     RandomReward[] memory randomRewards = _setupRandomRewards(actionRewards);
 
     if (randomRewards.length != 0) {
-      hasRandomWord = _world.hasRandomWord(skillSentinelTime);
+      hasRandomWord = _randomnessBeacon.hasRandomWord(skillSentinelTime);
       if (hasRandomWord) {
         uint256 numiations = Math.min(MAX_UNIQUE_TICKETS, numTickets);
 
-        bytes memory randomBytes = _world.getRandomBytes(numiations, startTimestamp, skillSentinelTime, playerId);
+        bytes memory randomBytes = _randomnessBeacon.getRandomBytes(
+          numiations,
+          startTimestamp,
+          skillSentinelTime,
+          playerId
+        );
         uint256 multiplier = numTickets / MAX_UNIQUE_TICKETS;
 
         // Cache some values for later

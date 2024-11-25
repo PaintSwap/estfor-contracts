@@ -58,7 +58,7 @@
   },
   {
     "inputs": [],
-    "name": "OnlyWorld",
+    "name": "OnlyRandomnessBeacon",
     "type": "error"
   },
   {
@@ -312,7 +312,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "world",
+        "name": "randomnessBeacon",
         "type": "address"
       }
     ],

@@ -1,7 +1,7 @@
 import {ethers, upgrades} from "hardhat";
 import {
   ITEM_NFT_ADDRESS,
-  WORLD_ADDRESS,
+  RANDOMNESS_BEACON_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYERS_LIBRARY_ADDRESS,
   CLANS_ADDRESS,
@@ -78,7 +78,7 @@ async function main() {
 
   // Update daily reward pools
   const DailyRewardsScheduler = await ethers.getContractFactory("dailyRewardsScheduler");
-  const dailyRewardsScheduler = (await upgrades.upgradeProxy(DAILY_REWARDS_SCHEDULER_ADDRESS, World, {
+  const dailyRewardsScheduler = (await upgrades.upgradeProxy(DAILY_REWARDS_SCHEDULER_ADDRESS, RandomnessBeacon, {
     kind: "uups",
   })) as DailyRewardsScheduler;
   await dailyRewardsScheduler.waitForDeployment();

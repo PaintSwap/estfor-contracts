@@ -8,7 +8,7 @@ let router;
 let paintSwapMarketplaceWhitelist;
 let paintSwapDecorator;
 let worldActions;
-let world;
+let randomnessBeacon;
 let dailyRewardsScheduler;
 let treasury;
 let shop;
@@ -61,7 +61,7 @@ if (!isBeta) {
   paintSwapDecorator = "0x000000000000000000000000000000000000dEaD";
   paintSwapMarketplaceWhitelist = "0x000000000000000000000000000000000000dEaD";
   worldActions = "";
-  world = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
+  randomnessBeacon = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
   dailyRewardsScheduler = "";
   treasury = "0x000000000000000000000000000000000000dEaD";
   shop = "0x7fb574e4fbe876f751fec90e59686c2776df19f9";
@@ -113,7 +113,7 @@ if (!isBeta) {
   paintSwapDecorator = "0xcd375b4aa427dcaf46ff79b1786c4ec7a59df623";
   paintSwapMarketplaceWhitelist = "0xe018ef943aa710d4a0a81788641ec1898aeb84d1";
   worldActions = "";
-  world = "0x01b7e0b11c8592bf82e17b0983c2b63b1d6903f7";
+  randomnessBeacon = "0x01b7e0b11c8592bf82e17b0983c2b63b1d6903f7";
   dailyRewardsScheduler = "";
   treasury = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
   shop = "0x575f595552132377d62e53701116d286f694b5e9";
@@ -159,7 +159,7 @@ if (!isBeta) {
 }
 
 export const WORLD_ACTIONS_ADDRESS = worldActions;
-export const WORLD_ADDRESS = world;
+export const RANDOMNESS_BEACON_ADDRESS = randomnessBeacon;
 export const DAILY_REWARDS_SCHEDULER_ADDRESS = dailyRewardsScheduler;
 export const TREASURY_ADDRESS = treasury;
 export const SHOP_ADDRESS = shop;

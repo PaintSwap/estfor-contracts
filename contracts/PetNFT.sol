@@ -9,7 +9,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {AdminAccess} from "./AdminAccess.sol";
-import {World} from "./World.sol";
+import {RandomnessBeacon} from "./RandomnessBeacon.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IBridgeable, BridgeableType} from "./Bridge/IBridgeable.sol";
@@ -132,7 +132,7 @@ contract PetNFT is
   uint8 private _brushDevPercentage;
   address private _territories;
   address private _players;
-  World private _world;
+  RandomnessBeacon private _randomnessBeacon;
   BloomFilter.Filter private _reservedPetNames; // TODO: remove 30 days after launch
   address private _bridge;
 
@@ -180,7 +180,7 @@ contract PetNFT is
     address dev,
     uint72 editNameCost,
     address treasury,
-    World world,
+    RandomnessBeacon randomnessBeacon,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -203,7 +203,7 @@ contract PetNFT is
     _isBeta = isBeta;
     _nextPetId = 1;
     _treasury = treasury;
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     setEditNameCost(editNameCost);
 
     _reservedPetNames._initialize();

@@ -2,7 +2,7 @@ import {ethers} from "hardhat";
 import {WORLD_ACTIONS_ADDRESS} from "./contractAddresses";
 import {allActions} from "./data/actions";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {World} from "../typechain-types";
+import {RandomnessBeacon} from "../typechain-types";
 import {getChainId} from "./utils";
 
 async function main() {

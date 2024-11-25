@@ -106,7 +106,7 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       bool hasRandomRewards = actionRewards.randomRewardTokenId1 != NONE; // A precheck as an optimization
       if (actionMetadata.xpElapsedTime != 0 && hasRandomRewards) {
         uint24 sentinelElapsedTime = actionMetadata.elapsedTime;
-        bool hasRandomWord = _world.hasRandomWord(startTime + sentinelElapsedTime);
+        bool hasRandomWord = _randomnessBeacon.hasRandomWord(startTime + sentinelElapsedTime);
         if (hasRandomWord && isCombat) {
           // The elapsed time needs to be updated if the random words are known as other dynamic things
           // like changing food/scroll consumption can be used to modify the random reward outputs.

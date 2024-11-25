@@ -11,7 +11,7 @@ import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PlayerNFT} from "../PlayerNFT.sol";
 import {PetNFT} from "../PetNFT.sol";
-import {World} from "../World.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";

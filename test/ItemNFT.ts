@@ -22,19 +22,23 @@ describe("ItemNFT", function () {
     }
 
     // Create the world
-    const World = await ethers.getContractFactory("World");
-    const world = (await upgrades.deployProxy(World, [await mockVRF.getAddress()], {
+    const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+    const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
       kind: "uups"
     })) as unknown as World;
 
     const mockOracleCB = await ethers.deployContract("MockOracleCB");
-    await world.initializeAddresses(mockOracleCB, mockOracleCB);
-    await world.initializeRandomWords();
+    await randomnessBeacon.initializeAddresses(mockOracleCB, mockOracleCB);
+    await randomnessBeacon.initializeRandomWords();
 
     const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
-    const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
-      kind: "uups"
-    })) as unknown as DailyRewardsScheduler;
+    const dailyRewardsScheduler = (await upgrades.deployProxy(
+      DailyRewardsScheduler,
+      [await randomnessBeacon.getAddress()],
+      {
+        kind: "uups"
+      }
+    )) as unknown as DailyRewardsScheduler;
 
     await setDailyAndWeeklyRewards(dailyRewardsScheduler);
 
@@ -108,7 +112,7 @@ describe("ItemNFT", function () {
       owner,
       alice,
       dev,
-      world,
+      randomnessBeacon,
       mockVRF,
       shop,
       royaltyReceiver,
@@ -320,7 +324,9 @@ describe("ItemNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {itemNFT, world, shop, royaltyReceiver, adminAccess, itemNFTLibrary} = await loadFixture(deployContracts);
+    const {itemNFT, randomnessBeacon, shop, royaltyReceiver, adminAccess, itemNFTLibrary} = await loadFixture(
+      deployContracts
+    );
     expect(await itemNFT.name()).to.be.eq("Estfor Items (Beta)");
     expect(await itemNFT.symbol()).to.be.eq("EK_IB");
 

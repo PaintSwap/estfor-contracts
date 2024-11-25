@@ -1073,8 +1073,8 @@
         "type": "address"
       },
       {
-        "internalType": "contract World",
-        "name": "world",
+        "internalType": "contract RandomnessBeacon",
+        "name": "randomnessBeacon",
         "type": "address"
       }
     ],

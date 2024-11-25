@@ -10,7 +10,7 @@ import {ItemNFT} from "./ItemNFT.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
-import {World} from "./World.sol";
+import {RandomnessBeacon} from "./RandomnessBeacon.sol";
 import {Quests} from "./Quests.sol";
 import {PromotionsLibrary} from "./PromotionsLibrary.sol";
 import {DailyRewardsScheduler} from "./DailyRewardsScheduler.sol";
@@ -71,7 +71,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
   ItemNFT private _itemNFT;
   PlayerNFT private _playerNFT;
   IBrushToken private _brush;
-  World private _world;
+  RandomnessBeacon private _randomnessBeacon;
   DailyRewardsScheduler private _dailyRewardsScheduler;
   Quests private _quests;
   address private _dev;
@@ -103,7 +103,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
   function initialize(
     IPlayers players,
-    World world,
+    RandomnessBeacon randomnessBeacon,
     DailyRewardsScheduler dailyRewardsScheduler,
     ItemNFT itemNFT,
     PlayerNFT playerNFT,
@@ -118,7 +118,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     __Ownable_init(_msgSender());
 
     _players = players;
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     _dailyRewardsScheduler = dailyRewardsScheduler;
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;
@@ -436,7 +436,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
   function _getTierReward(
     uint256 playerId,
-    World world,
+    RandomnessBeacon randomnessBeacon,
     uint256 oracleTime,
     PromotionMintStatus oldStatus
   ) private view returns (uint256 itemTokenId, uint256 amount, PromotionMintStatus promotionMintStatus) {
@@ -458,14 +458,14 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       playerTier = 2;
     }
 
-    if (!world.hasRandomWord(oracleTime)) {
+    if (!randomnessBeacon.hasRandomWord(oracleTime)) {
       promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
     } else {
       (itemTokenId, amount) = _dailyRewardsScheduler.getSpecificDailyReward(
         playerTier,
         playerId,
         0,
-        world.getRandomWord(oracleTime)
+        randomnessBeacon.getRandomWord(oracleTime)
       );
     }
   }
@@ -490,13 +490,13 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
       // Pick a random item from the list, only supports 1 item atm
       uint256 numAvailableItems = promotionInfo.randomItemTokenIds.length;
-      World world = _world;
+      RandomnessBeacon randomnessBeacon = _randomnessBeacon;
 
       uint256 oracleTime = (promotionInfo.startTime / 1 days) * 1 days - 1;
-      if (!world.hasRandomWord(oracleTime)) {
+      if (!randomnessBeacon.hasRandomWord(oracleTime)) {
         promotionMintStatus = PromotionMintStatus.ORACLE_NOT_CALLED;
       } else {
-        uint256 randomWord = world.getRandomWord(oracleTime);
+        uint256 randomWord = randomnessBeacon.getRandomWord(oracleTime);
         uint256 modifiedRandomWord = uint256(keccak256(abi.encodePacked(randomWord, playerId)));
         uint256 index = modifiedRandomWord % numAvailableItems;
         itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
@@ -538,7 +538,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
           uint256 oracleTime = ((promotionInfo.startTime / 1 days + today) * 1 days) - 1;
           (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(
             playerId,
-            _world,
+            _randomnessBeacon,
             oracleTime,
             promotionMintStatus
           );
@@ -586,12 +586,12 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
 
       uint256 endTime = promotionInfo.startTime + promotionInfo.numDays * 1 days;
       uint256 oracleTime = (endTime / 1 days) * 1 days - 1;
-      if (!_world.hasRandomWord(oracleTime)) {
+      if (!_randomnessBeacon.hasRandomWord(oracleTime)) {
         return (itemTokenIds, amounts, dayToSet, PromotionMintStatus.ORACLE_NOT_CALLED);
       }
 
       // The streak bonus random reward should be based on the last day of the promotion. Pick a random item from the list
-      uint256 randomWord = _world.getRandomWord(oracleTime);
+      uint256 randomWord = _randomnessBeacon.getRandomWord(oracleTime);
       uint256 modifiedRandomWord = uint256(keccak256(abi.encodePacked(randomWord, playerId)));
       uint256 index = modifiedRandomWord % numAvailableItems;
       itemTokenIds[0] = promotionInfo.randomStreakBonusItemTokenIds1[index];

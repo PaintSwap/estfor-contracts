@@ -135,7 +135,7 @@ describe("PetNFT", function () {
   });
 
   it("external_url when not in beta", async function () {
-    const {adminAccess, brush, treasury, dev, royaltyReceiver, alice, world, PetNFT} = await loadFixture(
+    const {adminAccess, brush, treasury, dev, royaltyReceiver, alice, randomnessBeacon, PetNFT} = await loadFixture(
       deployContracts
     );
 
@@ -152,7 +152,7 @@ describe("PetNFT", function () {
         dev.address,
         editNameCost,
         await treasury.getAddress(),
-        await world.getAddress(),
+        await randomnessBeacon.getAddress(),
         await adminAccess.getAddress(),
         isBeta
       ],
@@ -200,7 +200,7 @@ describe("PetNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {petNFT, adminAccess, brush, dev, royaltyReceiver, treasury, world, PetNFT} = await loadFixture(
+    const {petNFT, adminAccess, brush, dev, royaltyReceiver, treasury, randomnessBeacon, PetNFT} = await loadFixture(
       deployContracts
     );
     expect(await petNFT.name()).to.be.eq("Estfor Pets (Beta)");
@@ -218,7 +218,7 @@ describe("PetNFT", function () {
         dev.address,
         editNameCost,
         await treasury.getAddress(),
-        await world.getAddress(),
+        await randomnessBeacon.getAddress(),
         await adminAccess.getAddress(),
         isBeta
       ],

@@ -17,7 +17,7 @@ import {
   SHOP_ADDRESS,
   CLANS_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
-  WORLD_ADDRESS,
+  RANDOMNESS_BEACON_ADDRESS,
   ADMIN_ACCESS_ADDRESS,
   WISHING_WELL_ADDRESS,
   BANK_REGISTRY_ADDRESS,
@@ -194,7 +194,7 @@ async function main() {
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 
   const WorldActions = await ethers.getContractFactory("WorldActions");
-  const worldActions = await upgrades.upgradeProxy(WORLD_ADDRESS, WorldActions, {
+  const worldActions = await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, WorldActions, {
     kind: "uups",
     timeout
   });
@@ -202,13 +202,13 @@ async function main() {
   console.log(`worldActions = "${(await worldActions.getAddress()).toLowerCase()}"`);
 
   // World
-  const World = await ethers.getContractFactory("World");
-  const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const randomnessBeacon = await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
     kind: "uups",
     timeout
   });
-  await world.waitForDeployment();
-  console.log(`world = "${(await world.getAddress()).toLowerCase()}"`);
+  await randomnessBeacon.waitForDeployment();
+  console.log(`randomnessBeacon = "${(await randomnessBeacon.getAddress()).toLowerCase()}"`);
 
   // AdminAccess
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
@@ -430,7 +430,7 @@ async function main() {
     await verifyContracts([await quests.getAddress()]);
     await verifyContracts([await clans.getAddress()]);
     await verifyContracts([await worldActions.getAddress()]);
-    await verifyContracts([await world.getAddress()]);
+    await verifyContracts([await randomnessBeacon.getAddress()]);
     await verifyContracts([await estforLibrary.getAddress()]);
     await verifyContracts([await adminAccess.getAddress()]);
     await verifyContracts([await wishingWell.getAddress()]);

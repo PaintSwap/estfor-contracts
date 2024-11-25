@@ -11,7 +11,6 @@ import {
   PlayersImplQueueActions,
   PlayersImplRewards,
   TestPaintSwapDecorator,
-  World,
   DailyRewardsScheduler
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";

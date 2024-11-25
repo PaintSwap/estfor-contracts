@@ -12,7 +12,7 @@ import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {ICombatants} from "../interfaces/ICombatants.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IWorldActions} from "../interfaces/IWorldActions.sol";
-import {World} from "../World.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
@@ -153,7 +153,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
   IBankFactory private _bankFactory;
   IBrushToken private _brush;
   IWorldActions private _worldActions;
-  World private _world;
+  RandomnessBeacon private _randomnessBeacon;
 
   uint16[] private _combatActionIds; // Small monsters that might spawn
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanInfos;
@@ -202,7 +202,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     uint24 spawnRaidCooldown,
     IBrushToken brush,
     IWorldActions worldActions,
-    World world,
+    RandomnessBeacon randomnessBeacon,
     uint8 maxClanCombatants,
     uint16[] calldata combatActionIds,
     bool isBeta
@@ -219,7 +219,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     _vrfRequestInfo = vrfRequestInfo;
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
     _worldActions = worldActions;
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     _nextRaidId = 1;
     setMaxClanCombatants(maxClanCombatants);
     setSpawnRaidCooldown(spawnRaidCooldown);

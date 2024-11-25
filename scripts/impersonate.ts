@@ -15,7 +15,7 @@ import {
   SAMWITCH_VRF_ADDRESS,
   SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
-  WORLD_ADDRESS
+  RANDOMNESS_BEACON_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
 import {
@@ -94,8 +94,8 @@ async function main() {
 
   // Create the world
 
-  const World = await ethers.getContractFactory("World");
-  const world = await upgrades.upgradeProxy(WORLD_ADDRESS, World, {
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const randomnessBeacon = await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   });
@@ -181,7 +181,7 @@ async function main() {
   const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
   console.log(pendingQueuedActionState);
   /* When trying to fix a VRF issue
-const world = await ethers.getContractAt("World", WORLD_ADDRESS);
+const randomnessBeacon = await ethers.getContractAt("RandomnessBeacon", RANDOMNESS_BEACON_ADDRESS);
   const samwitchVRFSigner = await makeSigner(SAMWITCH_VRF_ADDRESS);
   const tx = await world
     .connect(samwitchVRFSigner)

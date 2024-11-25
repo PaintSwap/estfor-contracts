@@ -24,7 +24,7 @@ describe("Passive actions", function () {
   };
 
   it("Simple", async function () {
-    const {playerId, passiveActions, world, mockVRF, itemNFT, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, randomnessBeacon, mockVRF, itemNFT, alice} = await loadFixture(playersFixture);
 
     const passiveActionInput: PassiveActionInput = {
       ...defaultPassiveActionInput,
@@ -44,12 +44,12 @@ describe("Passive actions", function () {
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.false;
 
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.false;
 
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -173,7 +173,7 @@ describe("Passive actions", function () {
   });
 
   it("Must be owner of player to start, end and claim actions", async function () {
-    const {playerId, passiveActions, itemNFT, alice, world, mockVRF} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, alice, randomnessBeacon, mockVRF} = await loadFixture(playersFixture);
 
     const passiveActionInput = defaultPassiveActionInput;
     await passiveActions.addActions([passiveActionInput]);
@@ -188,8 +188,8 @@ describe("Passive actions", function () {
     await ethers.provider.send("evm_mine", []);
     let finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.false;
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     // Cannot end using wrong account
     await expect(passiveActions.endEarly(playerId)).to.be.revertedWithCustomError(
@@ -202,7 +202,7 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     await expect(passiveActions.claim(playerId)).to.be.revertedWithCustomError(
       passiveActions,
@@ -284,7 +284,7 @@ describe("Passive actions", function () {
   });
 
   it("Check guaranteed rewards", async function () {
-    const {playerId, passiveActions, itemNFT, alice, world, mockVRF} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, alice, randomnessBeacon, mockVRF} = await loadFixture(playersFixture);
 
     const passiveActionInput: PassiveActionInput = {
       ...defaultPassiveActionInput,
@@ -303,8 +303,8 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     let finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.false;
     expect(finishedInfo.hasRandomRewards).to.be.false;
@@ -318,8 +318,8 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
 
@@ -335,7 +335,7 @@ describe("Passive actions", function () {
   });
 
   it("Check random rewards", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100%
     const passiveActionInput: PassiveActionInput = {
@@ -353,12 +353,12 @@ describe("Passive actions", function () {
         {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 2}
       ]
     };
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await timeTravel24Hours();
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     let finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.false;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -372,13 +372,13 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWordsSeeded(world, mockVRF, 100_000_000_000_000n);
+    await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 100_000_000_000_000n);
     finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.false;
     expect(finishedInfo.hasRandomRewards).to.be.true;
 
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -400,7 +400,7 @@ describe("Passive actions", function () {
   });
 
   it("Starting a new action when the previous is finished and oracle not called with random rewards", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100%
     const passiveActionInput: PassiveActionInput = {
@@ -419,12 +419,12 @@ describe("Passive actions", function () {
       randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}]
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     let finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.false;
@@ -455,7 +455,7 @@ describe("Passive actions", function () {
   });
 
   it("Starting a new action when the previous is finished and oracle is called", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100%
     const passiveActionInput: PassiveActionInput = {
@@ -479,13 +479,13 @@ describe("Passive actions", function () {
       randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}]
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     await itemNFT.mint(alice, EstforConstants.POISON, 3);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF); // Oracle is called now
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF); // Oracle is called now
     let finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -516,7 +516,7 @@ describe("Passive actions", function () {
     expect(pendingPassiveActionState.isReady).to.be.false;
     expect(pendingPassiveActionState.producedRandomRewardItemTokenIds.length).to.eq(0);
 
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     pendingPassiveActionState = await passiveActions.pendingPassiveActionState(playerId);
     expect(pendingPassiveActionState.producedRandomRewardItemTokenIds.length).to.eq(1);
     expect(pendingPassiveActionState.producedRandomRewardItemTokenIds[0]).to.eq(EstforConstants.BRONZE_ARROW);
@@ -546,7 +546,7 @@ describe("Passive actions", function () {
   });
 
   it("Starting a new action when the previous is not finished is not allowed", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100%
     const passiveActionInput: PassiveActionInput = {
@@ -570,8 +570,8 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]); // Only go forward by 1 day
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     let finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.false;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -592,7 +592,7 @@ describe("Passive actions", function () {
   });
 
   it("Do not allow completing unless the oracle is called when using random rewards", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
 
     const randomChance = 65535; // 100%
     const passiveActionInput: PassiveActionInput = {
@@ -609,7 +609,7 @@ describe("Passive actions", function () {
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     const finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.false;
@@ -686,7 +686,7 @@ describe("Passive actions", function () {
   });
 
   it("Cannot claim twice", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
 
     const passiveActionInput = defaultPassiveActionInput;
     await passiveActions.addActions([passiveActionInput]);
@@ -695,8 +695,8 @@ describe("Passive actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     const queueId = 1;
     await expect(passiveActions.connect(alice).claim(playerId))
       .to.emit(passiveActions, "ClaimPassiveAction")
@@ -717,7 +717,7 @@ describe("Passive actions", function () {
   });
 
   it("Check skipSuccessPercent", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
     const passiveActionInput: PassiveActionInput = {
       ...defaultPassiveActionInput,
       info: {
@@ -732,10 +732,10 @@ describe("Passive actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [3 * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     let finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.false;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -747,8 +747,8 @@ describe("Passive actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [2 * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -760,7 +760,7 @@ describe("Passive actions", function () {
   });
 
   it("Add a boost which should give a greater chance of skipping a day", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
     const passiveActionInput: PassiveActionInput = {
       ...defaultPassiveActionInput,
       info: {
@@ -798,12 +798,12 @@ describe("Passive actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [5 * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     const finishedInfo = await passiveActions.finishedInfo(playerId);
     expect(finishedInfo.finished).to.be.true;
     expect(finishedInfo.oracleCalled).to.be.true;
@@ -815,7 +815,7 @@ describe("Passive actions", function () {
   });
 
   it("Check skippedToday", async function () {
-    const {playerId, passiveActions, itemNFT, world, mockVRF, alice} = await loadFixture(playersFixture);
+    const {playerId, passiveActions, itemNFT, randomnessBeacon, mockVRF, alice} = await loadFixture(playersFixture);
 
     const passiveActionInput: PassiveActionInput = {
       ...defaultPassiveActionInput,
@@ -828,7 +828,7 @@ describe("Passive actions", function () {
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 1);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     await ethers.provider.send("evm_increaseTime", [3 * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
     let pendingPassiveActionState = await passiveActions.pendingPassiveActionState(playerId);
@@ -836,17 +836,17 @@ describe("Passive actions", function () {
     expect(pendingPassiveActionState.numDaysSkipped).to.eq(0);
     expect(pendingPassiveActionState.skippedToday).to.be.false;
 
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     pendingPassiveActionState = await passiveActions.pendingPassiveActionState(playerId);
     expect(pendingPassiveActionState.numDaysSkipped).to.eq(1);
     expect(pendingPassiveActionState.skippedToday).to.be.false;
 
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     pendingPassiveActionState = await passiveActions.pendingPassiveActionState(playerId);
     expect(pendingPassiveActionState.numDaysSkipped).to.eq(2);
     expect(pendingPassiveActionState.skippedToday).to.be.false;
 
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     pendingPassiveActionState = await passiveActions.pendingPassiveActionState(playerId);
     expect(pendingPassiveActionState.numDaysSkipped).to.eq(3);
     expect(pendingPassiveActionState.skippedToday).to.be.true;

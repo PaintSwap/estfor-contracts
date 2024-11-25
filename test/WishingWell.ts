@@ -12,11 +12,11 @@ describe("WishingWell", function () {
   async function deployContracts() {
     const baseFixture = await loadFixture(playersFixture);
 
-    const {alice, wishingWell, brush, itemNFT, world, mockVRF} = baseFixture;
+    const {alice, wishingWell, brush, itemNFT, randomnessBeacon, mockVRF} = baseFixture;
 
     // Make sure it passes the next checkpoint so there are no issues running
     await timeTravelToNextCheckpoint();
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     const totalBrush = parseEther("100000");
     await brush.mint(alice, totalBrush);
@@ -140,7 +140,7 @@ describe("WishingWell", function () {
   });
 
   it("Check initialization params", async function () {
-    const {world, brush, playerNFT, shop, clans} = await loadFixture(deployContracts);
+    const {randomnessBeacon, brush, playerNFT, shop, clans} = await loadFixture(deployContracts);
 
     const wishingWell = await ethers.deployContract("WishingWell");
 
@@ -155,7 +155,7 @@ describe("WishingWell", function () {
         await brush.getAddress(),
         await playerNFT.getAddress(),
         await shop.getAddress(),
-        await world.getAddress(),
+        await randomnessBeacon.getAddress(),
         await clans.getAddress(),
         parseEther("5"),
         parseEther("1000"),
@@ -167,7 +167,9 @@ describe("WishingWell", function () {
   });
 
   it("Claim lottery winnings", async function () {
-    const {wishingWell, players, alice, world, mockVRF, playerId, raffleEntryCost} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, randomnessBeacon, mockVRF, playerId, raffleEntryCost} = await loadFixture(
+      deployContracts
+    );
 
     let lotteryId = await wishingWell.getLastLotteryId();
     expect(lotteryId).to.eq(1);
@@ -176,7 +178,7 @@ describe("WishingWell", function () {
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     expect(await wishingWell.hasPlayerEntered(lotteryId, playerId)).to.be.true;
 
@@ -283,12 +285,14 @@ describe("WishingWell", function () {
   });
 
   it("Cannot donate until the previous day oracle is called", async function () {
-    const {wishingWell, players, alice, world, mockVRF, playerId, raffleEntryCost} = await loadFixture(deployContracts);
+    const {wishingWell, players, alice, randomnessBeacon, mockVRF, playerId, raffleEntryCost} = await loadFixture(
+      deployContracts
+    );
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost));
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
 
@@ -298,7 +302,7 @@ describe("WishingWell", function () {
       wishingWell,
       "OracleNotCalledYet"
     );
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     await expect(players.connect(alice).donate(playerId, raffleEntryCost)).to.not.be.reverted;
   });
 
@@ -442,7 +446,7 @@ describe("WishingWell", function () {
       brush,
       totalBrush,
       mockVRF,
-      world,
+      randomnessBeacon,
       owner,
       raffleEntryCost
     } = await loadFixture(deployContracts);
@@ -455,14 +459,14 @@ describe("WishingWell", function () {
     await brush.approve(wishingWell, totalBrush);
     for (let i = 0; i < 2; ++i) {
       await timeTravel24Hours();
-      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "my name ser" + i, false);
       await players.donate(newPlayerId, raffleEntryCost);
     }
 
     // Should no longer be claimable
     await timeTravel24Hours();
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
 
@@ -474,12 +478,12 @@ describe("WishingWell", function () {
     lotteryId = await wishingWell.getLastLotteryId();
     for (let i = 0; i < 1; ++i) {
       await timeTravel24Hours();
-      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "should work now" + i, false);
       await players.donate(newPlayerId, raffleEntryCost);
     }
     await timeTravel24Hours();
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     expect(await wishingWell.hasClaimedReward(lotteryId)).to.eq(false);
     await players.connect(alice).processActions(playerId);
@@ -492,13 +496,13 @@ describe("WishingWell", function () {
     lotteryId = await wishingWell.getLastLotteryId();
 
     await timeTravel24Hours();
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     expect(await wishingWell.getLastUnclaimedWinner(2)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(3)).to.eq(lotteryId);
     const newPlayerId = await createPlayer(playerNFT, avatarId, owner, "cheesy", true);
     await players.donate(newPlayerId, raffleEntryCost);
     await timeTravel24Hours();
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(lotteryId);
 
@@ -512,8 +516,18 @@ describe("WishingWell", function () {
   });
 
   it("Multiple unclaimed wins should be claimed after each other", async function () {
-    const {wishingWell, players, alice, playerId, brush, totalBrush, mockVRF, world, owner, raffleEntryCost} =
-      await loadFixture(deployContracts);
+    const {
+      wishingWell,
+      players,
+      alice,
+      playerId,
+      brush,
+      totalBrush,
+      mockVRF,
+      randomnessBeacon,
+      owner,
+      raffleEntryCost
+    } = await loadFixture(deployContracts);
 
     await players.connect(alice).donate(playerId, raffleEntryCost);
     let lotteryId = await wishingWell.getLastLotteryId();
@@ -523,11 +537,11 @@ describe("WishingWell", function () {
     await brush.approve(wishingWell, totalBrush);
     for (let i = 0; i < 1; ++i) {
       await timeTravel24Hours();
-      await requestAndFulfillRandomWords(world, mockVRF);
+      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       await players.connect(alice).donate(playerId, raffleEntryCost);
     }
     await timeTravel24Hours();
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     expect(await wishingWell.getLastUnclaimedWinner(0)).to.eq(playerId);
     expect(await wishingWell.getLastUnclaimedWinner(1)).to.eq(lotteryId);
@@ -572,7 +586,7 @@ describe("WishingWell", function () {
   });
 
   it("Get extra XP boost as part of queueing a wishingWell, do not override lottery winnings", async function () {
-    const {players, alice, playerId, itemNFT, worldActions, world, raffleEntryCost, mockVRF, wishingWell} =
+    const {players, alice, playerId, itemNFT, worldActions, randomnessBeacon, raffleEntryCost, mockVRF, wishingWell} =
       await loadFixture(deployContracts);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
@@ -584,7 +598,7 @@ describe("WishingWell", function () {
 
     await ethers.provider.send("evm_increaseTime", [24 * 3600]);
     await ethers.provider.send("evm_mine", []);
-    await requestAndFulfillRandomWords(world, mockVRF);
+    await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
 
     const winnerInfo = await wishingWell.getWinner(lotteryId);
     expect(winnerInfo.lotteryId).to.eq(lotteryId);

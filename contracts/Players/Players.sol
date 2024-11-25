@@ -5,7 +5,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-import {World} from "../World.sol";
+import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {DailyRewardsScheduler} from "../DailyRewardsScheduler.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {PetNFT} from "../PetNFT.sol";
@@ -75,7 +75,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     PlayerNFT playerNFT,
     PetNFT petNFT,
     IWorldActions worldActions,
-    World world,
+    RandomnessBeacon randomnessBeacon,
     DailyRewardsScheduler dailyRewardsScheduler,
     AdminAccess adminAccess,
     Quests quests,
@@ -96,7 +96,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
     _playerNFT = playerNFT;
     _petNFT = petNFT;
     _worldActions = worldActions;
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     _dailyRewardsScheduler = dailyRewardsScheduler;
     _adminAccess = adminAccess;
     _quests = quests;

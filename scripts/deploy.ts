@@ -17,7 +17,7 @@ import {
   Quests,
   Shop,
   TestPaintSwapDecorator,
-  World,
+  RandomnessBeacon,
   InstantVRFActions,
   VRFRequestInfo,
   GenericInstantVRFActionStrategy,
@@ -271,20 +271,24 @@ async function main() {
   console.log(`worldActions = "${(await worldActions.getAddress()).toLowerCase()}"`);
 
   // Create the world
-  const World = await ethers.getContractFactory("World");
-  const world = (await upgrades.deployProxy(World, [await vrf.getAddress()], {
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await vrf.getAddress()], {
     kind: "uups",
     timeout
-  })) as unknown as World;
-  await world.waitForDeployment();
+  })) as unknown as RandomnessBeacon;
+  await randomnessBeacon.waitForDeployment();
 
-  console.log(`world = "${(await world.getAddress()).toLowerCase()}"`);
+  console.log(`randomnessBeacon = "${(await randomnessBeacon.getAddress()).toLowerCase()}"`);
 
   const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
-  const dailyRewardsScheduler = (await upgrades.deployProxy(DailyRewardsScheduler, [await world.getAddress()], {
-    kind: "uups",
-    timeout
-  })) as unknown as DailyRewardsScheduler;
+  const dailyRewardsScheduler = (await upgrades.deployProxy(
+    DailyRewardsScheduler,
+    [await randomnessBeacon.getAddress()],
+    {
+      kind: "uups",
+      timeout
+    }
+  )) as unknown as DailyRewardsScheduler;
   await dailyRewardsScheduler.waitForDeployment();
 
   console.log(`dailyRewardsScheduler = "${(await dailyRewardsScheduler.getAddress()).toLowerCase()}"`);
@@ -414,10 +418,14 @@ async function main() {
 
   const buyPath: [string, string] = [await wftm.getAddress(), await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
-  const quests = (await upgrades.deployProxy(Quests, [await world.getAddress(), await router.getAddress(), buyPath], {
-    kind: "uups",
-    timeout
-  })) as unknown as Quests;
+  const quests = (await upgrades.deployProxy(
+    Quests,
+    [await randomnessBeacon.getAddress(), await router.getAddress(), buyPath],
+    {
+      kind: "uups",
+      timeout
+    }
+  )) as unknown as Quests;
   await quests.waitForDeployment();
   console.log(`quests = "${(await quests.getAddress()).toLowerCase()}"`);
 
@@ -451,7 +459,7 @@ async function main() {
       await brush.getAddress(),
       await playerNFT.getAddress(),
       await shop.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await clans.getAddress(),
       raffleEntryCost,
       startGlobalDonationThresholdRewards,
@@ -486,7 +494,7 @@ async function main() {
       DEV_ADDRESS,
       editPetNameBrushPrice,
       await treasury.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -515,7 +523,7 @@ async function main() {
       await playerNFT.getAddress(),
       await petNFT.getAddress(),
       await worldActions.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await dailyRewardsScheduler.getAddress(),
       await adminAccess.getAddress(),
       await quests.getAddress(),
@@ -548,7 +556,7 @@ async function main() {
     Promotions,
     [
       await players.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       await dailyRewardsScheduler.getAddress(),
       await itemNFT.getAddress(),
       await playerNFT.getAddress(),
@@ -571,7 +579,7 @@ async function main() {
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
-    [await players.getAddress(), await itemNFT.getAddress(), await world.getAddress()],
+    [await players.getAddress(), await itemNFT.getAddress(), await randomnessBeacon.getAddress()],
     {
       kind: "uups",
       timeout
@@ -729,7 +737,7 @@ async function main() {
       spawnRaidCooldown,
       await brush.getAddress(),
       await worldActions.getAddress(),
-      await world.getAddress(),
+      await randomnessBeacon.getAddress(),
       maxRaidCombatants,
       raidCombatActionIds,
       isBeta
@@ -909,7 +917,7 @@ async function main() {
         await treasury.getAddress(),
         await shop.getAddress(),
         await worldActions.getAddress(),
-        await world.getAddress(),
+        await randomnessBeacon.getAddress(),
         await dailyRewardsScheduler.getAddress(),
         await royaltyReceiver.getAddress(),
         await clans.getAddress(),
@@ -939,10 +947,10 @@ async function main() {
     console.log("Skipping verifying contracts");
   }
 
-  tx = await world.initializeAddresses(wishingWell, dailyRewardsScheduler);
+  tx = await randomnessBeacon.initializeAddresses(wishingWell, dailyRewardsScheduler);
   await tx.wait();
   console.log("world initializeAddress");
-  tx = await world.initializeRandomWords();
+  tx = await randomnessBeacon.initializeRandomWords();
   await tx.wait();
   console.log("worldActions initializeRandomWords");
   tx = await playerNFT.setPlayers(players);

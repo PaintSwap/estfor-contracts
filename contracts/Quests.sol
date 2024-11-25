@@ -60,7 +60,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     uint32 numFixedQuestsCompleted;
   }
 
-  address private _world;
+  address private _randomnessBeacon;
   IPlayers private _players;
   uint16 private _numTotalQuests;
   mapping(uint256 questId => Quest quest) private _allFixedQuests;
@@ -89,11 +89,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(address world, ISolidlyRouter router, address[2] calldata path) external initializer {
+  function initialize(address randomnessBeacon, ISolidlyRouter router, address[2] calldata path) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
-    _world = world;
+    _randomnessBeacon = randomnessBeacon;
     _router = router;
     _wNative = path[0];
     _brush = path[1];

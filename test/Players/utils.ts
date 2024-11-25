@@ -916,9 +916,9 @@ export const setupTravelling = async function (worldActions: WorldActions, rate 
         skill: EstforTypes.Skill.FARMING, // TODO: Change to AGILITY later
         xpPerHour: 0,
         inputTokenIds: [EstforConstants.NONE],
-        inputAmounts: [from], // World location start
+        inputAmounts: [from], // RandomnessBeacon location start
         outputTokenId: EstforConstants.NONE,
-        outputAmount: to, // World location end
+        outputAmount: to, // RandomnessBeacon location end
         rate
       }
     ]

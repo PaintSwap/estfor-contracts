@@ -12,7 +12,7 @@ import {IWorldActions} from "./interfaces/IWorldActions.sol";
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract World is UUPSUpgradeable, OwnableUpgradeable {
+contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
