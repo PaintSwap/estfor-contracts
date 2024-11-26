@@ -31,7 +31,7 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
   error NoActionChoices();
   error ActionChoiceAlreadyExists();
   error ActionChoiceDoesNotExist();
-  error NotAFactorOf3600();
+  error NotAFactorOf3600(uint256 val);
   error NonCombatWithActionChoicesCannotHaveBothGuaranteedAndRandomRewards();
   error InputSpecifiedWithoutAmount();
   error InputAmountsMustBeInOrder();
@@ -125,10 +125,13 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
 
     if (action.info.numSpawned != 0) {
       // Combat
-      require((3600 * SPAWN_MUL) % action.info.numSpawned == 0, NotAFactorOf3600());
+      require((3600 * SPAWN_MUL) % action.info.numSpawned == 0, NotAFactorOf3600(action.info.numSpawned));
     } else if (action.guaranteedRewards.length != 0) {
       // Non-combat guaranteed rewards. Only care about the first one as it's used for correctly taking into account partial loots.
-      require((3600 * GUAR_MUL) % action.guaranteedRewards[0].rate == 0, NotAFactorOf3600());
+      require(
+        (3600 * GUAR_MUL) % action.guaranteedRewards[0].rate == 0,
+        NotAFactorOf3600(action.guaranteedRewards[0].rate)
+      );
     }
 
     _actions[action.actionId] = action.info;
@@ -172,7 +175,6 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
       require(amounts[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != inputTokenIds.length - 1) {
-        require(amounts[i] <= amounts[i + 1], InputAmountsMustBeInOrder());
         for (uint256 j; j < inputTokenIds.length; ++j) {
           require(j == i || inputTokenIds[i] != inputTokenIds[j], InputItemNoDuplicates());
         }
@@ -199,7 +201,7 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
 
     if (actionChoiceInput.rate != 0) {
       // Check that it is a factor of 3600
-      require((3600 * RATE_MUL) % actionChoiceInput.rate == 0, NotAFactorOf3600());
+      require((3600 * RATE_MUL) % actionChoiceInput.rate == 0, NotAFactorOf3600(actionChoiceInput.rate));
     }
   }
 

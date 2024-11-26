@@ -68,11 +68,6 @@
   },
   {
     "inputs": [],
-    "name": "InputAmountsMustBeInOrder",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "InputItemNoDuplicates",
     "type": "error"
   },

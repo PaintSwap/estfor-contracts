@@ -1,6 +1,5 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {BoostType, EquipPosition, ItemInput, Skill} from "@paintswap/estfor-definitions/types";
-
 export const allItems: ItemInput[] = [
   {
     combatStats: {
@@ -15,8 +14,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_HELMET,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 0,
@@ -25,7 +22,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_HELMET.json",
-    name: "Bronze Helmet"
+    name: "Bronze Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -40,8 +39,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_HELMET,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 1021,
@@ -50,7 +47,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_HELMET.json",
-    name: "Iron Helmet"
+    name: "Iron Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -65,8 +64,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_HELMET,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 3236,
@@ -75,7 +72,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_HELMET.json",
-    name: "Mithril Helmet"
+    name: "Mithril Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -90,8 +89,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_HELMET,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 7650,
@@ -100,7 +97,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_HELMET.json",
-    name: "Adamantine Helmet"
+    name: "Adamantine Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -115,8 +114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_HELMET,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 33913,
@@ -125,7 +122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_HELMET.json",
-    name: "Runite Helmet"
+    name: "Runite Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -140,8 +139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_HELMET,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 138307,
@@ -150,7 +147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_HELMET.json",
-    name: "Titanium Helmet"
+    name: "Titanium Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -165,8 +164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_HELMET,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -175,7 +172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET.json",
-    name: "Orichalcum Helmet"
+    name: "Orichalcum Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -190,8 +189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_ARMOR,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 0,
@@ -200,7 +197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_ARMOR.json",
-    name: "Bronze Armor"
+    name: "Bronze Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -215,8 +214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_ARMOR,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 1021,
@@ -225,7 +222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_ARMOR.json",
-    name: "Iron Armor"
+    name: "Iron Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -240,8 +239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_ARMOR,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 3236,
@@ -250,7 +247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_ARMOR.json",
-    name: "Mithril Armor"
+    name: "Mithril Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -265,8 +264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_ARMOR,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 7650,
@@ -275,7 +272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_ARMOR.json",
-    name: "Adamantine Armor"
+    name: "Adamantine Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -290,8 +289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_ARMOR,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 33913,
@@ -300,7 +297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_ARMOR.json",
-    name: "Runite Armor"
+    name: "Runite Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -315,8 +314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_ARMOR,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 138307,
@@ -325,7 +322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_ARMOR.json",
-    name: "Titanium Armor"
+    name: "Titanium Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -340,8 +339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARMOR,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -350,7 +347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR.json",
-    name: "Orichalcum Armor"
+    name: "Orichalcum Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -365,8 +364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 0,
@@ -375,7 +372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_TASSETS.json",
-    name: "Bronze Tassets"
+    name: "Bronze Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -390,8 +389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 1021,
@@ -400,7 +397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_TASSETS.json",
-    name: "Iron Tassets"
+    name: "Iron Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -415,8 +414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 3236,
@@ -425,7 +422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_TASSETS.json",
-    name: "Mithril Tassets"
+    name: "Mithril Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -440,8 +439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 7650,
@@ -450,7 +447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_TASSETS.json",
-    name: "Adamantine Tassets"
+    name: "Adamantine Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -465,8 +464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 33913,
@@ -475,7 +472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_TASSETS.json",
-    name: "Runite Tassets"
+    name: "Runite Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -490,8 +489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 138307,
@@ -500,7 +497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_TASSETS.json",
-    name: "Titanium Tassets"
+    name: "Titanium Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -515,8 +514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -525,7 +522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS.json",
-    name: "Orichalcum Tassets"
+    name: "Orichalcum Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -540,8 +539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 0,
@@ -550,7 +547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_GAUNTLETS.json",
-    name: "Bronze Gauntlets"
+    name: "Bronze Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -565,8 +564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 1021,
@@ -575,7 +572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_GAUNTLETS.json",
-    name: "Iron Gauntlets"
+    name: "Iron Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -590,8 +589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 3236,
@@ -600,7 +597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_GAUNTLETS.json",
-    name: "Mithril Gauntlets"
+    name: "Mithril Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -615,8 +614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 7650,
@@ -625,7 +622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_GAUNTLETS.json",
-    name: "Adamantine Gauntlets"
+    name: "Adamantine Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -640,8 +639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 33913,
@@ -650,7 +647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_GAUNTLETS.json",
-    name: "Runite Gauntlets"
+    name: "Runite Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -665,8 +664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 138307,
@@ -675,7 +672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_GAUNTLETS.json",
-    name: "Titanium Gauntlets"
+    name: "Titanium Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -690,8 +689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -700,7 +697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS.json",
-    name: "Orichalcum Gauntlets"
+    name: "Orichalcum Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -715,8 +714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 0,
@@ -725,7 +722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_BOOTS.json",
-    name: "Bronze Boots"
+    name: "Bronze Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -740,8 +739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 1021,
@@ -750,7 +747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_BOOTS.json",
-    name: "Iron Boots"
+    name: "Iron Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -765,8 +764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 3236,
@@ -775,7 +772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_BOOTS.json",
-    name: "Mithril Boots"
+    name: "Mithril Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -790,8 +789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 7650,
@@ -800,7 +797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_BOOTS.json",
-    name: "Adamantine Boots"
+    name: "Adamantine Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -815,8 +814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 33913,
@@ -825,7 +822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_BOOTS.json",
-    name: "Runite Boots"
+    name: "Runite Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -840,8 +839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 138307,
@@ -850,7 +847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_BOOTS.json",
-    name: "Titanium Boots"
+    name: "Titanium Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -865,8 +864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -875,7 +872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS.json",
-    name: "Orichalcum Boots"
+    name: "Orichalcum Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -890,8 +889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 0,
@@ -900,7 +897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_SHIELD.json",
-    name: "Bronze Shield"
+    name: "Bronze Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -915,8 +914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 1021,
@@ -925,7 +922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_SHIELD.json",
-    name: "Iron Shield"
+    name: "Iron Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -940,8 +939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 3236,
@@ -950,7 +947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_SHIELD.json",
-    name: "Mithril Shield"
+    name: "Mithril Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -965,8 +964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 7650,
@@ -975,7 +972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_SHIELD.json",
-    name: "Adamantine Shield"
+    name: "Adamantine Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -990,8 +989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 33913,
@@ -1000,7 +997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_SHIELD.json",
-    name: "Runite Shield"
+    name: "Runite Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1015,8 +1014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 138307,
@@ -1025,7 +1022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_SHIELD.json",
-    name: "Titanium Shield"
+    name: "Titanium Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1040,8 +1039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -1050,7 +1047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD.json",
-    name: "Orichalcum Shield"
+    name: "Orichalcum Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1065,8 +1064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SAPPHIRE_AMULET,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -1075,7 +1072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SAPPHIRE_AMULET.json",
-    name: "Sapphire Amulet"
+    name: "Sapphire Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1090,8 +1089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EMERALD_AMULET,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -1100,7 +1097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EMERALD_AMULET.json",
-    name: "Emerald Amulet"
+    name: "Emerald Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1115,8 +1114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUBY_AMULET,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -1125,7 +1122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUBY_AMULET.json",
-    name: "Ruby Amulet"
+    name: "Ruby Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1140,8 +1139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AMETHYST_AMULET,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -1150,7 +1147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AMETHYST_AMULET.json",
-    name: "Amethyst Amulet"
+    name: "Amethyst Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1165,8 +1164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DIAMOND_AMULET,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -1175,7 +1172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DIAMOND_AMULET.json",
-    name: "Diamond Amulet"
+    name: "Diamond Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1190,8 +1189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_AMULET,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -1200,7 +1197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET.json",
-    name: "Dragonstone Amulet"
+    name: "Dragonstone Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1215,8 +1214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.APPRENTICE_HAT,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 0,
@@ -1225,7 +1222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_HAT.json",
-    name: "Apprentice Hat"
+    name: "Apprentice Hat",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1240,8 +1239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAGE_HOOD,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 1021,
@@ -1250,7 +1247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_HOOD.json",
-    name: "Mage Hood"
+    name: "Mage Hood",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1265,8 +1264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SORCERER_HAT,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 3236,
@@ -1275,7 +1272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_HAT.json",
-    name: "Sorcerer Hat"
+    name: "Sorcerer Hat",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1290,8 +1289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SEERS_HOOD,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 16432,
@@ -1300,7 +1297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_HOOD.json",
-    name: "Seer's Hood"
+    name: "Seer's Hood",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1315,8 +1314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SHAMAN_HOOD,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 138307,
@@ -1325,7 +1322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_HOOD.json",
-    name: "Shaman Hood"
+    name: "Shaman Hood",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1340,8 +1339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_HAT,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -1350,7 +1347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT.json",
-    name: "Master Hat"
+    name: "Master Hat",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1365,8 +1364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.APPRENTICE_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 0,
@@ -1375,7 +1372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_BODY.json",
-    name: "Apprentice Body"
+    name: "Apprentice Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1390,8 +1389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAGE_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 1021,
@@ -1400,7 +1397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_BODY.json",
-    name: "Mage Body"
+    name: "Mage Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1415,8 +1414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SORCERER_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 3236,
@@ -1425,7 +1422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_BODY.json",
-    name: "Sorcerer Body"
+    name: "Sorcerer Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1440,8 +1439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SEERS_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 16432,
@@ -1450,7 +1447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_BODY.json",
-    name: "Seers Body"
+    name: "Seers Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1465,8 +1464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SHAMAN_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 138307,
@@ -1475,7 +1472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_BODY.json",
-    name: "Shaman Body"
+    name: "Shaman Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1490,8 +1489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -1500,7 +1497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY.json",
-    name: "Master Body"
+    name: "Master Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1515,8 +1514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.APPRENTICE_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 0,
@@ -1525,7 +1522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_TROUSERS.json",
-    name: "Apprentice Trousers"
+    name: "Apprentice Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1540,8 +1539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAGE_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 1021,
@@ -1550,7 +1547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_TROUSERS.json",
-    name: "Mage Trousers"
+    name: "Mage Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1565,8 +1564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SORCERER_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 3236,
@@ -1575,7 +1572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_TROUSERS.json",
-    name: "Sorcerer Trousers"
+    name: "Sorcerer Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1590,8 +1589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SEERS_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 16432,
@@ -1600,7 +1597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_TROUSERS.json",
-    name: "Seers Trousers"
+    name: "Seers Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1615,8 +1614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SHAMAN_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 138307,
@@ -1625,7 +1622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_TROUSERS.json",
-    name: "Shaman Trousers"
+    name: "Shaman Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1640,8 +1639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -1650,7 +1647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS.json",
-    name: "Master Trousers"
+    name: "Master Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1665,8 +1664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.APPRENTICE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 0,
@@ -1675,7 +1672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_GAUNTLETS.json",
-    name: "Apprentice Gauntlets"
+    name: "Apprentice Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1690,8 +1689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAGE_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 1021,
@@ -1700,7 +1697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_BRACERS.json",
-    name: "Mage Bracers"
+    name: "Mage Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1715,8 +1714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SORCERER_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 3236,
@@ -1725,7 +1722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_GAUNTLETS.json",
-    name: "Sorcerer Gauntlets"
+    name: "Sorcerer Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1740,8 +1739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SEERS_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 16432,
@@ -1750,7 +1747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_BRACERS.json",
-    name: "Seers Bracers"
+    name: "Seers Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1765,8 +1764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SHAMAN_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 138307,
@@ -1775,7 +1772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_GAUNTLETS.json",
-    name: "Shaman Gauntlets"
+    name: "Shaman Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1790,8 +1789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -1800,7 +1797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS.json",
-    name: "Master Bracers"
+    name: "Master Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1815,8 +1814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.APPRENTICE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 0,
@@ -1825,7 +1822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "APPRENTICE_BOOTS.json",
-    name: "Apprentice Boots"
+    name: "Apprentice Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1840,8 +1839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAGE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 1021,
@@ -1850,7 +1847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGE_BOOTS.json",
-    name: "Mage Boots"
+    name: "Mage Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1865,8 +1864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SORCERER_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 3236,
@@ -1875,7 +1872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SORCERER_BOOTS.json",
-    name: "Sorcerer Boots"
+    name: "Sorcerer Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1890,8 +1889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SEERS_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 16432,
@@ -1900,7 +1897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEERS_BOOTS.json",
-    name: "Seers Boots"
+    name: "Seers Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1915,8 +1914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SHAMAN_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 138307,
@@ -1925,7 +1922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHAMAN_BOOTS.json",
-    name: "Shaman Boots"
+    name: "Shaman Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1940,8 +1939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -1950,7 +1947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS.json",
-    name: "Master Boots"
+    name: "Master Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1965,8 +1964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MELEE,
     minXP: 0,
@@ -1975,7 +1972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_SWORD.json",
-    name: "Bronze Sword"
+    name: "Bronze Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -1990,8 +1989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MELEE,
     minXP: 1021,
@@ -2000,7 +1997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_SWORD.json",
-    name: "Iron Sword"
+    name: "Iron Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2015,8 +2014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MELEE,
     minXP: 3236,
@@ -2025,7 +2022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_SWORD.json",
-    name: "Mithril Sword"
+    name: "Mithril Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2040,8 +2039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MELEE,
     minXP: 7650,
@@ -2050,7 +2047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_SWORD.json",
-    name: "Adamantine Sword"
+    name: "Adamantine Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2065,8 +2064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MELEE,
     minXP: 33913,
@@ -2075,7 +2072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_SWORD.json",
-    name: "Runite Sword"
+    name: "Runite Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2090,8 +2089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MELEE,
     minXP: 138307,
@@ -2100,7 +2097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_SWORD.json",
-    name: "Titanium Sword"
+    name: "Titanium Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2115,8 +2114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MELEE,
     minXP: 554828,
@@ -2125,7 +2122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD.json",
-    name: "Orichalcum Sword"
+    name: "Orichalcum Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2140,8 +2139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TOTEM_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 0,
@@ -2150,7 +2147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TOTEM_STAFF.json",
-    name: "Totem Staff"
+    name: "Totem Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2165,8 +2164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SAPPHIRE_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 1021,
@@ -2175,7 +2172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SAPPHIRE_STAFF.json",
-    name: "Sapphire Staff"
+    name: "Sapphire Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2190,8 +2189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EMERALD_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 3236,
@@ -2200,7 +2197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EMERALD_STAFF.json",
-    name: "Emerald Staff"
+    name: "Emerald Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2215,8 +2214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUBY_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 16432,
@@ -2225,7 +2222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUBY_STAFF.json",
-    name: "Ruby Staff"
+    name: "Ruby Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2240,8 +2239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AMETHYST_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 68761,
@@ -2250,7 +2247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AMETHYST_STAFF.json",
-    name: "Amethyst Staff"
+    name: "Amethyst Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2265,8 +2264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DIAMOND_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 277219,
@@ -2275,7 +2272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DIAMOND_STAFF.json",
-    name: "Diamond Staff"
+    name: "Diamond Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2290,8 +2289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -2300,7 +2297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF.json",
-    name: "Dragonstone Staff"
+    name: "Dragonstone Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2315,8 +2314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COPPER_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2325,7 +2322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COPPER_ORE.json",
-    name: "Copper Ore"
+    name: "Copper Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2340,8 +2339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TIN_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2350,7 +2347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TIN_ORE.json",
-    name: "Tin Ore"
+    name: "Tin Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2365,8 +2364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2375,7 +2372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_ORE.json",
-    name: "Iron Ore"
+    name: "Iron Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2390,8 +2389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SAPPHIRE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2400,7 +2397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SAPPHIRE.json",
-    name: "Sapphire"
+    name: "Sapphire",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2415,8 +2414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COAL_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2425,7 +2422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COAL_ORE.json",
-    name: "Coal Ore"
+    name: "Coal Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2440,8 +2439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EMERALD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2450,7 +2447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EMERALD.json",
-    name: "Emerald"
+    name: "Emerald",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2465,8 +2464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2475,7 +2472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_ORE.json",
-    name: "Mithril Ore"
+    name: "Mithril Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2490,8 +2489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUBY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2500,7 +2497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUBY.json",
-    name: "Ruby"
+    name: "Ruby",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2515,8 +2514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2525,7 +2522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_ORE.json",
-    name: "Adamantine Ore"
+    name: "Adamantine Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2540,8 +2539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AMETHYST,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2550,7 +2547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AMETHYST.json",
-    name: "Amethyst"
+    name: "Amethyst",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2565,8 +2564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DIAMOND,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2575,7 +2572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DIAMOND.json",
-    name: "Diamond"
+    name: "Diamond",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2590,8 +2589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2600,7 +2597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_ORE.json",
-    name: "Runite Ore"
+    name: "Runite Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2615,8 +2614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2625,7 +2622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE.json",
-    name: "Dragonstone"
+    name: "Dragonstone",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2640,8 +2639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2650,7 +2647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_ORE.json",
-    name: "Titanium Ore"
+    name: "Titanium Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2665,8 +2664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2675,7 +2672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ORE.json",
-    name: "Orichalcum Ore"
+    name: "Orichalcum Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2690,8 +2689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MINING,
     minXP: 0,
@@ -2700,7 +2697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_PICKAXE.json",
-    name: "Bronze Pickaxe"
+    name: "Bronze Pickaxe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2715,8 +2714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MINING,
     minXP: 3236,
@@ -2725,7 +2722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_PICKAXE.json",
-    name: "Iron Pickaxe"
+    name: "Iron Pickaxe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2740,8 +2739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MINING,
     minXP: 68761,
@@ -2750,7 +2747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_PICKAXE.json",
-    name: "Mithril Pickaxe"
+    name: "Mithril Pickaxe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2765,8 +2764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MINING,
     minXP: 195864,
@@ -2775,7 +2772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_PICKAXE.json",
-    name: "Adamantine Pickaxe"
+    name: "Adamantine Pickaxe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2790,8 +2789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MINING,
     minXP: 392228,
@@ -2800,7 +2797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_PICKAXE.json",
-    name: "Runite Pickaxe"
+    name: "Runite Pickaxe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2815,8 +2814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MINING,
     minXP: 784726,
@@ -2825,7 +2822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_PICKAXE.json",
-    name: "Titanium Pickaxe"
+    name: "Titanium Pickaxe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2840,8 +2839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.MINING,
     minXP: 1109796,
@@ -2850,7 +2847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_PICKAXE.json",
-    name: "Orichalcum Pickaxe"
+    name: "Orichalcum Pickaxe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2865,8 +2864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_BAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2875,7 +2872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_BAR.json",
-    name: "Bronze Bar"
+    name: "Bronze Bar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2890,8 +2889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_BAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2900,7 +2897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_BAR.json",
-    name: "Iron Bar"
+    name: "Iron Bar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2915,8 +2914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_BAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2925,7 +2922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_BAR.json",
-    name: "Mithril Bar"
+    name: "Mithril Bar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2940,8 +2939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_BAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2950,7 +2947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_BAR.json",
-    name: "Adamantine Bar"
+    name: "Adamantine Bar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2965,8 +2964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_BAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -2975,7 +2972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_BAR.json",
-    name: "Runite Bar"
+    name: "Runite Bar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -2990,8 +2989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_BAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3000,7 +2997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_BAR.json",
-    name: "Titanium Bar"
+    name: "Titanium Bar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3015,8 +3014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_BAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3025,7 +3022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BAR.json",
-    name: "Orichalcum Bar"
+    name: "Orichalcum Bar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3040,8 +3039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATUOW_HOOD,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.THIEVING,
     minXP: 1021,
@@ -3050,7 +3047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_HOOD.json",
-    name: "Natuow Hood"
+    name: "Natuow Hood",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3065,8 +3064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATUOW_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.THIEVING,
     minXP: 1021,
@@ -3075,7 +3072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_BODY.json",
-    name: "Natuow Vestments"
+    name: "Natuow Vestments",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3090,8 +3089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATUOW_TASSETS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.THIEVING,
     minXP: 1021,
@@ -3100,7 +3097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_TASSETS.json",
-    name: "Natuow Tassets"
+    name: "Natuow Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3115,8 +3114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATUOW_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.THIEVING,
     minXP: 1021,
@@ -3125,7 +3122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_BOOTS.json",
-    name: "Natuow Boots"
+    name: "Natuow Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3140,8 +3139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATUOW_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.THIEVING,
     minXP: 1021,
@@ -3150,7 +3147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_BRACERS.json",
-    name: "Natuow Bracers"
+    name: "Natuow Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3165,8 +3164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BAT_WING_HAT,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.CRAFTING,
     minXP: 1021,
@@ -3175,7 +3172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_HAT.json",
-    name: "Bat Wing Hat"
+    name: "Bat Wing Hat",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3190,8 +3189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BAT_WING_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.CRAFTING,
     minXP: 1021,
@@ -3200,7 +3197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_BODY.json",
-    name: "Bat Wing Vestments"
+    name: "Bat Wing Vestments",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3215,8 +3214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BAT_WING_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.CRAFTING,
     minXP: 1021,
@@ -3225,7 +3222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_TROUSERS.json",
-    name: "Bat Wing Trousers"
+    name: "Bat Wing Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3240,8 +3239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BAT_WING_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.CRAFTING,
     minXP: 1021,
@@ -3250,7 +3247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_BOOTS.json",
-    name: "Bat Wing Boots"
+    name: "Bat Wing Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3265,8 +3264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BAT_WING_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.CRAFTING,
     minXP: 1021,
@@ -3275,7 +3272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_BRACERS.json",
-    name: "Bat Wing Bracers"
+    name: "Bat Wing Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3290,8 +3289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATURE_MASK,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 1021,
@@ -3300,7 +3297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_MASK.json",
-    name: "Nature Mask"
+    name: "Nature Mask",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3315,8 +3314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATURE_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 1021,
@@ -3325,7 +3322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_BODY.json",
-    name: "Nature Vestments"
+    name: "Nature Vestments",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3340,8 +3339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATURE_TROUSERS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 1021,
@@ -3350,7 +3347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_TROUSERS.json",
-    name: "Nature Trousers"
+    name: "Nature Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3365,8 +3364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATURE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 1021,
@@ -3375,7 +3372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_BOOTS.json",
-    name: "Nature Boots"
+    name: "Nature Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3390,8 +3389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATURE_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 1021,
@@ -3400,7 +3397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_BRACERS.json",
-    name: "Nature Bracers"
+    name: "Nature Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3415,8 +3414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LEAF_FRAGMENTS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3425,7 +3422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LEAF_FRAGMENTS.json",
-    name: "Leaf Fragments"
+    name: "Leaf Fragments",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3440,8 +3439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.VENOM_POUCH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3450,7 +3447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "VENOM_POUCH.json",
-    name: "Venom Pouch"
+    name: "Venom Pouch",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3465,8 +3464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BAT_WING,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3475,7 +3472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING.json",
-    name: "Bat Wing"
+    name: "Bat Wing",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3490,8 +3489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BAT_WING_PATCH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3500,7 +3497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BAT_WING_PATCH.json",
-    name: "Bat Wing Patch"
+    name: "Bat Wing Patch",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3515,8 +3514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.THREAD_NEEDLE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.CRAFTING,
     minXP: 0,
@@ -3525,7 +3522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "THREAD_NEEDLE.json",
-    name: "Thread & Needle"
+    name: "Thread & Needle",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3540,8 +3539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LOSSUTH_TEETH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3550,7 +3547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LOSSUTH_TEETH.json",
-    name: "Lossuth Teeth"
+    name: "Lossuth Teeth",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3565,8 +3564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LOSSUTH_SCALE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3575,7 +3572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LOSSUTH_SCALE.json",
-    name: "Lossuth Scale"
+    name: "Lossuth Scale",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3590,8 +3589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.QUARTZ_INFUSED_FEATHER,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3600,7 +3597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "QUARTZ_INFUSED_FEATHER.json",
-    name: "Quartz Infused Feather"
+    name: "Quartz Infused Feather",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3615,8 +3614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FEATHER,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3625,7 +3622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FEATHER.json",
-    name: "Feather"
+    name: "Feather",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3640,8 +3639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BARK_CHUNK,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3650,7 +3647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BARK_CHUNK.json",
-    name: "Bark Chunk"
+    name: "Bark Chunk",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3665,8 +3664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BLUECANAR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3675,7 +3672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BLUECANAR.json",
-    name: "Bluecanar"
+    name: "Bluecanar",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3690,8 +3689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ANURGAT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3700,7 +3697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANURGAT.json",
-    name: "Anurgat"
+    name: "Anurgat",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3715,8 +3714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUFARUM,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3725,7 +3722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUFARUM.json",
-    name: "Rufarum"
+    name: "Rufarum",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3740,8 +3739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WHITE_DEATH_SPORE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3750,7 +3747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WHITE_DEATH_SPORE.json",
-    name: "White Death Spore"
+    name: "White Death Spore",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3765,8 +3764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAGIC_FIRE_STARTER,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.FIREMAKING,
     minXP: 0,
@@ -3775,7 +3772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGIC_FIRE_STARTER.json",
-    name: "Magic Fire Starter"
+    name: "Magic Fire Starter",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3790,8 +3789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NET_STICK,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.FISHING,
     minXP: 0,
@@ -3800,7 +3797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NET_STICK.json",
-    name: "Net (with stick)"
+    name: "Net (with stick)",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3815,8 +3814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MEDIUM_NET,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.FISHING,
     minXP: 3236,
@@ -3825,7 +3822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MEDIUM_NET.json",
-    name: "Medium net"
+    name: "Medium net",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3840,8 +3839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LARGE_NET,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.FISHING,
     minXP: 637364,
@@ -3850,7 +3847,34 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LARGE_NET.json",
-    name: "Large net"
+    name: "Large net",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.MAGIC_NET,
+    equipPosition: EquipPosition.RIGHT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.FISHING,
+    minXP: 3138618,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "MAGIC_NET.json",
+    name: "Magic net",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3865,8 +3889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WOOD_FISHING_ROD,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.FISHING,
     minXP: 16432,
@@ -3875,7 +3897,59 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOOD_FISHING_ROD.json",
-    name: "Wood Fishing Rod"
+    name: "Wood Fishing Rod",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.TITANIUM_FISHING_ROD,
+    equipPosition: EquipPosition.RIGHT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.FISHING,
+    minXP: 1569456,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "TITANIUM_FISHING_ROD.json",
+    name: "Titanium Fishing Rod",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HARPOON,
+    equipPosition: EquipPosition.RIGHT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.FISHING,
+    minXP: 6276611,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HARPOON.json",
+    name: "Harpoon",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3890,8 +3964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.CAGE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.FISHING,
     minXP: 392228,
@@ -3900,7 +3972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "CAGE.json",
-    name: "Cage"
+    name: "Cage",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3915,8 +3989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3925,7 +3997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LOG.json",
-    name: "Log"
+    name: "Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3940,8 +4014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.OAK_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3950,7 +4022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "OAK_LOG.json",
-    name: "Oak Log"
+    name: "Oak Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3965,8 +4039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WILLOW_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -3975,7 +4047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WILLOW_LOG.json",
-    name: "Willow Log"
+    name: "Willow Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -3990,8 +4064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAPLE_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4000,7 +4072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAPLE_LOG.json",
-    name: "Maple Log"
+    name: "Maple Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4015,8 +4089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.REDWOOD_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4025,7 +4097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REDWOOD_LOG.json",
-    name: "Redwood Log"
+    name: "Redwood Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4040,8 +4114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MAGICAL_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4050,7 +4122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MAGICAL_LOG.json",
-    name: "Magical Log"
+    name: "Magical Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4065,8 +4139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ASH_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4075,7 +4147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ASH_LOG.json",
-    name: "Ash Log"
+    name: "Ash Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4090,8 +4164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ENCHANTED_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4100,7 +4172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ENCHANTED_LOG.json",
-    name: "Enchanted Log"
+    name: "Enchanted Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4115,8 +4189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LIVING_LOG,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4125,7 +4197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LIVING_LOG.json",
-    name: "Living Log"
+    name: "Living Log",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4140,8 +4214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 0,
@@ -4150,7 +4222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_AXE.json",
-    name: "Bronze Axe"
+    name: "Bronze Axe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4165,8 +4239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 1021,
@@ -4175,7 +4247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_AXE.json",
-    name: "Iron Axe"
+    name: "Iron Axe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4190,8 +4264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 7650,
@@ -4200,7 +4272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_AXE.json",
-    name: "Mithril Axe"
+    name: "Mithril Axe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4215,8 +4289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 23681,
@@ -4225,7 +4297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_AXE.json",
-    name: "Adamantine Axe"
+    name: "Adamantine Axe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4240,8 +4314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 48359,
@@ -4250,7 +4322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_AXE.json",
-    name: "Runite Axe"
+    name: "Runite Axe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4265,8 +4339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 68761,
@@ -4275,7 +4347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_AXE.json",
-    name: "Titanium Axe"
+    name: "Titanium Axe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4290,8 +4364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.WOODCUTTING,
     minXP: 138307,
@@ -4300,7 +4372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_AXE.json",
-    name: "Orichalcum Axe"
+    name: "Orichalcum Axe",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4315,8 +4389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_MINNUS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4325,7 +4397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_MINNUS.json",
-    name: "Raw Minnus"
+    name: "Raw Minnus",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4340,8 +4414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_BLEKK,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4350,7 +4422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_BLEKK.json",
-    name: "Raw Blekk"
+    name: "Raw Blekk",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4365,8 +4439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_SKRIMP,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4375,7 +4447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_SKRIMP.json",
-    name: "Raw Skrimp"
+    name: "Raw Skrimp",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4390,8 +4464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_FEOLA,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4400,7 +4472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_FEOLA.json",
-    name: "Raw Feola"
+    name: "Raw Feola",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4415,8 +4489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_ANCHO,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4425,7 +4497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ANCHO.json",
-    name: "Raw Ancho"
+    name: "Raw Ancho",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4440,8 +4514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_TROUT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4450,7 +4522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_TROUT.json",
-    name: "Raw Trout"
+    name: "Raw Trout",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4465,8 +4539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_ROJJA,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4475,7 +4547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ROJJA.json",
-    name: "Raw Rojja"
+    name: "Raw Rojja",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4490,8 +4564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_BOWFISH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4500,7 +4572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_BOWFISH.json",
-    name: "Raw Bowfish"
+    name: "Raw Bowfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4515,8 +4589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_GOLDFISH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4525,7 +4597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_GOLDFISH.json",
-    name: "Raw Goldfish"
+    name: "Raw Goldfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4540,8 +4614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_MYSTY_BLUE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4550,7 +4622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_MYSTY_BLUE.json",
-    name: "Raw Mysty Blue"
+    name: "Raw Mysty Blue",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4565,8 +4639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_FLITFISH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4575,7 +4647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_FLITFISH.json",
-    name: "Raw Flitfish"
+    name: "Raw Flitfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4590,8 +4664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_RAZORFISH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4600,7 +4672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_RAZORFISH.json",
-    name: "Raw Razorfish"
+    name: "Raw Razorfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4615,8 +4689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_QUAFFER,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4625,7 +4697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_QUAFFER.json",
-    name: "Raw Quaffer"
+    name: "Raw Quaffer",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4640,8 +4714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_ROXA,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4650,7 +4722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ROXA.json",
-    name: "Raw Roxa"
+    name: "Raw Roxa",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4665,8 +4739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_AZACUDDA,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4675,7 +4747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_AZACUDDA.json",
-    name: "Raw Azacudda"
+    name: "Raw Azacudda",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4690,8 +4764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_STONECLAW,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4700,7 +4772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_STONECLAW.json",
-    name: "Raw Stoneclaw"
+    name: "Raw Stoneclaw",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4715,8 +4789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_CRUSKAN,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4725,7 +4797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_CRUSKAN.json",
-    name: "Raw Cruskan"
+    name: "Raw Cruskan",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4740,8 +4814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_CHODFISH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4750,7 +4822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_CHODFISH.json",
-    name: "Raw Chodfish"
+    name: "Raw Chodfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4765,8 +4839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_DOUBTFISH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4775,7 +4847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_DOUBTFISH.json",
-    name: "Raw Doubtfish"
+    name: "Raw Doubtfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4790,8 +4864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RAW_ROSEFIN,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4800,7 +4872,309 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RAW_ROSEFIN.json",
-    name: "Raw Rosefin"
+    name: "Raw Rosefin",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_SPHINX_FISH,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_SPHINX_FISH.json",
+    name: "Raw Sphinx Fish",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_SHAW,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_SHAW.json",
+    name: "Raw Shaw",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_VANISHING_PERCH,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_VANISHING_PERCH.json",
+    name: "Raw Vanishing Perch",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_VIPER_BASS,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_VIPER_BASS.json",
+    name: "Raw Viper Bass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_WATER_SERPENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_WATER_SERPENT.json",
+    name: "Raw Water Serpent",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_WHISKFIN,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_WHISKFIN.json",
+    name: "Raw Whiskfin",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_MHARA,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_MHARA.json",
+    name: "Raw Mhara",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_GRAN_SQUIN,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_GRAN_SQUIN.json",
+    name: "Raw Gran Squin",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_LANCER,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_LANCER.json",
+    name: "Raw Lancer",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_OCTACLE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_OCTACLE.json",
+    name: "Raw Octacle",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_DRAGONFISH,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_DRAGONFISH.json",
+    name: "Raw Dragonfish",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.RAW_YERESPATUM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RAW_YERESPATUM.json",
+    name: "Raw Yerespatum",
+    isAvailable: false,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4815,8 +5189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_MINNUS,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4825,7 +5197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_MINNUS.json",
-    name: "Cooked Minnus"
+    name: "Cooked Minnus",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4840,8 +5214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_BLEKK,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4850,7 +5222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_BLEKK.json",
-    name: "Cooked Blekk"
+    name: "Cooked Blekk",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4865,8 +5239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_SKRIMP,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4875,7 +5247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_SKRIMP.json",
-    name: "Cooked Skrimp"
+    name: "Cooked Skrimp",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4890,8 +5264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_FEOLA,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4900,7 +5272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_FEOLA.json",
-    name: "Cooked Feola"
+    name: "Cooked Feola",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4915,8 +5289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_ANCHO,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4925,7 +5297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ANCHO.json",
-    name: "Cooked Ancho"
+    name: "Cooked Ancho",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4940,8 +5314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_TROUT,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4950,7 +5322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_TROUT.json",
-    name: "Cooked Trout"
+    name: "Cooked Trout",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4965,8 +5339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_ROJJA,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -4975,7 +5347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ROJJA.json",
-    name: "Cooked Rojja"
+    name: "Cooked Rojja",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -4990,8 +5364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_BOWFISH,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5000,7 +5372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_BOWFISH.json",
-    name: "Cooked Bowfish"
+    name: "Cooked Bowfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5015,8 +5389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_GOLDFISH,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5025,7 +5397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_GOLDFISH.json",
-    name: "Cooked Goldfish"
+    name: "Cooked Goldfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5040,8 +5414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_MYSTY_BLUE,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5050,7 +5422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_MYSTY_BLUE.json",
-    name: "Cooked Mysty Blue"
+    name: "Cooked Mysty Blue",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5065,8 +5439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_FLITFISH,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5075,7 +5447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_FLITFISH.json",
-    name: "Cooked Flitfish"
+    name: "Cooked Flitfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5090,8 +5464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_RAZORFISH,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5100,7 +5472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_RAZORFISH.json",
-    name: "Cooked Razorfish"
+    name: "Cooked Razorfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5115,8 +5489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_QUAFFER,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5125,7 +5497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_QUAFFER.json",
-    name: "Cooked Quaffer"
+    name: "Cooked Quaffer",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5140,8 +5514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_ROXA,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5150,7 +5522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ROXA.json",
-    name: "Cooked Roxa"
+    name: "Cooked Roxa",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5165,8 +5539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_AZACUDDA,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5175,7 +5547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_AZACUDDA.json",
-    name: "Cooked Azacudda"
+    name: "Cooked Azacudda",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5190,8 +5564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_STONECLAW,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5200,7 +5572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_STONECLAW.json",
-    name: "Cooked Stoneclaw"
+    name: "Cooked Stoneclaw",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5215,8 +5589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_CRUSKAN,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5225,7 +5597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_CRUSKAN.json",
-    name: "Cooked Cruskan"
+    name: "Cooked Cruskan",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5240,8 +5614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_CHODFISH,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5250,7 +5622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_CHODFISH.json",
-    name: "Cooked Chodfish"
+    name: "Cooked Chodfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5265,8 +5639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_DOUBTFISH,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5275,7 +5647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_DOUBTFISH.json",
-    name: "Cooked Doubtfish"
+    name: "Cooked Doubtfish",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5290,8 +5664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.COOKED_ROSEFIN,
     equipPosition: EquipPosition.FOOD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5300,7 +5672,309 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COOKED_ROSEFIN.json",
-    name: "Cooked Rosefin"
+    name: "Cooked Rosefin",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_SPHINX_FISH,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 84,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_SPHINX_FISH.json",
+    name: "Cooked Sphinx Fish",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_SHAW,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 90,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_SHAW.json",
+    name: "Cooked Shaw",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_VANISHING_PERCH,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 95,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_VANISHING_PERCH.json",
+    name: "Cooked Vanishing Perch",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_VIPER_BASS,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 102,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_VIPER_BASS.json",
+    name: "Cooked Viper Bass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_WATER_SERPENT,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 110,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_WATER_SERPENT.json",
+    name: "Cooked Water Serpent",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_WHISKFIN,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 120,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_WHISKFIN.json",
+    name: "Cooked Whiskfin",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_MHARA,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 125,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_MHARA.json",
+    name: "Cooked Mhara",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_GRAN_SQUIN,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 150,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_GRAN_SQUIN.json",
+    name: "Cooked Gran Squin",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_LANCER,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 180,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_LANCER.json",
+    name: "Cooked Lancer",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_OCTACLE,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 200,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_OCTACLE.json",
+    name: "Cooked Octacle",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_DRAGONFISH,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 220,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_DRAGONFISH.json",
+    name: "Cooked Dragonfish",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.COOKED_YERESPATUM,
+    equipPosition: EquipPosition.FOOD,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 240,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COOKED_YERESPATUM.json",
+    name: "Cooked Yerespatum",
+    isAvailable: false,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5315,8 +5989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGON_KEY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5325,7 +5997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_KEY.json",
-    name: "Dragon Key"
+    name: "Dragon Key",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5340,8 +6014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BONE_KEY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5350,7 +6022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BONE_KEY.json",
-    name: "Bone Key"
+    name: "Bone Key",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5365,8 +6039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATURE_KEY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5375,7 +6047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_KEY.json",
-    name: "Nature Key"
+    name: "Nature Key",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5390,8 +6064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AQUA_KEY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5400,7 +6072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AQUA_KEY.json",
-    name: "Aqua Key"
+    name: "Aqua Key",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5414,9 +6088,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_KEY,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -5425,7 +6097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_KEY.json",
-    name: "1st Anniversary Key"
+    name: "1st Anniversary Key",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5440,8 +6114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATUOW_HIDE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5450,7 +6122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_HIDE.json",
-    name: "Natuow Hide"
+    name: "Natuow Hide",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5465,8 +6139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATUOW_LEATHER,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5475,7 +6147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATUOW_LEATHER.json",
-    name: "Natuow Leather"
+    name: "Natuow Leather",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5490,8 +6164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SMALL_BONE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5500,7 +6172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SMALL_BONE.json",
-    name: "Small Bone"
+    name: "Small Bone",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5515,8 +6189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MEDIUM_BONE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5525,7 +6197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MEDIUM_BONE.json",
-    name: "Medium Bone"
+    name: "Medium Bone",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5540,8 +6214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LARGE_BONE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5550,7 +6222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LARGE_BONE.json",
-    name: "Large Bone"
+    name: "Large Bone",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5565,8 +6239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGON_BONE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5575,7 +6247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_BONE.json",
-    name: "Dragon Bone"
+    name: "Dragon Bone",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5590,8 +6264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGON_TEETH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5600,7 +6272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_TEETH.json",
-    name: "Dragon Teeth"
+    name: "Dragon Teeth",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5615,8 +6289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGON_SCALE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5625,7 +6297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_SCALE.json",
-    name: "Dragon Scale"
+    name: "Dragon Scale",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5640,8 +6314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.POISON,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5650,7 +6322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "POISON.json",
-    name: "Poison"
+    name: "Poison",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5665,8 +6339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.STRING,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5675,7 +6347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "STRING.json",
-    name: "String"
+    name: "String",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5690,8 +6364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ROPE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5700,7 +6372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ROPE.json",
-    name: "Rope"
+    name: "Rope",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5715,8 +6389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SHADOW_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5725,7 +6397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SHADOW_SCROLL.json",
-    name: "Shadow Scroll"
+    name: "Shadow Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5740,8 +6414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NATURE_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5750,7 +6422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NATURE_SCROLL.json",
-    name: "Nature Scroll"
+    name: "Nature Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5765,8 +6439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AQUA_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5775,7 +6447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AQUA_SCROLL.json",
-    name: "Aqua Scroll"
+    name: "Aqua Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5790,8 +6464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HELL_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5800,7 +6472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HELL_SCROLL.json",
-    name: "Hell Scroll"
+    name: "Hell Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5815,8 +6489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AIR_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5825,7 +6497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AIR_SCROLL.json",
-    name: "Air Scroll"
+    name: "Air Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5840,8 +6514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BARRAGE_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5850,7 +6522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BARRAGE_SCROLL.json",
-    name: "Barrage Scroll"
+    name: "Barrage Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5865,8 +6539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FREEZE_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5875,7 +6547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FREEZE_SCROLL.json",
-    name: "Freeze Scroll"
+    name: "Freeze Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5890,8 +6564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ANCIENT_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5900,7 +6572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANCIENT_SCROLL.json",
-    name: "Ancient Scroll"
+    name: "Ancient Scroll",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5915,8 +6589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BONEMEAL,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5925,7 +6597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BONEMEAL.json",
-    name: "Bonemeal"
+    name: "Bonemeal",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5940,8 +6614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ENCHANTED_ACORN,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5950,7 +6622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ENCHANTED_ACORN.json",
-    name: "Enchanted Acorn"
+    name: "Enchanted Acorn",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5965,8 +6639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ACORN_PATCH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -5975,7 +6647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ACORN_PATCH.json",
-    name: "Acorn Patch"
+    name: "Acorn Patch",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -5989,9 +6663,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.COMBAT_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -6000,7 +6672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 20,
     boostDuration: 86400,
     metadataURI: "COMBAT_BOOST.json",
-    name: "Combat Boost"
+    name: "Combat Boost",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6014,9 +6688,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.XP_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -6025,7 +6697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 86400,
     metadataURI: "XP_BOOST.json",
-    name: "XP Boost"
+    name: "XP Boost",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6039,9 +6713,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.GATHERING_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -6050,7 +6722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 86400,
     metadataURI: "GATHERING_BOOST.json",
-    name: "Gathering Boost"
+    name: "Gathering Boost",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6064,9 +6738,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.SKILL_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -6075,7 +6747,34 @@ export const allItems: ItemInput[] = [
     boostValue: 20,
     boostDuration: 86400,
     metadataURI: "SKILL_BOOST.json",
-    name: "Skill Boost"
+    name: "Skill Boost",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.ABSENCE_BOOST,
+    equipPosition: EquipPosition.BOOST_VIAL,
+    isTransferable: false,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.ABSENCE,
+    boostValue: 100,
+    boostDuration: 6048000,
+    metadataURI: "ABSENCE_BOOST.json",
+    name: "Absence Boost",
+    isAvailable: false,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6090,8 +6789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EGG_TIER1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6100,7 +6797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EGG_TIER1.json",
-    name: "Genesis Egg Tier 1"
+    name: "Genesis Egg Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6115,8 +6814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EGG_TIER2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6125,7 +6822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EGG_TIER2.json",
-    name: "Genesis Egg Tier 2"
+    name: "Genesis Egg Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6140,8 +6839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EGG_TIER3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6150,7 +6847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EGG_TIER3.json",
-    name: "Genesis Egg Tier 3"
+    name: "Genesis Egg Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6165,8 +6864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EGG_TIER4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6175,7 +6872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EGG_TIER4.json",
-    name: "Genesis Egg Tier 4"
+    name: "Genesis Egg Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6190,8 +6889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EGG_TIER5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6200,7 +6897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EGG_TIER5.json",
-    name: "Genesis Egg Tier 5"
+    name: "Genesis Egg Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6215,8 +6914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_1_TIER1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6225,7 +6922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_1_TIER1.json",
-    name: "OG Egg Tier 1"
+    name: "OG Egg Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6240,8 +6939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_1_TIER2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6250,7 +6947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_1_TIER2.json",
-    name: "OG Egg Tier 2"
+    name: "OG Egg Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6265,8 +6964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_1_TIER3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6275,7 +6972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_1_TIER3.json",
-    name: "OG Egg Tier 3"
+    name: "OG Egg Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6290,8 +6989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_1_TIER4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6300,7 +6997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_1_TIER4.json",
-    name: "OG Egg Tier 4"
+    name: "OG Egg Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6315,8 +7014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_1_TIER5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6325,7 +7022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_1_TIER5.json",
-    name: "OG Egg Tier 5"
+    name: "OG Egg Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6340,8 +7039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_2_TIER1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6350,7 +7047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_2_TIER1.json",
-    name: "1Kin Egg Tier 1"
+    name: "1Kin Egg Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6365,8 +7064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_2_TIER2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6375,7 +7072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_2_TIER2.json",
-    name: "1Kin Egg Tier 2"
+    name: "1Kin Egg Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6390,8 +7089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_2_TIER3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6400,7 +7097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_2_TIER3.json",
-    name: "1Kin Egg Tier 3"
+    name: "1Kin Egg Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6415,8 +7114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_2_TIER4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6425,7 +7122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_2_TIER4.json",
-    name: "1Kin Egg Tier 4"
+    name: "1Kin Egg Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6440,8 +7139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_2_TIER5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6450,7 +7147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_2_TIER5.json",
-    name: "1Kin Egg Tier 5"
+    name: "1Kin Egg Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6465,8 +7164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_3_TIER1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6475,7 +7172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_3_TIER1.json",
-    name: "Frost Egg Tier 1"
+    name: "Frost Egg Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6490,8 +7189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_3_TIER2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6500,7 +7197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_3_TIER2.json",
-    name: "Frost Egg Tier 2"
+    name: "Frost Egg Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6515,8 +7214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_3_TIER3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6525,7 +7222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_3_TIER3.json",
-    name: "Frost Egg Tier 3"
+    name: "Frost Egg Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6540,8 +7239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_3_TIER4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6550,7 +7247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_3_TIER4.json",
-    name: "Frost Egg Tier 4"
+    name: "Frost Egg Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6565,8 +7264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_3_TIER5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6575,7 +7272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_3_TIER5.json",
-    name: "Frost Egg Tier 5"
+    name: "Frost Egg Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6590,8 +7289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_4_TIER1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6600,7 +7297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_4_TIER1.json",
-    name: "Crystal Egg Tier 1"
+    name: "Crystal Egg Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6615,8 +7314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_4_TIER2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6625,7 +7322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_4_TIER2.json",
-    name: "Crystal Egg Tier 2"
+    name: "Crystal Egg Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6640,8 +7339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_4_TIER3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6650,7 +7347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_4_TIER3.json",
-    name: "Crystal Egg Tier 3"
+    name: "Crystal Egg Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6665,8 +7364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_4_TIER4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6675,7 +7372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_4_TIER4.json",
-    name: "Crystal Egg Tier 4"
+    name: "Crystal Egg Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6690,8 +7389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SECRET_EGG_4_TIER5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6700,7 +7397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SECRET_EGG_4_TIER5.json",
-    name: "Crystal Egg Tier 5"
+    name: "Crystal Egg Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6714,9 +7413,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER1,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6725,7 +7422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_EGG_TIER1.json",
-    name: "1st Anniversary Egg Tier 1"
+    name: "1st Anniversary Egg Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6739,9 +7438,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER2,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6750,7 +7447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_EGG_TIER2.json",
-    name: "1st Anniversary Egg Tier 2"
+    name: "1st Anniversary Egg Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6764,9 +7463,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER3,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6775,7 +7472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_EGG_TIER3.json",
-    name: "1st Anniversary Egg Tier 3"
+    name: "1st Anniversary Egg Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6789,9 +7488,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER4,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6800,7 +7497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_EGG_TIER4.json",
-    name: "1st Anniversary Egg Tier 4"
+    name: "1st Anniversary Egg Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6814,9 +7513,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER5,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -6825,7 +7522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_EGG_TIER5.json",
-    name: "1st Anniversary Egg Tier 5"
+    name: "1st Anniversary Egg Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6840,8 +7539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.PAPER,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -6850,7 +7547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "PAPER.json",
-    name: "Paper"
+    name: "Paper",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6865,8 +7564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ASH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -6875,7 +7572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ASH.json",
-    name: "Ash"
+    name: "Ash",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6890,8 +7589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 0,
@@ -6900,7 +7597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_ARROW.json",
-    name: "Bronze Arrow"
+    name: "Bronze Arrow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6915,8 +7614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 1021,
@@ -6925,7 +7622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_ARROW.json",
-    name: "Iron Arrow"
+    name: "Iron Arrow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6940,8 +7639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 3236,
@@ -6950,7 +7647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_ARROW.json",
-    name: "Mithril Arrow"
+    name: "Mithril Arrow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6965,8 +7664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 16432,
@@ -6975,7 +7672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_ARROW.json",
-    name: "Adamantine Arrow"
+    name: "Adamantine Arrow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -6990,8 +7689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 68761,
@@ -7000,7 +7697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_ARROW.json",
-    name: "Runite Arrow"
+    name: "Runite Arrow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7015,8 +7714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 277219,
@@ -7025,7 +7722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_ARROW.json",
-    name: "Titanium Arrow"
+    name: "Titanium Arrow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7040,8 +7739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARROW,
     equipPosition: EquipPosition.QUIVER,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -7050,7 +7747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARROW.json",
-    name: "Orichalcum Arrow"
+    name: "Orichalcum Arrow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7065,8 +7764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BASIC_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 0,
@@ -7075,7 +7772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BASIC_BOW.json",
-    name: "Basic Bow"
+    name: "Basic Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7090,8 +7789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BONE_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 1021,
@@ -7100,7 +7797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BONE_BOW.json",
-    name: "Bone Bow"
+    name: "Bone Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7115,8 +7814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EXPERT_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 3236,
@@ -7125,7 +7822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EXPERT_BOW.json",
-    name: "Expert Bow"
+    name: "Expert Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7140,8 +7839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SPECTRAL_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 16432,
@@ -7150,7 +7847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SPECTRAL_BOW.json",
-    name: "Spectral Bow"
+    name: "Spectral Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7165,8 +7864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ICY_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 68761,
@@ -7175,7 +7872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ICY_BOW.json",
-    name: "Icy Bow"
+    name: "Icy Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7190,8 +7889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GLITTERING_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 277219,
@@ -7200,7 +7897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GLITTERING_BOW.json",
-    name: "Glittering Bow"
+    name: "Glittering Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7215,8 +7914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GODLY_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -7225,7 +7922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW.json",
-    name: "Godly Bow"
+    name: "Godly Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7240,8 +7939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AZAMITE_COWL,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 0,
@@ -7250,7 +7947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AZAMITE_COWL.json",
-    name: "Azamite Cowl"
+    name: "Azamite Cowl",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7265,8 +7964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AZAMITE_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 0,
@@ -7275,7 +7972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AZAMITE_BODY.json",
-    name: "Azamite Body"
+    name: "Azamite Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7290,8 +7989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AZAMITE_CHAPS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 0,
@@ -7300,7 +7997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AZAMITE_CHAPS.json",
-    name: "Azamite Chaps"
+    name: "Azamite Chaps",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7315,8 +8014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AZAMITE_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 0,
@@ -7325,7 +8022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AZAMITE_BRACERS.json",
-    name: "Azamite Bracers"
+    name: "Azamite Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7340,8 +8039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.AZAMITE_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 0,
@@ -7350,7 +8047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "AZAMITE_BOOTS.json",
-    name: "Azamite Boots"
+    name: "Azamite Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7365,8 +8064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HAUBERK_COWL,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 1021,
@@ -7375,7 +8072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HAUBERK_COWL.json",
-    name: "Hauberk Cowl"
+    name: "Hauberk Cowl",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7390,8 +8089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HAUBERK_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 1021,
@@ -7400,7 +8097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HAUBERK_BODY.json",
-    name: "Hauberk Body"
+    name: "Hauberk Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7415,8 +8114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HAUBERK_CHAPS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 1021,
@@ -7425,7 +8122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HAUBERK_CHAPS.json",
-    name: "Hauberk Chaps"
+    name: "Hauberk Chaps",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7440,8 +8139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HAUBERK_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 1021,
@@ -7450,7 +8147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HAUBERK_BRACERS.json",
-    name: "Hauberk Bracers"
+    name: "Hauberk Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7465,8 +8164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HAUBERK_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 1021,
@@ -7475,7 +8172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HAUBERK_BOOTS.json",
-    name: "Hauberk Boots"
+    name: "Hauberk Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7490,8 +8189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GARAGOS_COWL,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 3236,
@@ -7500,7 +8197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GARAGOS_COWL.json",
-    name: "Garagos Cowl"
+    name: "Garagos Cowl",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7515,8 +8214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GARAGOS_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 3236,
@@ -7525,7 +8222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GARAGOS_BODY.json",
-    name: "Garagos Body"
+    name: "Garagos Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7540,8 +8239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GARAGOS_CHAPS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 3236,
@@ -7550,7 +8247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GARAGOS_CHAPS.json",
-    name: "Garagos Chaps"
+    name: "Garagos Chaps",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7565,8 +8264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GARAGOS_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 3236,
@@ -7575,7 +8272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GARAGOS_BRACERS.json",
-    name: "Garagos Bracers"
+    name: "Garagos Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7590,8 +8289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GARAGOS_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 3236,
@@ -7600,7 +8297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GARAGOS_BOOTS.json",
-    name: "Garagos Boots"
+    name: "Garagos Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7615,8 +8314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ETERNAL_COWL,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 16432,
@@ -7625,7 +8322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ETERNAL_COWL.json",
-    name: "Eternal Cowl"
+    name: "Eternal Cowl",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7640,8 +8339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ETERNAL_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 16432,
@@ -7650,7 +8347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ETERNAL_BODY.json",
-    name: "Eternal Body"
+    name: "Eternal Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7665,8 +8364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ETERNAL_CHAPS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 16432,
@@ -7675,7 +8372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ETERNAL_CHAPS.json",
-    name: "Eternal Chaps"
+    name: "Eternal Chaps",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7690,8 +8389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ETERNAL_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 16432,
@@ -7700,7 +8397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ETERNAL_BRACERS.json",
-    name: "Eternal Bracers"
+    name: "Eternal Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7715,8 +8414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ETERNAL_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 16432,
@@ -7725,7 +8422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ETERNAL_BOOTS.json",
-    name: "Eternal Boots"
+    name: "Eternal Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7740,8 +8439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.REAVER_COWL,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 138307,
@@ -7750,7 +8447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REAVER_COWL.json",
-    name: "Reaver Cowl"
+    name: "Reaver Cowl",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7765,8 +8464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.REAVER_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 138307,
@@ -7775,7 +8472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REAVER_BODY.json",
-    name: "Reaver Body"
+    name: "Reaver Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7790,8 +8489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.REAVER_CHAPS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 138307,
@@ -7800,7 +8497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REAVER_CHAPS.json",
-    name: "Reaver Chaps"
+    name: "Reaver Chaps",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7815,8 +8514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.REAVER_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 138307,
@@ -7825,7 +8522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REAVER_BRACERS.json",
-    name: "Reaver Bracers"
+    name: "Reaver Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7840,8 +8539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.REAVER_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 138307,
@@ -7850,7 +8547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "REAVER_BOOTS.json",
-    name: "Reaver Boots"
+    name: "Reaver Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7865,8 +8564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_COWL,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -7875,7 +8572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL.json",
-    name: "Scorching Cowl"
+    name: "Scorching Cowl",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7890,8 +8589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BODY,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -7900,7 +8597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY.json",
-    name: "Scorching Body"
+    name: "Scorching Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7915,8 +8614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_CHAPS,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -7925,7 +8622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS.json",
-    name: "Scorching Chaps"
+    name: "Scorching Chaps",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7940,8 +8639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BRACERS,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -7950,7 +8647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS.json",
-    name: "Scorching Bracers"
+    name: "Scorching Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7965,8 +8664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BOOTS,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -7975,7 +8672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS.json",
-    name: "Scorching Boots"
+    name: "Scorching Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -7990,8 +8689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ARROW_SHAFT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8000,7 +8697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ARROW_SHAFT.json",
-    name: "Arrow Shaft"
+    name: "Arrow Shaft",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8015,8 +8714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRONZE_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8025,7 +8722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRONZE_ARROW_HEAD.json",
-    name: "Bronze Arrow Head"
+    name: "Bronze Arrow Head",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8040,8 +8739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.IRON_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8050,7 +8747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "IRON_ARROW_HEAD.json",
-    name: "Iron Arrow Head"
+    name: "Iron Arrow Head",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8065,8 +8764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MITHRIL_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8075,7 +8772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MITHRIL_ARROW_HEAD.json",
-    name: "Mithril Arrow Head"
+    name: "Mithril Arrow Head",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8090,8 +8789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ADAMANTINE_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8100,7 +8797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ADAMANTINE_ARROW_HEAD.json",
-    name: "Adamantine Arrow Head"
+    name: "Adamantine Arrow Head",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8115,8 +8814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RUNITE_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8125,7 +8822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RUNITE_ARROW_HEAD.json",
-    name: "Runite Arrow Head"
+    name: "Runite Arrow Head",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8140,8 +8839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TITANIUM_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8150,7 +8847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITANIUM_ARROW_HEAD.json",
-    name: "Titanium Arrow Head"
+    name: "Titanium Arrow Head",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8165,8 +8864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8175,7 +8872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARROW_HEAD.json",
-    name: "Orichalcum Arrow Head"
+    name: "Orichalcum Arrow Head",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8190,8 +8889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FLIXORA,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8200,7 +8897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FLIXORA.json",
-    name: "Flixora"
+    name: "Flixora",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8215,8 +8914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BECARA_GRASS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8225,7 +8922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BECARA_GRASS.json",
-    name: "Becara Grass"
+    name: "Becara Grass",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8240,8 +8939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HURA_ROOT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8250,7 +8947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HURA_ROOT.json",
-    name: "Hura Root"
+    name: "Hura Root",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8265,8 +8964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.RIGOB_CLOTH,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8275,7 +8972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "RIGOB_CLOTH.json",
-    name: "Rigob Cloth"
+    name: "Rigob Cloth",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8290,8 +8989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.QUAVA_SILK,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8300,7 +8997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "QUAVA_SILK.json",
-    name: "Quava Silk"
+    name: "Quava Silk",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8314,9 +9013,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.LUCKY_POTION,
     equipPosition: EquipPosition.EXTRA_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8325,7 +9022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 86400,
     metadataURI: "LUCKY_POTION.json",
-    name: "Lucky Potion"
+    name: "Lucky Potion",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8339,9 +9038,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.LUCK_OF_THE_DRAW,
     equipPosition: EquipPosition.EXTRA_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8350,7 +9047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 5,
     boostDuration: 43200,
     metadataURI: "LUCK_OF_THE_DRAW.json",
-    name: "Luck Of The Draw"
+    name: "Luck Of The Draw",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8364,9 +9063,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.PRAY_TO_THE_BEARDIE,
     equipPosition: EquipPosition.GLOBAL_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8375,7 +9072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 432000,
     metadataURI: "PRAY_TO_THE_BEARDIE.json",
-    name: "Pray to the Beardie"
+    name: "Pray to the Beardie",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8389,9 +9088,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.PRAY_TO_THE_BEARDIE_2,
     equipPosition: EquipPosition.GLOBAL_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8400,7 +9097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 432000,
     metadataURI: "PRAY_TO_THE_BEARDIE_2.json",
-    name: "Pray to the Beardie 2"
+    name: "Pray to the Beardie 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8414,9 +9113,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.PRAY_TO_THE_BEARDIE_3,
     equipPosition: EquipPosition.GLOBAL_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8425,7 +9122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 432000,
     metadataURI: "PRAY_TO_THE_BEARDIE_3.json",
-    name: "Pray to the Beardie 3"
+    name: "Pray to the Beardie 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8439,9 +9138,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.CLAN_BOOSTER,
     equipPosition: EquipPosition.CLAN_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8450,7 +9147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 259500,
     metadataURI: "CLAN_BOOSTER.json",
-    name: "Clan Booster"
+    name: "Clan Booster",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8464,9 +9163,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.CLAN_BOOSTER_2,
     equipPosition: EquipPosition.CLAN_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8475,7 +9172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 259500,
     metadataURI: "CLAN_BOOSTER_2.json",
-    name: "Clan Booster 2"
+    name: "Clan Booster 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8489,9 +9188,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.CLAN_BOOSTER_3,
     equipPosition: EquipPosition.CLAN_BOOST_VIAL,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8500,7 +9197,34 @@ export const allItems: ItemInput[] = [
     boostValue: 10,
     boostDuration: 259500,
     metadataURI: "CLAN_BOOSTER_3.json",
-    name: "Clan Booster 3"
+    name: "Clan Booster 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.PASSIVE_SKIP_CHANCE,
+    equipPosition: EquipPosition.PASSIVE_BOOST_VIAL,
+    isTransferable: false,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.PASSIVE_SKIP_CHANCE,
+    boostValue: 10,
+    boostDuration: 0,
+    metadataURI: "PASSIVE_SKIP_CHANCE.json",
+    name: "Passive Skip Boost",
+    isAvailable: false,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8515,8 +9239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.TINY_ELIXIUM,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8525,7 +9247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TINY_ELIXIUM.json",
-    name: "Tiny Elixium"
+    name: "Tiny Elixium",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8540,8 +9264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SMALL_ELIXIUM,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8550,7 +9272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SMALL_ELIXIUM.json",
-    name: "Small Elixium"
+    name: "Small Elixium",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8565,8 +9289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MEDIUM_ELIXIUM,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8575,7 +9297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MEDIUM_ELIXIUM.json",
-    name: "Medium Elixium"
+    name: "Medium Elixium",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8590,8 +9314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.LARGE_ELIXIUM,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8600,7 +9322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "LARGE_ELIXIUM.json",
-    name: "Large Elixium"
+    name: "Large Elixium",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8615,8 +9339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.EXTRA_LARGE_ELIXIUM,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8625,7 +9347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "EXTRA_LARGE_ELIXIUM.json",
-    name: "Extra Large Elixium"
+    name: "Extra Large Elixium",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8640,8 +9364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FLUX,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8650,7 +9372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FLUX.json",
-    name: "Flux"
+    name: "Flux",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8665,8 +9389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HALLOWEEN_BONUS_1,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8675,7 +9397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HALLOWEEN_BONUS_1.json",
-    name: "Craven Countenance"
+    name: "Craven Countenance",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8690,8 +9414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HALLOWEEN_BONUS_2,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8700,7 +9422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HALLOWEEN_BONUS_2.json",
-    name: "Infernal Gaze"
+    name: "Infernal Gaze",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8715,8 +9439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.HALLOWEEN_BONUS_3,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8725,7 +9447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "HALLOWEEN_BONUS_3.json",
-    name: "Masque of Ironjaw"
+    name: "Masque of Ironjaw",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8740,8 +9464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.PROTECTION_SHIELD,
     equipPosition: EquipPosition.LOCKED_VAULT,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8750,7 +9472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 12,
     boostDuration: 172800,
     metadataURI: "PROTECTION_SHIELD.json",
-    name: "Protection Shield"
+    name: "Protection Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8765,8 +9489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DEVILISH_FINGERS,
     equipPosition: EquipPosition.LOCKED_VAULT,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8775,7 +9497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 1,
     boostDuration: 86400,
     metadataURI: "DEVILISH_FINGERS.json",
-    name: "Devilish Fingers"
+    name: "Devilish Fingers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8790,8 +9514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MIRROR_SHIELD,
     equipPosition: EquipPosition.TERRITORY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8800,7 +9522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 72,
     boostDuration: 86400,
     metadataURI: "MIRROR_SHIELD.json",
-    name: "Mirror Shield"
+    name: "Mirror Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8815,8 +9539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SHARPENED_CLAW,
     equipPosition: EquipPosition.LOCKED_VAULT,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -8825,7 +9547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 1,
     boostDuration: 86400,
     metadataURI: "SHARPENED_CLAW.json",
-    name: "Sharpened Claw"
+    name: "Sharpened Claw",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8840,8 +9564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_HELMET_1,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -8850,7 +9572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_1.json",
-    name: "Orichalcum Helmet Lvl 1"
+    name: "Orichalcum Helmet Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8865,8 +9589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARMOR_1,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -8875,7 +9597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_1.json",
-    name: "Orichalcum Armor Lvl 1"
+    name: "Orichalcum Armor Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8890,8 +9614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_TASSETS_1,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -8900,7 +9622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_1.json",
-    name: "Orichalcum Tassets Lvl 1"
+    name: "Orichalcum Tassets Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8915,8 +9639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_1,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -8925,7 +9647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_1.json",
-    name: "Orichalcum Gauntlets Lvl 1"
+    name: "Orichalcum Gauntlets Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8940,8 +9664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_BOOTS_1,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -8950,7 +9672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_1.json",
-    name: "Orichalcum Boots Lvl 1"
+    name: "Orichalcum Boots Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8965,8 +9689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SHIELD_1,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -8975,7 +9697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_1.json",
-    name: "Orichalcum Shield Lvl 1"
+    name: "Orichalcum Shield Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -8990,8 +9714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_AMULET_1,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -9000,7 +9722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_1.json",
-    name: "Dragonstone Amulet Lvl 1"
+    name: "Dragonstone Amulet Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9015,8 +9739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_HAT_1,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9025,7 +9747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_1.json",
-    name: "Master Hat Lvl 1"
+    name: "Master Hat Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9040,8 +9764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BODY_1,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9050,7 +9772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_1.json",
-    name: "Master Body Lvl 1"
+    name: "Master Body Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9065,8 +9789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_TROUSERS_1,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9075,7 +9797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_1.json",
-    name: "Master Trousers Lvl 1"
+    name: "Master Trousers Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9090,8 +9814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BRACERS_1,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9100,7 +9822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_1.json",
-    name: "Master Bracers Lvl 1"
+    name: "Master Bracers Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9115,8 +9839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BOOTS_1,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9125,7 +9847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_1.json",
-    name: "Master Boots Lvl 1"
+    name: "Master Boots Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9140,8 +9864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SWORD_1,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MELEE,
     minXP: 554828,
@@ -9150,7 +9872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_1.json",
-    name: "Orichalcum Sword Lvl 1"
+    name: "Orichalcum Sword Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9165,8 +9889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_STAFF_1,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9175,7 +9897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_1.json",
-    name: "Dragonstone Staff Lvl 1"
+    name: "Dragonstone Staff Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9190,8 +9914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GODLY_BOW_1,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9200,7 +9922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_1.json",
-    name: "Godly Bow Lvl 1"
+    name: "Godly Bow Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9215,8 +9939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_COWL_1,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9225,7 +9947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_1.json",
-    name: "Scorching Cowl Lvl 1"
+    name: "Scorching Cowl Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9240,8 +9964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BODY_1,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9250,7 +9972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_1.json",
-    name: "Scorching Body Lvl 1"
+    name: "Scorching Body Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9265,8 +9989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_CHAPS_1,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9275,7 +9997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_1.json",
-    name: "Scorching Chaps Lvl 1"
+    name: "Scorching Chaps Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9290,8 +10014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BRACERS_1,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9300,7 +10022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_1.json",
-    name: "Scorching Bracers Lvl 1"
+    name: "Scorching Bracers Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9315,8 +10039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BOOTS_1,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9325,7 +10047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_1.json",
-    name: "Scorching Boots Lvl 1"
+    name: "Scorching Boots Lvl 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9340,8 +10064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_HELMET_2,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9350,7 +10072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_2.json",
-    name: "Orichalcum Helmet Lvl 2"
+    name: "Orichalcum Helmet Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9365,8 +10089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARMOR_2,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9375,7 +10097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_2.json",
-    name: "Orichalcum Armor Lvl 2"
+    name: "Orichalcum Armor Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9390,8 +10114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_TASSETS_2,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9400,7 +10122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_2.json",
-    name: "Orichalcum Tassets Lvl 2"
+    name: "Orichalcum Tassets Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9415,8 +10139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_2,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9425,7 +10147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_2.json",
-    name: "Orichalcum Gauntlets Lvl 2"
+    name: "Orichalcum Gauntlets Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9440,8 +10164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_BOOTS_2,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9450,7 +10172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_2.json",
-    name: "Orichalcum Boots Lvl 2"
+    name: "Orichalcum Boots Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9465,8 +10189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SHIELD_2,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9475,7 +10197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_2.json",
-    name: "Orichalcum Shield Lvl 2"
+    name: "Orichalcum Shield Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9490,8 +10214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_AMULET_2,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -9500,7 +10222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_2.json",
-    name: "Dragonstone Amulet Lvl 2"
+    name: "Dragonstone Amulet Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9515,8 +10239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_HAT_2,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9525,7 +10247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_2.json",
-    name: "Master Hat Lvl 2"
+    name: "Master Hat Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9540,8 +10264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BODY_2,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9550,7 +10272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_2.json",
-    name: "Master Body Lvl 2"
+    name: "Master Body Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9565,8 +10289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_TROUSERS_2,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9575,7 +10297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_2.json",
-    name: "Master Trousers Lvl 2"
+    name: "Master Trousers Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9590,8 +10314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BRACERS_2,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9600,7 +10322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_2.json",
-    name: "Master Bracers Lvl 2"
+    name: "Master Bracers Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9615,8 +10339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BOOTS_2,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9625,7 +10347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_2.json",
-    name: "Master Boots Lvl 2"
+    name: "Master Boots Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9640,8 +10364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SWORD_2,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MELEE,
     minXP: 554828,
@@ -9650,7 +10372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_2.json",
-    name: "Orichalcum Sword Lvl 2"
+    name: "Orichalcum Sword Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9665,8 +10389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_STAFF_2,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -9675,7 +10397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_2.json",
-    name: "Dragonstone Staff Lvl 2"
+    name: "Dragonstone Staff Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9690,8 +10414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GODLY_BOW_2,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9700,7 +10422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_2.json",
-    name: "Godly Bow Lvl 2"
+    name: "Godly Bow Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9715,8 +10439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_COWL_2,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9725,7 +10447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_2.json",
-    name: "Scorching Cowl Lvl 2"
+    name: "Scorching Cowl Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9740,8 +10464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BODY_2,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9750,7 +10472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_2.json",
-    name: "Scorching Body Lvl 2"
+    name: "Scorching Body Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9765,8 +10489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_CHAPS_2,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9775,7 +10497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_2.json",
-    name: "Scorching Chaps Lvl 2"
+    name: "Scorching Chaps Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9790,8 +10514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BRACERS_2,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9800,7 +10522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_2.json",
-    name: "Scorching Bracers Lvl 2"
+    name: "Scorching Bracers Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9815,8 +10539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BOOTS_2,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -9825,7 +10547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_2.json",
-    name: "Scorching Boots Lvl 2"
+    name: "Scorching Boots Lvl 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9840,8 +10564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_HELMET_3,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9850,7 +10572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_3.json",
-    name: "Orichalcum Helmet Lvl 3"
+    name: "Orichalcum Helmet Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9865,8 +10589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARMOR_3,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9875,7 +10597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_3.json",
-    name: "Orichalcum Armor Lvl 3"
+    name: "Orichalcum Armor Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9890,8 +10614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_TASSETS_3,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9900,7 +10622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_3.json",
-    name: "Orichalcum Tassets Lvl 3"
+    name: "Orichalcum Tassets Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9915,8 +10639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_3,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9925,7 +10647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_3.json",
-    name: "Orichalcum Gauntlets Lvl 3"
+    name: "Orichalcum Gauntlets Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9940,8 +10664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_BOOTS_3,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9950,7 +10672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_3.json",
-    name: "Orichalcum Boots Lvl 3"
+    name: "Orichalcum Boots Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9965,8 +10689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SHIELD_3,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -9975,7 +10697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_3.json",
-    name: "Orichalcum Shield Lvl 3"
+    name: "Orichalcum Shield Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -9990,8 +10714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_AMULET_3,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -10000,7 +10722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_3.json",
-    name: "Dragonstone Amulet Lvl 3"
+    name: "Dragonstone Amulet Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10015,8 +10739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_HAT_3,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10025,7 +10747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_3.json",
-    name: "Master Hat Lvl 3"
+    name: "Master Hat Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10040,8 +10764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BODY_3,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10050,7 +10772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_3.json",
-    name: "Master Body Lvl 3"
+    name: "Master Body Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10065,8 +10789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_TROUSERS_3,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10075,7 +10797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_3.json",
-    name: "Master Trousers Lvl 3"
+    name: "Master Trousers Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10090,8 +10814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BRACERS_3,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10100,7 +10822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_3.json",
-    name: "Master Bracers Lvl 3"
+    name: "Master Bracers Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10115,8 +10839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BOOTS_3,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10125,7 +10847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_3.json",
-    name: "Master Boots Lvl 3"
+    name: "Master Boots Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10140,8 +10864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SWORD_3,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MELEE,
     minXP: 554828,
@@ -10150,7 +10872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_3.json",
-    name: "Orichalcum Sword Lvl 3"
+    name: "Orichalcum Sword Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10165,8 +10889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_STAFF_3,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10175,7 +10897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_3.json",
-    name: "Dragonstone Staff Lvl 3"
+    name: "Dragonstone Staff Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10190,8 +10914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GODLY_BOW_3,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10200,7 +10922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_3.json",
-    name: "Godly Bow Lvl 3"
+    name: "Godly Bow Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10215,8 +10939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_COWL_3,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10225,7 +10947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_3.json",
-    name: "Scorching Cowl Lvl 3"
+    name: "Scorching Cowl Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10240,8 +10964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BODY_3,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10250,7 +10972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_3.json",
-    name: "Scorching Body Lvl 3"
+    name: "Scorching Body Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10265,8 +10989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_CHAPS_3,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10275,7 +10997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_3.json",
-    name: "Scorching Chaps Lvl 3"
+    name: "Scorching Chaps Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10290,8 +11014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BRACERS_3,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10300,7 +11022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_3.json",
-    name: "Scorching Bracers Lvl 3"
+    name: "Scorching Bracers Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10315,8 +11039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BOOTS_3,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10325,7 +11047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_3.json",
-    name: "Scorching Boots Lvl 3"
+    name: "Scorching Boots Lvl 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10340,8 +11064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_HELMET_4,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10350,7 +11072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_4.json",
-    name: "Orichalcum Helmet Lvl 4"
+    name: "Orichalcum Helmet Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10365,8 +11089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARMOR_4,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10375,7 +11097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_4.json",
-    name: "Orichalcum Armor Lvl 4"
+    name: "Orichalcum Armor Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10390,8 +11114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_TASSETS_4,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10400,7 +11122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_4.json",
-    name: "Orichalcum Tassets Lvl 4"
+    name: "Orichalcum Tassets Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10415,8 +11139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_4,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10425,7 +11147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_4.json",
-    name: "Orichalcum Gauntlets Lvl 4"
+    name: "Orichalcum Gauntlets Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10440,8 +11164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_BOOTS_4,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10450,7 +11172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_4.json",
-    name: "Orichalcum Boots Lvl 4"
+    name: "Orichalcum Boots Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10465,8 +11189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SHIELD_4,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10475,7 +11197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_4.json",
-    name: "Orichalcum Shield Lvl 4"
+    name: "Orichalcum Shield Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10490,8 +11214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_AMULET_4,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -10500,7 +11222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_4.json",
-    name: "Dragonstone Amulet Lvl 4"
+    name: "Dragonstone Amulet Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10515,8 +11239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_HAT_4,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10525,7 +11247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_4.json",
-    name: "Master Hat Lvl 4"
+    name: "Master Hat Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10540,8 +11264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BODY_4,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10550,7 +11272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_4.json",
-    name: "Master Body Lvl 4"
+    name: "Master Body Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10565,8 +11289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_TROUSERS_4,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10575,7 +11297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_4.json",
-    name: "Master Trousers Lvl 4"
+    name: "Master Trousers Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10590,8 +11314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BRACERS_4,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10600,7 +11322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_4.json",
-    name: "Master Bracers Lvl 4"
+    name: "Master Bracers Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10615,8 +11339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BOOTS_4,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10625,7 +11347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_4.json",
-    name: "Master Boots Lvl 4"
+    name: "Master Boots Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10640,8 +11364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SWORD_4,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MELEE,
     minXP: 554828,
@@ -10650,7 +11372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_4.json",
-    name: "Orichalcum Sword Lvl 4"
+    name: "Orichalcum Sword Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10665,8 +11389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_STAFF_4,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -10675,7 +11397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_4.json",
-    name: "Dragonstone Staff Lvl 4"
+    name: "Dragonstone Staff Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10690,8 +11414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GODLY_BOW_4,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10700,7 +11422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_4.json",
-    name: "Godly Bow Lvl 4"
+    name: "Godly Bow Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10715,8 +11439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_COWL_4,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10725,7 +11447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_4.json",
-    name: "Scorching Cowl Lvl 4"
+    name: "Scorching Cowl Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10740,8 +11464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BODY_4,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10750,7 +11472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_4.json",
-    name: "Scorching Body Lvl 4"
+    name: "Scorching Body Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10765,8 +11489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_CHAPS_4,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10775,7 +11497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_4.json",
-    name: "Scorching Chaps Lvl 4"
+    name: "Scorching Chaps Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10790,8 +11514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BRACERS_4,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10800,7 +11522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_4.json",
-    name: "Scorching Bracers Lvl 4"
+    name: "Scorching Bracers Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10815,8 +11539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BOOTS_4,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -10825,7 +11547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_4.json",
-    name: "Scorching Boots Lvl 4"
+    name: "Scorching Boots Lvl 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10840,8 +11564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_HELMET_5,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10850,7 +11572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_HELMET_5.json",
-    name: "Orichalcum Helmet Lvl 5"
+    name: "Orichalcum Helmet Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10865,8 +11589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_ARMOR_5,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10875,7 +11597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_ARMOR_5.json",
-    name: "Orichalcum Armor Lvl 5"
+    name: "Orichalcum Armor Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10890,8 +11614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_TASSETS_5,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10900,7 +11622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_TASSETS_5.json",
-    name: "Orichalcum Tassets Lvl 5"
+    name: "Orichalcum Tassets Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10915,8 +11639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_5,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10925,7 +11647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_GAUNTLETS_5.json",
-    name: "Orichalcum Gauntlets Lvl 5"
+    name: "Orichalcum Gauntlets Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10940,8 +11664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_BOOTS_5,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10950,7 +11672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_BOOTS_5.json",
-    name: "Orichalcum Boots Lvl 5"
+    name: "Orichalcum Boots Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10965,8 +11689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SHIELD_5,
     equipPosition: EquipPosition.LEFT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.DEFENCE,
     minXP: 554828,
@@ -10975,7 +11697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SHIELD_5.json",
-    name: "Orichalcum Shield Lvl 5"
+    name: "Orichalcum Shield Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -10990,8 +11714,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_AMULET_5,
     equipPosition: EquipPosition.NECK,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11000,7 +11722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_AMULET_5.json",
-    name: "Dragonstone Amulet Lvl 5"
+    name: "Dragonstone Amulet Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11015,8 +11739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_HAT_5,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -11025,7 +11747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_HAT_5.json",
-    name: "Master Hat Lvl 5"
+    name: "Master Hat Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11040,8 +11764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BODY_5,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -11050,7 +11772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BODY_5.json",
-    name: "Master Body Lvl 5"
+    name: "Master Body Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11065,8 +11789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_TROUSERS_5,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -11075,7 +11797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_TROUSERS_5.json",
-    name: "Master Trousers Lvl 5"
+    name: "Master Trousers Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11090,8 +11814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BRACERS_5,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -11100,7 +11822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BRACERS_5.json",
-    name: "Master Bracers Lvl 5"
+    name: "Master Bracers Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11115,8 +11839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MASTER_BOOTS_5,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -11125,7 +11847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MASTER_BOOTS_5.json",
-    name: "Master Boots Lvl 5"
+    name: "Master Boots Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11140,8 +11864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ORICHALCUM_SWORD_5,
     equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MELEE,
     minXP: 554828,
@@ -11150,7 +11872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ORICHALCUM_SWORD_5.json",
-    name: "Orichalcum Sword Lvl 5"
+    name: "Orichalcum Sword Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11165,8 +11889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_STAFF_5,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.MAGIC,
     minXP: 554828,
@@ -11175,7 +11897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_5.json",
-    name: "Dragonstone Staff Lvl 5"
+    name: "Dragonstone Staff Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11190,8 +11914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GODLY_BOW_5,
     equipPosition: EquipPosition.BOTH_HANDS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -11200,7 +11922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_5.json",
-    name: "Godly Bow Lvl 5"
+    name: "Godly Bow Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11215,8 +11939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_COWL_5,
     equipPosition: EquipPosition.HEAD,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -11225,7 +11947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_COWL_5.json",
-    name: "Scorching Cowl Lvl 5"
+    name: "Scorching Cowl Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11240,8 +11964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BODY_5,
     equipPosition: EquipPosition.BODY,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -11250,7 +11972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BODY_5.json",
-    name: "Scorching Body Lvl 5"
+    name: "Scorching Body Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11265,8 +11989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_CHAPS_5,
     equipPosition: EquipPosition.LEGS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -11275,7 +11997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_CHAPS_5.json",
-    name: "Scorching Chaps Lvl 5"
+    name: "Scorching Chaps Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11290,8 +12014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BRACERS_5,
     equipPosition: EquipPosition.ARMS,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -11300,7 +12022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BRACERS_5.json",
-    name: "Scorching Bracers Lvl 5"
+    name: "Scorching Bracers Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11315,8 +12039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.SCORCHING_BOOTS_5,
     equipPosition: EquipPosition.FEET,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.RANGED,
     minXP: 554828,
@@ -11325,7 +12047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SCORCHING_BOOTS_5.json",
-    name: "Scorching Boots Lvl 5"
+    name: "Scorching Boots Lvl 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11340,8 +12064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11350,7 +12072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_HELMET.json",
-    name: "Infused Orichalcum Helmet"
+    name: "Infused Orichalcum Helmet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11365,8 +12089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11375,7 +12097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_ARMOR.json",
-    name: "Infused Orichalcum Armor"
+    name: "Infused Orichalcum Armor",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11390,8 +12114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11400,7 +12122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_TASSETS.json",
-    name: "Infused Orichalcum Tassets"
+    name: "Infused Orichalcum Tassets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11415,8 +12139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11425,7 +12147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_GAUNTLETS.json",
-    name: "Infused Orichalcum Gauntlets"
+    name: "Infused Orichalcum Gauntlets",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11440,8 +12164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11450,7 +12172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_BOOTS.json",
-    name: "Infused Orichalcum Boots"
+    name: "Infused Orichalcum Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11465,8 +12189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11475,7 +12197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_SHIELD.json",
-    name: "Infused Orichalcum Shield"
+    name: "Infused Orichalcum Shield",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11490,8 +12214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11500,7 +12222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_DRAGONSTONE_AMULET.json",
-    name: "Infused Dragonstone Amulet"
+    name: "Infused Dragonstone Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11515,8 +12239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_HAT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11525,7 +12247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_HAT.json",
-    name: "Infused Master Hat"
+    name: "Infused Master Hat",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11540,8 +12264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_BODY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11550,7 +12272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_BODY.json",
-    name: "Infused Master Body"
+    name: "Infused Master Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11565,8 +12289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_TROUSERS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11575,7 +12297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_TROUSERS.json",
-    name: "Infused Master Trousers"
+    name: "Infused Master Trousers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11590,8 +12314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_BRACERS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11600,7 +12322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_BRACERS.json",
-    name: "Infused Master Bracers"
+    name: "Infused Master Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11615,8 +12339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_BOOTS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11625,7 +12347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_BOOTS.json",
-    name: "Infused Master Boots"
+    name: "Infused Master Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11640,8 +12364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11650,7 +12372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_SWORD.json",
-    name: "Infused Orichalcum Sword"
+    name: "Infused Orichalcum Sword",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11665,8 +12389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_DRAGONSTONE_STAFF,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11675,7 +12397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_DRAGONSTONE_STAFF.json",
-    name: "Infused Dragonstone Staff"
+    name: "Infused Dragonstone Staff",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11690,8 +12414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_GODLY_BOW,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11700,7 +12422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_GODLY_BOW.json",
-    name: "Infused Godly Bow"
+    name: "Infused Godly Bow",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11715,8 +12439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_COWL,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11725,7 +12447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_COWL.json",
-    name: "Infused Scorching Cowl"
+    name: "Infused Scorching Cowl",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11740,8 +12464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_BODY,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11750,7 +12472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_BODY.json",
-    name: "Infused Scorching Body"
+    name: "Infused Scorching Body",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11765,8 +12489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_CHAPS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11775,7 +12497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_CHAPS.json",
-    name: "Infused Scorching Chaps"
+    name: "Infused Scorching Chaps",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11790,8 +12514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_BRACERS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11800,7 +12522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_BRACERS.json",
-    name: "Infused Scorching Bracers"
+    name: "Infused Scorching Bracers",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11815,8 +12539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_BOOTS,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11825,7 +12547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_BOOTS.json",
-    name: "Infused Scorching Boots"
+    name: "Infused Scorching Boots",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11840,8 +12564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.PANGSTEN_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11850,7 +12572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "PANGSTEN_RING.json",
-    name: "Pangsten Ring"
+    name: "Pangsten Ring",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11865,8 +12589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.CANVITE_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11875,7 +12597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "CANVITE_RING.json",
-    name: "Canvite Ring"
+    name: "Canvite Ring",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11890,8 +12614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.ETCHED_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11900,7 +12622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ETCHED_RING.json",
-    name: "Etched Ring"
+    name: "Etched Ring",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11915,8 +12639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.PRIMDIAT_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11925,7 +12647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "PRIMDIAT_RING.json",
-    name: "Primdiat Ring"
+    name: "Primdiat Ring",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11940,8 +12664,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.OCULITE_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11950,7 +12672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "OCULITE_RING.json",
-    name: "Oculite Ring"
+    name: "Oculite Ring",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11965,8 +12689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.NOVIAN_RING,
     equipPosition: EquipPosition.RING,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -11975,7 +12697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "NOVIAN_RING.json",
-    name: "Novian Ring"
+    name: "Novian Ring",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -11989,9 +12713,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_RING,
     equipPosition: EquipPosition.RING,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12000,7 +12722,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_RING.json",
-    name: "1st Anniversary Ring"
+    name: "1st Anniversary Ring",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12015,8 +12739,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12025,7 +12747,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_HELMET_FRAGMENT.json",
-    name: "Infused Orichalcum Helmet Fragment"
+    name: "Infused Orichalcum Helmet Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12040,8 +12764,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12050,7 +12772,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_ARMOR_FRAGMENT.json",
-    name: "Infused Orichalcum Armor Fragment"
+    name: "Infused Orichalcum Armor Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12065,8 +12789,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12075,7 +12797,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_TASSETS_FRAGMENT.json",
-    name: "Infused Orichalcum Tassets Fragment"
+    name: "Infused Orichalcum Tassets Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12090,8 +12814,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12100,7 +12822,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_GAUNTLETS_FRAGMENT.json",
-    name: "Infused Orichalcum Gauntlets Fragment"
+    name: "Infused Orichalcum Gauntlets Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12115,8 +12839,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12125,7 +12847,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_BOOTS_FRAGMENT.json",
-    name: "Infused Orichalcum Boots Fragment"
+    name: "Infused Orichalcum Boots Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12140,8 +12864,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12150,7 +12872,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_SHIELD_FRAGMENT.json",
-    name: "Infused Orichalcum Shield Fragment"
+    name: "Infused Orichalcum Shield Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12165,8 +12889,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12175,7 +12897,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_DRAGONSTONE_AMULET_FRAGMENT.json",
-    name: "Infused Dragonstone Amulet Fragment"
+    name: "Infused Dragonstone Amulet Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12190,8 +12914,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_HAT_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12200,7 +12922,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_HAT_FRAGMENT.json",
-    name: "Infused Master Hat Fragment"
+    name: "Infused Master Hat Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12215,8 +12939,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12225,7 +12947,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_BODY_FRAGMENT.json",
-    name: "Infused Master Body Fragment"
+    name: "Infused Master Body Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12240,8 +12964,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_BRACERS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12250,7 +12972,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_BRACERS_FRAGMENT.json",
-    name: "Infused Master Bracers Fragment"
+    name: "Infused Master Bracers Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12265,8 +12989,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_TROUSERS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12275,7 +12997,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_TROUSERS_FRAGMENT.json",
-    name: "Infused Master Trousers Fragment"
+    name: "Infused Master Trousers Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12290,8 +13014,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_MASTER_BOOTS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12300,7 +13022,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_MASTER_BOOTS_FRAGMENT.json",
-    name: "Infused Master Boots Fragment"
+    name: "Infused Master Boots Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12315,8 +13039,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12325,7 +13047,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_ORICHALCUM_SWORD_FRAGMENT.json",
-    name: "Infused Orichalcum Sword Fragment"
+    name: "Infused Orichalcum Sword Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12340,8 +13064,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGONSTONE_STAFF_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12350,7 +13072,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGONSTONE_STAFF_FRAGMENT.json",
-    name: "Dragonstone Staff Fragment"
+    name: "Dragonstone Staff Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12365,8 +13089,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.GODLY_BOW_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12375,7 +13097,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "GODLY_BOW_FRAGMENT.json",
-    name: "Godly Bow Fragment"
+    name: "Godly Bow Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12390,8 +13114,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_COWL_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12400,7 +13122,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_COWL_FRAGMENT.json",
-    name: "Infused Scorching Cowl Fragment"
+    name: "Infused Scorching Cowl Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12415,8 +13139,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_BODY_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12425,7 +13147,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_BODY_FRAGMENT.json",
-    name: "Infused Scorching Body Fragment"
+    name: "Infused Scorching Body Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12440,8 +13164,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_BRACERS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12450,7 +13172,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_BRACERS_FRAGMENT.json",
-    name: "Infused Scorching Bracers Fragment"
+    name: "Infused Scorching Bracers Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12465,8 +13189,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_CHAPS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12475,7 +13197,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_CHAPS_FRAGMENT.json",
-    name: "Infused Scorching Chaps Fragment"
+    name: "Infused Scorching Chaps Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12490,8 +13214,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.INFUSED_SCORCHING_BOOTS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12500,7 +13222,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "INFUSED_SCORCHING_BOOTS_FRAGMENT.json",
-    name: "Infused Scorching Boots Fragment"
+    name: "Infused Scorching Boots Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12515,8 +13239,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FISHING_CHEST_1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12525,7 +13247,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_1.json",
-    name: "Fishing Chest Tier 1"
+    name: "Fishing Chest Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12540,8 +13264,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FISHING_CHEST_2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12550,7 +13272,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_2.json",
-    name: "Fishing Chest Tier 2"
+    name: "Fishing Chest Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12565,8 +13289,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FISHING_CHEST_3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12575,7 +13297,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_3.json",
-    name: "Fishing Chest Tier 3"
+    name: "Fishing Chest Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12590,8 +13314,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FISHING_CHEST_4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12600,7 +13322,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_4.json",
-    name: "Fishing Chest Tier 4"
+    name: "Fishing Chest Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12615,8 +13339,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.FISHING_CHEST_5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12625,7 +13347,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "FISHING_CHEST_5.json",
-    name: "Fishing Chest Tier 5"
+    name: "Fishing Chest Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12640,8 +13364,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WOODCUTTING_CHEST_1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12650,7 +13372,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_1.json",
-    name: "Woodcutting Chest Tier 1"
+    name: "Woodcutting Chest Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12665,8 +13389,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WOODCUTTING_CHEST_2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12675,7 +13397,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_2.json",
-    name: "Woodcutting Chest Tier 2"
+    name: "Woodcutting Chest Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12690,8 +13414,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WOODCUTTING_CHEST_3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12700,7 +13422,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_3.json",
-    name: "Woodcutting Chest Tier 3"
+    name: "Woodcutting Chest Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12715,8 +13439,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WOODCUTTING_CHEST_4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12725,7 +13447,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_4.json",
-    name: "Woodcutting Chest Tier 4"
+    name: "Woodcutting Chest Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12740,8 +13464,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.WOODCUTTING_CHEST_5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12750,7 +13472,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WOODCUTTING_CHEST_5.json",
-    name: "Woodcutting Chest Tier 5"
+    name: "Woodcutting Chest Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12765,8 +13489,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MINING_CHEST_1,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12775,7 +13497,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_1.json",
-    name: "Mining Chest Tier 1"
+    name: "Mining Chest Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12790,8 +13514,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MINING_CHEST_2,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12800,7 +13522,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_2.json",
-    name: "Mining Chest Tier 2"
+    name: "Mining Chest Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12815,8 +13539,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MINING_CHEST_3,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12825,7 +13547,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_3.json",
-    name: "Mining Chest Tier 3"
+    name: "Mining Chest Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12840,8 +13564,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MINING_CHEST_4,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12850,7 +13572,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_4.json",
-    name: "Mining Chest Tier 4"
+    name: "Mining Chest Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12865,8 +13589,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.MINING_CHEST_5,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12875,7 +13597,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "MINING_CHEST_5.json",
-    name: "Mining Chest Tier 5"
+    name: "Mining Chest Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12890,8 +13614,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.DRAGON_CHEST,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12900,7 +13622,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DRAGON_CHEST.json",
-    name: "Dragon Chest"
+    name: "Dragon Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12915,8 +13639,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BONE_CHEST,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12925,7 +13647,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BONE_CHEST.json",
-    name: "Bone Chest"
+    name: "Bone Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12939,9 +13663,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ANNIV1_CHEST,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12950,7 +13672,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "ANNIV1_CHEST.json",
-    name: "1st Anniversary Chest"
+    name: "1st Anniversary Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12965,8 +13689,6 @@ export const allItems: ItemInput[] = [
     tokenId: EstforConstants.BRIMSTONE,
     equipPosition: EquipPosition.NONE,
     isTransferable: true,
-    isAvailable: true,
-    questPrerequisiteId: 0,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -12975,7 +13697,9 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BRIMSTONE.json",
-    name: "Brimstone"
+    name: "Brimstone",
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     combatStats: {
@@ -12989,9 +13713,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.COIN,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
-    isAvailable: false,
-    questPrerequisiteId: 0,
+    isTransferable: false,
     isFullModeOnly: true,
     skill: Skill.NONE,
     minXP: 0,
@@ -13000,6 +13722,3933 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "COIN.json",
-    name: "Coin"
+    name: "Coin",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.KRAGSTYR_EGG_TIER1,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "KRAGSTYR_EGG_TIER1.json",
+    name: "Kragstyr Egg Tier 1",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.KRAGSTYR_EGG_TIER2,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "KRAGSTYR_EGG_TIER2.json",
+    name: "Kragstyr Egg Tier 2",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.KRAGSTYR_EGG_TIER3,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "KRAGSTYR_EGG_TIER3.json",
+    name: "Kragstyr Egg Tier 3",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.KRAGSTYR_EGG_TIER4,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "KRAGSTYR_EGG_TIER4.json",
+    name: "Kragstyr Egg Tier 4",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.KRAGSTYR_EGG_TIER5,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "KRAGSTYR_EGG_TIER5.json",
+    name: "Kragstyr Egg Tier 5",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.TRICK_CHEST2024,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "TRICK_CHEST2024.json",
+    name: "Trick Chest 2024",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.TREAT_CHEST2024,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "TREAT_CHEST2024.json",
+    name: "Treat Chest 2024",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.TRICK_OR_TREAT_KEY,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "TRICK_OR_TREAT_KEY.json",
+    name: "Trick or Treat Key",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 8,
+      magicAttack: 8,
+      rangedAttack: 8,
+      meleeDefence: -12,
+      magicDefence: -12,
+      rangedDefence: -12,
+      health: -30
+    },
+    tokenId: EstforConstants.RING_OF_TUR,
+    equipPosition: EquipPosition.RING,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RING_OF_TUR.json",
+    name: "Ring of Tur",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 5,
+      magicAttack: 5,
+      rangedAttack: 5,
+      meleeDefence: 5,
+      magicDefence: 5,
+      rangedDefence: 5,
+      health: -30
+    },
+    tokenId: EstforConstants.KEPHRI_AMULET,
+    equipPosition: EquipPosition.NECK,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "KEPHRI_AMULET.json",
+    name: "Kephri Amulet",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.LIFFYN,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "LIFFYN.json",
+    name: "Liffyn",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.VANAGLOT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "VANAGLOT.json",
+    name: "Vanaglot",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.FANGENSTORM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "FANGENSTORM.json",
+    name: "Fangenstorm",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_001_V1,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_ALCHEMY_001_V1.json",
+    name: "Alchemist's Compendium Vol I",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_002_V2,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_ALCHEMY_002_V2.json",
+    name: "Alchemist's Compendium Vol II",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_003_V3,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_ALCHEMY_003_V3.json",
+    name: "Alchemist's Compendium Vol III",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_004_V4,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_ALCHEMY_004_V4.json",
+    name: "Alchemist's Compendium Vol IV",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_005_V5,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_ALCHEMY_005_V5.json",
+    name: "Alchemist's Compendium Vol V",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_001,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_HARVEST_001.json",
+    name: "Initiate Gatherer's Pass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_002,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_HARVEST_002.json",
+    name: "Adept Gatherer's Pass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_003,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_HARVEST_003.json",
+    name: "Experienced Gatherer's Pass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_004,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_HARVEST_004.json",
+    name: "Veteran Gatherer's Pass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_005,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_HARVEST_005.json",
+    name: "Explorer's Pass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_006,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_HARVEST_006.json",
+    name: "Pathfinder's Pass",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_007,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLUEPRINT_HARVEST_007.json",
+    name: "Seeker's Pass",
+    isAvailable: false,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_001_BRONZE,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_001_BRONZE.json",
+    name: "Gynder's Yefir",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_001_BRONZE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_001_BRONZE_FRAGMENT.json",
+    name: "Gynder's Yefir Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_002_IRON,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_002_IRON.json",
+    name: "Risgolron's Yefir",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_002_IRON_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_002_IRON_FRAGMENT.json",
+    name: "Risgolron's Yefir Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_003_MITHRIL,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_003_MITHRIL.json",
+    name: "Erudi's Yfrol",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_003_MITHRIL_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_003_MITHRIL_FRAGMENT.json",
+    name: "Erudi's Yfrol Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_004_ADAMANTINE,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_004_ADAMANTINE.json",
+    name: "Stregarion's Yfrol",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_004_ADAMANTINE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_004_ADAMANTINE_FRAGMENT.json",
+    name: "Stregarion's Yfrol Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_005_RUNITE,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_005_RUNITE.json",
+    name: "Sinlorion's Wysgrif",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_005_RUNITE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_005_RUNITE_FRAGMENT.json",
+    name: "Sinlorion's Wysgrif Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_006_TITANIUM,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_006_TITANIUM.json",
+    name: "Hudolwyr's Wysgrif",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_006_TITANIUM_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_006_TITANIUM_FRAGMENT.json",
+    name: "Hudolwyr's Wysgrif Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM.json",
+    name: "Odlarion's Wysgrif",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_1,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM_1.json",
+    name: "Odlarions Wysgrif T1",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_2,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM_2.json",
+    name: "Odlarions Wysgrif T2",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_3,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM_3.json",
+    name: "Odlarions Wysgrif T3",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_4,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM_4.json",
+    name: "Odlarions Wysgrif T4",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_5,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MAGIC,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM_5.json",
+    name: "Odlarions Wysgrif T5",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM_FRAGMENT.json",
+    name: "Odlarion's Wysgrif Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BOOK_007_ORICHALCUM_INFUSED.json",
+    name: "Infused Odlarions Wysgrif",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CHARCOAL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CHARCOAL.json",
+    name: "Charcoal",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CHEST_001_PRIMORDIAL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CHEST_001_PRIMORDIAL.json",
+    name: "Primordial Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CHEST_002_AETHER,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CHEST_002_AETHER.json",
+    name: "Aether Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CHEST_003_ARCANE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CHEST_003_ARCANE.json",
+    name: "Arcane Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CHEST_004_ASTRAL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CHEST_004_ASTRAL.json",
+    name: "Astral Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CHEST_005_VOID,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CHEST_005_VOID.json",
+    name: "Void Chest",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_001_BRONZE,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_001_BRONZE.json",
+    name: "Effyd Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_001_BRONZE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_001_BRONZE_FRAGMENT.json",
+    name: "Effyd Kiel Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_002_IRON,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_002_IRON.json",
+    name: "Haearn Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_002_IRON_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_002_IRON_FRAGMENT.json",
+    name: "Haearn Kiel Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_003_MITHRIL,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_003_MITHRIL.json",
+    name: "Ithrith Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_003_MITHRIL_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_003_MITHRIL_FRAGMENT.json",
+    name: "Ithrith Kiel Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_004_ADAMANTINE,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_004_ADAMANTINE.json",
+    name: "Adama Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_004_ADAMANTINE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_004_ADAMANTINE_FRAGMENT.json",
+    name: "Adama Kiel Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_005_RUNITE,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_005_RUNITE.json",
+    name: "Rhun Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_005_RUNITE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_005_RUNITE_FRAGMENT.json",
+    name: "Rhun Kiel Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_006_TITANIUM,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_006_TITANIUM.json",
+    name: "Vinget Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_006_TITANIUM_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_006_TITANIUM_FRAGMENT.json",
+    name: "Vinget Kiel Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM.json",
+    name: "Deuion Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_1,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM_1.json",
+    name: "Deuion Kiel T1",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_2,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM_2.json",
+    name: "Deuion Kiel T2",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_3,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM_3.json",
+    name: "Deuion Kiel T3",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_4,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM_4.json",
+    name: "Deuion Kiel T4",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_5,
+    equipPosition: EquipPosition.BOTH_HANDS,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.RANGED,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM_5.json",
+    name: "Deuion Kiel T5",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM_FRAGMENT.json",
+    name: "Deuion Kiel Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "CROSSBOW_007_ORICHALCUM_INFUSED.json",
+    name: "Infused Deuion Kiel",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_001_BRONZE,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_001_BRONZE.json",
+    name: "Effyd Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_001_BRONZE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_001_BRONZE_FRAGMENT.json",
+    name: "Effyd Cledyr Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_002_IRON,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_002_IRON.json",
+    name: "Haearn Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_002_IRON_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_002_IRON_FRAGMENT.json",
+    name: "Haearn Cledyr Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_003_MITHRIL,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_003_MITHRIL.json",
+    name: "Ithrith Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_003_MITHRIL_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_003_MITHRIL_FRAGMENT.json",
+    name: "Ithrith Cledyr Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_004_ADAMANTINE,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_004_ADAMANTINE.json",
+    name: "Adama Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_004_ADAMANTINE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_004_ADAMANTINE_FRAGMENT.json",
+    name: "Adama Cledyr Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_005_RUNITE,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_005_RUNITE.json",
+    name: "Rhun Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_005_RUNITE_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_005_RUNITE_FRAGMENT.json",
+    name: "Rhun Cledyr Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_006_TITANIUM,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_006_TITANIUM.json",
+    name: "Itanus Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_006_TITANIUM_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_006_TITANIUM_FRAGMENT.json",
+    name: "Itanus Cledyr Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM.json",
+    name: "Orcalith Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_1,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM_1.json",
+    name: "Effyd Cledyr T1",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_2,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM_2.json",
+    name: "Effyd Cledyr T2",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_3,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM_3.json",
+    name: "Effyd Cledyr T3",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_4,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM_4.json",
+    name: "Effyd Cledyr T4",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_5,
+    equipPosition: EquipPosition.LEFT_HAND,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.MELEE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM_5.json",
+    name: "Effyd Cledyr T5",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_FRAGMENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM_FRAGMENT.json",
+    name: "Orcalith Cledyr Fragment",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_INFUSED,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "DAGGER_007_ORICHALCUM_INFUSED.json",
+    name: "Infused Orcalith Cledyr",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 1,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "EDIBLES_001_WILD_STRAWBERRY.json",
+    name: "Wild Strawberry",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.EDIBLES_002_WILD_CHERRY,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 4,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "EDIBLES_002_WILD_CHERRY.json",
+    name: "Wild Cherries",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.EDIBLES_003_WILD_CARROT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 8,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "EDIBLES_003_WILD_CARROT.json",
+    name: "Wild Carrot",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.EDIBLES_004_RED_APPLE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 14,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "EDIBLES_004_RED_APPLE.json",
+    name: "Red Apple",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.EDIBLES_005_PEACH,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 18,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "EDIBLES_005_PEACH.json",
+    name: "Peach",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 24,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "EDIBLES_006_ELDER_BERRIES.json",
+    name: "Elder Berries",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.EDIBLES_007_HONEY,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 46,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "EDIBLES_007_HONEY.json",
+    name: "Honey",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.FERTILE_SOIL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "FERTILE_SOIL.json",
+    name: "Fertile Soil",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.FOOLS_BERRY_EXTRACT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "FOOLS_BERRY_EXTRACT.json",
+    name: "Fools Berry Extract",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.GOLDEN_SCARAB,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "GOLDEN_SCARAB.json",
+    name: "Golden Scarab",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_001_GLIMMER_LEAF,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_001_GLIMMER_LEAF.json",
+    name: "Glimmer Leaf",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_002_RIPARIS,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_002_RIPARIS.json",
+    name: "Riparis",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_003_SHIMMERWEED,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_003_SHIMMERWEED.json",
+    name: "Shimmerweed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_004_FROST_BLOSSOM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_004_FROST_BLOSSOM.json",
+    name: "Frost Blossom",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_005_STYRGARM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_005_STYRGARM.json",
+    name: "Styrgarm",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_006_ORNFLOWER,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_006_ORNFLOWER.json",
+    name: "Ornflower",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_007_BLOMSBRYD,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_007_BLOMSBRYD.json",
+    name: "Blomsbryd",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_008_PURPERELLA,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_008_PURPERELLA.json",
+    name: "Purperella",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_009_LYFBLOOM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_009_LYFBLOOM.json",
+    name: "Lyfbloom",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_010_FOOLS_BERRY,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_010_FOOLS_BERRY.json",
+    name: "Fool's Berry",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_011_LUMELILA,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_011_LUMELILA.json",
+    name: "Lumelila",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_012_WIDOWS_CHERRIES.json",
+    name: "Widow's Cherries",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_013_LINDWYN_BERRIES,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_013_LINDWYN_BERRIES.json",
+    name: "Lindwyn Berries",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_014_ALDERSKORN_BERRIES.json",
+    name: "Alderskorn Berries",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.HERB_015_EVIGOR_FRUIT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "HERB_015_EVIGOR_FRUIT.json",
+    name: "Evigor Fruit",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.KEY_001_OMNI,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "KEY_001_OMNI.json",
+    name: "Omni Key",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.LUMELILA_TOXIN,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "LUMELILA_TOXIN.json",
+    name: "Lumelila Toxin",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.NAIL_001_MITHRIL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "NAIL_001_MITHRIL.json",
+    name: "Mithril Nail",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.NAIL_002_RUNITE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "NAIL_002_RUNITE.json",
+    name: "Runite Nail",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.NAIL_003_ORICHALCUM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "NAIL_003_ORICHALCUM.json",
+    name: "Orichalcum Nail",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.PLANK_001_SMALL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "PLANK_001_SMALL.json",
+    name: "Small Plank",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.PLANK_002_MEDIUM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "PLANK_002_MEDIUM.json",
+    name: "Medium Plank",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.PLANK_003_LARGE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "PLANK_003_LARGE.json",
+    name: "Large Plank",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.PLOT_001_SMALL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "PLOT_001_SMALL.json",
+    name: "Small Plot",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.PLOT_002_MEDIUM,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "PLOT_002_MEDIUM.json",
+    name: "Medium Plot",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.PLOT_003_LARGE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "PLOT_003_LARGE.json",
+    name: "Large Plot",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_001_SMALL_HEALING,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 100,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "POTION_001_SMALL_HEALING.json",
+    name: "Healing Potion S",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_002_MEDIUM_HEALING,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 180,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "POTION_002_MEDIUM_HEALING.json",
+    name: "Healing Potion M",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_003_LARGE_HEALING,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 270,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "POTION_003_LARGE_HEALING.json",
+    name: "Healing Potion L",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_004_EXTRA_LARGE_HEALING,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 350,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "POTION_004_EXTRA_LARGE_HEALING.json",
+    name: "Healing Potion XL",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 10,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_005_SMALL_MELEE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_005_SMALL_MELEE.json",
+    name: "Melee Boost Potion S",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 30,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_006_LARGE_MELEE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_006_LARGE_MELEE.json",
+    name: "Melee Boost Potion L",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 10,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_007_SMALL_RANGED,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_007_SMALL_RANGED.json",
+    name: "Ranged Boost Potion S",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 30,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_008_LARGE_RANGED,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_008_LARGE_RANGED.json",
+    name: "Ranged Boost Potion L",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 10,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_009_SMALL_MAGIC,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_009_SMALL_MAGIC.json",
+    name: "Magic Boost Potion S",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 30,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_010_LARGE_MAGIC,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_010_LARGE_MAGIC.json",
+    name: "Magic Boost Potion L",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 10,
+      magicDefence: 10,
+      rangedDefence: 10,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_011_SMALL_DEFENCE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_011_SMALL_DEFENCE.json",
+    name: "Defence Boost Potion S",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 40,
+      magicDefence: 40,
+      rangedDefence: 40,
+      health: 0
+    },
+    tokenId: EstforConstants.POTION_012_LARGE_DEFENCE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_012_LARGE_DEFENCE.json",
+    name: "Defence Boost Potion L",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 65
+    },
+    tokenId: EstforConstants.POTION_013_SMALL_HEALTH,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_013_SMALL_HEALTH.json",
+    name: "Health Boost Potion S",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 220
+    },
+    tokenId: EstforConstants.POTION_014_LARGE_HEALTH,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.COMBAT_FIXED,
+    boostValue: 0,
+    boostDuration: 86400,
+    metadataURI: "POTION_014_LARGE_HEALTH.json",
+    name: "Health Boost Potion L",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_001_WILD,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_001_WILD.json",
+    name: "Wild Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_001_WILD_HARVESTABLE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_001_WILD_HARVESTABLE.json",
+    name: "Harvestable Wild Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_002_UNKNOWN,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_002_UNKNOWN.json",
+    name: "Unknown Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_002_UNKNOWN_HARVESTABLE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_002_UNKNOWN_HARVESTABLE.json",
+    name: "Harvestable Wild Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_003_MYSTERIOUS,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_003_MYSTERIOUS.json",
+    name: "Mysterious Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_003_MYSTERIOUS_HARVESTABLE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_003_MYSTERIOUS_HARVESTABLE.json",
+    name: "Harvestable Wild Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_004_OBSCURE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_004_OBSCURE.json",
+    name: "Obscure Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_004_OBSCURE_HARVESTABLE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_004_OBSCURE_HARVESTABLE.json",
+    name: "Harvestable Wild Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_005_ANCIENT,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_005_ANCIENT.json",
+    name: "Ancient Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SEED_005_ANCIENT_HARVESTABLE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SEED_005_ANCIENT_HARVESTABLE.json",
+    name: "Harvestable Wild Seed",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SHARD_001_PRIMORDIAL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SHARD_001_PRIMORDIAL.json",
+    name: "Primordial Shard",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SHARD_002_AETHER,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SHARD_002_AETHER.json",
+    name: "Aether Shard",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SHARD_003_ARCANE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SHARD_003_ARCANE.json",
+    name: "Arcane Shard",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SHARD_004_ASTRAL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SHARD_004_ASTRAL.json",
+    name: "Astral Shard",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SHARD_005_VOID,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SHARD_005_VOID.json",
+    name: "Void Shard",
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SHARD_006_OMNI,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: true,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SHARD_006_OMNI.json",
+    name: "Omni Shard",
+    isAvailable: true,
+    questPrerequisiteId: 0
   }
 ];

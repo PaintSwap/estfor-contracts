@@ -14,7 +14,7 @@ enum BoostType {
   PVP_REATTACK,
   PVP_SUPER_ATTACK,
   // Combat stats
-  COMBAT_STATS
+  COMBAT_FIXED
 }
 
 struct Equipment {

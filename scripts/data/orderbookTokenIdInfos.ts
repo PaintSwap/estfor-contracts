@@ -773,7 +773,22 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     minQuantity: "1"
   },
   {
+    tokenId: EstforConstants.MAGIC_NET,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
     tokenId: EstforConstants.WOOD_FISHING_ROD,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.TITANIUM_FISHING_ROD,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HARPOON,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
   },
@@ -963,6 +978,36 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     minQuantity: "1"
   },
   {
+    tokenId: EstforConstants.RAW_SPHINX_FISH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.RAW_SHAW,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.RAW_VANISHING_PERCH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.RAW_VIPER_BASS,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.RAW_WATER_SERPENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.RAW_WHISKFIN,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
     tokenId: EstforConstants.COOKED_MINNUS,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
@@ -1059,6 +1104,36 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
   },
   {
     tokenId: EstforConstants.COOKED_ROSEFIN,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.COOKED_SPHINX_FISH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.COOKED_SHAW,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.COOKED_VANISHING_PERCH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.COOKED_VIPER_BASS,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.COOKED_WATER_SERPENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.COOKED_WHISKFIN,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
   },
@@ -2564,6 +2639,721 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
   },
   {
     tokenId: EstforConstants.FANGENSTORM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_001_V1,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_002_V2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_003_V3,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_004_V4,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_005_V5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_001,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_002,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_003,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_004,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_005,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BLUEPRINT_HARVEST_006,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_001_BRONZE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_001_BRONZE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_002_IRON,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_002_IRON_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_003_MITHRIL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_003_MITHRIL_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_004_ADAMANTINE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_004_ADAMANTINE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_005_RUNITE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_005_RUNITE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_006_TITANIUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_006_TITANIUM_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_1,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_3,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_4,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CHARCOAL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CHEST_001_PRIMORDIAL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CHEST_002_AETHER,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CHEST_003_ARCANE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CHEST_004_ASTRAL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CHEST_005_VOID,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_001_BRONZE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_001_BRONZE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_002_IRON,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_002_IRON_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_003_MITHRIL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_003_MITHRIL_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_004_ADAMANTINE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_004_ADAMANTINE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_005_RUNITE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_005_RUNITE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_006_TITANIUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_006_TITANIUM_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_1,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_3,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_4,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_001_BRONZE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_001_BRONZE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_002_IRON,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_002_IRON_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_003_MITHRIL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_003_MITHRIL_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_004_ADAMANTINE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_004_ADAMANTINE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_005_RUNITE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_005_RUNITE_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_006_TITANIUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_006_TITANIUM_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_1,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_3,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_4,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_FRAGMENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.DAGGER_007_ORICHALCUM_INFUSED,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.EDIBLES_002_WILD_CHERRY,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.EDIBLES_003_WILD_CARROT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.EDIBLES_004_RED_APPLE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.EDIBLES_005_PEACH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.EDIBLES_007_HONEY,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.FERTILE_SOIL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.FOOLS_BERRY_EXTRACT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.GOLDEN_SCARAB,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_001_GLIMMER_LEAF,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_002_RIPARIS,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_003_SHIMMERWEED,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_004_FROST_BLOSSOM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_005_STYRGARM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_006_ORNFLOWER,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_007_BLOMSBRYD,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_008_PURPERELLA,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_009_LYFBLOOM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_010_FOOLS_BERRY,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_011_LUMELILA,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_013_LINDWYN_BERRIES,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.HERB_015_EVIGOR_FRUIT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.KEY_001_OMNI,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.LUMELILA_TOXIN,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.NAIL_001_MITHRIL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.NAIL_002_RUNITE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.NAIL_003_ORICHALCUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.PLANK_001_SMALL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.PLANK_002_MEDIUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.PLANK_003_LARGE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.PLOT_001_SMALL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.PLOT_002_MEDIUM,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.PLOT_003_LARGE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_001_SMALL_HEALING,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_002_MEDIUM_HEALING,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_003_LARGE_HEALING,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_004_EXTRA_LARGE_HEALING,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_005_SMALL_MELEE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_006_LARGE_MELEE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_007_SMALL_RANGED,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_008_LARGE_RANGED,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_009_SMALL_MAGIC,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_010_LARGE_MAGIC,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_011_SMALL_DEFENCE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_012_LARGE_DEFENCE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_013_SMALL_HEALTH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.POTION_014_LARGE_HEALTH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_001_WILD,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_001_WILD_HARVESTABLE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_002_UNKNOWN,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_002_UNKNOWN_HARVESTABLE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_003_MYSTERIOUS,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_003_MYSTERIOUS_HARVESTABLE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_004_OBSCURE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_004_OBSCURE_HARVESTABLE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_005_ANCIENT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SEED_005_ANCIENT_HARVESTABLE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SHARD_001_PRIMORDIAL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SHARD_002_AETHER,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SHARD_003_ARCANE,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SHARD_004_ASTRAL,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SHARD_005_VOID,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SHARD_006_OMNI,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
   }

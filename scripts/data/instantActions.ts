@@ -10,9 +10,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_HELMET,
@@ -23,9 +23,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_HELMET,
@@ -36,9 +36,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_HELMET,
@@ -49,9 +49,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_HELMET,
@@ -62,9 +62,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_HELMET,
@@ -75,9 +75,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET,
@@ -88,9 +88,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 11,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_ARMOR,
@@ -101,9 +101,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_ARMOR,
@@ -114,9 +114,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_ARMOR,
@@ -127,9 +127,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_ARMOR,
@@ -140,9 +140,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_ARMOR,
@@ -153,9 +153,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_ARMOR,
@@ -166,9 +166,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 13,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR,
@@ -179,9 +179,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 19,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_TASSETS,
@@ -192,9 +192,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_TASSETS,
@@ -205,9 +205,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_TASSETS,
@@ -218,9 +218,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_TASSETS,
@@ -231,9 +231,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_TASSETS,
@@ -244,9 +244,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_TASSETS,
@@ -257,9 +257,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS,
@@ -270,9 +270,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 11,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_GAUNTLETS,
@@ -283,9 +283,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_GAUNTLETS,
@@ -296,9 +296,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_GAUNTLETS,
@@ -309,9 +309,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_GAUNTLETS,
@@ -322,9 +322,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_GAUNTLETS,
@@ -335,9 +335,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_GAUNTLETS,
@@ -348,9 +348,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS,
@@ -361,9 +361,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_BOOTS,
@@ -374,9 +374,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_BOOTS,
@@ -387,9 +387,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_BOOTS,
@@ -400,9 +400,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_BOOTS,
@@ -413,9 +413,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_BOOTS,
@@ -426,9 +426,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_BOOTS,
@@ -439,9 +439,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS,
@@ -452,9 +452,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_SHIELD,
@@ -465,9 +465,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_SHIELD,
@@ -478,9 +478,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_SHIELD,
@@ -491,9 +491,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_SHIELD,
@@ -504,9 +504,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_SHIELD,
@@ -517,9 +517,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 9,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_SHIELD,
@@ -530,9 +530,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD,
@@ -543,9 +543,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 23,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_SWORD,
@@ -556,9 +556,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_SWORD,
@@ -569,9 +569,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_SWORD,
@@ -582,9 +582,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_SWORD,
@@ -595,9 +595,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_SWORD,
@@ -608,9 +608,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD,
@@ -621,9 +621,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SAPPHIRE_AMULET,
@@ -634,9 +634,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EMERALD_AMULET,
@@ -647,9 +647,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUBY_AMULET,
@@ -660,9 +660,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AMETHYST_AMULET,
@@ -673,9 +673,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DIAMOND_AMULET,
@@ -686,9 +686,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET,
@@ -699,9 +699,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_HAT,
@@ -712,9 +712,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_HOOD,
@@ -725,9 +725,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_HAT,
@@ -738,9 +738,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_HOOD,
@@ -751,9 +751,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_HOOD,
@@ -764,9 +764,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT,
@@ -777,9 +777,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 24,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_BODY,
@@ -790,9 +790,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_BODY,
@@ -803,9 +803,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_BODY,
@@ -816,9 +816,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_BODY,
@@ -829,9 +829,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_BODY,
@@ -842,9 +842,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY,
@@ -855,9 +855,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 12,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_TROUSERS,
@@ -868,9 +868,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_TROUSERS,
@@ -881,9 +881,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_TROUSERS,
@@ -894,9 +894,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_TROUSERS,
@@ -907,9 +907,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_TROUSERS,
@@ -920,9 +920,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS,
@@ -933,9 +933,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 30,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_GAUNTLETS,
@@ -946,9 +946,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_BRACERS,
@@ -959,9 +959,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_GAUNTLETS,
@@ -972,9 +972,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_BRACERS,
@@ -985,9 +985,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_GAUNTLETS,
@@ -998,9 +998,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS,
@@ -1011,9 +1011,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_APPRENTICE_BOOTS,
@@ -1024,9 +1024,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MAGE_BOOTS,
@@ -1037,9 +1037,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SORCERER_BOOTS,
@@ -1050,9 +1050,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SEERS_BOOTS,
@@ -1063,9 +1063,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHAMAN_BOOTS,
@@ -1076,9 +1076,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS,
@@ -1089,9 +1089,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SAPPHIRE_STAFF,
@@ -1102,9 +1102,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EMERALD_STAFF,
@@ -1115,9 +1115,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUBY_STAFF,
@@ -1128,9 +1128,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AMETHYST_STAFF,
@@ -1141,9 +1141,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DIAMOND_STAFF,
@@ -1154,9 +1154,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF,
@@ -1167,9 +1167,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 30,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_PICKAXE,
@@ -1180,9 +1180,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_PICKAXE,
@@ -1193,9 +1193,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_PICKAXE,
@@ -1206,9 +1206,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_PICKAXE,
@@ -1219,9 +1219,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_PICKAXE,
@@ -1232,9 +1232,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_PICKAXE,
@@ -1245,9 +1245,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_HOOD,
@@ -1258,9 +1258,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_BODY,
@@ -1271,9 +1271,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_TASSETS,
@@ -1284,9 +1284,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_BOOTS,
@@ -1297,9 +1297,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_BRACERS,
@@ -1310,9 +1310,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_HAT,
@@ -1323,9 +1323,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_BODY,
@@ -1336,9 +1336,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 20,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_TROUSERS,
@@ -1349,9 +1349,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 20,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_BOOTS,
@@ -1362,9 +1362,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BAT_WING_BRACERS,
@@ -1375,9 +1375,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_MASK,
@@ -1388,9 +1388,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_BODY,
@@ -1401,9 +1401,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_TROUSERS,
@@ -1414,9 +1414,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_BOOTS,
@@ -1427,9 +1427,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_BRACERS,
@@ -1440,9 +1440,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_AXE,
@@ -1453,9 +1453,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_AXE,
@@ -1466,9 +1466,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_AXE,
@@ -1479,9 +1479,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_AXE,
@@ -1492,9 +1492,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_AXE,
@@ -1505,9 +1505,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_AXE,
@@ -1518,9 +1518,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATUOW_LEATHER,
@@ -1531,9 +1531,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ROPE,
@@ -1544,9 +1544,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SHADOW_SCROLL,
@@ -1557,9 +1557,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NATURE_SCROLL,
@@ -1570,9 +1570,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 3,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AQUA_SCROLL,
@@ -1583,9 +1583,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HELL_SCROLL,
@@ -1596,9 +1596,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 7,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AIR_SCROLL,
@@ -1609,9 +1609,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BARRAGE_SCROLL,
@@ -1622,9 +1622,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 9,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_FREEZE_SCROLL,
@@ -1635,9 +1635,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANCIENT_SCROLL,
@@ -1648,9 +1648,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ACORN_PATCH,
@@ -1661,9 +1661,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_ARROW,
@@ -1674,9 +1674,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_ARROW,
@@ -1687,9 +1687,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_ARROW,
@@ -1700,9 +1700,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_ARROW,
@@ -1713,9 +1713,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_ARROW,
@@ -1726,9 +1726,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_ARROW,
@@ -1739,9 +1739,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARROW,
@@ -1752,9 +1752,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BONE_BOW,
@@ -1765,9 +1765,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_EXPERT_BOW,
@@ -1778,9 +1778,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SPECTRAL_BOW,
@@ -1791,9 +1791,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ICY_BOW,
@@ -1804,9 +1804,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GLITTERING_BOW,
@@ -1817,9 +1817,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW,
@@ -1830,9 +1830,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 30,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_COWL,
@@ -1843,9 +1843,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_BODY,
@@ -1856,9 +1856,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_CHAPS,
@@ -1869,9 +1869,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_BRACERS,
@@ -1882,9 +1882,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_AZAMITE_BOOTS,
@@ -1895,9 +1895,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_COWL,
@@ -1908,9 +1908,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_BODY,
@@ -1921,9 +1921,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_CHAPS,
@@ -1934,9 +1934,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_BRACERS,
@@ -1947,9 +1947,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_HAUBERK_BOOTS,
@@ -1960,9 +1960,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_COWL,
@@ -1973,9 +1973,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_BODY,
@@ -1986,9 +1986,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_CHAPS,
@@ -1999,9 +1999,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_BRACERS,
@@ -2012,9 +2012,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GARAGOS_BOOTS,
@@ -2025,9 +2025,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_COWL,
@@ -2038,9 +2038,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_BODY,
@@ -2051,9 +2051,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_CHAPS,
@@ -2064,9 +2064,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_BRACERS,
@@ -2077,9 +2077,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETERNAL_BOOTS,
@@ -2090,9 +2090,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_COWL,
@@ -2103,9 +2103,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_BODY,
@@ -2116,9 +2116,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_CHAPS,
@@ -2129,9 +2129,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_BRACERS,
@@ -2142,9 +2142,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_REAVER_BOOTS,
@@ -2155,9 +2155,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL,
@@ -2168,9 +2168,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 8,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY,
@@ -2181,9 +2181,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 12,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS,
@@ -2194,9 +2194,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS,
@@ -2207,9 +2207,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 24,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS,
@@ -2220,9 +2220,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 30,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BRONZE_ARROW_HEAD,
@@ -2233,9 +2233,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_IRON_ARROW_HEAD,
@@ -2246,9 +2246,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 2,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MITHRIL_ARROW_HEAD,
@@ -2259,9 +2259,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 4,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMANTINE_ARROW_HEAD,
@@ -2272,9 +2272,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 5,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_RUNITE_ARROW_HEAD,
@@ -2285,9 +2285,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 6,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_TITANIUM_ARROW_HEAD,
@@ -2298,9 +2298,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARROW_HEAD,
@@ -2311,9 +2311,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_BATWING_PATCH,
@@ -2324,9 +2324,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_1,
@@ -2337,9 +2337,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 13,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_1,
@@ -2350,9 +2350,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 21,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_1,
@@ -2363,9 +2363,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 13,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_1,
@@ -2376,9 +2376,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_1,
@@ -2389,9 +2389,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 17,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_1,
@@ -2402,9 +2402,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_1,
@@ -2415,9 +2415,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_1,
@@ -2428,9 +2428,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 17,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_1,
@@ -2441,9 +2441,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 26,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_1,
@@ -2454,9 +2454,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 14,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_1,
@@ -2467,9 +2467,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 32,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_1,
@@ -2480,9 +2480,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_1,
@@ -2493,9 +2493,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_1,
@@ -2506,9 +2506,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 32,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_1,
@@ -2519,9 +2519,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 32,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_1,
@@ -2532,9 +2532,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_1,
@@ -2545,9 +2545,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 14,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_1,
@@ -2558,9 +2558,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_1,
@@ -2571,9 +2571,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 26,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_1,
@@ -2584,9 +2584,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 32,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_2,
@@ -2597,9 +2597,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_2,
@@ -2610,9 +2610,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 23,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_2,
@@ -2623,9 +2623,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 15,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_2,
@@ -2636,9 +2636,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 12,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_2,
@@ -2649,9 +2649,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 19,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_2,
@@ -2662,9 +2662,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 27,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_2,
@@ -2675,9 +2675,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 12,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_2,
@@ -2688,9 +2688,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 19,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_2,
@@ -2701,9 +2701,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 28,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_2,
@@ -2714,9 +2714,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_2,
@@ -2727,9 +2727,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 34,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_2,
@@ -2740,9 +2740,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 20,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_2,
@@ -2753,9 +2753,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 12,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_2,
@@ -2766,9 +2766,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 34,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_2,
@@ -2779,9 +2779,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 34,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_2,
@@ -2792,9 +2792,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 12,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_2,
@@ -2805,9 +2805,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_2,
@@ -2818,9 +2818,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 20,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_2,
@@ -2831,9 +2831,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 28,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_2,
@@ -2844,9 +2844,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 34,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_3,
@@ -2857,9 +2857,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 17,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_3,
@@ -2870,9 +2870,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_3,
@@ -2883,9 +2883,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 17,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_3,
@@ -2896,9 +2896,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 14,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_3,
@@ -2909,9 +2909,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 21,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_3,
@@ -2922,9 +2922,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 29,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_3,
@@ -2935,9 +2935,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 14,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_3,
@@ -2948,9 +2948,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 21,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_3,
@@ -2961,9 +2961,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 30,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_3,
@@ -2974,9 +2974,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_3,
@@ -2987,9 +2987,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 36,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_3,
@@ -3000,9 +3000,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 22,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_3,
@@ -3013,9 +3013,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 14,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_3,
@@ -3026,9 +3026,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 36,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_3,
@@ -3039,9 +3039,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 36,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_3,
@@ -3052,9 +3052,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 14,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_3,
@@ -3065,9 +3065,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_3,
@@ -3078,9 +3078,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 22,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_3,
@@ -3091,9 +3091,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 30,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_3,
@@ -3104,9 +3104,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 36,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_4,
@@ -3117,9 +3117,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 19,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_4,
@@ -3130,9 +3130,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 27,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_4,
@@ -3143,9 +3143,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 19,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_4,
@@ -3156,9 +3156,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_4,
@@ -3169,9 +3169,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 23,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_4,
@@ -3182,9 +3182,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 31,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_4,
@@ -3195,9 +3195,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_4,
@@ -3208,9 +3208,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 23,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_4,
@@ -3221,9 +3221,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 32,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_4,
@@ -3234,9 +3234,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 20,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_4,
@@ -3247,9 +3247,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 38,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_4,
@@ -3260,9 +3260,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 24,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_4,
@@ -3273,9 +3273,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_4,
@@ -3286,9 +3286,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 38,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_4,
@@ -3299,9 +3299,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 38,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_4,
@@ -3312,9 +3312,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 16,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_4,
@@ -3325,9 +3325,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 20,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_4,
@@ -3338,9 +3338,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 24,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_4,
@@ -3351,9 +3351,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 32,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_4,
@@ -3364,9 +3364,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 38,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_HELMET_5,
@@ -3377,9 +3377,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 21,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_ARMOR_5,
@@ -3390,9 +3390,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 29,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_TASSETS_5,
@@ -3403,9 +3403,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 21,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_GAUNTLETS_5,
@@ -3416,9 +3416,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_BOOTS_5,
@@ -3429,9 +3429,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SHIELD_5,
@@ -3442,9 +3442,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 33,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ORICHALCUM_SWORD_5,
@@ -3455,9 +3455,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_AMULET_5,
@@ -3468,9 +3468,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_HAT_5,
@@ -3481,9 +3481,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 34,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BODY_5,
@@ -3494,9 +3494,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 22,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_TROUSERS_5,
@@ -3507,9 +3507,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 40,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BRACERS_5,
@@ -3520,9 +3520,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 26,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_MASTER_BOOTS_5,
@@ -3533,9 +3533,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_DRAGONSTONE_STAFF_5,
@@ -3546,9 +3546,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 40,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_GODLY_BOW_5,
@@ -3559,9 +3559,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 40,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_COWL_5,
@@ -3572,9 +3572,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 18,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_5,
@@ -3585,9 +3585,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 22,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_5,
@@ -3598,9 +3598,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 26,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_5,
@@ -3611,9 +3611,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 34,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_5,
@@ -3624,9 +3624,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 40,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_PANGSTEN_RING,
@@ -3637,9 +3637,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_CANVITE_RING,
@@ -3650,9 +3650,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 10,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ETCHED_RING,
@@ -3663,9 +3663,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_PRIMDIAT_RING,
@@ -3676,9 +3676,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_OCULITE_RING,
@@ -3689,9 +3689,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 25,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_NOVIAN_RING,
@@ -3702,9 +3702,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.TINY_ELIXIUM,
     outputAmount: 40,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
-    actionType: InstantActionType.FORGING_COMBINE
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_HELMET,
@@ -3715,9 +3715,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_ARMOR,
@@ -3728,9 +3728,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_TASSETS,
@@ -3741,9 +3741,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_GAUNTLETS,
@@ -3754,9 +3754,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_BOOTS,
@@ -3767,9 +3767,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_SHIELD,
@@ -3780,9 +3780,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORICHALCUM_SWORD,
@@ -3793,9 +3793,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_DRAGONSTONE_AMULET,
@@ -3806,9 +3806,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_HAT,
@@ -3819,9 +3819,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_HAT,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_BODY,
@@ -3832,9 +3832,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_BODY,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_BRACERS,
@@ -3845,9 +3845,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_BRACERS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_TROUSERS,
@@ -3858,9 +3858,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_TROUSERS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_MASTER_BOOTS,
@@ -3871,9 +3871,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_MASTER_BOOTS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_DRAGONSTONE_STAFF,
@@ -3884,9 +3884,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.DRAGONSTONE_STAFF,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_COWL,
@@ -3897,9 +3897,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_COWL,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_BODY,
@@ -3910,9 +3910,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_BODY,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_BRACERS,
@@ -3923,9 +3923,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_BRACERS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_CHAPS,
@@ -3936,9 +3936,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_CHAPS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SCORCHING_BOOTS,
@@ -3949,9 +3949,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.INFUSED_SCORCHING_BOOTS,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FLETCHING_GODLY_BOW,
@@ -3962,9 +3962,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.GODLY_BOW,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: true,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_CHEST,
@@ -3975,9 +3975,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.ANNIV1_CHEST,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_KEY,
@@ -3988,9 +3988,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.ANNIV1_KEY,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_RING,
@@ -4001,9 +4001,9 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.ANNIV1_RING,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV1_EGG_TIER1,
@@ -4014,8 +4014,853 @@ export const allInstantActions: InstantActionInput[] = [
     outputTokenId: EstforConstants.ANNIV1_EGG_TIER1,
     outputAmount: 1,
     isFullModeOnly: true,
-    questPrerequisiteId: 0,
+    actionType: InstantActionType.GENERIC,
     isAvailable: false,
-    actionType: InstantActionType.GENERIC
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_LIFFYN,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [25],
+    outputTokenId: EstforConstants.LIFFYN,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_VANAGLOT,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [25],
+    outputTokenId: EstforConstants.VANAGLOT,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_FANGENSTORM,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [25],
+    outputTokenId: EstforConstants.FANGENSTORM,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_RING,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [25],
+    outputTokenId: EstforConstants.RING_OF_TUR,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_AMULET,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [25],
+    outputTokenId: EstforConstants.KEPHRI_AMULET,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_TRICK_CHEST,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [3],
+    outputTokenId: EstforConstants.TRICK_CHEST2024,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_TREAT_CHEST,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [3],
+    outputTokenId: EstforConstants.TREAT_CHEST2024,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_TRICK_OR_TREAT_KEY,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [2],
+    outputTokenId: EstforConstants.TRICK_OR_TREAT_KEY,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_SMITHING_EFFYD_CLEDYR,
+    minSkills: [Skill.SMITHING],
+    minXPs: [23681],
+    inputTokenIds: [EstforConstants.DAGGER_001_BRONZE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [20, 10],
+    outputTokenId: EstforConstants.DAGGER_001_BRONZE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_SMITHING_HAEARN_CLEDYR,
+    minSkills: [Skill.SMITHING],
+    minXPs: [68761],
+    inputTokenIds: [EstforConstants.DAGGER_002_IRON_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [20, 20],
+    outputTokenId: EstforConstants.DAGGER_002_IRON,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_SMITHING_ITHRITH_CLEDYR,
+    minSkills: [Skill.SMITHING],
+    minXPs: [195864],
+    inputTokenIds: [EstforConstants.DAGGER_003_MITHRIL_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [30, 40],
+    outputTokenId: EstforConstants.DAGGER_003_MITHRIL,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_SMITHING_ADAMA_CLEDYR,
+    minSkills: [Skill.SMITHING],
+    minXPs: [554828],
+    inputTokenIds: [EstforConstants.DAGGER_004_ADAMANTINE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [30, 80],
+    outputTokenId: EstforConstants.DAGGER_004_ADAMANTINE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_SMITHING_RHUN_CLEDYR,
+    minSkills: [Skill.SMITHING],
+    minXPs: [1109796],
+    inputTokenIds: [EstforConstants.DAGGER_005_RUNITE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [40, 160],
+    outputTokenId: EstforConstants.DAGGER_005_RUNITE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_SMITHING_ITANUS_CLEDYR,
+    minSkills: [Skill.SMITHING],
+    minXPs: [2219452],
+    inputTokenIds: [EstforConstants.DAGGER_006_TITANIUM_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [40, 320],
+    outputTokenId: EstforConstants.DAGGER_006_TITANIUM,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_SMITHING_ORCALITH_CLEDYR,
+    minSkills: [Skill.SMITHING],
+    minXPs: [4438448],
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [40, 640],
+    outputTokenId: EstforConstants.DAGGER_007_ORICHALCUM,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_CRAFTING_GYNDERS_YEFIR,
+    minSkills: [Skill.CRAFTING],
+    minXPs: [23681],
+    inputTokenIds: [EstforConstants.BOOK_001_BRONZE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [20, 10],
+    outputTokenId: EstforConstants.BOOK_001_BRONZE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_CRAFTING_RISGOLRONS_YEFIR,
+    minSkills: [Skill.CRAFTING],
+    minXPs: [68761],
+    inputTokenIds: [EstforConstants.BOOK_002_IRON_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [20, 20],
+    outputTokenId: EstforConstants.BOOK_002_IRON,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_CRAFTING_ERUDIS_YFROL,
+    minSkills: [Skill.CRAFTING],
+    minXPs: [195864],
+    inputTokenIds: [EstforConstants.BOOK_003_MITHRIL_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [30, 40],
+    outputTokenId: EstforConstants.BOOK_003_MITHRIL,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_CRAFTING_STREGARIONS_YFROL,
+    minSkills: [Skill.CRAFTING],
+    minXPs: [554828],
+    inputTokenIds: [EstforConstants.BOOK_004_ADAMANTINE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [30, 80],
+    outputTokenId: EstforConstants.BOOK_004_ADAMANTINE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_CRAFTING_SINLORIONS_WYSGRIF,
+    minSkills: [Skill.CRAFTING],
+    minXPs: [1109796],
+    inputTokenIds: [EstforConstants.BOOK_005_RUNITE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [40, 160],
+    outputTokenId: EstforConstants.BOOK_005_RUNITE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_CRAFTING_HUDOLWYRS_WYSGRIF,
+    minSkills: [Skill.CRAFTING],
+    minXPs: [2219452],
+    inputTokenIds: [EstforConstants.BOOK_006_TITANIUM_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [40, 320],
+    outputTokenId: EstforConstants.BOOK_006_TITANIUM,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_CRAFTING_ORLARIONS_WYSGRIF,
+    minSkills: [Skill.CRAFTING],
+    minXPs: [4438448],
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [80, 640],
+    outputTokenId: EstforConstants.BOOK_007_ORICHALCUM,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FLETCHING_EFFYD_KIEL,
+    minSkills: [Skill.FLETCHING],
+    minXPs: [23681],
+    inputTokenIds: [EstforConstants.CROSSBOW_001_BRONZE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [20, 10],
+    outputTokenId: EstforConstants.CROSSBOW_001_BRONZE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FLETCHING_HAEARN_KIEL,
+    minSkills: [Skill.FLETCHING],
+    minXPs: [68761],
+    inputTokenIds: [EstforConstants.CROSSBOW_002_IRON_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [20, 20],
+    outputTokenId: EstforConstants.CROSSBOW_002_IRON,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FLETCHING_ITHRITH_KIEL,
+    minSkills: [Skill.FLETCHING],
+    minXPs: [195864],
+    inputTokenIds: [EstforConstants.CROSSBOW_003_MITHRIL_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [30, 40],
+    outputTokenId: EstforConstants.CROSSBOW_003_MITHRIL,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FLETCHING_ADAMA_KIEL,
+    minSkills: [Skill.FLETCHING],
+    minXPs: [554828],
+    inputTokenIds: [EstforConstants.CROSSBOW_004_ADAMANTINE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [30, 80],
+    outputTokenId: EstforConstants.CROSSBOW_004_ADAMANTINE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FLETCHING_RHUN_KIEL,
+    minSkills: [Skill.FLETCHING],
+    minXPs: [1109796],
+    inputTokenIds: [EstforConstants.CROSSBOW_005_RUNITE_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [40, 160],
+    outputTokenId: EstforConstants.CROSSBOW_005_RUNITE,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FLETCHING_VINGET_KIEL,
+    minSkills: [Skill.FLETCHING],
+    minXPs: [2219452],
+    inputTokenIds: [EstforConstants.CROSSBOW_006_TITANIUM_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [40, 320],
+    outputTokenId: EstforConstants.CROSSBOW_006_TITANIUM,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FLETCHING_DEUION_KIEL,
+    minSkills: [Skill.FLETCHING],
+    minXPs: [4438448],
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM_FRAGMENT, EstforConstants.FLUX],
+    inputAmounts: [80, 640],
+    outputTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [1021, 23681],
+    inputTokenIds: [EstforConstants.DAGGER_001_BRONZE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 2,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_HAEARN_CLEDYR,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [3236, 68761],
+    inputTokenIds: [EstforConstants.DAGGER_002_IRON],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 3,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ITHRITH_CLEDYR,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [11294, 195864],
+    inputTokenIds: [EstforConstants.DAGGER_003_MITHRIL],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 6,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMA_CLEDYR,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [23681, 554828],
+    inputTokenIds: [EstforConstants.DAGGER_004_ADAMANTINE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 8,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_RHUN_CLEDYR,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [68761, 1109796],
+    inputTokenIds: [EstforConstants.DAGGER_005_RUNITE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 9,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ITANUS_CLEDYR,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [138307, 2219452],
+    inputTokenIds: [EstforConstants.DAGGER_006_TITANIUM],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 15,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ORCALITH_CLEDYR,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 23,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_KIEL,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [1021, 23681],
+    inputTokenIds: [EstforConstants.CROSSBOW_001_BRONZE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 2,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_HAEARN_KIEL,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [3236, 68761],
+    inputTokenIds: [EstforConstants.CROSSBOW_002_IRON],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 3,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ITHRITH_KIEL,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [11294, 195864],
+    inputTokenIds: [EstforConstants.CROSSBOW_003_MITHRIL],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 6,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ADAMA_KIEL,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [23681, 554828],
+    inputTokenIds: [EstforConstants.CROSSBOW_004_ADAMANTINE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 8,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_RHUN_KIEL,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [68761, 1109796],
+    inputTokenIds: [EstforConstants.CROSSBOW_005_RUNITE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 9,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_VINGET_KIEL,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [138307, 2219452],
+    inputTokenIds: [EstforConstants.CROSSBOW_006_TITANIUM],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 15,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 23,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_GYNDERS_YEFIR,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [1021, 23681],
+    inputTokenIds: [EstforConstants.BOOK_001_BRONZE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 2,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_RISGOLRONS_YEFIR,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [3236, 68761],
+    inputTokenIds: [EstforConstants.BOOK_002_IRON],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 3,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ERUDIS_YFROL,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [11294, 195864],
+    inputTokenIds: [EstforConstants.BOOK_003_MITHRIL],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 6,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_STREGARIONS_YFROL,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [23681, 554828],
+    inputTokenIds: [EstforConstants.BOOK_004_ADAMANTINE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 8,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_SINLORIONS_WYSGRIF,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [68761, 1109796],
+    inputTokenIds: [EstforConstants.BOOK_005_RUNITE],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 9,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_HUDOLWYRS_WYSGRIF,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [138307, 2219452],
+    inputTokenIds: [EstforConstants.BOOK_006_TITANIUM],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 15,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 23,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_1,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM_1],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 25,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_2,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM_2],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 27,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_3,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM_3],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 29,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_4,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM_4],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 31,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_EFFYD_CLEDYR_5,
+    minSkills: [Skill.FORGING, Skill.SMITHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM_5],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 33,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_1,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM_1],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 25,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_2,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM_2],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 27,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_3,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM_3],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 29,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_4,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM_4],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 31,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_DEUION_KIEL_5,
+    minSkills: [Skill.FORGING, Skill.FLETCHING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM_5],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 33,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_1,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM_1],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 25,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_2,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM_2],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 27,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_3,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM_3],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 29,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_4,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM_4],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 31,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ODLARIONS_WYSGRIF_5,
+    minSkills: [Skill.FORGING, Skill.CRAFTING],
+    minXPs: [277219, 4438448],
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM_5],
+    inputAmounts: [1],
+    outputTokenId: EstforConstants.TINY_ELIXIUM,
+    outputAmount: 33,
+    isFullModeOnly: true,
+    actionType: InstantActionType.FORGING_COMBINE,
+    isAvailable: true,
+    questPrerequisiteId: 0
   }
 ];

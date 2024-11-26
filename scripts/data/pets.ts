@@ -2,7 +2,6 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 import {BasePetInput, PetEnhancementType, PetSkin, Skill} from "@paintswap/estfor-definitions/types";
 export const allBasePets: BasePetInput[] = [
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER1,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
@@ -18,10 +17,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER2,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
@@ -37,10 +36,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER3,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
@@ -56,10 +55,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [20, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
-    percentageStarThreshold: 18
+    percentageStarThreshold: 18,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER4,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
@@ -75,10 +74,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [25, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER5,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows.",
@@ -94,10 +93,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER1,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
@@ -113,10 +112,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER2,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
@@ -132,10 +131,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER3,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
@@ -151,10 +150,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [20, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
-    percentageStarThreshold: 18
+    percentageStarThreshold: 18,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER4,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
@@ -170,10 +169,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [25, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER5,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities.",
@@ -189,10 +188,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER1,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
@@ -208,10 +207,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER2,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
@@ -227,10 +226,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER3,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
@@ -246,10 +245,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [20, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
-    percentageStarThreshold: 18
+    percentageStarThreshold: 18,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER4,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
@@ -265,10 +264,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [25, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER5,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat.",
@@ -284,10 +283,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER1,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
@@ -303,10 +302,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER2,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
@@ -322,10 +321,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER3,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
@@ -341,10 +340,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [20, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
-    percentageStarThreshold: 18
+    percentageStarThreshold: 18,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER4,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
@@ -360,10 +359,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [25, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER5,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat.",
@@ -379,10 +378,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER1,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
@@ -398,10 +397,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [50, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
-    percentageStarThreshold: 41
+    percentageStarThreshold: 41,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER2,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
@@ -417,10 +416,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [73, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 42,
-    percentageStarThreshold: 60
+    percentageStarThreshold: 60,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER3,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
@@ -436,10 +435,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [100, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 75,
-    percentageStarThreshold: 83
+    percentageStarThreshold: 83,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER4,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
@@ -455,10 +454,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [133, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 109,
-    percentageStarThreshold: 110
+    percentageStarThreshold: 110,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER5,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat.",
@@ -474,10 +473,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [170, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 127,
-    percentageStarThreshold: 141
+    percentageStarThreshold: 141,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER1,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
@@ -493,10 +492,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 5],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER2,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
@@ -512,10 +511,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER3,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
@@ -531,10 +530,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 10],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 18,
-    percentageStarThreshold: 18
+    percentageStarThreshold: 18,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER4,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
@@ -550,10 +549,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER5,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner.",
@@ -569,10 +568,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER1,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
@@ -588,10 +587,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 5],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER2,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
@@ -607,10 +606,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER3,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
@@ -626,10 +625,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 10],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 18,
-    percentageStarThreshold: 18
+    percentageStarThreshold: 18,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER4,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
@@ -645,10 +644,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER5,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat.",
@@ -664,10 +663,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER1,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
@@ -683,10 +682,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 5],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER2,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
@@ -702,10 +701,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER3,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
@@ -721,10 +720,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 10],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 18,
-    percentageStarThreshold: 18
+    percentageStarThreshold: 18,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER4,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
@@ -740,10 +739,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER5,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat.",
@@ -759,10 +758,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_TIER1,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
@@ -778,10 +777,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_TIER2,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
@@ -797,10 +796,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_TIER3,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
@@ -816,10 +815,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_TIER4,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
@@ -835,10 +834,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_TIER5,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. OG Edition",
@@ -854,10 +853,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_TIER1,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
@@ -873,10 +872,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_TIER2,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
@@ -892,10 +891,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_TIER3,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
@@ -911,10 +910,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_TIER4,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
@@ -930,10 +929,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_TIER5,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. OG Edition",
@@ -949,10 +948,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_TIER1,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
@@ -968,10 +967,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_TIER2,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
@@ -987,10 +986,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_TIER3,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
@@ -1006,10 +1005,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_TIER4,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
@@ -1025,10 +1024,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_TIER5,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. OG Edition",
@@ -1044,10 +1043,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_DEFENCE_TIER1,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
@@ -1063,10 +1062,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_DEFENCE_TIER2,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
@@ -1082,10 +1081,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_DEFENCE_TIER3,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
@@ -1101,10 +1100,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_DEFENCE_TIER4,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
@@ -1120,10 +1119,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_DEFENCE_TIER5,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. OG Edition",
@@ -1139,10 +1138,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_HEALTH_TIER1,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
@@ -1158,10 +1157,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [75, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 37,
-    percentageStarThreshold: 61
+    percentageStarThreshold: 61,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_HEALTH_TIER2,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
@@ -1177,10 +1176,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [110, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 62,
-    percentageStarThreshold: 90
+    percentageStarThreshold: 90,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_HEALTH_TIER3,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
@@ -1196,10 +1195,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [150, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 112,
-    percentageStarThreshold: 124
+    percentageStarThreshold: 124,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_HEALTH_TIER4,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
@@ -1215,10 +1214,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [200, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 163,
-    percentageStarThreshold: 165
+    percentageStarThreshold: 165,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_HEALTH_TIER5,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. OG Edition",
@@ -1234,10 +1233,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [255, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 190,
-    percentageStarThreshold: 211
+    percentageStarThreshold: 211,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER1,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
@@ -1253,10 +1252,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER2,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
@@ -1272,10 +1271,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER3,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
@@ -1291,10 +1290,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER4,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
@@ -1310,10 +1309,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 18],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER5,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. OG Edition",
@@ -1329,10 +1328,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 23],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER1,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
@@ -1348,10 +1347,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER2,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
@@ -1367,10 +1366,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER3,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
@@ -1386,10 +1385,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER4,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
@@ -1405,10 +1404,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 18],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER5,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. OG Edition",
@@ -1424,10 +1423,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 23],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER1,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
@@ -1443,10 +1442,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER2,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
@@ -1462,10 +1461,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER3,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
@@ -1481,10 +1480,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER4,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
@@ -1500,10 +1499,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 18],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER5,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. OG Edition",
@@ -1519,10 +1518,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 23],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER1,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
@@ -1538,10 +1537,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER2,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
@@ -1557,10 +1556,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER3,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
@@ -1576,10 +1575,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER4,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
@@ -1595,10 +1594,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER5,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1Kin Edition",
@@ -1614,10 +1613,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [28, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
-    percentageStarThreshold: 25
+    percentageStarThreshold: 25,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER1,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
@@ -1633,10 +1632,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER2,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
@@ -1652,10 +1651,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER3,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
@@ -1671,10 +1670,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER4,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
@@ -1690,10 +1689,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER5,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1Kin Edition",
@@ -1709,10 +1708,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [28, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
-    percentageStarThreshold: 25
+    percentageStarThreshold: 25,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER1,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
@@ -1728,10 +1727,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER2,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
@@ -1747,10 +1746,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER3,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
@@ -1766,10 +1765,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER4,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
@@ -1785,10 +1784,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER5,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1Kin Edition",
@@ -1804,10 +1803,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [28, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
-    percentageStarThreshold: 25
+    percentageStarThreshold: 25,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER1,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
@@ -1823,10 +1822,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER2,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
@@ -1842,10 +1841,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER3,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
@@ -1861,10 +1860,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER4,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
@@ -1880,10 +1879,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER5,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1Kin Edition",
@@ -1899,10 +1898,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [28, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
-    percentageStarThreshold: 25
+    percentageStarThreshold: 25,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER1,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
@@ -1918,10 +1917,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 38
+    percentageStarThreshold: 38,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER2,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
@@ -1937,10 +1936,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [65, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 38,
-    percentageStarThreshold: 55
+    percentageStarThreshold: 55,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER3,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
@@ -1956,10 +1955,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [90, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 67,
-    percentageStarThreshold: 76
+    percentageStarThreshold: 76,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER4,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
@@ -1975,10 +1974,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [125, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 101,
-    percentageStarThreshold: 105
+    percentageStarThreshold: 105,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER5,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1Kin Edition",
@@ -1994,10 +1993,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [160, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 119,
-    percentageStarThreshold: 134
+    percentageStarThreshold: 134,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER1,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
@@ -2013,10 +2012,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [4, 4],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 8
+    percentageStarThreshold: 8,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER2,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
@@ -2032,10 +2031,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [7, 7],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER3,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
@@ -2051,10 +2050,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [9, 9],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 17
+    percentageStarThreshold: 17,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER4,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
@@ -2070,10 +2069,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [11, 11],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER5,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1Kin Edition",
@@ -2089,10 +2088,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 13],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 24,
-    percentageStarThreshold: 24
+    percentageStarThreshold: 24,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER1,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
@@ -2108,10 +2107,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [4, 4],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 8
+    percentageStarThreshold: 8,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER2,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
@@ -2127,10 +2126,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [7, 7],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER3,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
@@ -2146,10 +2145,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [9, 9],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 17
+    percentageStarThreshold: 17,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER4,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
@@ -2165,10 +2164,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [11, 11],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER5,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1Kin Edition",
@@ -2184,10 +2183,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 13],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 24,
-    percentageStarThreshold: 24
+    percentageStarThreshold: 24,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER1,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
@@ -2203,10 +2202,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [4, 4],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 8
+    percentageStarThreshold: 8,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER2,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
@@ -2222,10 +2221,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [7, 7],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER3,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
@@ -2241,10 +2240,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [9, 9],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 17
+    percentageStarThreshold: 17,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER4,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
@@ -2260,10 +2259,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [11, 11],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER5,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1Kin Edition",
@@ -2279,10 +2278,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 13],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 24,
-    percentageStarThreshold: 24
+    percentageStarThreshold: 24,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_TIER1,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
@@ -2298,10 +2297,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 5
+    percentageStarThreshold: 5,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_TIER2,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
@@ -2317,10 +2316,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_TIER3,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
@@ -2336,10 +2335,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_TIER4,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
@@ -2355,10 +2354,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_TIER5,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Frost Edition",
@@ -2374,10 +2373,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_TIER1,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
@@ -2393,10 +2392,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 5
+    percentageStarThreshold: 5,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_TIER2,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
@@ -2412,10 +2411,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_TIER3,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
@@ -2431,10 +2430,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_TIER4,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
@@ -2450,10 +2449,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_TIER5,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Frost Edition",
@@ -2469,10 +2468,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_TIER1,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
@@ -2488,10 +2487,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 5
+    percentageStarThreshold: 5,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_TIER2,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
@@ -2507,10 +2506,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_TIER3,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
@@ -2526,10 +2525,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_TIER4,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
@@ -2545,10 +2544,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_TIER5,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Frost Edition",
@@ -2564,10 +2563,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER1,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
@@ -2583,10 +2582,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 5
+    percentageStarThreshold: 5,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER2,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
@@ -2602,10 +2601,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 7
+    percentageStarThreshold: 7,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER3,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
@@ -2621,10 +2620,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [10, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 9
+    percentageStarThreshold: 9,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER4,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
@@ -2640,10 +2639,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [13, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 12
+    percentageStarThreshold: 12,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER5,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Frost Edition",
@@ -2659,10 +2658,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_HEALTH_TIER1,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
@@ -2678,10 +2677,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [25, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 37,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_HEALTH_TIER2,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
@@ -2697,10 +2696,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [37, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 62,
-    percentageStarThreshold: 31
+    percentageStarThreshold: 31,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_HEALTH_TIER3,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
@@ -2716,10 +2715,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [50, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 112,
-    percentageStarThreshold: 42
+    percentageStarThreshold: 42,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_HEALTH_TIER4,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
@@ -2735,10 +2734,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [67, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 163,
-    percentageStarThreshold: 56
+    percentageStarThreshold: 56,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_HEALTH_TIER5,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Frost Edition",
@@ -2754,10 +2753,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [85, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 190,
-    percentageStarThreshold: 71
+    percentageStarThreshold: 71,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER1,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
@@ -2773,10 +2772,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [3, 3],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 5
+    percentageStarThreshold: 5,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER2,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
@@ -2792,10 +2791,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [4, 4],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 8
+    percentageStarThreshold: 8,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER3,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
@@ -2811,10 +2810,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 5],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 10
+    percentageStarThreshold: 10,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER4,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
@@ -2830,10 +2829,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [6, 6],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 11
+    percentageStarThreshold: 11,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER5,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Frost Edition",
@@ -2849,10 +2848,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 41,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER1,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
@@ -2868,10 +2867,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [3, 3],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 5
+    percentageStarThreshold: 5,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER2,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
@@ -2887,10 +2886,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [4, 4],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 8
+    percentageStarThreshold: 8,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER3,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
@@ -2906,10 +2905,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 5],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 10
+    percentageStarThreshold: 10,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER4,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
@@ -2925,10 +2924,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [6, 6],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 11
+    percentageStarThreshold: 11,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER5,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Frost Edition",
@@ -2944,10 +2943,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 41,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER1,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
@@ -2963,10 +2962,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [3, 3],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 5
+    percentageStarThreshold: 5,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER2,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
@@ -2982,10 +2981,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [4, 4],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 8
+    percentageStarThreshold: 8,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER3,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
@@ -3001,10 +3000,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [5, 5],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 10
+    percentageStarThreshold: 10,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER4,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
@@ -3020,10 +3019,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [6, 6],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 11
+    percentageStarThreshold: 11,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER5,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Frost Edition",
@@ -3039,10 +3038,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 41,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER1,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
@@ -3058,10 +3057,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER2,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
@@ -3077,10 +3076,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER3,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
@@ -3096,10 +3095,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER4,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
@@ -3115,10 +3114,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER5,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Crystal Edition",
@@ -3134,10 +3133,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER1,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
@@ -3153,10 +3152,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER2,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
@@ -3172,10 +3171,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER3,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
@@ -3191,10 +3190,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER4,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
@@ -3210,10 +3209,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER5,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Crystal Edition",
@@ -3229,10 +3228,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER1,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
@@ -3248,10 +3247,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER2,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
@@ -3267,10 +3266,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER3,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
@@ -3286,10 +3285,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER4,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
@@ -3305,10 +3304,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER5,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Crystal Edition",
@@ -3324,10 +3323,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER1,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
@@ -3343,10 +3342,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER2,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
@@ -3362,10 +3361,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER3,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
@@ -3381,10 +3380,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER4,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
@@ -3400,10 +3399,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [38, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER5,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Crystal Edition",
@@ -3419,10 +3418,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [45, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 40
+    percentageStarThreshold: 40,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER1,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
@@ -3438,10 +3437,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [75, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 61
+    percentageStarThreshold: 61,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER2,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
@@ -3457,10 +3456,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [110, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
-    percentageStarThreshold: 90
+    percentageStarThreshold: 90,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER3,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
@@ -3476,10 +3475,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [150, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 38,
-    percentageStarThreshold: 124
+    percentageStarThreshold: 124,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER4,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
@@ -3495,10 +3494,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [200, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 55,
-    percentageStarThreshold: 165
+    percentageStarThreshold: 165,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER5,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Crystal Edition",
@@ -3514,10 +3513,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [255, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 64,
-    percentageStarThreshold: 211
+    percentageStarThreshold: 211,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER1,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
@@ -3533,10 +3532,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 5,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER2,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
@@ -3552,10 +3551,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER3,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
@@ -3571,10 +3570,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 10,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER4,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
@@ -3590,10 +3589,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 18],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 11,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER5,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Crystal Edition",
@@ -3609,10 +3608,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 23],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 41
+    percentageStarThreshold: 41,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER1,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
@@ -3628,10 +3627,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 5,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER2,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
@@ -3647,10 +3646,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER3,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
@@ -3666,10 +3665,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 10,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER4,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
@@ -3685,10 +3684,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 18],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 11,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER5,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Crystal Edition",
@@ -3704,10 +3703,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 23],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 41
+    percentageStarThreshold: 41,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER1,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
@@ -3723,10 +3722,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [8, 8],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 5,
-    percentageStarThreshold: 14
+    percentageStarThreshold: 14,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER2,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
@@ -3742,10 +3741,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 12],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
-    percentageStarThreshold: 21
+    percentageStarThreshold: 21,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER3,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
@@ -3761,10 +3760,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [15, 15],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 10,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER4,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
@@ -3780,10 +3779,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 18],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 11,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: true
   },
   {
-    isTransferable: true,
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER5,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Crystal Edition",
@@ -3799,10 +3798,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [23, 23],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
-    percentageStarThreshold: 41
+    percentageStarThreshold: 41,
+    isTransferable: true
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER1,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1st Anniversary Edition",
@@ -3818,10 +3817,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
-    percentageStarThreshold: 11
+    percentageStarThreshold: 11,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER2,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1st Anniversary Edition",
@@ -3837,10 +3836,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER3,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1st Anniversary Edition",
@@ -3856,10 +3855,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [24, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER4,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1st Anniversary Edition",
@@ -3875,10 +3874,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER5,
     description:
       "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. 1st Anniversary Edition",
@@ -3894,10 +3893,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [36, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER1,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1st Anniversary Edition",
@@ -3913,10 +3912,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
-    percentageStarThreshold: 11
+    percentageStarThreshold: 11,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER2,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1st Anniversary Edition",
@@ -3932,10 +3931,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER3,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1st Anniversary Edition",
@@ -3951,10 +3950,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [24, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER4,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1st Anniversary Edition",
@@ -3970,10 +3969,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER5,
     description:
       "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. 1st Anniversary Edition",
@@ -3989,10 +3988,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [36, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER1,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1st Anniversary Edition",
@@ -4008,10 +4007,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
-    percentageStarThreshold: 11
+    percentageStarThreshold: 11,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER2,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1st Anniversary Edition",
@@ -4027,10 +4026,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER3,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1st Anniversary Edition",
@@ -4046,10 +4045,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [24, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER4,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1st Anniversary Edition",
@@ -4065,10 +4064,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER5,
     description:
       "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. 1st Anniversary Edition",
@@ -4084,10 +4083,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [36, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER1,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1st Anniversary Edition",
@@ -4103,10 +4102,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [12, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
-    percentageStarThreshold: 11
+    percentageStarThreshold: 11,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER2,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1st Anniversary Edition",
@@ -4122,10 +4121,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [18, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
-    percentageStarThreshold: 16
+    percentageStarThreshold: 16,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER3,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1st Anniversary Edition",
@@ -4141,10 +4140,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [24, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
-    percentageStarThreshold: 22
+    percentageStarThreshold: 22,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER4,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1st Anniversary Edition",
@@ -4160,10 +4159,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [30, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 27
+    percentageStarThreshold: 27,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER5,
     description:
       "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. 1st Anniversary Edition",
@@ -4179,10 +4178,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [36, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
-    percentageStarThreshold: 33
+    percentageStarThreshold: 33,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER1,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1st Anniversary Edition",
@@ -4198,10 +4197,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [52, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
-    percentageStarThreshold: 43
+    percentageStarThreshold: 43,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER2,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1st Anniversary Edition",
@@ -4217,10 +4216,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [76, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 45,
-    percentageStarThreshold: 63
+    percentageStarThreshold: 63,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER3,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1st Anniversary Edition",
@@ -4236,10 +4235,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [104, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 79,
-    percentageStarThreshold: 87
+    percentageStarThreshold: 87,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER4,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1st Anniversary Edition",
@@ -4255,10 +4254,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [138, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 114,
-    percentageStarThreshold: 115
+    percentageStarThreshold: 115,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER5,
     description:
       "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. 1st Anniversary Edition",
@@ -4274,10 +4273,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [176, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 133,
-    percentageStarThreshold: 147
+    percentageStarThreshold: 147,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER1,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1st Anniversary Edition",
@@ -4293,10 +4292,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [7, 7],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER2,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1st Anniversary Edition",
@@ -4312,10 +4311,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [11, 11],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER3,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1st Anniversary Edition",
@@ -4331,10 +4330,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [14, 14],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER4,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1st Anniversary Edition",
@@ -4350,10 +4349,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [17, 17],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER5,
     description:
       "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. 1st Anniversary Edition",
@@ -4369,10 +4368,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [21, 21],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
-    percentageStarThreshold: 39
+    percentageStarThreshold: 39,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER1,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1st Anniversary Edition",
@@ -4388,10 +4387,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [7, 7],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER2,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1st Anniversary Edition",
@@ -4407,10 +4406,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [11, 11],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER3,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1st Anniversary Edition",
@@ -4426,10 +4425,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [14, 14],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER4,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1st Anniversary Edition",
@@ -4445,10 +4444,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [17, 17],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER5,
     description:
       "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. 1st Anniversary Edition",
@@ -4464,10 +4463,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [21, 21],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
-    percentageStarThreshold: 39
+    percentageStarThreshold: 39,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER1,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1st Anniversary Edition",
@@ -4483,10 +4482,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [7, 7],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
-    percentageStarThreshold: 13
+    percentageStarThreshold: 13,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER2,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1st Anniversary Edition",
@@ -4502,10 +4501,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [11, 11],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
-    percentageStarThreshold: 20
+    percentageStarThreshold: 20,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER3,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1st Anniversary Edition",
@@ -4521,10 +4520,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [14, 14],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 26
+    percentageStarThreshold: 26,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER4,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1st Anniversary Edition",
@@ -4540,10 +4539,10 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [17, 17],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
-    percentageStarThreshold: 32
+    percentageStarThreshold: 32,
+    isTransferable: false
   },
   {
-    isTransferable: false,
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER5,
     description:
       "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. 1st Anniversary Edition",
@@ -4559,6 +4558,767 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [21, 21],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
-    percentageStarThreshold: 39
+    percentageStarThreshold: 39,
+    isTransferable: false
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER1,
+    description:
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE,
+    skillEnhancements: [Skill.MELEE, Skill.NONE],
+    skillMinLevels: [1, 0],
+    skillFixedMins: [1, 0],
+    skillFixedMaxs: [20, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 17,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER2,
+    description:
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE,
+    skillEnhancements: [Skill.MELEE, Skill.NONE],
+    skillMinLevels: [20, 0],
+    skillFixedMins: [6, 0],
+    skillFixedMaxs: [30, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 26,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER3,
+    description:
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE,
+    skillEnhancements: [Skill.MELEE, Skill.NONE],
+    skillMinLevels: [40, 0],
+    skillFixedMins: [10, 0],
+    skillFixedMaxs: [40, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 35,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER4,
+    description:
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE,
+    skillEnhancements: [Skill.MELEE, Skill.NONE],
+    skillMinLevels: [60, 0],
+    skillFixedMins: [14, 0],
+    skillFixedMaxs: [50, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 44,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER5,
+    description:
+      "A tigret is a loyal companion, serving in its best capacity to extend the reach of its owner. Using its natural agility, the tigret rushes enemy lines, delivering powerful melee blows. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE,
+    skillEnhancements: [Skill.MELEE, Skill.NONE],
+    skillMinLevels: [80, 0],
+    skillFixedMins: [20, 0],
+    skillFixedMaxs: [60, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 53,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER1,
+    description:
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC,
+    skillEnhancements: [Skill.MAGIC, Skill.NONE],
+    skillMinLevels: [1, 0],
+    skillFixedMins: [1, 0],
+    skillFixedMaxs: [20, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 17,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER2,
+    description:
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC,
+    skillEnhancements: [Skill.MAGIC, Skill.NONE],
+    skillMinLevels: [20, 0],
+    skillFixedMins: [6, 0],
+    skillFixedMaxs: [30, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 26,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER3,
+    description:
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC,
+    skillEnhancements: [Skill.MAGIC, Skill.NONE],
+    skillMinLevels: [40, 0],
+    skillFixedMins: [10, 0],
+    skillFixedMaxs: [40, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 35,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER4,
+    description:
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC,
+    skillEnhancements: [Skill.MAGIC, Skill.NONE],
+    skillMinLevels: [60, 0],
+    skillFixedMins: [14, 0],
+    skillFixedMaxs: [50, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 44,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER5,
+    description:
+      "Small but strong, the flitterfly exudes a comforting Primdiat warmth. Mages can harness this to their advantage in a combat situation, boosting their natural magical abilities. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC,
+    skillEnhancements: [Skill.MAGIC, Skill.NONE],
+    skillMinLevels: [80, 0],
+    skillFixedMins: [20, 0],
+    skillFixedMaxs: [60, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 53,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER1,
+    description:
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED,
+    skillEnhancements: [Skill.RANGED, Skill.NONE],
+    skillMinLevels: [1, 0],
+    skillFixedMins: [1, 0],
+    skillFixedMaxs: [20, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 17,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER2,
+    description:
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED,
+    skillEnhancements: [Skill.RANGED, Skill.NONE],
+    skillMinLevels: [20, 0],
+    skillFixedMins: [6, 0],
+    skillFixedMaxs: [30, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 26,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER3,
+    description:
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED,
+    skillEnhancements: [Skill.RANGED, Skill.NONE],
+    skillMinLevels: [40, 0],
+    skillFixedMins: [10, 0],
+    skillFixedMaxs: [40, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 35,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER4,
+    description:
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED,
+    skillEnhancements: [Skill.RANGED, Skill.NONE],
+    skillMinLevels: [60, 0],
+    skillFixedMins: [14, 0],
+    skillFixedMaxs: [50, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 44,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER5,
+    description:
+      "Beautiful and dangerous, the humfinch is highly sought after among the Rangers of Estfor Kingdom. It flashes out of sight and into the sky quicker than the eye can follow. Just as swiftly, it descends upon the enemy in combat. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED,
+    skillEnhancements: [Skill.RANGED, Skill.NONE],
+    skillMinLevels: [80, 0],
+    skillFixedMins: [20, 0],
+    skillFixedMaxs: [60, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 53,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER1,
+    description:
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.DEFENCE,
+    skillEnhancements: [Skill.DEFENCE, Skill.NONE],
+    skillMinLevels: [1, 0],
+    skillFixedMins: [1, 0],
+    skillFixedMaxs: [20, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 17,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER2,
+    description:
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.DEFENCE,
+    skillEnhancements: [Skill.DEFENCE, Skill.NONE],
+    skillMinLevels: [20, 0],
+    skillFixedMins: [6, 0],
+    skillFixedMaxs: [30, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 26,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER3,
+    description:
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.DEFENCE,
+    skillEnhancements: [Skill.DEFENCE, Skill.NONE],
+    skillMinLevels: [40, 0],
+    skillFixedMins: [10, 0],
+    skillFixedMaxs: [40, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 35,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER4,
+    description:
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.DEFENCE,
+    skillEnhancements: [Skill.DEFENCE, Skill.NONE],
+    skillMinLevels: [60, 0],
+    skillFixedMins: [14, 0],
+    skillFixedMaxs: [50, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 44,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER5,
+    description:
+      "In Estfor, the tortle can be found in many regions. Domesticating the tortle, however, is much less commonplace. As hard-headed as they are hard-shelled, tortles refuse to yield in any circumstance. If one is befriended, though, it will defend its companion in combat with boundless courage. Thus, it grants a Defence boost in combat. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.DEFENCE,
+    skillEnhancements: [Skill.DEFENCE, Skill.NONE],
+    skillMinLevels: [80, 0],
+    skillFixedMins: [20, 0],
+    skillFixedMaxs: [60, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 53,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER1,
+    description:
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.HEALTH,
+    skillEnhancements: [Skill.HEALTH, Skill.NONE],
+    skillMinLevels: [1, 0],
+    skillFixedMins: [1, 0],
+    skillFixedMaxs: [80, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 65,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER2,
+    description:
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.HEALTH,
+    skillEnhancements: [Skill.HEALTH, Skill.NONE],
+    skillMinLevels: [15, 0],
+    skillFixedMins: [10, 0],
+    skillFixedMaxs: [123, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 101,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER3,
+    description:
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.HEALTH,
+    skillEnhancements: [Skill.HEALTH, Skill.NONE],
+    skillMinLevels: [30, 0],
+    skillFixedMins: [20, 0],
+    skillFixedMaxs: [190, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 157,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER4,
+    description:
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.HEALTH,
+    skillEnhancements: [Skill.HEALTH, Skill.NONE],
+    skillMinLevels: [45, 0],
+    skillFixedMins: [41, 0],
+    skillFixedMaxs: [255, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 213,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER5,
+    description:
+      "Belugran carry a unique protein in the sweat-like film that coats their skin. By snuggling up closely to their owners, belugran grant a bonus to Health in combat. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.HEALTH,
+    skillEnhancements: [Skill.HEALTH, Skill.NONE],
+    skillMinLevels: [60, 0],
+    skillFixedMins: [115, 0],
+    skillFixedMaxs: [255, 0],
+    skillFixedIncrements: [1, 0],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 228,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER1,
+    description:
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
+    skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
+    skillMinLevels: [1, 1],
+    skillFixedMins: [1, 1],
+    skillFixedMaxs: [10, 10],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 17,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER2,
+    description:
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
+    skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
+    skillMinLevels: [10, 10],
+    skillFixedMins: [4, 4],
+    skillFixedMaxs: [16, 16],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 28,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER3,
+    description:
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
+    skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
+    skillMinLevels: [30, 30],
+    skillFixedMins: [6, 6],
+    skillFixedMaxs: [20, 20],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 35,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER4,
+    description:
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
+    skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
+    skillMinLevels: [50, 50],
+    skillFixedMins: [8, 8],
+    skillFixedMaxs: [24, 24],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 42,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER5,
+    description:
+      "A haermit is an uncommon companion, but the support they offer in battle is quite coveted. Lending both their claws and shell to any combat effort, the haermit grants both a Melee and Defence bonus to its owner. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
+    skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
+    skillMinLevels: [70, 70],
+    skillFixedMins: [10, 10],
+    skillFixedMaxs: [30, 30],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 53,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER1,
+    description:
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
+    skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
+    skillMinLevels: [1, 1],
+    skillFixedMins: [1, 1],
+    skillFixedMaxs: [10, 10],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 17,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER2,
+    description:
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
+    skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
+    skillMinLevels: [10, 10],
+    skillFixedMins: [4, 4],
+    skillFixedMaxs: [16, 16],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 28,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER3,
+    description:
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
+    skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
+    skillMinLevels: [30, 30],
+    skillFixedMins: [6, 6],
+    skillFixedMaxs: [20, 20],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 35,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER4,
+    description:
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
+    skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
+    skillMinLevels: [50, 50],
+    skillFixedMins: [8, 8],
+    skillFixedMaxs: [24, 24],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 42,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER5,
+    description:
+      "Octies are strange little creatures, but they carry within them quite the reserve of Primdiat energy. Like the squiz of the Southern Bay, octies can expel ink to shield their companions from incoming attacks. These two traits combined allow the octie to grant both a Magic and Defence bonus in combat. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
+    skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
+    skillMinLevels: [70, 70],
+    skillFixedMins: [10, 10],
+    skillFixedMaxs: [30, 30],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 53,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER1,
+    description:
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Kragstyr Edition",
+    tier: 1,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
+    skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
+    skillMinLevels: [1, 1],
+    skillFixedMins: [1, 1],
+    skillFixedMaxs: [10, 10],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 17,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER2,
+    description:
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Kragstyr Edition",
+    tier: 2,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
+    skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
+    skillMinLevels: [10, 10],
+    skillFixedMins: [4, 4],
+    skillFixedMaxs: [16, 16],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 28,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER3,
+    description:
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Kragstyr Edition",
+    tier: 3,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
+    skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
+    skillMinLevels: [30, 30],
+    skillFixedMins: [6, 6],
+    skillFixedMaxs: [20, 20],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 35,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER4,
+    description:
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Kragstyr Edition",
+    tier: 4,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
+    skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
+    skillMinLevels: [50, 50],
+    skillFixedMins: [8, 8],
+    skillFixedMaxs: [24, 24],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 42,
+    percentageStarThreshold: 0,
+    isTransferable: true
+  },
+  {
+    baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER5,
+    description:
+      "Sharp in both mind and body, the prodhog possesses a stunning capability to catapult its spines in small bursts. Whether near or far, it is as adorable as it is formidable. It grants its owner a bonus to Ranged and Defence in combat. Kragstyr Edition",
+    tier: 5,
+    skin: PetSkin.KRAGSTYR,
+    enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
+    skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
+    skillMinLevels: [70, 70],
+    skillFixedMins: [10, 10],
+    skillFixedMaxs: [30, 30],
+    skillFixedIncrements: [1, 1],
+    skillPercentageMins: [0, 0],
+    skillPercentageMaxs: [0, 0],
+    skillPercentageIncrements: [1, 1],
+    fixedStarThreshold: 53,
+    percentageStarThreshold: 0,
+    isTransferable: true
   }
 ];

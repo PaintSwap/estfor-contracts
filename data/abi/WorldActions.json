@@ -144,7 +144,13 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "val",
+        "type": "uint256"
+      }
+    ],
     "name": "NotAFactorOf3600",
     "type": "error"
   },

@@ -1140,6 +1140,7 @@ async function main() {
   console.log("Add full attire bonuses");
 
   await setDailyAndWeeklyRewards(dailyRewardsScheduler);
+  console.log("Set daily and weekly rewards");
 
   tx = await worldActions.addActions(allActions);
   await tx.wait();

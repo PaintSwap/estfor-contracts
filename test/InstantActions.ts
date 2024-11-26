@@ -31,41 +31,6 @@ describe("Instant actions", function () {
       actionType
     };
 
-    it("Check input item order", async function () {
-      const {instantActions} = await loadFixture(playersFixture);
-
-      const instantActionInput: InstantActionInput = {
-        ...defaultInstantActionInput,
-        inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3],
-        outputTokenId: RUNITE_ARROW,
-        outputAmount: 2
-      };
-
-      instantActionInput.inputAmounts[0] = 4;
-      await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
-        instantActions,
-        "InputAmountsMustBeInOrder"
-      );
-
-      instantActionInput.inputAmounts[0] = 1;
-      instantActionInput.inputAmounts[1] = 4;
-      await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
-        instantActions,
-        "InputAmountsMustBeInOrder"
-      );
-
-      instantActionInput.inputAmounts[1] = 2;
-      instantActionInput.inputAmounts[2] = 1;
-      await expect(instantActions.addActions([instantActionInput])).to.be.revertedWithCustomError(
-        instantActions,
-        "InputAmountsMustBeInOrder"
-      );
-
-      instantActionInput.inputAmounts[2] = 3;
-      expect(await instantActions.addActions([instantActionInput])).to.not.be.reverted;
-    });
-
     it("Check input item validation", async function () {
       const {instantActions} = await loadFixture(playersFixture);
 

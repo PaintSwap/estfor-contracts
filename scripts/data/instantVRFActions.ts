@@ -1,7 +1,6 @@
-import {AbiCoder} from "ethers"; // ethers v6
+import {AbiCoder} from "ethers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {InstantVRFActionInput, InstantVRFActionType} from "@paintswap/estfor-definitions/types";
-
 const abiCoder = new AbiCoder();
 
 export const allInstantVRFActions: InstantVRFActionInput[] = [
@@ -23,9 +22,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_ARMOR,
@@ -45,9 +44,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_TASSETS,
@@ -67,9 +66,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_GAUNTLETS,
@@ -89,9 +88,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_BOOTS,
@@ -111,9 +110,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_SHIELD,
@@ -133,9 +132,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_DRAGONSTONE_AMULET,
@@ -155,9 +154,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_HAT,
@@ -177,9 +176,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BODY,
@@ -199,9 +198,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_TROUSERS,
@@ -221,9 +220,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BRACERS,
@@ -243,9 +242,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_MASTER_BOOTS,
@@ -265,9 +264,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORICHALCUM_SWORD,
@@ -287,9 +286,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_DRAGONSTONE_STAFF,
@@ -309,9 +308,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_GODLY_BOW,
@@ -331,9 +330,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_COWL,
@@ -353,9 +352,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BODY,
@@ -375,9 +374,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_CHAPS,
@@ -397,9 +396,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BRACERS,
@@ -419,9 +418,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_SCORCHING_BOOTS,
@@ -441,9 +440,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.FORGING
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_1,
@@ -467,9 +466,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_2,
@@ -493,9 +492,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_3,
@@ -520,9 +519,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_4,
@@ -547,9 +546,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_5,
@@ -574,9 +573,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_1,
@@ -599,9 +598,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_2,
@@ -625,9 +624,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_3,
@@ -652,9 +651,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_4,
@@ -679,9 +678,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_WOODCUTTING_CHEST_5,
@@ -706,9 +705,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_1,
@@ -732,9 +731,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_2,
@@ -758,9 +757,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_3,
@@ -785,9 +784,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_4,
@@ -812,9 +811,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_MINING_CHEST_5,
@@ -839,9 +838,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_DRAGON_CHEST,
@@ -866,9 +865,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_BONE_CHEST,
@@ -893,9 +892,9 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
   },
   {
     actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_ANNIV1_CHEST,
@@ -920,9 +919,363 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       ]
     ),
     isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
     isAvailable: true,
-    questPrerequisiteId: 0,
-    actionType: InstantVRFActionType.GENERIC
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_TRICK_CHEST,
+    inputTokenIds: [EstforConstants.TRICK_CHEST2024, EstforConstants.TRICK_OR_TREAT_KEY],
+    inputAmounts: [1, 1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.COIN, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 52428, amount: 2},
+          {itemTokenId: EstforConstants.COIN, chance: 39321, amount: 5},
+          {itemTokenId: EstforConstants.COIN, chance: 26214, amount: 15},
+          {itemTokenId: EstforConstants.LIFFYN, chance: 19661, amount: 1},
+          {itemTokenId: EstforConstants.VANAGLOT, chance: 15073, amount: 1},
+          {itemTokenId: EstforConstants.FANGENSTORM, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.RING_OF_TUR, chance: 5898, amount: 1},
+          {itemTokenId: EstforConstants.KEPHRI_AMULET, chance: 3277, amount: 1},
+          {itemTokenId: EstforConstants.KRAGSTYR_EGG_TIER1, chance: 655, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_TREAT_CHEST,
+    inputTokenIds: [EstforConstants.TREAT_CHEST2024, EstforConstants.TRICK_OR_TREAT_KEY],
+    inputAmounts: [1, 1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.XP_BOOST, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.GATHERING_BOOST, chance: 52428, amount: 1},
+          {itemTokenId: EstforConstants.COMBAT_BOOST, chance: 42598, amount: 1},
+          {itemTokenId: EstforConstants.SKILL_BOOST, chance: 32768, amount: 1},
+          {itemTokenId: EstforConstants.XP_BOOST, chance: 22937, amount: 2},
+          {itemTokenId: EstforConstants.GATHERING_BOOST, chance: 16384, amount: 2},
+          {itemTokenId: EstforConstants.LIFFYN, chance: 9830, amount: 1},
+          {itemTokenId: EstforConstants.VANAGLOT, chance: 6554, amount: 1},
+          {itemTokenId: EstforConstants.FANGENSTORM, chance: 3277, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FARMING_WILD_SEED,
+    inputTokenIds: [EstforConstants.SEED_001_WILD_HARVESTABLE],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 65535, amount: 5},
+          {itemTokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES, chance: 56173, amount: 5},
+          {itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, chance: 46811, amount: 5},
+          {itemTokenId: EstforConstants.HERB_001_GLIMMER_LEAF, chance: 37449, amount: 5},
+          {itemTokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY, chance: 28086, amount: 5},
+          {itemTokenId: EstforConstants.EDIBLES_002_WILD_CHERRY, chance: 18724, amount: 5},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 9362, amount: 5}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FARMING_UNKNOWN_SEED,
+    inputTokenIds: [EstforConstants.SEED_002_UNKNOWN_HARVESTABLE],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 65535, amount: 5},
+          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 56173, amount: 5},
+          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 46811, amount: 5},
+          {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 37449, amount: 5},
+          {itemTokenId: EstforConstants.EDIBLES_003_WILD_CARROT, chance: 28086, amount: 5},
+          {itemTokenId: EstforConstants.EDIBLES_004_RED_APPLE, chance: 18724, amount: 5},
+          {itemTokenId: EstforConstants.EDIBLES_005_PEACH, chance: 9362, amount: 5}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FARMING_MYSTERIOUS_SEED,
+    inputTokenIds: [EstforConstants.SEED_003_MYSTERIOUS_HARVESTABLE],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 65535, amount: 5},
+          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 56173, amount: 5},
+          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 46811, amount: 5},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 37449, amount: 5},
+          {itemTokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES, chance: 28086, amount: 5},
+          {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 18724, amount: 5},
+          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 9362, amount: 5}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FARMING_OBSCURE_SEED,
+    inputTokenIds: [EstforConstants.SEED_004_OBSCURE_HARVESTABLE],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 65535, amount: 5},
+          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 56173, amount: 5},
+          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 46811, amount: 5},
+          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 37449, amount: 5},
+          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 28086, amount: 5},
+          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 18724, amount: 5},
+          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 9362, amount: 5}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FARMING_ANCIENT_SEED,
+    inputTokenIds: [EstforConstants.SEED_005_ANCIENT_HARVESTABLE],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 65535, amount: 5},
+          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 56173, amount: 5},
+          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 46811, amount: 5},
+          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 37449, amount: 5},
+          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 28086, amount: 5},
+          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 18724, amount: 5},
+          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 9362, amount: 5}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ORCALITH_CLEDYR,
+    inputTokenIds: [EstforConstants.DAGGER_007_ORICHALCUM_INFUSED],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.DAGGER_007_ORICHALCUM_1, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_007_ORICHALCUM_2, chance: 26214, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_007_ORICHALCUM_3, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_007_ORICHALCUM_4, chance: 3932, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_007_ORICHALCUM_5, chance: 655, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_DEUION_KIEL,
+    inputTokenIds: [EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_1, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_2, chance: 26214, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_3, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_4, chance: 3932, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_5, chance: 655, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ODLARIONS_WYSGRIF,
+    inputTokenIds: [EstforConstants.BOOK_007_ORICHALCUM_INFUSED],
+    inputAmounts: [1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.BOOK_007_ORICHALCUM_1, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_007_ORICHALCUM_2, chance: 26214, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_007_ORICHALCUM_3, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_007_ORICHALCUM_4, chance: 3932, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_007_ORICHALCUM_5, chance: 655, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_PRIMORDIAL_CHEST,
+    inputTokenIds: [EstforConstants.CHEST_001_PRIMORDIAL, EstforConstants.KEY_001_OMNI],
+    inputAmounts: [1, 1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 32768, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 26214, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 22937, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 9830, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_AETHER_CHEST,
+    inputTokenIds: [EstforConstants.CHEST_002_AETHER, EstforConstants.KEY_001_OMNI],
+    inputAmounts: [1, 1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 32768, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 26214, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 22937, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 9830, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_ARCANE_CHEST,
+    inputTokenIds: [EstforConstants.CHEST_003_ARCANE, EstforConstants.KEY_001_OMNI],
+    inputAmounts: [1, 1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 32768, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 26214, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 22937, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 9830, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_ASTRAL_CHEST,
+    inputTokenIds: [EstforConstants.CHEST_004_ASTRAL, EstforConstants.KEY_001_OMNI],
+    inputAmounts: [1, 1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 32768, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 26214, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 22937, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 9830, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_THIEVING_VOID_CHEST,
+    inputTokenIds: [EstforConstants.CHEST_005_VOID, EstforConstants.KEY_001_OMNI],
+    inputAmounts: [1, 1],
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 32768, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 26214, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 22937, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 9830, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
   },
   {
     actionType: InstantVRFActionType.EGG,
@@ -1339,6 +1692,86 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     data: abiCoder.encode(
       ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
       [0, {rewardBasePetIdMin: EstforConstants.ANNIV1_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ANNIV1_MAX_TIER5}]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER1,
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER1, rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER1}
+      ]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER2,
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER2, rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER2}
+      ]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER3,
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER3, rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER3}
+      ]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER4,
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER4, rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER4}
+      ]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER5,
+    data: abiCoder.encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [
+        0,
+        {rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER5, rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER5}
+      ]
     ),
     isFullModeOnly: true,
     isAvailable: true,

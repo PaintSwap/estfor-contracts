@@ -14,8 +14,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate: 120 * 10}],
     randomRewards: [],
@@ -42,8 +42,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 100 * 10}],
     randomRewards: [],
@@ -70,8 +70,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.WILLOW_LOG, rate: 90 * 10}],
     randomRewards: [],
@@ -98,8 +98,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MAPLE_LOG, rate: 80 * 10}],
     randomRewards: [],
@@ -126,8 +126,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.REDWOOD_LOG, rate: 75 * 10}],
     randomRewards: [],
@@ -154,8 +154,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 72 * 10}],
     randomRewards: [],
@@ -182,8 +182,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ASH_LOG, rate: 60 * 10}],
     randomRewards: [],
@@ -210,8 +210,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 40 * 10}],
     randomRewards: [],
@@ -238,8 +238,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LIVING_LOG, rate: 36 * 10}],
     randomRewards: [],
@@ -266,8 +266,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.LOG, rate: 40 * 10},
@@ -301,8 +301,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.LOG, rate: 40 * 10},
@@ -337,8 +337,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.OAK_LOG, rate: 36 * 10},
@@ -373,8 +373,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.MAPLE_LOG, rate: 25 * 10},
@@ -409,8 +409,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.REDWOOD_LOG, rate: 25 * 10},
@@ -445,8 +445,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 120 * 10}],
     randomRewards: [],
@@ -473,8 +473,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.TIN_ORE, rate: 120 * 10}],
     randomRewards: [],
@@ -501,8 +501,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.IRON_ORE, rate: 100 * 10}],
     randomRewards: [],
@@ -529,8 +529,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SAPPHIRE, rate: 50 * 10}],
     randomRewards: [],
@@ -557,8 +557,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.COAL_ORE, rate: 90 * 10}],
     randomRewards: [],
@@ -585,8 +585,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.EMERALD, rate: 45 * 10}],
     randomRewards: [],
@@ -613,8 +613,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MITHRIL_ORE, rate: 90 * 10}],
     randomRewards: [],
@@ -641,8 +641,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RUBY, rate: 40 * 10}],
     randomRewards: [],
@@ -669,8 +669,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ADAMANTINE_ORE, rate: 75 * 10}],
     randomRewards: [],
@@ -697,8 +697,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.AMETHYST, rate: 36 * 10}],
     randomRewards: [],
@@ -725,8 +725,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RUNITE_ORE, rate: 72 * 10}],
     randomRewards: [],
@@ -753,8 +753,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.DIAMOND, rate: 30 * 10}],
     randomRewards: [],
@@ -781,8 +781,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.TITANIUM_ORE, rate: 60 * 10}],
     randomRewards: [],
@@ -809,8 +809,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.DRAGONSTONE, rate: 20 * 10}],
     randomRewards: [],
@@ -837,8 +837,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 40 * 10}],
     randomRewards: [],
@@ -865,8 +865,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.TIN_ORE, rate: 40 * 10},
@@ -901,8 +901,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.MITHRIL_ORE, rate: 30 * 10},
@@ -937,8 +937,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ADAMANTINE_ORE, rate: 25 * 10},
@@ -973,8 +973,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RUNITE_ORE, rate: 45 * 10},
@@ -1009,8 +1009,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.TITANIUM_ORE, rate: 20 * 10},
@@ -1045,8 +1045,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FIRE_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -1073,8 +1073,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -1101,8 +1101,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -1129,8 +1129,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MINNUS, rate: 120 * 10}],
     randomRewards: [],
@@ -1157,8 +1157,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_BLEKK, rate: 120 * 10}],
     randomRewards: [],
@@ -1185,8 +1185,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SKRIMP, rate: 120 * 10}],
     randomRewards: [],
@@ -1213,8 +1213,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_FEOLA, rate: 100 * 10}],
     randomRewards: [],
@@ -1241,8 +1241,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ANCHO, rate: 90 * 10}],
     randomRewards: [],
@@ -1269,8 +1269,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_TROUT, rate: 72 * 10}],
     randomRewards: [],
@@ -1297,8 +1297,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ROJJA, rate: 60 * 10}],
     randomRewards: [],
@@ -1325,8 +1325,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_BOWFISH, rate: 50 * 10}],
     randomRewards: [],
@@ -1353,8 +1353,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_GOLDFISH, rate: 45 * 10}],
     randomRewards: [],
@@ -1381,8 +1381,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_MYSTY_BLUE, rate: 48 * 10}],
     randomRewards: [],
@@ -1409,8 +1409,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_FLITFISH, rate: 50 * 10}],
     randomRewards: [],
@@ -1437,8 +1437,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_RAZORFISH, rate: 50 * 10}],
     randomRewards: [],
@@ -1465,8 +1465,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_QUAFFER, rate: 48 * 10}],
     randomRewards: [],
@@ -1493,8 +1493,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ROXA, rate: 45 * 10}],
     randomRewards: [],
@@ -1521,8 +1521,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_AZACUDDA, rate: 45 * 10}],
     randomRewards: [],
@@ -1549,8 +1549,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_STONECLAW, rate: 45 * 10}],
     randomRewards: [],
@@ -1577,8 +1577,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_CRUSKAN, rate: 45 * 10}],
     randomRewards: [],
@@ -1605,8 +1605,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_CHODFISH, rate: 36 * 10}],
     randomRewards: [],
@@ -1633,8 +1633,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_DOUBTFISH, rate: 36 * 10}],
     randomRewards: [],
@@ -1661,8 +1661,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_ROSEFIN, rate: 36 * 10}],
     randomRewards: [],
@@ -1689,8 +1689,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.MEDIUM_NET,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_BLEKK, rate: 40 * 10},
@@ -1725,8 +1725,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOOD_FISHING_ROD,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_ROJJA, rate: 20 * 10},
@@ -1761,8 +1761,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.WOOD_FISHING_ROD,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_GOLDFISH, rate: 15 * 10},
@@ -1797,8 +1797,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.CAGE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_ROXA, rate: 16 * 10},
@@ -1833,8 +1833,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.LARGE_NET,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.RAW_CHODFISH, rate: 12 * 10},
@@ -1869,8 +1869,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
@@ -1900,8 +1900,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [
@@ -1931,8 +1931,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
@@ -1965,8 +1965,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.STRING, rate: 1 * 10}],
     randomRewards: [],
@@ -1993,8 +1993,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.BECARA_GRASS, chance: 1328, amount: 1}],
@@ -2021,8 +2021,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MEDIUM_BONE, rate: 1 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.BLUECANAR, chance: 750, amount: 2}],
@@ -2049,8 +2049,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.WILLOW_LOG, rate: 1 * 10}],
     randomRewards: [
@@ -2080,8 +2080,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.STRING, rate: 2 * 10}],
     randomRewards: [
@@ -2111,8 +2111,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.DRAGON_BONE, rate: 1 * 10}],
     randomRewards: [
@@ -2142,8 +2142,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.MEDIUM_BONE, rate: 1 * 10}],
     randomRewards: [
@@ -2173,8 +2173,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10}],
     randomRewards: [
@@ -2205,8 +2205,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -2236,8 +2236,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -2267,8 +2267,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10}],
     randomRewards: [
@@ -2299,8 +2299,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10},
@@ -2335,8 +2335,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.LARGE_BONE, rate: 1 * 10}],
     randomRewards: [
@@ -2367,8 +2367,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.REDWOOD_LOG, rate: 2 * 10}],
     randomRewards: [
@@ -2399,8 +2399,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
@@ -2434,8 +2434,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.SMALL_BONE, rate: 1 * 10},
@@ -2468,8 +2468,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.FLUX, rate: 1 * 10},
@@ -2505,8 +2505,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.FLUX, rate: 1 * 10},
@@ -2542,8 +2542,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRIMSTONE, rate: 1 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.NATURE_KEY, chance: 364, amount: 1}],
@@ -2570,11 +2570,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.AQUA_KEY, chance: 364, amount: 1}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.AQUA_KEY, chance: 364, amount: 1},
+      {itemTokenId: EstforConstants.KEY_001_OMNI, chance: 364, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 30,
       magicAttack: 30,
@@ -2598,13 +2601,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.NATURE_KEY, chance: 455, amount: 1},
-      {itemTokenId: EstforConstants.AQUA_KEY, chance: 455, amount: 1}
+      {itemTokenId: EstforConstants.AQUA_KEY, chance: 455, amount: 1},
+      {itemTokenId: EstforConstants.KEY_001_OMNI, chance: 455, amount: 1}
     ],
     combatStats: {
       meleeAttack: 40,
@@ -2629,12 +2633,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 546, amount: 1},
+      {itemTokenId: EstforConstants.KEY_001_OMNI, chance: 546, amount: 1},
       {itemTokenId: EstforConstants.OCULITE_RING, chance: 1, amount: 1}
     ],
     combatStats: {
@@ -2660,12 +2665,13 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRIMSTONE, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.BONE_KEY, chance: 910, amount: 1},
+      {itemTokenId: EstforConstants.KEY_001_OMNI, chance: 910, amount: 1},
       {itemTokenId: EstforConstants.PRIMDIAT_RING, chance: 1, amount: 1}
     ],
     combatStats: {
@@ -2691,13 +2697,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2048, amount: 2},
       {itemTokenId: EstforConstants.BONE_KEY, chance: 2048, amount: 2},
+      {itemTokenId: EstforConstants.KEY_001_OMNI, chance: 2048, amount: 1},
       {itemTokenId: EstforConstants.ETCHED_RING, chance: 2, amount: 1}
     ],
     combatStats: {
@@ -2723,13 +2730,14 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.BRIMSTONE, rate: 5 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.DRAGON_KEY, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.BONE_KEY, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.KEY_001_OMNI, chance: 2731, amount: 2},
       {itemTokenId: EstforConstants.NOVIAN_RING, chance: 2, amount: 1}
     ],
     combatStats: {
@@ -2748,21 +2756,21 @@ export const allActions: ActionInput[] = [
       skill: Skill.COMBAT,
       isAvailable: false,
       actionChoiceRequired: true,
-      xpPerHour: 250,
+      xpPerHour: 200,
       numSpawned: 10 * 1000,
       minXP: 0,
       handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
       handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [
-      {itemTokenId: EstforConstants.SMALL_BONE, rate: 3 * 10},
+      {itemTokenId: EstforConstants.SMALL_BONE, rate: 5 * 10},
       {itemTokenId: EstforConstants.NATUOW_HIDE, rate: 3 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.COIN, chance: 2731, amount: 1}],
+    randomRewards: [{itemTokenId: EstforConstants.COIN, chance: 1365, amount: 1}],
     combatStats: {
       meleeAttack: 1,
       magicAttack: 0,
@@ -2771,6 +2779,73 @@ export const allActions: ActionInput[] = [
       magicDefence: 0,
       rangedDefence: 0,
       health: 100
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_GROG_TOAD,
+    info: {
+      skill: Skill.COMBAT,
+      isAvailable: false,
+      actionChoiceRequired: true,
+      xpPerHour: 350,
+      numSpawned: 10 * 1000,
+      minXP: 0,
+      handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+      handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.SMALL_BONE, rate: 5 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.POISON, chance: 33314, amount: 1},
+      {itemTokenId: EstforConstants.FLIXORA, chance: 6007, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 2731, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 20,
+      magicAttack: 20,
+      rangedAttack: 20,
+      meleeDefence: 10,
+      magicDefence: 10,
+      rangedDefence: 10,
+      health: 250
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_COMBAT_NIGHTMARE_UFFINCH,
+    info: {
+      skill: Skill.COMBAT,
+      isAvailable: false,
+      actionChoiceRequired: true,
+      xpPerHour: 550,
+      numSpawned: 10 * 1000,
+      minXP: 0,
+      handItemTokenIdRangeMin: EstforConstants.COMBAT_BASE,
+      handItemTokenIdRangeMax: EstforConstants.COMBAT_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.SMALL_BONE, rate: 5 * 10},
+      {itemTokenId: EstforConstants.FEATHER, rate: 25 * 10}
+    ],
+    randomRewards: [
+      {itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 6007, amount: 1},
+      {itemTokenId: EstforConstants.COIN, chance: 4096, amount: 1},
+      {itemTokenId: EstforConstants.QUARTZ_INFUSED_FEATHER, chance: 3004, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 40,
+      magicAttack: 40,
+      rangedAttack: 40,
+      meleeDefence: 30,
+      magicDefence: 30,
+      rangedDefence: 30,
+      health: 500
     }
   },
   {
@@ -2786,8 +2861,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -2814,8 +2889,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 70,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -2845,8 +2920,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 65,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -2876,8 +2951,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 60,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -2907,8 +2982,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 65,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.SHADOW_SCROLL, chance: 12000, amount: 100}],
@@ -2935,8 +3010,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 65,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -2966,8 +3041,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.LEAF_FRAGMENTS, chance: 40000, amount: 2}],
@@ -2994,8 +3069,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3026,8 +3101,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3058,8 +3133,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3090,8 +3165,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 80,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3121,8 +3196,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3153,8 +3228,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.BLUECANAR, chance: 40000, amount: 2}],
@@ -3181,8 +3256,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3213,8 +3288,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3244,8 +3319,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 50,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -3272,8 +3347,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3304,8 +3379,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3336,8 +3411,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3369,8 +3444,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3401,8 +3476,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: true
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [
@@ -3433,8 +3508,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -3461,8 +3536,8 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
@@ -3489,11 +3564,1026 @@ export const allActions: ActionInput[] = [
       handItemTokenIdRangeMax: EstforConstants.NONE,
       successPercent: 100,
       worldLocation: 0,
-      questPrerequisiteId: 0,
-      isFullModeOnly: false
+      isFullModeOnly: false,
+      questPrerequisiteId: 0
     },
     guaranteedRewards: [],
     randomRewards: [],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_WOODCUTTING_TANGLED_PASS,
+    info: {
+      skill: Skill.WOODCUTTING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 650,
+      numSpawned: 0 * 1000,
+      minXP: 392228,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+      handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 20 * 10},
+      {itemTokenId: EstforConstants.LIVING_LOG, rate: 18 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 2731, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_WOODCUTTING_CHOKING_HOLLOW,
+    info: {
+      skill: Skill.WOODCUTTING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 800,
+      numSpawned: 0 * 1000,
+      minXP: 1109796,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+      handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 25 * 10},
+      {itemTokenId: EstforConstants.LIVING_LOG, rate: 24 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 5461, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_WOODCUTTING_RAZORVINE_THICKET,
+    info: {
+      skill: Skill.WOODCUTTING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 950,
+      numSpawned: 0 * 1000,
+      minXP: 2219452,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+      handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 36 * 10},
+      {itemTokenId: EstforConstants.LIVING_LOG, rate: 30 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 8191, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_WOODCUTTING_BRAMBLED_THROAT,
+    info: {
+      skill: Skill.WOODCUTTING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1150,
+      numSpawned: 0 * 1000,
+      minXP: 4438448,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+      handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 45 * 10},
+      {itemTokenId: EstforConstants.LIVING_LOG, rate: 40 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 10922, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_WOODCUTTING_THE_HEART,
+    info: {
+      skill: Skill.WOODCUTTING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1350,
+      numSpawned: 0 * 1000,
+      minXP: 8876091,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_AXE,
+      handItemTokenIdRangeMax: EstforConstants.WOODCUTTING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 50 * 10},
+      {itemTokenId: EstforConstants.LIVING_LOG, rate: 48 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 13653, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_MINING_GATE,
+    info: {
+      skill: Skill.MINING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1100,
+      numSpawned: 0 * 1000,
+      minXP: 1569456,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_PICKAXE,
+      handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 20 * 10},
+      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 10 * 10},
+      {itemTokenId: EstforConstants.CHARCOAL, rate: 30 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 2731, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_MINING_PETRIFIED_GARDEN,
+    info: {
+      skill: Skill.MINING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1250,
+      numSpawned: 0 * 1000,
+      minXP: 2219452,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_PICKAXE,
+      handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 25 * 10},
+      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 15 * 10},
+      {itemTokenId: EstforConstants.CHARCOAL, rate: 40 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 5461, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_MINING_BURIED_COURTYARD,
+    info: {
+      skill: Skill.MINING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1400,
+      numSpawned: 0 * 1000,
+      minXP: 3138618,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_PICKAXE,
+      handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 36 * 10},
+      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 20 * 10},
+      {itemTokenId: EstforConstants.CHARCOAL, rate: 50 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 8191, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_MINING_GILDED_HALLS,
+    info: {
+      skill: Skill.MINING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1550,
+      numSpawned: 0 * 1000,
+      minXP: 4438448,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_PICKAXE,
+      handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 45 * 10},
+      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 25 * 10},
+      {itemTokenId: EstforConstants.CHARCOAL, rate: 60 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 10922, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_MINING_THRONE_ROOM,
+    info: {
+      skill: Skill.MINING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1700,
+      numSpawned: 0 * 1000,
+      minXP: 8876091,
+      handItemTokenIdRangeMin: EstforConstants.ORICHALCUM_PICKAXE,
+      handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [
+      {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 50 * 10},
+      {itemTokenId: EstforConstants.DRAGONSTONE, rate: 36 * 10},
+      {itemTokenId: EstforConstants.CHARCOAL, rate: 75 * 10}
+    ],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 13653, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FISHING_RAW_SPHINX_FISH,
+    info: {
+      skill: Skill.FISHING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 950,
+      numSpawned: 0 * 1000,
+      minXP: 1569456,
+      handItemTokenIdRangeMin: EstforConstants.TITANIUM_FISHING_ROD,
+      handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SPHINX_FISH, rate: 45 * 10}],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 2731, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FISHING_RAW_SHAW,
+    info: {
+      skill: Skill.FISHING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1000,
+      numSpawned: 0 * 1000,
+      minXP: 2219452,
+      handItemTokenIdRangeMin: EstforConstants.TITANIUM_FISHING_ROD,
+      handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SHAW, rate: 36 * 10}],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 4095, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FISHING_RAW_VANISHING_PERCH,
+    info: {
+      skill: Skill.FISHING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1150,
+      numSpawned: 0 * 1000,
+      minXP: 3138618,
+      handItemTokenIdRangeMin: EstforConstants.MAGIC_NET,
+      handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.RAW_VANISHING_PERCH, rate: 36 * 10}],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 5461, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FISHING_RAW_VIPER_BASS,
+    info: {
+      skill: Skill.FISHING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1300,
+      numSpawned: 0 * 1000,
+      minXP: 4438448,
+      handItemTokenIdRangeMin: EstforConstants.MAGIC_NET,
+      handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.RAW_VIPER_BASS, rate: 45 * 10}],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 8191, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FISHING_RAW_WATER_SERPENT,
+    info: {
+      skill: Skill.FISHING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1450,
+      numSpawned: 0 * 1000,
+      minXP: 6276611,
+      handItemTokenIdRangeMin: EstforConstants.HARPOON,
+      handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.RAW_WATER_SERPENT, rate: 45 * 10}],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 10922, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FISHING_RAW_WHISKFIN,
+    info: {
+      skill: Skill.FISHING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1600,
+      numSpawned: 0 * 1000,
+      minXP: 8876091,
+      handItemTokenIdRangeMin: EstforConstants.HARPOON,
+      handItemTokenIdRangeMax: EstforConstants.FISHING_MAX,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.RAW_WHISKFIN, rate: 45 * 10}],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 13653, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_THIEVING_FORGOTTEN_QUARRY,
+    info: {
+      skill: Skill.THIEVING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 900,
+      numSpawned: 0 * 1000,
+      minXP: 1109796,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 2731, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_THIEVING_ENDLESS_TUNNEL,
+    info: {
+      skill: Skill.THIEVING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1100,
+      numSpawned: 0 * 1000,
+      minXP: 1802804,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 5461, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_THIEVING_CATACOMBS,
+    info: {
+      skill: Skill.THIEVING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1300,
+      numSpawned: 0 * 1000,
+      minXP: 3138618,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 8191, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_THIEVING_LOST_SANCTUM,
+    info: {
+      skill: Skill.THIEVING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1500,
+      numSpawned: 0 * 1000,
+      minXP: 5098336,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 10922, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_THIEVING_VAULT,
+    info: {
+      skill: Skill.THIEVING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1700,
+      numSpawned: 0 * 1000,
+      minXP: 8876091,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [],
+    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 13653, amount: 2}],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_MEADOW,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 25,
+      numSpawned: 0 * 1000,
+      minXP: 0,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY, rate: 120 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.FERTILE_SOIL, chance: 13653, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 1, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_GRASSLANDS,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 40,
+      numSpawned: 0 * 1000,
+      minXP: 1021,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_001,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_001,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.HERB_001_GLIMMER_LEAF, rate: 1 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, chance: 27306, amount: 1},
+      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 2, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_PLAINS,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 65,
+      numSpawned: 0 * 1000,
+      minXP: 5067,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_002,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_002,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_002_WILD_CHERRY, rate: 120 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.FERTILE_SOIL, chance: 27306, amount: 1},
+      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 4, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_RIVERBANK,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 105,
+      numSpawned: 0 * 1000,
+      minXP: 16432,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_002,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_002,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_003_WILD_CARROT, rate: 80 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.FERTILE_SOIL, chance: 40959, amount: 1},
+      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 4, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_FOREST,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 135,
+      numSpawned: 0 * 1000,
+      minXP: 68761,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_003,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_003,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_004_RED_APPLE, rate: 60 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 4, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_CLIFFS,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 160,
+      numSpawned: 0 * 1000,
+      minXP: 195864,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_003,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_003,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_005_PEACH, rate: 60 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 8, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_RUINS,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 335,
+      numSpawned: 0 * 1000,
+      minXP: 392228,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_004,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_004,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES, rate: 50 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.SEED_003_MYSTERIOUS, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 8, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_MARSHLANDS,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 480,
+      numSpawned: 0 * 1000,
+      minXP: 784726,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_004,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_004,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.HERB_002_RIPARIS, rate: 1 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.SEED_003_MYSTERIOUS, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 8, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_WETLANDS,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 630,
+      numSpawned: 0 * 1000,
+      minXP: 1109796,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_005,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_005,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, rate: 1 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 27306, amount: 1},
+      {itemTokenId: EstforConstants.SEED_004_OBSCURE, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 16, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_PLATEAU,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 780,
+      numSpawned: 0 * 1000,
+      minXP: 2219452,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_005,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_005,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_007_HONEY, rate: 36 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 32767, amount: 1},
+      {itemTokenId: EstforConstants.SEED_004_OBSCURE, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 5461, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 16, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_BLUFF,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 890,
+      numSpawned: 0 * 1000,
+      minXP: 4438448,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_006,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_006,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, rate: 1 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.EDIBLES_007_HONEY, chance: 27306, amount: 15},
+      {itemTokenId: EstforConstants.SEED_005_ANCIENT, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 16, amount: 1}
+    ],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
+    actionId: EstforConstants.ACTION_FARMING_RIDGE,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: false,
+      xpPerHour: 1000,
+      numSpawned: 0 * 1000,
+      minXP: 8876091,
+      handItemTokenIdRangeMin: EstforConstants.BLUEPRINT_HARVEST_006,
+      handItemTokenIdRangeMax: EstforConstants.BLUEPRINT_HARVEST_006,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [{itemTokenId: EstforConstants.HERB_004_FROST_BLOSSOM, rate: 1 * 10}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 10922, amount: 1},
+      {itemTokenId: EstforConstants.SEED_005_ANCIENT, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 2731, amount: 1},
+      {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 32, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,

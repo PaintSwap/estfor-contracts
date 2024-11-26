@@ -41,7 +41,6 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   error UnsupportedActionType();
   error IncorrectInputAmounts();
   error InputSpecifiedWithoutAmount();
-  error InputAmountsMustBeInOrder();
   error InvalidInputTokenId();
   error InputItemNoDuplicates();
   error TooManyInputItems();
@@ -346,7 +345,6 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       require(amounts[i] != 0, InputSpecifiedWithoutAmount());
 
       if (i != inputTokenIds.length - 1) {
-        require(amounts[i] <= amounts[i + 1], InputAmountsMustBeInOrder());
         for (uint256 j; j < inputTokenIds.length; ++j) {
           require(j == i || inputTokenIds[i] != inputTokenIds[j], InputItemNoDuplicates());
         }

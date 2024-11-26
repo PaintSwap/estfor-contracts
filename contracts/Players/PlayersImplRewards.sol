@@ -171,11 +171,10 @@ contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDele
           );
         }
 
-        // Check for any boosts. Only gives combat stats if the boost is active from the start of the action.
-        // TODO: Not supported yet
+        // Only gives combat stats if the boost is active from the start of the action.
         /*
         PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
-        if (activeBoost.boostType == BoostType.COMBAT_STATS) {
+        if (activeBoost.boostType == BoostType.COMBAT_FIXED) {
           bool boostIsActiveFromStartOfAction = activeBoost.startTime <= veryStartTime;
           bool boostIsActiveForTheWholeDuration = endTime <= (activeBoost.startTime + activeBoost.duration);
           if (boostIsActiveFromStartOfAction && boostIsActiveForTheWholeDuration) {

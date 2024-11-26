@@ -201,7 +201,7 @@ export const tier1DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.COPPER_ORE, amount: 30},
   {itemTokenId: EstforConstants.COPPER_ORE, amount: 30},
   {itemTokenId: EstforConstants.COPPER_ORE, amount: 30},
-  {itemTokenId: EstforConstants.COPPER_ORE, amount: 30},
+  {itemTokenId: EstforConstants.COPPER_ORE, amount: 30}
 ];
 export const tier2DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.BRONZE_ARROW, amount: 10},
@@ -403,7 +403,7 @@ export const tier2DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.TIN_ORE, amount: 10},
   {itemTokenId: EstforConstants.TIN_ORE, amount: 10},
   {itemTokenId: EstforConstants.TIN_ORE, amount: 20},
-  {itemTokenId: EstforConstants.TIN_ORE, amount: 20},
+  {itemTokenId: EstforConstants.TIN_ORE, amount: 20}
 ];
 export const tier3DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.IRON_ARROW, amount: 10},
@@ -605,7 +605,7 @@ export const tier3DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.ASH, amount: 30},
   {itemTokenId: EstforConstants.ASH, amount: 50},
   {itemTokenId: EstforConstants.ASH, amount: 70},
-  {itemTokenId: EstforConstants.ASH, amount: 100},
+  {itemTokenId: EstforConstants.ASH, amount: 100}
 ];
 export const tier4DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.MITHRIL_ARROW, amount: 50},
@@ -807,7 +807,7 @@ export const tier4DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.ARROW_SHAFT, amount: 30},
   {itemTokenId: EstforConstants.ARROW_SHAFT, amount: 30},
   {itemTokenId: EstforConstants.ARROW_SHAFT, amount: 40},
-  {itemTokenId: EstforConstants.ARROW_SHAFT, amount: 50},
+  {itemTokenId: EstforConstants.ARROW_SHAFT, amount: 50}
 ];
 export const tier5DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 50},
@@ -1009,7 +1009,7 @@ export const tier5DailyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.ASH, amount: 150},
   {itemTokenId: EstforConstants.ASH, amount: 170},
   {itemTokenId: EstforConstants.ASH, amount: 200},
-  {itemTokenId: EstforConstants.ASH, amount: 200},
+  {itemTokenId: EstforConstants.ASH, amount: 200}
 ];
 export const tier6DailyRewards: Equipment[] = [];
 
@@ -1023,7 +1023,7 @@ export const tier1WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.COMBAT_BOOST, amount: 1},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 1},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 1},
-  {itemTokenId: EstforConstants.BONEMEAL, amount: 100},
+  {itemTokenId: EstforConstants.BONEMEAL, amount: 100}
 ];
 export const tier2WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.XP_BOOST, amount: 2},
@@ -1035,7 +1035,7 @@ export const tier2WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.COMBAT_BOOST, amount: 2},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 2},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 2},
-  {itemTokenId: EstforConstants.BONEMEAL, amount: 200},
+  {itemTokenId: EstforConstants.BONEMEAL, amount: 200}
 ];
 export const tier3WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.XP_BOOST, amount: 3},
@@ -1047,7 +1047,7 @@ export const tier3WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.COMBAT_BOOST, amount: 3},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 3},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 3},
-  {itemTokenId: EstforConstants.BONEMEAL, amount: 500},
+  {itemTokenId: EstforConstants.BONEMEAL, amount: 500}
 ];
 export const tier4WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.XP_BOOST, amount: 4},
@@ -1059,7 +1059,7 @@ export const tier4WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.COMBAT_BOOST, amount: 4},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 4},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 4},
-  {itemTokenId: EstforConstants.BONEMEAL, amount: 800},
+  {itemTokenId: EstforConstants.BONEMEAL, amount: 800}
 ];
 export const tier5WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.XP_BOOST, amount: 5},
@@ -1071,7 +1071,7 @@ export const tier5WeeklyRewards: Equipment[] = [
   {itemTokenId: EstforConstants.COMBAT_BOOST, amount: 5},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 5},
   {itemTokenId: EstforConstants.GATHERING_BOOST, amount: 5},
-  {itemTokenId: EstforConstants.BONEMEAL, amount: 1000},
+  {itemTokenId: EstforConstants.BONEMEAL, amount: 1000}
 ];
 export const tier6WeeklyRewards: Equipment[] = [];
 
@@ -1080,12 +1080,12 @@ export const allDailyRewards: Equipment[][] = [
   tier2DailyRewards,
   tier3DailyRewards,
   tier4DailyRewards,
-  tier5DailyRewards,
+  tier5DailyRewards
 ];
 export const allWeeklyRewards: Equipment[][] = [
   tier1WeeklyRewards,
   tier2WeeklyRewards,
   tier3WeeklyRewards,
   tier4WeeklyRewards,
-  tier5WeeklyRewards,
+  tier5WeeklyRewards
 ];

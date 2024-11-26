@@ -221,41 +221,6 @@ describe("WorldActions", function () {
       );
     });
 
-    it("Check input item order", async function () {
-      const {worldActions} = await loadFixture(deployContracts);
-
-      const choiceId = 1;
-      const actionChoiceInput: ActionChoiceInput = {
-        ...defaultActionChoice,
-        skill: EstforTypes.Skill.MAGIC,
-        xpPerHour: 0,
-        rate: 1 * RATE_MUL,
-        inputTokenIds: [EstforConstants.BRONZE_ARROW, EstforConstants.IRON_ARROW, EstforConstants.ADAMANTINE_ARROW],
-        inputAmounts: [1, 2, 3]
-      };
-
-      actionChoiceInput.inputAmounts[0] = 4;
-      await expect(
-        worldActions.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
-      ).to.be.revertedWithCustomError(worldActions, "InputAmountsMustBeInOrder");
-
-      actionChoiceInput.inputAmounts[0] = 1;
-      actionChoiceInput.inputAmounts[1] = 4;
-      await expect(
-        worldActions.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
-      ).to.be.revertedWithCustomError(worldActions, "InputAmountsMustBeInOrder");
-
-      actionChoiceInput.inputAmounts[1] = 2;
-      actionChoiceInput.inputAmounts[2] = 1;
-      await expect(
-        worldActions.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])
-      ).to.be.revertedWithCustomError(worldActions, "InputAmountsMustBeInOrder");
-
-      actionChoiceInput.inputAmounts[2] = 3;
-      expect(await worldActions.addActionChoices(EstforConstants.NONE, [choiceId], [actionChoiceInput])).to.not.be
-        .reverted;
-    });
-
     it("Check input item validation", async function () {
       const {worldActions} = await loadFixture(deployContracts);
 
