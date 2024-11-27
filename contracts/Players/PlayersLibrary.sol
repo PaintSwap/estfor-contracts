@@ -679,33 +679,34 @@ library PlayersLibrary {
     xpElapsedTime = (uint256(baseInputItemsConsumedNum) * 3600 * RATE_MUL) / actionChoice.rate;
   }
 
+  function _getBoostedTime(
+    uint256 actionStartTime,
+    uint256 elapsedTime,
+    uint40 boostStartTime,
+    uint24 boostDuration
+  ) internal pure returns (uint24 boostedTime) {
+    // Calculate time overlap between action and boost periods
+    uint256 actionEndTime = actionStartTime + elapsedTime;
+    uint256 boostEndTime = boostStartTime + boostDuration;
+
+    // If there's no overlap or no elapsed time, boosted time is 0
+    if (actionStartTime >= boostEndTime || actionEndTime <= boostStartTime || elapsedTime == 0) {
+      boostedTime = 0;
+    } else {
+      // Calculate overlap using max of start times and min of end times
+      uint256 overlapStart = actionStartTime > boostStartTime ? actionStartTime : boostStartTime;
+      uint256 overlapEnd = actionEndTime < boostEndTime ? actionEndTime : boostEndTime;
+      boostedTime = uint24(overlapEnd - overlapStart);
+    }
+  }
+
   function getBoostedTime(
     uint256 actionStartTime,
     uint256 elapsedTime,
     uint40 boostStartTime,
     uint24 boostDuration
-  ) public pure returns (uint24 boostedTime) {
-    uint256 actionEndTime = actionStartTime + elapsedTime;
-    uint256 boostEndTime = boostStartTime + boostDuration;
-    bool boostFinishedBeforeOrOnActionStarted = actionStartTime >= boostEndTime;
-    bool boostStartedAfterOrOnActionFinished = actionEndTime <= boostStartTime;
-    uint24 actionDuration = uint24(actionEndTime - actionStartTime);
-    if (boostFinishedBeforeOrOnActionStarted || boostStartedAfterOrOnActionFinished || elapsedTime == 0) {
-      // Boost was not active at all during this queued action
-      boostedTime = 0;
-    } else if (boostStartTime <= actionStartTime && boostEndTime >= actionEndTime) {
-      boostedTime = actionDuration;
-    } else if (boostStartTime < actionStartTime && boostEndTime < actionEndTime) {
-      boostedTime = uint24(boostEndTime - actionStartTime);
-    } else if (boostStartTime > actionStartTime && boostEndTime > actionEndTime) {
-      boostedTime = uint24(actionEndTime - boostStartTime);
-    } else if (boostStartTime > actionStartTime && boostEndTime <= actionEndTime) {
-      boostedTime = boostDuration;
-    } else if (boostStartTime == actionStartTime && boostEndTime <= actionEndTime) {
-      boostedTime = boostDuration;
-    } else {
-      assert(false); // Should never happen
-    }
+  ) external pure returns (uint24) {
+    return _getBoostedTime(actionStartTime, elapsedTime, boostStartTime, boostDuration);
   }
 
   function _getXPFromBoostImpl(
@@ -723,7 +724,7 @@ library PlayersLibrary {
       (isCombatSkill && boostType == BoostType.COMBAT_XP) ||
       (!isCombatSkill && boostType == BoostType.NON_COMBAT_XP)
     ) {
-      uint256 boostedTime = getBoostedTime(actionStartTime, xpElapsedTime, boostStartTime, boostDuration);
+      uint256 boostedTime = _getBoostedTime(actionStartTime, xpElapsedTime, boostStartTime, boostDuration);
       boostPointsAccrued = uint32((boostedTime * xpPerHour * boostValue) / (3600 * 100));
     }
   }
@@ -863,35 +864,6 @@ library PlayersLibrary {
     combatStats.meleeDefence = int16(defenceLevel);
     combatStats.rangedDefence = int16(defenceLevel);
     combatStats.magicDefence = int16(defenceLevel);
-  }
-
-  function updateCombatStatsFromSkill(
-    CombatStats memory combatStats,
-    uint8 skillId,
-    int16 skillDiff
-  ) external pure returns (CombatStats memory statsOut) {
-    return _updateCombatStatsFromSkill(combatStats, skillId._asSkill(), skillDiff);
-  }
-
-  function _updateCombatStatsFromSkill(
-    CombatStats memory combatStats,
-    Skill skill,
-    int16 skillDiff
-  ) internal pure returns (CombatStats memory statsOut) {
-    statsOut = combatStats;
-    if (skill == Skill.MELEE) {} else if (skill == Skill.RANGED) {
-      statsOut.rangedAttack += skillDiff; // Extra/Reduced ranged damage
-    } else if (skill == Skill.MAGIC) {
-      statsOut.magicAttack += skillDiff; // Extra/Reduced magic damage
-    } else if (skill == Skill.DEFENCE) {
-      statsOut.meleeDefence += skillDiff;
-      statsOut.rangedDefence += skillDiff;
-      statsOut.magicDefence += skillDiff;
-    } else if (skill == Skill.HEALTH) {
-      statsOut.health += skillDiff;
-    } else {
-      assert(false);
-    }
   }
 
   function updateCombatStatsFromAttire(

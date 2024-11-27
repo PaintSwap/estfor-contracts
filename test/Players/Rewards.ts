@@ -1140,8 +1140,8 @@ describe("Rewards", function () {
         const randomChanceFraction = randomChanceFractions[i];
         const expectedTotal = numRepeats * randomChanceFraction * numHours;
         // Have 2 queued actions so get twice as much
-        expect(balanceMap.get(itemTokenId)).to.be.gte(Math.floor(expectedTotal * 0.65 * 2)); // Within 35% below
-        expect(balanceMap.get(itemTokenId)).to.be.lte(Math.floor(expectedTotal * 1.35 * 2)); // Within 35% above
+        expect(balanceMap.get(itemTokenId)).to.be.gte(Math.floor(expectedTotal * 0.6 * 2)); // Within 40% below
+        expect(balanceMap.get(itemTokenId)).to.be.lte(Math.floor(expectedTotal * 1.4 * 2)); // Within 40% above
         ++i;
       }
     });

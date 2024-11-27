@@ -145,29 +145,16 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         // This takes into account
         combatStats = PlayersLibrary.getCombatStatsFromHero(pendingQueuedActionProcessed, _playerXP[playerId]);
         if (actionChoice.skill1 != 0) {
-          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
-            combatStats,
-            actionChoice.skill1,
-            actionChoice.skillDiff1
-          );
+          combatStats = _updateCombatStatsFromSkill(combatStats, Skill(actionChoice.skill1), actionChoice.skillDiff1);
         }
         if (actionChoice.skill2 != 0) {
-          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
-            combatStats,
-            actionChoice.skill2,
-            actionChoice.skillDiff2
-          );
+          combatStats = _updateCombatStatsFromSkill(combatStats, Skill(actionChoice.skill2), actionChoice.skillDiff2);
         }
         if (actionChoice.skill3 != 0) {
-          combatStats = PlayersLibrary.updateCombatStatsFromSkill(
-            combatStats,
-            actionChoice.skill3,
-            actionChoice.skillDiff3
-          );
+          combatStats = _updateCombatStatsFromSkill(combatStats, Skill(actionChoice.skill3), actionChoice.skillDiff3);
         }
 
-        // Only gives combat stats if the boost is active from the start of the action.
-        /*
+        // Only gives combat stats if the boost is active from the start of the action for the whole one
         PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
         if (activeBoost.boostType == BoostType.COMBAT_FIXED) {
           bool boostIsActiveFromStartOfAction = activeBoost.startTime <= veryStartTime;
@@ -176,7 +163,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
             Item memory item = _itemNFT.getItem(activeBoost.itemTokenId);
             PlayersLibrary._updateCombatStatsFromItem(combatStats, item);
           }
-        } */
+        }
 
         // Update combat stats from the pet if it is still valid.
         // The pet enhancements only take into account base hero stats, not any bonuses from equipment.
@@ -737,7 +724,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     // Check for any boosts for random rewards (guaranteed rewards already have boosts applied)
     PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     if (activeBoost.boostType == BoostType.GATHERING) {
-      uint256 boostedTime = PlayersLibrary.getBoostedTime(
+      uint256 boostedTime = PlayersLibrary._getBoostedTime(
         startTime,
         xpElapsedTime,
         activeBoost.startTime,
@@ -792,7 +779,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     // Check for any boosts
     PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     if (activeBoost.boostType == BoostType.GATHERING) {
-      uint256 boostedTime = PlayersLibrary.getBoostedTime(
+      uint256 boostedTime = PlayersLibrary._getBoostedTime(
         skillStartTime,
         xpElapsedTime,
         activeBoost.startTime,
@@ -886,7 +873,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
           if (boostType == BoostType.GATHERING) {
             uint256 elapsedTime = pendingRandomReward.elapsedTime;
 
-            uint256 boostedTime = PlayersLibrary.getBoostedTime(
+            uint256 boostedTime = PlayersLibrary._getBoostedTime(
               pendingRandomReward.startTime,
               elapsedTime,
               pendingRandomReward.boostStartTime,
@@ -912,6 +899,27 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       mstore(ids, length)
       mstore(amounts, length)
       mstore(queueIds, length)
+    }
+  }
+
+  function _updateCombatStatsFromSkill(
+    CombatStats memory combatStats,
+    Skill skill,
+    int16 skillDiff
+  ) internal pure returns (CombatStats memory statsOut) {
+    statsOut = combatStats;
+    if (skill == Skill.MELEE) {} else if (skill == Skill.RANGED) {
+      statsOut.rangedAttack += skillDiff; // Extra/Reduced ranged damage
+    } else if (skill == Skill.MAGIC) {
+      statsOut.magicAttack += skillDiff; // Extra/Reduced magic damage
+    } else if (skill == Skill.DEFENCE) {
+      statsOut.meleeDefence += skillDiff;
+      statsOut.rangedDefence += skillDiff;
+      statsOut.magicDefence += skillDiff;
+    } else if (skill == Skill.HEALTH) {
+      statsOut.health += skillDiff;
+    } else {
+      assert(false);
     }
   }
 

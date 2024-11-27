@@ -793,7 +793,7 @@
     "outputs": [
       {
         "internalType": "uint24",
-        "name": "boostedTime",
+        "name": "",
         "type": "uint24"
       }
     ],
@@ -1127,109 +1127,6 @@
       }
     ],
     "name": "updateCombatStatsFromPet",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "int16",
-            "name": "meleeAttack",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicAttack",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedAttack",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "health",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "meleeDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedDefence",
-            "type": "int16"
-          }
-        ],
-        "internalType": "struct CombatStats",
-        "name": "statsOut",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "int16",
-            "name": "meleeAttack",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicAttack",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedAttack",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "health",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "meleeDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "magicDefence",
-            "type": "int16"
-          },
-          {
-            "internalType": "int16",
-            "name": "rangedDefence",
-            "type": "int16"
-          }
-        ],
-        "internalType": "struct CombatStats",
-        "name": "combatStats",
-        "type": "tuple"
-      },
-      {
-        "internalType": "uint8",
-        "name": "skillId",
-        "type": "uint8"
-      },
-      {
-        "internalType": "int16",
-        "name": "skillDiff",
-        "type": "int16"
-      }
-    ],
-    "name": "updateCombatStatsFromSkill",
     "outputs": [
       {
         "components": [
