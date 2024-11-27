@@ -1474,7 +1474,7 @@ describe("Players", function () {
     await itemNFT.mint(alice, EstforConstants.XP_BOOST, 1);
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,

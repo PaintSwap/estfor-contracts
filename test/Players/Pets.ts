@@ -207,7 +207,7 @@ describe("Pets", function () {
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(getXPFromLevel(5) + 36); // Now gain some XP
   });
 
-  it("Queue a pet with combat and startActionsExtra", async function () {
+  it("Queue a pet with combat and startActionsAdvanced", async function () {
     const {
       players,
       playerId,
@@ -238,7 +238,7 @@ describe("Pets", function () {
 
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.NONE,

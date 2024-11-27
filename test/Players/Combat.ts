@@ -729,7 +729,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [],
           EstforConstants.XP_BOOST,
@@ -855,7 +855,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [],
           EstforConstants.XP_BOOST,
@@ -1023,7 +1023,7 @@ describe("Combat Actions", function () {
       const raffleCost = await wishingWell.getRaffleEntryCost();
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           EstforConstants.XP_BOOST,

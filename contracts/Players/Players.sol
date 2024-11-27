@@ -125,31 +125,23 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     _startActions(playerId, queuedActions, NONE, uint40(block.timestamp), 0, 0, queueStrategy);
   }
 
-  /// @notice Start actions for a player
+  /// @notice Start actions for a player, has more advanced options
   /// @param playerId Id for the player
   /// @param queuedActions Actions to queue
   /// @param boostItemTokenId Which boost to consume, can be NONE
-  /// @param boostStartTime (Not used yet)
+  /// @param boostStartTime when should the boost start? Must be within 24 hours
   /// @param queueStrategy Can be either `ActionQueueStrategy.NONE` for overwriting all actions,
   ///                     `ActionQueueStrategy.KEEP_LAST_IN_PROGRESS` or `ActionQueueStrategy.APPEND`
-  function startActionsExtra(
+  function startActionsAdvanced(
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions,
     uint16 boostItemTokenId,
-    uint40 boostStartTime, // Not used yet (always current time)
+    uint40 boostStartTime,
     uint256 questId,
     uint256 donationAmount,
     ActionQueueStrategy queueStrategy
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _startActions(
-      playerId,
-      queuedActions,
-      boostItemTokenId,
-      uint40(block.timestamp),
-      questId,
-      donationAmount,
-      queueStrategy
-    );
+    _startActions(playerId, queuedActions, boostItemTokenId, boostStartTime, questId, donationAmount, queueStrategy);
   }
 
   /// @notice Process actions for a player up to the current block timestamp

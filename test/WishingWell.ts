@@ -569,7 +569,7 @@ describe("WishingWell", function () {
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
-    await players.connect(alice).startActionsExtra(
+    await players.connect(alice).startActionsAdvanced(
       playerId,
       [queuedAction],
       EstforConstants.NONE,
@@ -605,7 +605,7 @@ describe("WishingWell", function () {
 
     // Now claim it while queueing another donation
     await expect(
-      players.connect(alice).startActionsExtra(
+      players.connect(alice).startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.NONE,

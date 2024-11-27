@@ -37,7 +37,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
@@ -84,7 +84,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
@@ -132,7 +132,7 @@ describe("Boosts", function () {
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           EstforConstants.XP_BOOST,
@@ -181,7 +181,7 @@ describe("Boosts", function () {
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           EstforConstants.XP_BOOST,
@@ -231,7 +231,7 @@ describe("Boosts", function () {
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           EstforConstants.XP_BOOST,
@@ -278,7 +278,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.COMBAT_BOOST,
@@ -331,7 +331,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
@@ -383,7 +383,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
@@ -431,7 +431,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.NONE,
@@ -495,7 +495,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.NONE,
@@ -587,7 +587,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.NONE,
@@ -724,7 +724,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
@@ -856,7 +856,7 @@ describe("Boosts", function () {
     await expect(
       players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           EstforConstants.NONE,
@@ -1011,7 +1011,7 @@ describe("Boosts", function () {
     await expect(
       players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           EstforConstants.NONE,
@@ -1142,7 +1142,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
@@ -1157,7 +1157,7 @@ describe("Boosts", function () {
     // Change to gathering boost
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -1171,7 +1171,7 @@ describe("Boosts", function () {
     // Back to XP boost
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
@@ -1230,7 +1230,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -1279,7 +1279,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -1382,7 +1382,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -1481,7 +1481,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction, queuedAction, queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -1529,7 +1529,7 @@ describe("Boosts", function () {
 
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -1618,7 +1618,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,
@@ -1682,7 +1682,7 @@ describe("Boosts", function () {
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players
       .connect(alice)
-      .startActionsExtra(
+      .startActionsAdvanced(
         playerId,
         [queuedAction],
         EstforConstants.GATHERING_BOOST,

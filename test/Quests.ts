@@ -1064,7 +1064,7 @@ describe("Quests", function () {
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
     });
 
-    it("Activate quest through startActionsExtra", async function () {
+    it("Activate quest through startActionsAdvanced", async function () {
       const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
         questsFixture
       );
@@ -1074,7 +1074,7 @@ describe("Quests", function () {
       expect((await quests.activeQuests(playerId)).questId).to.eq(0);
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           NONE,

@@ -1077,7 +1077,7 @@ describe("Non-Combat Actions", function () {
       await itemNFT.mint(alice, EstforConstants.SKILL_BOOST, 1);
       await players
         .connect(alice)
-        .startActionsExtra(
+        .startActionsAdvanced(
           playerId,
           [queuedAction],
           EstforConstants.SKILL_BOOST,
