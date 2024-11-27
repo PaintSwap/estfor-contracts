@@ -169,11 +169,6 @@
   },
   {
     "inputs": [],
-    "name": "InvalidStartSlot",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "InvalidTravellingTimespan",
     "type": "error"
   },

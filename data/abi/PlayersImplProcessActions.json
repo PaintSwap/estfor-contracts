@@ -1,11 +1,6 @@
 [
   {
     "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [],
     "name": "ActionChoiceIdNotRequired",
     "type": "error"
   },
@@ -192,11 +187,6 @@
       }
     ],
     "name": "InvalidSkillId",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InvalidStartSlot",
     "type": "error"
   },
   {
@@ -1389,34 +1379,6 @@
       }
     ],
     "name": "donate",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Skill",
-        "name": "skill",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint56",
-        "name": "xp",
-        "type": "uint56"
-      }
-    ],
-    "name": "modifyXP",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

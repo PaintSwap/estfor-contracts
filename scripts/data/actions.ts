@@ -4221,6 +4221,7 @@ export const allActions: ActionInput[] = [
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY, rate: 120 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.FERTILE_SOIL, chance: 13653, amount: 1},
+      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 4095, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 1, amount: 1}
     ],
     combatStats: {

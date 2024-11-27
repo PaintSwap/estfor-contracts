@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -16,13 +15,9 @@ import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPla
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, IPlayersMiscDelegateView {
+contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDelegateView {
   using CombatStyleLibrary for bytes1;
   using CombatStyleLibrary for CombatStyle;
-
-  constructor() {
-    _checkStartSlot();
-  }
 
   // === XP Threshold rewards ===
   function claimableXPThresholdRewardsImpl(
@@ -551,17 +546,18 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     uint256[] calldata startingItemTokenIds,
     uint256[] calldata startingAmounts
   ) external {
-    Player storage player = _players[playerId];
-    player.totalXP = uint56(START_XP);
-
     uint256 length = uint256(startSkills[1] != Skill.NONE ? 2 : 1);
     uint32 xpEach = uint32(START_XP / length);
 
+    uint256 levelsGained;
     for (uint256 i; i < length; ++i) {
       Skill skill = startSkills[i];
-      _updateXP(from, playerId, skill, xpEach);
+      levelsGained += _updateXP(from, playerId, skill, xpEach);
     }
 
+    Player storage player = _players[playerId];
+    player.totalXP = uint48(START_XP);
+    player.totalLevel = uint16(START_LEVEL + levelsGained);
     player.skillBoosted1 = startSkills[0];
     player.skillBoosted2 = startSkills[1]; // Can be NONE
 
@@ -569,12 +565,55 @@ contract PlayersImplMisc is PlayersImplBase, PlayersBase, IPlayersMiscDelegate, 
     _itemNFT.mintBatch(from, startingItemTokenIds, startingAmounts);
   }
 
+  function _claimTotalXPThresholdRewards(
+    address from,
+    uint256 playerId,
+    uint256 oldTotalXP,
+    uint256 newTotalXP
+  ) private {
+    (uint256[] memory itemTokenIds, uint256[] memory amounts) = _claimableXPThresholdRewards(oldTotalXP, newTotalXP);
+    if (itemTokenIds.length != 0) {
+      _itemNFT.mintBatch(from, itemTokenIds, amounts);
+      emit ClaimedXPThresholdRewards(from, playerId, itemTokenIds, amounts);
+    }
+  }
+
+  function _modifyXPRelative(address from, uint256 playerId, Skill skill, uint56 gainedXP) private {
+    require(_playerNFT.balanceOf(from, playerId) != 0, NotOwnerOfPlayer());
+    uint256 levelsGained = _updateXP(from, playerId, skill, gainedXP);
+    uint48 newTotalXP = uint48(_players[playerId].totalXP + gainedXP);
+    _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
+    Player storage player = _players[playerId];
+    player.totalXP = newTotalXP;
+    player.totalLevel += uint16(levelsGained);
+
+    // Update any in-progress actions. If things like passive actions give XP we want to make sure not to take it into account for any in-progress actions
+    if (gainedXP > type(uint24).max) {
+      if (player.currentActionProcessedSkill1 == skill) {
+        player.currentActionProcessedXPGained1 += uint24(gainedXP);
+      } else if (player.currentActionProcessedSkill2 == skill) {
+        player.currentActionProcessedXPGained2 += uint24(gainedXP);
+      } else if (player.currentActionProcessedSkill3 == skill) {
+        player.currentActionProcessedXPGained3 += uint24(gainedXP);
+      }
+    }
+  }
+
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external {
+    // Make sure it isn't less XP
+    uint256 oldXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
+    require(xp >= oldXP, TestInvalidXP());
+    uint56 gainedXP = uint56(xp - oldXP);
+    _modifyXPRelative(from, playerId, skill, gainedXP);
+  }
+
   function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external payable {
     // This is a one off quest
     (uint256[] memory itemTokenIds /*uint256[] memory amounts*/, , Skill skillGained, uint32 xpGained) = _quests
       .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
-    // Must update before the call to buyBrushQuest so the indexer can remove the in-progress XP update
-    _updateXP(msg.sender, playerId, skillGained, xpGained);
+
+    uint256 oldXP = PlayersLibrary.readXP(skillGained, _playerXP[playerId]);
+    _modifyXPRelative(to, playerId, skillGained, uint56(oldXP + xpGained));
 
     bool success = _quests.buyBrushQuest{value: msg.value}(msg.sender, to, playerId, questId, useExactETH);
     require(success, BuyBrushFailed());

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 
 import {RandomnessBeacon} from "../RandomnessBeacon.sol";
@@ -15,15 +14,11 @@ import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplQueueActions is PlayersImplBase, PlayersBase {
+contract PlayersImplQueueActions is PlayersBase {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
   using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for bytes1;
-
-  constructor() {
-    _checkStartSlot();
-  }
 
   function startActions(
     uint256 playerId,

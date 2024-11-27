@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelegate} from "../interfaces/IPlayersDelegates.sol";
@@ -10,13 +9,9 @@ import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
+contract PlayersImplProcessActions is PlayersBase {
   using CombatStyleLibrary for bytes1;
   using CombatStyleLibrary for CombatStyle;
-
-  constructor() {
-    _checkStartSlot();
-  }
 
   function processActionsAndSetState(
     uint256 playerId
@@ -140,30 +135,31 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
       }
       // XP gained
       if (actionMetadata.xpGained != 0) {
-        {
-          uint256 previousTotalXP = player.totalXP;
-          uint256 newTotalXP = previousTotalXP + actionMetadata.xpGained;
-          player.totalXP = uint56(newTotalXP);
-        }
-
         // Keep reading until the xp expected is reached
         uint256 xpGained;
+        uint256 levelsGained;
         for (uint256 j = skillIndex; j < pendingQueuedActionProcessed.skills.length; ++j) {
           xpGained += pendingQueuedActionProcessed.xpGainedSkills[j];
           if (xpGained <= actionMetadata.xpGained) {
             // Map this to the current action
-            _updateXP(
+            uint256 newLevels = _updateXP(
               from,
               playerId,
               pendingQueuedActionProcessed.skills[j],
               pendingQueuedActionProcessed.xpGainedSkills[j]
             );
+
+            levelsGained += newLevels;
             skillIndex = j + 1;
           } else {
             break;
           }
         }
+
+        player.totalXP += actionMetadata.xpGained;
+        player.totalLevel += uint16(levelsGained);
       }
+
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
         emit ActionFinished(from, playerId, actionMetadata.queueId);
@@ -226,12 +222,14 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
 
     // Any quest XP gains
     uint256 questXpGained;
+    uint256 questLevelsGained;
     for (uint256 j; j < questState.skills.length; ++j) {
-      _updateXP(from, playerId, questState.skills[j], questState.xpGainedSkills[j]);
+      questLevelsGained += _updateXP(from, playerId, questState.skills[j], questState.xpGainedSkills[j]);
       questXpGained += questState.xpGainedSkills[j];
     }
     if (questXpGained != 0) {
-      player.totalXP = uint56(player.totalXP + questXpGained);
+      player.totalXP = uint48(player.totalXP + questXpGained);
+      player.totalLevel += uint16(questLevelsGained);
     }
 
     // Daily/weekly rewards
@@ -464,43 +462,6 @@ contract PlayersImplProcessActions is PlayersImplBase, PlayersBase {
     );
 
     emit AddPendingRandomReward(from, playerId, queueId, skillStartTime, xpElapsedTime, rolls);
-  }
-
-  function _claimTotalXPThresholdRewards(
-    address from,
-    uint256 playerId,
-    uint256 oldTotalXP,
-    uint256 newTotalXP
-  ) private {
-    (uint256[] memory itemTokenIds, uint256[] memory amounts) = _claimableXPThresholdRewards(oldTotalXP, newTotalXP);
-    if (itemTokenIds.length != 0) {
-      _itemNFT.mintBatch(from, itemTokenIds, amounts);
-      emit ClaimedXPThresholdRewards(from, playerId, itemTokenIds, amounts);
-    }
-  }
-
-  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external {
-    // Make sure it isn't less XP
-    uint256 oldXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
-    require(xp >= oldXP, TestInvalidXP());
-    require(_playerNFT.balanceOf(from, playerId) != 0, NotOwnerOfPlayer());
-    uint56 gainedXP = uint56(xp - oldXP);
-    _updateXP(from, playerId, skill, gainedXP);
-    uint56 newTotalXP = uint56(_players[playerId].totalXP + gainedXP);
-    _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
-    _players[playerId].totalXP = newTotalXP;
-
-    // Update any in-progress actions. If things like passive actions give XP we want to make sure not to take it into account for any in-progress actions
-    if (gainedXP > type(uint24).max) {
-      Player storage player = _players[playerId];
-      if (player.currentActionProcessedSkill1 == skill) {
-        player.currentActionProcessedXPGained1 += uint24(gainedXP);
-      } else if (player.currentActionProcessedSkill2 == skill) {
-        player.currentActionProcessedXPGained2 += uint24(gainedXP);
-      } else if (player.currentActionProcessedSkill3 == skill) {
-        player.currentActionProcessedXPGained3 += uint24(gainedXP);
-      }
-    }
   }
 
   function _handleDailyRewards(address from, uint256 playerId) private {

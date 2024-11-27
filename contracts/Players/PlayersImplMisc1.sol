@@ -5,7 +5,6 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {ItemNFT} from "../ItemNFT.sol";
@@ -21,14 +20,10 @@ import {IPlayersMisc1DelegateView} from "../interfaces/IPlayersDelegates.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplMisc1 is PlayersImplBase, PlayersBase, IPlayersMisc1DelegateView {
+contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
   using Strings for uint32;
   using Strings for uint256;
   using Strings for bytes32;
-
-  constructor() {
-    _checkStartSlot();
-  }
 
   // Show all the player stats, return metadata json
   function uri(

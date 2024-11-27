@@ -138,7 +138,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
     _brush = brush;
     _nextPlayerId = startPlayerId;
-    setInitialLevel(17);
+    setInitialLevel(START_LEVEL);
     _imageBaseUri = imageBaseUri;
     _treasury = treasury;
     _dev = dev;

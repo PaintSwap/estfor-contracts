@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {PlayersImplBase} from "./PlayersImplBase.sol";
 import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
@@ -13,14 +12,10 @@ import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract PlayersImplRewards is PlayersImplBase, PlayersBase, IPlayersRewardsDelegateView {
+contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
   using CombatStyleLibrary for bytes1;
   using CombatStyleLibrary for CombatStyle;
   using SkillLibrary for Skill;
-
-  constructor() {
-    _checkStartSlot();
-  }
 
   // Get any changes that are pending and not commited to the blockchain yet.
   // Such as items consumed/produced, xp gained, whether the player died, pending random reward rolls & quest rewards.

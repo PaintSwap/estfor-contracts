@@ -16912,7 +16912,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_001_SMALL_HEALING,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.FOOD,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -16937,7 +16937,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_002_MEDIUM_HEALING,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.FOOD,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -16962,7 +16962,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_003_LARGE_HEALING,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.FOOD,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -16987,7 +16987,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_004_EXTRA_LARGE_HEALING,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.FOOD,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17012,7 +17012,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_005_SMALL_MELEE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17022,7 +17022,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_005_SMALL_MELEE.json",
-    name: "Melee Boost Potion S",
+    name: "Melee Boost S",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17037,7 +17037,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_006_LARGE_MELEE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17047,7 +17047,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_006_LARGE_MELEE.json",
-    name: "Melee Boost Potion L",
+    name: "Melee Boost L",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17062,7 +17062,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_007_SMALL_RANGED,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17072,7 +17072,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_007_SMALL_RANGED.json",
-    name: "Ranged Boost Potion S",
+    name: "Ranged Boost S",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17087,7 +17087,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_008_LARGE_RANGED,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17097,7 +17097,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_008_LARGE_RANGED.json",
-    name: "Ranged Boost Potion L",
+    name: "Ranged Boost L",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17112,7 +17112,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_009_SMALL_MAGIC,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17122,7 +17122,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_009_SMALL_MAGIC.json",
-    name: "Magic Boost Potion S",
+    name: "Magic Boost S",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17137,7 +17137,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_010_LARGE_MAGIC,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17147,7 +17147,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_010_LARGE_MAGIC.json",
-    name: "Magic Boost Potion L",
+    name: "Magic Boost L",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17162,7 +17162,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_011_SMALL_DEFENCE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17172,7 +17172,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_011_SMALL_DEFENCE.json",
-    name: "Defence Boost Potion S",
+    name: "Defence Boost S",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17187,7 +17187,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.POTION_012_LARGE_DEFENCE,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17197,7 +17197,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_012_LARGE_DEFENCE.json",
-    name: "Defence Boost Potion L",
+    name: "Defence Boost L",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17212,7 +17212,7 @@ export const allItems: ItemInput[] = [
       health: 65
     },
     tokenId: EstforConstants.POTION_013_SMALL_HEALTH,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17222,7 +17222,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_013_SMALL_HEALTH.json",
-    name: "Health Boost Potion S",
+    name: "Health Boost S",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17237,7 +17237,7 @@ export const allItems: ItemInput[] = [
       health: 220
     },
     tokenId: EstforConstants.POTION_014_LARGE_HEALTH,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.BOOST_VIAL,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -17247,7 +17247,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 86400,
     metadataURI: "POTION_014_LARGE_HEALTH.json",
-    name: "Health Boost Potion L",
+    name: "Health Boost L",
     isAvailable: true,
     questPrerequisiteId: 0
   },

@@ -101,7 +101,6 @@ abstract contract PlayersBase {
   error ItemMinimumXPNotReached();
   error AttireMinimumXPNotReached();
   error ConsumableMinimumXPNotReached();
-  error InvalidStartSlot();
   error NoItemBalance(uint16 itemTokenId);
   error CannotEquipTwoHandedAndOtherEquipment();
   error IncorrectRightHandEquipment(uint16 equippedItemTokenId);
@@ -302,8 +301,13 @@ abstract contract PlayersBase {
     emit SetActionQueue(from, playerId, queuedActions, attire, startTime);
   }
 
-  // This does not update player.totalXP!!
-  function _updateXP(address from, uint256 playerId, Skill skill, uint128 pointsAccrued) internal {
+  // This does not update player.totalXP or player.totalLevel!
+  function _updateXP(
+    address from,
+    uint256 playerId,
+    Skill skill,
+    uint128 pointsAccrued
+  ) internal returns (uint8 levelsGained) {
     PackedXP storage packedXP = _playerXP[playerId];
     uint256 oldPoints = PlayersLibrary.readXP(skill, packedXP);
     uint256 newPoints = oldPoints + pointsAccrued;
@@ -313,7 +317,7 @@ abstract contract PlayersBase {
       pointsAccrued = uint32(newPoints - oldPoints);
     }
     if (pointsAccrued == 0) {
-      return;
+      return 0;
     }
     uint256 offset = 2; // Accounts for NONE & COMBAT skills
     uint256 skillOffsetted = uint8(skill) - offset;
@@ -369,7 +373,8 @@ abstract contract PlayersBase {
       }
     }
     // Update the player's level
-    if (newLevel > oldLevel) {
+    levelsGained = uint8(newLevel - oldLevel);
+    if (levelsGained > 0) {
       emit LevelUp(from, playerId, skill, oldLevel, newLevel);
     }
   }
@@ -417,15 +422,6 @@ abstract contract PlayersBase {
       abi.encodeWithSelector(IPlayersMiscDelegateView.claimableXPThresholdRewardsImpl.selector, oldTotalXP, newTotalXP)
     );
     return abi.decode(data, (uint256[], uint256[]));
-  }
-
-  function _checkStartSlot() internal pure {
-    uint256 expectedStartSlotNumber = 0; // From the various slot arrays expected in the base classes
-    uint256 slot;
-    assembly ("memory-safe") {
-      slot := _startSlot.slot
-    }
-    require(slot == expectedStartSlotNumber, InvalidStartSlot());
   }
 
   function _setPrevPlayerState(Player storage player, PendingQueuedActionData memory currentActionProcessed) internal {

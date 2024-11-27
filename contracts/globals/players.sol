@@ -49,7 +49,8 @@ struct Player {
   uint16 currentActionProcessedBaseInputItemsConsumedNum; // e.g scrolls, crafting materials etc
   Skill skillBoosted1; // The first skill that is boosted
   Skill skillBoosted2; // The second skill that is boosted (if applicable)
-  uint56 totalXP;
+  uint48 totalXP;
+  uint16 totalLevel; // Doesn't not automatically add new skills to it
   bytes1 packedData; // Contains worldLocation in first 6 bits (0 is the main starting randomnessBeacon), and full mode unlocked in the upper most bit
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
@@ -320,6 +321,8 @@ struct ActivePlayerInfo {
   uint24 timespan1;
   uint24 timespan2;
 }
+
+uint8 constant START_LEVEL = 17; // Needs updating when there is a new skill. Only useful for new heroes.
 
 uint256 constant MAX_UNIQUE_TICKETS = 64;
 // Used in a bunch of places

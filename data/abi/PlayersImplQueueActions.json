@@ -1,11 +1,6 @@
 [
   {
     "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [],
     "name": "ActionChoiceIdNotRequired",
     "type": "error"
   },
@@ -192,11 +187,6 @@
       }
     ],
     "name": "InvalidSkillId",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InvalidStartSlot",
     "type": "error"
   },
   {

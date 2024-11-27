@@ -67,7 +67,6 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
-    _checkStartSlot();
   }
 
   function initialize(
@@ -283,10 +282,10 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     _clearEverything(from, playerId, !isEmergency);
   }
 
-  function _clearEverything(address from, uint256 playerId, bool _processTheActions) private {
+  function _clearEverything(address from, uint256 playerId, bool processTheActions) private {
     _delegatecall(
       _implQueueActions,
-      abi.encodeWithSelector(IPlayersDelegate.clearEverything.selector, from, playerId, _processTheActions)
+      abi.encodeWithSelector(IPlayersDelegate.clearEverything.selector, from, playerId, processTheActions)
     );
   }
 
@@ -437,12 +436,16 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     return PlayersLibrary.readXP(skill, _playerXP[playerId]);
   }
 
-  function getLevel(uint256 playerId, Skill skill) external view override returns (uint256) {
+  function getLevel(uint256 playerId, Skill skill) external view override returns (uint256 level) {
     return PlayersLibrary._getLevel(PlayersLibrary.readXP(skill, _playerXP[playerId]));
   }
 
-  function getTotalXP(uint256 playerId) external view override returns (uint256) {
+  function getTotalXP(uint256 playerId) external view override returns (uint256 totalXP) {
     return _players[playerId].totalXP;
+  }
+
+  function getTotalLevel(uint256 playerId) external view override returns (uint256 totalLevel) {
+    return _players[playerId].totalLevel;
   }
 
   function getPackedXP(uint256 playerId) external view returns (PackedXP memory) {
@@ -482,10 +485,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
   }
 
   function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external isXPModifier {
-    _delegatecall(
-      _implProcessActions,
-      abi.encodeWithSelector(IPlayersDelegate.modifyXP.selector, from, playerId, skill, xp)
-    );
+    _delegatecall(_implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.modifyXP.selector, from, playerId, skill, xp));
   }
 
   function setImpls(

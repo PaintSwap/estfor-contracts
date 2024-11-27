@@ -221,11 +221,6 @@
   },
   {
     "inputs": [],
-    "name": "InvalidStartSlot",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "InvalidTravellingTimespan",
     "type": "error"
   },
@@ -2250,7 +2245,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "level",
         "type": "uint256"
       }
     ],
@@ -2945,9 +2940,14 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint56",
+            "internalType": "uint48",
             "name": "totalXP",
-            "type": "uint56"
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint16",
+            "name": "totalLevel",
+            "type": "uint16"
           },
           {
             "internalType": "bytes1",
@@ -3043,11 +3043,30 @@
         "type": "uint256"
       }
     ],
+    "name": "getTotalLevel",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalLevel",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
     "name": "getTotalXP",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "totalXP",
         "type": "uint256"
       }
     ],
