@@ -106,9 +106,7 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
   });
   console.log(`playersImplMisc = "${(await playersImplMisc.getAddress()).toLowerCase()}"`);
 
-  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
-  });
+  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1");
   console.log(`playersImplMisc1 = "${(await playersImplMisc1.getAddress()).toLowerCase()}"`);
 
   return {

@@ -254,9 +254,7 @@ export const playersFixture = async function () {
   const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: await playersLibrary.getAddress()}
   });
-  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1", {
-    libraries: {PlayersLibrary: await playersLibrary.getAddress()}
-  });
+  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1");
 
   const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.deployProxy(

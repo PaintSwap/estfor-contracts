@@ -365,6 +365,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     uint64[] memory playerIds = clanInfo.playerIds;
     for (uint256 i; i < playerIds.length; ++i) {
       uint64 playerId = playerIds[i];
+      // TODO Make a getLevels function
       combatStats.health += int16(int256(_players.getLevel(playerId, Skill.HEALTH)));
       combatStats.meleeAttack += int16(int256(_players.getLevel(playerId, Skill.MELEE)));
       combatStats.magicAttack += int16(int256(_players.getLevel(playerId, Skill.MAGIC)));

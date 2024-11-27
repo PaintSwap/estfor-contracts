@@ -261,8 +261,8 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
       if (actionChoice.successPercent != 100) {
         // Only does the first skill
 
-        uint256 minLevel = PlayersLibrary.getLevel(actionChoice.skillMinXP1);
-        uint256 skillLevel = PlayersLibrary.getLevel(
+        uint256 minLevel = PlayersLibrary._getLevel(actionChoice.skillMinXP1);
+        uint256 skillLevel = PlayersLibrary._getLevel(
           PlayersLibrary.getAbsoluteActionStartXP(
             actionChoice.skill1,
             pendingQueuedActionProcessed,

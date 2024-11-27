@@ -47,8 +47,10 @@ describe("PlayerNFT", function () {
         isBeta
       )
     )
-      .to.emit(playerNFT, "SetInitialLevel")
-      .withArgs(17);
+      .to.emit(playerNFT, "EditNameCost")
+      .withArgs(editNameBrushPrice)
+      .and.to.emit(playerNFT, "UpgradePlayerCost")
+      .withArgs(upgradePlayerBrushPrice);
   });
 
   it("Empty name", async function () {

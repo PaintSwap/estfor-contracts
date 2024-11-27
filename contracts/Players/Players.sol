@@ -444,6 +444,20 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     return _players[playerId].totalXP;
   }
 
+  /* TODO: When there is a new skill can use this to update totalLevel properly (needs testing)
+  function calibrate(uint256 playerId) public {
+    // Get total level of all skills, check if it matches total level on player
+    uint256 end = START_LEVEL + 2; // Accounts for NONE & COMBAT meta-skills
+    uint16 totalLevel;
+    for (uint i = 2; i < end; ++i) {
+      Skill skill = Skill(i);
+      uint256 skillXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
+      totalLevel += PlayersLibrary._getLevel(skillXP);
+    }
+    // Set new totalLevel
+    _players[playerId].totalLevel = totalLevel;
+  } */
+
   function getTotalLevel(uint256 playerId) external view override returns (uint256 totalLevel) {
     return _players[playerId].totalLevel;
   }

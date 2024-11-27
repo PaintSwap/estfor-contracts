@@ -49,7 +49,6 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
-  event SetInitialLevel(uint256 initialLevel);
 
   error NotOwnerOfPlayer();
   error NotPlayers();
@@ -138,7 +137,6 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
     _brush = brush;
     _nextPlayerId = startPlayerId;
-    setInitialLevel(START_LEVEL);
     _imageBaseUri = imageBaseUri;
     _treasury = treasury;
     _dev = dev;
@@ -400,10 +398,6 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   function setUpgradeCost(uint72 upgradePlayerCost) public onlyOwner {
     _upgradePlayerCost = upgradePlayerCost;
     emit UpgradePlayerCost(upgradePlayerCost);
-  }
-
-  function setInitialLevel(uint8 initialLevel) public onlyOwner {
-    emit SetInitialLevel(initialLevel);
   }
 
   function setReservedHeroNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
