@@ -447,19 +447,16 @@ contract PlayersImplProcessActions is PlayersBase {
     );
 
     // There's no random word for this yet, so add it to the loot queue. (TODO: They can force add it later)
-    _pendingRandomRewards[playerId].push(
-      PendingRandomReward({
-        actionId: actionId,
-        queueId: queueId,
-        startTime: skillStartTime,
-        xpElapsedTime: uint24(xpElapsedTime),
-        elapsedTime: elapsedTime,
-        sentinelElapsedTime: sentinelElapsedTime,
-        boostItemTokenId: boostItemTokenId,
-        boostStartTime: boostStartTime,
-        fullAttireBonusRewardsPercent: fullAttireBonusRewardsPercent
-      })
-    );
+    PendingRandomReward storage pendingRandomReward = _pendingRandomRewards[playerId].push();
+    pendingRandomReward.actionId = actionId;
+    pendingRandomReward.queueId = queueId;
+    pendingRandomReward.startTime = skillStartTime;
+    pendingRandomReward.xpElapsedTime = xpElapsedTime;
+    pendingRandomReward.elapsedTime = elapsedTime;
+    pendingRandomReward.sentinelElapsedTime = sentinelElapsedTime;
+    pendingRandomReward.boostItemTokenId = boostItemTokenId;
+    pendingRandomReward.boostStartTime = boostStartTime;
+    pendingRandomReward.fullAttireBonusRewardsPercent = fullAttireBonusRewardsPercent;
 
     emit AddPendingRandomReward(from, playerId, queueId, skillStartTime, xpElapsedTime, rolls);
   }
