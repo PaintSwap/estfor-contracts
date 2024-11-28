@@ -18,7 +18,7 @@ import {HardhatNetworkAccountUserConfig, SolcUserConfig} from "hardhat/types";
 const defaultConfig: SolcUserConfig = {
   version: "0.8.28",
   settings: {
-    evmVersion: "paris",
+    evmVersion: "cancun",
     optimizer: {
       enabled: true,
       runs: 9999999,
