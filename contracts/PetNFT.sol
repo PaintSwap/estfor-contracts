@@ -354,7 +354,7 @@ contract PetNFT is
   function getBridgeableBytes(uint256 petId) external view override returns (bytes memory) {
     Pet memory pet = _pets[petId];
     string memory petName = _names[petId];
-    return abi.encode(pet, pet.lastTrainedTimestamp, _names[petId]);
+    return abi.encode(pet, pet.lastTrainedTimestamp, petName);
   }
 
   function burnBatch(address from, uint256[] memory tokenIds) external onlyBurners(from) {
