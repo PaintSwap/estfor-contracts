@@ -14,7 +14,7 @@ import {
   WORLD_ACTIONS_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations, setDailyAndWeeklyRewards, verifyContracts} from "./utils";
-import {Players} from "../typechain-types";
+import {Players, WorldActions} from "../typechain-types";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {ActionChoiceInput, Skill} from "@paintswap/estfor-definitions/types";
 import {allInstantActions} from "./data/instantActions";
@@ -27,7 +27,6 @@ import {allItems} from "./data/items";
 import {ShopItem, allShopItems} from "./data/shopItems";
 import {QuestInput, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
 import {parseEther} from "ethers";
-import {WorldActions} from "../typechain-types/contracts/WorldActions.sol";
 
 async function main() {
   const [owner] = await ethers.getSigners();
