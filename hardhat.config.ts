@@ -139,7 +139,8 @@ const config: HardhatUserConfig = {
   contractSizer: {
     alphaSort: true,
     runOnCompile: true,
-    disambiguatePaths: false
+    disambiguatePaths: false,
+    except: ["test", "@openzeppelin"]
   },
   abiExporter: {
     path: "./data/abi",
@@ -148,16 +149,7 @@ const config: HardhatUserConfig = {
     flat: true,
     spacing: 2,
     format: "json",
-    except: [
-      "/ozUpgradeable",
-      "/interfaces",
-      "/test",
-      "/helper",
-      "/debug",
-      "/legacy",
-      "SamWitchVRFConsumerUpgradeable",
-      "@openzeppelin"
-    ]
+    except: ["/interfaces", "/test", "/helper", "/debug", "/legacy", "SamWitchVRFConsumerUpgradeable", "@openzeppelin"]
   },
   typechain: {
     target: "ethers-v6"
