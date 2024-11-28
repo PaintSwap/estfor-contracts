@@ -5,7 +5,7 @@ import {Skill, Attire, CombatStyle, CombatStats} from "./misc.sol";
 import {GuaranteedReward, RandomReward} from "./rewards.sol";
 
 enum ActionQueueStrategy {
-  NONE,
+  OVERWRITE,
   APPEND,
   KEEP_LAST_IN_PROGRESS
 }

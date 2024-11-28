@@ -19,7 +19,7 @@ describe("Pets", function () {
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PetNotOwned");
   });
 
@@ -49,7 +49,7 @@ describe("Pets", function () {
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     // Upgrade player, can now equip pet
@@ -58,7 +58,7 @@ describe("Pets", function () {
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
@@ -96,7 +96,7 @@ describe("Pets", function () {
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [62]);
     await ethers.provider.send("evm_mine", []);
 
@@ -140,7 +140,7 @@ describe("Pets", function () {
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     let pet = await petNFT.getPet(petId);
     expect(pet.lastAssignmentTimestamp).to.eq(NOW);
     await petNFT.connect(alice).safeTransferFrom(alice, owner, petId, 1, "0x");
@@ -187,7 +187,7 @@ describe("Pets", function () {
 
     await players
       .connect(alice)
-      .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await petNFT.connect(alice).safeTransferFrom(alice, owner, petId, 1, "0x");
     await petNFT.safeTransferFrom(owner, alice, petId, 1, "0x");
     await itemNFT
@@ -245,7 +245,7 @@ describe("Pets", function () {
         0,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     await ethers.provider.send("evm_increaseTime", [72]);
@@ -285,7 +285,7 @@ describe("Pets", function () {
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
     // Should be killing 1 every 72 seconds when you have 6 melee. So a melee of 3 with a 100% multiplier will be enough
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [72]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);

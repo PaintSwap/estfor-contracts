@@ -38,7 +38,7 @@ describe("Non-Combat Actions", function () {
 
       const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -118,7 +118,7 @@ describe("Non-Combat Actions", function () {
         [1, 1, 1, 1, 1]
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -183,7 +183,7 @@ describe("Non-Combat Actions", function () {
       }
     ]);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -267,7 +267,7 @@ describe("Non-Combat Actions", function () {
     const mintAmount = 5;
     await itemNFT.mint(alice, EstforConstants.LOG, mintAmount); // Mint less than will be used
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
     await ethers.provider.send("evm_mine", []);
@@ -406,7 +406,7 @@ describe("Non-Combat Actions", function () {
       }
     ]);
 
-    await players.connect(alice).startActions(playerId, [queuedActions[0]], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedActions[0]], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [10]);
     await ethers.provider.send("evm_mine", []);
     let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -579,10 +579,10 @@ describe("Non-Combat Actions", function () {
     /*    await expect(
       players
         .connect(alice)
-        .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStrategy.NONE)
+        .startActions(playerId, queuedActions, EstforConstants.NONE, EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.reverted;
 */
-    await players.connect(alice).startActions(playerId, queuedActions, EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, queuedActions, EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await itemNFT.mint(alice, EstforConstants.LOG, 1);
     await ethers.provider.send("evm_increaseTime", [queuedActions[0].timespan + queuedActions[1].timespan + 2]);
@@ -648,14 +648,14 @@ describe("Non-Combat Actions", function () {
       }
     ]);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MINING)).to.eq(0);
 
     queuedAction.timespan = 3600;
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -740,7 +740,7 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.mint(alice, EstforConstants.COAL_ORE, 255);
       await itemNFT.mint(alice, EstforConstants.MITHRIL_ORE, 255);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -853,7 +853,7 @@ describe("Non-Combat Actions", function () {
       const queuedAction1 = {...queuedAction, choiceId: choiceId1};
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction1], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction1], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedAction1.timespan]);
       await ethers.provider.send("evm_mine", []);
@@ -883,7 +883,7 @@ describe("Non-Combat Actions", function () {
       const minLevel = 1;
       const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
@@ -908,7 +908,7 @@ describe("Non-Combat Actions", function () {
 
       await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
@@ -939,7 +939,7 @@ describe("Non-Combat Actions", function () {
 
       await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       const numLoops = queuedAction.timespan / 240;
 
@@ -976,7 +976,7 @@ describe("Non-Combat Actions", function () {
 
       await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
@@ -1084,7 +1084,7 @@ describe("Non-Combat Actions", function () {
           0,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
       await ethers.provider.send("evm_increaseTime", [3 * 3600]);
       await ethers.provider.send("evm_mine", []);
@@ -1158,7 +1158,7 @@ describe("Non-Combat Actions", function () {
         petId: EstforConstants.NONE
       };
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2 + 2]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1257,7 +1257,7 @@ describe("Non-Combat Actions", function () {
       const numRepeats = 25;
       let numRandomRewardsHit = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
         await timeTravel24Hours();
         await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
         const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1346,7 +1346,7 @@ describe("Non-Combat Actions", function () {
       const numRepeats = 25;
       let numRandomRewardsHit = 0; // Checks there is some randomness
       for (let i = 0; i < numRepeats; ++i) {
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
         await timeTravel24Hours();
         await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
         const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1497,7 +1497,7 @@ describe("Non-Combat Actions", function () {
 
       const numRepeats = 10; // Should get it at least once
       for (let i = 0; i < numRepeats; ++i) {
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
         await ethers.provider.send("evm_increaseTime", [24 * 3600]);
         await ethers.provider.send("evm_mine", []);
         await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
@@ -1574,7 +1574,7 @@ describe("Non-Combat Actions", function () {
 
       // Make sure it passes the next checkpoint so there are no issues running
       await timeTravelToNextCheckpoint();
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await timeTravel(3600);
       await players.connect(alice).processActions(playerId);
       await timeTravel24Hours();
@@ -1610,7 +1610,7 @@ describe("Non-Combat Actions", function () {
         [startingAmount, startingAmount]
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -1639,7 +1639,7 @@ describe("Non-Combat Actions", function () {
         [startingAmount, startingAmount]
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 3]);
       await ethers.provider.send("evm_mine", []);
@@ -1698,7 +1698,7 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20 * 60, 1 * 60]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 12]); // Should make 59
       await ethers.provider.send("evm_mine", []);
@@ -1773,7 +1773,7 @@ describe("Non-Combat Actions", function () {
       // Don't have enough rope (needs 2)
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [40, 1]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1807,7 +1807,7 @@ describe("Non-Combat Actions", function () {
       // Don't have enough rope (needs 2)
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [20, 2]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1840,7 +1840,7 @@ describe("Non-Combat Actions", function () {
 
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [200, 10]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [900]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
@@ -1895,7 +1895,7 @@ describe("Non-Combat Actions", function () {
       const {queuedAction: queuedActionCrafting} = await setupBasicCrafting(itemNFT, worldActions);
       const queuedAction = {...queuedActionCrafting, timespan: 7200};
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -1942,7 +1942,7 @@ describe("Non-Combat Actions", function () {
       // Queue 2 for 1 hour each
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan * 2.5]); // Finish 2 and a bit
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -2033,7 +2033,7 @@ describe("Non-Combat Actions", function () {
       // Don't enough enough rope (needs 2)
       await itemNFT.mintBatch(alice, [EstforConstants.SAPPHIRE, EstforConstants.ROPE], [41, 3]);
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -2073,7 +2073,7 @@ describe("Non-Combat Actions", function () {
         [startingAmount, startingAmount, startingAmount]
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -2110,7 +2110,7 @@ describe("Non-Combat Actions", function () {
       [startingAmount, startingAmount, startingAmount]
     );
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
@@ -2146,7 +2146,7 @@ describe("Non-Combat Actions", function () {
         [startingAmount, startingAmount, startingAmount]
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -2182,7 +2182,7 @@ describe("Non-Combat Actions", function () {
         [startingAmount, startingAmount, startingAmount]
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 2]);
       await ethers.provider.send("evm_mine", []);
@@ -2218,7 +2218,7 @@ describe("Non-Combat Actions", function () {
         [startingAmount, startingAmount]
       );
 
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       expect(queuedAction.timespan).to.eq(8 * 3600); // 8 hours
       await timeTravel(queuedAction.timespan - 10);
@@ -2250,7 +2250,7 @@ describe("Non-Combat Actions", function () {
     const queuedAction = {...basicWoodcuttingQueuedAction};
     queuedAction.timespan = timespan;
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await ethers.provider.send("evm_increaseTime", [Number(queuedAction.timespan) + 2]);
     await ethers.provider.send("evm_mine", []);
@@ -2270,7 +2270,7 @@ describe("Non-Combat Actions", function () {
     const rate = 2 * GUAR_MUL;
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions, rate);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [(queuedAction.timespan / 4) * 3]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -2335,7 +2335,7 @@ describe("Non-Combat Actions", function () {
       petId: EstforConstants.NONE
     };
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -2358,24 +2358,24 @@ describe("Non-Combat Actions", function () {
     ]);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidHandEquipment");
 
     queuedAction.leftHandEquipmentTokenId = EstforConstants.BRONZE_AXE;
     queuedAction.rightHandEquipmentTokenId = EstforConstants.NONE;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "IncorrectEquippedItem");
 
     queuedAction.rightHandEquipmentTokenId = EstforConstants.BRONZE_AXE;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "IncorrectLeftHandEquipment");
 
     queuedAction.leftHandEquipmentTokenId = EstforConstants.NONE;
 
     // Now this works
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     // Transfer away, the action should just be skipped and no xp/loot should be given
     expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_AXE)).to.eq(1);

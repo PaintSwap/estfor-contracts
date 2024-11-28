@@ -44,7 +44,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     expect(await itemNFT.balanceOf(alice, EstforConstants.XP_BOOST)).to.eq(0);
 
@@ -91,7 +91,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     expect(await itemNFT.balanceOf(alice, EstforConstants.XP_BOOST)).to.eq(0);
 
@@ -139,11 +139,11 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
       await ethers.provider.send("evm_increaseTime", [86400]);
       await ethers.provider.send("evm_mine", []);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [86400]); // boost has expired
       await ethers.provider.send("evm_mine", []);
 
@@ -188,11 +188,11 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
       await players
         .connect(alice)
-        .startActions(playerId, [queuedActionFinishAfterBoost], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedActionFinishAfterBoost], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedActionFinishAfterBoost.timespan]); // boost has expired inside action
       await ethers.provider.send("evm_mine", []);
       const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
@@ -238,7 +238,7 @@ describe("Boosts", function () {
           NOW,
           0,
           NO_DONATION_AMOUNT,
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
       await ethers.provider.send("evm_increaseTime", [120]);
       await ethers.provider.send("evm_mine", []);
@@ -285,7 +285,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -338,7 +338,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
@@ -390,7 +390,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
@@ -438,7 +438,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     // Currently only minted through donation thresholds
@@ -502,7 +502,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     // Currently only minted through donation thresholds
@@ -594,7 +594,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     // Currently only minted through donation thresholds
@@ -731,7 +731,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     // Currently only minted through donation thresholds
@@ -863,7 +863,7 @@ describe("Boosts", function () {
           NOW,
           0,
           raffleCost,
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         )
     )
       .to.emit(wishingWell, "LastClanDonationThreshold")
@@ -1018,7 +1018,7 @@ describe("Boosts", function () {
           NOW,
           0,
           nextGlobalThreshold,
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         )
     )
       .to.emit(wishingWell, "LastGlobalDonationThreshold")
@@ -1149,7 +1149,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     await ethers.provider.send("evm_increaseTime", [3600]);
     await ethers.provider.send("evm_mine", []);
@@ -1237,7 +1237,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
@@ -1286,7 +1286,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
@@ -1389,7 +1389,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
@@ -1488,7 +1488,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(1);
 
@@ -1536,7 +1536,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(0);
   });
@@ -1625,7 +1625,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
     expect(await itemNFT.balanceOf(alice, EstforConstants.GATHERING_BOOST)).to.eq(0);
 
@@ -1689,7 +1689,7 @@ describe("Boosts", function () {
         NOW,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);

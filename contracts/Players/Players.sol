@@ -116,7 +116,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
   /// @param playerId Id for the player
   /// @param queuedActions Actions to queue
   /// @param queueStrategy Can be either:
-  ///                     `ActionQueueStrategy.NONE` for overwriting all actions,
+  ///                     `ActionQueueStrategy.OVERWRITE_ALL` for overwriting all actions,
   ///                     `ActionQueueStrategy.KEEP_LAST_IN_PROGRESS` when removes any not started actions and keeps the current in-progress one or
   ///                     `ActionQueueStrategy.APPEND` which adds to the end
   function startActions(
@@ -133,7 +133,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
   /// @param boostItemTokenId Which boost to consume, can be NONE
   /// @param boostStartTime when the boost should start. Must be within 24 hours. Using 0 or a time earlier than now will use the current block time.
   /// @param queueStrategy Can be either:
-  ///                     `ActionQueueStrategy.NONE` for overwriting all actions,
+  ///                     `ActionQueueStrategy.OVERWRITE_ALL` for overwriting all actions,
   ///                     `ActionQueueStrategy.KEEP_LAST_IN_PROGRESS` when removes any not started actions and keeps the current in-progress one or
   ///                     `ActionQueueStrategy.APPEND` which adds to the end
   function startActionsAdvanced(

@@ -37,7 +37,7 @@ contract PlayersImplQueueActions is PlayersBase {
     ) = _processActions(from, playerId);
 
     Player storage player = _players[playerId];
-    if (queueStrategy == ActionQueueStrategy.NONE) {
+    if (queueStrategy == ActionQueueStrategy.OVERWRITE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
         delete player.actionQueue;

@@ -128,7 +128,7 @@ describe("Players", function () {
   it("Skill points", async function () {
     const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [361]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -154,7 +154,7 @@ describe("Players", function () {
   it("Partial consume aux items", async function () {
     const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const {queuedAction, rate} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await ethers.provider.send("evm_mine", []);
@@ -172,7 +172,7 @@ describe("Players", function () {
   it("Skill points, max range", async function () {
     const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
@@ -246,36 +246,36 @@ describe("Players", function () {
     await itemNFT.mint(alice, EstforConstants.BRONZE_GAUNTLETS, 1);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.head = EstforConstants.NONE;
     queuedAction.attire.neck = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.neck = EstforConstants.NONE;
     queuedAction.attire.body = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.body = EstforConstants.NONE;
     queuedAction.attire.feet = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.feet = EstforConstants.NONE;
     queuedAction.attire.legs = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.legs = EstforConstants.NONE;
     queuedAction.attire.ring = EstforConstants.BRONZE_GAUNTLETS;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
     queuedAction.attire.ring = EstforConstants.NONE;
     queuedAction.attire.arms = EstforConstants.BRONZE_GAUNTLETS; // Correct
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
   });
 
   it("validateActions", async function () {
@@ -341,7 +341,7 @@ describe("Players", function () {
     const queuedActionCorrect = {...queuedAction, attire: {...EstforTypes.noAttire}};
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
 
     let {successes, reasons} = await players
@@ -436,7 +436,7 @@ describe("Players", function () {
     const queuedActionCorrect = {...queuedAction, attire: {...EstforTypes.noAttire}};
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidEquipPosition");
 
     let {successes, reasons} = await players
@@ -457,7 +457,7 @@ describe("Players", function () {
   it("Queueing after 1 action is completely finished", async function () {
     const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.APPEND);
@@ -485,12 +485,12 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       await ethers.provider.send("evm_mine", []);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].queueId).to.eq(3);
@@ -502,14 +502,14 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       await ethers.provider.send("evm_mine", []);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
       expect(actionQueue[0].queueId).to.eq(3);
@@ -523,7 +523,7 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       await ethers.provider.send("evm_mine", []);
       let actionQueue = await players.getActionQueue(playerId);
@@ -544,7 +544,7 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       await ethers.provider.send("evm_mine", []);
       let actionQueue = await players.getActionQueue(playerId);
@@ -568,12 +568,12 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       await ethers.provider.send("evm_mine", []);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players.connect(alice).startActions(playerId, [], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [], EstforTypes.ActionQueueStrategy.OVERWRITE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(0);
     });
@@ -583,12 +583,12 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       await ethers.provider.send("evm_mine", []);
       let actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(2);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       actionQueue = await players.getActionQueue(playerId);
       expect(actionQueue.length).to.eq(1);
       expect(actionQueue[0].queueId).to.eq(3);
@@ -600,7 +600,7 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
       await ethers.provider.send("evm_mine", []);
       let actionQueue = await players.getActionQueue(playerId);
@@ -620,7 +620,7 @@ describe("Players", function () {
       expect(actionQueue.length).to.eq(0);
       const queuedAction = {...basicWoodcuttingQueuedAction};
       queuedAction.timespan = 14 * 3600;
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + 1]);
       await ethers.provider.send("evm_mine", []);
 
@@ -712,13 +712,14 @@ describe("Players", function () {
     await itemNFT.mint(alice, EstforConstants.ORICHALCUM_AXE, 1);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ActionMinimumXPNotReached");
 
     // Update to level 70, check it works
     await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, getXPFromLevel(70));
-    expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    expect(
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 
   describe("ActionChoices", function () {
@@ -729,13 +730,14 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicFiremaking(itemNFT, worldActions, minXP);
 
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update firemaking level, check it works
       await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP);
-      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
-        .to.not.be.reverted;
+      expect(
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+      ).to.not.be.reverted;
     });
 
     it("Min XP multiple skills", async function () {
@@ -769,24 +771,25 @@ describe("Players", function () {
 
       // 2 skills
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update alchemy level, should not work yet
       await players.modifyXP(alice, playerId, EstforTypes.Skill.ALCHEMY, minXP1);
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update firemaking but not to correct level
       await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP1);
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, minXP2);
-      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
-        .to.not.be.reverted;
+      expect(
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+      ).to.not.be.reverted;
 
       // 3 skills
       tx = await worldActions.addActionChoices(
@@ -809,13 +812,14 @@ describe("Players", function () {
       choiceId = await getActionChoiceId(tx, worldActions);
       queuedAction = {...queuedActionBase, choiceId};
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
       ).to.be.revertedWithCustomError(players, "ActionChoiceMinimumXPNotReached");
 
       // Update cooking to correct level
       await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, minXP3);
-      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
-        .to.not.be.reverted;
+      expect(
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+      ).to.not.be.reverted;
     });
 
     it("Output number > 1", async function () {
@@ -849,7 +853,7 @@ describe("Players", function () {
       queuedAction.choiceId = choiceId;
 
       // Update firemamking level, check it works
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
 
@@ -944,16 +948,17 @@ describe("Players", function () {
     await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 1);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ConsumableMinimumXPNotReached");
 
     await players.modifyXP(alice, playerId, EstforTypes.Skill.HEALTH, minXP);
 
     // Update health level, check it works
-    expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    expect(
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
   });
 
   it("Attire", async function () {
@@ -1036,11 +1041,12 @@ describe("Players", function () {
       attire[equips[i] as keyof Attire] = attireEquipped[i].tokenId;
       queuedAction.attire = attire;
       await expect(
-        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+        players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
       ).to.be.revertedWithCustomError(players, "AttireMinimumXPNotReached");
       await players.modifyXP(alice, playerId, attireEquipped[i].skill, minXP);
-      expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE))
-        .to.not.be.reverted;
+      expect(
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+      ).to.not.be.reverted;
     }
 
     // Test case, create a player
@@ -1100,13 +1106,14 @@ describe("Players", function () {
     await itemNFT.mint(alice, EstforConstants.ORICHALCUM_AXE, 1);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ItemMinimumXPNotReached");
 
     // Update to level 70, check it works
     await players.modifyXP(alice, playerId, EstforTypes.Skill.WOODCUTTING, minXP);
-    expect(await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    expect(
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 
   describe("Missing required equipment right hand equipment", async function () {
@@ -1129,7 +1136,7 @@ describe("Players", function () {
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await ethers.provider.send("evm_increaseTime", [36]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
@@ -1162,7 +1169,7 @@ describe("Players", function () {
         .startActions(
           playerId,
           [queuedActionFiremaking, queuedAction, queuedActionFishing],
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
 
       // Completely finish first one
@@ -1194,7 +1201,7 @@ describe("Players", function () {
         .startActions(
           playerId,
           [queuedActionFiremaking, queuedAction, queuedActionFishing],
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
 
       // Completely finish first one and go into the second one a bit
@@ -1231,7 +1238,7 @@ describe("Players", function () {
         .startActions(
           playerId,
           [queuedActionFiremaking, queuedActionWoodcutting, queuedActionFishing],
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
 
       await itemNFT.mint(alice, EstforConstants.LOG, 10000);
@@ -1272,7 +1279,7 @@ describe("Players", function () {
         .startActions(
           playerId,
           [queuedActionFiremaking, queuedActionWoodcutting, queuedActionFishing],
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
       await players.connect(alice).processActions(playerId);
 
@@ -1314,7 +1321,7 @@ describe("Players", function () {
         .startActions(
           playerId,
           [queuedActionWoodcutting, queuedActionFiremaking, queuedActionFishing],
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         );
 
       // Remove required item for firemaking
@@ -1344,7 +1351,7 @@ describe("Players", function () {
 
     await players
       .connect(alice)
-      .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     await ethers.provider.send("evm_increaseTime", [(queuedAction.timespan * 10) / rate]); // Just do 1 of the action
     await ethers.provider.send("evm_mine", []);
@@ -1415,9 +1422,9 @@ describe("Players", function () {
 
     // 16MM is the maximum xp per hour that can be gained, so need to loop it many times to go over
     for (let i = 0; i < 25; ++i) {
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       await timeTravel24Hours();
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     }
     const xp = await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING);
     expect(xp).to.eq(Math.pow(2, 32) - 1);
@@ -1481,7 +1488,7 @@ describe("Players", function () {
         0,
         0,
         NO_DONATION_AMOUNT,
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     expect((await players.getActiveBoost(playerId)).boostType).to.not.eq(0);
@@ -1501,10 +1508,10 @@ describe("Players", function () {
     );
     await players.pauseGame(true);
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "GameIsPaused");
     await players.pauseGame(false);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await players.pauseGame(true);
     await expect(players.connect(alice).processActions(playerId)).to.be.revertedWithCustomError(
       players,
@@ -1520,7 +1527,7 @@ describe("Players", function () {
     const queuedAction = {...basicWoodcuttingQueuedAction};
     queuedAction.timespan = 0;
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "EmptyTimespan");
   });
 
@@ -1530,7 +1537,7 @@ describe("Players", function () {
     const queuedAction = {...basicWoodcuttingQueuedAction};
     queuedAction.choiceId = BigInt(EstforConstants.ACTIONCHOICE_COOKING_ANCHO);
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ActionChoiceIdNotRequired");
   });
 
@@ -1541,7 +1548,7 @@ describe("Players", function () {
     const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
     const queuedAction = {...basicWoodcuttingQueuedAction};
     queuedAction.timespan = 24 * 3600;
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [5]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -1563,7 +1570,7 @@ describe("Players", function () {
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
@@ -1590,7 +1597,7 @@ describe("Players", function () {
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
@@ -1619,7 +1626,7 @@ describe("Players", function () {
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
@@ -1652,7 +1659,7 @@ describe("Players", function () {
     const playerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
 
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
 
@@ -1773,7 +1780,7 @@ describe("Players", function () {
         .startActions(
           playerId,
           [basicWoodcuttingQueuedAction, queuedAction, basicWoodcuttingQueuedAction],
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         )
     ).to.be.revertedWithCustomError(players, "EmptyTimespan");
 
@@ -1784,7 +1791,7 @@ describe("Players", function () {
         .startActions(
           playerId,
           [basicWoodcuttingQueuedAction, queuedAction, basicWoodcuttingQueuedAction],
-          EstforTypes.ActionQueueStrategy.NONE
+          EstforTypes.ActionQueueStrategy.OVERWRITE
         )
     ).to.be.revertedWithCustomError(players, "ActionTimespanExceedsMaxTime");
 
@@ -1794,7 +1801,7 @@ describe("Players", function () {
       .startActions(
         playerId,
         [basicWoodcuttingQueuedAction, basicWoodcuttingQueuedAction, queuedAction],
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       );
 
     const actionQueue = await players.getActionQueue(playerId);
@@ -1809,7 +1816,7 @@ describe("Players", function () {
     // If it's at the end then it trims it
     await players
       .connect(alice)
-      .startActions(playerId, [queuedAction, fullTimeAction], EstforTypes.ActionQueueStrategy.NONE);
+      .startActions(playerId, [queuedAction, fullTimeAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     let actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue[0].timespan).to.eq(1600);
@@ -1832,7 +1839,7 @@ describe("Players", function () {
     const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
     const {queuedAction: basicWoodcuttingQueuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
     const queuedAction = {...basicWoodcuttingQueuedAction, timespan: 25 * 3600};
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     const actionQueue = await players.getActionQueue(playerId);
     expect(actionQueue[0].timespan).to.eq(24 * 3600);
   });
@@ -1911,15 +1918,16 @@ describe("Players", function () {
     ]);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
 
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
-    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 
   it("Check that only upgraded players can equip full mode only items (attire)", async function () {
@@ -1954,15 +1962,16 @@ describe("Players", function () {
     await itemNFT.mint(alice, EstforConstants.BRONZE_HELMET, 1);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
 
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
-    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 
   it("Check that only upgraded players can equip full mode only items (left/right hand equipment)", async function () {
@@ -1991,15 +2000,16 @@ describe("Players", function () {
     ]);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
 
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
 
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
-    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 
   it("Check that only upgraded players can start a full mode only actionChoice, where action is not set to full mode only", async function () {
@@ -2042,13 +2052,13 @@ describe("Players", function () {
     );
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
   });
 
   it("Check that only upgraded players can start a full mode only actionChoice, where action is also set to full mode only", async function () {
@@ -2114,13 +2124,13 @@ describe("Players", function () {
     );
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
   });
 
   it("Check that only upgraded players can start a non-full mode only actionChoice, where action is set to full mode only", async function () {
@@ -2165,13 +2175,13 @@ describe("Players", function () {
     ]);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
   });
 
   it("Check that only upgraded players can start a full mode only action", async function () {
@@ -2208,13 +2218,13 @@ describe("Players", function () {
     };
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "PlayerNotUpgraded");
     // Upgrade and try again
     await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
   });
 
   it("Action choice with > 255 input amounts", async function () {
@@ -2317,7 +2327,7 @@ describe("Players", function () {
     await brush.mint(alice, upgradePlayerBrushPrice);
     await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", true);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -2342,14 +2352,14 @@ describe("Players", function () {
     const {players, playerId, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
     const {queuedAction, rate, action} = await setupBasicWoodcutting(itemNFT, worldActions);
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
     const actionInput = {...action};
     actionInput.info.isAvailable = false; // Woodcutting log no longer available
     await worldActions.editActions([actionInput]);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ActionNotAvailable");
 
     const {queuedAction: queuedActionFishing} = await setupBasicFishing(itemNFT, worldActions);
@@ -2370,7 +2380,7 @@ describe("Players", function () {
     );
     // Still cannot queue it
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ActionNotAvailable");
   });
 
@@ -2381,7 +2391,7 @@ describe("Players", function () {
     const minLevel = 1;
     const {queuedAction, rate, choiceId} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     // Make it not available
     const actionChoiceInput = {
       ...defaultActionChoice,
@@ -2398,7 +2408,7 @@ describe("Players", function () {
     await worldActions.editActionChoices(queuedAction.actionId, [choiceId], [actionChoiceInput]);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ActionChoiceNotAvailable");
 
     actionChoiceInput.isAvailable = false;
@@ -2420,7 +2430,7 @@ describe("Players", function () {
 
     // Still cannot queue it
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "ActionChoiceNotAvailable");
   });
 
@@ -2433,11 +2443,12 @@ describe("Players", function () {
     await worldActions.editActions([actionInput]);
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "DependentQuestNotCompleted");
     await createAndDoPurseStringsQuest(players, quests, alice, playerId);
-    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 
   it("An action choice with a quest requirement must have the quest completed to do it", async function () {
@@ -2467,11 +2478,12 @@ describe("Players", function () {
     );
 
     await expect(
-      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "DependentQuestNotCompleted");
     await createAndDoPurseStringsQuest(players, quests, alice, playerId);
-    await expect(players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE)).to
-      .not.be.reverted;
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 
   it.skip("Travelling", async function () {
@@ -2480,11 +2492,13 @@ describe("Players", function () {
 
     const queuedActionInvalidTimespan = {...queuedAction, timespan: 1800};
     await expect(
-      players.connect(alice).startActions(playerId, [queuedActionInvalidTimespan], EstforTypes.ActionQueueStrategy.NONE)
+      players
+        .connect(alice)
+        .startActions(playerId, [queuedActionInvalidTimespan], EstforTypes.ActionQueueStrategy.OVERWRITE)
     ).to.be.revertedWithCustomError(players, "InvalidTravellingTimespan");
 
     // Travel from 0 to 1
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await timeTravel(queuedAction.timespan);
     const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.worldLocation).to.eq(1);
@@ -2494,7 +2508,7 @@ describe("Players", function () {
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(queuedAction.timespan); // TODO: Change this and the other one to AGILITY when it's added
 
     // Trying to travel from 0 to 1 should do nothing and earn no xp. Should be allowed to queue but it does nothing
-    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
     await ethers.provider.send("evm_mine", []);
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(queuedAction.timespan);
@@ -2505,7 +2519,7 @@ describe("Players", function () {
     // Confirm a starting area skill cannot be used in a different area
     await players
       .connect(alice)
-      .startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStrategy.NONE);
+      .startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStrategy.OVERWRITE);
     await ethers.provider.send("evm_increaseTime", [queuedActionWoodcutting.timespan]);
     await ethers.provider.send("evm_mine", []);
     await players.connect(alice).processActions(playerId);
@@ -2516,7 +2530,7 @@ describe("Players", function () {
     it("Checkpoints should be cleared when making a character inactive", async function () {
       const {players, playerId, itemNFT, playerNFT, avatarId, worldActions, alice} = await loadFixture(playersFixture);
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       // Check checkpoints
       let activePlayerInfo = await players.getActivePlayerInfo(alice.address);
@@ -2532,7 +2546,7 @@ describe("Players", function () {
         const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
 
         const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await itemNFT
           .connect(alice)
@@ -2548,7 +2562,7 @@ describe("Players", function () {
         const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
 
         const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
         await players.connect(alice).processActions(playerId);
@@ -2568,7 +2582,7 @@ describe("Players", function () {
         const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
         await players
           .connect(alice)
-          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 2]); // Right before next action starts
         await players.connect(alice).processActions(playerId);
@@ -2593,7 +2607,7 @@ describe("Players", function () {
         const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
         await players
           .connect(alice)
-          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+          .startActions(playerId, [queuedAction, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await ethers.provider.send("evm_increaseTime", [queuedAction.timespan - 3]); // Right before next action starts
         await players.connect(alice).processActions(playerId);
@@ -2621,7 +2635,7 @@ describe("Players", function () {
 
         await players
           .connect(alice)
-          .startActions(playerId, [queuedActionFiremaking, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+          .startActions(playerId, [queuedActionFiremaking, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 80);
         await itemNFT.connect(alice).burn(alice.address, EstforConstants.BRONZE_AXE, 5);
@@ -2649,7 +2663,7 @@ describe("Players", function () {
         await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 70000); // Start with a ton more
         await players
           .connect(alice)
-          .startActions(playerId, [queuedActionFiremaking, queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+          .startActions(playerId, [queuedActionFiremaking, queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await ethers.provider.send("evm_increaseTime", [queuedActionFiremaking.timespan - 3]);
 
@@ -2669,7 +2683,7 @@ describe("Players", function () {
         const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
 
         await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 70000); // Start with a ton more
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
         await itemNFT
@@ -2752,7 +2766,7 @@ describe("Players", function () {
           [1, 1, 1, 1, 1]
         );
 
-        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+        await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
         await itemNFT.connect(alice).burn(alice.address, EstforConstants.NATURE_MASK, 1); // Remove a bit of the attire
         await itemNFT.mint(alice.address, EstforConstants.NATURE_MASK, 1); // Minting again does nothing
@@ -2888,7 +2902,9 @@ describe("Players", function () {
 
         const numRepeats = 10; // Should get it at least once
         for (let i = 0; i < numRepeats; ++i) {
-          await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+          await players
+            .connect(alice)
+            .startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
           await itemNFT.connect(alice).burn(alice.address, EstforConstants.NATUOW_HOOD, 1); // Remove a bit of the attire
           await itemNFT.mint(alice.address, EstforConstants.NATUOW_HOOD, 1); // Minting again does nothing
           await ethers.provider.send("evm_increaseTime", [24 * 3600]);
@@ -2918,7 +2934,7 @@ describe("Players", function () {
 
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedActionFiremaking], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedActionFiremaking], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedActionFiremaking.timespan / 2]);
       await players.connect(alice).processActions(playerId);
@@ -2940,7 +2956,7 @@ describe("Players", function () {
 
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedActionFiremaking], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(playerId, [queuedAction, queuedActionFiremaking], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan + queuedActionFiremaking.timespan]);
       await players.connect(alice).processActions(playerId);
@@ -2949,7 +2965,7 @@ describe("Players", function () {
     });
 
     it("Multiple checkpoints", async function () {
-      const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
       const queuedAction1 = {...queuedAction, timespan: queuedAction.timespan / 2};
@@ -2957,7 +2973,11 @@ describe("Players", function () {
       // 3 checkpoints
       await players
         .connect(alice)
-        .startActions(playerId, [queuedAction, queuedAction1, queuedAction2], EstforTypes.ActionQueueStrategy.NONE);
+        .startActions(
+          playerId,
+          [queuedAction, queuedAction1, queuedAction2],
+          EstforTypes.ActionQueueStrategy.OVERWRITE
+        );
 
       // Get current time
       const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -3005,7 +3025,7 @@ describe("Players", function () {
       expect(activePlayerInfo.timespan2).to.eq(queuedAction.timespan);
 
       // Replace whole thing
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
       activePlayerInfo = await players.getActivePlayerInfo(alice.address);
       expect(activePlayerInfo.checkpoint).to.be.eq(NOW1);
@@ -3015,10 +3035,10 @@ describe("Players", function () {
     });
 
     it("Checkpoints should always start from the beginning of the first action regardless of it being in-progress", async function () {
-      const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
+      const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
-      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.NONE);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
       let activePlayerInfo = await players.getActivePlayerInfo(alice.address);
       expect(activePlayerInfo.checkpoint).to.be.gt(0);
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);

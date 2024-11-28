@@ -65,9 +65,9 @@ export const addTestData = async (
   let gasLimit = await players.startActions.estimateGas(
     playerId,
     [queuedActionWoodcutting],
-    EstforTypes.ActionQueueStrategy.NONE
+    EstforTypes.ActionQueueStrategy.OVERWRITE
   );
-  let tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStrategy.NONE, {
+  let tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStrategy.OVERWRITE, {
     gasLimit: gasLimit + 300000n
   });
 
@@ -107,9 +107,9 @@ export const addTestData = async (
   gasLimit = await players.startActions.estimateGas(
     playerId,
     [queuedActionFiremaking],
-    EstforTypes.ActionQueueStrategy.NONE
+    EstforTypes.ActionQueueStrategy.OVERWRITE
   );
-  tx = await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStrategy.NONE, {
+  tx = await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStrategy.OVERWRITE, {
     gasLimit: gasLimit + 300000n
   });
   await tx.wait();
@@ -133,9 +133,9 @@ export const addTestData = async (
   gasLimit = await players.startActions.estimateGas(
     playerId,
     [queuedActionWoodcutting],
-    EstforTypes.ActionQueueStrategy.NONE
+    EstforTypes.ActionQueueStrategy.OVERWRITE
   );
-  tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStrategy.NONE, {
+  tx = await players.startActions(playerId, [queuedActionWoodcutting], EstforTypes.ActionQueueStrategy.OVERWRITE, {
     gasLimit: gasLimit + 300000n
   });
   await tx.wait();
@@ -167,9 +167,9 @@ export const addTestData = async (
   gasLimit = await players.startActions.estimateGas(
     playerId,
     [queuedActionCombat],
-    EstforTypes.ActionQueueStrategy.NONE
+    EstforTypes.ActionQueueStrategy.OVERWRITE
   );
-  tx = await players.startActions(playerId, [queuedActionCombat], EstforTypes.ActionQueueStrategy.NONE, {
+  tx = await players.startActions(playerId, [queuedActionCombat], EstforTypes.ActionQueueStrategy.OVERWRITE, {
     gasLimit: gasLimit + 300000n
   });
   await tx.wait();
@@ -238,7 +238,7 @@ export const addTestData = async (
 
   if (isDevNetwork(network)) {
     // Make some progress on the quest and process the action
-    await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStrategy.NONE);
+    await players.startActions(playerId, [queuedActionFiremaking], EstforTypes.ActionQueueStrategy.OVERWRITE);
     console.log("Number of logs before quest", (await itemNFT.balanceOf(owner, EstforConstants.LOG)).toString());
     await ethers.provider.send("evm_increaseTime", [1000]);
     await ethers.provider.send("evm_mine", []);

@@ -576,7 +576,7 @@ describe("WishingWell", function () {
       0,
       0,
       raffleEntryCost, // donation
-      EstforTypes.ActionQueueStrategy.NONE
+      EstforTypes.ActionQueueStrategy.OVERWRITE
     );
 
     // Should have the implicit boost
@@ -612,7 +612,7 @@ describe("WishingWell", function () {
         0,
         0,
         raffleEntryCost, // donation
-        EstforTypes.ActionQueueStrategy.NONE
+        EstforTypes.ActionQueueStrategy.OVERWRITE
       )
     )
       .to.emit(wishingWell, "ClaimedLotteryWinnings")
