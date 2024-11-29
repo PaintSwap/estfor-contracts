@@ -10,7 +10,7 @@ import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import "../globals/all.sol";
 
 contract PlayersImplProcessActions is PlayersBase {
-  using CombatStyleLibrary for bytes1;
+  using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
 
   function processActionsAndSetState(
@@ -89,8 +89,8 @@ contract PlayersImplProcessActions is PlayersBase {
 
       ActionChoice memory actionChoice;
       QueuedAction storage queuedAction = _players[playerId].actionQueue[i];
-      CombatStyle combatStyle = queuedAction.packed._asCombatStyle();
-      bool isCombat = queuedAction.packed._isCombatStyle();
+      CombatStyle combatStyle = queuedAction.combatStyle._asCombatStyle();
+      bool isCombat = queuedAction.combatStyle._isCombatStyle();
       if (queuedAction.choiceId != 0) {
         // Includes combat
         actionChoice = _worldActions.getActionChoice(isCombat ? NONE : queuedAction.actionId, queuedAction.choiceId);

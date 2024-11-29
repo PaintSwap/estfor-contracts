@@ -16,7 +16,7 @@ import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPla
 import "../globals/all.sol";
 
 contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDelegateView {
-  using CombatStyleLibrary for bytes1;
+  using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
 
   // === XP Threshold rewards ===
@@ -326,7 +326,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
   {
     // Figure out how much food should be consumed.
     // This is based on the damage done from battling
-    bool isCombat = queuedAction.packed._isCombatStyle();
+    bool isCombat = queuedAction.combatStyle._isCombatStyle();
     if (isCombat) {
       // Fetch the requirements for it
       CombatStats memory enemyCombatStats = _worldActions.getCombatStats(queuedAction.actionId);

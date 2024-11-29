@@ -409,7 +409,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
       CombatStats memory enemyCombatStats = _worldActions.getCombatStats(actionId);
       ActionChoice memory actionChoice = _worldActions.getActionChoice(NONE, choiceId);
 
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _worldActions
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour) = _worldActions
         .getRewardsHelper(actionId);
 
       numSpawnedPerHour *= 5 ** raidInfo.tier; // 5, 25, 125

@@ -3152,7 +3152,7 @@ describe("Combat Actions", function () {
     const fixture = await loadFixture(playersFixture);
     const {players, itemNFT, worldActions, playerId, alice} = fixture;
 
-    const {queuedAction: queuedActionMelee, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, worldActions);
+    const {queuedAction: queuedActionMelee} = await setupBasicMeleeCombat(itemNFT, worldActions);
 
     // Set my combat stats
     await itemNFT.mintBatch(alice.address, [EstforConstants.IRON_HELMET], [1]);
@@ -3287,5 +3287,30 @@ describe("Combat Actions", function () {
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(0);
     expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_ARROW)).to.eq(0);
     expect(await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS)).to.eq(0);
+  });
+
+  it("Invalid combat styles should revert", async function () {
+    const fixture = await loadFixture(playersFixture);
+    const {players, itemNFT, worldActions, playerId, alice} = fixture;
+
+    const {queuedAction} = await setupBasicMeleeCombat(itemNFT, worldActions);
+    queuedAction.combatStyle = EstforTypes.CombatStyle.NONE;
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.be.revertedWithCustomError(players, "InvalidCombatStyle");
+
+    queuedAction.combatStyle = 3 as EstforTypes.CombatStyle;
+
+    const CombatStyleLibrary = await ethers.getContractFactory("CombatStyleLibrary");
+
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.be.revertedWithCustomError(CombatStyleLibrary, "InvalidCombatStyleId");
+
+    queuedAction.combatStyle = EstforTypes.CombatStyle.ATTACK; // Use a valid one
+    await expect(
+      players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE)
+    ).to.not.be.reverted;
   });
 });

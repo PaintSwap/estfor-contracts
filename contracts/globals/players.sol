@@ -334,8 +334,8 @@ uint256 constant IS_AVAILABLE_BIT = 6;
 // Passive actions
 uint256 constant HAS_RANDOM_REWARDS_BIT = 5;
 
-// Queued action
-uint256 constant HAS_PET_BIT = 4;
-uint256 constant IS_VALID_BIT = 3;
+// The rest use world location for first 4 bits
 
-// 1 & 2 are for the combatStyle
+// Queued action
+uint256 constant HAS_PET_BIT = 2;
+uint256 constant IS_VALID_BIT = 1;

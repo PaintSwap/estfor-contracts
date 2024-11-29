@@ -105,12 +105,13 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
 
   function getRewardsHelper(
     uint16 actionId
-  ) external view returns (ActionRewards memory, Skill skill, uint256 numSpanwed, uint8 worldLocation) {
+  ) external view returns (ActionRewards memory, Skill skill, uint256 numSpawned) {
+    // , uint8 worldLocation) {
     return (
       _actionRewards[actionId],
       _actions[actionId].skill._asSkill(),
-      _actions[actionId].numSpawned,
-      _actions[actionId].worldLocation
+      _actions[actionId].numSpawned
+      //      _actions[actionId].worldLocation
     );
   }
 

@@ -19,7 +19,7 @@ interface IWorldActions {
 
   function getRewardsHelper(
     uint16 actionId
-  ) external view returns (ActionRewards memory, Skill skill, uint256 numSpanwed, uint8 worldLocation);
+  ) external view returns (ActionRewards memory, Skill skill, uint256 numSpawned); // , uint8 worldLocation);
 
   function getSkill(uint256 actionId) external view returns (Skill skill);
 

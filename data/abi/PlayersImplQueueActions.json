@@ -1206,9 +1206,14 @@
             "type": "bytes1"
           },
           {
-            "internalType": "uint32",
+            "internalType": "uint8",
+            "name": "combatStyle",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
             "name": "reserved",
-            "type": "uint32"
+            "type": "uint24"
           },
           {
             "internalType": "uint40",
@@ -1714,9 +1719,14 @@
             "type": "bytes1"
           },
           {
-            "internalType": "uint32",
+            "internalType": "uint8",
+            "name": "combatStyle",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
             "name": "reserved",
-            "type": "uint32"
+            "type": "uint24"
           },
           {
             "internalType": "uint40",

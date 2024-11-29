@@ -2163,13 +2163,8 @@
       },
       {
         "internalType": "uint256",
-        "name": "numSpanwed",
+        "name": "numSpawned",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint8",
-        "name": "worldLocation",
-        "type": "uint8"
       }
     ],
     "stateMutability": "view",

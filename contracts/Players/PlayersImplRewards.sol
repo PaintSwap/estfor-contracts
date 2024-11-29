@@ -13,7 +13,7 @@ import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 import "../globals/all.sol";
 
 contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
-  using CombatStyleLibrary for bytes1;
+  using CombatStyleLibrary for uint8;
   using CombatStyleLibrary for CombatStyle;
   using SkillLibrary for Skill;
 
@@ -26,13 +26,13 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     Player storage player = _players[playerId];
     QueuedAction[] storage actionQueue = player.actionQueue;
     uint256 actionQueueLength = actionQueue.length;
-    pendingQueuedActionState.worldLocation = uint8(player.packedData & bytes1(uint8(0x0F)));
+    // pendingQueuedActionState.worldLocation = uint8(player.packedData & bytes1(uint8(0x0F)));
     pendingQueuedActionState.equipmentStates = new PendingQueuedActionEquipmentState[](actionQueueLength + 1); // reserve +1 for handling the previously processed in current action
     pendingQueuedActionState.actionMetadatas = new PendingQueuedActionMetadata[](actionQueueLength + 1);
 
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
-    pendingQueuedActionProcessed.skills = new Skill[](actionQueueLength * 2); // combat can have xp rewarded in 2 skills (combat + health)
-    pendingQueuedActionProcessed.xpGainedSkills = new uint32[](actionQueueLength * 2);
+    pendingQueuedActionProcessed.skills = new Skill[](actionQueueLength << 1); // combat can have xp rewarded in 2 skills (melee/magic/ranged + health)
+    pendingQueuedActionProcessed.xpGainedSkills = new uint32[](actionQueueLength << 1);
     uint256 pendingQueuedActionProcessedLength;
 
     // This is done so that we can start the full XP calculation using the same stats as when the action was originally started
@@ -106,16 +106,13 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       uint32 pointsAccrued;
       uint256 endTime = startTime + queuedAction.timespan;
 
-      (
-        ActionRewards memory actionRewards,
-        Skill actionSkill,
-        uint256 numSpawnedPerHour,
-        uint8 worldLocation
-      ) = _worldActions.getRewardsHelper(queuedAction.actionId);
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour) = //        uint8 worldLocation
+      _worldActions.getRewardsHelper(queuedAction.actionId);
 
       uint256 elapsedTime = _getElapsedTime(startTime, endTime);
-      bool correctWorldLocation = worldLocation == pendingQueuedActionState.worldLocation;
-      if (elapsedTime == 0 || !correctWorldLocation) {
+      //      bool correctWorldLocation = worldLocation == pendingQueuedActionState.worldLocation;
+      if (elapsedTime == 0) {
+        // || !correctWorldLocation) {
         _addRemainingQueuedAction(
           pendingQueuedActionState.remainingQueuedActions,
           queuedAction,
@@ -133,7 +130,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       uint256 prevProcessedTime = queuedAction.prevProcessedTime;
       uint256 veryStartTime = startTime - prevProcessedTime;
 
-      bool isCombat = queuedAction.packed._isCombatStyle();
+      bool isCombat = queuedAction.combatStyle._isCombatStyle();
       ActionChoice memory actionChoice;
       if (queuedAction.choiceId != 0) {
         actionChoice = _worldActions.getActionChoice(isCombat ? 0 : queuedAction.actionId, queuedAction.choiceId);
@@ -293,11 +290,11 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         if (died) {
           pendingQueuedActionMetadata.died = true;
         }
-
+        /*
         if (fullyFinished && actionSkill == Skill.TRAVELING) {
           // Get the new world location
           pendingQueuedActionState.worldLocation = uint8(actionChoice.outputAmount);
-        }
+        }*/
       } else {
         // No action choice
         if (queuedAction.prevProcessedTime != 0) {
@@ -376,7 +373,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       uint256 pointsAccruedExclBaseBoost;
       uint256 prevPointsAccrued;
       uint256 prevPointsAccruedExclBaseBoost;
-      CombatStyle combatStyle = queuedAction.packed._asCombatStyle();
+      CombatStyle combatStyle = queuedAction.combatStyle._asCombatStyle();
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, combatStyle, queuedAction.actionId);
       (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
         playerId,
@@ -406,7 +403,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       pendingQueuedActionMetadata.xpElapsedTime = uint24(xpElapsedTime);
       uint32 xpGained = pointsAccrued;
       uint32 healthPointsGained;
-      if (pointsAccruedExclBaseBoost != 0 && combatStyle._isCombatStyle()) {
+      if (pointsAccruedExclBaseBoost != 0 && isCombat) {
         healthPointsGained = _getHealthPointsFromCombat(
           playerId,
           pointsAccruedExclBaseBoost + prevPointsAccruedExclBaseBoost
@@ -418,7 +415,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         xpGained += healthPointsGained;
       }
 
-      bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && combatStyle._isCombatStyle();
+      bool hasCombatXP = pointsAccruedExclBaseBoost != 0 && isCombat;
 
       if (pointsAccrued != 0) {
         pendingQueuedActionProcessed.skills[pendingQueuedActionProcessedLength] = skill;
@@ -668,8 +665,9 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     view
     returns (uint256[] memory ids, uint256[] memory amounts, uint256[] memory randomIds, uint256[] memory randomAmounts)
   {
-    (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _worldActions
-      .getRewardsHelper(actionId);
+    (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour) = _worldActions.getRewardsHelper(
+      actionId
+    );
     bool isCombat = actionSkill._isSkillCombat();
 
     uint16 monstersKilledFull = uint16((numSpawnedPerHour * (prevXPElapsedTime + xpElapsedTime)) / (SPAWN_MUL * 3600));
@@ -830,7 +828,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     uint256 length;
     for (uint256 i; i < pendingRandomRewardsLength; ++i) {
       PendingRandomReward storage pendingRandomReward = pendingRandomRewards[i];
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour, ) = _worldActions
+      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour) = _worldActions
         .getRewardsHelper(pendingRandomReward.actionId);
       bool isCombat = actionSkill._isSkillCombat();
       uint16 monstersKilled = uint16(
@@ -908,7 +906,9 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     int16 skillDiff
   ) internal pure returns (CombatStats memory statsOut) {
     statsOut = combatStats;
-    if (skill == Skill.MELEE) {} else if (skill == Skill.RANGED) {
+    if (skill == Skill.MELEE) {
+      //      statsOut.meleeAttack += skillDiff; // Extra/Reduced melee damage (not used currently so save some bytecode)
+    } else if (skill == Skill.RANGED) {
       statsOut.rangedAttack += skillDiff; // Extra/Reduced ranged damage
     } else if (skill == Skill.MAGIC) {
       statsOut.magicAttack += skillDiff; // Extra/Reduced magic damage
