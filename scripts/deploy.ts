@@ -1292,7 +1292,17 @@ async function main() {
     EstforConstants.SECRET_EGG_4_TIER2,
     EstforConstants.SECRET_EGG_4_TIER3,
     EstforConstants.SECRET_EGG_4_TIER4,
-    EstforConstants.SECRET_EGG_4_TIER5
+    EstforConstants.SECRET_EGG_4_TIER5,
+    EstforConstants.KRAGSTYR_EGG_TIER1,
+    EstforConstants.KRAGSTYR_EGG_TIER2,
+    EstforConstants.KRAGSTYR_EGG_TIER3,
+    EstforConstants.KRAGSTYR_EGG_TIER4,
+    EstforConstants.KRAGSTYR_EGG_TIER5,
+    EstforConstants.KEPHRI_AMULET,
+    EstforConstants.RING_OF_TUR,
+    EstforConstants.TRICK_CHEST2024,
+    EstforConstants.TREAT_CHEST2024,
+    EstforConstants.TRICK_OR_TREAT_KEY
   ];
 
   tx = await shop.addUnsellableItems(items);

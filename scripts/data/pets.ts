@@ -4577,7 +4577,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4596,7 +4596,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4615,7 +4615,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4634,7 +4634,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4653,7 +4653,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4672,7 +4672,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4691,7 +4691,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4710,7 +4710,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4729,7 +4729,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4748,7 +4748,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4767,7 +4767,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4786,7 +4786,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4805,7 +4805,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4824,7 +4824,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4843,7 +4843,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4862,7 +4862,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4881,7 +4881,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4900,7 +4900,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4919,7 +4919,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4938,7 +4938,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4957,7 +4957,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 65,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4976,7 +4976,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 101,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -4995,7 +4995,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 157,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5014,7 +5014,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 213,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5033,7 +5033,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 228,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5052,7 +5052,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5071,7 +5071,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 28,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5090,7 +5090,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 35,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5109,7 +5109,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 42,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5128,7 +5128,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 53,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5147,7 +5147,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5166,7 +5166,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 28,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5185,7 +5185,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 35,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5204,7 +5204,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 42,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5223,7 +5223,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 53,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5242,7 +5242,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5261,7 +5261,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 28,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5280,7 +5280,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 35,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5299,7 +5299,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 42,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   },
   {
@@ -5318,7 +5318,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageMaxs: [0, 0],
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 53,
-    percentageStarThreshold: 0,
+    percentageStarThreshold: 255,
     isTransferable: true
   }
 ];

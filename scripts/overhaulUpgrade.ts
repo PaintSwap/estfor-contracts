@@ -384,7 +384,7 @@ async function main() {
   const quest = allQuests.find((q) => q.questId === EstforConstants.QUEST_SO_FLETCH) as QuestInput;
   tx = await quests.addQuests([quest], [defaultMinRequirements]);
   await tx.wait();
-  console.log("Add new quest");
+  console.log("Add new quests");
   // Edit them all to fix up the second storage slot bit location
   tx = await quests.editQuests(allQuests, allQuestsMinRequirements);
   await tx.wait();

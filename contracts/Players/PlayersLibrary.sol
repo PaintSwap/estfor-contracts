@@ -418,7 +418,6 @@ library PlayersLibrary {
 
     // Time spent in comabt with the enemies that were killed, needed in case foodConsumed gets maxed out
     uint256 combatElapsedTimeKilling;
-    // Step 1 - Best case scenario how many we can kill
     uint256 numKilled;
     bool canKillAll = dmgDealt > uint16(enemyCombatStats.health);
     if (canKillAll) {
@@ -439,12 +438,12 @@ library PlayersLibrary {
 
     // Step 2 - Work out how many consumables are used
     // Check how many to consume, and also adjust xpElapsedTime if they don't have enough consumables
-    baseInputItemsConsumedNum = uint16(Math.ceilDiv(combatElapsedTime * actionChoice.rate, 3600 * RATE_MUL));
-    if (actionChoice.rate != 0) {
-      baseInputItemsConsumedNum = uint16(Math.max(numKilled, baseInputItemsConsumedNum));
-    }
     uint256 maxRequiredBaseInputItemsConsumedRatio = baseInputItemsConsumedNum;
-    if (baseInputItemsConsumedNum != 0) {
+    if (actionChoice.rate != 0) {
+      baseInputItemsConsumedNum = uint16(
+        Math.max(numKilled, Math.ceilDiv(combatElapsedTime * actionChoice.rate, 3600 * RATE_MUL))
+      );
+
       // This checks the balances
       maxRequiredBaseInputItemsConsumedRatio = _getMaxRequiredRatio(
         from,
@@ -454,61 +453,48 @@ library PlayersLibrary {
         pendingQueuedActionEquipmentStates
       );
 
-      if (baseInputItemsConsumedNum > maxRequiredBaseInputItemsConsumedRatio) {
-        // How many can we kill with the consumables we do have
+      if (baseInputItemsConsumedNum == 0) {
+        // Requires input items but we don't have any. In combat the entire time getting rekt
+        xpElapsedTime = 0;
+        combatElapsedTime = elapsedTime;
+      } else if (baseInputItemsConsumedNum > maxRequiredBaseInputItemsConsumedRatio) {
         numKilled = (numKilled * maxRequiredBaseInputItemsConsumedRatio) / baseInputItemsConsumedNum;
         xpElapsedTime = respawnTime * numKilled;
+        baseInputItemsConsumedNum = uint16(maxRequiredBaseInputItemsConsumedRatio);
 
         if (canKillAll) {
           uint256 combatTimePerEnemy = Math.ceilDiv(uint16(enemyCombatStats.health) * respawnTime, dmgDealt);
           combatElapsedTime = combatTimePerEnemy * numKilled;
           combatElapsedTimeKilling = combatElapsedTime;
-          combatElapsedTime += elapsedTime - (respawnTime * numKilled); // Plus fighting the one you haven't killed
+          combatElapsedTime += elapsedTime - (respawnTime * numKilled);
         } else {
           // In combat the entire time
           combatElapsedTime = elapsedTime;
           combatElapsedTimeKilling = combatTimePerKill * numKilled;
         }
-        baseInputItemsConsumedNum = uint16(maxRequiredBaseInputItemsConsumedRatio);
       }
-    } else if (actionChoice.rate != 0) {
-      // Requires input items but we don't have any. In combat the entire time getting rekt
-      xpElapsedTime = 0;
-      combatElapsedTime = elapsedTime;
     }
 
-    // Step 3 - Work out how much food is needed. If you die then work out how many consumables you actually used as in combat you died before you could cast more.
-    uint32 totalHealthLost = _fullDmg(enemyCombatStats, combatStats, alphaCombat, betaCombat, combatElapsedTime);
+    // Calculate combat damage
+    // Step 3 - Calculate raw damage taken
+    int32 totalHealthLost = int32(_fullDmg(enemyCombatStats, combatStats, alphaCombat, betaCombat, combatElapsedTime));
 
-    uint32 playerHealth = uint16(int16(_max(0, combatStats.health)));
-    if (int32(totalHealthLost) > combatStats.health) {
-      // Take away our health points from the total dealt
-      totalHealthLost -= playerHealth;
-    } else {
-      totalHealthLost = 0;
-    }
+    // Take away our health points from the total dealt to us
+    totalHealthLost -= combatStats.health;
 
-    uint32 totalHealthLostOnlyKilled = _fullDmg(
-      enemyCombatStats,
-      combatStats,
-      alphaCombat,
-      betaCombat,
-      combatElapsedTimeKilling
+    int32 totalHealthLostOnlyKilled = int32(
+      _fullDmg(enemyCombatStats, combatStats, alphaCombat, betaCombat, combatElapsedTimeKilling)
     );
 
-    if (int32(totalHealthLostOnlyKilled) > combatStats.health) {
-      // Take away our health points from the total dealt
-      totalHealthLostOnlyKilled -= playerHealth;
-    } else {
-      totalHealthLostOnlyKilled = 0;
-    }
+    totalHealthLostOnlyKilled -= combatStats.health;
 
+    int32 playerHealth = combatStats.health;
     uint256 totalFoodRequiredKilling;
     (foodConsumed, totalFoodRequiredKilling, died) = _getFoodConsumed(
       from,
       regenerateId,
-      totalHealthLost,
-      totalHealthLostOnlyKilled,
+      totalHealthLost > 0 ? uint32(totalHealthLost) : 0,
+      totalHealthLostOnlyKilled > 0 ? uint32(totalHealthLostOnlyKilled) : 0,
       playerHealth,
       alphaCombatHealing,
       itemNFT,
@@ -523,15 +509,10 @@ library PlayersLibrary {
         healthRestored = item.healthRestored;
       }
 
-      uint256 totalHealth = uint16(combatStats.health) + foodConsumed * healthRestored;
+      // Calculate total health using raw values
+      int256 totalHealth = playerHealth + int256(uint256(foodConsumed * healthRestored));
       // How much combat time is required to kill the player
-      uint256 killPlayerTime = _timeToKillPlayer(
-        combatStats,
-        enemyCombatStats,
-        alphaCombat,
-        betaCombat,
-        int(totalHealth)
-      );
+      uint256 killPlayerTime = _timeToKillPlayer(combatStats, enemyCombatStats, alphaCombat, betaCombat, totalHealth);
 
       combatElapsedTime = Math.min(combatElapsedTime, killPlayerTime); // Needed?
       if (healthRestored == 0 || totalHealthLost <= 0) {
@@ -558,9 +539,10 @@ library PlayersLibrary {
 
       // Step 3.5 - Wasn't enough food, so work out how many consumables we actually used.
       if (actionChoice.rate != 0) {
-        baseInputItemsConsumedNum = uint16(Math.ceilDiv(combatElapsedTime * actionChoice.rate, 3600 * RATE_MUL));
         // Make sure we use at least 1 per kill
-        baseInputItemsConsumedNum = uint16(Math.max(numKilled, baseInputItemsConsumedNum));
+        baseInputItemsConsumedNum = uint16(
+          Math.max(numKilled, Math.ceilDiv(combatElapsedTime * actionChoice.rate, 3600 * RATE_MUL))
+        );
 
         // Make sure we don't go above the maximum amount of consumables (scrolls/arrows) that we actually have
         if (baseInputItemsConsumedNum > maxRequiredBaseInputItemsConsumedRatio) {
@@ -605,7 +587,7 @@ library PlayersLibrary {
     uint16 regenerateId,
     uint32 totalHealthLost,
     uint32 totalHealthLostKilling,
-    uint32 totalHealthPlayer,
+    int32 totalHealthPlayer,
     uint256 alphaCombatHealing,
     address itemNFT,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates
@@ -620,8 +602,9 @@ library PlayersLibrary {
       // No food attached or didn't lose any health
       died = totalHealthLost != 0;
     } else {
-      // Equation used is totalFoodRequired = totalHealthLost / (healthRestoredFromItem * healingDoneFromHealth)
-      uint256 healingDoneFromHealth = _calculateHealingDoneFromHealth(totalHealthPlayer, alphaCombatHealing);
+      // Only use positive values for healing bonus
+      uint256 effectiveHealth = totalHealthPlayer > 0 ? uint32(totalHealthPlayer) : 0;
+      uint256 healingDoneFromHealth = _calculateHealingDoneFromHealth(effectiveHealth, alphaCombatHealing);
       uint256 totalFoodRequired = _calculateTotalFoodRequired(
         totalHealthLost,
         healthRestoredFromItem,

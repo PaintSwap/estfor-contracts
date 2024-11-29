@@ -12,10 +12,11 @@ async function main() {
   const passiveActions = await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS);
 
   const actionsToReduce = [
-    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER2,
-    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER3,
-    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4,
-    EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER5
+    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER1,
+    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER2,
+    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER3,
+    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER4,
+    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER5
   ];
 
   const values = [0, 0, 0, 0];

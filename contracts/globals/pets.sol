@@ -37,8 +37,9 @@ struct Pet {
   uint40 lastAssignmentTimestamp;
   address owner; // Will be used as an optimization to avoid having to look up the owner of the pet in another storage slot
   bool isTransferable;
+  // New storage slot
   uint24 baseId;
-  // New storage slot. These are used when training a pet
+  // These are used when training a pet
   uint40 lastTrainedTimestamp;
   uint8 skillFixedEnhancementMax1; // The maximum possible value for skillFixedEnhancement1 when training
   uint8 skillFixedEnhancementMax2;

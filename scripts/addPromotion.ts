@@ -34,40 +34,76 @@ async function main() {
     amounts: [1, 1, 1],
   }); */
 
+  /*
   const startTime = 1701417600; // Fri dec 1st 08:00 UTC
   const numDays = 22;
-  await promotions.addPromotions([
+  await promotions.connect(owner).addPromotion({
+    promotion: Promotion.XMAS_2023,
+    startTime,
+    endTime: startTime + 24 * 3600 * numDays,
+    minTotalXP: 0,
+    numDailyRandomItemsToPick: 1,
+    isMultiday: true,
+    brushCostMissedDay: ethers.parseEther("25"),
+    tokenCost: 0n,
+    redeemCodeLength: 0,
+    adminOnly: false,
+    promotionTiedToUser: false,
+    promotionTiedToPlayer: true,
+    promotionMustOwnPlayer: true,
+    evolvedHeroOnly: false,
+    numDaysClaimablePeriodStreakBonus: 9,
+    numDaysHitNeededForStreakBonus: 20,
+    numRandomStreakBonusItemsToPick1: 1,
+    numRandomStreakBonusItemsToPick2: 0,
+    randomStreakBonusItemTokenIds1: [
+      EstforConstants.HALLOWEEN_BONUS_1,
+      EstforConstants.HALLOWEEN_BONUS_2,
+      EstforConstants.HALLOWEEN_BONUS_3,
+    ],
+    randomStreakBonusAmounts1: [1, 1, 1],
+    randomStreakBonusItemTokenIds2: [],
+    randomStreakBonusAmounts2: [],
+    guaranteedStreakBonusItemTokenIds: [],
+    guaranteedStreakBonusAmounts: [],
+    guaranteedItemTokenIds: [],
+    guaranteedAmounts: [],
+    randomItemTokenIds: [],
+    randomAmounts: [],
+    questPrerequisiteId: 0
+    });
+  */
+
+  const startTime = 1729760400; // Thur Oct 24th 09:00 UTC
+  const numDays = 14;
+  await promotions.connect(owner).addPromotions([
     {
-      promotion: Promotion.XMAS_2023,
+      promotion: Promotion.HALLOWEEN_2024,
       startTime,
       endTime: startTime + 24 * 3600 * numDays,
       minTotalXP: 0,
-      numDailyRandomItemsToPick: 1,
+      numDailyRandomItemsToPick: 0,
       isMultiday: true,
-      brushCostMissedDay: parseEther("25"),
+      brushCostMissedDay: 0n,
       tokenCost: 0n,
       redeemCodeLength: 0,
       adminOnly: false,
       promotionTiedToUser: false,
       promotionTiedToPlayer: true,
       promotionMustOwnPlayer: true,
-      evolvedHeroOnly: false,
-      numDaysClaimablePeriodStreakBonus: 9,
-      numDaysHitNeededForStreakBonus: 20,
-      numRandomStreakBonusItemsToPick1: 1,
+      evolvedHeroOnly: true,
+      numDaysClaimablePeriodStreakBonus: 0,
+      numDaysHitNeededForStreakBonus: 0,
+      numRandomStreakBonusItemsToPick1: 0,
       numRandomStreakBonusItemsToPick2: 0,
-      randomStreakBonusItemTokenIds1: [
-        EstforConstants.HALLOWEEN_BONUS_1,
-        EstforConstants.HALLOWEEN_BONUS_2,
-        EstforConstants.HALLOWEEN_BONUS_3
-      ],
-      randomStreakBonusAmounts1: [1, 1, 1],
+      randomStreakBonusItemTokenIds1: [],
+      randomStreakBonusAmounts1: [],
       randomStreakBonusItemTokenIds2: [],
       randomStreakBonusAmounts2: [],
       guaranteedStreakBonusItemTokenIds: [],
       guaranteedStreakBonusAmounts: [],
-      guaranteedItemTokenIds: [],
-      guaranteedAmounts: [],
+      guaranteedItemTokenIds: [EstforConstants.COIN],
+      guaranteedAmounts: [5],
       randomItemTokenIds: [],
       randomAmounts: [],
       questPrerequisiteId: 0

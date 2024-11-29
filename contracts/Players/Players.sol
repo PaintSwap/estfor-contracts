@@ -445,7 +445,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     // Get total level of all skills, check if it matches total level on player
     uint256 end = START_LEVEL + 2; // Accounts for NONE & COMBAT meta-skills
     uint16 totalLevel;
-    for (uint i = 2; i < end; ++i) {
+    for (uint256 i = 2; i < end; ++i) {
       Skill skill = Skill(i);
       uint256 skillXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
       totalLevel += PlayersLibrary._getLevel(skillXP);

@@ -357,10 +357,14 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     PromotionInfo memory promotionInfo = _activePromotions[promotion];
     uint256 dayToSet = FINAL_PROMOTION_DAY_INDEX;
     if (promotionInfo.isMultiday) {
-      (itemTokenIds, amounts, dayToSet, promotionMintStatus) = _handleMultidayPromotion(playerId, promotion, timestamp);
+      (itemTokenIds, amounts, dayToSet, promotionMintStatus) = _handleMultidayPromotionView(
+        playerId,
+        promotion,
+        timestamp
+      );
     } else {
       // Single day promotion
-      (itemTokenIds, amounts, promotionMintStatus) = _handleSinglePromotion(playerId, promotion, timestamp);
+      (itemTokenIds, amounts, promotionMintStatus) = _handleSinglePromotionView(playerId, promotion, timestamp);
     }
 
     daysToSet = new uint256[](itemTokenIds.length);
@@ -470,7 +474,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _handleSinglePromotion(
+  function _handleSinglePromotionView(
     uint256 playerId,
     Promotion promotion,
     uint256 timestamp
@@ -482,11 +486,17 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     PromotionInfo memory promotionInfo = _activePromotions[promotion];
     promotionMintStatus = _checkMintPromotion(playerId, promotion, timestamp);
     if (promotionMintStatus == PromotionMintStatus.SUCCESS) {
-      // TODO: Support itemTokenIds later
+      // TODO: Support more than 1 numDailyRandomItemsToPick later
       itemTokenIds = new uint256[](
         promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length
       );
       amounts = new uint256[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
+
+      // First add the guaranteed items
+      for (uint256 i; i < promotionInfo.guaranteedItemTokenIds.length; ++i) {
+        itemTokenIds[i] = promotionInfo.guaranteedItemTokenIds[i];
+        amounts[i] = promotionInfo.guaranteedAmounts[i];
+      }
 
       // Pick a random item from the list, only supports 1 item atm
       uint256 numAvailableItems = promotionInfo.randomItemTokenIds.length;
@@ -499,14 +509,16 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
         uint256 randomWord = randomnessBeacon.getRandomWord(oracleTime);
         uint256 modifiedRandomWord = uint256(keccak256(abi.encodePacked(randomWord, playerId)));
         uint256 index = modifiedRandomWord % numAvailableItems;
-        itemTokenIds[0] = promotionInfo.randomItemTokenIds[index];
-        amounts[0] = promotionInfo.randomAmounts[index];
+
+        uint256 startIndex = promotionInfo.guaranteedItemTokenIds.length; // Guaranteed items are in front
+        itemTokenIds[startIndex] = promotionInfo.randomItemTokenIds[index];
+        amounts[startIndex] = promotionInfo.randomAmounts[index];
       }
     }
   }
 
-  // TODO: Only really supporting xmas 2023 so far with tiered rewards
-  function _handleMultidayPromotion(
+  // TODO: Only really supporting xmas 2023 so far with tiered rewards (and halloween 2024)
+  function _handleMultidayPromotionView(
     uint256 playerId,
     Promotion promotion,
     uint256 timestamp
@@ -532,16 +544,27 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       );
       amounts = new uint256[](promotionInfo.numDailyRandomItemsToPick + promotionInfo.guaranteedItemTokenIds.length);
 
+      // First add the guaranteed items
+      for (uint256 i; i < promotionInfo.guaranteedItemTokenIds.length; ++i) {
+        itemTokenIds[i] = promotionInfo.guaranteedItemTokenIds[i];
+        amounts[i] = promotionInfo.guaranteedAmounts[i];
+      }
+
       promotionMintStatus = _checkMultidayDailyMintPromotion(playerId, promotion, timestamp);
       if (promotionMintStatus == PromotionMintStatus.SUCCESS) {
-        if (promotionInfo.randomItemTokenIds.length == 0) {
+        // TODO: Update this on Sonic branch with better flags. Currently only supports tiered rewards
+        if (promotionInfo.guaranteedItemTokenIds.length == 0 && promotionInfo.randomItemTokenIds.length == 0) {
+          // Currently assumes tiered rewards
           uint256 oracleTime = ((promotionInfo.startTime / 1 days + today) * 1 days) - 1;
-          (itemTokenIds[0], amounts[0], promotionMintStatus) = _getTierReward(
+          uint256 startIndex = promotionInfo.guaranteedItemTokenIds.length; // Guaranteed items are in front
+          (itemTokenIds[startIndex], amounts[startIndex], promotionMintStatus) = _getTierReward(
             playerId,
             _randomnessBeacon,
             oracleTime,
             promotionMintStatus
           );
+        } else if (promotionInfo.guaranteedItemTokenIds.length != 0) {
+          // TODO: Just temporary until the migration with better types to determine what rewards are given
         } else {
           // Not supported yet
           assert(false);

@@ -55,9 +55,15 @@ library PromotionsLibrary {
     require(promotionInfoInput.randomItemTokenIds.length == promotionInfoInput.randomAmounts.length, LengthMismatch());
     require(promotionInfoInput.promotion != Promotion.NONE, PromotionNotSet());
     require(promotionInfoInput.startTime < promotionInfoInput.endTime, StartTimeMustBeHigherEndTime());
-    require(promotionInfoInput.numDailyRandomItemsToPick != 0, NoNumItemsToPick());
+    require(
+      (promotionInfoInput.numDailyRandomItemsToPick != 0 || promotionInfoInput.guaranteedItemTokenIds.length != 0),
+      NoNumItemsToPick()
+    );
     // TODO: Special handling for now, only allowing 1 item to be picked
-    require(promotionInfoInput.numDailyRandomItemsToPick == 1, InvalidPromotion());
+    require(
+      promotionInfoInput.guaranteedItemTokenIds.length != 0 || promotionInfoInput.numDailyRandomItemsToPick == 1,
+      InvalidPromotion()
+    );
     // Check brush input is valid
     require(promotionInfoInput.tokenCost % 1 ether == 0, InvalidBrushCost());
     // start and endTime must be factors of 24 hours apart

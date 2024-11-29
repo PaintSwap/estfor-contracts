@@ -3148,6 +3148,44 @@ describe("Combat Actions", function () {
     expect(await itemNFT.balanceOf(alice, EstforConstants.COOKED_MINNUS)).to.eq(0);
   });
 
+  it("Negative health should use more food", async function () {
+    const fixture = await loadFixture(playersFixture);
+    const {players, itemNFT, worldActions, playerId, alice} = fixture;
+
+    const {queuedAction: queuedActionMelee, rate, numSpawned} = await setupBasicMeleeCombat(itemNFT, worldActions);
+
+    // Set my combat stats
+    await itemNFT.mintBatch(alice.address, [EstforConstants.IRON_HELMET], [1]);
+
+    await itemNFT.addItems([
+      {
+        ...EstforTypes.defaultItemInput,
+        combatStats: {
+          ...EstforTypes.defaultItemInput.combatStats,
+          health: -100
+        },
+        tokenId: EstforConstants.IRON_HELMET,
+        equipPosition: EstforTypes.EquipPosition.HEAD
+      }
+    ]);
+
+    const queuedAction: EstforTypes.QueuedActionInput = {
+      ...queuedActionMelee,
+      attire: {...EstforTypes.noAttire, head: EstforConstants.IRON_HELMET}
+    };
+
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
+
+    const time = 3600;
+    await ethers.provider.send("evm_increaseTime", [time]);
+    await players.connect(alice).processActions(playerId);
+
+    // Check food is consumed
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.COOKED_MINNUS)).to.eq(255 - 11);
+    // Only no 0 id items produced
+    expect(await itemNFT.balanceOf(alice.address, EstforConstants.NONE)).to.eq(0);
+  });
+
   it("Dead, don't kill all", async function () {
     // Lose all the XP that would have been gained
     const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);

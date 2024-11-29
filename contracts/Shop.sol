@@ -5,7 +5,6 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {Treasury} from "./Treasury.sol";
-
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 

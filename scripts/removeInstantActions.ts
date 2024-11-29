@@ -9,9 +9,20 @@ async function main() {
   console.log(`Remove instant actions using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
+
+  const actionIds = [
+    EstforConstants.INSTANT_ACTION_FORGING_LIFFYN,
+    EstforConstants.INSTANT_ACTION_FORGING_VANAGLOT,
+    EstforConstants.INSTANT_ACTION_FORGING_FANGENSTORM,
+    EstforConstants.INSTANT_ACTION_FORGING_RING,
+    EstforConstants.INSTANT_ACTION_FORGING_AMULET,
+    EstforConstants.INSTANT_ACTION_FORGING_TRICK_CHEST,
+    EstforConstants.INSTANT_ACTION_FORGING_TREAT_CHEST,
+    EstforConstants.INSTANT_ACTION_FORGING_TRICK_OR_TREAT_KEY
+  ];
   await instantActions.removeActions(
-    [InstantActionType.FORGING_COMBINE],
-    [EstforConstants.INSTANT_ACTION_FORGING_IRON_ARMOR],
+    actionIds.map(() => InstantActionType.FORGING_COMBINE),
+    actionIds
   );
 }
 

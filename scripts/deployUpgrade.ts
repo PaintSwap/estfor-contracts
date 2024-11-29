@@ -221,9 +221,6 @@ async function main() {
   let promotionsLibrary: PromotionsLibrary;
   if (newPromotionsLibrary) {
     promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
-    if (network.chainId == 250n) {
-      await verifyContracts([await promotionsLibrary.getAddress()]);
-    }
   } else {
     promotionsLibrary = await ethers.getContractAt("PromotionsLibrary", PROMOTIONS_LIBRARY_ADDRESS);
   }
@@ -427,6 +424,7 @@ async function main() {
     await verifyContracts([await adminAccess.getAddress()]);
     await verifyContracts([await wishingWell.getAddress()]);
     await verifyContracts([await promotions.getAddress()]);
+    await verifyContracts([await promotionsLibrary.getAddress()]);
     await verifyContracts([await instantActions.getAddress()]);
     await verifyContracts([await vrfRequestInfo.getAddress()]);
     await verifyContracts([await instantVRFActions.getAddress()]);
