@@ -281,9 +281,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "skillXPGained",
-            "type": "uint16"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -423,9 +423,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "skillXPGained",
-            "type": "uint16"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -766,9 +766,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "skillXPGained",
-            "type": "uint16"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -896,9 +896,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "skillXPGained",
-            "type": "uint16"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",
@@ -1075,9 +1075,9 @@
             "type": "uint8"
           },
           {
-            "internalType": "uint16",
+            "internalType": "uint24",
             "name": "skillXPGained",
-            "type": "uint16"
+            "type": "uint24"
           },
           {
             "internalType": "uint16",

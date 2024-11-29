@@ -269,7 +269,6 @@ async function main() {
 
   console.log(`worldActions = "${(await worldActions.getAddress()).toLowerCase()}"`);
 
-  // Create the world
   const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
   const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await vrf.getAddress()], {
     kind: "uups",
@@ -1142,9 +1141,12 @@ async function main() {
   await setDailyAndWeeklyRewards(dailyRewardsScheduler);
   console.log("Set daily and weekly rewards");
 
-  tx = await worldActions.addActions(allActions);
-  await tx.wait();
-  console.log("Add actions");
+  for (let i = 0; i < allActions.length; i += chunkSize) {
+    const chunk = allActions.slice(i, i + chunkSize);
+    tx = await worldActions.addActions(chunk);
+    await tx.wait();
+    console.log("Add actions chunk ", i);
+  }
 
   tx = await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
   await tx.wait();
@@ -1164,19 +1166,17 @@ async function main() {
     [allActionChoiceIdsFiremaking, allActionChoiceIdsSmithing, allActionChoiceIdsCooking],
     [allActionChoicesFiremaking, allActionChoicesSmithing, allActionChoicesCooking]
   );
-
   await tx.wait();
   console.log("Add action choices1");
 
   // Add new ones here for gas reasons
-  tx = await worldActions.addBulkActionChoices(
-    [craftingActionId, fletchingActionId],
-    [allActionChoiceIdsCrafting, allActionChoiceIdsFletching],
-    [allActionChoicesCrafting, allActionChoicesFletching]
-  );
-
+  tx = await worldActions.addActionChoices(craftingActionId, allActionChoiceIdsCrafting, allActionChoicesCrafting);
   await tx.wait();
   console.log("Add action choices2");
+
+  tx = await worldActions.addActionChoices(fletchingActionId, allActionChoiceIdsFletching, allActionChoicesFletching);
+  await tx.wait();
+  console.log("Add action choices3");
 
   // Add new ones here for gas reasons
   tx = await worldActions.addBulkActionChoices(
@@ -1186,7 +1186,7 @@ async function main() {
   );
 
   await tx.wait();
-  console.log("Add action choices3");
+  console.log("Add action choices4");
 
   tx = await worldActions.addBulkActionChoices(
     [genericCombatActionId, genericCombatActionId, genericCombatActionId],

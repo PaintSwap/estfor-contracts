@@ -12,7 +12,7 @@ struct QuestInput {
   uint16 actionChoiceId; // actionChoice to perform
   uint16 actionChoiceNum; // how many to do (base number), (up to 65535)
   Skill skillReward; // The skill to reward XP to
-  uint16 skillXPGained; // The amount of XP to give (up to 65535)
+  uint24 skillXPGained; // The amount of XP to give (up to 65535)
   uint16 rewardItemTokenId1; // Reward an item
   uint16 rewardAmount1; // amount of the reward (up to 65535)
   uint16 rewardItemTokenId2; // Reward another item
@@ -33,7 +33,7 @@ struct Quest {
   uint16 actionChoiceId; // actionChoice to perform
   uint16 actionChoiceNum; // how many to do (base number), (up to 65535)
   Skill skillReward; // The skill to reward XP to
-  uint16 skillXPGained; // The amount of XP to give (up to 65535)
+  uint24 skillXPGained; // The amount of XP to give (up to 65535)
   uint16 rewardItemTokenId1; // Reward an item
   uint16 rewardAmount1; // amount of the reward (up to 65535)
   uint16 rewardItemTokenId2; // Reward another item
