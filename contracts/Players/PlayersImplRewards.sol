@@ -106,8 +106,11 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       uint32 pointsAccrued;
       uint256 endTime = startTime + queuedAction.timespan;
 
-      (ActionRewards memory actionRewards, Skill actionSkill, uint256 numSpawnedPerHour) = //        uint8 worldLocation
-      _worldActions.getRewardsHelper(queuedAction.actionId);
+      (
+        ActionRewards memory actionRewards,
+        Skill actionSkill,
+        uint256 numSpawnedPerHour //        uint8 worldLocation
+      ) = _worldActions.getRewardsHelper(queuedAction.actionId);
 
       uint256 elapsedTime = _getElapsedTime(startTime, endTime);
       //      bool correctWorldLocation = worldLocation == pendingQueuedActionState.worldLocation;
@@ -198,7 +201,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         actionChoice.handItemTokenIdRangeMin,
         checkpointEquipments
       );
-
+      // TODO: If this is a raid it's ok to be missing it
       if (missingRequiredHandEquipment) {
         if (i == 0) {
           // Clear the state and make sure the next queued action can finish
@@ -272,7 +275,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         if (numActionsCompleted != 0) {
           actionIds[actionIdsLength] = queuedAction.actionId;
           actionAmounts[actionIdsLength] = numActionsCompleted;
-          actionIdsLength++;
+          ++actionIdsLength;
         }
 
         if (producedEquipment.itemTokenId != NONE) {
@@ -366,7 +369,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         if (numActionsCompleted != 0) {
           actionIds[actionIdsLength] = queuedAction.actionId;
           actionAmounts[actionIdsLength] = numActionsCompleted;
-          actionIdsLength++;
+          ++actionIdsLength;
         }
       }
 

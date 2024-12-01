@@ -49,7 +49,7 @@ contract PetNFT is
   event AddBasePets(BasePetInput[] basePetInputs);
   event EditBasePets(BasePetInput[] basePetInputs);
   event EditNameCost(uint256 newCost);
-  event Train(uint256 playerId, uint256 petId);
+  event Train(uint256 playerId, uint256 petId, uint256 xpGained);
 
   error PetAlreadyExists();
   error PetDoesNotExist();
@@ -379,9 +379,13 @@ contract PetNFT is
 
     // Still possible to train up? Harder to train up higher level pets? Requires multiple days?
     uint64 currentXP = _pets[petId].xp;
-    _pets[petId].xp = currentXP + 100; // TODO:
+
+    // TODO: Use randomnessBeacon xpGained
+    uint64 xpGained = 100;
+    _pets[petId].xp = currentXP + xpGained;
     _pets[petId].lastTrainedTimestamp = uint40(timestamp);
-    emit Train(playerId, petId);
+    // TODO: Levelled up?
+    emit Train(playerId, petId, xpGained);
   }
 
   function _createRandomPet(uint256 petId, uint256 _basePetId, uint256 randomWord) private returns (Pet memory pet) {

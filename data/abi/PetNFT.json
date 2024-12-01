@@ -837,6 +837,12 @@
         "internalType": "uint256",
         "name": "petId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "xpGained",
+        "type": "uint256"
       }
     ],
     "name": "Train",
