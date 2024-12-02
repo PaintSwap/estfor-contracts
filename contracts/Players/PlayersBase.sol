@@ -235,7 +235,7 @@ abstract contract PlayersBase {
     }
   }
 
-  function _isPlayerFullMode(uint256 playerId) internal view returns (bool) {
+  function _isEvolved(uint256 playerId) internal view returns (bool) {
     return uint8(_players[playerId].packedData >> IS_FULL_MODE_BIT) & 1 == 1;
   }
 

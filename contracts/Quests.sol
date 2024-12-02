@@ -123,7 +123,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     require(
-      !_isQuestPackedDataFullMode(quest.packedData) || _players.isPlayerUpgraded(playerId),
+      !_isQuestPackedDataFullMode(quest.packedData) || _players.isPlayerEvolved(playerId),
       CannotStartFullModeQuest()
     );
 

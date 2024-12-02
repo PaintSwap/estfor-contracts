@@ -98,7 +98,7 @@ library ClanBattleLibrary {
 
           {
             uint256 numRollsA = (levelA / 20) +
-              (IPlayers(players).isPlayerUpgraded(clanMembersA[i]) ? 2 : 1) +
+              (IPlayers(players).isPlayerEvolved(clanMembersA[i]) ? 2 : 1) +
               extraRollsA;
 
             // Check how many bits are set based on the number of rolls
@@ -108,7 +108,7 @@ library ClanBattleLibrary {
           }
           {
             uint256 numRollsB = (levelB / 20) +
-              (IPlayers(players).isPlayerUpgraded(clanMembersB[i]) ? 2 : 1) +
+              (IPlayers(players).isPlayerEvolved(clanMembersB[i]) ? 2 : 1) +
               extraRollsB;
 
             for (uint256 j; j < numRollsB; ++j) {

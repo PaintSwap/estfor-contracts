@@ -157,7 +157,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   function _checkDoActionRequirements(uint256 playerId, InstantAction storage instantAction) private view {
     require(instantAction.inputTokenId1 != NONE, InvalidActionId());
     _checkMinXPRequirements(playerId, instantAction);
-    require(!_isActionFullMode(instantAction) || _players.isPlayerUpgraded(playerId), PlayerNotUpgraded());
+    require(!_isActionFullMode(instantAction) || _players.isPlayerEvolved(playerId), PlayerNotUpgraded());
     if (instantAction.questPrerequisiteId != 0) {
       require(_quests.isQuestCompleted(playerId, instantAction.questPrerequisiteId), DependentQuestNotCompleted());
     }

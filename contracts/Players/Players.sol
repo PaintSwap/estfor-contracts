@@ -193,7 +193,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
 
   // Callback after upgrading a player
   function upgradePlayer(uint256 playerId) external override onlyPlayerNFT {
-    require(!_isPlayerFullMode(playerId), AlreadyUpgraded());
+    require(!_isEvolved(playerId), AlreadyUpgraded());
 
     _players[playerId].packedData = _players[playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
   }
@@ -481,8 +481,8 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     return _globalBoost;
   }
 
-  function isPlayerUpgraded(uint256 playerId) external view override returns (bool) {
-    return _isPlayerFullMode(playerId);
+  function isPlayerEvolved(uint256 playerId) external view override returns (bool) {
+    return _isEvolved(playerId);
   }
 
   function getAlphaCombatParams()

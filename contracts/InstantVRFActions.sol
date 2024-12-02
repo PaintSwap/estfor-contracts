@@ -156,14 +156,14 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     require(_playerActionInfos[playerId].actionIdAmountPairs[0] == 0, AlreadyProcessing());
     require(actionIds.length != 0, NotDoingAnyActions());
 
-    bool isPlayerUpgraded = _players.isPlayerUpgraded(playerId);
+    bool isPlayerEvolved = _players.isPlayerEvolved(playerId);
     uint256 totalAmount;
     uint256 numRandomWords;
     for (uint256 i; i < actionIds.length; ++i) {
       uint16 actionId = actionIds[i];
       require(_actionExists(actionId), ActionDoesNotExist());
       require(_isActionAvailable(actionId), ActionNotAvailable());
-      require(isPlayerUpgraded || !_isActionFullMode(actionId), PlayerNotUpgraded());
+      require(isPlayerEvolved || !_isActionFullMode(actionId), PlayerNotUpgraded());
 
       uint16 questPrerequisiteId = _actions[actionId].questPrerequisiteId;
       if (questPrerequisiteId != 0) {

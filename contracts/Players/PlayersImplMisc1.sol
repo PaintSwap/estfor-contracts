@@ -58,7 +58,7 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
         ",",
         _getTraitStringJSON("Clan", _clans.getClanNameOfPlayer(playerId)),
         ",",
-        _getTraitStringJSON("Full version", _isPlayerFullMode(playerId) ? "true" : "false"),
+        _getTraitStringJSON("Full version", _isEvolved(playerId) ? "true" : "false"),
         ",",
         _getTraitNumberJSON("Melee level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP))),
         ",",

@@ -164,7 +164,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
     require(_isActionAvailable(actionId), ActionNotAvailable());
 
-    require(!_isActionFullMode(actionId) || _players.isPlayerUpgraded(playerId), PlayerNotUpgraded());
+    require(!_isActionFullMode(actionId) || _players.isPlayerEvolved(playerId), PlayerNotUpgraded());
 
     if (boostItemTokenId != NONE) {
       Item memory item = _itemNFT.getItem(boostItemTokenId);

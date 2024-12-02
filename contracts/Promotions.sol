@@ -305,7 +305,7 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
       if (promotionInfo.tokenCost != 0) {
         _pay(promotionInfo.tokenCost * 1 ether);
       } else {
-        require(!promotionInfo.evolvedHeroOnly || _players.isPlayerUpgraded(playerId), PlayerNotEvolved());
+        require(!promotionInfo.evolvedHeroOnly || _players.isPlayerEvolved(playerId), PlayerNotEvolved());
       }
     }
 

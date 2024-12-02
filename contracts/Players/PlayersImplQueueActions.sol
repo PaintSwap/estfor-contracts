@@ -212,7 +212,7 @@ contract PlayersImplQueueActions is PlayersBase {
     );
 
     bool isCombat = actionInfo.skill._isSkillCombat();
-    bool isPlayerUpgraded = _isPlayerFullMode(playerId);
+    bool isPlayerEvolved = _isEvolved(playerId);
 
     // Check the actionChoice is valid
     ActionChoice memory actionChoice;
@@ -267,7 +267,7 @@ contract PlayersImplQueueActions is PlayersBase {
       }
 
       bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
-      require(!actionChoiceFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
+      require(!actionChoiceFullModeOnly || isPlayerEvolved, PlayerNotUpgraded());
       bool actionChoiceIsAvailable = uint8(actionChoice.packedData >> IS_AVAILABLE_BIT) & 1 == 1;
       require(actionChoiceIsAvailable, ActionChoiceNotAvailable());
 
@@ -279,7 +279,7 @@ contract PlayersImplQueueActions is PlayersBase {
       require(false, ActionChoiceIdNotRequired());
     }
 
-    require(!(actionInfo.isFullModeOnly && !isPlayerUpgraded), PlayerNotUpgraded());
+    require(!(actionInfo.isFullModeOnly && !isPlayerEvolved), PlayerNotUpgraded());
     require(actionInfo.isAvailable, ActionNotAvailable());
     require(queuedActionInput.timespan != 0, EmptyTimespan());
     // Check combatStyle is only selected if queuedAction is combat
@@ -295,7 +295,7 @@ contract PlayersImplQueueActions is PlayersBase {
       attire.feet != NONE ||
       attire.ring != NONE
     ) {
-      _checkAttire(from, playerId, isPlayerUpgraded, attire, pendingQueuedActionProcessed, pendingQuestState);
+      _checkAttire(from, playerId, isPlayerEvolved, attire, pendingQueuedActionProcessed, pendingQuestState);
       setAttire = true;
     }
 
@@ -307,7 +307,7 @@ contract PlayersImplQueueActions is PlayersBase {
     _checkHandEquipments(
       from,
       playerId,
-      isPlayerUpgraded,
+      isPlayerEvolved,
       [queuedActionInput.rightHandEquipmentTokenId, queuedActionInput.leftHandEquipmentTokenId], // Must be in order of right -> left
       actionInfo.handItemTokenIdRangeMin,
       actionInfo.handItemTokenIdRangeMax,
@@ -317,9 +317,9 @@ contract PlayersImplQueueActions is PlayersBase {
       pendingQuestState
     );
 
-    _checkFood(playerId, isPlayerUpgraded, queuedActionInput, pendingQueuedActionProcessed, pendingQuestState);
+    _checkFood(playerId, isPlayerEvolved, queuedActionInput, pendingQueuedActionProcessed, pendingQuestState);
 
-    _checkPet(from, isPlayerUpgraded, queuedActionInput.petId);
+    _checkPet(from, isPlayerEvolved, queuedActionInput.petId);
   }
 
   // Add any new xp gained from previous actions now completed that haven't been pushed to the blockchain yet. For instance
@@ -388,7 +388,7 @@ contract PlayersImplQueueActions is PlayersBase {
 
   function _checkFood(
     uint256 playerId,
-    bool isPlayerUpgraded,
+    bool isPlayerEvolved,
     QueuedActionInput memory queuedActionInput,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory questState
@@ -402,14 +402,14 @@ contract PlayersImplQueueActions is PlayersBase {
         ConsumableMinimumXPNotReached()
       );
       // TODO: Untested
-      require(!isFoodFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
+      require(!isFoodFullModeOnly || isPlayerEvolved, PlayerNotUpgraded());
     }
   }
 
-  function _checkPet(address from, bool isPlayerUpgraded, uint256 _petId) private view {
+  function _checkPet(address from, bool isPlayerEvolved, uint256 _petId) private view {
     if (_petId != 0) {
       // All pets are upgrade only
-      require(isPlayerUpgraded, PlayerNotUpgraded());
+      require(isPlayerEvolved, PlayerNotUpgraded());
       require(_petNFT.balanceOf(from, _petId) != 0, PetNotOwned());
     }
   }
@@ -470,7 +470,7 @@ contract PlayersImplQueueActions is PlayersBase {
   function _checkAttire(
     address from,
     uint256 playerId,
-    bool isPlayerUpgraded,
+    bool isPlayerEvolved,
     Attire memory attire,
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory questState
@@ -495,7 +495,7 @@ contract PlayersImplQueueActions is PlayersBase {
           AttireMinimumXPNotReached()
         );
         require(balances[i] != 0, NoItemBalance(itemTokenIds[i]));
-        require(isPlayerUpgraded || !isItemFullModeOnly[i], PlayerNotUpgraded());
+        require(isPlayerEvolved || !isItemFullModeOnly[i], PlayerNotUpgraded());
       }
     }
   }
@@ -503,7 +503,7 @@ contract PlayersImplQueueActions is PlayersBase {
   function _checkHandEquipments(
     address from,
     uint256 playerId,
-    bool isPlayerUpgraded,
+    bool isPlayerEvolved,
     uint16[2] memory equippedItemTokenIds, // [right, left]
     uint16 handItemTokenIdRangeMin,
     uint16 handItemTokenIdRangeMax,
@@ -539,7 +539,7 @@ contract PlayersImplQueueActions is PlayersBase {
           _getRealXP(skill, _playerXP[playerId], pendingQueuedActionProcessed, questState) >= minXP,
           ItemMinimumXPNotReached()
         );
-        require(!isItemFullModeOnly || isPlayerUpgraded, PlayerNotUpgraded());
+        require(!isItemFullModeOnly || isPlayerEvolved, PlayerNotUpgraded());
 
         if (isRightHand) {
           require(

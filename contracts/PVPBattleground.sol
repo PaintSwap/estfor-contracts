@@ -313,8 +313,8 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
     uint256 numWinnersA;
     uint256 numWinnersB;
     IPlayers players = _players;
-    bool playerAUpgraded = players.isPlayerUpgraded(playerId);
-    bool playerBUpgraded = players.isPlayerUpgraded(defendingPlayerId);
+    bool playerAUpgraded = players.isPlayerEvolved(playerId);
+    bool playerBUpgraded = players.isPlayerEvolved(defendingPlayerId);
 
     for (uint256 i; i < skills.length; ++i) {
       // It's possible that there are empty entries if they left the clan
