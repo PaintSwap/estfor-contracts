@@ -322,7 +322,7 @@ async function main() {
   console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`);
 
   // ClanBattleLibrary
-  const newClanBattleLibrary = false;
+  const newClanBattleLibrary = true;
   let clanBattleLibrary: ClanBattleLibrary;
   if (newClanBattleLibrary) {
     clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary");
@@ -376,6 +376,17 @@ async function main() {
   await combatantsHelper.waitForDeployment();
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
+  const Raids = await ethers.getContractFactory("Raids", {
+    libraries: {PlayersLibrary: await PLAYERS_LIBRARY_ADDRESS}
+  });
+  const raids = await upgrades.upgradeProxy(RAIDS_ADDRESS, Raids, {
+    kind: "uups",
+    unsafeAllow: ["external-library-linking"],
+    timeout
+  });
+  await raids.waitForDeployment();
+  console.log(`raids = "${(await raids.getAddress()).toLowerCase()}"`);
+
   const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
   const territoryTreasury = await upgrades.upgradeProxy(TERRITORY_TREASURY_ADDRESS, TerritoryTreasury, {
     kind: "uups",
@@ -400,16 +411,6 @@ async function main() {
   });
   await passiveActions.waitForDeployment();
   console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`);
-
-  const Raids = await ethers.getContractFactory("Raids", {
-    libraries: {PlayersLibrary: await PLAYERS_LIBRARY_ADDRESS}
-  });
-  const raids = await upgrades.upgradeProxy(RAIDS_ADDRESS, Raids, {
-    kind: "uups",
-    timeout
-  });
-  await raids.waitForDeployment();
-  console.log(`raids = "${(await raids.getAddress()).toLowerCase()}"`);
 
   if (network.chainId == 250n) {
     await verifyContracts([await players.getAddress()]);

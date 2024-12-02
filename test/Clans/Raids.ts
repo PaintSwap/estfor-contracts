@@ -4,7 +4,7 @@ import {clanFixture} from "./utils";
 import {ClanRank, Skill} from "@paintswap/estfor-definitions/types";
 import {allBattleSkills} from "../../scripts/data/territories";
 import {getXPFromLevel} from "../Players/utils";
-import {fulfillRandomWords, fulfillRandomWordsSeeded, getEventLog, SPAWN_MUL} from "../utils";
+import {fulfillRandomWords, fulfillRandomWordsSeeded, getEventLog, SPAWN_MUL, upgradePlayer} from "../utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {allActions} from "../../scripts/data/actions";
 import {
@@ -60,8 +60,35 @@ describe("Raids", function () {
 
   const raidFixture = async function () {
     const fixture = await loadFixture(clanFixture);
-
     const {raids, worldActions, itemNFT} = fixture;
+
+    const {
+      playerId,
+      playerNFT,
+      avatarId,
+      origName,
+      owner,
+      alice,
+      bob,
+      charlie,
+      erin,
+      frank,
+      brush,
+      upgradePlayerBrushPrice
+    } = fixture;
+
+    await upgradePlayer(playerNFT, playerId, brush, upgradePlayerBrushPrice, alice);
+
+    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
+    await upgradePlayer(playerNFT, ownerPlayerId, brush, upgradePlayerBrushPrice, owner);
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
+    await upgradePlayer(playerNFT, bobPlayerId, brush, upgradePlayerBrushPrice, bob);
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
+    await upgradePlayer(playerNFT, charliePlayerId, brush, upgradePlayerBrushPrice, charlie);
+    const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
+    await upgradePlayer(playerNFT, erinPlayerId, brush, upgradePlayerBrushPrice, erin);
+    const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 5, true);
+    await upgradePlayer(playerNFT, frankPlayerId, brush, upgradePlayerBrushPrice, frank);
 
     // Add all actions
     const raidCombatActionIds = [
@@ -97,7 +124,7 @@ describe("Raids", function () {
     );
 
     await raids.setCombatActions(raidCombatActionIds);
-    return {...fixture, raidCombatActionIds};
+    return {...fixture, raidCombatActionIds, ownerPlayerId, bobPlayerId, charliePlayerId, erinPlayerId, frankPlayerId};
   };
 
   describe("Basic raid functionality", function () {
@@ -426,11 +453,23 @@ describe("Raids", function () {
     });
 
     it("Enforces max clan combatants", async function () {
-      const {clanId, playerId, alice, bob, combatantsHelper, maxRaidCombatants, clans, playerNFT, raids} =
-        await loadFixture(raidFixture);
+      const {
+        clanId,
+        playerId,
+        alice,
+        bob,
+        combatantsHelper,
+        maxRaidCombatants,
+        clans,
+        playerNFT,
+        raids,
+        brush,
+        upgradePlayerBrushPrice
+      } = await loadFixture(raidFixture);
 
       // Create an array with one more than the max combatants and elements from 1 to maxRaidCombatants + 1
-      const tooManyIds = Array.from({length: maxRaidCombatants + 1}, (_, i) => i + 1);
+      const startPlayerId = 7n; // 6 players created already
+      const tooManyIds = Array.from({length: maxRaidCombatants + 1}, (_, i) => BigInt(i) + startPlayerId);
 
       const tierId = 2;
       await clans.addTiers([
@@ -447,15 +486,14 @@ describe("Raids", function () {
       // Upgrade clan so we can fit more members
       await clans.connect(alice).upgradeClan(clanId, playerId, tierId);
 
-      const tooManyIdsWithoutFirst = tooManyIds.slice(1, tooManyIds.length);
-
       // Update clan tier
-      await clans.connect(alice).inviteMembers(clanId, tooManyIdsWithoutFirst, playerId);
+      await clans.connect(alice).inviteMembers(clanId, tooManyIds, playerId);
 
       const avatarId = 1;
       const makeActive = true;
-      for (let nextPlayerId = playerId + 1n; nextPlayerId < tooManyIds.length + 1; ++nextPlayerId) {
+      for (let nextPlayerId = startPlayerId; nextPlayerId < startPlayerId + BigInt(tooManyIds.length); ++nextPlayerId) {
         await createPlayer(playerNFT, avatarId, bob, "name" + nextPlayerId, makeActive, "", "", "", false);
+        await upgradePlayer(playerNFT, nextPlayerId, brush, upgradePlayerBrushPrice, bob);
         await clans.connect(bob).acceptInvite(clanId, nextPlayerId, 0);
       }
 

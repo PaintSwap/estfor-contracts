@@ -1,4 +1,4 @@
-import {getStorageAt, loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {clanFixture} from "./utils";
 import {createPlayer} from "../../scripts/utils";
@@ -6,7 +6,7 @@ import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {LockedBankVaults, MockBrushToken, Territories} from "../../typechain-types";
 
-import {fulfillRandomWords, timeTravel} from "../utils";
+import {fulfillRandomWords, timeTravel, upgradePlayer} from "../utils";
 import {Block, ContractTransactionReceipt} from "ethers";
 import {allBattleSkills} from "../../scripts/data/territories";
 import {getXPFromLevel, makeSigner} from "../Players/utils";
@@ -29,8 +29,39 @@ describe("LockedBankVaults", function () {
     await lockedBankVaults.connect(territoriesSigner).lockFunds(clanId, alice, playerId, amount);
   };
 
+  const lockedBankVaultsFixture = async () => {
+    const fixture = await loadFixture(clanFixture);
+    const {
+      playerId,
+      playerNFT,
+      avatarId,
+      origName,
+      owner,
+      alice,
+      bob,
+      charlie,
+      erin,
+      frank,
+      brush,
+      upgradePlayerBrushPrice
+    } = fixture;
+    await upgradePlayer(playerNFT, playerId, brush, upgradePlayerBrushPrice, alice);
+    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
+    await upgradePlayer(playerNFT, ownerPlayerId, brush, upgradePlayerBrushPrice, owner);
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
+    await upgradePlayer(playerNFT, bobPlayerId, brush, upgradePlayerBrushPrice, bob);
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
+    await upgradePlayer(playerNFT, charliePlayerId, brush, upgradePlayerBrushPrice, charlie);
+    const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
+    await upgradePlayer(playerNFT, erinPlayerId, brush, upgradePlayerBrushPrice, erin);
+    const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 5, true);
+    await upgradePlayer(playerNFT, frankPlayerId, brush, upgradePlayerBrushPrice, frank);
+
+    return {...fixture, ownerPlayerId, bobPlayerId, charliePlayerId, erinPlayerId, frankPlayerId};
+  };
+
   it("Lock funds", async () => {
-    const {lockedBankVaults, clanId, playerId, alice, brush, territories} = await loadFixture(clanFixture);
+    const {lockedBankVaults, clanId, playerId, alice, brush, territories} = await loadFixture(lockedBankVaultsFixture);
 
     await brush.mint(territories, 1000);
     const territoriesSigner = await makeSigner(territories);
@@ -41,7 +72,7 @@ describe("LockedBankVaults", function () {
   });
 
   it("Only territories contract can lock funds", async () => {
-    const {lockedBankVaults, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
+    const {lockedBankVaults, clanId, playerId, alice, brush} = await loadFixture(lockedBankVaultsFixture);
 
     await brush.mint(alice, 100);
     await brush.connect(alice).approve(lockedBankVaults, 100);
@@ -53,7 +84,7 @@ describe("LockedBankVaults", function () {
 
   it("Cannot attack your own clan", async function () {
     const {lockedBankVaults, LockedBankVaultsLibrary, combatantsHelper, territories, clanId, playerId, brush, alice} =
-      await loadFixture(clanFixture);
+      await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
@@ -66,24 +97,11 @@ describe("LockedBankVaults", function () {
   });
 
   it("Leaving clan removes you as a combatant", async function () {
-    const {
-      lockedBankVaults,
-      combatantsHelper,
-      territories,
-      clanId,
-      playerId,
-      brush,
-      owner,
-      alice,
-      playerNFT,
-      avatarId,
-      origName,
-      clans
-    } = await loadFixture(clanFixture);
+    const {lockedBankVaults, combatantsHelper, territories, clanId, playerId, brush, ownerPlayerId, alice, clans} =
+      await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
 
-    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
@@ -97,7 +115,7 @@ describe("LockedBankVaults", function () {
 
   it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
     const {lockedBankVaultsLibrary, clanId, playerId, alice, combatantChangeCooldown, combatantsHelper} =
-      await loadFixture(clanFixture);
+      await loadFixture(lockedBankVaultsFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
     // Clear player id part so we can hit the custom error we want
@@ -127,9 +145,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
+      bobPlayerId,
+      charliePlayerId,
       alice,
       bob,
       charlie,
@@ -142,7 +159,7 @@ describe("LockedBankVaults", function () {
       brush,
       mockVRF,
       lockedFundsPeriod
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -150,11 +167,9 @@ describe("LockedBankVaults", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
@@ -191,9 +206,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
+      bobPlayerId,
+      charliePlayerId,
       alice,
       bob,
       charlie,
@@ -204,18 +218,16 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
@@ -237,10 +249,10 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
-      owner,
+      bobPlayerId,
+      charliePlayerId,
+      erinPlayerId,
+      frankPlayerId,
       alice,
       bob,
       charlie,
@@ -258,8 +270,9 @@ describe("LockedBankVaults", function () {
       attackingCooldown,
       reattackingCooldown,
       combatantChangeCooldown,
-      players
-    } = await loadFixture(clanFixture);
+      players,
+      ownerPlayerId
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
@@ -267,11 +280,9 @@ describe("LockedBankVaults", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
     // Increase odds of winning
@@ -304,11 +315,9 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(100); // // unchanged
 
     // Let's give them more players so they can win
-    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 3, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
-    const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
     await clans.connect(erin).requestToJoin(clanId, erinPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [erinPlayerId], playerId);
     // Extend member capacity
@@ -323,7 +332,6 @@ describe("LockedBankVaults", function () {
       }
     ]);
 
-    const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 5, true);
     await clans.connect(frank).requestToJoin(clanId, frankPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [frankPlayerId], playerId);
 
@@ -395,7 +403,7 @@ describe("LockedBankVaults", function () {
       brush,
       bankAddress,
       lockedFundsPeriod
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
     const lockPeriodSlice = lockedFundsPeriod / 10;
@@ -449,9 +457,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
+      bobPlayerId,
+      charliePlayerId,
       alice,
       bob,
       charlie,
@@ -464,18 +471,16 @@ describe("LockedBankVaults", function () {
       brush,
       mockVRF,
       vrfRequestInfo
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
@@ -652,12 +657,10 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
+      bobPlayerId,
       brush,
       alice,
       bob,
-      playerNFT,
-      avatarId,
-      origName,
       clanName,
       discord,
       telegram,
@@ -666,7 +669,7 @@ describe("LockedBankVaults", function () {
       tierId,
       mockVRF,
       maxLockedVaults
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     for (let i = 0; i < maxLockedVaults - 1; ++i) {
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
@@ -675,7 +678,6 @@ describe("LockedBankVaults", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
 
@@ -708,12 +710,10 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
+      bobPlayerId,
       brush,
       alice,
       bob,
-      playerNFT,
-      avatarId,
-      origName,
       clanName,
       discord,
       telegram,
@@ -722,7 +722,7 @@ describe("LockedBankVaults", function () {
       tierId,
       mockVRF,
       maxLockedVaults
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     for (let i = 0; i < maxLockedVaults; ++i) {
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 400, territories);
@@ -763,7 +763,6 @@ describe("LockedBankVaults", function () {
       );
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
 
@@ -821,10 +820,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
+      bobPlayerId,
       itemNFT,
-      avatarId,
-      origName,
       alice,
       bob,
       clanName,
@@ -836,12 +833,11 @@ describe("LockedBankVaults", function () {
       brush,
       mockVRF,
       attackingCooldown
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
@@ -908,10 +904,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
+      bobPlayerId,
       itemNFT,
-      avatarId,
-      origName,
       alice,
       bob,
       clanName,
@@ -922,12 +916,11 @@ describe("LockedBankVaults", function () {
       tierId,
       brush,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
@@ -970,10 +963,9 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
+      bobPlayerId,
+      charliePlayerId,
       itemNFT,
-      avatarId,
-      origName,
       alice,
       bob,
       charlie,
@@ -986,12 +978,11 @@ describe("LockedBankVaults", function () {
       brush,
       mockVRF,
       attackingCooldown
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
@@ -1018,7 +1009,6 @@ describe("LockedBankVaults", function () {
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
 
     // Create a new clan to attack/defend
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).createClan(charliePlayerId, clanName + 2, discord, telegram, twitter, imageId, tierId);
 
     const charlieClanId = bobClanId + 1;
@@ -1060,10 +1050,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
+      bobPlayerId,
       itemNFT,
-      avatarId,
-      origName,
       alice,
       bob,
       clanName,
@@ -1073,12 +1061,11 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = clanId + 1;
 
@@ -1162,9 +1149,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
+      bobPlayerId,
+      charliePlayerId,
       alice,
       bob,
       charlie,
@@ -1179,7 +1165,9 @@ describe("LockedBankVaults", function () {
       mockVRF,
       treasury,
       players
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
+
+    const brushBalanceBefore = await brush.balanceOf(dev);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories);
@@ -1188,10 +1176,8 @@ describe("LockedBankVaults", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     const bobClanId = clanId + 1;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
@@ -1221,8 +1207,8 @@ describe("LockedBankVaults", function () {
 
     // Check it went to the correct places
     expect(await brush.balanceOf(treasury)).to.eq(25);
-    expect(await brush.balanceOf(dev)).to.eq(12);
-    expect(await brush.amountBurnt()).to.eq(12);
+    expect(await brush.balanceOf(dev)).to.eq(brushBalanceBefore + 12n);
+    expect(await brush.amountBurnt()).to.eq(brushBalanceBefore + 12n);
   });
 
   it("Win an attack with some locked vaults", async () => {
@@ -1233,9 +1219,8 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
+      bobPlayerId,
+      charliePlayerId,
       alice,
       bob,
       charlie,
@@ -1247,7 +1232,7 @@ describe("LockedBankVaults", function () {
       tierId,
       brush,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 300, territories);
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 200, territories);
@@ -1256,11 +1241,9 @@ describe("LockedBankVaults", function () {
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack/defend
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
@@ -1289,9 +1272,7 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
+      bobPlayerId,
       alice,
       bob,
       clanName,
@@ -1302,12 +1283,11 @@ describe("LockedBankVaults", function () {
       tierId,
       brush,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = clanId + 1;
     await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories);
@@ -1350,9 +1330,7 @@ describe("LockedBankVaults", function () {
       territories,
       clanId,
       playerId,
-      playerNFT,
-      avatarId,
-      origName,
+      bobPlayerId,
       alice,
       bob,
       clanName,
@@ -1362,12 +1340,11 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(lockedBankVaultsFixture);
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
     // Create a new clan to attack
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = clanId + 1;
     await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 300, territories);
@@ -1401,9 +1378,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -1413,12 +1388,11 @@ describe("LockedBankVaults", function () {
         imageId,
         tierId,
         brush
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       // Create a new clan to attack/defend
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = 2;
 
@@ -1436,9 +1410,8 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
+        charliePlayerId,
         alice,
         bob,
         charlie,
@@ -1450,18 +1423,16 @@ describe("LockedBankVaults", function () {
         tierId,
         brush,
         mockVRF
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
       const bobClanId = clanId + 1;
-      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
       await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
@@ -1501,9 +1472,10 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
+        charliePlayerId,
+        frankPlayerId,
+        erinPlayerId,
         alice,
         bob,
         charlie,
@@ -1519,17 +1491,15 @@ describe("LockedBankVaults", function () {
         mockVRF,
         lockedFundsPeriod,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend with 2 members
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
-      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
       await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
@@ -1538,11 +1508,9 @@ describe("LockedBankVaults", function () {
         .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], false, [], bobPlayerId);
 
       // Create a new clan to attack/defend
-      const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 3, true);
       await clans.connect(erin).createClan(erinPlayerId, clanName + 2, discord, telegram, twitter, imageId, tierId);
       const erinClanId = clanId + 2;
 
-      const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 4, true);
       await clans.connect(frank).createClan(frankPlayerId, clanName + 3, discord, telegram, twitter, imageId, tierId);
       const frankClanId = clanId + 3;
 
@@ -1680,9 +1648,10 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
+        charliePlayerId,
+        frankPlayerId,
+        erinPlayerId,
         alice,
         bob,
         charlie,
@@ -1696,12 +1665,11 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
       const bobClanId = clanId + 1;
@@ -1727,11 +1695,9 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
 
       // Lose (make the other clan have 2 more combatant)
-      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
       await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
-      const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 3, true);
       await clans.connect(frank).requestToJoin(bobClanId, frankPlayerId, 0);
       await clans.connect(bob).acceptJoinRequests(bobClanId, [frankPlayerId], bobPlayerId);
 
@@ -1841,9 +1807,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -1855,14 +1819,13 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend with 2 members
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
 
@@ -1909,9 +1872,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -1923,14 +1884,13 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend with 2 members
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
 
@@ -1979,9 +1939,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -1993,14 +1951,13 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         lockedFundsPeriod
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend with 2 members
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
 
@@ -2043,9 +2000,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2057,14 +2012,13 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         lockedFundsPeriod
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend with 2 members
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
 
@@ -2109,9 +2063,10 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
+        charliePlayerId,
+        erinPlayerId,
+        frankPlayerId,
         alice,
         bob,
         charlie,
@@ -2126,17 +2081,15 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend with 2 members
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
-      const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 2, true);
       await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
       await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
@@ -2145,11 +2098,9 @@ describe("LockedBankVaults", function () {
         .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], false, [], bobPlayerId);
 
       // Create a new clan to attack/defend
-      const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 3, true);
       await clans.connect(erin).createClan(erinPlayerId, clanName + 2, discord, telegram, twitter, imageId, tierId);
       const erinClanId = clanId + 2;
 
-      const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 4, true);
       await clans.connect(frank).createClan(frankPlayerId, clanName + 3, discord, telegram, twitter, imageId, tierId);
       const frankClanId = clanId + 3;
 
@@ -2251,9 +2202,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2265,13 +2214,12 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend between each other
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
       await combatantsHelper
@@ -2334,7 +2282,9 @@ describe("LockedBankVaults", function () {
     });
 
     it("Force updating MMR should correctly cleanse any initialized clans which do not have any locked vaults", async () => {
-      const {lockedBankVaults, territories, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
+      const {lockedBankVaults, territories, clanId, playerId, alice, brush} = await loadFixture(
+        lockedBankVaultsFixture
+      );
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
@@ -2369,14 +2319,24 @@ describe("LockedBankVaults", function () {
         erin,
         frank,
         brush,
+        ownerPlayerId,
+        bobPlayerId,
+        charliePlayerId,
+        erinPlayerId,
+        frankPlayerId,
         playerNFT,
-        avatarId
-      } = await loadFixture(clanFixture);
+        avatarId,
+        origName,
+        upgradePlayerBrushPrice
+      } = await loadFixture(lockedBankVaultsFixture);
+
+      const devPlayerId = await createPlayer(playerNFT, avatarId, dev, origName + 10, true);
+      await upgradePlayer(playerNFT, devPlayerId, brush, upgradePlayerBrushPrice, dev);
 
       const signers = [owner, bob, charlie, dev, erin, frank];
-      for (const signer of signers) {
-        const playerId = await createPlayer(playerNFT, avatarId, signer, signer.address.slice(2, 10), true);
-        await clans.connect(signer).createClan(playerId, signer.address.slice(2, 10), "", "", "", 2, 1);
+      const playerIds = [ownerPlayerId, bobPlayerId, charliePlayerId, devPlayerId, erinPlayerId, frankPlayerId];
+      for (let i = 0; i < signers.length; ++i) {
+        await clans.connect(signers[i]).createClan(playerIds[i], signers[i].address.slice(2, 10), "", "", "", 2, 1);
       }
 
       // alice is 1, owner is 2
@@ -2402,7 +2362,9 @@ describe("LockedBankVaults", function () {
     });
 
     it("Try not clearing with initializeMMR", async () => {
-      const {lockedBankVaults, territories, clanId, playerId, alice, brush} = await loadFixture(clanFixture);
+      const {lockedBankVaults, territories, clanId, playerId, alice, brush} = await loadFixture(
+        lockedBankVaultsFixture
+      );
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
 
@@ -2423,7 +2385,7 @@ describe("LockedBankVaults", function () {
     });
 
     it("Gas used getIdleClans() for many clans should be below max", async () => {
-      const {lockedBankVaults} = await loadFixture(clanFixture);
+      const {lockedBankVaults} = await loadFixture(lockedBankVaultsFixture);
 
       const clanIds = [...Array(100).keys()].map((i) => i + 1);
       const mmrs = clanIds;
@@ -2446,9 +2408,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2460,13 +2420,12 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend between each other
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
       await combatantsHelper
@@ -2502,9 +2461,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2516,13 +2473,12 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend between each other
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
       await combatantsHelper
@@ -2556,9 +2512,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2570,13 +2524,12 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend between each other
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
       await combatantsHelper
@@ -2611,9 +2564,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2625,13 +2576,12 @@ describe("LockedBankVaults", function () {
         brush,
         mockVRF,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend between each other
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
       await combatantsHelper
@@ -2668,9 +2618,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2681,13 +2629,12 @@ describe("LockedBankVaults", function () {
         tierId,
         brush,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend between each other
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
       await combatantsHelper
@@ -2722,9 +2669,7 @@ describe("LockedBankVaults", function () {
         territories,
         clanId,
         playerId,
-        playerNFT,
-        avatarId,
-        origName,
+        bobPlayerId,
         alice,
         bob,
         clanName,
@@ -2735,13 +2680,12 @@ describe("LockedBankVaults", function () {
         tierId,
         brush,
         players
-      } = await loadFixture(clanFixture);
+      } = await loadFixture(lockedBankVaultsFixture);
 
       await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], true, [playerId], false, [], playerId);
 
       // Create a new clan to attack/defend between each other
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
       await combatantsHelper

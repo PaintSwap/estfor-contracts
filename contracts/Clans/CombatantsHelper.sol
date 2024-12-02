@@ -29,6 +29,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   error PlayerCombatantCooldownTimestamp();
   error PlayerIdsNotSortedOrDuplicates();
   error NotMemberOfClan();
+  error PlayerNotUpgraded(uint256 playerId);
 
   struct PlayerInfo {
     uint40 combatantCooldownTimestamp;
@@ -190,6 +191,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
         if (i != playerIds.length - 1) {
           require(playerIds[i] < playerIds[i + 1], PlayerIdsNotSortedOrDuplicates());
         }
+        require(_players.isPlayerEvolved(playerId), PlayerNotUpgraded(playerId));
 
         playerInfo.combatantCooldownTimestamp = uint40(newCombatantCooldownTimestamp);
       }

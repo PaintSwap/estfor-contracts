@@ -4,7 +4,7 @@ import {clanFixture} from "./utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ethers} from "hardhat";
 import {createPlayer} from "../../scripts/utils";
-import {fulfillRandomWords} from "../utils";
+import {fulfillRandomWords, upgradePlayer} from "../utils";
 import {getXPFromLevel} from "../Players/utils";
 import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {allItems} from "../../scripts/data/items";
@@ -12,8 +12,41 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 import {Block, parseEther} from "ethers";
 
 describe("Territories", function () {
+  const territoriesVaultsFixture = async () => {
+    const fixture = await loadFixture(clanFixture);
+    const {
+      playerId,
+      playerNFT,
+      avatarId,
+      origName,
+      owner,
+      alice,
+      bob,
+      charlie,
+      erin,
+      frank,
+      brush,
+      upgradePlayerBrushPrice
+    } = fixture;
+
+    await upgradePlayer(playerNFT, playerId, brush, upgradePlayerBrushPrice, alice);
+
+    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
+    await upgradePlayer(playerNFT, ownerPlayerId, brush, upgradePlayerBrushPrice, owner);
+    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
+    await upgradePlayer(playerNFT, bobPlayerId, brush, upgradePlayerBrushPrice, bob);
+    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
+    await upgradePlayer(playerNFT, charliePlayerId, brush, upgradePlayerBrushPrice, charlie);
+    const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
+    await upgradePlayer(playerNFT, erinPlayerId, brush, upgradePlayerBrushPrice, erin);
+    const frankPlayerId = await createPlayer(playerNFT, avatarId, frank, origName + 5, true);
+    await upgradePlayer(playerNFT, frankPlayerId, brush, upgradePlayerBrushPrice, frank);
+
+    return {...fixture, ownerPlayerId, bobPlayerId, charliePlayerId, erinPlayerId, frankPlayerId};
+  };
+
   it("Check defaults", async () => {
-    const {territories} = await loadFixture(clanFixture);
+    const {territories} = await loadFixture(territoriesVaultsFixture);
 
     expect(allTerritories.length).to.eq(25);
     expect((await territories.getTerrorities()).length).to.eq(allTerritories.length);
@@ -23,7 +56,9 @@ describe("Territories", function () {
   });
 
   it("Claim an unoccupied territory", async () => {
-    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(
+      territoriesVaultsFixture
+    );
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -46,14 +81,16 @@ describe("Territories", function () {
   });
 
   it("Cannot attack a territory which doesn't exist", async () => {
-    const {clanId, playerId, territories} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories} = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 26;
     await expect(territories.attackTerritory(clanId, territoryId, playerId)).to.be.reverted;
   });
 
   it("Cannot attack your own territory", async () => {
-    const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(
+      territoriesVaultsFixture
+    );
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -71,7 +108,9 @@ describe("Territories", function () {
   });
 
   it("Can attack another territory if you already own one", async () => {
-    const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, combatantsHelper, alice, mockVRF} = await loadFixture(
+      territoriesVaultsFixture
+    );
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -97,11 +136,10 @@ describe("Territories", function () {
   it("Attack an occupied territory and win", async () => {
     const {
       players,
-      playerNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      bobPlayerId,
       territories,
       combatantsHelper,
       alice,
@@ -112,9 +150,8 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
 
@@ -128,7 +165,6 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a new player and a new clan
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     // Make the attacking players statistically more powerful.
@@ -158,11 +194,10 @@ describe("Territories", function () {
   it("Attack an occupied territory and lose", async () => {
     const {
       players,
-      playerNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      bobPlayerId,
       territories,
       combatantsHelper,
       alice,
@@ -173,9 +208,8 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -188,7 +222,6 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a new player and a new clan
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     // Make the defending players statistically more powerful.
@@ -218,11 +251,13 @@ describe("Territories", function () {
   it("A player cannot defend multiple territories", async () => {
     const {
       players,
-      playerNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      ownerPlayerId,
+      bobPlayerId,
+      charliePlayerId,
+      erinPlayerId,
       territories,
       combatantsHelper,
       owner,
@@ -236,13 +271,11 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF,
       combatantChangeCooldown
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
-    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
@@ -263,10 +296,6 @@ describe("Territories", function () {
     }
 
     // Create a clan of 3 players
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
-    const erinPlayerId = await createPlayer(playerNFT, avatarId, erin, origName + 4, true);
-
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
@@ -326,11 +355,11 @@ describe("Territories", function () {
 
   it("Leaving a clan while in a pending attack should mean you aren't used", async () => {
     const {
-      playerNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      bobPlayerId,
+      charliePlayerId,
       territories,
       combatantsHelper,
       alice,
@@ -342,9 +371,8 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -356,9 +384,6 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a clan of 2 players
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
-    const charliePlayerId = await createPlayer(playerNFT, avatarId, charlie, origName + 3, true);
-
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
@@ -387,11 +412,10 @@ describe("Territories", function () {
 
   it("Clan is destroyed after a pending attack, should auto lose", async () => {
     const {
-      playerNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      bobPlayerId,
       territories,
       combatantsHelper,
       alice,
@@ -402,9 +426,8 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -414,7 +437,6 @@ describe("Territories", function () {
     const requestId = 1;
     await fulfillRandomWords(requestId, territories, mockVRF);
 
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
     const bobClanId = 2;
     await combatantsHelper
@@ -441,11 +463,10 @@ describe("Territories", function () {
 
   it("Clan is destroyed after taking control of a territory, should auto lose", async () => {
     const {
-      playerNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      bobPlayerId,
       territories,
       combatantsHelper,
       alice,
@@ -456,9 +477,8 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -470,7 +490,6 @@ describe("Territories", function () {
 
     await clans.connect(alice).changeRank(clanId, playerId, ClanRank.NONE, playerId);
 
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 2, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = 2;
@@ -489,11 +508,10 @@ describe("Territories", function () {
   it("Multiple clans should be able to attack an occupied territory", async () => {});
 
   it("Attacking players array should be sorted and without duplicates", async () => {
-    const {playerNFT, avatarId, clans, clanId, playerId, combatantsHelper, owner, alice, origName} = await loadFixture(
-      clanFixture
+    const {clans, clanId, playerId, ownerPlayerId, combatantsHelper, alice} = await loadFixture(
+      territoriesVaultsFixture
     );
 
-    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 
@@ -511,11 +529,11 @@ describe("Territories", function () {
   });
 
   it("Must be a colonel to attack a territory", async () => {
-    const {playerNFT, avatarId, clans, clanId, playerId, territories, combatantsHelper, owner, alice, origName} =
-      await loadFixture(clanFixture);
+    const {clans, clanId, playerId, ownerPlayerId, territories, combatantsHelper, alice} = await loadFixture(
+      territoriesVaultsFixture
+    );
 
     const territoryId = 1;
-    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
     await clans.connect(alice).changeRank(clanId, ownerPlayerId, ClanRank.SCOUT, playerId);
@@ -531,7 +549,7 @@ describe("Territories", function () {
   });
 
   it("Is owner of player when attacking", async () => {
-    const {clanId, playerId, territories, owner} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories} = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await expect(territories.attackTerritory(clanId, territoryId, playerId)).to.be.revertedWithCustomError(
@@ -541,8 +559,8 @@ describe("Territories", function () {
   });
 
   it("Occupied territories should emit brush", async () => {
-    const {clanId, playerId, territories, combatantsHelper, brush, alice, bankFactory, lockedBankVaults, mockVRF} =
-      await loadFixture(clanFixture);
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, lockedBankVaults, mockVRF} =
+      await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -574,7 +592,9 @@ describe("Territories", function () {
   });
 
   it("Can only claim emissions once every 8 hours", async () => {
-    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(clanFixture);
+    const {clanId, playerId, territories, combatantsHelper, brush, alice, mockVRF} = await loadFixture(
+      territoriesVaultsFixture
+    );
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -605,6 +625,7 @@ describe("Territories", function () {
     const {
       clanId,
       playerId,
+      bobPlayerId,
       territories,
       combatantsHelper,
       brush,
@@ -612,16 +633,13 @@ describe("Territories", function () {
       mockVRF,
       clans,
       bob,
-      playerNFT,
-      avatarId,
-      origName,
       clanName,
       discord,
       twitter,
       telegram,
       imageId,
       tierId
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -637,7 +655,6 @@ describe("Territories", function () {
     await territories.connect(alice).addUnclaimedEmissions(parseEther("500"));
 
     // Create a new player and a new clan
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     await expect(territories.connect(bob).harvest(territoryId, bobPlayerId)).to.revertedWithCustomError(
@@ -648,7 +665,7 @@ describe("Territories", function () {
 
   it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
     const {territories, combatantsHelper, combatantChangeCooldown, clanId, playerId, alice} = await loadFixture(
-      clanFixture
+      territoriesVaultsFixture
     );
 
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -671,7 +688,7 @@ describe("Territories", function () {
   });
 
   it("Add new territory", async () => {
-    const {territories} = await loadFixture(clanFixture);
+    const {territories} = await loadFixture(territoriesVaultsFixture);
 
     // Should fail as the total is already maxed
     let addTerritory = {...allTerritories[0], territoryId: 27, percentageEmissions: 10};
@@ -705,7 +722,7 @@ describe("Territories", function () {
   });
 
   it("Edit territory", async () => {
-    const {territories} = await loadFixture(clanFixture);
+    const {territories} = await loadFixture(territoriesVaultsFixture);
 
     const editedTerritory = {...allTerritories[0], percentageEmissions: 90};
 
@@ -723,7 +740,7 @@ describe("Territories", function () {
   });
 
   it("Remove territory", async () => {
-    const {territories} = await loadFixture(clanFixture);
+    const {territories} = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await territories.removeTerritories([territoryId]);
@@ -735,11 +752,10 @@ describe("Territories", function () {
   it("Attack territory gas price", async () => {
     const {
       players,
-      playerNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      bobPlayerId,
       territories,
       combatantsHelper,
       alice,
@@ -750,10 +766,9 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF,
       vrfRequestInfo
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
 
@@ -763,7 +778,6 @@ describe("Territories", function () {
       .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
 
     // Create a new player and a new clan
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     // Make the attacking players statistically more powerful.
@@ -821,7 +835,7 @@ describe("Territories", function () {
 
   it("Assigning new combatants is allowed while holding a territory", async () => {
     const {clanId, playerId, territories, combatantsHelper, combatantChangeCooldown, alice, mockVRF} =
-      await loadFixture(clanFixture);
+      await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
     await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
@@ -843,12 +857,11 @@ describe("Territories", function () {
 
   it("Blocking attacks with item", async () => {
     const {
-      playerNFT,
       itemNFT,
-      avatarId,
       clans,
       clanId,
       playerId,
+      bobPlayerId,
       territories,
       combatantsHelper,
       alice,
@@ -859,9 +872,8 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      origName,
       mockVRF
-    } = await loadFixture(clanFixture);
+    } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
 
@@ -874,7 +886,6 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockVRF);
 
     // Create a new player and a new clan
-    const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, origName + 1, true);
     await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
 
     const bobClanId = clanId + 1;
@@ -966,22 +977,10 @@ describe("Territories", function () {
   });
 
   it("Must have at least minimum MMR to attack a territory", async () => {
-    const {
-      playerNFT,
-      avatarId,
-      clans,
-      clanId,
-      playerId,
-      territories,
-      combatantsHelper,
-      owner,
-      alice,
-      origName,
-      initialMMR
-    } = await loadFixture(clanFixture);
+    const {clans, clanId, playerId, ownerPlayerId, territories, combatantsHelper, alice, initialMMR} =
+      await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
-    const ownerPlayerId = await createPlayer(playerNFT, avatarId, owner, origName + 1, true);
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
 

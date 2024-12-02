@@ -63,49 +63,6 @@ describe("ClanBattleLibrary", function () {
     expect(res.didAWin).to.be.false;
   });
 
-  it("Evolved hero should get an extra roll", async () => {
-    const {owner, alice, players, playerId, clanBattleLibrary, playerNFT, upgradePlayerBrushPrice, brush, origName} =
-      await loadFixture(clanFixture);
-
-    const clanMembersA = [playerId];
-    const skills = [Skill.FISHING];
-
-    const avatarId = 1;
-    let randomWordAs = [0, 3, 0];
-    let randomWordBs = [0, 3, 0];
-    const extraRollsA = 0;
-    const extraRollsB = 0;
-
-    await createPlayer(playerNFT, avatarId, owner, "New name", true);
-    await players.modifyXP(owner, playerId + 1n, skills[0], getXPFromLevel(20));
-    const clanMembersB = [playerId + 1n];
-    let res = await clanBattleLibrary.determineBattleOutcome(
-      players,
-      clanMembersA,
-      clanMembersB,
-      skills,
-      [...randomWordAs, ...randomWordBs],
-      extraRollsA,
-      extraRollsB
-    );
-    expect(res.didAWin).to.be.false;
-
-    await brush.connect(alice).approve(playerNFT, upgradePlayerBrushPrice);
-    await brush.mint(alice, upgradePlayerBrushPrice);
-    const upgrade = true;
-    await playerNFT.connect(alice).editPlayer(playerId, origName, "", "", "", upgrade);
-    res = await clanBattleLibrary.determineBattleOutcome(
-      players,
-      clanMembersA,
-      clanMembersB,
-      skills,
-      [...randomWordAs, ...randomWordBs],
-      extraRollsA,
-      extraRollsB
-    );
-    expect(res.didAWin).to.be.true;
-  });
-
   it("Check extra rolls work", async () => {
     const {owner, players, playerId, clanBattleLibrary, playerNFT} = await loadFixture(clanFixture);
 

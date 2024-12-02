@@ -71,7 +71,7 @@ library ClanBattleLibrary {
         } else {
           uint256 levelA = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersA[i], Skill(skills[i])));
           uint256 levelB = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersB[i], Skill(skills[i])));
-          if (levelA > 20 * 12 || levelB > 20 * 12) {
+          if (levelA > 20 * 13 || levelB > 20 * 13) {
             assert(false); // Unsupported
           }
 
@@ -96,24 +96,16 @@ library ClanBattleLibrary {
             bytesB = bytes2(uint16(randomWords[5] >> (j * 16)));
           }
 
-          {
-            uint256 numRollsA = (levelA / 20) +
-              (IPlayers(players).isPlayerEvolved(clanMembersA[i]) ? 2 : 1) +
-              extraRollsA;
+          uint256 numRollsA = (levelA / 20) + 1 + extraRollsA;
 
-            // Check how many bits are set based on the number of rolls
-            for (uint256 j; j < numRollsA; ++j) {
-              rollsA[i] += uint16(bytesA >> j) & 1;
-            }
+          // Check how many bits are set based on the number of rolls
+          for (uint256 j; j < numRollsA; ++j) {
+            rollsA[i] += uint16(bytesA >> j) & 1;
           }
-          {
-            uint256 numRollsB = (levelB / 20) +
-              (IPlayers(players).isPlayerEvolved(clanMembersB[i]) ? 2 : 1) +
-              extraRollsB;
+          uint256 numRollsB = (levelB / 20) + 1 + extraRollsB;
 
-            for (uint256 j; j < numRollsB; ++j) {
-              rollsB[i] += uint16(bytesB >> j) & 1;
-            }
+          for (uint256 j; j < numRollsB; ++j) {
+            rollsB[i] += uint16(bytesB >> j) & 1;
           }
         }
         if (rollsA[i] > rollsB[i]) {
