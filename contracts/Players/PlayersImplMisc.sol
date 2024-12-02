@@ -169,11 +169,12 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
           itemTokenIds = new uint256[](length);
           amounts = new uint256[](length);
           itemTokenIds[0] = itemTokenId;
-          amounts[0] = amount;
-
+          uint256 divisor = _isEvolved(playerId) ? 1 : 10; // Divide amount by 10 if not evolved
+          amounts[0] = Math.max(1, amount / divisor);
           // Claim weekly rewards (this shifts the left-most 7 day streaks to the very right and checks all bits are set)
           if (canClaimWeeklyRewards) {
             (itemTokenIds[1], amounts[1]) = _dailyRewardsScheduler.getWeeklyReward(playerTier, playerId);
+            amounts[1] = Math.max(1, amounts[1] / divisor);
           }
         }
       }

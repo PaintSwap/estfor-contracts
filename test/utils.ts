@@ -1,6 +1,6 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {BaseContract, Block, ContractTransactionReceipt, ContractTransactionResponse} from "ethers";
-import {MockVRF, Players, Quests, RandomnessBeacon} from "../typechain-types";
+import {MockBrushToken, MockVRF, PlayerNFT, Players, Quests, RandomnessBeacon} from "../typechain-types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, QuestInput} from "../scripts/data/quests";
@@ -64,6 +64,21 @@ export const fulfillRandomWordsSeeded = async (
   return mockVRF.fulfillSeeded(requestId, contract, seed, {gasPrice});
 };
 
+export const upgradePlayer = async (
+  playerNFT: PlayerNFT,
+  playerId: bigint,
+  brush: MockBrushToken,
+  upgradePlayerBrushPrice: bigint,
+  signer: SignerWithAddress
+) => {
+  await brush.connect(signer).approve(playerNFT, upgradePlayerBrushPrice);
+  await brush.mint(signer, upgradePlayerBrushPrice);
+  // Upgrade player
+  const upgrade = true;
+  const name = await playerNFT.getName(playerId);
+  await playerNFT.connect(signer).editPlayer(playerId, name, "", "", "", upgrade);
+};
+
 export const bronzeHelmetStats: EstforTypes.CombatStats = {
   meleeAttack: 1,
   magicAttack: 0,
@@ -73,18 +88,6 @@ export const bronzeHelmetStats: EstforTypes.CombatStats = {
   rangedDefence: 1,
   health: 1
 };
-
-// Should match the PlayersBase contract constants
-export const MAX_TIME = 86400n; // 1 day
-export const START_XP = 374n;
-// 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
-export const MAX_SUCCESS_PERCENT_CHANCE = 90n;
-export const MAX_UNIQUE_TICKETS = 64; // This also affects passive action max days
-
-export const SPAWN_MUL = 1000;
-export const RATE_MUL = 1000;
-export const GUAR_MUL = 10;
-export const NO_DONATION_AMOUNT = 0n;
 
 // Helper function to retrieve the event and return the desired property (e.g., actionId)
 export const getEventLog = async (
@@ -167,3 +170,15 @@ export enum BattleResult {
 
 // see Initilizable.sol. keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Initializable")) - 1)) & ~bytes32(uint256(0xff))
 export const initializerSlot = "0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00";
+
+// Should match the PlayersBase contract constants
+export const MAX_TIME = 86400n; // 1 day
+export const START_XP = 374n;
+// 90%, used for actions/actionChoices which can have a failure rate like thieving/cooking
+export const MAX_SUCCESS_PERCENT_CHANCE = 90n;
+export const MAX_UNIQUE_TICKETS = 64; // This also affects passive action max days
+
+export const SPAWN_MUL = 1000;
+export const RATE_MUL = 1000;
+export const GUAR_MUL = 10;
+export const NO_DONATION_AMOUNT = 0n;
