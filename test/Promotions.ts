@@ -729,6 +729,7 @@ describe("Promotions", function () {
       await dailyRewardsScheduler.setDailyRewardPool(3, [{itemTokenId: EstforConstants.MITHRIL_ARROW, amount: 10}]);
       await dailyRewardsScheduler.setDailyRewardPool(4, [{itemTokenId: EstforConstants.ADAMANTINE_ARROW, amount: 10}]);
       await dailyRewardsScheduler.setDailyRewardPool(5, [{itemTokenId: EstforConstants.RUNITE_ARROW, amount: 10}]);
+      await dailyRewardsScheduler.setDailyRewardPool(6, [{itemTokenId: EstforConstants.ORICHALCUM_ARROW, amount: 10}]);
 
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -771,7 +772,7 @@ describe("Promotions", function () {
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
-      expect(await itemNFT.balanceOf(alice, EstforConstants.RUNITE_ARROW)).to.eq(30);
+      expect(await itemNFT.balanceOf(alice, EstforConstants.ORICHALCUM_ARROW)).to.eq(10);
     });
 
     it("Minting before start date not allowed", async function () {

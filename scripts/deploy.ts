@@ -164,10 +164,10 @@ async function main() {
       console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
 
       const factory = await ethers.getContractAt("ISolidlyFactory", await router.factory());
-      console.log("Factory is at ", await router.factory());
+      console.log(`Factory is at "${(await router.factory()).toLowerCase()}"`);
 
       const pair = await factory.getPair(brush, WFTM_ADDRESS, false);
-      console.log(pair);
+      console.log("pair", pair);
       if (pair == ethers.ZeroAddress) {
         tx = await brush.approve(router, ethers.parseEther("100000000"));
         await tx.wait();

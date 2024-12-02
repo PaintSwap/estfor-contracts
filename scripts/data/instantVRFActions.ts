@@ -983,13 +983,13 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       [
         0,
         [
-          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 65535, amount: 5},
-          {itemTokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES, chance: 56173, amount: 5},
-          {itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, chance: 46811, amount: 5},
-          {itemTokenId: EstforConstants.HERB_001_GLIMMER_LEAF, chance: 37449, amount: 5},
-          {itemTokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY, chance: 28086, amount: 5},
-          {itemTokenId: EstforConstants.EDIBLES_002_WILD_CHERRY, chance: 18724, amount: 5},
-          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 9362, amount: 5}
+          {itemTokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES, chance: 65535, amount: 20},
+          {itemTokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY, chance: 52428, amount: 30},
+          {itemTokenId: EstforConstants.EDIBLES_002_WILD_CHERRY, chance: 39321, amount: 30},
+          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 29491, amount: 2},
+          {itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, chance: 19661, amount: 10},
+          {itemTokenId: EstforConstants.HERB_001_GLIMMER_LEAF, chance: 13107, amount: 5},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 6554, amount: 1}
         ]
       ]
     ),
@@ -1007,13 +1007,13 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       [
         0,
         [
-          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 65535, amount: 5},
-          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 56173, amount: 5},
-          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 46811, amount: 5},
-          {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 37449, amount: 5},
-          {itemTokenId: EstforConstants.EDIBLES_003_WILD_CARROT, chance: 28086, amount: 5},
-          {itemTokenId: EstforConstants.EDIBLES_004_RED_APPLE, chance: 18724, amount: 5},
-          {itemTokenId: EstforConstants.EDIBLES_005_PEACH, chance: 9362, amount: 5}
+          {itemTokenId: EstforConstants.EDIBLES_003_WILD_CARROT, chance: 65535, amount: 40},
+          {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 52428, amount: 20},
+          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 39321, amount: 2},
+          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 29491, amount: 2},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 19661, amount: 3},
+          {itemTokenId: EstforConstants.EDIBLES_004_RED_APPLE, chance: 13107, amount: 40},
+          {itemTokenId: EstforConstants.EDIBLES_005_PEACH, chance: 6554, amount: 40}
         ]
       ]
     ),
@@ -1031,13 +1031,13 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       [
         0,
         [
-          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 65535, amount: 5},
-          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 56173, amount: 5},
-          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 46811, amount: 5},
-          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 37449, amount: 5},
-          {itemTokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES, chance: 28086, amount: 5},
-          {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 18724, amount: 5},
-          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 9362, amount: 5}
+          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 65535, amount: 5},
+          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 52428, amount: 2},
+          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 42598, amount: 2},
+          {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 32768, amount: 5},
+          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 22937, amount: 5},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 13107, amount: 5},
+          {itemTokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES, chance: 6554, amount: 40}
         ]
       ]
     ),
@@ -1055,13 +1055,13 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       [
         0,
         [
-          {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 65535, amount: 5},
-          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 56173, amount: 5},
-          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 46811, amount: 5},
-          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 37449, amount: 5},
-          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 28086, amount: 5},
-          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 18724, amount: 5},
-          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 9362, amount: 5}
+          {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 65535, amount: 10},
+          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 52428, amount: 20},
+          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 39321, amount: 5},
+          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 31457, amount: 5},
+          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 23593, amount: 5},
+          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 15728, amount: 5},
+          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 7864, amount: 5}
         ]
       ]
     ),
@@ -1079,13 +1079,13 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       [
         0,
         [
-          {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 65535, amount: 5},
-          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 56173, amount: 5},
-          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 46811, amount: 5},
-          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 37449, amount: 5},
-          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 28086, amount: 5},
-          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 18724, amount: 5},
-          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 9362, amount: 5}
+          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 65535, amount: 20},
+          {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 52428, amount: 10},
+          {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 39321, amount: 10},
+          {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 31457, amount: 10},
+          {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 23593, amount: 10},
+          {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 15728, amount: 10},
+          {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 7864, amount: 10}
         ]
       ]
     ),
@@ -1170,11 +1170,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 65535, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 32768, amount: 2},
-          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 26214, amount: 3},
-          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 22937, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 9830, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 17039, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 3932, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 655, amount: 1}
         ]
       ]
     ),
@@ -1193,11 +1193,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 65535, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 32768, amount: 2},
-          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 26214, amount: 3},
-          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 22937, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 9830, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 17039, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 3932, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 655, amount: 1}
         ]
       ]
     ),
@@ -1216,11 +1216,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 65535, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 32768, amount: 2},
-          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 26214, amount: 3},
-          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 22937, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 9830, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 17039, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_003_ARCANE, chance: 3932, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 655, amount: 1}
         ]
       ]
     ),
@@ -1239,11 +1239,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 65535, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 32768, amount: 2},
-          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 26214, amount: 3},
-          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 22937, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 9830, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 17039, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_004_ASTRAL, chance: 3932, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 655, amount: 1}
         ]
       ]
     ),
@@ -1262,11 +1262,11 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 65535, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 32768, amount: 2},
-          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 26214, amount: 3},
-          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 22937, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 9830, amount: 1},
-          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 3277, amount: 1}
+          {itemTokenId: EstforConstants.SHARD_001_PRIMORDIAL, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 17039, amount: 2},
+          {itemTokenId: EstforConstants.SHARD_002_AETHER, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.SHARD_005_VOID, chance: 3932, amount: 3},
+          {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 655, amount: 1}
         ]
       ]
     ),

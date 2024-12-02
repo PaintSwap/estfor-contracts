@@ -14062,7 +14062,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_001_V1,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14087,7 +14087,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_002_V2,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14112,7 +14112,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_003_V3,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14137,7 +14137,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_004_V4,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14162,7 +14162,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_005_V5,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: false,
     skill: Skill.NONE,
@@ -14173,7 +14173,7 @@ export const allItems: ItemInput[] = [
     boostDuration: 0,
     metadataURI: "BLUEPRINT_ALCHEMY_005_V5.json",
     name: "Alchemist's Compendium Vol V",
-    isAvailable: true,
+    isAvailable: false,
     questPrerequisiteId: 0
   },
   {
@@ -14187,7 +14187,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_001,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14212,7 +14212,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_002,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14237,7 +14237,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_003,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14262,7 +14262,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_004,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14287,7 +14287,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_005,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14312,7 +14312,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_006,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: true,
     skill: Skill.NONE,
@@ -14337,7 +14337,7 @@ export const allItems: ItemInput[] = [
       health: 0
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_007,
-    equipPosition: EquipPosition.NONE,
+    equipPosition: EquipPosition.RIGHT_HAND,
     isTransferable: true,
     isFullModeOnly: false,
     skill: Skill.NONE,
@@ -14354,12 +14354,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 5,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 3,
+      magicDefence: 3,
+      rangedDefence: -6,
+      health: -25
     },
     tokenId: EstforConstants.BOOK_001_BRONZE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14404,12 +14404,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 10,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 6,
+      magicDefence: 6,
+      rangedDefence: -12,
+      health: -52
     },
     tokenId: EstforConstants.BOOK_002_IRON,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14454,12 +14454,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 15,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 12,
+      magicDefence: 12,
+      rangedDefence: -18,
+      health: -80
     },
     tokenId: EstforConstants.BOOK_003_MITHRIL,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14504,12 +14504,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 25,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 12,
+      magicDefence: 12,
+      rangedDefence: -20,
+      health: -110
     },
     tokenId: EstforConstants.BOOK_004_ADAMANTINE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14554,12 +14554,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 30,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 18,
+      magicDefence: 18,
+      rangedDefence: -22,
+      health: -140
     },
     tokenId: EstforConstants.BOOK_005_RUNITE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14604,12 +14604,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 40,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 24,
+      magicDefence: 24,
+      rangedDefence: -28,
+      health: -170
     },
     tokenId: EstforConstants.BOOK_006_TITANIUM,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14654,12 +14654,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 60,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 28,
+      magicDefence: 28,
+      rangedDefence: -30,
+      health: -220
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14679,12 +14679,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 65,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 28,
+      magicDefence: 28,
+      rangedDefence: -27,
+      health: -220
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_1,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14704,12 +14704,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 70,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 28,
+      magicDefence: 28,
+      rangedDefence: -24,
+      health: -220
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_2,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14729,12 +14729,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 75,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 28,
+      magicDefence: 28,
+      rangedDefence: -21,
+      health: -220
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_3,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14754,12 +14754,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 80,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 28,
+      magicDefence: 28,
+      rangedDefence: -18,
+      health: -220
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_4,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14779,12 +14779,12 @@ export const allItems: ItemInput[] = [
   {
     combatStats: {
       meleeAttack: 0,
-      magicAttack: 0,
+      magicAttack: 85,
       rangedAttack: 0,
-      meleeDefence: 0,
-      magicDefence: 0,
-      rangedDefence: 0,
-      health: 0
+      meleeDefence: 28,
+      magicDefence: 28,
+      rangedDefence: -15,
+      health: -220
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_5,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15005,7 +15005,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 1,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15055,7 +15055,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 4,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15105,7 +15105,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 10,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15155,7 +15155,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 17,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15205,7 +15205,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 24,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15255,7 +15255,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 30,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15305,7 +15305,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 50,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15330,7 +15330,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 55,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15355,7 +15355,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 60,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15380,7 +15380,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 65,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15405,7 +15405,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 70,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15430,7 +15430,7 @@ export const allItems: ItemInput[] = [
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
-      rangedAttack: 0,
+      rangedAttack: 75,
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
@@ -15503,11 +15503,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 1,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -6,
       rangedDefence: 0,
       health: 0
     },
@@ -15553,11 +15553,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 3,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -12,
       rangedDefence: 0,
       health: 0
     },
@@ -15603,11 +15603,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 8,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -18,
       rangedDefence: 0,
       health: 0
     },
@@ -15653,11 +15653,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 15,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -20,
       rangedDefence: 0,
       health: 0
     },
@@ -15703,11 +15703,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 20,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -22,
       rangedDefence: 0,
       health: 0
     },
@@ -15753,11 +15753,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 25,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -28,
       rangedDefence: 0,
       health: 0
     },
@@ -15803,11 +15803,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 40,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -30,
       rangedDefence: 0,
       health: 0
     },
@@ -15828,11 +15828,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 42,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -28,
       rangedDefence: 0,
       health: 0
     },
@@ -15853,11 +15853,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 44,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -26,
       rangedDefence: 0,
       health: 0
     },
@@ -15878,11 +15878,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 46,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -24,
       rangedDefence: 0,
       health: 0
     },
@@ -15903,11 +15903,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 48,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -22,
       rangedDefence: 0,
       health: 0
     },
@@ -15928,11 +15928,11 @@ export const allItems: ItemInput[] = [
   },
   {
     combatStats: {
-      meleeAttack: 0,
+      meleeAttack: 50,
       magicAttack: 0,
       rangedAttack: 0,
       meleeDefence: 0,
-      magicDefence: 0,
+      magicDefence: -20,
       rangedDefence: 0,
       health: 0
     },

@@ -3593,7 +3593,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_AXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 20 * 10},
@@ -3624,7 +3624,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_AXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 25 * 10},
@@ -3655,7 +3655,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_AXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 36 * 10},
@@ -3686,7 +3686,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_AXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 45 * 10},
@@ -3717,7 +3717,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_AXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 50 * 10},
@@ -3748,7 +3748,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 20 * 10},
@@ -3780,7 +3780,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 25 * 10},
@@ -3812,7 +3812,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 36 * 10},
@@ -3844,7 +3844,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 45 * 10},
@@ -3876,7 +3876,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_V
     },
     guaranteedRewards: [
       {itemTokenId: EstforConstants.ORICHALCUM_ORE, rate: 50 * 10},
@@ -3908,7 +3908,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SPHINX_FISH, rate: 45 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 2731, amount: 2}],
@@ -3936,7 +3936,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SHAW, rate: 36 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 4095, amount: 2}],
@@ -3964,7 +3964,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_VANISHING_PERCH, rate: 36 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 5461, amount: 2}],
@@ -3992,7 +3992,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_VIPER_BASS, rate: 45 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 8191, amount: 2}],
@@ -4020,7 +4020,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_WATER_SERPENT, rate: 45 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 10922, amount: 2}],
@@ -4048,7 +4048,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_WHISKFIN, rate: 45 * 10}],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 13653, amount: 2}],
@@ -4076,7 +4076,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 2731, amount: 2}],
@@ -4104,7 +4104,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 5461, amount: 2}],
@@ -4132,7 +4132,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 8191, amount: 2}],
@@ -4160,7 +4160,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 10922, amount: 2}],
@@ -4188,7 +4188,7 @@ export const allActions: ActionInput[] = [
       successPercent: 100,
       worldLocation: 0,
       isFullModeOnly: true,
-      questPrerequisiteId: 0
+      questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
     randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 13653, amount: 2}],
@@ -4221,7 +4221,7 @@ export const allActions: ActionInput[] = [
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY, rate: 120 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.FERTILE_SOIL, chance: 13653, amount: 1},
-      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 4095, amount: 1},
+      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 8192, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 1, amount: 1}
     ],
     combatStats: {
@@ -4253,7 +4253,7 @@ export const allActions: ActionInput[] = [
     guaranteedRewards: [{itemTokenId: EstforConstants.HERB_001_GLIMMER_LEAF, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, chance: 27306, amount: 1},
-      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 13653, amount: 1},
       {itemTokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 2, amount: 1}
     ],
@@ -4286,7 +4286,7 @@ export const allActions: ActionInput[] = [
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_002_WILD_CHERRY, rate: 120 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.FERTILE_SOIL, chance: 27306, amount: 1},
-      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_001_WILD, chance: 19114, amount: 1},
       {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 4, amount: 1}
     ],
@@ -4319,7 +4319,7 @@ export const allActions: ActionInput[] = [
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_003_WILD_CARROT, rate: 80 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.FERTILE_SOIL, chance: 40959, amount: 1},
-      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 8192, amount: 1},
       {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 4, amount: 1}
     ],
@@ -4351,7 +4351,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_004_RED_APPLE, rate: 60 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 13653, amount: 1},
       {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 4, amount: 1}
@@ -4384,7 +4384,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_005_PEACH, rate: 60 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_002_UNKNOWN, chance: 19114, amount: 1},
       {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 8, amount: 1}
     ],
@@ -4416,7 +4416,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES, rate: 50 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.SEED_003_MYSTERIOUS, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_003_MYSTERIOUS, chance: 13653, amount: 1},
       {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 8, amount: 1}
     ],
@@ -4448,7 +4448,7 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.HERB_002_RIPARIS, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.SEED_003_MYSTERIOUS, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_003_MYSTERIOUS, chance: 19114, amount: 1},
       {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 8, amount: 1}
@@ -4482,7 +4482,7 @@ export const allActions: ActionInput[] = [
     guaranteedRewards: [{itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, rate: 1 * 10}],
     randomRewards: [
       {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 27306, amount: 1},
-      {itemTokenId: EstforConstants.SEED_004_OBSCURE, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_004_OBSCURE, chance: 8192, amount: 1},
       {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 16, amount: 1}
     ],
@@ -4514,8 +4514,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.EDIBLES_007_HONEY, rate: 36 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 32767, amount: 1},
-      {itemTokenId: EstforConstants.SEED_004_OBSCURE, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 32768, amount: 1},
+      {itemTokenId: EstforConstants.SEED_004_OBSCURE, chance: 13653, amount: 1},
       {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 5461, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 16, amount: 1}
     ],
@@ -4547,9 +4547,9 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.EDIBLES_007_HONEY, chance: 27306, amount: 15},
-      {itemTokenId: EstforConstants.SEED_005_ANCIENT, chance: 8191, amount: 1},
-      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.EDIBLES_007_HONEY, chance: 27306, amount: 1},
+      {itemTokenId: EstforConstants.SEED_005_ANCIENT, chance: 8192, amount: 1},
+      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 8192, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 16, amount: 1}
     ],
     combatStats: {
@@ -4580,8 +4580,8 @@ export const allActions: ActionInput[] = [
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.HERB_004_FROST_BLOSSOM, rate: 1 * 10}],
     randomRewards: [
-      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 10922, amount: 1},
-      {itemTokenId: EstforConstants.SEED_005_ANCIENT, chance: 8191, amount: 1},
+      {itemTokenId: EstforConstants.SEED_005_ANCIENT, chance: 13653, amount: 1},
+      {itemTokenId: EstforConstants.CHEST_003_ARCANE, chance: 10923, amount: 1},
       {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 2731, amount: 1},
       {itemTokenId: EstforConstants.GOLDEN_SCARAB, chance: 32, amount: 1}
     ],

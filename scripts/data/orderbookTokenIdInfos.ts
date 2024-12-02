@@ -2663,11 +2663,6 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     minQuantity: "1"
   },
   {
-    tokenId: EstforConstants.BLUEPRINT_ALCHEMY_005_V5,
-    tick: ethers.parseEther("0.00001").toString(),
-    minQuantity: "1"
-  },
-  {
     tokenId: EstforConstants.BLUEPRINT_HARVEST_001,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"

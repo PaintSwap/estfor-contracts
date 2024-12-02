@@ -450,8 +450,10 @@ contract Promotions is UUPSUpgradeable, OwnableUpgradeable {
     uint256 playerTier;
 
     // Work out the tier
-    if (totalXP >= TIER_5_DAILY_REWARD_START_XP) {
-      playerTier = 5; // Can't go higher than 5 currently
+    if (totalXP >= TIER_6_DAILY_REWARD_START_XP) {
+      playerTier = 6; // Can't go higher than 6 currently
+    } else if (totalXP >= TIER_5_DAILY_REWARD_START_XP) {
+      playerTier = 5;
     } else if (totalXP >= TIER_4_DAILY_REWARD_START_XP) {
       playerTier = 5;
     } else if (totalXP >= TIER_3_DAILY_REWARD_START_XP) {

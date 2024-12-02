@@ -141,7 +141,9 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
         uint256 playerTier;
 
         // Work out the tier
-        if (totalXP >= TIER_5_DAILY_REWARD_START_XP) {
+        if (totalXP >= TIER_6_DAILY_REWARD_START_XP) {
+          playerTier = 6;
+        } else if (totalXP >= TIER_5_DAILY_REWARD_START_XP) {
           playerTier = 5;
         } else if (totalXP >= TIER_4_DAILY_REWARD_START_XP) {
           playerTier = 4;
