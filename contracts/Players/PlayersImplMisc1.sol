@@ -34,23 +34,23 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
     uint256 playerId
   ) external view returns (string memory) {
     PackedXP storage packedXP = _playerXP[playerId];
-    uint256 overallLevel = PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.RANGED, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.MAGIC, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.DEFENCE, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.HEALTH, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.MINING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.WOODCUTTING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FISHING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.SMITHING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.THIEVING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.CRAFTING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.COOKING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FIREMAKING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.ALCHEMY, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FARMING, packedXP)) +
-      PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FORGING, packedXP));
+    uint256 overallLevel = PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.MELEE, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.RANGED, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.MAGIC, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.DEFENCE, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.HEALTH, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.MINING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.WOODCUTTING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FISHING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.SMITHING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.THIEVING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.CRAFTING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.COOKING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FIREMAKING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.ALCHEMY, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FLETCHING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FARMING, packedXP)) +
+      PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FORGING, packedXP));
 
     string memory attributes = string(
       abi.encodePacked(
@@ -60,57 +60,57 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
         ",",
         _getTraitStringJSON("Full version", _isEvolved(playerId) ? "true" : "false"),
         ",",
-        _getTraitNumberJSON("Melee level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.MELEE, packedXP))),
+        _getTraitNumberJSON("Melee level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.MELEE, packedXP))),
         ",",
-        _getTraitNumberJSON("Ranged level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.RANGED, packedXP))),
+        _getTraitNumberJSON("Ranged level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.RANGED, packedXP))),
         ",",
-        _getTraitNumberJSON("Magic level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.MAGIC, packedXP))),
+        _getTraitNumberJSON("Magic level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.MAGIC, packedXP))),
         ",",
-        _getTraitNumberJSON("Defence level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.DEFENCE, packedXP))),
+        _getTraitNumberJSON("Defence level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.DEFENCE, packedXP))),
         ",",
-        _getTraitNumberJSON("Health level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.HEALTH, packedXP))),
+        _getTraitNumberJSON("Health level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.HEALTH, packedXP))),
         ",",
-        _getTraitNumberJSON("Mining level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.MINING, packedXP))),
+        _getTraitNumberJSON("Mining level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.MINING, packedXP))),
         ",",
         _getTraitNumberJSON(
           "Woodcutting level",
-          PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.WOODCUTTING, packedXP))
+          PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.WOODCUTTING, packedXP))
         ),
         ",",
-        _getTraitNumberJSON("Fishing level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FISHING, packedXP))),
+        _getTraitNumberJSON("Fishing level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FISHING, packedXP))),
         ",",
         _getTraitNumberJSON(
           "Smithing level",
-          PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.SMITHING, packedXP))
+          PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.SMITHING, packedXP))
         ),
         ",",
         _getTraitNumberJSON(
           "Thieving level",
-          PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.THIEVING, packedXP))
+          PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.THIEVING, packedXP))
         ),
         ",",
         _getTraitNumberJSON(
           "Crafting level",
-          PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.CRAFTING, packedXP))
+          PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.CRAFTING, packedXP))
         ),
         ",",
-        _getTraitNumberJSON("Cooking level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.COOKING, packedXP))),
+        _getTraitNumberJSON("Cooking level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.COOKING, packedXP))),
         ",",
         _getTraitNumberJSON(
           "Firemaking level",
-          PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FIREMAKING, packedXP))
+          PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FIREMAKING, packedXP))
         ),
         ",",
-        _getTraitNumberJSON("Alchemy level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.ALCHEMY, packedXP))),
+        _getTraitNumberJSON("Alchemy level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.ALCHEMY, packedXP))),
         ",",
         _getTraitNumberJSON(
           "Fletching level",
-          PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FLETCHING, packedXP))
+          PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FLETCHING, packedXP))
         ),
         ",",
-        _getTraitNumberJSON("Forging level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FORGING, packedXP))),
+        _getTraitNumberJSON("Forging level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FORGING, packedXP))),
         ",",
-        _getTraitNumberJSON("Farming level", PlayersLibrary._getLevel(PlayersLibrary.readXP(Skill.FARMING, packedXP))),
+        _getTraitNumberJSON("Farming level", PlayersLibrary._getLevel(PlayersLibrary._readXP(Skill.FARMING, packedXP))),
         ",",
         _getTraitNumberJSON("Total level", uint16(overallLevel))
       )

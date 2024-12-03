@@ -24,7 +24,7 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 import {allActions} from "./data/actions";
 import {avatarIds, avatarInfos} from "./data/avatars";
 import {allItems} from "./data/items";
-import {ShopItem, allShopItems} from "./data/shopItems";
+import {allShopItems} from "./data/shopItems";
 import {QuestInput, allQuests, allQuestsMinRequirements, defaultMinRequirements} from "./data/quests";
 import {parseEther} from "ethers";
 

@@ -809,7 +809,7 @@ library PlayersLibrary {
     }
   }
 
-  function readXP(Skill skill, PackedXP storage packedXP) internal view returns (uint256) {
+  function _readXP(Skill skill, PackedXP storage packedXP) internal view returns (uint256) {
     require(!skill._isSkillCombat() && !skill._isSkill(Skill.TRAVELING), InvalidXPSkill());
     if (skill._isSkillNone()) {
       return 0;
@@ -825,6 +825,10 @@ library PlayersLibrary {
     }
 
     return uint40(slotVal >> (relativePos * 40));
+  }
+
+  function readXP(Skill skill, PackedXP storage packedXP) external view returns (uint256) {
+    return _readXP(skill, packedXP);
   }
 
   function getCombatStatsFromHero(
@@ -1044,7 +1048,7 @@ library PlayersLibrary {
     PendingQueuedActionProcessed calldata pendingQueuedActionProcessed,
     PackedXP storage packedXP
   ) internal view returns (uint256) {
-    uint256 xp = readXP(skill, packedXP);
+    uint256 xp = _readXP(skill, packedXP);
     if (pendingQueuedActionProcessed.currentAction.skill1 == skill) {
       xp -= pendingQueuedActionProcessed.currentAction.xpGained1;
     } else if (pendingQueuedActionProcessed.currentAction.skill2 == skill) {

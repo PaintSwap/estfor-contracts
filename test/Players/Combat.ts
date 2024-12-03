@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {COOKED_MINNUS, QUEST_SUPPLY_RUN} from "@paintswap/estfor-definitions/constants";
+import {COOKED_MINNUS, GUAR_MUL, QUEST_SUPPLY_RUN, RATE_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 import {QueuedActionInput, Skill, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
@@ -9,16 +9,13 @@ import {
   getActionChoiceId,
   getActionChoiceIds,
   getActionId,
-  GUAR_MUL,
   NO_DONATION_AMOUNT,
-  RATE_MUL,
   requestAndFulfillRandomWords,
   requestAndFulfillRandomWordsSeeded,
-  SPAWN_MUL,
   START_XP
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {setupBasicMeleeCombat} from "./utils";
+import {BOOST_START_NOW, setupBasicMeleeCombat} from "./utils";
 import {timeTravel, timeTravel24Hours} from "../utils";
 import {allActions} from "../../scripts/data/actions";
 import {QuestInput, allQuests, defaultMinRequirements} from "../../scripts/data/quests";
@@ -733,7 +730,7 @@ describe("Combat Actions", function () {
           playerId,
           [],
           EstforConstants.XP_BOOST,
-          0,
+          BOOST_START_NOW,
           0,
           NO_DONATION_AMOUNT,
           EstforTypes.ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
@@ -859,7 +856,7 @@ describe("Combat Actions", function () {
           playerId,
           [],
           EstforConstants.XP_BOOST,
-          0,
+          BOOST_START_NOW,
           0,
           NO_DONATION_AMOUNT,
           EstforTypes.ActionQueueStrategy.KEEP_LAST_IN_PROGRESS
@@ -961,9 +958,19 @@ describe("Combat Actions", function () {
     });
 
     it("clearEverything", async function () {
-      const {playerId, players, alice, worldActions, itemNFT, choiceId, brush, wishingWell} = await loadFixture(
-        playersFixtureMelee
-      );
+      const {
+        playerId,
+        players,
+        alice,
+        worldActions,
+        itemNFT,
+        choiceId,
+        brush,
+        wishingWell,
+        playerNFT,
+        avatarId,
+        origName
+      } = await loadFixture(playersFixtureMelee);
 
       const boostValue = 50;
 
@@ -1027,7 +1034,7 @@ describe("Combat Actions", function () {
           playerId,
           [queuedAction],
           EstforConstants.XP_BOOST,
-          0,
+          BOOST_START_NOW,
           0,
           raffleCost,
           EstforTypes.ActionQueueStrategy.OVERWRITE
@@ -1040,7 +1047,11 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_mine", []);
       expect((await players.getActiveBoost(playerId)).boostType).to.not.eq(0);
       expect((await players.getActiveBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
-      await expect(players.connect(alice).clearEverything(playerId)).to.not.be.reverted;
+
+      // Make a new player active so the old one is cleared
+      const makeActive = true;
+      await createPlayer(playerNFT, avatarId, alice, origName + 1, makeActive, "", "", "", false);
+
       expect((await players.getActionQueue(playerId)).length).to.eq(0);
       // Active boost should be removed
       expect((await players.getActiveBoost(playerId)).boostType).to.eq(0);

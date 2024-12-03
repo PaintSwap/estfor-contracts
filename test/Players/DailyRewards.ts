@@ -2,12 +2,13 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {GUAR_MUL, requestAndFulfillRandomWords, upgradePlayer} from "../utils";
+import {requestAndFulfillRandomWords, upgradePlayer} from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicWoodcutting} from "./utils";
 import {timeTravel24Hours} from "../utils";
 import {createPlayer} from "../../scripts/utils";
 import {Block} from "ethers";
+import {GUAR_MUL} from "@paintswap/estfor-definitions/constants";
 
 describe("Daily Rewards", function () {
   it("Daily & weekly reward when starting an action", async function () {

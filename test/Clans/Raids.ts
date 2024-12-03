@@ -4,7 +4,7 @@ import {clanFixture} from "./utils";
 import {ClanRank, Skill} from "@paintswap/estfor-definitions/types";
 import {allBattleSkills} from "../../scripts/data/territories";
 import {getXPFromLevel} from "../Players/utils";
-import {fulfillRandomWords, fulfillRandomWordsSeeded, getEventLog, SPAWN_MUL, upgradePlayer} from "../utils";
+import {fulfillRandomWords, fulfillRandomWordsSeeded, getEventLog, upgradePlayer} from "../utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {allActions} from "../../scripts/data/actions";
 import {
@@ -14,6 +14,7 @@ import {
 } from "../../scripts/data/actionChoiceIds";
 import {allActionChoicesMagic, allActionChoicesMelee, allActionChoicesRanged} from "../../scripts/data/actionChoices";
 import {createPlayer} from "../../scripts/utils";
+import {SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 
 describe("Raids", function () {
   const basicRaid = {

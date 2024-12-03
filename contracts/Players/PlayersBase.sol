@@ -87,7 +87,7 @@ abstract contract PlayersBase {
   error NotPlayerNFT();
   error NotItemNFT();
   error ActionNotAvailable();
-  error UnsupportedAttire();
+  error UnsupportedAttire(uint16 itemTokenId);
   error UnsupportedChoiceId();
   error InvalidHandEquipment(uint16 itemTokenId);
   error NoActiveBoost();
@@ -107,7 +107,6 @@ abstract contract PlayersBase {
   error IncorrectLeftHandEquipment(uint16 equippedItemTokenId);
   error IncorrectEquippedItem();
   error NotABoostVial();
-  error StartTimeTooFarInTheFuture();
   error UnsupportedRegenerateItem();
   error InvalidCombatStyle();
   error InvalidSkill();
@@ -155,9 +154,6 @@ abstract contract PlayersBase {
   // Don't set this above 1747 otherwise it can result in 100% chance for anything around that value
   uint256 internal constant RANDOM_REWARD_CHANCE_MULTIPLIER_CUTOFF = 1328;
 
-  // *IMPORTANT* keep as the first non-constant state variable
-  uint256 internal _startSlot;
-
   RandomnessBeacon internal _randomnessBeacon;
   IWorldActions internal _worldActions;
   DailyRewardsScheduler internal _dailyRewardsScheduler;
@@ -169,11 +165,12 @@ abstract contract PlayersBase {
   uint8 internal _alphaCombatHealing;
   PlayerNFT internal _playerNFT;
   uint64 internal _nextQueueId; // Global queued action id
-
   bool internal _gamePaused;
+
   AdminAccess internal _adminAccess;
   bool internal _isBeta;
 
+  // Where most of the logic is location
   address internal _implQueueActions;
   address internal _implProcessActions;
   address internal _implRewards;

@@ -260,11 +260,6 @@
   },
   {
     "inputs": [],
-    "name": "StartTimeTooFarInTheFuture",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "TestInvalidXP",
     "type": "error"
   },
@@ -279,7 +274,13 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      }
+    ],
     "name": "UnsupportedAttire",
     "type": "error"
   },

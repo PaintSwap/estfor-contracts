@@ -6,9 +6,7 @@ import {ethers} from "hardhat";
 import {
   getActionChoiceId,
   getActionId,
-  GUAR_MUL,
   NO_DONATION_AMOUNT,
-  RATE_MUL,
   requestAndFulfillRandomWords,
   requestAndFulfillRandomWordsSeeded
 } from "../utils";
@@ -22,12 +20,14 @@ import {
   setupBasicAlchemy,
   setupBasicFletching,
   setupBasicForging,
-  setupBasicFarming
+  setupBasicFarming,
+  BOOST_START_NOW
 } from "./utils";
 import {timeTravelToNextCheckpoint, timeTravel, timeTravel24Hours} from "../utils";
 import {Block} from "ethers";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
 import {FullAttireBonusInputStruct} from "../../typechain-types/contracts/Players/Players";
+import {GUAR_MUL, RATE_MUL} from "@paintswap/estfor-definitions/constants";
 
 const actionIsAvailable = true;
 
@@ -1081,7 +1081,7 @@ describe("Non-Combat Actions", function () {
           playerId,
           [queuedAction],
           EstforConstants.SKILL_BOOST,
-          0,
+          BOOST_START_NOW,
           0,
           NO_DONATION_AMOUNT,
           EstforTypes.ActionQueueStrategy.OVERWRITE

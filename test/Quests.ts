@@ -3,13 +3,16 @@ import {EstforConstants, EstforTypes, NONE} from "@paintswap/estfor-definitions"
 import {
   ACTION_WOODCUTTING_LOG,
   COOKED_MINNUS,
+  GUAR_MUL,
   QUEST_ALMS_POOR,
   QUEST_HIDDEN_BOUNTY,
   QUEST_PURSE_STRINGS,
   QUEST_SUPPLY_RUN,
   QUEST_TOWN_COOKOUT,
   QUEST_TWO_BIRDS,
-  SKILL_BOOST
+  RATE_MUL,
+  SKILL_BOOST,
+  SPAWN_MUL
 } from "@paintswap/estfor-definitions/constants";
 import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
@@ -17,6 +20,7 @@ import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, QuestInput} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {
+  BOOST_START_NOW,
   setupBasicCooking,
   setupBasicFiremaking,
   setupBasicFishing,
@@ -24,7 +28,7 @@ import {
   setupBasicMeleeCombat,
   setupBasicWoodcutting
 } from "./Players/utils";
-import {getActionChoiceId, getActionId, GUAR_MUL, NO_DONATION_AMOUNT, RATE_MUL, SPAWN_MUL, START_XP} from "./utils";
+import {getActionChoiceId, getActionId, NO_DONATION_AMOUNT, START_XP} from "./utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -1065,9 +1069,7 @@ describe("Quests", function () {
     });
 
     it("Activate quest through startActionsAdvanced", async function () {
-      const {players, playerId, alice, quests, firemakingQuest, queuedAction, rate, itemNFT} = await loadFixture(
-        questsFixture
-      );
+      const {players, playerId, alice, quests, firemakingQuest, queuedAction} = await loadFixture(questsFixture);
 
       await quests.addQuests([firemakingQuest], [defaultMinRequirements]);
       const questId = firemakingQuest.questId;
@@ -1077,7 +1079,7 @@ describe("Quests", function () {
         .startActionsAdvanced(
           playerId,
           [queuedAction],
-          NONE,
+          EstforConstants.NONE,
           0,
           questId,
           NO_DONATION_AMOUNT,

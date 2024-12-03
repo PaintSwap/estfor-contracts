@@ -5,7 +5,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 import {initializerSlot, requestAndFulfillRandomWords, timeTravel24Hours, timeTravelToNextCheckpoint} from "./utils";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
-import {setupBasicWoodcutting} from "./Players/utils";
+import {BOOST_START_NOW, setupBasicWoodcutting} from "./Players/utils";
 import {parseEther} from "ethers";
 
 describe("WishingWell", function () {
@@ -573,7 +573,7 @@ describe("WishingWell", function () {
       playerId,
       [queuedAction],
       EstforConstants.NONE,
-      0,
+      BOOST_START_NOW,
       0,
       raffleEntryCost, // donation
       EstforTypes.ActionQueueStrategy.OVERWRITE
@@ -609,7 +609,7 @@ describe("WishingWell", function () {
         playerId,
         [queuedAction],
         EstforConstants.NONE,
-        0,
+        BOOST_START_NOW,
         0,
         raffleEntryCost, // donation
         EstforTypes.ActionQueueStrategy.OVERWRITE

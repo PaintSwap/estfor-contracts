@@ -8,17 +8,15 @@ import {
   createAndDoPurseStringsQuest,
   getActionChoiceId,
   getActionId,
-  GUAR_MUL,
   NO_DONATION_AMOUNT,
-  RATE_MUL,
   requestAndFulfillRandomWords,
-  SPAWN_MUL,
   START_XP,
   timeTravel,
   timeTravel24Hours
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
+  BOOST_START_NOW,
   getXPFromLevel,
   MAX_LEVEL,
   setupBasicCooking,
@@ -28,7 +26,7 @@ import {
   setupTravelling
 } from "./utils";
 import {Players} from "../../typechain-types";
-import {ACTION_FISHING_MINNUS} from "@paintswap/estfor-definitions/constants";
+import {ACTION_FISHING_MINNUS, GUAR_MUL, RATE_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 import {Block, ContractTransactionReceipt} from "ethers";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
 import {FullAttireBonusInputStruct} from "../../typechain-types/contracts/Players/Players";
@@ -1485,7 +1483,7 @@ describe("Players", function () {
         playerId,
         [queuedAction],
         EstforConstants.XP_BOOST,
-        0,
+        BOOST_START_NOW,
         0,
         NO_DONATION_AMOUNT,
         EstforTypes.ActionQueueStrategy.OVERWRITE

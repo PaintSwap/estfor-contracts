@@ -71,3 +71,5 @@ uint16 constant ACTIONCHOICE_RANGED_BASIC_BOW = 3000;
 uint256 constant SPAWN_MUL = 1000;
 uint256 constant RATE_MUL = 1000;
 uint256 constant GUAR_MUL = 10; // Guaranteeded reward multiplier (1 decimal, allows for 2 hour action times)
+
+uint256 constant MAX_QUEUEABLE_ACTIONS = 3; // Available slots to queue actions

@@ -178,7 +178,4 @@ export const START_XP = 374n;
 export const MAX_SUCCESS_PERCENT_CHANCE = 90n;
 export const MAX_UNIQUE_TICKETS = 64; // This also affects passive action max days
 
-export const SPAWN_MUL = 1000;
-export const RATE_MUL = 1000;
-export const GUAR_MUL = 10;
 export const NO_DONATION_AMOUNT = 0n;

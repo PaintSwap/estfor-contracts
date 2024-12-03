@@ -19,7 +19,7 @@ interface IPlayersDelegate {
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions,
     uint16 boostItemTokenId,
-    uint40 boostStartTime,
+    uint8 boostStartReverseIndex,
     uint256 questId,
     uint256 donationAmount,
     ActionQueueStrategy queueStrategy

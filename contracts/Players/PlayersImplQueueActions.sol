@@ -23,7 +23,7 @@ contract PlayersImplQueueActions is PlayersBase {
     uint256 playerId,
     QueuedActionInput[] memory queuedActionInputs,
     uint16 boostItemTokenId,
-    uint40 boostStartTime,
+    uint8 boostStartReverseIndex,
     uint256 questId,
     uint256 donationAmount,
     ActionQueueStrategy queueStrategy
@@ -46,7 +46,7 @@ contract PlayersImplQueueActions is PlayersBase {
         mstore(remainingQueuedActions, 0)
       }
 
-      require(queuedActionInputs.length <= 3, TooManyActionsQueued());
+      require(queuedActionInputs.length <= MAX_QUEUEABLE_ACTIONS, TooManyActionsQueued());
     } else {
       if (queueStrategy == ActionQueueStrategy.KEEP_LAST_IN_PROGRESS && remainingQueuedActions.length > 1) {
         // Only want one
@@ -56,7 +56,10 @@ contract PlayersImplQueueActions is PlayersBase {
       }
 
       // Keep remaining actions
-      require(remainingQueuedActions.length + queuedActionInputs.length <= 3, TooManyActionsQueuedSomeAlreadyExist());
+      require(
+        remainingQueuedActions.length + queuedActionInputs.length <= MAX_QUEUEABLE_ACTIONS,
+        TooManyActionsQueuedSomeAlreadyExist()
+      );
       player.actionQueue = remainingQueuedActions;
       for (uint256 i; i < remainingQueuedActions.length; ++i) {
         totalTimespan += remainingQueuedActions[i].timespan;
@@ -88,7 +91,8 @@ contract PlayersImplQueueActions is PlayersBase {
       queuedActions[i] = remainingQueuedActions[i];
     }
 
-    uint256 startTimeNewActions = block.timestamp - totalTimespan;
+    uint256 veryStartTime = block.timestamp - totalTimespan;
+    uint256 startTimeNewActions = veryStartTime;
     for (uint256 i; i != queuedActionsLength; ++i) {
       if (totalTimespan + queuedActionInputs[i].timespan > MAX_TIME) {
         // Must be the last one which will exceed the max time
@@ -131,15 +135,25 @@ contract PlayersImplQueueActions is PlayersBase {
     setInitialCheckpoints(from, playerId, 0, player.actionQueue, attire);
     emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTimestamp);
 
-    assert(totalTimespan < MAX_TIME + 1 hours); // Should never happen
-    _nextQueueId = uint56(queueId);
+    //    assert(totalTimespan < MAX_TIME + 1 hours); // Should never happen (TODO: Can uncomment when we have more bytecode available)
+    _nextQueueId = uint64(queueId);
 
     if (questId != 0) {
       _quests.activateQuest(from, playerId, questId);
     }
 
     if (boostItemTokenId != NONE) {
-      _consumeBoost(from, playerId, boostItemTokenId, boostStartTime);
+      uint40 boostStartTimestamp;
+      if (boostStartReverseIndex >= (queuedActions.length - 1)) {
+        boostStartTimestamp = uint40(block.timestamp);
+      } else {
+        boostStartTimestamp = uint40(veryStartTime);
+        uint256 bounds = queuedActions.length - boostStartReverseIndex - 1;
+        for (uint256 i = 0; i < bounds; ++i) {
+          boostStartTimestamp += queuedActions[i].timespan;
+        }
+      }
+      _consumeBoost(from, playerId, boostItemTokenId, boostStartTimestamp);
     }
 
     if (donationAmount != 0) {
@@ -147,24 +161,20 @@ contract PlayersImplQueueActions is PlayersBase {
     }
   }
 
-  function _consumeBoost(address from, uint256 playerId, uint16 itemTokenId, uint40 startTime) private {
+  function _consumeBoost(address from, uint256 playerId, uint16 itemTokenId, uint40 boostStartTimestamp) private {
     Item memory item = _itemNFT.getItem(itemTokenId);
     require(item.equipPosition == EquipPosition.BOOST_VIAL, NotABoostVial());
-    require(startTime < block.timestamp + 7 days, StartTimeTooFarInTheFuture());
-    if (startTime < block.timestamp) {
-      startTime = uint40(block.timestamp);
-    }
 
     // Burn it
     _itemNFT.burn(from, itemTokenId, 1);
 
-    // If there's an active potion which hasn't been consumed yet, then we can mint it back
+    // If there's an active boost which hasn't been consumed yet, then we can mint it back
     PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
       _itemNFT.mint(from, playerBoost.itemTokenId, 1);
     }
 
-    playerBoost.startTime = startTime;
+    playerBoost.startTime = boostStartTimestamp;
     playerBoost.duration = item.boostDuration;
     playerBoost.value = item.boostValue;
     playerBoost.boostType = item.boostType;
@@ -174,7 +184,7 @@ contract PlayersImplQueueActions is PlayersBase {
       from,
       playerId,
       BoostInfo({
-        startTime: startTime,
+        startTime: boostStartTimestamp,
         duration: item.boostDuration,
         value: item.boostValue,
         boostType: item.boostType,
@@ -190,9 +200,7 @@ contract PlayersImplQueueActions is PlayersBase {
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed,
     QuestState memory pendingQuestState
   ) public view returns (bool setAttire) {
-    if (queuedActionInput.attire.reserved1 != NONE) {
-      require(false, UnsupportedAttire());
-    }
+    require(queuedActionInput.attire.reserved1 == NONE, UnsupportedAttire(queuedActionInput.attire.reserved1));
     if (queuedActionInput.regenerateId != NONE) {
       require(
         _itemNFT.getItem(queuedActionInput.regenerateId).equipPosition == EquipPosition.FOOD,
@@ -262,9 +270,10 @@ contract PlayersImplQueueActions is PlayersBase {
       require(actionChoice.skill._asSkill() != Skill.NONE, InvalidSkill());
 
       // Timespan should be exact for the rate when travelling (e.g if it takes 2 hours, 2 hours should be queued)
-      if (actionInfo.skill._asSkill() == Skill.TRAVELING) {
+      // TODO: travelling not supported yet
+      /*      if (actionInfo.skill._asSkill() == Skill.TRAVELING) {
         require(queuedActionInput.timespan == (RATE_MUL * 3600) / actionChoice.rate, InvalidTravellingTimespan());
-      }
+      } */
 
       bool actionChoiceFullModeOnly = uint8(actionChoice.packedData >> IS_FULL_MODE_BIT) & 1 == 1;
       require(!actionChoiceFullModeOnly || isPlayerEvolved, PlayerNotUpgraded());
@@ -275,11 +284,11 @@ contract PlayersImplQueueActions is PlayersBase {
       if (actionChoice.questPrerequisiteId != 0) {
         require(_quests.isQuestCompleted(playerId, actionChoice.questPrerequisiteId), DependentQuestNotCompleted());
       }
-    } else if (queuedActionInput.choiceId != NONE) {
-      require(false, ActionChoiceIdNotRequired());
+    } else {
+      require(queuedActionInput.choiceId == NONE, ActionChoiceIdNotRequired());
     }
 
-    require(!(actionInfo.isFullModeOnly && !isPlayerEvolved), PlayerNotUpgraded());
+    require(!actionInfo.isFullModeOnly || isPlayerEvolved, PlayerNotUpgraded());
     require(actionInfo.isAvailable, ActionNotAvailable());
     require(queuedActionInput.timespan != 0, EmptyTimespan());
     // Check combatStyle is only selected if queuedAction is combat
@@ -586,7 +595,7 @@ contract PlayersImplQueueActions is PlayersBase {
   // Consumes all the actions in the queue up to this time.
   // Mints the boost vial if it hasn't been consumed at all yet, otherwise removese any active ones
   // Removes all the actions from the queue
-  function clearEverything(address from, uint256 playerId, bool processTheActions) public {
+  function clearEverything(address from, uint256 playerId, bool processTheActions) external {
     if (processTheActions) {
       _processActions(from, playerId);
     }
@@ -600,10 +609,12 @@ contract PlayersImplQueueActions is PlayersBase {
     // Remove any active boost
     PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
     if (activeBoost.boostType != BoostType.NONE) {
+      uint256 startTime = activeBoost.startTime;
+      uint16 itemTokenId = activeBoost.itemTokenId;
       _clearPlayerMainBoost(playerId);
-      if (activeBoost.startTime > block.timestamp) {
+      if (startTime > block.timestamp) {
         // Mint it if it hasn't been consumed yet
-        _itemNFT.mint(from, activeBoost.itemTokenId, 1);
+        _itemNFT.mint(from, itemTokenId, 1);
       }
     }
   }
@@ -629,8 +640,8 @@ contract PlayersImplQueueActions is PlayersBase {
       : 0;
 
     if (numActionsFinished > 0) {
-      for (uint256 i; i < 3; ++i) {
-        if (i + numActionsFinished < 3) {
+      for (uint256 i; i < MAX_QUEUEABLE_ACTIONS; ++i) {
+        if (i + numActionsFinished < MAX_QUEUEABLE_ACTIONS) {
           _checkpointEquipments[playerId][i] = _checkpointEquipments[playerId][i + numActionsFinished];
         } else {
           delete _checkpointEquipments[playerId][i];
@@ -638,11 +649,11 @@ contract PlayersImplQueueActions is PlayersBase {
       }
     }
 
-    for (uint256 i; i < 3; ++i) {
+    for (uint256 i; i < MAX_QUEUEABLE_ACTIONS; ++i) {
       if (i < queuedActions.length) {
         if (queuedActions[i].prevProcessedTime == 0) {
           // Set the checkpoints
-          uint16[10] memory itemTokenIds; // attire, left/right hand equipment
+          uint16[10] memory itemTokenIds; // attire for 8 elements and then left + right hand equipment
           itemTokenIds[0] = attire[i].head;
           itemTokenIds[1] = attire[i].neck;
           itemTokenIds[2] = attire[i].body;
@@ -650,7 +661,7 @@ contract PlayersImplQueueActions is PlayersBase {
           itemTokenIds[4] = attire[i].legs;
           itemTokenIds[5] = attire[i].feet;
           itemTokenIds[6] = attire[i].ring;
-          itemTokenIds[7] = attire[i].reserved1;
+          //          itemTokenIds[7] = attire[i].reserved1;
           itemTokenIds[8] = queuedActions[i].leftHandEquipmentTokenId;
           itemTokenIds[9] = queuedActions[i].rightHandEquipmentTokenId;
 

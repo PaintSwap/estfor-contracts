@@ -3,11 +3,15 @@ import {ActionInput, Equipment, defaultActionChoice, defaultActionInfo} from "@p
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {ItemNFT, WorldActions} from "../../typechain-types";
-import {bronzeHelmetStats, getActionChoiceId, getActionId, GUAR_MUL, RATE_MUL, SPAWN_MUL} from "../utils";
+import {bronzeHelmetStats, getActionChoiceId, getActionId} from "../utils";
 import {
   ACTION_FIREMAKING_ITEM,
   ACTION_FISHING_MINNUS,
-  ACTION_WOODCUTTING_LOG
+  ACTION_MINING_COPPER,
+  ACTION_WOODCUTTING_LOG,
+  GUAR_MUL,
+  RATE_MUL,
+  SPAWN_MUL
 } from "@paintswap/estfor-definitions/constants";
 import {HardhatEthersSigner} from "@nomicfoundation/hardhat-ethers/signers";
 import {BaseContract} from "ethers";
@@ -110,6 +114,56 @@ export const setupBasicFishing = async function (itemNFT: ItemNFT, worldActions:
     {
       ...EstforTypes.defaultItemInput,
       tokenId: EstforConstants.NET_STICK,
+      equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+    }
+  ]);
+
+  return {queuedAction, rate};
+};
+
+export const setupBasicMining = async function (itemNFT: ItemNFT, worldActions: WorldActions) {
+  const rate = 100 * GUAR_MUL; // per hour
+  const tx = await worldActions.addActions([
+    {
+      actionId: ACTION_MINING_COPPER,
+      info: {
+        skill: EstforTypes.Skill.MINING,
+        xpPerHour: 3600,
+        minXP: 0,
+        worldLocation: 0,
+        isFullModeOnly: false,
+        numSpawned: 0,
+        handItemTokenIdRangeMin: EstforConstants.MINING_BASE,
+        handItemTokenIdRangeMax: EstforConstants.MINING_MAX,
+        isAvailable: true,
+        questPrerequisiteId: 0,
+        actionChoiceRequired: false,
+        successPercent: 100
+      },
+      guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate}],
+      randomRewards: [],
+      combatStats: EstforTypes.emptyCombatStats
+    }
+  ]);
+  const actionId = await getActionId(tx, worldActions);
+
+  const timespan = 3600;
+  const queuedAction: EstforTypes.QueuedActionInput = {
+    attire: EstforTypes.noAttire,
+    actionId,
+    combatStyle: EstforTypes.CombatStyle.NONE,
+    choiceId: EstforConstants.NONE,
+    regenerateId: EstforConstants.NONE,
+    timespan,
+    rightHandEquipmentTokenId: EstforConstants.BRONZE_PICKAXE,
+    leftHandEquipmentTokenId: EstforConstants.NONE,
+    petId: EstforConstants.NONE
+  };
+
+  await itemNFT.addItems([
+    {
+      ...EstforTypes.defaultItemInput,
+      tokenId: EstforConstants.BRONZE_PICKAXE,
       equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
     }
   ]);
@@ -233,7 +287,6 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, worldActi
   };
   let tx = await worldActions.addActions([combatAction]);
   const actionId = await getActionId(tx, worldActions);
-
   tx = await worldActions.addActionChoices(
     EstforConstants.NONE,
     [1],
@@ -247,8 +300,8 @@ export const setupBasicMeleeCombat = async function (itemNFT: ItemNFT, worldActi
   const choiceId = await getActionChoiceId(tx, worldActions);
   await itemNFT.mint(alice, EstforConstants.BRONZE_SWORD, 1);
   await itemNFT.mint(alice, EstforConstants.BRONZE_HELMET, 1);
-
   await itemNFT.mint(alice, EstforConstants.COOKED_MINNUS, 255);
+
   const timespan = 3600;
   const queuedAction: EstforTypes.QueuedActionInput = {
     attire: {...EstforTypes.noAttire, head: EstforConstants.BRONZE_HELMET},
@@ -1007,3 +1060,5 @@ export const getXPFromLevel = (level: number) => {
 };
 
 export const MAX_LEVEL = 135;
+
+export const BOOST_START_NOW = 3;

@@ -3,7 +3,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {playersFixture} from "./PlayersFixture";
-import {setupBasicPetMeleeCombat, getXPFromLevel} from "./utils";
+import {setupBasicPetMeleeCombat, getXPFromLevel, BOOST_START_NOW} from "./utils";
 import {PetSkin, Skill} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "../../scripts/data/pets";
 import {NO_DONATION_AMOUNT} from "../utils";
@@ -242,7 +242,7 @@ describe("Pets", function () {
         playerId,
         [queuedAction],
         EstforConstants.NONE,
-        0,
+        BOOST_START_NOW,
         0,
         NO_DONATION_AMOUNT,
         EstforTypes.ActionQueueStrategy.OVERWRITE

@@ -1,10 +1,10 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {SHADOW_SCROLL} from "@paintswap/estfor-definitions/constants";
+import {RATE_MUL, SHADOW_SCROLL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 import {ActionChoiceInput, ActionInput, Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {getActionId, RATE_MUL, SPAWN_MUL} from "./utils";
+import {getActionId} from "./utils";
 import {WorldActions} from "../typechain-types";
 
 describe("WorldActions", function () {

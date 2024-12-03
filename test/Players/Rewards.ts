@@ -1,17 +1,15 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import NONE, {ACTION_THIEVING_CHILD, BRONZE_ARROW} from "@paintswap/estfor-definitions/constants";
+import NONE, {ACTION_THIEVING_CHILD, BRONZE_ARROW, GUAR_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
   bronzeHelmetStats,
   getActionChoiceId,
   getActionId,
-  GUAR_MUL,
   MAX_UNIQUE_TICKETS,
   requestAndFulfillRandomWords,
-  requestAndFulfillRandomWordsSeeded,
-  SPAWN_MUL
+  requestAndFulfillRandomWordsSeeded
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {setupBasicMeleeCombat, setupBasicWoodcutting} from "./utils";

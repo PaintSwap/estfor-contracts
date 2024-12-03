@@ -322,7 +322,7 @@ async function main() {
   console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`);
 
   // ClanBattleLibrary
-  const newClanBattleLibrary = true;
+  const newClanBattleLibrary = false;
   let clanBattleLibrary: ClanBattleLibrary;
   if (newClanBattleLibrary) {
     clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary");

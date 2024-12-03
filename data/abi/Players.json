@@ -277,11 +277,6 @@
   },
   {
     "inputs": [],
-    "name": "NotBeta",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "NotEquipped",
     "type": "error"
   },
@@ -359,11 +354,6 @@
   },
   {
     "inputs": [],
-    "name": "StartTimeTooFarInTheFuture",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "TestInvalidXP",
     "type": "error"
   },
@@ -394,7 +384,13 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "itemTokenId",
+        "type": "uint16"
+      }
+    ],
     "name": "UnsupportedAttire",
     "type": "error"
   },
@@ -1722,19 +1718,6 @@
     "name": "buyBrushQuest",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      }
-    ],
-    "name": "clearEverything",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -3707,9 +3690,9 @@
         "type": "uint16"
       },
       {
-        "internalType": "uint40",
-        "name": "boostStartTime",
-        "type": "uint40"
+        "internalType": "uint8",
+        "name": "boostStartReverseIndex",
+        "type": "uint8"
       },
       {
         "internalType": "uint256",

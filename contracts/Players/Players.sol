@@ -31,7 +31,6 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
 
   error InvalidSelector();
   error GameIsPaused();
-  error NotBeta();
   error PlayerLocked();
 
   modifier isOwnerOfPlayerAndActiveMod(uint256 playerId) {
@@ -46,11 +45,6 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
 
   modifier isOwnerOfPlayerOrEmpty(uint256 playerId) {
     require(playerId == 0 || _playerNFT.balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
-    _;
-  }
-
-  modifier isBetaMod() {
-    require(_isBeta, NotBeta());
     _;
   }
 
@@ -124,14 +118,16 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     QueuedActionInput[] calldata queuedActions,
     ActionQueueStrategy queueStrategy
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _startActions(playerId, queuedActions, NONE, uint40(block.timestamp), 0, 0, queueStrategy);
+    _startActions(playerId, queuedActions, NONE, 0, 0, 0, queueStrategy);
   }
 
   /// @notice Start actions for a player, has more advanced options
   /// @param playerId Id for the player
   /// @param queuedActions Actions to queue
   /// @param boostItemTokenId Which boost to consume, can be NONE
-  /// @param boostStartTime when the boost should start. Must be within 24 hours. Using 0 or a time earlier than now will use the current block time.
+  /// @param boostStartReverseIndex when the boost should start. Starts from the end, if it goes too far it starts from the current timestamp.
+  /// @param questId Quest to start, can be 0
+  /// @param donationAmount Amount to donate, can be 0
   /// @param queueStrategy Can be either:
   ///                     `ActionQueueStrategy.OVERWRITE_ALL` for overwriting all actions,
   ///                     `ActionQueueStrategy.KEEP_LAST_IN_PROGRESS` when removes any not started actions and keeps the current in-progress one or
@@ -140,12 +136,20 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     uint256 playerId,
     QueuedActionInput[] calldata queuedActions,
     uint16 boostItemTokenId,
-    uint40 boostStartTime,
+    uint8 boostStartReverseIndex, // If true, then the boost will start when the next action starts, else starts now.
     uint256 questId,
     uint256 donationAmount,
     ActionQueueStrategy queueStrategy
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _startActions(playerId, queuedActions, boostItemTokenId, boostStartTime, questId, donationAmount, queueStrategy);
+    _startActions(
+      playerId,
+      queuedActions,
+      boostItemTokenId,
+      boostStartReverseIndex,
+      questId,
+      donationAmount,
+      queueStrategy
+    );
   }
 
   /// @notice Process actions for a player up to the current block timestamp
@@ -272,12 +276,6 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     }
   }
 
-  function clearEverything(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) isBetaMod {
-    address from = _msgSender();
-    bool isEmergency = true;
-    _clearEverything(from, playerId, !isEmergency);
-  }
-
   function _clearEverything(address from, uint256 playerId, bool processTheActions) private {
     _delegatecall(
       _implQueueActions,
@@ -289,7 +287,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     uint256 playerId,
     QueuedActionInput[] memory queuedActions,
     uint16 boostItemTokenId,
-    uint40 boostStartTime,
+    uint8 boostStartReverseIndex,
     uint256 questId,
     uint256 donationAmount,
     ActionQueueStrategy queueStrategy
@@ -301,7 +299,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
         playerId,
         queuedActions,
         boostItemTokenId,
-        boostStartTime,
+        boostStartReverseIndex,
         questId,
         donationAmount,
         queueStrategy
@@ -429,11 +427,11 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
   }
 
   function getPlayerXP(uint256 playerId, Skill skill) external view override returns (uint256) {
-    return PlayersLibrary.readXP(skill, _playerXP[playerId]);
+    return PlayersLibrary._readXP(skill, _playerXP[playerId]);
   }
 
   function getLevel(uint256 playerId, Skill skill) external view override returns (uint256 level) {
-    return PlayersLibrary._getLevel(PlayersLibrary.readXP(skill, _playerXP[playerId]));
+    return PlayersLibrary._getLevel(PlayersLibrary._readXP(skill, _playerXP[playerId]));
   }
 
   function getTotalXP(uint256 playerId) external view override returns (uint256 totalXP) {
@@ -447,7 +445,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     uint16 totalLevel;
     for (uint256 i = 2; i < end; ++i) {
       Skill skill = Skill(i);
-      uint256 skillXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
+      uint256 skillXP = PlayersLibrary._readXP(skill, _playerXP[playerId]);
       totalLevel += PlayersLibrary._getLevel(skillXP);
     }
     // Set new totalLevel
