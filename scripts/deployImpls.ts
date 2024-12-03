@@ -33,6 +33,7 @@ async function main() {
     });
     raids = (await upgrades.upgradeProxy(RAIDS_ADDRESS, Raids, {
       kind: "uups",
+      unsafeAllow: ["external-library-linking"],
       timeout: 600 * 1000 // 10 minutes
     })) as unknown as Raids;
     await raids.waitForDeployment();

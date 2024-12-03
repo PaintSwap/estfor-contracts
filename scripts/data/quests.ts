@@ -9,7 +9,7 @@ import {
   MITHRIL_PICKAXE,
   NATUOW_HIDE,
   NATUOW_LEATHER,
-  RUBY,
+  RUBY
 } from "@paintswap/estfor-definitions/constants";
 import {Skill} from "@paintswap/estfor-definitions/types";
 
@@ -53,7 +53,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_NYMPTH_WATCH,
@@ -73,7 +73,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: LOG,
     burnAmount: 1000,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_SUPPLY_RUN,
@@ -93,7 +93,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NATUOW_HIDE,
     burnAmount: 500,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_HIDDEN_BOUNTY,
@@ -113,7 +113,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_PURSE_STRINGS, // Special one that just involves buying brush
@@ -133,7 +133,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_ALMS_POOR,
@@ -153,7 +153,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: EstforConstants.COOKED_BLEKK,
     burnAmount: 500,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_BURNER_WATCH,
@@ -173,7 +173,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_TWO_BIRDS,
@@ -193,7 +193,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_APPRENTICESHIP,
@@ -213,7 +213,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_TOWN_COOKOUT,
@@ -233,7 +233,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: EstforConstants.RAW_SKRIMP,
     burnAmount: 5000,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_IRON_AGE,
@@ -253,7 +253,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: EstforConstants.IRON_BAR,
     burnAmount: 7500,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_CLEAR_SKIES,
@@ -273,7 +273,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_MEADERY_MADNESS,
@@ -293,7 +293,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FOREST_FIRE,
@@ -313,7 +313,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_MITHRIL_MILITIA,
@@ -333,7 +333,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: MITHRIL_ARMOR,
     burnAmount: 25,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_MINOR_MINERS,
@@ -353,7 +353,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: MITHRIL_PICKAXE,
     burnAmount: 12,
     isFullModeOnly: false,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_SO_FLETCH,
@@ -373,7 +373,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_ENTER_THE_VEIL,
@@ -393,7 +393,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FORGE_AHEAD,
@@ -413,7 +413,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_HEART_STRINGS,
@@ -433,7 +433,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_ALCHEMICAL_PROWESS,
@@ -453,7 +453,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_NEW_ALCHEMY,
@@ -473,7 +473,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FLEX_THE_BOW,
@@ -493,7 +493,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_DRAGON_SLAYER,
@@ -513,7 +513,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
 
   {
@@ -525,8 +525,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.WOODCUTTING,
+    skillXPGained: 550,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 10,
     rewardItemTokenId2: NONE,
@@ -534,7 +534,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_AXE_II,
@@ -545,8 +545,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.WOODCUTTING,
+    skillXPGained: 910,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 20,
     rewardItemTokenId2: NONE,
@@ -554,7 +554,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_AXE_III,
@@ -565,8 +565,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.WOODCUTTING,
+    skillXPGained: 1810,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 30,
     rewardItemTokenId2: NONE,
@@ -574,7 +574,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_AXE_IV,
@@ -585,8 +585,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.WOODCUTTING,
+    skillXPGained: 5100,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 40,
     rewardItemTokenId2: NONE,
@@ -594,7 +594,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_AXE_V,
@@ -605,8 +605,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.WOODCUTTING,
+    skillXPGained: 24550,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 50,
     rewardItemTokenId2: NONE,
@@ -614,7 +614,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE,
@@ -625,8 +625,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.MINING,
+    skillXPGained: 1100,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 10,
     rewardItemTokenId2: NONE,
@@ -634,7 +634,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_II,
@@ -645,8 +645,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.MINING,
+    skillXPGained: 8700,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 20,
     rewardItemTokenId2: NONE,
@@ -654,7 +654,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_III,
@@ -665,8 +665,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.MINING,
+    skillXPGained: 8030,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 30,
     rewardItemTokenId2: NONE,
@@ -674,7 +674,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_IV,
@@ -685,8 +685,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.MINING,
+    skillXPGained: 40640,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 40,
     rewardItemTokenId2: NONE,
@@ -694,7 +694,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_WAY_OF_THE_PICKAXE_V,
@@ -705,8 +705,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.MINING,
+    skillXPGained: 57500,
     rewardItemTokenId1: EstforConstants.NATURE_KEY,
     rewardAmount1: 50,
     rewardItemTokenId2: NONE,
@@ -714,7 +714,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_BAIT_AND_STRING,
@@ -725,8 +725,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.FISHING,
+    skillXPGained: 230,
     rewardItemTokenId1: EstforConstants.AQUA_KEY,
     rewardAmount1: 10,
     rewardItemTokenId2: NONE,
@@ -734,7 +734,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_BAIT_AND_STRING_II,
@@ -745,8 +745,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.FISHING,
+    skillXPGained: 2200,
     rewardItemTokenId1: EstforConstants.AQUA_KEY,
     rewardAmount1: 20,
     rewardItemTokenId2: NONE,
@@ -754,7 +754,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_BAIT_AND_STRING_III,
@@ -765,8 +765,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.FISHING,
+    skillXPGained: 3600,
     rewardItemTokenId1: EstforConstants.AQUA_KEY,
     rewardAmount1: 30,
     rewardItemTokenId2: NONE,
@@ -774,7 +774,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_BAIT_AND_STRING_IV,
@@ -785,8 +785,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.FISHING,
+    skillXPGained: 20300,
     rewardItemTokenId1: EstforConstants.AQUA_KEY,
     rewardAmount1: 40,
     rewardItemTokenId2: NONE,
@@ -794,7 +794,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_BAIT_AND_STRING_V,
@@ -805,8 +805,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.FISHING,
+    skillXPGained: 31300,
     rewardItemTokenId1: EstforConstants.AQUA_KEY,
     rewardAmount1: 50,
     rewardItemTokenId2: NONE,
@@ -814,7 +814,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FIRE_AND_ICE,
@@ -834,7 +834,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FIRE_AND_ICE_II,
@@ -854,7 +854,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FIRE_AND_ICE_III,
@@ -874,7 +874,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
 
   {
@@ -895,7 +895,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FIRE_AND_ICE_V,
@@ -915,7 +915,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FIRE_AND_ICE_VI,
@@ -935,7 +935,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_FIRE_AND_ICE_VII,
@@ -955,7 +955,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT,
@@ -966,8 +966,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.THIEVING,
+    skillXPGained: 800,
     rewardItemTokenId1: EstforConstants.WOODCUTTING_CHEST_2,
     rewardAmount1: 10,
     rewardItemTokenId2: EstforConstants.MINING_CHEST_2,
@@ -975,7 +975,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_II,
@@ -986,8 +986,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.THIEVING,
+    skillXPGained: 900,
     rewardItemTokenId1: EstforConstants.FISHING_CHEST_3,
     rewardAmount1: 10,
     rewardItemTokenId2: EstforConstants.MINING_CHEST_3,
@@ -995,7 +995,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_III,
@@ -1006,8 +1006,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.THIEVING,
+    skillXPGained: 15900,
     rewardItemTokenId1: EstforConstants.MINING_CHEST_4,
     rewardAmount1: 10,
     rewardItemTokenId2: EstforConstants.FISHING_CHEST_4,
@@ -1015,7 +1015,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_IV,
@@ -1026,8 +1026,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.THIEVING,
+    skillXPGained: 49100,
     rewardItemTokenId1: EstforConstants.DRAGON_CHEST,
     rewardAmount1: 20,
     rewardItemTokenId2: EstforConstants.WOODCUTTING_CHEST_4,
@@ -1035,7 +1035,7 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
   {
     questId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V,
@@ -1046,8 +1046,8 @@ export const allQuests: QuestInput[] = [
     actionNum2: 0,
     actionChoiceId: 0,
     actionChoiceNum: 0,
-    skillReward: Skill.NONE,
-    skillXPGained: 0,
+    skillReward: Skill.THIEVING,
+    skillXPGained: 55450,
     rewardItemTokenId1: EstforConstants.BONE_CHEST,
     rewardAmount1: 20,
     rewardItemTokenId2: EstforConstants.MINING_CHEST_5,
@@ -1055,8 +1055,188 @@ export const allQuests: QuestInput[] = [
     burnItemTokenId: NONE,
     burnAmount: 0,
     isFullModeOnly: true,
-    worldLocation: 0,
+    worldLocation: 0
   },
+  {
+    questId: EstforConstants.QUEST_GROWING_CONCERNS,
+    dependentQuestId: 0,
+    actionId1: EstforConstants.ACTION_FARMING_GRASSLANDS,
+    actionNum1: 24,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: 0,
+    actionChoiceNum: 0,
+    skillReward: Skill.FARMING,
+    skillXPGained: 510,
+    rewardItemTokenId1: EstforConstants.SEED_001_WILD,
+    rewardAmount1: 30,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_GROWING_CONCERNS_II,
+    dependentQuestId: EstforConstants.QUEST_GROWING_CONCERNS,
+    actionId1: EstforConstants.ACTION_FARMING_RIVERBANK,
+    actionNum1: 5760,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: 0,
+    actionChoiceNum: 0,
+    skillReward: Skill.FARMING,
+    skillXPGained: 6540,
+    rewardItemTokenId1: EstforConstants.SEED_002_UNKNOWN,
+    rewardAmount1: 30,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_GROWING_CONCERNS_III,
+    dependentQuestId: EstforConstants.QUEST_GROWING_CONCERNS_II,
+    actionId1: EstforConstants.ACTION_FARMING_FOREST,
+    actionNum1: 7200,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: 0,
+    actionChoiceNum: 0,
+    skillReward: Skill.FARMING,
+    skillXPGained: 40430,
+    rewardItemTokenId1: EstforConstants.SEED_003_MYSTERIOUS,
+    rewardAmount1: 30,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_GROWING_CONCERNS_IV,
+    dependentQuestId: EstforConstants.QUEST_GROWING_CONCERNS_III,
+    actionId1: EstforConstants.ACTION_FARMING_RUINS,
+    actionNum1: 8400,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: 0,
+    actionChoiceNum: 0,
+    skillReward: Skill.FARMING,
+    skillXPGained: 49060,
+    rewardItemTokenId1: EstforConstants.SEED_004_OBSCURE,
+    rewardAmount1: 30,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_GROWING_CONCERNS_V,
+    dependentQuestId: EstforConstants.QUEST_GROWING_CONCERNS_IV,
+    actionId1: EstforConstants.ACTION_FARMING_WETLANDS,
+    actionNum1: 168,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: 0,
+    actionChoiceNum: 0,
+    skillReward: Skill.FARMING,
+    skillXPGained: 138710,
+    rewardItemTokenId1: EstforConstants.SEED_005_ANCIENT,
+    rewardAmount1: 30,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_APPRENTICESHIP_II,
+    dependentQuestId: EstforConstants.QUEST_APPRENTICESHIP,
+    actionId1: EstforConstants.ACTIONCHOICE_CRAFTING_SMALL_PLANK,
+    actionNum1: 360,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: 0,
+    actionChoiceNum: 0,
+    skillReward: Skill.CRAFTING,
+    skillXPGained: 1100,
+    rewardItemTokenId1: EstforConstants.MAPLE_LOG,
+    rewardAmount1: 300,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_APPRENTICESHIP_III,
+    dependentQuestId: EstforConstants.QUEST_APPRENTICESHIP_II,
+    actionId1: 0,
+    actionNum1: 0,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: EstforConstants.ACTIONCHOICE_CRAFTING_SMALL_PLOT,
+    actionChoiceNum: 12,
+    skillReward: Skill.CRAFTING,
+    skillXPGained: 2190,
+    rewardItemTokenId1: EstforConstants.ASH_LOG,
+    rewardAmount1: 250,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_STIRRED_NOT_SHAKEN,
+    dependentQuestId: EstforConstants.QUEST_APPRENTICESHIP_II,
+    actionId1: 0,
+    actionNum1: 0,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: EstforConstants.ACTIONCHOICE_ALCHEMY_HEALING_POTION_S,
+    actionChoiceNum: 120,
+    skillReward: Skill.ALCHEMY,
+    skillXPGained: 1650,
+    rewardItemTokenId1: EstforConstants.SEED_002_UNKNOWN_HARVESTABLE,
+    rewardAmount1: 5,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  },
+  {
+    questId: EstforConstants.QUEST_IRON_AGE_II,
+    dependentQuestId: EstforConstants.QUEST_IRON_AGE,
+    actionId1: NONE,
+    actionNum1: 0,
+    actionId2: NONE,
+    actionNum2: 0,
+    actionChoiceId: EstforConstants.ACTIONCHOICE_SMITHING_MITHRIL_NAIL,
+    actionChoiceNum: 1440,
+    skillReward: Skill.ALCHEMY,
+    skillXPGained: 1650,
+    rewardItemTokenId1: EstforConstants.RUNITE_BAR,
+    rewardAmount1: 250,
+    rewardItemTokenId2: EstforConstants.NONE,
+    rewardAmount2: 0,
+    burnItemTokenId: NONE,
+    burnAmount: 0,
+    isFullModeOnly: true,
+    worldLocation: 0
+  }
 ];
 
 type MinRequirement = {
@@ -1069,7 +1249,7 @@ export type MinRequirementArray = [MinRequirement, MinRequirement, MinRequiremen
 export const defaultMinRequirements: [MinRequirement, MinRequirement, MinRequirement] = [
   {skill: Skill.NONE, xp: 0},
   {skill: Skill.NONE, xp: 0},
-  {skill: Skill.NONE, xp: 0},
+  {skill: Skill.NONE, xp: 0}
 ];
 
 export const allQuestsMinRequirements: MinRequirementArray[] = [
@@ -1085,9 +1265,27 @@ export const allQuestsMinRequirements: MinRequirementArray[] = [
   defaultMinRequirements,
   defaultMinRequirements,
   [
+    {skill: Skill.ALCHEMY, xp: 3236},
+    {skill: Skill.NONE, xp: 0},
+    {skill: Skill.NONE, xp: 0}
+  ],
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  defaultMinRequirements,
+  [
+    {skill: Skill.SMITHING, xp: 3236},
+    {skill: Skill.NONE, xp: 0},
+    {skill: Skill.NONE, xp: 0}
+  ],
+  [
     {skill: Skill.HEALTH, xp: 2939},
     {skill: Skill.NONE, xp: 0},
-    {skill: Skill.NONE, xp: 0},
+    {skill: Skill.NONE, xp: 0}
   ],
   defaultMinRequirements,
   defaultMinRequirements,
@@ -1126,6 +1324,5 @@ export const allQuestsMinRequirements: MinRequirementArray[] = [
   defaultMinRequirements,
   defaultMinRequirements,
   defaultMinRequirements,
-  defaultMinRequirements,
-  defaultMinRequirements,
+  defaultMinRequirements
 ];

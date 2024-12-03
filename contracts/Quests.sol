@@ -36,7 +36,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   error InvalidRewardAmount();
   error InvalidActionNum();
   error InvalidActionChoiceNum();
-  error LengthMismatch();
+  error LengthMismatch(uint256 questsLength, uint256 minimumRequirementsLength);
   error InvalidSkillXPGained();
   error InvalidFTMAmount();
   error InvalidBrushAmount();
@@ -584,7 +584,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     QuestInput[] calldata quests,
     MinimumRequirement[3][] calldata minimumRequirements
   ) external onlyOwner {
-    require(quests.length == minimumRequirements.length, LengthMismatch());
+    require(quests.length == minimumRequirements.length, LengthMismatch(quests.length, minimumRequirements.length));
 
     uint256 bounds = quests.length;
     for (uint256 i; i < bounds; ++i) {

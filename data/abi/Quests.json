@@ -118,7 +118,18 @@
     "type": "error"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "questsLength",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minimumRequirementsLength",
+        "type": "uint256"
+      }
+    ],
     "name": "LengthMismatch",
     "type": "error"
   },

@@ -237,7 +237,7 @@ async function main() {
     editNameBrushPrice = parseEther("1000");
     editPetNameBrushPrice = parseEther("1");
     upgradePlayerBrushPrice = parseEther("2000");
-    raffleEntryCost = parseEther("12");
+    raffleEntryCost = parseEther("7");
     startGlobalDonationThresholdRewards = parseEther("300000");
     clanDonationThresholdRewardIncrement = parseEther("5000");
     mmrAttackDistance = 4;
