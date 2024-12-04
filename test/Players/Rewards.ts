@@ -494,9 +494,9 @@ describe("Rewards", function () {
         let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
         expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
-        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000_000n);
+        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000n);
         await timeTravel24Hours();
-        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000_000n);
+        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000n);
 
         expect(await randomnessBeacon.hasRandomWord(endTime)).to.be.true;
 
