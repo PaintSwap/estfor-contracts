@@ -5,9 +5,6 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
-  error BankRelayAlreadySet();
-  error LockedBankVaultsAlreadySet();
-
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
