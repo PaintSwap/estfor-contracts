@@ -62,7 +62,8 @@ import {
   allActionChoicesRanged,
   allActionChoicesAlchemy,
   allActionChoicesFletching,
-  allActionChoicesForging
+  allActionChoicesForging,
+  allActionChoicesFarming
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsFiremaking,
@@ -74,7 +75,8 @@ import {
   allActionChoiceIdsRanged,
   allActionChoiceIdsAlchemy,
   allActionChoiceIdsFletching,
-  allActionChoiceIdsForging
+  allActionChoiceIdsForging,
+  allActionChoiceIdsFarming
 } from "./data/actionChoiceIds";
 import {
   BRUSH_ADDRESS,
@@ -1159,6 +1161,7 @@ async function main() {
   const fletchingActionId = EstforConstants.ACTION_FLETCHING_ITEM;
   const alchemyActionId = EstforConstants.ACTION_ALCHEMY_ITEM;
   const forgingActionId = EstforConstants.ACTION_FORGING_ITEM;
+  const farmingActionId = EstforConstants.ACTION_FARMING_ITEM;
   const genericCombatActionId = EstforConstants.NONE;
 
   tx = await worldActions.addBulkActionChoices(
@@ -1178,7 +1181,6 @@ async function main() {
   await tx.wait();
   console.log("Add action choices3");
 
-  // Add new ones here for gas reasons
   tx = await worldActions.addBulkActionChoices(
     [alchemyActionId, forgingActionId],
     [allActionChoiceIdsAlchemy, allActionChoiceIdsForging],
@@ -1187,6 +1189,16 @@ async function main() {
 
   await tx.wait();
   console.log("Add action choices4");
+
+  // Add new ones here for gas reasons
+  tx = await worldActions.addBulkActionChoices(
+    [farmingActionId],
+    [allActionChoiceIdsFarming],
+    [allActionChoicesFarming]
+  );
+
+  await tx.wait();
+  console.log("Add action choices5");
 
   tx = await worldActions.addBulkActionChoices(
     [genericCombatActionId, genericCombatActionId, genericCombatActionId],

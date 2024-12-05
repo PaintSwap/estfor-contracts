@@ -1,6 +1,5 @@
 import {ethers} from "hardhat";
 import {RANDOMNESS_BEACON_ADDRESS} from "./contractAddresses";
-import {RandomnessBeacon} from "../typechain-types";
 import {getChainId} from "./utils";
 
 async function main() {

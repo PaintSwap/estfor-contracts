@@ -4203,6 +4203,34 @@ export const allActions: ActionInput[] = [
     }
   },
   {
+    actionId: EstforConstants.ACTION_FARMING_ITEM,
+    info: {
+      skill: Skill.FARMING,
+      isAvailable: true,
+      actionChoiceRequired: true,
+      xpPerHour: 0,
+      numSpawned: 0 * 1000,
+      minXP: 0,
+      handItemTokenIdRangeMin: EstforConstants.NONE,
+      handItemTokenIdRangeMax: EstforConstants.NONE,
+      successPercent: 100,
+      worldLocation: 0,
+      isFullModeOnly: true,
+      questPrerequisiteId: 0
+    },
+    guaranteedRewards: [],
+    randomRewards: [],
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    }
+  },
+  {
     actionId: EstforConstants.ACTION_FARMING_MEADOW,
     info: {
       skill: Skill.FARMING,
