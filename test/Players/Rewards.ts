@@ -494,9 +494,9 @@ describe("Rewards", function () {
         let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
         expect(pendingQueuedActionState.equipmentStates.length).to.eq(0);
 
-        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000_000n);
+        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000n);
         await timeTravel24Hours();
-        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000_000n);
+        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 400_000_000n);
 
         expect(await randomnessBeacon.hasRandomWord(endTime)).to.be.true;
 
@@ -582,8 +582,8 @@ describe("Rewards", function () {
       const numHours = 2;
 
       await timeTravelToNextCheckpoint();
-      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
-      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 100_000_000n);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 100_000_000n);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -633,7 +633,7 @@ describe("Rewards", function () {
         let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
         expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(0);
 
-        await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+        await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 100_000_000_000n);
 
         expect(await randomnessBeacon.hasRandomWord(endTime)).to.be.true;
 
@@ -2219,7 +2219,7 @@ describe("Rewards", function () {
 
       await timeTravel24Hours();
 
-      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 100_000_000_000n);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 100_000_000n);
 
       expect(await itemNFT.balanceOf(alice, BRONZE_ARROW)).to.be.eq(0);
 
