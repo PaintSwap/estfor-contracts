@@ -29,10 +29,8 @@ async function main() {
   if (actionChoices.length !== actionChoicesToUpdate.size || actionChoiceIds.length !== actionChoicesToUpdate.size) {
     console.error("ActionChoiceIds not found");
   } else {
-    {
-      const tx = await worldActions.editActionChoices(EstforConstants.NONE, actionChoiceIds, actionChoices);
-      await tx.wait();
-    }
+    const tx = await worldActions.editActionChoices(EstforConstants.NONE, actionChoiceIds, actionChoices);
+    await tx.wait();
   }
 
   /*

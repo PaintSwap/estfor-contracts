@@ -3895,7 +3895,7 @@ export const allActions: ActionInput[] = [
     }
   },
   {
-    actionId: EstforConstants.ACTION_FISHING_RAW_SPHINX_FISH,
+    actionId: EstforConstants.ACTION_FISHING_SPHINX_FISH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
@@ -3923,7 +3923,7 @@ export const allActions: ActionInput[] = [
     }
   },
   {
-    actionId: EstforConstants.ACTION_FISHING_RAW_SHAW,
+    actionId: EstforConstants.ACTION_FISHING_SHAW,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
@@ -3951,7 +3951,7 @@ export const allActions: ActionInput[] = [
     }
   },
   {
-    actionId: EstforConstants.ACTION_FISHING_RAW_VANISHING_PERCH,
+    actionId: EstforConstants.ACTION_FISHING_VANISHING_PERCH,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
@@ -3979,7 +3979,7 @@ export const allActions: ActionInput[] = [
     }
   },
   {
-    actionId: EstforConstants.ACTION_FISHING_RAW_VIPER_BASS,
+    actionId: EstforConstants.ACTION_FISHING_VIPER_BASS,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
@@ -4007,7 +4007,7 @@ export const allActions: ActionInput[] = [
     }
   },
   {
-    actionId: EstforConstants.ACTION_FISHING_RAW_WATER_SERPENT,
+    actionId: EstforConstants.ACTION_FISHING_WATER_SERPENT,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
@@ -4035,7 +4035,7 @@ export const allActions: ActionInput[] = [
     }
   },
   {
-    actionId: EstforConstants.ACTION_FISHING_RAW_WHISKFIN,
+    actionId: EstforConstants.ACTION_FISHING_WHISKFIN,
     info: {
       skill: Skill.FISHING,
       isAvailable: true,
