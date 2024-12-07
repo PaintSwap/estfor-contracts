@@ -1059,6 +1059,4 @@ export const getXPFromLevel = (level: number) => {
   return EstforConstants.levelXp[level - 1];
 };
 
-export const MAX_LEVEL = 135;
-
-export const BOOST_START_NOW = 3;
+export const BOOST_START_NOW = 2;

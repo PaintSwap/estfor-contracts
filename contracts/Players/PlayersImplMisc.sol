@@ -85,7 +85,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
   // Index not level, add one after (check for > max)
   function _findBaseXPThreshold(uint256 xp) private pure returns (uint16) {
     uint256 low;
-    uint256 high = xpRewardBytes.length / 4;
+    uint256 high = XP_THRESHOLD_REWARDS.length / 4;
 
     while (low < high) {
       uint256 mid = (low + high) / 2;
@@ -110,10 +110,10 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     uint256 key = index * 4;
     return
       uint32(
-        xpRewardBytes[key] |
-          (bytes4(xpRewardBytes[key + 1]) >> 8) |
-          (bytes4(xpRewardBytes[key + 2]) >> 16) |
-          (bytes4(xpRewardBytes[key + 3]) >> 24)
+        XP_THRESHOLD_REWARDS[key] |
+          (bytes4(XP_THRESHOLD_REWARDS[key + 1]) >> 8) |
+          (bytes4(XP_THRESHOLD_REWARDS[key + 2]) >> 16) |
+          (bytes4(XP_THRESHOLD_REWARDS[key + 3]) >> 24)
       );
   }
 

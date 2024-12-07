@@ -233,7 +233,7 @@ async function main() {
   let mmrAttackDistance;
   if (!isBeta) {
     // prod version
-    itemsUri = "ipfs://bafybeigwx32mxinkieite3w2el43ynk4e4oad2qel7p4cmvesiy2rnbnue/";
+    itemsUri = "ipfs://bafybeiajnpzlbg2ymeerahd3cwhc3tp3b3bxzj6iahdqyzuwarinsbfsta/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
     editNameBrushPrice = parseEther("1000");
@@ -244,7 +244,7 @@ async function main() {
     clanDonationThresholdRewardIncrement = parseEther("5000");
     mmrAttackDistance = 4;
   } else {
-    itemsUri = "ipfs://bafybeidlnctar6ejm3cz2hunke7tgwdpvem2vjjhl3xzedraxjwh346mji/";
+    itemsUri = "ipfs://bafybeibvzbxbblmg7hixl7zozjdacmu6qtj46z7p5pukiflb5kgcakwz5a/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
     editNameBrushPrice = parseEther("1");

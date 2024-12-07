@@ -18,7 +18,6 @@ import {playersFixture} from "./PlayersFixture";
 import {
   BOOST_START_NOW,
   getXPFromLevel,
-  MAX_LEVEL,
   setupBasicCooking,
   setupBasicFiremaking,
   setupBasicFishing,
@@ -26,7 +25,7 @@ import {
   setupTravelling
 } from "./utils";
 import {Players} from "../../typechain-types";
-import {ACTION_FISHING_MINNUS, GUAR_MUL, RATE_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
+import {ACTION_FISHING_MINNUS, GUAR_MUL, MAX_LEVEL, RATE_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 import {Block, ContractTransactionReceipt} from "ethers";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
 import {FullAttireBonusInputStruct} from "../../typechain-types/contracts/Players/Players";
