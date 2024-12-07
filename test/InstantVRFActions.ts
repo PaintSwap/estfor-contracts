@@ -20,14 +20,12 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createAndDoPurseStringsQuest, fulfillRandomWords} from "./utils";
 import {AbiCoder, ZeroAddress} from "ethers"; // ethers v6
 import {ethers} from "hardhat";
-import {TestERC1155HolderRogue} from "../typechain-types";
 
 const abiCoder = new AbiCoder();
 
 describe("Instant VRF actions", function () {
   const forgingFixture = async function () {
-    const fixture = {...(await loadFixture(playersFixture))};
-
+    const fixture = await loadFixture(playersFixture);
     await fixture.instantVRFActions.addStrategies(
       [InstantVRFActionType.FORGING, InstantVRFActionType.GENERIC],
       [
@@ -1084,26 +1082,77 @@ describe("Instant VRF actions", function () {
 
   describe("Egg hatching random rewards", function () {
     const eggFixture = async function () {
-      const fixture = {...(await loadFixture(playersFixture))};
+      const fixture = await loadFixture(playersFixture);
 
       await fixture.instantVRFActions.addStrategies(
         [InstantVRFActionType.EGG],
-        [await fixture.genericInstantVRFActionStrategy.getAddress()] // TODO: Update
+        [await fixture.eggInstantVRFActionStrategy.getAddress()]
       );
       return fixture;
     };
 
-    const defaultInstantVRFActionInput: InstantVRFActionInput = {
-      ..._defaultInstantVRFActionInput,
-      actionId: 1,
-      inputTokenIds: [BRONZE_ARROW, IRON_ARROW, ADAMANTINE_ARROW],
-      inputAmounts: [1, 2, 3],
-      data: abiCoder.encode(
-        ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
-        [0, [{itemTokenId: EstforConstants.RUNITE_ARROW, chance: 65535, amount: 2}]]
-      ),
-      isFullModeOnly: false,
-      actionType: EstforTypes.InstantVRFActionType.EGG
-    };
+    it("Check random rewards", async function () {
+      const {playerId, instantVRFActions, mockVRF, itemNFT, maxInstantVRFActionAmount, petNFT, alice} =
+        await loadFixture(eggFixture);
+      this.timeout(100000); // 100 seconds, this test might take a while on CI
+
+      const instantVRFActionInput: InstantVRFActionInput = {
+        ..._defaultInstantVRFActionInput,
+        actionId: 1,
+        actionType: InstantVRFActionType.EGG,
+        inputTokenIds: [EstforConstants.EGG_TIER1],
+        inputAmounts: [1],
+        isFullModeOnly: false,
+        data: ethers.AbiCoder.defaultAbiCoder().encode(
+          ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+          [
+            0,
+            {
+              rewardBasePetIdMin: EstforConstants.DEFAULT_MIN_TIER1,
+              rewardBasePetIdMax: EstforConstants.DEFAULT_MAX_TIER1
+            }
+          ]
+        )
+      };
+
+      // Add it twice, just to get this tested
+      await instantVRFActions.addActions([
+        instantVRFActionInput,
+        {...instantVRFActionInput, actionId: instantVRFActionInput.actionId + 1}
+      ]);
+
+      await itemNFT.mint(alice, EstforConstants.EGG_TIER1, 10000000);
+
+      const actionAmount1 = maxInstantVRFActionAmount / 2n;
+      const actionAmount2 = maxInstantVRFActionAmount / 2n - 1n;
+      const actionAmount = actionAmount1 + actionAmount2;
+      // Repeat the test a bunch of times to check the random rewards are as expected
+      const numRepeats = 50n;
+      const allPetTypesMap = new Map<bigint, number>(); // pet base id -> count
+
+      for (let i = 0n; i < numRepeats; ++i) {
+        await instantVRFActions
+          .connect(alice)
+          .doInstantVRFActions(
+            playerId,
+            [instantVRFActionInput.actionId, instantVRFActionInput.actionId + 1],
+            [actionAmount1, actionAmount2],
+            {
+              value: await instantVRFActions.requestCost(actionAmount)
+            }
+          );
+
+        await fulfillRandomWords(i + 1n, instantVRFActions, mockVRF);
+
+        const basePetId = (await petNFT.getPet(1)).baseId;
+
+        allPetTypesMap.set(basePetId, (allPetTypesMap.get(basePetId) || 0) + 1);
+      }
+
+      // Check you have at least one of each basePetId
+      for (const [, count] of allPetTypesMap) {
+        expect(count).to.be.gte(1);
+      }
+    });
   });
 });

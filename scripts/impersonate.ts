@@ -182,7 +182,7 @@ async function main() {
   /* When trying to fix a VRF issue
 const randomnessBeacon = await ethers.getContractAt("RandomnessBeacon", RANDOMNESS_BEACON_ADDRESS);
   const samwitchVRFSigner = await makeSigner(SAMWITCH_VRF_ADDRESS);
-  const tx = await world
+  const tx = await randomnessBeacon
     .connect(samwitchVRFSigner)
     .fulfillRandomWords(
       ethers.toBeHex("104046019367107169710442674117296229748040445173308782669979590837825775087813", 32),

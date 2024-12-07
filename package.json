@@ -21,13 +21,14 @@
     "@openzeppelin/contracts": "https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts/contracts?v5.1-memory-safe",
     "@openzeppelin/contracts-upgradeable": "https://gitpkg.now.sh/PaintSwap/openzeppelin-contracts-upgradeable/contracts?v5.1-memory-safe",
     "@openzeppelin/hardhat-upgrades": "^3.5.0",
-    "@paintswap/estfor-definitions": "2.0.44",
+    "@paintswap/estfor-definitions": "2.0.48",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^5.0.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.9.1",
     "chai": "^4.3.7",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "eslint": "9",
     "ethers": "6",
@@ -134,5 +135,6 @@
     "precommit": "pretty-quick --staged",
     "prepare": "husky install .husky"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "dependencies": {}
 }

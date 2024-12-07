@@ -16,15 +16,12 @@ import {
   InstantVRFActions,
   ItemNFT,
   LockedBankVaults,
-  MockBrushToken,
-  MockVRF,
   MockRouter,
   PassiveActions,
   PetNFT,
   PlayerNFT,
   Players,
   Promotions,
-  PromotionsLibrary,
   Quests,
   RoyaltyReceiver,
   Shop,
@@ -50,7 +47,12 @@ export const playersFixture = async function () {
   const brush = await ethers.deployContract("MockBrushToken");
   const mockVRF = await ethers.deployContract("MockVRF");
 
-  // Add some dummy blocks so that randomness beacon can access previous blocks for random numbers
+  const WorldActions = await ethers.getContractFactory("WorldActions");
+  const worldActions = (await upgrades.deployProxy(WorldActions, [], {
+    kind: "uups"
+  })) as unknown as WorldActions;
+
+  // Add some dummy blocks so that the randomness beacon can access previous blocks for random numbers
   for (let i = 0; i < 5; ++i) {
     await owner.sendTransaction({
       to: owner.address,
@@ -58,12 +60,6 @@ export const playersFixture = async function () {
       maxFeePerGas: 1
     });
   }
-
-  // Create the world
-  const WorldActions = await ethers.getContractFactory("WorldActions");
-  const worldActions = (await upgrades.deployProxy(WorldActions, [], {
-    kind: "uups"
-  })) as unknown as WorldActions;
 
   const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
   const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
