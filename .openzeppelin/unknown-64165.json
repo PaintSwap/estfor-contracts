@@ -95272,6 +95272,714 @@
           ]
         }
       }
+    },
+    "8f14b8edcde40d4516591e3b3010e555ebf75152bc120014a14a4126d8b764e8": {
+      "address": "0xC7520535b2c123699dE6bE18d4b40Dd7b1756759",
+      "txHash": "0x6310d441e1b097e5f91a8335cf25df1408359ffafcaddfd3df421b753da62897",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(ItemNFT)32891",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:93"
+          },
+          {
+            "label": "_players",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(Players)43726",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:94"
+          },
+          {
+            "label": "_quests",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(Quests)53272",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:95"
+          },
+          {
+            "label": "_vrfRequestInfo",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(VRFRequestInfo)57379",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:96"
+          },
+          {
+            "label": "_gasCostPerUnit",
+            "offset": 20,
+            "slot": "3",
+            "type": "t_uint64",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:97"
+          },
+          {
+            "label": "_maxActionAmount",
+            "offset": 28,
+            "slot": "3",
+            "type": "t_uint8",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:98"
+          },
+          {
+            "label": "_oracle",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:100"
+          },
+          {
+            "label": "_samWitchVRF",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(ISamWitchVRF)62789",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:101"
+          },
+          {
+            "label": "_petNFT",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_contract(PetNFT)39604",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:102"
+          },
+          {
+            "label": "_playerActionInfos",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_struct(PlayerActionInfo)29396_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:104"
+          },
+          {
+            "label": "_actions",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)29416_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:105"
+          },
+          {
+            "label": "_requestIdToPlayer",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_mapping(t_bytes32,t_struct(Player)29421_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:106"
+          },
+          {
+            "label": "_strategies",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_enum(InstantVRFActionType)61856,t_contract(IInstantVRFActionStrategy)29240)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:107"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)1035_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)963_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint16)10_storage": {
+            "label": "uint16[10]",
+            "numberOfBytes": "32"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IInstantVRFActionStrategy)29240": {
+            "label": "contract IInstantVRFActionStrategy",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISamWitchVRF)62789": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)32891": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)39604": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Players)43726": {
+            "label": "contract Players",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Quests)53272": {
+            "label": "contract Quests",
+            "numberOfBytes": "20"
+          },
+          "t_contract(VRFRequestInfo)57379": {
+            "label": "contract VRFRequestInfo",
+            "numberOfBytes": "20"
+          },
+          "t_enum(InstantVRFActionType)61856": {
+            "label": "enum InstantVRFActionType",
+            "members": ["NONE", "GENERIC", "FORGING", "EGG"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_struct(Player)29421_storage)": {
+            "label": "mapping(bytes32 => struct InstantVRFActions.Player)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(InstantVRFActionType)61856,t_contract(IInstantVRFActionStrategy)29240)": {
+            "label": "mapping(enum InstantVRFActionType => contract IInstantVRFActionStrategy)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)29416_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.InstantVRFAction)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerActionInfo)29396_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.PlayerActionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantVRFAction)29416_storage": {
+            "label": "struct InstantVRFActions.InstantVRFAction",
+            "members": [
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint24",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint24",
+                "offset": 7,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "questPrerequisiteId",
+                "type": "t_uint16",
+                "offset": 15,
+                "slot": "0"
+              },
+              {
+                "label": "actionType",
+                "type": "t_enum(InstantVRFActionType)61856",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 18,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Player)29421_storage": {
+            "label": "struct InstantVRFActions.Player",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "playerId",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerActionInfo)29396_storage": {
+            "label": "struct InstantVRFActions.PlayerActionInfo",
+            "members": [
+              {
+                "label": "actionIdAmountPairs",
+                "type": "t_array(t_uint16)10_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "235b80d1566df7392e7c6034762a114e4da7c9fbeeb8486215722ad1ad593dd0": {
+      "address": "0xf6f1ad49Dc58D293864190D607eFFab739f7b2Ae",
+      "txHash": "0xd3978c59e66aacfb92fc41904848df497ed894d95c434e961fc29c9299a60290",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(ItemNFT)18347",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:93"
+          },
+          {
+            "label": "_players",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(Players)25349",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:94"
+          },
+          {
+            "label": "_quests",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(Quests)33687",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:95"
+          },
+          {
+            "label": "_vrfRequestInfo",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(VRFRequestInfo)35962",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:96"
+          },
+          {
+            "label": "_gasCostPerUnit",
+            "offset": 20,
+            "slot": "3",
+            "type": "t_uint64",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:97"
+          },
+          {
+            "label": "_maxActionAmount",
+            "offset": 28,
+            "slot": "3",
+            "type": "t_uint8",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:98"
+          },
+          {
+            "label": "_oracle",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:100"
+          },
+          {
+            "label": "_samWitchVRF",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(ISamWitchVRF)39851",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:101"
+          },
+          {
+            "label": "_petNFT",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_contract(PetNFT)21227",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:102"
+          },
+          {
+            "label": "_playerActionInfos",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_struct(PlayerActionInfo)14852_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:104"
+          },
+          {
+            "label": "_actions",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_struct(InstantVRFAction)14872_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:105"
+          },
+          {
+            "label": "_requestIdToPlayer",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_mapping(t_bytes32,t_struct(Player)14877_storage)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:106"
+          },
+          {
+            "label": "_strategies",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_mapping(t_enum(InstantVRFActionType)38942,t_contract(IInstantVRFActionStrategy)14696)",
+            "contract": "InstantVRFActions",
+            "src": "contracts\\InstantVRFActions.sol:107"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint16)10_storage": {
+            "label": "uint16[10]",
+            "numberOfBytes": "32"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IInstantVRFActionStrategy)14696": {
+            "label": "contract IInstantVRFActionStrategy",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISamWitchVRF)39851": {
+            "label": "contract ISamWitchVRF",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)18347": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)21227": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Players)25349": {
+            "label": "contract Players",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Quests)33687": {
+            "label": "contract Quests",
+            "numberOfBytes": "20"
+          },
+          "t_contract(VRFRequestInfo)35962": {
+            "label": "contract VRFRequestInfo",
+            "numberOfBytes": "20"
+          },
+          "t_enum(InstantVRFActionType)38942": {
+            "label": "enum InstantVRFActionType",
+            "members": ["NONE", "GENERIC", "FORGING", "EGG"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_struct(Player)14877_storage)": {
+            "label": "mapping(bytes32 => struct InstantVRFActions.Player)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(InstantVRFActionType)38942,t_contract(IInstantVRFActionStrategy)14696)": {
+            "label": "mapping(enum InstantVRFActionType => contract IInstantVRFActionStrategy)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(InstantVRFAction)14872_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.InstantVRFAction)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PlayerActionInfo)14852_storage)": {
+            "label": "mapping(uint256 => struct InstantVRFActions.PlayerActionInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InstantVRFAction)14872_storage": {
+            "label": "struct InstantVRFActions.InstantVRFAction",
+            "members": [
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint24",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint24",
+                "offset": 7,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "questPrerequisiteId",
+                "type": "t_uint16",
+                "offset": 15,
+                "slot": "0"
+              },
+              {
+                "label": "actionType",
+                "type": "t_enum(InstantVRFActionType)38942",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 18,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Player)14877_storage": {
+            "label": "struct InstantVRFActions.Player",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "playerId",
+                "type": "t_uint64",
+                "offset": 20,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PlayerActionInfo)14852_storage": {
+            "label": "struct InstantVRFActions.PlayerActionInfo",
+            "members": [
+              {
+                "label": "actionIdAmountPairs",
+                "type": "t_array(t_uint16)10_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }
