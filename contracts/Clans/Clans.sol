@@ -147,7 +147,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   IPlayers private _players;
   IBankFactory private _bankFactory;
   IERC1155 private _playerNFT;
-  uint80 private _nextClanId;
+  uint40 private _nextClanId;
   uint16 private _initialMMR;
   address private _treasury;
   uint80 private _editNameCost;
@@ -211,7 +211,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     address dev,
     uint80 editNameCost,
     address paintswapMarketplaceWhitelist,
-    uint16 initialMMR
+    uint16 initialMMR,
+    uint40 startClanId
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
@@ -220,7 +221,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _playerNFT = playerNFT;
     _treasury = pool;
     _dev = dev;
-    _nextClanId = 1;
+    _nextClanId = startClanId;
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
     setEditNameCost(editNameCost);
     setInitialMMR(initialMMR);
@@ -242,8 +243,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _checkTierExists(tierId);
     _checkClanImage(imageId, tier.maxImageId);
 
-    uint256 clanId = _nextClanId;
-    _nextClanId++;
+    uint256 clanId = _nextClanId++;
     Clan storage clan = _clans[clanId];
     clan.ownerPlayerId = uint64(playerId);
     clan.tierId = tierId;

@@ -1476,6 +1476,11 @@
         "type": "address"
       },
       {
+        "internalType": "uint40",
+        "name": "startPetId",
+        "type": "uint40"
+      },
+      {
         "internalType": "contract AdminAccess",
         "name": "adminAccess",
         "type": "address"

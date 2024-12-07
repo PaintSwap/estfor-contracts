@@ -37,6 +37,7 @@ async function main() {
   const orderBook = (await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS)) as unknown as OrderBook;
   const quests = (await ethers.getContractAt("Quests", QUESTS_ADDRESS)) as unknown as Quests;
   const bank = (await ethers.getContractAt("Bank", BANK_ADDRESS)) as unknown as Bank;
+  const startClanId = 30_000;
 
   await addTestData(
     itemNFT,
@@ -49,7 +50,8 @@ async function main() {
     bank,
     minItemQuantityBeforeSellsAllowed,
     orderBook,
-    quests
+    quests,
+    startClanId
   );
 }
 

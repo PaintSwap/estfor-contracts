@@ -5,17 +5,13 @@ import {ethers} from "hardhat";
 import {
   Bank,
   BankFactory,
-  BankRegistry,
-  BankRelay,
   Clans,
   ItemNFT,
-  LockedBankVaults,
   MockBrushToken,
   OrderBook,
   PlayerNFT,
   Players,
   Quests,
-  Raids,
   Shop
 } from "../typechain-types";
 import {createPlayer, isDevNetwork} from "./utils";
@@ -35,7 +31,8 @@ export const addTestData = async (
   bank: Bank,
   minItemQuantityBeforeSellsAllowed: bigint,
   orderBook: OrderBook,
-  quests: Quests
+  quests: Quests,
+  startClanId: number
 ) => {
   const [owner, alice] = await ethers.getSigners();
 
@@ -259,7 +256,7 @@ export const addTestData = async (
   await tx.wait();
   console.log("Create clan");
 
-  const clanId = 1;
+  const clanId = startClanId;
   const clanBankAddress = await calculateClanBankAddress(
     clanId,
     await bankFactory.getAddress(),

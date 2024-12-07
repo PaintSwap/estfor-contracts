@@ -174,7 +174,7 @@ export const playersFixture = async function () {
 
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
   const initialMMR = 500;
-
+  const startClanId = 1;
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()}
   });
@@ -187,7 +187,8 @@ export const playersFixture = async function () {
       dev.address,
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
-      initialMMR
+      initialMMR,
+      startClanId
     ],
     {
       kind: "uups",
@@ -213,6 +214,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as WishingWell;
 
+  const startPetId = 1;
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   const PetNFT = await ethers.getContractFactory("PetNFT", {
     libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()}
@@ -227,6 +229,7 @@ export const playersFixture = async function () {
       editNameBrushPrice,
       await treasury.getAddress(),
       await randomnessBeacon.getAddress(),
+      startPetId,
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -715,6 +718,7 @@ export const playersFixture = async function () {
     pvpAttackingCooldown,
     raids,
     spawnRaidCooldown,
-    maxRaidCombatants
+    maxRaidCombatants,
+    startPetId
   };
 };

@@ -223,7 +223,9 @@ async function main() {
   const maxActionAmount = 64;
   const minItemQuantityBeforeSellsAllowed = 500n;
   const sellingCutoffDuration = 48 * 3600; // 48 hours
-  const startPlayerId = 200_000; // TODO: Can update
+  const startPlayerId = 200_000;
+  const startClanId = 30_000;
+  const startPetId = 2_000;
 
   const WorldActions = await ethers.getContractFactory("WorldActions");
   const worldActions = (await upgrades.deployProxy(WorldActions, [], {
@@ -404,7 +406,8 @@ async function main() {
       DEV_ADDRESS,
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
-      initialMMR
+      initialMMR,
+      startClanId
     ],
     {
       kind: "uups",
@@ -458,6 +461,7 @@ async function main() {
       editPetNameBrushPrice,
       await treasury.getAddress(),
       await randomnessBeacon.getAddress(),
+      startPetId,
       await adminAccess.getAddress(),
       isBeta
     ],
@@ -1297,7 +1301,8 @@ async function main() {
       bank,
       minItemQuantityBeforeSellsAllowed,
       orderBook,
-      quests
+      quests,
+      startClanId
     );
   }
 }

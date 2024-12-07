@@ -1911,6 +1911,11 @@
         "internalType": "uint16",
         "name": "initialMMR",
         "type": "uint16"
+      },
+      {
+        "internalType": "uint40",
+        "name": "startClanId",
+        "type": "uint40"
       }
     ],
     "name": "initialize",

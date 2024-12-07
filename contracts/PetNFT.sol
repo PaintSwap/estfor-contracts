@@ -181,6 +181,7 @@ contract PetNFT is
     uint72 editNameCost,
     address treasury,
     RandomnessBeacon randomnessBeacon,
+    uint40 startPetId,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -201,7 +202,7 @@ contract PetNFT is
     _imageBaseUri = imageBaseUri;
     _dev = dev;
     _isBeta = isBeta;
-    _nextPetId = 1;
+    _nextPetId = startPetId;
     _treasury = treasury;
     _randomnessBeacon = randomnessBeacon;
     setEditNameCost(editNameCost);
