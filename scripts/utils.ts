@@ -1,16 +1,13 @@
-import {Block, Contract, Network, parseEther} from "ethers";
+import {Contract, Network} from "ethers";
 import {ethers, run} from "hardhat";
 import {
-  MockBrushToken,
   MockPaintSwapMarketplaceWhitelist,
-  WrappedNative,
   PlayerNFT,
   PlayersImplMisc,
   PlayersImplMisc1,
   PlayersImplProcessActions,
   PlayersImplQueueActions,
   PlayersImplRewards,
-  TestPaintSwapDecorator,
   DailyRewardsScheduler
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
@@ -118,30 +115,11 @@ export const deployPlayerImplementations = async (playersLibraryAddress: string)
   };
 };
 
-export const deployMockPaintSwapContracts = async (
-  brush: MockBrushToken,
-  wftm: WrappedNative,
-  fakeBrushLP: string
-): Promise<{
+export const deployMockPaintSwapContracts = async (): Promise<{
   paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
-  paintSwapDecorator: TestPaintSwapDecorator;
-  pid: number;
 }> => {
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
-  const brushPerSecond = parseEther("2");
-  const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
-  const paintSwapDecorator = await ethers.deployContract("TestPaintSwapDecorator", [brush, wftm, brushPerSecond, NOW]);
-
-  const token = await ethers.getContractAt("IERC20", fakeBrushLP);
-  let tx = await token.approve(paintSwapDecorator, parseEther("1000000000000000000000"));
-  await tx.wait();
-  console.log("Approve fake brush LP");
-
-  // Add the LP to the decorator
-  tx = await paintSwapDecorator.add("1", fakeBrushLP, true);
-  await tx.wait();
-  const pid = 0;
-  return {paintSwapMarketplaceWhitelist, paintSwapDecorator, pid};
+  return {paintSwapMarketplaceWhitelist};
 };
 
 export const isBeta = process.env.IS_BETA == "true";

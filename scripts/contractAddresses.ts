@@ -6,7 +6,6 @@ let oracle;
 let samWitchVRF;
 let router;
 let paintSwapMarketplaceWhitelist;
-let paintSwapDecorator;
 let worldActions;
 let randomnessBeacon;
 let dailyRewardsScheduler;
@@ -58,7 +57,6 @@ if (!isBeta) {
   oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
   samWitchVRF = "0xeF5AC0489fc8ABC1085E8D1f5BEE85e74E6D2cC2";
   router = "0x000000000000000000000000000000000000dEaD";
-  paintSwapDecorator = "0x000000000000000000000000000000000000dEaD";
   paintSwapMarketplaceWhitelist = "0x000000000000000000000000000000000000dEaD";
   worldActions = "";
   randomnessBeacon = "0x28866bf156152966b5872bee39bc05b5b5eedb02";
@@ -110,7 +108,6 @@ if (!isBeta) {
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
   samWitchVRF = "0x68db5ba48ad5ca5ee1620a9aee8eec9ccd1cfc95";
   router = "0xf08413857af2cfbb6edb69a92475cc27ea51453b";
-  paintSwapDecorator = "0xd26798d7fda156f37eda930a89729a240b6c860e";
   paintSwapMarketplaceWhitelist = "0xa7cc6c8b25c22440b13e5b35605d9b04366f9375";
   worldActions = "0x60836b887af6b056f3f52cbcf2c0a0c0651fea43";
   randomnessBeacon = "0x6a6f13375303a1262602e2de681e465d48d6a11a";
@@ -210,7 +207,6 @@ export const RAIDS_ADDRESS = raids;
 
 export const WFTM_ADDRESS = wftm;
 export const BRUSH_ADDRESS = brush;
-export const DECORATOR_ADDRESS = paintSwapDecorator;
 export const ROUTER_ADDRESS = router;
 export const PAINTSWAP_MARKETPLACE_WHITELIST = paintSwapMarketplaceWhitelist;
 

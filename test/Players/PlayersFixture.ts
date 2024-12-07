@@ -38,7 +38,7 @@ import {
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
-import {Block, parseEther} from "ethers";
+import {parseEther} from "ethers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 
 export const playersFixture = async function () {
@@ -362,12 +362,6 @@ export const playersFixture = async function () {
     kind: "uups"
   })) as unknown as BankRelay;
 
-  const WrappedNative = await ethers.getContractFactory("WrappedNative");
-  const wftm = await WrappedNative.deploy();
-
-  const brushPerSecond = parseEther("2");
-  const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
-
   const pvpAttackingCooldown = 3600; // 1 hour
   const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
   const pvpBattleground = (await upgrades.deployProxy(
@@ -451,13 +445,6 @@ export const playersFixture = async function () {
   )) as unknown as Raids;
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
-
-  const decorator = await ethers.deployContract("TestPaintSwapDecorator", [
-    await brush.getAddress(),
-    await wftm.getAddress(),
-    brushPerSecond,
-    NOW
-  ]);
 
   const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
   const mmrAttackDistance = 4;
@@ -705,8 +692,6 @@ export const playersFixture = async function () {
     playersLibrary,
     instantActions,
     clanBattleLibrary,
-    decorator,
-    brushPerSecond,
     mmrAttackDistance,
     lockedBankVaults,
     territories,
