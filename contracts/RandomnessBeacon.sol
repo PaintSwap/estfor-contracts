@@ -139,19 +139,17 @@ contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable {
     uint256 numTickets,
     uint256 startTimestamp,
     uint256 endTimestamp,
-    uint256 playerId
+    uint256 id // player or pet id for instance
   ) external view returns (bytes memory randomBytes) {
     if (numTickets <= 16) {
       // 32 bytes
       bytes32 word = bytes32(getRandomWord(endTimestamp));
-      randomBytes = abi.encodePacked(_getRandomComponent(word, startTimestamp, endTimestamp, playerId));
+      randomBytes = abi.encodePacked(_getRandomComponent(word, startTimestamp, endTimestamp, id));
     } else if (numTickets <= MAX_UNIQUE_TICKETS) {
       // 4 * 32 bytes
       uint256[4] memory multipleWords = getMultipleWords(endTimestamp);
       for (uint256 i; i < 4; ++i) {
-        multipleWords[i] = uint256(
-          _getRandomComponent(bytes32(multipleWords[i]), startTimestamp, endTimestamp, playerId)
-        );
+        multipleWords[i] = uint256(_getRandomComponent(bytes32(multipleWords[i]), startTimestamp, endTimestamp, id));
         // XOR all the words with the first fresh random number to give more randomness to the existing random words
         if (i != 0) {
           multipleWords[i] = uint256(keccak256(abi.encodePacked(multipleWords[i] ^ multipleWords[0])));
@@ -167,9 +165,9 @@ contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable {
     bytes32 word,
     uint256 startTimestamp,
     uint256 endTimestamp,
-    uint256 playerId
+    uint256 id
   ) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(word, startTimestamp, endTimestamp, playerId));
+    return keccak256(abi.encodePacked(word, startTimestamp, endTimestamp, id));
   }
 
   function _fulfillRandomWords(uint256 requestId, uint256[] memory fulfilledRandomWords) internal {
