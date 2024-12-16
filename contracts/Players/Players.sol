@@ -32,6 +32,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
   error InvalidSelector();
   error GameIsPaused();
   error PlayerLocked();
+  error NotBridge();
 
   modifier isOwnerOfPlayerAndActiveMod(uint256 playerId) {
     require(isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -58,6 +59,11 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     _;
   }
 
+  modifier onlyBridge() {
+    require(_msgSender() == _bridge, NotBridge());
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -79,6 +85,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     address implRewards,
     address implMisc,
     address implMisc1,
+    address bridge,
     bool isBeta
   ) external initializer {
     __UUPSUpgradeable_init();
@@ -100,6 +107,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     _implRewards = implRewards;
     _implMisc = implMisc;
     _implMisc1 = implMisc1;
+    _bridge = bridge;
     _isBeta = isBeta;
 
     _nextQueueId = 1;
@@ -170,17 +178,20 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
       _setActivePlayer(from, playerId);
     }
 
-    _delegatecall(
-      _implMisc,
-      abi.encodeWithSelector(
-        IPlayersMiscDelegate.mintedPlayer.selector,
-        from,
-        playerId,
-        startSkills,
-        startingItemTokenIds,
-        startingAmounts
-      )
-    );
+    bool isBridging = startingItemTokenIds.length == 0;
+    if (!isBridging) {
+      _delegatecall(
+        _implMisc,
+        abi.encodeWithSelector(
+          IPlayersMiscDelegate.mintedPlayer.selector,
+          from,
+          playerId,
+          startSkills,
+          startingItemTokenIds,
+          startingAmounts
+        )
+      );
+    }
   }
 
   function beforeItemNFTTransfer(
@@ -492,8 +503,11 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     return (_alphaCombat, _betaCombat, _alphaCombatHealing);
   }
 
-  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external isXPModifier {
-    _delegatecall(_implMisc, abi.encodeWithSelector(IPlayersMiscDelegate.modifyXP.selector, from, playerId, skill, xp));
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool skipEffects) external isXPModifier {
+    _delegatecall(
+      _implMisc,
+      abi.encodeWithSelector(IPlayersMiscDelegate.modifyXP.selector, from, playerId, skill, xp, skipEffects)
+    );
   }
 
   function setImpls(
@@ -551,6 +565,12 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     for (uint256 i; i < accounts.length; ++i) {
       _xpModifiers[accounts[i]] = isModifier;
     }
+  }
+
+  function bridgePlayer(uint256 playerId, uint256 totalXP, uint256 totalLevel) external onlyBridge {
+    Player storage player = _players[playerId];
+    player.totalXP = uint48(totalXP);
+    player.totalLevel = uint16(totalLevel);
   }
 
   // For the various view functions that require delegatecall

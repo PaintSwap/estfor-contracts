@@ -59,6 +59,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   error TooManyInputItems();
   error InvalidInputTokenId();
   error NoInputItemsSpecified();
+  error NotBridge();
 
   struct PassiveActionInput {
     uint16 actionId;
@@ -123,9 +124,15 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   mapping(uint256 actionId => PassiveAction action) private _actions;
   mapping(uint256 actionId => ActionRewards) private _actionRewards;
   mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private _activePassiveActions;
+  address private _bridge; // TODO: Bridge Can remove later
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
+    _;
+  }
+
+  modifier onlyBridge() {
+    require(_msgSender() == _bridge, NotBridge());
     _;
   }
 
@@ -134,7 +141,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     _disableInitializers();
   }
 
-  function initialize(IPlayers players, ItemNFT itemNFT, RandomnessBeacon randomnessBeacon) external initializer {
+  function initialize(
+    IPlayers players,
+    ItemNFT itemNFT,
+    RandomnessBeacon randomnessBeacon,
+    address bridge
+  ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
     __ReentrancyGuard_init();
@@ -142,6 +154,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     _players = players;
     _itemNFT = itemNFT;
     _randomnessBeacon = randomnessBeacon;
+    _bridge = bridge;
     _lastQueueId = 1;
   }
 
@@ -266,7 +279,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
       uint256 length;
       for (uint256 i; i < numIterations; ++i) {
-        uint256 operation = uint256(_getSlice(randomBytes, i));
+        uint16 operation = EstforLibrary._get16bitSlice(randomBytes, i);
         uint16 rand = uint16(Math.min(type(uint16).max, operation));
         for (uint256 j; j < randomRewards.length; ++j) {
           RandomReward memory randomReward = randomRewards[j];
@@ -291,6 +304,22 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         mstore(ids, length)
         mstore(amounts, length)
       }
+    }
+  }
+
+  function addPassiveActionBridge(uint256 playerId, uint256 actionId, uint256 startTime) external onlyBridge {
+    // If has a passive action then queue it
+    if (actionId != 0) {
+      uint16 boostItemTokenId;
+      uint96 queueId = _lastQueueId++;
+      _activePassiveActions[playerId] = ActivePassiveInfo({
+        actionId: uint16(actionId),
+        queueId: queueId,
+        startTime: uint40(startTime),
+        boostItemTokenId: boostItemTokenId
+      });
+
+      emit StartPassiveAction(playerId, _msgSender(), actionId, queueId, boostItemTokenId);
     }
   }
 
@@ -336,11 +365,6 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     emit ClaimPassiveAction(playerId, _msgSender(), queueId, itemTokenIds, amounts, startingAnother);
   }
 
-  function _getSlice(bytes memory b, uint256 index) private pure returns (uint16) {
-    uint256 key = index * 2;
-    return uint16(b[key] | (bytes2(b[key + 1]) >> 8));
-  }
-
   function _isWinner(
     uint256 playerId,
     uint256 startTimestamp,
@@ -349,7 +373,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint8 skipSuccessPercent
   ) private view returns (bool winner) {
     bytes memory randomBytes = _randomnessBeacon.getRandomBytes(1, startTimestamp, endTimestamp, playerId);
-    uint16 word = _getSlice(randomBytes, 0);
+    uint16 word = EstforLibrary._get16bitSlice(randomBytes, 0);
     return word < ((type(uint16).max * (uint256(skipSuccessPercent) + boostIncrease)) / 100);
   }
 

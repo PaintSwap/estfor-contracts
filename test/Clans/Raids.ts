@@ -13,7 +13,7 @@ import {
   allActionChoiceIdsRanged
 } from "../../scripts/data/actionChoiceIds";
 import {allActionChoicesMagic, allActionChoicesMelee, allActionChoicesRanged} from "../../scripts/data/actionChoices";
-import {createPlayer} from "../../scripts/utils";
+import {createPlayer, SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 import {SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 
 describe("Raids", function () {
@@ -257,7 +257,7 @@ describe("Raids", function () {
       await raids.addBaseRaids([1, 2, 3], [trashMonsterBaseRaid, trashMonsterBaseRaid, trashMonsterBaseRaid]);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);
       for (const skill of [Skill.MELEE, Skill.RANGED, Skill.MAGIC, Skill.HEALTH, Skill.DEFENCE]) {
-        await players.modifyXP(alice, playerId, skill, getXPFromLevel(135));
+        await players.modifyXP(alice, playerId, skill, getXPFromLevel(135), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       const bankAddress = await bankFactory.getBankAddress(clanId);
@@ -340,7 +340,7 @@ describe("Raids", function () {
       await raids.addBaseRaids([1, 2, 3], [trashMonsterBaseRaid, trashMonsterBaseRaid, trashMonsterBaseRaid]);
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);
       for (const skill of [Skill.MELEE, Skill.RANGED, Skill.MAGIC, Skill.HEALTH, Skill.DEFENCE]) {
-        await players.modifyXP(alice, playerId, skill, getXPFromLevel(135));
+        await players.modifyXP(alice, playerId, skill, getXPFromLevel(135), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       const bankAddress = await bankFactory.getBankAddress(clanId);
@@ -412,7 +412,7 @@ describe("Raids", function () {
 
       // Max out player stats to ensure victory
       for (const skill of allBattleSkills) {
-        await players.modifyXP(alice, playerId, skill, getXPFromLevel(100));
+        await players.modifyXP(alice, playerId, skill, getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       await combatantsHelper.connect(alice).assignCombatants(clanId, false, [], false, [], true, [playerId], playerId);

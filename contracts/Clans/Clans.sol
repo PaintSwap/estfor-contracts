@@ -54,6 +54,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint256 brushDevPercentage
   );
   event AddXP(uint256 clanId, uint256 xp, bool xpEmittedElsewhere);
+  event SetMMR(uint256 clanId, uint256 mmr); // Only used by bridge currently
 
   error AlreadyInClan();
   error NotOwnerOfPlayer();
@@ -108,6 +109,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error BankFactoryAlreadySet();
   error ClanNameIsReserved(string name);
   error NotXPModifier();
+  error NotBridge();
 
   struct Clan {
     uint64 ownerPlayerId;
@@ -165,7 +167,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(string name => bool exists) private _lowercaseNames;
   mapping(uint256 clanId => uint40 timestampLeft) private _ownerlessClanTimestamps; // timestamp
   mapping(address account => bool isModifier) private _xpModifiers;
-  BloomFilter.Filter private _reservedClanNames; // TODO: remove 30 days after launch
+  BloomFilter.Filter private _reservedClanNames; // TODO: remove 90 days after launch
+  address private _bridge; // TODO: Bridge Can remove later if no longer need the bridge
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
@@ -199,6 +202,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _;
   }
 
+  modifier onlyBridge() {
+    require(_msgSender() == _bridge, NotBridge());
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -212,7 +220,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint80 editNameCost,
     address paintswapMarketplaceWhitelist,
     uint16 initialMMR,
-    uint40 startClanId
+    uint40 startClanId,
+    address bridge
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
@@ -226,6 +235,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     setEditNameCost(editNameCost);
     setInitialMMR(initialMMR);
     _reservedClanNames._initialize();
+    _bridge = bridge;
   }
 
   function createClan(
@@ -266,6 +276,43 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _pay(tier.price);
 
     _bankFactory.createBank(_msgSender(), clanId);
+  }
+
+  function createClanBridge(
+    address from,
+    uint256 playerId,
+    uint256 clanId,
+    string calldata name,
+    string calldata discord,
+    string calldata telegram,
+    string calldata twitter,
+    uint256 imageId,
+    uint256 createdTimestamp,
+    uint256 tierId,
+    uint256 mmr,
+    bool disableJoinRequests
+  ) external onlyBridge {
+    Clan storage clan = _clans[clanId];
+    clan.ownerPlayerId = uint64(playerId);
+    clan.tierId = uint8(tierId);
+    clan.imageId = uint16(imageId);
+    clan.memberCount = 1;
+    clan.createdTimestamp = uint40(createdTimestamp);
+    clan.mmr = uint16(mmr);
+    emit SetMMR(clanId, mmr);
+
+    if (disableJoinRequests) {
+      clan.disableJoinRequests = disableJoinRequests;
+      emit JoinRequestsEnabled(clanId, !disableJoinRequests, playerId);
+    }
+
+    PlayerInfo storage player = _playerInfo[playerId];
+    player.clanId = uint32(clanId);
+    player.rank = ClanRank.OWNER;
+    (string memory trimmedName, ) = _setName(clanId, name);
+    string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
+    emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId);
+    _bankFactory.createBank(from, clanId);
   }
 
   function editClan(
@@ -898,8 +945,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     IBankFactory bankFactory,
     IClanMemberLeftCB territories,
     IClanMemberLeftCB lockedBankVaults,
-    IClanMemberLeftCB raids,
-    address paintswapMarketplaceWhitelist
+    IClanMemberLeftCB raids
   ) external onlyOwner {
     require(address(_bankFactory) == address(0) || _bankFactory == bankFactory, BankFactoryAlreadySet());
 
@@ -908,7 +954,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _territories = territories;
     _lockedBankVaults = lockedBankVaults;
     _raids = raids;
-    _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
   }
 
   function setXPModifiers(address[] calldata accounts, bool isModifier) external onlyOwner {

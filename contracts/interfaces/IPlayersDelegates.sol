@@ -35,7 +35,7 @@ interface IPlayersDelegate {
 
   function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external;
 
-  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external;
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool skipEffects) external;
 }
 
 interface IPlayersMiscDelegate {
@@ -49,7 +49,7 @@ interface IPlayersMiscDelegate {
     uint256[] calldata startingAmounts
   ) external;
 
-  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external;
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool skipEffects) external;
 }
 
 interface IPlayersMisc1Delegate {

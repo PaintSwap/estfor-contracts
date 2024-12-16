@@ -319,7 +319,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "playerId",
+        "name": "id",
         "type": "uint256"
       }
     ],

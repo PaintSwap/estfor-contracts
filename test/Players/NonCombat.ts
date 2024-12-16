@@ -28,6 +28,7 @@ import {Block} from "ethers";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
 import {FullAttireBonusInputStruct} from "../../typechain-types/contracts/Players/Players";
 import {GUAR_MUL, RATE_MUL} from "@paintswap/estfor-definitions/constants";
+import {SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 
 const actionIsAvailable = true;
 
@@ -906,7 +907,7 @@ describe("Non-Combat Actions", function () {
       const minLevel = 65;
       const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90), SKIP_XP_THRESHOLD_EFFECTS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
@@ -937,7 +938,7 @@ describe("Non-Combat Actions", function () {
       const minLevel = 65;
       const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90), SKIP_XP_THRESHOLD_EFFECTS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
@@ -974,7 +975,7 @@ describe("Non-Combat Actions", function () {
       const minLevel = 65;
       const {queuedAction, rate} = await setupBasicCooking(itemNFT, worldActions, successPercent, minLevel);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90));
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.COOKING, getXPFromLevel(90), SKIP_XP_THRESHOLD_EFFECTS);
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 

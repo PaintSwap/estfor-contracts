@@ -1,5 +1,5 @@
 import {Skill} from "@paintswap/estfor-definitions/types";
-import {ethers, upgrades} from "hardhat";
+import {deployments, ethers, upgrades} from "hardhat";
 import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {
   AdminAccess,
@@ -34,11 +34,12 @@ import {
   PVPBattleground,
   Raids,
   WorldActions,
-  DailyRewardsScheduler
+  DailyRewardsScheduler,
+  Bridge
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
-import {parseEther} from "ethers";
+import {ContractFactory, parseEther} from "ethers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 
 export const playersFixture = async function () {
@@ -46,6 +47,19 @@ export const playersFixture = async function () {
 
   const brush = await ethers.deployContract("MockBrushToken");
   const mockVRF = await ethers.deployContract("MockVRF");
+
+  const EndpointV2MockArtifact = await deployments.getArtifact("EndpointV2Mock");
+  const EndpointV2Mock = new ContractFactory(EndpointV2MockArtifact.abi, EndpointV2MockArtifact.bytecode, owner);
+  const endpointId = 30112; // fantom
+  const lzEndpoint = await EndpointV2Mock.deploy(endpointId, owner);
+
+  const Bridge = await ethers.getContractFactory("Bridge");
+  const srcEid = 30112; // Fantom
+  const bridge = (await upgrades.deployProxy(Bridge, [srcEid], {
+    kind: "uups",
+    constructorArgs: [await lzEndpoint.getAddress()],
+    unsafeAllow: ["delegatecall", "constructor", "state-variable-immutable"]
+  })) as unknown as Bridge;
 
   const WorldActions = await ethers.getContractFactory("WorldActions");
   const worldActions = (await upgrades.deployProxy(WorldActions, [], {
@@ -154,7 +168,8 @@ export const playersFixture = async function () {
       upgradePlayerBrushPrice,
       imageBaseUri,
       startPlayerId,
-      isBeta
+      isBeta,
+      await bridge.getAddress()
     ],
     {
       kind: "uups",
@@ -166,7 +181,7 @@ export const playersFixture = async function () {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(
     Quests,
-    [await randomnessBeacon.getAddress(), await router.getAddress(), buyPath],
+    [await randomnessBeacon.getAddress(), await bridge.getAddress(), await router.getAddress(), buyPath],
     {
       kind: "uups"
     }
@@ -188,7 +203,8 @@ export const playersFixture = async function () {
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
       initialMMR,
-      startClanId
+      startClanId,
+      await bridge.getAddress()
     ],
     {
       kind: "uups",
@@ -274,6 +290,7 @@ export const playersFixture = async function () {
       await playersImplRewards.getAddress(),
       await playersImplMisc.getAddress(),
       await playersImplMisc1.getAddress(),
+      await bridge.getAddress(),
       isBeta
     ],
     {
@@ -542,7 +559,12 @@ export const playersFixture = async function () {
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
-    [await players.getAddress(), await itemNFT.getAddress(), await randomnessBeacon.getAddress()],
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await randomnessBeacon.getAddress(),
+      await bridge.getAddress()
+    ],
     {
       kind: "uups"
     }
@@ -584,14 +606,7 @@ export const playersFixture = async function () {
 
   await petNFT.initializeAddresses(instantVRFActions, players, territories);
 
-  await clans.initializeAddresses(
-    players,
-    bankFactory,
-    territories,
-    lockedBankVaults,
-    raids,
-    paintSwapMarketplaceWhitelist
-  );
+  await clans.initializeAddresses(players, bankFactory, territories, lockedBankVaults, raids);
 
   await playerNFT.setBrushDistributionPercentages(25, 50, 25);
   await petNFT.setBrushDistributionPercentages(25, 50, 25);
@@ -719,6 +734,7 @@ export const playersFixture = async function () {
     raids,
     spawnRaidCooldown,
     maxRaidCombatants,
-    startPetId
+    startPetId,
+    bridge
   };
 };

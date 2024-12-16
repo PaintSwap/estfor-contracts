@@ -141,10 +141,10 @@ async function main() {
   await clans.waitForDeployment();
   console.log(`clans = "${await clans.getAddress().toLowerCase()}"`);
 
-  const psMarketplaceWhitelist = "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD";
-  tx = await clans.setPaintSwapMarketplaceWhitelist(psMarketplaceWhitelist);
-  await tx.wait();
-  console.log("setPaintSwapMarketplaceWhitelist");
+//  const psMarketplaceWhitelist = "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD";
+//  tx = await clans.setPaintSwapMarketplaceWhitelist(psMarketplaceWhitelist);
+//  await tx.wait();
+//  console.log("setPaintSwapMarketplaceWhitelist");
 
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
     libraries: {EstforLibrary: (await estforLibrary.getAddress())},

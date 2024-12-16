@@ -200,6 +200,8 @@ abstract contract PlayersBase {
   mapping(uint256 playerId => CheckpointEquipments[3] checkpointEquipments) internal _checkpointEquipments;
   mapping(address account => bool isModifier) internal _xpModifiers;
 
+  address internal _bridge; // TODO: Remove later
+
   modifier onlyPlayerNFT() {
     require(msg.sender == address(_playerNFT), NotPlayerNFT());
     _;

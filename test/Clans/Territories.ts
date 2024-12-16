@@ -3,7 +3,7 @@ import {expect} from "chai";
 import {clanFixture} from "./utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ethers} from "hardhat";
-import {createPlayer} from "../../scripts/utils";
+import {createPlayer, SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 import {fulfillRandomWords, upgradePlayer} from "../utils";
 import {getXPFromLevel} from "../Players/utils";
 import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
@@ -169,7 +169,7 @@ describe("Territories", function () {
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
     }
 
     await combatantsHelper
@@ -226,7 +226,7 @@ describe("Territories", function () {
 
     // Make the defending players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
     }
 
     await combatantsHelper
@@ -291,8 +291,8 @@ describe("Territories", function () {
 
     // The other clan will have 3 players, so if you only have 1 defender you will you lose by default
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
-      await players.modifyXP(owner, ownerPlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+      await players.modifyXP(owner, ownerPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
     }
 
     // Create a clan of 3 players
@@ -782,7 +782,7 @@ describe("Territories", function () {
 
     // Make the attacking players statistically more powerful.
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
     }
 
     await combatantsHelper

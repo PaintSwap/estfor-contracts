@@ -20,6 +20,7 @@ import NONE, {
 } from "@paintswap/estfor-definitions/constants";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {createAndDoPurseStringsQuest} from "./utils";
+import {SKIP_XP_THRESHOLD_EFFECTS} from "../scripts/utils";
 
 describe("Instant actions", function () {
   describe("Generic", function () {
@@ -354,13 +355,13 @@ describe("Instant actions", function () {
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
-      await players.modifyXP(alice, playerId, Skill.WOODCUTTING, 1);
+      await players.modifyXP(alice, playerId, Skill.WOODCUTTING, 1, SKIP_XP_THRESHOLD_EFFECTS);
 
       await expect(
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)
       ).to.be.revertedWithCustomError(instantActions, "MinimumXPNotReached");
 
-      await players.modifyXP(alice, playerId, Skill.FIREMAKING, 2);
+      await players.modifyXP(alice, playerId, Skill.FIREMAKING, 2, SKIP_XP_THRESHOLD_EFFECTS);
 
       await expect(
         instantActions.connect(alice).doInstantActions(playerId, [instantActionInput.actionId], [1], actionType)

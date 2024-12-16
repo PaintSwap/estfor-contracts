@@ -1,5 +1,5 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers, upgrades} from "hardhat";
+import {deployments, ethers, upgrades} from "hardhat";
 import {
   BankFactory,
   Clans,
@@ -37,7 +37,8 @@ import {
   PVPBattleground,
   Raids,
   WorldActions,
-  DailyRewardsScheduler
+  DailyRewardsScheduler,
+  Bridge
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -80,6 +81,7 @@ import {
   BRUSH_ADDRESS,
   DEV_ADDRESS,
   ORACLE_ADDRESS,
+  PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS,
   ROUTER_ADDRESS,
   SAMWITCH_VRF_ADDRESS,
   WFTM_ADDRESS
@@ -97,7 +99,7 @@ import {allTerritories, allBattleSkills, allMinimumMMRs} from "./data/territorie
 import {allInstantVRFActions} from "./data/instantVRFActions";
 import {InstantVRFActionType} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "./data/pets";
-import {parseEther} from "ethers";
+import {ContractFactory, parseEther} from "ethers";
 import {allPassiveActions} from "./data/passiveActions";
 import {allOrderBookTokenIdInfos} from "./data/orderbookTokenIdInfos";
 import {allBaseRaidIds, allBaseRaids} from "./data/raids";
@@ -105,6 +107,7 @@ import {allBaseRaidIds, allBaseRaids} from "./data/raids";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Deploying contracts with the account: ${owner.address} on chain: ${await getChainId(owner)}`);
+
   const network = await ethers.provider.getNetwork();
   let brush: MockBrushToken;
   let wftm: WrappedNative;
@@ -113,6 +116,8 @@ async function main() {
   let router: SolidlyExtendedRouter | MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
   let tx;
+  let lzEndpoint;
+  let buyBrush = true;
   {
     if (isDevNetwork(network)) {
       brush = await ethers.deployContract("MockBrushToken");
@@ -127,11 +132,17 @@ async function main() {
       router = await ethers.deployContract("MockRouter");
       console.log("Minted SolidlyExtendedRouter");
       ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
-    } else if (network.chainId == 64165n) {
-      // Sonic testnet.
-      brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
 
-      tx = await brush.mint(owner, parseEther("1000000000000"));
+      const EndpointV2MockArtifact = await deployments.getArtifact("EndpointV2Mock");
+      const EndpointV2Mock = new ContractFactory(EndpointV2MockArtifact.abi, EndpointV2MockArtifact.bytecode, owner);
+      const endpointId = 30112; // fantom
+      lzEndpoint = await (await EndpointV2Mock.deploy(endpointId, owner)).getAddress();
+      console.log("Deployed mock lzEndpoint");
+    } else if (network.chainId == 57054n) {
+      // Sonic blaze testnet.
+      brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS); // When you have one
+
+      tx = await brush.mint(owner, parseEther("1000000000000"), {gasLimit: 400_000});
       console.log("Minted brush");
       await tx.wait();
       tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100000"));
@@ -145,31 +156,33 @@ async function main() {
       router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS);
       console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
 
-      const factory = await ethers.getContractAt("ISolidlyFactory", await router.factory());
-      console.log(`Factory is at "${(await router.factory()).toLowerCase()}"`);
-
-      const pair = await factory.getPair(brush, WFTM_ADDRESS, false);
-      console.log("pair", pair);
-      if (pair == ethers.ZeroAddress) {
-        tx = await brush.approve(router, ethers.parseEther("100000000"));
-        await tx.wait();
-        console.log("Approved brush on the router");
-
-        tx = await router.addLiquidityETH(
-          brush,
-          false,
-          ethers.parseEther("10000"),
-          ethers.parseEther("10000"),
-          ethers.parseEther("1"),
-          owner,
-          Date.now() + 1000000000,
-          {value: ethers.parseEther("1")}
-        );
-        await tx.wait();
-        console.log("Added liquidity");
-      }
-
+      lzEndpoint = "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff";
+      buyBrush = false;
       ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
+    } else if (network.chainId == 146n) {
+      brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
+      wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
+      oracleAddress = ORACLE_ADDRESS;
+      vrf = await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS);
+      console.log("attached wftm and vrf");
+      router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS);
+      paintSwapMarketplaceWhitelist = await ethers.getContractAt(
+        "MockPaintSwapMarketplaceWhitelist",
+        PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS
+      );
+      lzEndpoint = "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B";
+    } else if (network.chainId == 250n) {
+      // Fantom mainnet
+      brush = await ethers.getContractAt("MockBrushToken", "0x85dec8c4B2680793661bCA91a8F129607571863d");
+      wftm = await ethers.getContractAt("WrappedNative", "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
+      oracleAddress = ORACLE_ADDRESS;
+      vrf = await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS);
+      router = await ethers.getContractAt("MockRouter", "0x2aa07920e4ecb4ea8c801d9dfece63875623b285");
+      paintSwapMarketplaceWhitelist = await ethers.getContractAt(
+        "MockPaintSwapMarketplaceWhitelist",
+        "0x7559038535f3d6ed6BAc5a54Ab4B69DA827F44BD"
+      );
+      lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c";
     } else {
       throw Error("Not a supported network");
     }
@@ -226,6 +239,16 @@ async function main() {
   const startPlayerId = 200_000;
   const startClanId = 30_000;
   const startPetId = 2_000;
+  const srcEid = 30112; // Fantom (TODO: Update as necessary)
+
+  const Bridge = await ethers.getContractFactory("Bridge");
+  const bridge = (await upgrades.deployProxy(Bridge, [srcEid], {
+    kind: "uups",
+    constructorArgs: [lzEndpoint],
+    timeout,
+    unsafeAllow: ["delegatecall", "constructor", "state-variable-immutable"]
+  })) as unknown as Bridge;
+  console.log(`bridge = "${(await bridge.getAddress()).toLowerCase()}"`);
 
   const WorldActions = await ethers.getContractFactory("WorldActions");
   const worldActions = (await upgrades.deployProxy(WorldActions, [], {
@@ -370,7 +393,8 @@ async function main() {
       upgradePlayerBrushPrice,
       heroImageBaseUri,
       startPlayerId,
-      isBeta
+      isBeta,
+      await bridge.getAddress()
     ],
     {
       kind: "uups",
@@ -385,7 +409,7 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(
     Quests,
-    [await randomnessBeacon.getAddress(), await router.getAddress(), buyPath],
+    [await randomnessBeacon.getAddress(), await bridge.getAddress(), await router.getAddress(), buyPath],
     {
       kind: "uups",
       timeout
@@ -407,7 +431,8 @@ async function main() {
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
       initialMMR,
-      startClanId
+      startClanId,
+      await bridge.getAddress()
     ],
     {
       kind: "uups",
@@ -501,6 +526,7 @@ async function main() {
       await playersImplRewards.getAddress(),
       await playersImplMisc.getAddress(),
       await playersImplMisc1.getAddress(),
+      await bridge.getAddress(),
       isBeta
     ],
     {
@@ -546,7 +572,12 @@ async function main() {
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
-    [await players.getAddress(), await itemNFT.getAddress(), await randomnessBeacon.getAddress()],
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await randomnessBeacon.getAddress(),
+      await bridge.getAddress()
+    ],
     {
       kind: "uups",
       timeout
@@ -901,7 +932,8 @@ async function main() {
         await upgrades.beacon.getImplementationAddress(await bank.getAddress()),
         await bankRegistry.getAddress(),
         await bankFactory.getAddress(),
-        await bankRelay.getAddress()
+        await bankRelay.getAddress(),
+        await bridge.getAddress()
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -932,16 +964,13 @@ async function main() {
   await tx.wait();
   console.log("petNFT initializeAddresses");
 
-  tx = await clans.initializeAddresses(
-    players,
-    bankFactory,
-    territories,
-    lockedBankVaults,
-    raids,
-    paintSwapMarketplaceWhitelist
-  );
+  tx = await clans.initializeAddresses(players, bankFactory, territories, lockedBankVaults, raids);
   await tx.wait();
   console.log("clans initializeAddresses");
+
+  tx = await bridge.initializeAddresses(petNFT, itemNFT, playerNFT, players, clans, quests, passiveActions);
+  await tx.wait();
+  console.log("bridge initializeAddresses");
 
   tx = await playerNFT.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
@@ -986,7 +1015,8 @@ async function main() {
       orderBook,
       instantVRFActions,
       passiveActions,
-      raids
+      raids,
+      bridge
     ],
     true
   );
@@ -1106,6 +1136,11 @@ async function main() {
     await tx.wait();
     console.log("Add actions chunk ", i);
   }
+
+  // TODO: Bridge remove this later
+  tx = await players.setXPModifiers([bridge], true);
+  await tx.wait();
+  console.log("players.setXPModifiers");
 
   tx = await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
   await tx.wait();
@@ -1271,7 +1306,10 @@ async function main() {
     EstforConstants.RING_OF_TUR,
     EstforConstants.TRICK_CHEST2024,
     EstforConstants.TREAT_CHEST2024,
-    EstforConstants.TRICK_OR_TREAT_KEY
+    EstforConstants.TRICK_OR_TREAT_KEY,
+    EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
+    EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
+    EstforConstants.DAGGER_007_ORICHALCUM_INFUSED
   ];
 
   tx = await shop.addUnsellableItems(items);
@@ -1287,7 +1325,8 @@ async function main() {
     await adminAccess.addAdmins([
       "0xb4dda75e5dee0a9e999152c3b72816fc1004d1dd",
       "0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC",
-      "0xa801864d0D24686B15682261aa05D4e1e6e5BD94"
+      "0xa801864d0D24686B15682261aa05D4e1e6e5BD94",
+      "0x6dC225F7f21ACB842761b8df52AE46208705c942"
     ]);
 
     await addTestData(
@@ -1302,7 +1341,8 @@ async function main() {
       minItemQuantityBeforeSellsAllowed,
       orderBook,
       quests,
-      startClanId
+      startClanId,
+      buyBrush
     );
   }
 }

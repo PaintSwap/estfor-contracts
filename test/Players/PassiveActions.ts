@@ -11,6 +11,7 @@ import {expect} from "chai";
 import {requestAndFulfillRandomWords, requestAndFulfillRandomWordsSeeded, timeTravel24Hours} from "../utils";
 import {BRONZE_ARROW, IRON_ARROW} from "@paintswap/estfor-definitions/constants";
 import {getXPFromLevel} from "./utils";
+import {SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 
 describe("Passive actions", function () {
   const defaultPassiveActionInput: PassiveActionInput = {
@@ -238,14 +239,14 @@ describe("Passive actions", function () {
       .to.be.revertedWithCustomError(passiveActions, "MinimumLevelNotReached")
       .withArgs(Skill.WOODCUTTING, 2);
 
-    await players.modifyXP(alice, playerId, Skill.WOODCUTTING, getXPFromLevel(3));
-    await players.modifyXP(alice, playerId, Skill.FIREMAKING, getXPFromLevel(2));
+    await players.modifyXP(alice, playerId, Skill.WOODCUTTING, getXPFromLevel(3), SKIP_XP_THRESHOLD_EFFECTS);
+    await players.modifyXP(alice, playerId, Skill.FIREMAKING, getXPFromLevel(2), SKIP_XP_THRESHOLD_EFFECTS);
 
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0))
       .to.be.revertedWithCustomError(passiveActions, "MinimumLevelNotReached")
       .withArgs(Skill.ALCHEMY, 2);
 
-    await players.modifyXP(alice, playerId, Skill.ALCHEMY, getXPFromLevel(2));
+    await players.modifyXP(alice, playerId, Skill.ALCHEMY, getXPFromLevel(2), SKIP_XP_THRESHOLD_EFFECTS);
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
   });
 

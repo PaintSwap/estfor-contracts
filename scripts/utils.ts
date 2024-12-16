@@ -144,3 +144,6 @@ export const estimateGas = async (signer: SignerWithAddress, contract: Contract,
   });
   return gasLimit;
 };
+
+export const SKIP_XP_THRESHOLD_EFFECTS = true;
+export const DONT_SKIP_XP_THRESHOLD_EFFECTS = false;

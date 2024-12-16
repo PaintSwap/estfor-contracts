@@ -16,7 +16,7 @@ describe("PlayerNFT", function () {
   }
 
   it("Check initialization params", async function () {
-    const {brush, shop, dev, royaltyReceiver, estforLibrary} = await loadFixture(deployContracts);
+    const {brush, shop, dev, royaltyReceiver, estforLibrary, bridge} = await loadFixture(deployContracts);
 
     const playerNFT = await ethers.deployContract("PlayerNFT", {
       libraries: {EstforLibrary: await estforLibrary.getAddress()}
@@ -44,7 +44,8 @@ describe("PlayerNFT", function () {
         upgradePlayerBrushPrice,
         imageBaseUri,
         startPlayerId,
-        isBeta
+        isBeta,
+        await bridge.getAddress()
       )
     )
       .to.emit(playerNFT, "EditNameCost")
@@ -404,7 +405,8 @@ describe("PlayerNFT", function () {
       wishingWell,
       bankFactory,
       petNFT,
-      estforLibrary
+      estforLibrary,
+      bridge
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
@@ -427,7 +429,8 @@ describe("PlayerNFT", function () {
         upgradePlayerBrushPrice,
         imageBaseUri,
         startPlayerId,
-        isBeta
+        isBeta,
+        await bridge.getAddress()
       ],
       {
         kind: "uups",
@@ -453,6 +456,7 @@ describe("PlayerNFT", function () {
         await playersImplRewards.getAddress(),
         await playersImplMisc.getAddress(),
         await playersImplMisc1.getAddress(),
+        await bridge.getAddress(),
         isBeta
       ],
       {
@@ -499,7 +503,7 @@ describe("PlayerNFT", function () {
   });
 
   it("name & symbol", async function () {
-    const {playerNFT, brush, shop, dev, royaltyReceiver, estforLibrary} = await loadFixture(deployContracts);
+    const {playerNFT, brush, shop, dev, royaltyReceiver, estforLibrary, bridge} = await loadFixture(deployContracts);
     expect(await playerNFT.name()).to.be.eq("Estfor Players (Beta)");
     expect(await playerNFT.symbol()).to.be.eq("EK_PB");
 
@@ -524,7 +528,8 @@ describe("PlayerNFT", function () {
         upgradePlayerBrushPrice,
         imageBaseUri,
         startPlayerId,
-        isBeta
+        isBeta,
+        await bridge.getAddress()
       ],
       {
         kind: "uups",

@@ -219,6 +219,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -1088,6 +1093,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "mmr",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetMMR",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -1374,6 +1398,74 @@
       }
     ],
     "name": "createClan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "discord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "telegram",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "imageId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "createdTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tierId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "mmr",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "disableJoinRequests",
+        "type": "bool"
+      }
+    ],
+    "name": "createClanBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1916,6 +2008,11 @@
         "internalType": "uint40",
         "name": "startClanId",
         "type": "uint40"
+      },
+      {
+        "internalType": "address",
+        "name": "bridge",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -1948,11 +2045,6 @@
       {
         "internalType": "contract IClanMemberLeftCB",
         "name": "raids",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "paintswapMarketplaceWhitelist",
         "type": "address"
       }
     ],

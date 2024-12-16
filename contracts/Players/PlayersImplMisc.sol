@@ -565,7 +565,9 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     player.skillBoosted2 = startSkills[1]; // Can be NONE
 
     // Mint starting equipment
-    _itemNFT.mintBatch(from, startingItemTokenIds, startingAmounts);
+    if (startingItemTokenIds.length != 0) {
+      _itemNFT.mintBatch(from, startingItemTokenIds, startingAmounts);
+    }
   }
 
   function _claimTotalXPThresholdRewards(
@@ -581,11 +583,13 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     }
   }
 
-  function _modifyXPRelative(address from, uint256 playerId, Skill skill, uint56 gainedXP) private {
+  function _modifyXPRelative(address from, uint256 playerId, Skill skill, uint56 gainedXP, bool skipEffects) private {
     require(_playerNFT.balanceOf(from, playerId) != 0, NotOwnerOfPlayer());
     uint256 levelsGained = _updateXP(from, playerId, skill, gainedXP);
     uint48 newTotalXP = uint48(_players[playerId].totalXP + gainedXP);
-    _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
+    if (!skipEffects) {
+      _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
+    }
     Player storage player = _players[playerId];
     player.totalXP = newTotalXP;
     player.totalLevel += uint16(levelsGained);
@@ -602,12 +606,12 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     }
   }
 
-  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp) external {
+  function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool skipEffects) external {
     // Make sure it isn't less XP
     uint256 oldXP = PlayersLibrary.readXP(skill, _playerXP[playerId]);
     require(xp >= oldXP, TestInvalidXP());
     uint56 gainedXP = uint56(xp - oldXP);
-    _modifyXPRelative(from, playerId, skill, gainedXP);
+    _modifyXPRelative(from, playerId, skill, gainedXP, skipEffects);
   }
 
   function buyBrushQuest(address to, uint256 playerId, uint256 questId, bool useExactETH) external payable {
@@ -616,7 +620,8 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
       .getQuestCompletedRewards(QUEST_PURSE_STRINGS);
 
     uint256 oldXP = PlayersLibrary.readXP(skillGained, _playerXP[playerId]);
-    _modifyXPRelative(to, playerId, skillGained, uint56(oldXP + xpGained));
+    bool skipEffects = true;
+    _modifyXPRelative(to, playerId, skillGained, uint56(oldXP + xpGained), skipEffects);
 
     bool success = _quests.buyBrushQuest{value: msg.value}(msg.sender, to, playerId, questId, useExactETH);
     require(success, BuyBrushFailed());

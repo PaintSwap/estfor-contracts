@@ -1579,11 +1579,6 @@
                 "internalType": "uint16",
                 "name": "burnCompletedAmount",
                 "type": "uint16"
-              },
-              {
-                "internalType": "bool",
-                "name": "isFixed",
-                "type": "bool"
               }
             ],
             "internalType": "struct PlayerQuest[]",

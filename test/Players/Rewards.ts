@@ -16,6 +16,7 @@ import {setupBasicMeleeCombat, setupBasicWoodcutting} from "./utils";
 import {timeTravel24Hours, timeTravelToNextCheckpoint} from "../utils";
 import {defaultActionChoice, emptyCombatStats} from "@paintswap/estfor-definitions/types";
 import {Block} from "ethers";
+import {DONT_SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 
 const actionIsAvailable = true;
 
@@ -181,21 +182,23 @@ describe("Rewards", function () {
       await players.addXPThresholdRewards([{xpThreshold: 1000, rewards: rewards1}]);
 
       // Test max level works
-      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2070952))
+      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2070952, DONT_SKIP_XP_THRESHOLD_EFFECTS))
         .to.emit(players, "AddXP")
         .withArgs(alice, playerId, EstforTypes.Skill.MELEE, 2070952)
         .and.to.emit(players, "ClaimedXPThresholdRewards")
         .withArgs(alice, playerId, [EstforConstants.BRONZE_BAR, EstforConstants.BRONZE_HELMET], [3, 4]);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
 
-      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2080952))
+      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2080952, DONT_SKIP_XP_THRESHOLD_EFFECTS))
         .to.emit(players, "AddXP")
         .withArgs(alice, playerId, EstforTypes.Skill.MELEE, 10000)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2080952);
 
       // Check balance
-      await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 2070952))
+      await expect(
+        players.modifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 2070952, DONT_SKIP_XP_THRESHOLD_EFFECTS)
+      )
         .to.emit(players, "AddXP")
         .withArgs(alice, playerId, EstforTypes.Skill.DEFENCE, 2070952)
         .and.to.not.emit(players, "ClaimedXPThresholdRewards");

@@ -389,4 +389,20 @@ library EstforLibrary {
 
     require(randomRewards.length <= 4, TooManyRandomRewards());
   }
+
+  function _get16bitSlice(bytes memory b, uint256 index) internal pure returns (uint16) {
+    uint256 key = index * 2;
+    return uint16(b[key] | (bytes2(b[key + 1]) >> 8));
+  }
+
+  // Helper function to get random value between min and max (inclusive) for uint8
+  function _getRandomInRange8(uint8 minValue, uint8 maxValue, uint8 randomness) internal pure returns (uint8) {
+    if (maxValue <= minValue) {
+      return minValue;
+    }
+
+    uint8 range = maxValue - minValue + 1;
+    // Use modulo to get value in range and add minValue
+    return uint8((uint16(randomness) % uint16(range)) + uint16(minValue));
+  }
 }

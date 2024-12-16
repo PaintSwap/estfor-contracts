@@ -1,117 +1,51 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OAppUpgradeable, Origin, MessagingFee} from "@layerzerolabs/oapp-evm-upgradeable/contracts/oapp/OAppUpgradeable.sol";
 
-import {PetNFT, Pet} from "../PetNFT.sol";
+import {PetNFT} from "../PetNFT.sol";
+import {ItemNFT} from "../ItemNFT.sol";
+import {PlayerNFT} from "../PlayerNFT.sol";
+import {Players} from "../Players/Players.sol";
+import {Clans} from "../Clans/Clans.sol";
+import {Quests} from "../Quests.sol";
+import {PassiveActions} from "../PassiveActions.sol";
 
+import {PlayerQuest} from "../globals/quests.sol";
 import {Skill} from "../globals/players.sol";
 
-contract Bridge is OAppUpgradeable {
-  struct Message {
-    string message;
-    uint40 timestamp;
-  }
+import {PlayersLibrary} from "../Players/PlayersLibrary.sol";
 
-  struct SenderInfo {
-    uint64 nonce;
-    bool isAuthorized;
-  }
-
-  event UpdateAllowedSenders(uint32 indexed eid, address[] senders, bool[] isAuthorized);
-
-  error InvalidOrigin(uint32 srcEid);
-  error InvalidNonce(uint64 nonce);
+contract Bridge is UUPSUpgradeable, OAppUpgradeable {
   error InvalidInputLength();
-
-  mapping(uint32 eid => mapping(bytes32 sender => SenderInfo info)) private _senderInfoByEID;
-  mapping(uint32 => address[]) private _senders; // senders by EID
+  error MessageAlreadyProcessed();
+  error InvalidSourceChain();
+  error UnknownMessageType();
 
   PetNFT private _petNFT;
+  PlayerNFT private _playerNFT;
+  Players private _players;
+  ItemNFT private _itemNFT;
+  Clans private _clans;
+  Quests private _quests;
+  PassiveActions private _passiveActions;
+  uint32 _srcEid;
+
+  // Mapping to track processed message guids
+  mapping(bytes32 guids => bool isProcessed) private processedMessages;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
-  constructor(address lzEndpoint) OAppUpgradeable(lzEndpoint) {}
+  constructor(address lzEndpoint) OAppUpgradeable(lzEndpoint) {
+    _disableInitializers();
+  }
 
-  function initialize(address delegate, address petNFT) public initializer {
-    __OApp_init(delegate);
+  function initialize(uint32 srcEid) public initializer {
+    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
-    _petNFT = PetNFT(petNFT);
+    __OApp_init(_msgSender());
+    _srcEid = srcEid;
   }
-
-  /**
-   * @notice Sends a message from the source to destination chain.
-   * @param dstEid Destination chain's endpoint ID.
-   * @param tokenType The type of token to send.
-   * @param tokenId The message to send.
-   * @param options Message execution options (e.g., for sending gas to destination).
-   */
-  function send(uint32 dstEid, uint8 tokenType, uint256 tokenId, bytes calldata options) external payable {
-    bytes memory payload;
-    if (tokenType == 0) {
-      // Pet
-      payload = abi.encode(tokenType, _petNFT.getBridgeableBytes(tokenId));
-    } else {
-      revert("Unknown token type");
-    }
-
-    _lzSend(
-      dstEid,
-      payload,
-      options,
-      // Fee in native gas and ZRO token.
-      MessagingFee(msg.value, 0),
-      // Refund address in case of failed source message.
-      payable(_msgSender())
-    );
-  }
-
-  // struct BasePetMetadata {
-  //   string description;
-  //   uint8 tier;
-  //   PetSkin skin; // uint8
-  //   PetEnhancementType enhancementType; // uint8
-  //   Skill skillEnhancement1; // uint8
-  //   uint8 skillFixedMin1;
-  //   uint8 skillFixedMax1;
-  //   uint8 skillFixedIncrement1;
-  //   uint8 skillPercentageMin1;
-  //   uint8 skillPercentageMax1;
-  //   uint8 skillPercentageIncrement1;
-  //   uint8 skillMinLevel1;
-  //   Skill skillEnhancement2;
-  //   uint8 skillFixedMin2;
-  //   uint8 skillFixedMax2;
-  //   uint8 skillFixedIncrement2;
-  //   uint8 skillPercentageMin2;
-  //   uint8 skillPercentageMax2;
-  //   uint8 skillPercentageIncrement2;
-  //   uint8 skillMinLevel2;
-  //   uint16 fixedStarThreshold;
-  //   uint16 percentageStarThreshold;
-  // }
-
-  // struct Pet {
-  //   Skill skillEnhancement1; // uint8
-  //   uint8 skillFixedEnhancement1;
-  //   uint8 skillPercentageEnhancement1;
-  //   Skill skillEnhancement2; // uint8
-  //   uint8 skillFixedEnhancement2;
-  //   uint8 skillPercentageEnhancement2;
-  //   uint40 lastAssignmentTimestamp;
-  //   address owner; // uint160
-  //   // 1 byte left in this storage slot
-  //   uint24 baseId;
-  // }
-  // string name;
-  // uint40 lastAssignmentTimestamp;
-
-  // // mapping(uint256 basePetId => BasePetMetadata metadata) private _basePetMetadatas;
-  // // mapping(uint256 petId => Pet pet) private _pets;
-  // // mapping(uint256 petId => string name) private _names;
-  // // mapping(string name => bool exists) private _lowercaseNames;
-  // // mapping(uint256 petId => uint40 lastAssignmentTimestamp) private _lastAssignmentTimestamps;
 
   /**
    * @dev Called when data is received from the protocol. It overrides the equivalent function in the parent contract.
@@ -124,59 +58,179 @@ contract Bridge is OAppUpgradeable {
     Origin calldata origin,
     bytes32 guid,
     bytes calldata payload,
-    address, // Executor address as specified by the OApp.
-    bytes calldata // Any extra data or options to trigger on receipt.
+    address executor, // Executor address as specified by the OApp.
+    bytes calldata extraData // Any extra data or options to trigger on receipt.
   ) internal override {
-    // Check if the payload is from the expected endpoint
-    require(origin.srcEid == 5, InvalidOrigin(origin.srcEid));
-    // Check if the sender is authorized and the nonce is valid
-    require(_senderInfoByEID[origin.srcEid][origin.sender].isAuthorized, InvalidOrigin(origin.srcEid));
-    // Check if the nonce is valid
-    require(_senderInfoByEID[origin.srcEid][origin.sender].nonce < origin.nonce, InvalidNonce(origin.nonce));
-    // Update nonce
-    _senderInfoByEID[origin.srcEid][origin.sender].nonce = origin.nonce;
+    // Prevent duplicate messages
+    require(!processedMessages[guid], MessageAlreadyProcessed());
+
+    // Only needed if you want to restrict to specific source chain
+    require(origin.srcEid == _srcEid, InvalidSourceChain());
+
+    // Mark message as processed
+    processedMessages[guid] = true;
 
     // Determine the type from the first byte of the payload
-    uint8 messageType = uint8(payload[0]);
+    uint8 messageType = abi.decode(payload, (uint8));
 
-    if (messageType == 0) {
+    if (messageType == 1) {
       _handlePetMessage(payload);
-      // } else if (messageType == 1) {
-      //   _handleItemMessage(payload);
-      // } else if (messageType == 2) {
-      //   _handlePlayerMessage(payload);
+    } else if (messageType == 2) {
+      _handleItemMessage(payload);
+    } else if (messageType == 3) {
+      _handlePlayerMessage(payload);
     } else {
-      revert("Unknown message type");
+      revert UnknownMessageType();
     }
-
-    // Decode the payload to get the message
-    (string memory message, uint40 timestamp) = abi.decode(payload, (string, uint40));
-
-    // Some arbitrary data you want to deliver to the destination chain!
-    Message memory data = Message(message, timestamp);
   }
 
   function _handlePetMessage(bytes calldata payload) private {
     // Decode the payload to get the message
-    (string memory message, uint40 timestamp) = abi.decode(payload, (string, uint40));
+    // (string memory message, uint40 timestamp) = abi.decode(payload, (string, uint40));
     // Do something with the message
   }
 
-  /**
-   * @dev Set the allowed senders for a specific network endpoint ID.
-   * @param eid The network endpoint ID.
-   * @param senders The list of senders.
-   * @param isAuthorized The list of authorization statuses.
-   */
-  function updateAllowedSenders(
-    uint32 eid,
-    address[] calldata senders,
-    bool[] calldata isAuthorized
-  ) external onlyOwner {
-    require(senders.length == isAuthorized.length, InvalidInputLength());
-    for (uint256 i = 0; i < senders.length; ++i) {
-      _senderInfoByEID[eid][bytes32(uint256(uint160(senders[i])))].isAuthorized = isAuthorized[i];
-    }
-    emit UpdateAllowedSenders(eid, senders, isAuthorized);
+  function _handleItemMessage(bytes calldata payload) private {
+    (uint256 messageType, address to, uint256[] memory ids, uint256[] memory amounts) = abi.decode(
+      payload,
+      (uint256, address, uint256[], uint256[])
+    );
+    _itemNFT.mintBatch(to, ids, amounts);
   }
+
+  function _handlePlayerMessage(bytes calldata payload) private {
+    (
+      uint256 messageType,
+      address from,
+      uint256 playerId,
+      uint256 avatarId,
+      string memory heroName,
+      string memory discord,
+      string memory twitter,
+      string memory telegram,
+      bool isUpgraded,
+      Skill[] memory skills,
+      uint256[] memory xps,
+      uint256 clanId,
+      string memory clanName,
+      string memory clanDiscord,
+      string memory clanTelegram,
+      string memory clanTwitter,
+      uint256 clanImageId,
+      uint256 clanCreatedTimestamp,
+      uint256 clanTierId,
+      uint256 clanMMR,
+      bool clanDisableJoinRequests,
+      uint256[] memory questsCompleted,
+      uint256[] memory questIds,
+      uint256[] memory questActionCompletedNum1s,
+      uint256[] memory questActionCompletedNum2s,
+      uint256[] memory questActionChoiceCompletedNums,
+      uint256[] memory questBurnCompletedAmounts,
+      uint256 passiveActionId,
+      uint256 passiveActionStartTime
+    ) = abi.decode(
+        payload,
+        (
+          uint256,
+          address,
+          uint256,
+          uint256,
+          string,
+          string,
+          string,
+          string,
+          bool,
+          Skill[],
+          uint256[],
+          uint256,
+          string,
+          string,
+          string,
+          string,
+          uint256,
+          uint256,
+          uint256,
+          uint256,
+          bool,
+          uint256[],
+          uint256[],
+          uint256[],
+          uint256[],
+          uint256[],
+          uint256[],
+          uint256,
+          uint256
+        )
+      );
+    // Mint the player
+    _playerNFT.mintBridge(from, playerId, avatarId, heroName, discord, twitter, telegram, isUpgraded);
+
+    // Update all xps for the skills
+    uint256 totalXP;
+    uint256 totalLevel;
+    bool skipEffects = false;
+    for (uint256 i = 0; i < skills.length; ++i) {
+      uint56 skillXP = uint56(xps[i]);
+      if (skillXP > 0) {
+        _players.modifyXP(from, playerId, skills[i], skillXP, skipEffects);
+      }
+      totalXP += skillXP;
+      totalLevel += PlayersLibrary._getLevel(skillXP);
+    }
+
+    _players.bridgePlayer(playerId, totalXP, totalLevel);
+
+    // Create clan. Not worrying about the clan items, only clan itself
+    if (clanId != 0) {
+      _clans.createClanBridge(
+        from,
+        playerId,
+        clanId,
+        clanName,
+        clanDiscord,
+        clanTelegram,
+        clanTwitter,
+        clanImageId,
+        clanCreatedTimestamp,
+        clanTierId,
+        clanMMR,
+        clanDisableJoinRequests
+      );
+    }
+
+    // Update quests
+    _quests.processQuestsBridge(
+      from,
+      playerId,
+      questsCompleted,
+      questIds,
+      questActionCompletedNum1s,
+      questActionCompletedNum2s,
+      questActionChoiceCompletedNums,
+      questBurnCompletedAmounts
+    );
+
+    _passiveActions.addPassiveActionBridge(playerId, passiveActionId, passiveActionStartTime);
+  }
+
+  function initializeAddresses(
+    PetNFT petNFT,
+    ItemNFT itemNFT,
+    PlayerNFT playerNFT,
+    Players players,
+    Clans clans,
+    Quests quests,
+    PassiveActions passiveActions
+  ) external onlyOwner {
+    _petNFT = petNFT;
+    _itemNFT = itemNFT;
+    _playerNFT = playerNFT;
+    _players = players;
+    _clans = clans;
+    _quests = quests;
+    _passiveActions = passiveActions;
+  }
+
+  function _authorizeUpgrade(address) internal override onlyOwner {}
 }

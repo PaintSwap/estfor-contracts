@@ -216,6 +216,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInWhitelist",
     "type": "error"
   },
@@ -1003,6 +1008,11 @@
         "internalType": "bool",
         "name": "isBeta",
         "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "bridge",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -1092,6 +1102,54 @@
       }
     ],
     "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "avatarId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "heroName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "discord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "telegram",
+        "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "isUpgrade",
+        "type": "bool"
+      }
+    ],
+    "name": "mintBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

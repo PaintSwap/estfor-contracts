@@ -12,6 +12,7 @@ import {
   timeTravelToNextCheckpoint
 } from "./utils";
 import {
+  SKIP_XP_THRESHOLD_EFFECTS,
   TIER_2_DAILY_REWARD_START_XP,
   TIER_3_DAILY_REWARD_START_XP,
   TIER_4_DAILY_REWARD_START_XP,
@@ -346,7 +347,7 @@ describe("Promotions", function () {
           promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023)
         ).to.be.revertedWithCustomError(promotions, "PlayerDoesNotQualify");
 
-        await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, 100000);
+        await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, 100000, SKIP_XP_THRESHOLD_EFFECTS);
         await promotions.connect(alice).mintPromotion(playerId, Promotion.HALLOWEEN_2023);
       });
 
@@ -738,35 +739,65 @@ describe("Promotions", function () {
 
       expect(await itemNFT.balanceOf(alice, EstforConstants.IRON_ARROW)).to.eq(10);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_2_DAILY_REWARD_START_XP);
+      await players.modifyXP(
+        alice,
+        playerId,
+        EstforTypes.Skill.FIREMAKING,
+        TIER_2_DAILY_REWARD_START_XP,
+        SKIP_XP_THRESHOLD_EFFECTS
+      );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice, EstforConstants.MITHRIL_ARROW)).to.eq(10);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_3_DAILY_REWARD_START_XP);
+      await players.modifyXP(
+        alice,
+        playerId,
+        EstforTypes.Skill.FIREMAKING,
+        TIER_3_DAILY_REWARD_START_XP,
+        SKIP_XP_THRESHOLD_EFFECTS
+      );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice, EstforConstants.ADAMANTINE_ARROW)).to.eq(10);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_4_DAILY_REWARD_START_XP);
+      await players.modifyXP(
+        alice,
+        playerId,
+        EstforTypes.Skill.FIREMAKING,
+        TIER_4_DAILY_REWARD_START_XP,
+        SKIP_XP_THRESHOLD_EFFECTS
+      );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice, EstforConstants.RUNITE_ARROW)).to.eq(10);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_5_DAILY_REWARD_START_XP);
+      await players.modifyXP(
+        alice,
+        playerId,
+        EstforTypes.Skill.FIREMAKING,
+        TIER_5_DAILY_REWARD_START_XP,
+        SKIP_XP_THRESHOLD_EFFECTS
+      );
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
       await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
       expect(await itemNFT.balanceOf(alice, EstforConstants.RUNITE_ARROW)).to.eq(20);
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, TIER_6_DAILY_REWARD_START_XP);
+      await players.modifyXP(
+        alice,
+        playerId,
+        EstforTypes.Skill.FIREMAKING,
+        TIER_6_DAILY_REWARD_START_XP,
+        SKIP_XP_THRESHOLD_EFFECTS
+      );
       // Just get more of runite for now
       await ethers.provider.send("evm_increaseTime", [3600 * 24]);
       await ethers.provider.send("evm_mine", []);
@@ -811,7 +842,7 @@ describe("Promotions", function () {
         promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023)
       ).to.be.revertedWithCustomError(promotions, "PlayerDoesNotQualify");
 
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, 100000);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.FIREMAKING, 100000, SKIP_XP_THRESHOLD_EFFECTS);
       await promotions.connect(alice).mintPromotion(playerId, Promotion.XMAS_2023);
     });
 

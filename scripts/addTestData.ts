@@ -32,7 +32,8 @@ export const addTestData = async (
   minItemQuantityBeforeSellsAllowed: bigint,
   orderBook: OrderBook,
   quests: Quests,
-  startClanId: number
+  startClanId: number,
+  buyBrush: boolean
 ) => {
   const [owner, alice] = await ethers.getSigners();
 
@@ -40,7 +41,6 @@ export const addTestData = async (
   console.log(`ChainId: ${network.chainId}`);
 
   const startAvatarId = 1;
-
   // Create player
   const makeActive = true;
   const playerId = await createPlayer(playerNFT, startAvatarId, owner, "0xSamWitch", makeActive);
@@ -271,6 +271,7 @@ export const addTestData = async (
   // Invite new member
   const alicePlayerId = await createPlayer(playerNFT, startAvatarId, alice, "Alice", makeActive);
   console.log("create Alice");
+
   tx = await clans.inviteMembers(clanId, [alicePlayerId], playerId);
   await tx.wait();
   console.log("Invite Alice");
@@ -324,17 +325,19 @@ export const addTestData = async (
   await tx.wait();
   console.log("Make a limit order");
 
-  // Buy some brush
-  tx = await quests.buyBrush(owner, 1, true, {value: ethers.parseEther("0.001")});
-  await tx.wait();
-  console.log("Bought some brush");
+  if (buyBrush) {
+    // Buy some brush
+    tx = await quests.buyBrush(owner, 1, true, {value: ethers.parseEther("0.001")});
+    await tx.wait();
+    console.log("Bought some brush");
 
-  // Sell some brush
-  tx = await brush.approve(quests, ethers.parseEther("1"));
-  await tx.wait();
-  console.log("Approve brush for selling in quests");
+    // Sell some brush
+    tx = await brush.approve(quests, ethers.parseEther("1"));
+    await tx.wait();
+    console.log("Approve brush for selling in quests");
 
-  tx = await quests.sellBrush(owner, ethers.parseEther("0.001"), 0, false);
-  await tx.wait();
-  console.log("Sold brush");
+    tx = await quests.sellBrush(owner, ethers.parseEther("0.001"), 0, false);
+    await tx.wait();
+    console.log("Sold brush");
+  }
 };

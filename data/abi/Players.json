@@ -277,6 +277,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotEquipped",
     "type": "error"
   },
@@ -1695,6 +1700,29 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalXP",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalLevel",
+        "type": "uint256"
+      }
+    ],
+    "name": "bridgePlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "to",
         "type": "address"
@@ -2693,11 +2721,6 @@
                     "internalType": "uint16",
                     "name": "burnCompletedAmount",
                     "type": "uint16"
-                  },
-                  {
-                    "internalType": "bool",
-                    "name": "isFixed",
-                    "type": "bool"
                   }
                 ],
                 "internalType": "struct PlayerQuest[]",
@@ -3193,6 +3216,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "bridge",
+        "type": "address"
+      },
+      {
         "internalType": "bool",
         "name": "isBeta",
         "type": "bool"
@@ -3305,6 +3333,11 @@
         "internalType": "uint56",
         "name": "xp",
         "type": "uint56"
+      },
+      {
+        "internalType": "bool",
+        "name": "skipEffects",
+        "type": "bool"
       }
     ],
     "name": "modifyXP",

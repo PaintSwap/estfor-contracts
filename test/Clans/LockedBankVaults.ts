@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {clanFixture} from "./utils";
-import {createPlayer} from "../../scripts/utils";
+import {createPlayer, SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {LockedBankVaults, MockBrushToken, Territories} from "../../typechain-types";
@@ -287,11 +287,17 @@ describe("LockedBankVaults", function () {
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
     // Increase odds of winning
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
     }
 
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(
+        charlie,
+        charliePlayerId,
+        allBattleSkills[i],
+        getXPFromLevel(100),
+        SKIP_XP_THRESHOLD_EFFECTS
+      );
     }
 
     // Attack
@@ -767,7 +773,7 @@ describe("LockedBankVaults", function () {
     const bobClanId = 2;
 
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
     }
 
     // Attack
@@ -1183,8 +1189,14 @@ describe("LockedBankVaults", function () {
     await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
 
     for (let i = 0; i < allBattleSkills.length; ++i) {
-      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
-      await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
+      await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+      await players.modifyXP(
+        charlie,
+        charliePlayerId,
+        allBattleSkills[i],
+        getXPFromLevel(100),
+        SKIP_XP_THRESHOLD_EFFECTS
+      );
     }
 
     // Lock
@@ -1516,10 +1528,22 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+        await players.modifyXP(
+          charlie,
+          charliePlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
+        await players.modifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+        await players.modifyXP(
+          frank,
+          frankPlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
       }
 
       await combatantsHelper
@@ -1679,7 +1703,7 @@ describe("LockedBankVaults", function () {
       await lockFundsForClan(lockedBankVaults, bobClanId, brush, bob, bobPlayerId, 1000, territories);
 
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId]);
@@ -1718,9 +1742,21 @@ describe("LockedBankVaults", function () {
           bobPlayerId
         );
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+        await players.modifyXP(
+          charlie,
+          charliePlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
+        await players.modifyXP(
+          frank,
+          frankPlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
       }
       await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
         value: await lockedBankVaults.getAttackCost()
@@ -1835,7 +1871,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       await lockedBankVaults
@@ -1900,7 +1936,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       await lockedBankVaults
@@ -2106,10 +2142,22 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(charlie, charliePlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100));
-        await players.modifyXP(frank, frankPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+        await players.modifyXP(
+          charlie,
+          charliePlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
+        await players.modifyXP(erin, erinPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+        await players.modifyXP(
+          frank,
+          frankPlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
       }
 
       await combatantsHelper
@@ -2228,7 +2276,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       // Attacker wins (most likely)
@@ -2434,7 +2482,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       let clear = true;
@@ -2487,7 +2535,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       let clear = true;
@@ -2538,7 +2586,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       let clear = false;
@@ -2590,7 +2638,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       let clear = false;
@@ -2643,7 +2691,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       let clear = true;
@@ -2694,7 +2742,7 @@ describe("LockedBankVaults", function () {
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
-        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100));
+        await players.modifyXP(alice, playerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
       }
 
       // Attacker loses (most likely)

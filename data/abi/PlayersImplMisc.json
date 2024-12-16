@@ -1770,6 +1770,11 @@
         "internalType": "uint56",
         "name": "xp",
         "type": "uint56"
+      },
+      {
+        "internalType": "bool",
+        "name": "skipEffects",
+        "type": "bool"
       }
     ],
     "name": "modifyXP",

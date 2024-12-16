@@ -5,6 +5,7 @@ import {
   LockedBankVaultsLibrary,
   OrderBook,
   PetNFTLibrary,
+  Players,
   PromotionsLibrary,
   RoyaltyReceiver
 } from "../typechain-types";
@@ -44,7 +45,8 @@ import {
   BAZAAR_ADDRESS,
   PVP_BATTLEGROUND_ADDRESS,
   RAIDS_ADDRESS,
-  PLAYERS_LIBRARY_ADDRESS
+  PLAYERS_LIBRARY_ADDRESS,
+  BRIDGE_ADDRESS
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -69,11 +71,11 @@ async function main() {
 
   // Players
   const Players = await ethers.getContractFactory("Players");
-  const players = await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
+  const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
     timeout
-  });
+  })) as Players;
   await players.waitForDeployment();
   console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
 
@@ -412,6 +414,17 @@ async function main() {
   await passiveActions.waitForDeployment();
   console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`);
 
+  const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c"; // On Sonic
+  const Bridge = await ethers.getContractFactory("Bridge");
+  const bridge = await upgrades.upgradeProxy(BRIDGE_ADDRESS, Bridge, {
+    kind: "uups",
+    timeout,
+    unsafeAllow: ["delegatecall", "constructor", "state-variable-immutable"],
+    constructorArgs: [lzEndpoint]
+  });
+  await bridge.waitForDeployment();
+  console.log("bridge = ", (await bridge.getAddress()).toLowerCase());
+
   if (network.chainId == 250n) {
     await verifyContracts([await players.getAddress()]);
     await verifyContracts([await playerNFT.getAddress()]);
@@ -441,6 +454,7 @@ async function main() {
     await verifyContracts([await royaltyReceiver.getAddress()]);
     await verifyContracts([await passiveActions.getAddress()]);
     await verifyContracts([await treasury.getAddress()]);
+    await verifyContracts([await bridge.getAddress()]);
   }
 }
 

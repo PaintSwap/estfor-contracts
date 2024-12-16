@@ -50,6 +50,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   error NotSupported();
   error CannotStartFullModeQuest();
   error CannotChangeBackToFullMode();
+  error NotBridge();
 
   struct MinimumRequirement {
     Skill skill;
@@ -63,16 +64,19 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   address private _randomnessBeacon;
   IPlayers private _players;
   uint16 private _numTotalQuests;
-  mapping(uint256 questId => Quest quest) private _allFixedQuests;
-  mapping(uint256 playerId => BitMaps.BitMap) private _questsCompleted;
-  mapping(uint256 playerId => PlayerQuest playerQuest) private _activeQuests;
-  mapping(uint256 playerId => mapping(uint256 queueId => PlayerQuest quest)) private _inProgressFixedQuests; // Only puts it here if changing active quest for something else
-  mapping(uint256 questId => MinimumRequirement[3]) private _minimumRequirements;
-  mapping(uint256 playerId => PlayerQuestInfo) private _playerInfo;
+
   // For buying/selling brush
   ISolidlyRouter private _router;
   address private _wNative; // wFTM
   address private _brush; // brush
+
+  mapping(uint256 questId => Quest quest) private _allFixedQuests;
+  mapping(uint256 playerId => BitMaps.BitMap) private _questsCompleted;
+  mapping(uint256 playerId => PlayerQuest playerQuest) private _activeQuests;
+  mapping(uint256 playerId => mapping(uint256 questId => PlayerQuest quest)) private _inProgressFixedQuests; // Only puts it here if changing active quests for another one or pausing
+  mapping(uint256 questId => MinimumRequirement[3]) private _minimumRequirements;
+  mapping(uint256 playerId => PlayerQuestInfo) private _playerInfo;
+  address private _bridge; // TODO: Bridge Can remove later
 
   modifier onlyPlayers() {
     require(_msgSender() == address(_players), NotPlayers());
@@ -84,16 +88,27 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     _;
   }
 
+  modifier onlyBridge() {
+    require(_msgSender() == _bridge, NotBridge());
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(address randomnessBeacon, ISolidlyRouter router, address[2] calldata path) external initializer {
+  function initialize(
+    address randomnessBeacon,
+    address bridge,
+    ISolidlyRouter router,
+    address[2] calldata path
+  ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
     _randomnessBeacon = randomnessBeacon;
+    _bridge = bridge;
     _router = router;
     _wNative = path[0];
     _brush = path[1];
@@ -151,7 +166,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
       // Start fresh quest
       PlayerQuest memory playerQuest;
       playerQuest.questId = uint32(questId);
-      playerQuest.isFixed = true;
       _activeQuests[playerId] = playerQuest;
     }
     emit ActivateQuest(from, playerId, questId);
@@ -192,6 +206,35 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
       if (hasQuestProgress) {
         _activeQuests[playerId] = activeQuestInfo0;
         emit UpdateQuestProgress(playerId, activeQuestInfo0);
+      }
+    }
+  }
+
+  function processQuestsBridge(
+    address from,
+    uint256 playerId,
+    uint256[] calldata questsCompleted,
+    uint256[] calldata questIds,
+    uint256[] calldata questActionCompletedNum1s,
+    uint256[] calldata questActionCompletedNum2s,
+    uint256[] calldata questActionChoiceCompletedNums,
+    uint256[] calldata questBurnCompletedAmounts
+  ) external onlyBridge {
+    for (uint256 i; i < questsCompleted.length; ++i) {
+      uint256 questId = questsCompleted[i];
+      _questCompleted(from, playerId, questId);
+    }
+
+    for (uint256 i; i < questIds.length; ++i) {
+      uint256 questId = questIds[i];
+      PlayerQuest memory playerQuest;
+      if (questId != 0) {
+        playerQuest.actionCompletedNum1 = uint16(questActionCompletedNum1s[i]);
+        playerQuest.actionCompletedNum2 = uint16(questActionCompletedNum2s[i]);
+        playerQuest.actionChoiceCompletedNum = uint16(questActionChoiceCompletedNums[i]);
+        playerQuest.burnCompletedAmount = uint16(questBurnCompletedAmounts[i]);
+        _inProgressFixedQuests[playerId][questId] = playerQuest;
+        emit UpdateQuestProgress(playerId, playerQuest);
       }
     }
   }

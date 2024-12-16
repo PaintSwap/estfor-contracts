@@ -2,7 +2,7 @@ import {ethers} from "hardhat";
 import {ITEM_NFT_ADDRESS, PASSIVE_ACTIONS_ADDRESS, PLAYERS_ADDRESS} from "./contractAddresses";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {getXPFromLevel} from "../test/Players/utils";
-import {getChainId} from "./utils";
+import {SKIP_XP_THRESHOLD_EFFECTS, getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -13,7 +13,13 @@ async function main() {
   const passiveActions = await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS);
   const playerId = 1;
   const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
-  let tx = await players.modifyXP(owner.address, playerId, EstforTypes.Skill.ALCHEMY, getXPFromLevel(20));
+  let tx = await players.modifyXP(
+    owner.address,
+    playerId,
+    EstforTypes.Skill.ALCHEMY,
+    getXPFromLevel(20),
+    SKIP_XP_THRESHOLD_EFFECTS
+  );
   await tx.wait();
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);

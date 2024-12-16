@@ -50,7 +50,6 @@ struct PlayerQuest {
   uint16 actionCompletedNum2;
   uint16 actionChoiceCompletedNum;
   uint16 burnCompletedAmount;
-  bool isFixed;
 }
 
 uint256 constant QUEST_PURSE_STRINGS = 5; // MAKE SURE THIS MATCHES definitions

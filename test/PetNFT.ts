@@ -7,6 +7,7 @@ import {PetNFT} from "../typechain-types";
 import {getXPFromLevel, makeSigner} from "./Players/utils";
 import {parseEther} from "ethers";
 import {EstforTypes} from "@paintswap/estfor-definitions";
+import {SKIP_XP_THRESHOLD_EFFECTS} from "../scripts/utils";
 
 describe("PetNFT", function () {
   async function deployContracts() {
@@ -258,7 +259,7 @@ describe("PetNFT", function () {
       "LevelNotHighEnough"
     );
 
-    await players.connect(alice).modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(2));
+    await players.connect(alice).modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(2), SKIP_XP_THRESHOLD_EFFECTS);
     await expect(petNFT.connect(playersSigner).assignPet(alice, playerId, petId, 0)).to.not.be.reverted;
   });
 

@@ -70,6 +70,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   error LengthMismatch();
   error PercentNotTotal100();
   error HeroNameIsReserved(string reservedName);
+  error NotBridge();
 
   struct PlayerInfo {
     uint24 avatarId;
@@ -97,13 +98,13 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
   bool private _isBeta; // Not need to pack this
   AdminAccess private _adminAccess; // Unused but is set
   uint32 private _numBurned;
-
-  mapping(uint256 avatarId => AvatarInfo avatarInfo) private _avatars;
   string private _imageBaseUri;
+  mapping(uint256 avatarId => AvatarInfo avatarInfo) private _avatars;
   mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
   mapping(uint256 playerId => string name) private _names;
   mapping(string name => bool exists) private _lowercaseNames;
-  BloomFilter.Filter private _reservedHeroNames; // TODO: remove 30 days after launch
+  BloomFilter.Filter private _reservedHeroNames; // TODO: remove 90 days after launch
+  address private _bridge; // TODO: Bridge Can remove later
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -112,6 +113,11 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
   modifier onlyPlayers() {
     require(_msgSender() == address(_players), NotPlayers());
+    _;
+  }
+
+  modifier onlyBridge() {
+    require(_msgSender() == address(_bridge), NotBridge());
     _;
   }
 
@@ -129,7 +135,8 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     uint72 upgradePlayerCost,
     string calldata imageBaseUri,
     uint64 startPlayerId,
-    bool isBeta
+    bool isBeta,
+    address bridge
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
@@ -146,6 +153,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     _royaltyFee = 30; // 3%
     _royaltyReceiver = royaltyReceiver;
     _isBeta = isBeta;
+    _bridge = bridge;
 
     _reservedHeroNames._initialize();
   }
@@ -166,13 +174,49 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     _checkSocials(discord, twitter, telegram);
     emit NewPlayer(playerId, avatarId, trimmedName, from, discord, twitter, telegram, upgrade);
     _checkMintingAvatar(avatarId);
-    _playerInfos[playerId].originalAvatarId = uint24(avatarId);
-    _playerInfos[playerId].mintedTimestamp = uint40(block.timestamp);
+    PlayerInfo storage playerInfo = _playerInfos[playerId];
+    playerInfo.originalAvatarId = uint24(avatarId);
+    playerInfo.mintedTimestamp = uint40(block.timestamp);
     _mint(from, playerId, 1, "");
     _mintStartingItems(from, playerId, avatarId, makeActive);
     if (upgrade) {
       uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
       _upgradePlayer(playerId, evolvedAvatarId);
+    } else {
+      _playerInfos[playerId].avatarId = uint24(avatarId);
+    }
+  }
+
+  function mintBridge(
+    address from,
+    uint256 playerId,
+    uint256 avatarId,
+    string calldata heroName,
+    string calldata discord,
+    string calldata twitter,
+    string calldata telegram,
+    bool isUpgrade
+  ) external onlyBridge {
+    _lowercaseNames[EstforLibrary.toLower(heroName)] = true;
+    _names[playerId] = heroName;
+    emit NewPlayer(playerId, avatarId, heroName, from, discord, twitter, telegram, isUpgrade);
+
+    PlayerInfo storage playerInfo = _playerInfos[playerId];
+    playerInfo.originalAvatarId = uint24(avatarId);
+    playerInfo.mintedTimestamp = uint40(block.timestamp);
+    _mint(from, playerId, 1, "");
+    uint256[] memory startingItemTokenIds;
+    uint256[] memory startingAmounts;
+    _players.mintedPlayer(from, playerId, _avatars[avatarId].startSkills, true, startingItemTokenIds, startingAmounts);
+    if (isUpgrade) {
+      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
+      // _upgradePlayer equivalent
+      playerInfo.avatarId = evolvedAvatarId;
+      playerInfo.upgradedTimestamp = uint40(block.timestamp);
+      _players.upgradePlayer(playerId);
+      uint256 tokenCost = 0; // Free when bridging
+      emit UpgradePlayerAvatar(playerId, evolvedAvatarId, tokenCost);
+      // end _upgradePlayer equivalent
     } else {
       _playerInfos[playerId].avatarId = uint24(avatarId);
     }
@@ -321,9 +365,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
 
   /**
    * @dev Returns whether `tokenId` exists.
-   *
    * Tokens can be managed by their owner or approved accounts via {setApprovalForAll}.
-   *
    */
   function exists(uint256 tokenId) public view returns (bool) {
     return _playerInfos[tokenId].avatarId != 0;

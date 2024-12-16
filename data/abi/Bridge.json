@@ -11,6 +11,38 @@
     "type": "constructor"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "name": "AddressEmptyCode",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1967InvalidImplementation",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1967NonPayable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FailedCall",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "InvalidDelegate",
     "type": "error"
@@ -31,30 +63,18 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "nonce",
-        "type": "uint64"
-      }
-    ],
-    "name": "InvalidNonce",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "srcEid",
-        "type": "uint32"
-      }
-    ],
-    "name": "InvalidOrigin",
+    "inputs": [],
+    "name": "InvalidSourceChain",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "LzTokenUnavailable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MessageAlreadyProcessed",
     "type": "error"
   },
   {
@@ -134,14 +154,24 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "UUPSUnauthorizedCallContext",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "slot",
+        "type": "bytes32"
       }
     ],
-    "name": "SafeERC20FailedOperation",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnknownMessageType",
     "type": "error"
   },
   {
@@ -200,25 +230,26 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint32",
-        "name": "eid",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "senders",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool[]",
-        "name": "isAuthorized",
-        "type": "bool[]"
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
       }
     ],
-    "name": "UpdateAllowedSenders",
+    "name": "Upgraded",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -272,17 +303,55 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "delegate",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "petNFT",
-        "type": "address"
+        "internalType": "uint32",
+        "name": "srcEid",
+        "type": "uint32"
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract PetNFT",
+        "name": "petNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract PlayerNFT",
+        "name": "playerNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Players",
+        "name": "players",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Clans",
+        "name": "clans",
+        "type": "address"
+      },
+      {
+        "internalType": "contract Quests",
+        "name": "quests",
+        "type": "address"
+      },
+      {
+        "internalType": "contract PassiveActions",
+        "name": "passiveActions",
+        "type": "address"
+      }
+    ],
+    "name": "initializeAddresses",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -459,37 +528,22 @@
   },
   {
     "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "dstEid",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint8",
-        "name": "tokenType",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "options",
-        "type": "bytes"
-      }
-    ],
-    "name": "send",
+    "inputs": [],
+    "name": "renounceOwnership",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -539,24 +593,19 @@
   {
     "inputs": [
       {
-        "internalType": "uint32",
-        "name": "eid",
-        "type": "uint32"
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
       },
       {
-        "internalType": "address[]",
-        "name": "senders",
-        "type": "address[]"
-      },
-      {
-        "internalType": "bool[]",
-        "name": "isAuthorized",
-        "type": "bool[]"
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
-    "name": "updateAllowedSenders",
+    "name": "upgradeToAndCall",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   }
 ]

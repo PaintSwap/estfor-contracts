@@ -20,7 +20,6 @@ import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, QuestInput} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {
-  BOOST_START_NOW,
   setupBasicCooking,
   setupBasicFiremaking,
   setupBasicFishing,
@@ -29,6 +28,7 @@ import {
   setupBasicWoodcutting
 } from "./Players/utils";
 import {getActionChoiceId, getActionId, NO_DONATION_AMOUNT, START_XP} from "./utils";
+import {SKIP_XP_THRESHOLD_EFFECTS} from "../scripts/utils";
 
 export async function questsFixture() {
   const fixture = await loadFixture(playersFixture);
@@ -384,12 +384,12 @@ describe("Quests", function () {
         "InvalidMinimumRequirement"
       );
 
-      await players.connect(alice).modifyXP(alice, playerId, Skill.HEALTH, 2999);
+      await players.connect(alice).modifyXP(alice, playerId, Skill.HEALTH, 2999, SKIP_XP_THRESHOLD_EFFECTS);
       await expect(players.connect(alice).activateQuest(playerId, questId)).to.be.revertedWithCustomError(
         quests,
         "InvalidMinimumRequirement"
       );
-      await players.connect(alice).modifyXP(alice, playerId, Skill.HEALTH, 3000);
+      await players.connect(alice).modifyXP(alice, playerId, Skill.HEALTH, 3000, SKIP_XP_THRESHOLD_EFFECTS);
       await players.connect(alice).activateQuest(playerId, questId);
     });
   });

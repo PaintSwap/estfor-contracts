@@ -150,6 +150,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -784,6 +789,29 @@
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actionId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "addPassiveActionBridge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
       }
     ],
     "name": "claim",
@@ -1075,6 +1103,11 @@
       {
         "internalType": "contract RandomnessBeacon",
         "name": "randomnessBeacon",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "bridge",
         "type": "address"
       }
     ],

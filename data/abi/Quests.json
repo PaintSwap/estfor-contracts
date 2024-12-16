@@ -140,6 +140,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -616,11 +621,6 @@
             "internalType": "uint16",
             "name": "burnCompletedAmount",
             "type": "uint16"
-          },
-          {
-            "internalType": "bool",
-            "name": "isFixed",
-            "type": "bool"
           }
         ],
         "indexed": false,
@@ -717,11 +717,6 @@
             "internalType": "uint16",
             "name": "burnCompletedAmount",
             "type": "uint16"
-          },
-          {
-            "internalType": "bool",
-            "name": "isFixed",
-            "type": "bool"
           }
         ],
         "internalType": "struct PlayerQuest",
@@ -1243,6 +1238,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "bridge",
+        "type": "address"
+      },
+      {
         "internalType": "contract ISolidlyRouter",
         "name": "router",
         "type": "address"
@@ -1333,11 +1333,6 @@
             "internalType": "uint16",
             "name": "burnCompletedAmount",
             "type": "uint16"
-          },
-          {
-            "internalType": "bool",
-            "name": "isFixed",
-            "type": "bool"
           }
         ],
         "internalType": "struct PlayerQuest[]",
@@ -1351,6 +1346,54 @@
       }
     ],
     "name": "processQuests",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "questsCompleted",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "questIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "questActionCompletedNum1s",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "questActionCompletedNum2s",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "questActionChoiceCompletedNums",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "questBurnCompletedAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "processQuestsBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1451,11 +1494,6 @@
             "internalType": "uint16",
             "name": "burnCompletedAmount",
             "type": "uint16"
-          },
-          {
-            "internalType": "bool",
-            "name": "isFixed",
-            "type": "bool"
           }
         ],
         "internalType": "struct PlayerQuest[]",

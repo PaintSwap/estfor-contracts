@@ -52,7 +52,6 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   mapping(uint256 itemId => string tokenURI) private _tokenURIs;
   mapping(uint256 itemId => CombatStats combatStats) private _combatStats;
   mapping(uint256 itemId => Item item) private _items;
-
   mapping(address account => bool isApproved) private _approvals;
 
   modifier onlyMinters() {

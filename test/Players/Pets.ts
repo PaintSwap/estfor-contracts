@@ -8,6 +8,7 @@ import {PetSkin, Skill} from "@paintswap/estfor-definitions/types";
 import {allBasePets} from "../../scripts/data/pets";
 import {NO_DONATION_AMOUNT} from "../utils";
 import {Block} from "ethers";
+import {SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 
 describe("Pets", function () {
   it("Queue a pet which you don't have a balance for", async function () {
@@ -44,7 +45,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), SKIP_XP_THRESHOLD_EFFECTS);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
@@ -87,7 +88,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), SKIP_XP_THRESHOLD_EFFECTS);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
@@ -132,7 +133,7 @@ describe("Pets", function () {
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
-    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), SKIP_XP_THRESHOLD_EFFECTS);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
@@ -177,7 +178,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), SKIP_XP_THRESHOLD_EFFECTS);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
@@ -228,7 +229,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), SKIP_XP_THRESHOLD_EFFECTS);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 
@@ -276,7 +277,7 @@ describe("Pets", function () {
     await petNFT.addBasePets([basePet]);
     await petNFT.mintBatch(alice, [basePet.baseId], 0);
 
-    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5));
+    await players.modifyXP(alice, playerId, Skill.MELEE, getXPFromLevel(5), SKIP_XP_THRESHOLD_EFFECTS);
     const petId = 1;
     const {queuedAction} = await setupBasicPetMeleeCombat(itemNFT, worldActions, petId);
 

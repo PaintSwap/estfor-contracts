@@ -2,9 +2,8 @@ import "dotenv/config";
 
 import {HardhatUserConfig} from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-
 import "@nomiclabs/hardhat-solhint";
-
+import "hardhat-deploy";
 import "@openzeppelin/hardhat-upgrades";
 
 import "hardhat-contract-sizer";
@@ -18,7 +17,7 @@ import {HardhatNetworkAccountUserConfig, SolcUserConfig} from "hardhat/types";
 const defaultConfig: SolcUserConfig = {
   version: "0.8.28",
   settings: {
-    evmVersion: "paris",
+    evmVersion: "cancun",
     optimizer: {
       enabled: true,
       runs: 9999999,
@@ -90,6 +89,7 @@ const config: HardhatUserConfig = {
       "contracts/Clans/LockedBankVaults.sol": lowRunsConfig,
       "contracts/Clans/Territories.sol": mediumRunsConfig,
       "contracts/Clans/Raids.sol": lowRunsConfig,
+      "contracts/PassiveActions.sol": mediumRunsConfig,
       "contracts/Players/Players.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": lowRunsConfig,
@@ -104,7 +104,7 @@ const config: HardhatUserConfig = {
     }
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     showMethodSig: true
   },
   networks: {
@@ -116,8 +116,7 @@ const config: HardhatUserConfig = {
     },
     sonic: {
       url: process.env.SONIC_RPC,
-      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("150", "gwei"))
+      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string]
     },
     sonic_testnet: {
       url: process.env.SONIC_TESTNET_RPC,
@@ -126,7 +125,19 @@ const config: HardhatUserConfig = {
     fantom: {
       url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("15", "gwei"))
+      gasPrice: Number(parseUnits("5", "gwei"))
+    }
+  },
+  external: {
+    contracts: [
+      {
+        // Specify the exact path
+        artifacts: "node_modules/@layerzerolabs/test-devtools-evm-hardhat/artifacts",
+        deploy: "node_modules/@layerzerolabs/test-devtools-evm-hardhat/deploy"
+      }
+    ],
+    deployments: {
+      hardhat: ["node_modules/@layerzerolabs/test-devtools-evm-hardhat/deployments/hardhat"]
     }
   },
   mocha: {
@@ -149,7 +160,16 @@ const config: HardhatUserConfig = {
     flat: true,
     spacing: 2,
     format: "json",
-    except: ["/interfaces", "/test", "/helper", "/debug", "/legacy", "SamWitchVRFConsumerUpgradeable", "@openzeppelin"]
+    except: [
+      "/interfaces",
+      "/test",
+      "/helper",
+      "/debug",
+      "/legacy",
+      "SamWitchVRFConsumerUpgradeable",
+      "@openzeppelin",
+      "@layerzerolabs"
+    ]
   },
   typechain: {
     target: "ethers-v6"

@@ -26,7 +26,6 @@ enum PetEnhancementType {
   RANGED_AND_DEFENCE
 }
 
-// NOTE: This struct is bridged from Fantom -> Sonic
 struct Pet {
   Skill skillEnhancement1;
   uint8 skillFixedEnhancement1;

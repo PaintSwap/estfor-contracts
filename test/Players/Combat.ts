@@ -4,7 +4,7 @@ import {COOKED_MINNUS, GUAR_MUL, QUEST_SUPPLY_RUN, RATE_MUL, SPAWN_MUL} from "@p
 import {QueuedActionInput, Skill, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {AvatarInfo, createPlayer} from "../../scripts/utils";
+import {AvatarInfo, createPlayer, SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
 import {
   getActionChoiceId,
   getActionChoiceIds,
@@ -1042,7 +1042,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [73318]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      await players.modifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 250);
+      await players.modifyXP(alice, playerId, EstforTypes.Skill.DEFENCE, 250, SKIP_XP_THRESHOLD_EFFECTS);
       await ethers.provider.send("evm_increaseTime", [240]);
       await ethers.provider.send("evm_mine", []);
       expect((await players.getActiveBoost(playerId)).boostType).to.not.eq(0);
@@ -2381,9 +2381,9 @@ describe("Combat Actions", function () {
       ]);
 
       // Set player combat stats
-      await players.modifyXP(alice, playerId, Skill.MAGIC, 14500);
-      await players.modifyXP(alice, playerId, Skill.HEALTH, 1600);
-      await players.modifyXP(alice, playerId, Skill.DEFENCE, 250);
+      await players.modifyXP(alice, playerId, Skill.MAGIC, 14500, SKIP_XP_THRESHOLD_EFFECTS);
+      await players.modifyXP(alice, playerId, Skill.HEALTH, 1600, SKIP_XP_THRESHOLD_EFFECTS);
+      await players.modifyXP(alice, playerId, Skill.DEFENCE, 250, SKIP_XP_THRESHOLD_EFFECTS);
 
       const items = [EstforConstants.COOKED_MINNUS, EstforConstants.AIR_SCROLL, EstforConstants.SHADOW_SCROLL];
       const balances = await itemNFT.balanceOfs(alice, items);
