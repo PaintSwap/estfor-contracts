@@ -361,7 +361,6 @@ async function main() {
   const Territories = await ethers.getContractFactory("Territories");
   const territories = await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
-    unsafeAllow: ["external-library-linking"],
     timeout
   });
   await territories.waitForDeployment();

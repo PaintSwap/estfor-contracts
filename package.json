@@ -122,6 +122,7 @@
     "addInstantVRFActionStrategies": "npx hardhat run scripts/addInstantVRFActionStrategies.ts",
     "setMMRAttackDistance": "npx hardhat run scripts/setMMRAttackDistance.ts",
     "initializeMMR": "npx hardhat run scripts/initializeMMR.ts",
+    "setFundAllocationPercentages": "npx hardhat run scripts/setFundAllocationPercentages.ts",
     "pauseGame": "npx hardhat run scripts/pauseGame.ts",
     "setAvatars": "npx hardhat run scripts/setAvatars.ts",
     "setOrderbookTokenIdInfos": "npx hardhat run scripts/setOrderbookTokenIdInfos.ts",

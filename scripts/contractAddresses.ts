@@ -106,6 +106,7 @@ if (!isBeta) {
   raids = "";
 } else {
   // Fantom addresses for testing bridging
+  /*
   brush = "0x85dec8c4b2680793661bca91a8f129607571863d";
   wftm = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
   oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
@@ -157,9 +158,8 @@ if (!isBeta) {
   territoryTreasury = "0x707e072052a609ef65fe04bed1c155ce794d51b6";
   bankRegistry = "0x22aa1f1acb6c136c0d8a1a64961a26c56bee50a3";
   bankFactory = "0xf76850b95ea87d91043d33a12566c7f74e809760";
-
+*/
   // Sonic blaze beta addresses
-  /*
   router = "0xf08413857af2cfbb6edb69a92475cc27ea51453b";
   brush = "0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57";
   wftm = "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38";
@@ -211,7 +211,7 @@ if (!isBeta) {
   combatantsHelper = "0x9a91634e4c47389ec3a75681b5979767778b81ac";
   territoryTreasury = "0x5cf84612cc7aab33450eebd1a520a93406c57792";
   bankRegistry = "0xea7054c1fd3d21e60a5e6ec0a97197d969f4bace";
-  bankFactory = "0x64b5fa108af1528a3d3835f70ff01d21420db93d"; */
+  bankFactory = "0x64b5fa108af1528a3d3835f70ff01d21420db93d";
 }
 
 export const WORLD_ACTIONS_ADDRESS = worldActions;

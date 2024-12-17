@@ -137,7 +137,6 @@ async function main() {
       const EndpointV2Mock = new ContractFactory(EndpointV2MockArtifact.abi, EndpointV2MockArtifact.bytecode, owner);
       const endpointId = 30112; // fantom
       lzEndpoint = await (await EndpointV2Mock.deploy(endpointId, owner)).getAddress();
-      lzEndpoint = await (await ethers.deployContract("MockLZEndpointV2", [1, owner])).getAddress();
       console.log("Deployed mock lzEndpoint");
     } else if (network.chainId == 57054n) {
       // Sonic blaze testnet.
@@ -853,7 +852,7 @@ async function main() {
   await combatantsHelper.waitForDeployment();
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
-  const minHarvestInterval = BigInt(3.75 * 3600); // 3 hours 45 minutes;
+  const minHarvestInterval = isBeta ? 600n : BigInt(3.75 * 3600); // 10 mins on beta & 3 hours 45 minutes on prod
   const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
   const territoryTreasury = await upgrades.deployProxy(TerritoryTreasury, [
     await territories.getAddress(),
@@ -979,11 +978,11 @@ async function main() {
 
   tx = await playerNFT.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
-  console.log("petNFT setBrushDistributionPercentages");
+  console.log("playerNFT.setBrushDistributionPercentages");
 
   tx = await petNFT.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
-  console.log("petNFT setBrushDistributionPercentages");
+  console.log("petNFT.setBrushDistributionPercentages");
 
   tx = await shop.setBrushDistributionPercentages(25, 50, 25);
   await tx.wait();
@@ -1052,8 +1051,8 @@ async function main() {
   await tx.wait();
   console.log("territories.setMinimumMMRs");
 
-  const treasuryAccounts = [await shop.getAddress(), ethers.ZeroAddress];
-  const treasuryPercentages = [10, 90];
+  const treasuryAccounts = [await shop.getAddress(), await territoryTreasury.getAddress(), ethers.ZeroAddress];
+  const treasuryPercentages = [2, 30, 68];
   tx = await treasury.setFundAllocationPercentages(treasuryAccounts, treasuryPercentages);
   await tx.wait();
   console.log("treasury.setFundAllocationPercentages");

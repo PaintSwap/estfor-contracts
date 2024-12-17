@@ -118,8 +118,8 @@ const config: HardhatUserConfig = {
       url: process.env.SONIC_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string]
     },
-    sonic_testnet: {
-      url: process.env.SONIC_TESTNET_RPC,
+    "sonic-blaze": {
+      url: process.env.SONIC_BLAZE_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string]
     },
     fantom: {
@@ -145,13 +145,23 @@ const config: HardhatUserConfig = {
     slow: 1
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY
+    apiKey: process.env.ETHERSCAN_API_KEY,
+    customChains: [
+      {
+        network: "sonic",
+        chainId: 146,
+        urls: {
+          apiURL: "https://api.sonicscan.org/api",
+          browserURL: "https://sonicscan.org"
+        }
+      }
+    ]
   },
   contractSizer: {
     alphaSort: true,
     runOnCompile: true,
     disambiguatePaths: false,
-    except: ["test", "@openzeppelin"]
+    except: ["test", "@openzeppelin", "@layerzerolabs"]
   },
   abiExporter: {
     path: "./data/abi",
