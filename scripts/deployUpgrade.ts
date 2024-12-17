@@ -75,7 +75,7 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["delegatecall"],
     timeout
-  })) as Players;
+  })) as unknown as Players;
   await players.waitForDeployment();
   console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
 

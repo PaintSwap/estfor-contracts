@@ -474,7 +474,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
-      isAvailable: false,
+      isAvailable: true,
       questPrerequisiteId: 0
     },
     guaranteedRewards: [
@@ -496,7 +496,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
-      isAvailable: false,
+      isAvailable: true,
       questPrerequisiteId: 0
     },
     guaranteedRewards: [
@@ -518,7 +518,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
-      isAvailable: false,
+      isAvailable: true,
       questPrerequisiteId: 0
     },
     guaranteedRewards: [
@@ -540,7 +540,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
-      isAvailable: false,
+      isAvailable: true,
       questPrerequisiteId: 0
     },
     guaranteedRewards: [
@@ -562,7 +562,7 @@ export const allPassiveActions: PassiveActionInput[] = [
       skipSuccessPercent: 0,
       worldLocation: 0,
       isFullModeOnly: true,
-      isAvailable: true,
+      isAvailable: false,
       questPrerequisiteId: 0
     },
     guaranteedRewards: [

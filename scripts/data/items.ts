@@ -14697,7 +14697,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BOOK_007_ORICHALCUM_1.json",
-    name: "Odlarions Wysgrif Lvl 1",
+    name: "Odlarion's Wysgrif Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -14722,7 +14722,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BOOK_007_ORICHALCUM_2.json",
-    name: "Odlarions Wysgrif Lvl 2",
+    name: "Odlarion's Wysgrif Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -14747,7 +14747,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BOOK_007_ORICHALCUM_3.json",
-    name: "Odlarions Wysgrif Lvl 3",
+    name: "Odlarion's Wysgrif Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -14772,7 +14772,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BOOK_007_ORICHALCUM_4.json",
-    name: "Odlarions Wysgrif Lvl 4",
+    name: "Odlarion's Wysgrif Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -14797,7 +14797,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BOOK_007_ORICHALCUM_5.json",
-    name: "Odlarions Wysgrif Lvl 5",
+    name: "Odlarion's Wysgrif Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -14847,7 +14847,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BOOK_007_ORICHALCUM_INFUSED.json",
-    name: "Infused Odlarions Wysgrif",
+    name: "Infused Odlarion's Wysgrif",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17297,7 +17297,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEED_001_WILD_HARVESTABLE.json",
-    name: "Harvestable Wild Seed",
+    name: "Wild Sprout",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17347,7 +17347,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEED_002_UNKNOWN_HARVESTABLE.json",
-    name: "Harvestable Wild Seed",
+    name: "Unknown Sprout",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17397,7 +17397,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEED_003_MYSTERIOUS_HARVESTABLE.json",
-    name: "Harvestable Wild Seed",
+    name: "Mysterious Sprout",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17447,7 +17447,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEED_004_OBSCURE_HARVESTABLE.json",
-    name: "Harvestable Wild Seed",
+    name: "Obscure Sprout",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17497,7 +17497,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SEED_005_ANCIENT_HARVESTABLE.json",
-    name: "Harvestable Wild Seed",
+    name: "Ancient Sprout",
     isAvailable: true,
     questPrerequisiteId: 0
   },

@@ -54,6 +54,7 @@ async function main() {
   await playersImplRewards.waitForDeployment();
   console.log(`PlayersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 */
+
   if (chainId == 250n) {
     await verifyContracts([
       await playersImplQueueActions.getAddress(),

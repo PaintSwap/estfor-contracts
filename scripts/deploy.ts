@@ -137,12 +137,15 @@ async function main() {
       const EndpointV2Mock = new ContractFactory(EndpointV2MockArtifact.abi, EndpointV2MockArtifact.bytecode, owner);
       const endpointId = 30112; // fantom
       lzEndpoint = await (await EndpointV2Mock.deploy(endpointId, owner)).getAddress();
+      lzEndpoint = await (await ethers.deployContract("MockLZEndpointV2", [1, owner])).getAddress();
       console.log("Deployed mock lzEndpoint");
     } else if (network.chainId == 57054n) {
       // Sonic blaze testnet.
-      brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS); // When you have one
+      brush = await ethers.deployContract("MockBrushToken");
+      console.log(`brush = ${(await brush.getAddress()).toLowerCase()}`);
+      // brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS); // When you have one
 
-      tx = await brush.mint(owner, parseEther("1000000000000"), {gasLimit: 400_000});
+      tx = await brush.mint(owner, parseEther("10000000000000"), {gasLimit: 400_000});
       console.log("Minted brush");
       await tx.wait();
       tx = await brush.transfer("0xF83219Cd7D96ab2D80f16D36e5d9D00e287531eC", ethers.parseEther("100000"));
@@ -150,6 +153,7 @@ async function main() {
       await tx.wait();
 
       wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
+
       oracleAddress = ORACLE_ADDRESS;
       vrf = await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS);
       console.log("attached wftm and vrf");
@@ -160,6 +164,7 @@ async function main() {
       buyBrush = false;
       ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
     } else if (network.chainId == 146n) {
+      // TODO Sonic.
       brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
       wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
       oracleAddress = ORACLE_ADDRESS;

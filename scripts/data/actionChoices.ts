@@ -1524,7 +1524,11 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 300,
-    inputTokenIds: [EstforConstants.SHARD_003_ARCANE, EstforConstants.SHARD_004_ASTRAL, EstforConstants.SHARD_005_VOID],
+    inputTokenIds: [
+      EstforConstants.SHARD_001_PRIMORDIAL,
+      EstforConstants.SHARD_003_ARCANE,
+      EstforConstants.SHARD_004_ASTRAL
+    ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.DAGGER_001_BRONZE_FRAGMENT,
     outputAmount: 1,
@@ -1542,11 +1546,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 450,
-    inputTokenIds: [
-      EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_005_VOID
-    ],
+    inputTokenIds: [EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE, EstforConstants.SHARD_005_VOID],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.DAGGER_002_IRON_FRAGMENT,
     outputAmount: 1,
@@ -1565,9 +1565,9 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     rate: 1 * 1000,
     xpPerHour: 600,
     inputTokenIds: [
-      EstforConstants.SHARD_002_AETHER,
+      EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_005_VOID
     ],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.DAGGER_003_MITHRIL_FRAGMENT,
@@ -1589,7 +1589,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_004_ASTRAL
     ],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.DAGGER_004_ADAMANTINE_FRAGMENT,
@@ -1608,7 +1608,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 900,
-    inputTokenIds: [EstforConstants.SHARD_005_VOID, EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE],
+    inputTokenIds: [EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_004_ASTRAL, EstforConstants.SHARD_005_VOID],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.DAGGER_005_RUNITE_FRAGMENT,
     outputAmount: 1,
@@ -1628,7 +1628,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     xpPerHour: 1200,
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_002_AETHER,
+      EstforConstants.SHARD_003_ARCANE,
       EstforConstants.SHARD_004_ASTRAL
     ],
     inputAmounts: [3, 3, 3],
@@ -4594,7 +4594,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 300,
-    inputTokenIds: [EstforConstants.SHARD_003_ARCANE, EstforConstants.SHARD_004_ASTRAL, EstforConstants.SHARD_005_VOID],
+    inputTokenIds: [EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE, EstforConstants.SHARD_005_VOID],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.BOOK_001_BRONZE_FRAGMENT,
     outputAmount: 1,
@@ -4613,9 +4613,9 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     rate: 1 * 1000,
     xpPerHour: 450,
     inputTokenIds: [
-      EstforConstants.SHARD_003_ARCANE,
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_003_ARCANE,
+      EstforConstants.SHARD_004_ASTRAL
     ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.BOOK_002_IRON_FRAGMENT,
@@ -4634,11 +4634,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 600,
-    inputTokenIds: [
-      EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_004_ASTRAL
-    ],
+    inputTokenIds: [EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_004_ASTRAL, EstforConstants.SHARD_005_VOID],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.BOOK_003_MITHRIL_FRAGMENT,
     outputAmount: 1,
@@ -4658,7 +4654,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     xpPerHour: 750,
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_002_AETHER,
+      EstforConstants.SHARD_003_ARCANE,
       EstforConstants.SHARD_005_VOID
     ],
     inputAmounts: [2, 2, 2],
@@ -4678,7 +4674,11 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 900,
-    inputTokenIds: [EstforConstants.SHARD_005_VOID, EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE],
+    inputTokenIds: [
+      EstforConstants.SHARD_001_PRIMORDIAL,
+      EstforConstants.SHARD_002_AETHER,
+      EstforConstants.SHARD_004_ASTRAL
+    ],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.BOOK_005_RUNITE_FRAGMENT,
     outputAmount: 1,
@@ -4696,11 +4696,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 1200,
-    inputTokenIds: [
-      EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_004_ASTRAL
-    ],
+    inputTokenIds: [EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE, EstforConstants.SHARD_005_VOID],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.BOOK_006_TITANIUM_FRAGMENT,
     outputAmount: 1,
@@ -4718,11 +4714,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 1500,
-    inputTokenIds: [
-      EstforConstants.SHARD_006_OMNI,
-      EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_004_ASTRAL
-    ],
+    inputTokenIds: [EstforConstants.SHARD_006_OMNI, EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE],
     inputAmounts: [1, 4, 4],
     outputTokenId: EstforConstants.BOOK_007_ORICHALCUM_FRAGMENT,
     outputAmount: 1,
@@ -6202,7 +6194,11 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 300,
-    inputTokenIds: [EstforConstants.SHARD_003_ARCANE, EstforConstants.SHARD_004_ASTRAL, EstforConstants.SHARD_005_VOID],
+    inputTokenIds: [
+      EstforConstants.SHARD_001_PRIMORDIAL,
+      EstforConstants.SHARD_003_ARCANE,
+      EstforConstants.SHARD_005_VOID
+    ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.CROSSBOW_001_BRONZE_FRAGMENT,
     outputAmount: 1,
@@ -6221,9 +6217,9 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     rate: 1 * 1000,
     xpPerHour: 450,
     inputTokenIds: [
-      EstforConstants.SHARD_003_ARCANE,
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_002_AETHER,
+      EstforConstants.SHARD_004_ASTRAL
     ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.CROSSBOW_002_IRON_FRAGMENT,
@@ -6242,11 +6238,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 600,
-    inputTokenIds: [
-      EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_004_ASTRAL
-    ],
+    inputTokenIds: [EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE, EstforConstants.SHARD_005_VOID],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.CROSSBOW_003_MITHRIL_FRAGMENT,
     outputAmount: 1,
@@ -6266,8 +6258,8 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     xpPerHour: 750,
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_003_ARCANE,
+      EstforConstants.SHARD_004_ASTRAL
     ],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.CROSSBOW_004_ADAMANTINE_FRAGMENT,
@@ -6286,7 +6278,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skillDiffs: [0],
     rate: 1 * 1000,
     xpPerHour: 900,
-    inputTokenIds: [EstforConstants.SHARD_005_VOID, EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_003_ARCANE],
+    inputTokenIds: [EstforConstants.SHARD_002_AETHER, EstforConstants.SHARD_004_ASTRAL, EstforConstants.SHARD_005_VOID],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.CROSSBOW_005_RUNITE_FRAGMENT,
     outputAmount: 1,
@@ -6306,8 +6298,8 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     xpPerHour: 1200,
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_003_ARCANE,
+      EstforConstants.SHARD_005_VOID
     ],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.CROSSBOW_006_TITANIUM_FRAGMENT,
@@ -6329,7 +6321,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_006_OMNI,
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_005_VOID
     ],
     inputAmounts: [1, 4, 4],
     outputTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_FRAGMENT,
@@ -8143,11 +8135,11 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     rate: 1 * 1000,
     xpPerHour: 2000,
     inputTokenIds: [
-      EstforConstants.DAGGER_007_ORICHALCUM_FRAGMENT,
-      EstforConstants.FLUX,
-      EstforConstants.EXTRA_LARGE_ELIXIUM
+      EstforConstants.DAGGER_007_ORICHALCUM,
+      EstforConstants.EXTRA_LARGE_ELIXIUM,
+      EstforConstants.POTION_006_LARGE_MELEE
     ],
-    inputAmounts: [50, 50, 10],
+    inputAmounts: [1, 20, 50],
     outputTokenId: EstforConstants.DAGGER_007_ORICHALCUM_INFUSED,
     outputAmount: 1,
     successPercent: 100,
@@ -8165,11 +8157,11 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     rate: 1 * 1000,
     xpPerHour: 4000,
     inputTokenIds: [
-      EstforConstants.BOOK_007_ORICHALCUM_FRAGMENT,
-      EstforConstants.FLUX,
-      EstforConstants.EXTRA_LARGE_ELIXIUM
+      EstforConstants.BOOK_007_ORICHALCUM,
+      EstforConstants.EXTRA_LARGE_ELIXIUM,
+      EstforConstants.POTION_010_LARGE_MAGIC
     ],
-    inputAmounts: [100, 50, 10],
+    inputAmounts: [1, 20, 50],
     outputTokenId: EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
     outputAmount: 1,
     successPercent: 100,
@@ -8187,11 +8179,11 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     rate: 1 * 1000,
     xpPerHour: 4000,
     inputTokenIds: [
-      EstforConstants.CROSSBOW_007_ORICHALCUM_FRAGMENT,
-      EstforConstants.FLUX,
-      EstforConstants.EXTRA_LARGE_ELIXIUM
+      EstforConstants.CROSSBOW_007_ORICHALCUM,
+      EstforConstants.EXTRA_LARGE_ELIXIUM,
+      EstforConstants.POTION_008_LARGE_RANGED
     ],
-    inputAmounts: [100, 50, 10],
+    inputAmounts: [1, 20, 50],
     outputTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
     outputAmount: 1,
     successPercent: 100,

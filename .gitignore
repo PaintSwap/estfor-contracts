@@ -2,9 +2,10 @@ node_modules
 .env
 *.log
 unknown-*.json
-!unknown-250.json
-!unknown-250-beta.json
-!unknown-64165.json
+# sonic blaze
+!unknown-57054
+# sonic
+!unknown-146
 coverage
 coverage.json
 typechain
