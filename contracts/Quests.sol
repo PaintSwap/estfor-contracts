@@ -25,6 +25,16 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   event DeactivateQuest(uint256 playerId, uint256 questId);
   event QuestCompleted(address from, uint256 playerId, uint256 questId);
   event UpdateQuestProgress(uint256 playerId, PlayerQuest playerQuest);
+  // Just for the bridge
+  event QuestCompletedFromBridge(
+    address from,
+    uint256 playerId,
+    uint256 questId,
+    uint256[] extraItemTokenIds,
+    uint256[] extraItemAMounts,
+    Skill[] extraSkills,
+    uint256[] extraSkillXPs
+  );
 
   error NotWorld();
   error NotOwnerOfPlayerAndActive();
@@ -64,7 +74,6 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   address private _randomnessBeacon;
   IPlayers private _players;
   uint16 private _numTotalQuests;
-
   // For buying/selling brush
   ISolidlyRouter private _router;
   address private _wNative; // wFTM
@@ -222,13 +231,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   ) external onlyBridge {
     for (uint256 i; i < questsCompleted.length; ++i) {
       uint256 questId = questsCompleted[i];
-      _questCompleted(from, playerId, questId);
+      _questCompletedBridge(from, playerId, questId);
     }
 
     for (uint256 i; i < questIds.length; ++i) {
       uint256 questId = questIds[i];
       PlayerQuest memory playerQuest;
       if (questId != 0) {
+        playerQuest.questId = uint32(questId);
         playerQuest.actionCompletedNum1 = uint16(questActionCompletedNum1s[i]);
         playerQuest.actionCompletedNum2 = uint16(questActionCompletedNum2s[i]);
         playerQuest.actionChoiceCompletedNum = uint16(questActionChoiceCompletedNums[i]);
@@ -307,6 +317,53 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     emit QuestCompleted(from, playerId, questId);
     _questsCompleted[playerId].set(questId);
     delete _activeQuests[playerId];
+    ++_playerInfo[playerId].numFixedQuestsCompleted;
+  }
+
+  // TODO: Delete after bridge is removed
+  uint256 private constant QUEST_WAY_OF_THE_AXE = 25;
+  uint256 private constant QUEST_BAIT_AND_STRING_V = 39;
+  uint256 private constant QUEST_SPECIAL_ASSIGNMENT = 47;
+  uint256 private constant QUEST_SPECIAL_ASSIGNMENT_V = 51;
+
+  function _isCompletedBridgedQuest(uint256 questId) private view returns (Skill skill, uint32 skillXP) {
+    if (
+      (questId >= QUEST_WAY_OF_THE_AXE && questId <= QUEST_BAIT_AND_STRING_V) ||
+      (questId >= QUEST_SPECIAL_ASSIGNMENT && questId <= QUEST_SPECIAL_ASSIGNMENT_V)
+    ) {
+      return (_allFixedQuests[questId].skillReward, _allFixedQuests[questId].skillXPGained);
+    }
+  }
+
+  function _questCompletedBridge(
+    address from,
+    uint256 playerId,
+    uint256 questId
+  ) private returns (Skill skill, uint32 skillXP) {
+    (skill, skillXP) = _isCompletedBridgedQuest(questId);
+    uint256[] memory extraItemTokenIds;
+    uint256[] memory extraItemAmounts;
+    Skill[] memory extraSkills = new Skill[](skill != Skill.NONE ? 1 : 0);
+    uint256[] memory extraSkillXPs = new uint256[](skill != Skill.NONE ? 1 : 0);
+
+    if (skill != Skill.NONE) {
+      extraSkills[0] = skill;
+      extraSkillXPs[0] = skillXP;
+
+      uint xp = _players.getPlayerXP(playerId, skill);
+      // Allow XP threshold rewards if this ends up passing any thresholds
+      _players.modifyXP(from, playerId, skill, uint56(xp + skillXP), false);
+    }
+    emit QuestCompletedFromBridge(
+      from,
+      playerId,
+      questId,
+      extraItemTokenIds,
+      extraItemAmounts,
+      extraSkills,
+      extraSkillXPs
+    );
+    _questsCompleted[playerId].set(questId);
     ++_playerInfo[playerId].numFixedQuestsCompleted;
   }
 

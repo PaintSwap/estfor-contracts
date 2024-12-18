@@ -11,8 +11,6 @@ import {getChainId} from "./utils";
 async function main() {
   const [owner, alice] = await ethers.getSigners();
   console.log(`Deploying clan wars test data: ${owner.address} on chain id ${await getChainId(owner)}`);
-  // const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-  // const alice = await ethers.getImpersonatedSigner("0xBa00694692267ed0B5154d48Fcb4D435D0B24d3F");
 
   const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS);
   const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);

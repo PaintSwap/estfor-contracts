@@ -163,13 +163,14 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
           uint256
         )
       );
+
     // Mint the player
     _playerNFT.mintBridge(from, playerId, avatarId, heroName, discord, twitter, telegram, isUpgraded);
 
     // Update all xps for the skills
     uint256 totalXP;
     uint256 totalLevel;
-    bool skipEffects = false;
+    bool skipEffects = true;
     for (uint256 i = 0; i < skills.length; ++i) {
       uint56 skillXP = uint56(xps[i]);
       if (skillXP > 0) {
@@ -178,7 +179,8 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
       totalXP += skillXP;
       totalLevel += PlayersLibrary._getLevel(skillXP);
     }
-
+    // Need to add Level 1 for farming as it didn't exist on Fantom
+    totalLevel += 1;
     _players.bridgePlayer(playerId, totalXP, totalLevel);
 
     // Create clan. Not worrying about the clan items, only clan itself

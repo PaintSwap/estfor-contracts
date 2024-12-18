@@ -906,7 +906,7 @@ describe("Quests", function () {
     await players.connect(alice).processActions(playerId);
     const cookingXP = await players.getPlayerXP(playerId, Skill.COOKING);
     expect(await players.getPlayerXP(playerId, Skill.WOODCUTTING)).to.eq(10000);
-    expect((await players.getPlayers(playerId)).totalXP).to.eq(START_XP + cookingXP + 10000n);
+    expect((await players.getPlayer(playerId)).totalXP).to.eq(START_XP + cookingXP + 10000n);
     expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_BAR)).to.eq(3);
   });
 

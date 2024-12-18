@@ -20,6 +20,7 @@ jobs:
       PRIVATE_KEY1: "0xa0610ad18a7a793b0d2c12d28d74ccc8d90a422514db2e4cea3a9eaec7215ad3"
       IS_BETA: true
       HARDHAT_USE_PRIVATE_KEY: false
+      CHAIN_ID: 31337
     steps:
       - uses: actions/checkout@v4
       - name: Install packages

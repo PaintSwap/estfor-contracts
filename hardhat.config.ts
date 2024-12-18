@@ -125,7 +125,7 @@ const config: HardhatUserConfig = {
     fantom: {
       url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("10", "gwei"))
+      gasPrice: Number(parseUnits("100", "gwei"))
     }
   },
   external: {

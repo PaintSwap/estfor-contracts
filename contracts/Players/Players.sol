@@ -471,7 +471,7 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     return _playerXP[playerId];
   }
 
-  function getPlayers(uint256 playerId) external view returns (Player memory) {
+  function getPlayer(uint256 playerId) external view returns (Player memory) {
     return _players[playerId];
   }
 

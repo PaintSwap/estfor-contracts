@@ -213,18 +213,18 @@ async function main() {
   let mmrAttackDistance;
   if (!isBeta) {
     // prod version
-    itemsUri = "ipfs://bafybeiajnpzlbg2ymeerahd3cwhc3tp3b3bxzj6iahdqyzuwarinsbfsta/";
+    itemsUri = "ipfs://bafybeigv35aag7dowwogpu2qkzt3z4brguwlc7pkho55v6yvotor72xy5a/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
-    editNameBrushPrice = parseEther("1000");
+    editNameBrushPrice = parseEther("200");
     editPetNameBrushPrice = parseEther("1");
-    upgradePlayerBrushPrice = parseEther("2000");
+    upgradePlayerBrushPrice = parseEther("400");
     raffleEntryCost = parseEther("7");
-    startGlobalDonationThresholdRewards = parseEther("300000");
-    clanDonationThresholdRewardIncrement = parseEther("5000");
+    startGlobalDonationThresholdRewards = parseEther("100000");
+    clanDonationThresholdRewardIncrement = parseEther("2500");
     mmrAttackDistance = 4;
   } else {
-    itemsUri = "ipfs://bafybeibvzbxbblmg7hixl7zozjdacmu6qtj46z7p5pukiflb5kgcakwz5a/";
+    itemsUri = "ipfs://bafybeiebmf7ov2hpicrscvobmyhuwcdl2pmtb2fibinlospkjtrg7rl2ny/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
     editNameBrushPrice = parseEther("1");
@@ -896,7 +896,7 @@ async function main() {
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
-  if (network.chainId == 250n) {
+  if (network.chainId == 416n) {
     try {
       const addresses = [
         await players.getAddress(),
@@ -1141,8 +1141,8 @@ async function main() {
     console.log("Add actions chunk ", i);
   }
 
-  // TODO: Bridge remove this later
-  tx = await players.setXPModifiers([bridge], true);
+  // TODO: Bridge & quests remove later
+  tx = await players.setXPModifiers([bridge, quests], true);
   await tx.wait();
   console.log("players.setXPModifiers");
 

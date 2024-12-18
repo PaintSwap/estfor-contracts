@@ -552,10 +552,13 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     uint256 length = uint256(startSkills[1] != Skill.NONE ? 2 : 1);
     uint32 xpEach = uint32(START_XP / length);
 
+    bool fromBridge = startingItemTokenIds.length == 0;
     uint256 levelsGained;
-    for (uint256 i; i < length; ++i) {
-      Skill skill = startSkills[i];
-      levelsGained += _updateXP(from, playerId, skill, xpEach);
+    if (!fromBridge) {
+      for (uint256 i; i < length; ++i) {
+        Skill skill = startSkills[i];
+        levelsGained += _updateXP(from, playerId, skill, xpEach);
+      }
     }
 
     Player storage player = _players[playerId];
@@ -565,7 +568,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     player.skillBoosted2 = startSkills[1]; // Can be NONE
 
     // Mint starting equipment
-    if (startingItemTokenIds.length != 0) {
+    if (!fromBridge) {
       _itemNFT.mintBatch(from, startingItemTokenIds, startingAmounts);
     }
   }

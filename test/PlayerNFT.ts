@@ -174,7 +174,7 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(alice)).to.eq(0);
 
     // Check upgraded flag
-    const player = await players.getPlayers(newPlayerId);
+    const player = await players.getPlayer(newPlayerId);
     expect(player.packedData == "0x80");
   });
 
@@ -257,7 +257,7 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n + editNameBrushPrice / 2n);
 
     // Check upgraded flag
-    const player = await players.getPlayers(playerId);
+    const player = await players.getPlayer(playerId);
     expect(player.packedData == "0x80");
 
     // Upgrading should fail the second time
@@ -307,7 +307,7 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n);
 
     // Check upgraded flag
-    const player = await players.getPlayers(playerId);
+    const player = await players.getPlayer(playerId);
     expect(player.packedData == "0x80");
 
     // Check avatar ids are as expected

@@ -121,7 +121,7 @@ describe("Players", function () {
     const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
     expect(await players.getPlayerXP(newPlayerId, Skill.FIREMAKING)).to.eq(START_XP / 2n);
     expect(await players.getPlayerXP(newPlayerId, Skill.HEALTH)).to.eq(START_XP / 2n);
-    expect((await players.getPlayers(newPlayerId)).totalXP).to.eq(START_XP);
+    expect((await players.getPlayer(newPlayerId)).totalXP).to.eq(START_XP);
   });
 
   it("Skill points", async function () {
@@ -133,7 +133,7 @@ describe("Players", function () {
     await players.connect(alice).processActions(playerId);
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(360);
     expect(await itemNFT.balanceOf(alice, EstforConstants.LOG)).to.eq(10); // Should be rounded down
-    expect((await players.getPlayers(playerId)).totalXP).to.eq(START_XP + 360n);
+    expect((await players.getPlayer(playerId)).totalXP).to.eq(START_XP + 360n);
   });
 
   it("Skill points (many)", async function () {
@@ -1123,7 +1123,7 @@ describe("Players", function () {
 
   describe("Missing required equipment right hand equipment", async function () {
     async function expectRemovedCurrentAction(players: Players, playerId: bigint, now: number) {
-      const player = await players.getPlayers(playerId);
+      const player = await players.getPlayer(playerId);
       expect(player.currentActionStartTimestamp).to.eq(now);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
       expect(player.currentActionProcessedXPGained1).to.eq(0);
@@ -1362,7 +1362,7 @@ describe("Players", function () {
     await ethers.provider.send("evm_mine", []);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await players.connect(alice).processActions(playerId);
-    const player = await players.getPlayers(playerId);
+    const player = await players.getPlayer(playerId);
     expect(player.currentActionStartTimestamp).to.eq(NOW + 1);
     expect(player.currentActionProcessedSkill1).to.eq(Skill.WOODCUTTING);
     expect(player.currentActionProcessedXPGained1).to.eq((queuedAction.timespan * 10) / rate);
@@ -2508,7 +2508,7 @@ describe("Players", function () {
     const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
     expect(pendingQueuedActionState.worldLocation).to.eq(1);
     await players.connect(alice).processActions(playerId);
-    expect((await players.getPlayers(playerId)).packedData).to.eq("0x01");
+    expect((await players.getPlayer(playerId)).packedData).to.eq("0x01");
     // Should earn agility xp
     expect(await players.getPlayerXP(playerId, EstforTypes.Skill.FARMING)).to.eq(queuedAction.timespan); // TODO: Change this and the other one to AGILITY when it's added
 

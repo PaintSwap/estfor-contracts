@@ -773,7 +773,7 @@ describe("Combat Actions", function () {
 
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250);
 
-      let player = await players.getPlayers(playerId);
+      let player = await players.getPlayer(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
       expect(player.currentActionProcessedXPGained1).to.eq(1145);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
@@ -944,7 +944,7 @@ describe("Combat Actions", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(1145n + 250n);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(381n + 250n);
 
-      let player = await players.getPlayers(playerId);
+      let player = await players.getPlayer(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
       expect(player.currentActionProcessedXPGained1).to.eq(1145 + 250);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
@@ -1920,7 +1920,7 @@ describe("Combat Actions", function () {
       const xpGained = BigInt(Math.floor(queuedAction.timespan * 0.5 * 1.1));
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(startXP + xpGained);
 
-      let player = await players.getPlayers(playerId);
+      let player = await players.getPlayer(playerId);
       expect(player.currentActionStartTimestamp).to.eq(NOW + 1);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
       expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
@@ -1936,7 +1936,7 @@ describe("Combat Actions", function () {
       const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
       NOW = NOW1;
       await players.connect(alice).processActions(playerId);
-      player = await players.getPlayers(playerId);
+      player = await players.getPlayer(playerId);
       expect(player.currentActionStartTimestamp).to.eq(NOW + 1);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MAGIC);
       expect(player.currentActionProcessedXPGained1).to.eq(xpGained);
@@ -1956,7 +1956,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [queuedAction.timespan]);
       await ethers.provider.send("evm_mine", []);
       await players.connect(alice).processActions(playerId);
-      player = await players.getPlayers(playerId);
+      player = await players.getPlayer(playerId);
       expect(player.currentActionStartTimestamp).to.eq(0);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.NONE);
       expect(player.currentActionProcessedXPGained1).to.eq(0);
@@ -3146,7 +3146,7 @@ describe("Combat Actions", function () {
 
     await players.connect(alice).processActions(playerId);
 
-    const actuallyConsumed = Number((await players.getPlayers(playerId)).currentActionProcessedFoodConsumed);
+    const actuallyConsumed = Number((await players.getPlayer(playerId)).currentActionProcessedFoodConsumed);
     expect(actuallyConsumed).to.be.oneOf([consumedFood, consumedFood + 1, consumedFood + 2]);
 
     await ethers.provider.send("evm_increaseTime", [3600 * 24]);
