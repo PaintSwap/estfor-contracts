@@ -121,8 +121,28 @@ describe("PlayerNFT", function () {
     const isSecondNameReserved1 = await playerNFT.isHeroNameReserved(secondReservedName);
     expect(isSecondNameReserved1).to.be.false;
 
-    const reservedNames = [reservedName, secondReservedName]; // Replace with actual names if needed
-    await playerNFT.setReservedHeroNames(reservedNames.length, generateUniqueBitPositions(reservedNames));
+    // if we have exported a list of reserved names, we can use them to generate bit positions
+    const filePath = "./export/players.txt";
+    const fileExists = await fs
+      .access(filePath)
+      .then(() => true)
+      .catch(() => false);
+    const reservedNames = fileExists ? (await fs.readFile(filePath, "utf-8")).split("\n") : [];
+    const firstReservedName = reservedNames.length > 0 ? reservedNames[0] : reservedName;
+
+    // but for tests we are going to use a small list
+    reservedNames.push(firstReservedName);
+    reservedNames.push(secondReservedName);
+
+    const positions = generateUniqueBitPositions(reservedNames);
+    // console.log(`Generated ${positions.length} bit positions`);
+    const batchSize = 15000;
+    for (let i = 0; i < positions.length; i += batchSize) {
+      const batch = positions.slice(i, i + batchSize);
+      // const gas = await playerNFT.setReservedHeroNames.estimateGas(reservedNames.length, batch);
+      // console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
+      await playerNFT.setReservedHeroNames(reservedNames.length, batch);
+    }
 
     const isReservedNameStillReserved = await playerNFT.isHeroNameReserved(reservedName);
     expect(isReservedNameStillReserved).to.be.true;
