@@ -122,6 +122,37 @@ export const deployMockPaintSwapContracts = async (): Promise<{
   return {paintSwapMarketplaceWhitelist};
 };
 
+/**
+ * Generates unique bit positions for each item in the Bloom filter.
+ * @param items Array of items to add to the Bloom filter (strings).
+ * @param existing Set of unique bit positions for the Bloom filter.
+ * @param bitCount Number of bits in the Bloom filter.
+ * @returns Set of unique bit positions for the Bloom filter.
+ */
+export function generateUniqueBitPositions(
+  items: string[],
+  existing: bigint[] = [],
+  bitCount: bigint = 65536n
+): bigint[] {
+  const positions = new Set<bigint>(existing);
+  const calculatedHashCount = (bitCount * 144n) / (BigInt(items.length) * 100n) + 1n;
+  const hashCount = calculatedHashCount < 256n ? calculatedHashCount : 255n;
+
+  for (const item of items) {
+    const itemHash = ethers.solidityPackedKeccak256(["string"], [item.trim().toLowerCase()]);
+
+    for (let i = 0n; i < hashCount; i++) {
+      const position = BigInt(ethers.solidityPackedKeccak256(["bytes32", "uint8"], [itemHash, i])) % bitCount;
+      positions.add(position); // Automatically prevents duplicate entries
+    }
+  }
+
+  return [...positions];
+}
+
+// Delay function
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const isBeta = process.env.IS_BETA == "true";
 
 // Needs to match that in rewards.sol
