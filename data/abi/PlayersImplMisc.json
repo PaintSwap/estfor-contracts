@@ -1128,6 +1128,37 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "random",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum Skill",
+        "name": "skill1",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum Skill",
+        "name": "skill2",
+        "type": "uint8"
+      }
+    ],
+    "name": "S",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "from",
         "type": "address"

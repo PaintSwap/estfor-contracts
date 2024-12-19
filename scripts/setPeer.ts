@@ -4,8 +4,6 @@ import {BRIDGE_ADDRESS} from "./contractAddresses";
 
 // Enable bridging by adding other chains
 async function main() {
-  const [owner] = await ethers.getSigners();
-
   const bridge = await ethers.getContractAt("Bridge", BRIDGE_ADDRESS);
   const dstEid = 30112; // Fantom
   let dstBridgeAddress; // Used for Fantom -> Sonic migration

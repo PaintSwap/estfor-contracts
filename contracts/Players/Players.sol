@@ -178,20 +178,17 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
       _setActivePlayer(from, playerId);
     }
 
-    bool isBridging = startingItemTokenIds.length == 0;
-    if (!isBridging) {
-      _delegatecall(
-        _implMisc,
-        abi.encodeWithSelector(
-          IPlayersMiscDelegate.mintedPlayer.selector,
-          from,
-          playerId,
-          startSkills,
-          startingItemTokenIds,
-          startingAmounts
-        )
-      );
-    }
+    _delegatecall(
+      _implMisc,
+      abi.encodeWithSelector(
+        IPlayersMiscDelegate.mintedPlayer.selector,
+        from,
+        playerId,
+        startSkills,
+        startingItemTokenIds,
+        startingAmounts
+      )
+    );
   }
 
   function beforeItemNFTTransfer(
