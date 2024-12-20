@@ -344,8 +344,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     // Have both a minimum and maximum gas limit
     if (callbackGasLimit < 200_000) {
       callbackGasLimit = 200_000;
-    } else if (callbackGasLimit > 5_500_000) {
-      callbackGasLimit = 5_500_000;
+    } else if (callbackGasLimit > 6_500_000) {
+      callbackGasLimit = 6_500_000;
     }
 
     requestId = _samWitchVRF.requestRandomWords(numRandomWords, callbackGasLimit);
