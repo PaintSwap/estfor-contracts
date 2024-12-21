@@ -43,6 +43,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   error AlreadyUnsellable();
   error AlreadySellable();
   error ItemNotSellable(uint tokenId);
+  error SellingPrevented();
 
   struct ShopItem {
     uint16 tokenId;
@@ -67,6 +68,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   uint24 public minItemQuantityBeforeSellsAllowed;
   address public dev;
   mapping(uint itemId => uint price) public shopItems;
+  bool sellingPrevented;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -197,6 +199,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   // Does not burn!
   function _sell(uint _tokenId, uint _quantity, uint _sellPrice) private {
+    if (sellingPrevented) {
+      revert SellingPrevented();
+    }
+
     uint price = shopItems[_tokenId];
     if (price != 0 && price < _sellPrice) {
       revert LiquidatePriceIsHigherThanShop(_tokenId);
@@ -332,6 +338,14 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function setItemNFT(ItemNFT _itemNFT) external onlyOwner {
     itemNFT = _itemNFT;
+  }
+
+  function setSellingPrevented(bool _sellingPrevented) external onlyOwner {
+    sellingPrevented = _sellingPrevented;
+  }
+
+  function withdrawTreasury() external onlyOwner {
+    brush.transfer(dev, brush.balanceOf(address(this)));
   }
 
   function setMinItemQuantityBeforeSellsAllowed(uint24 _minItemQuantityBeforeSellsAllowed) public onlyOwner {

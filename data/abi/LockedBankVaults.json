@@ -107,6 +107,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotEnoughFTM",
     "type": "error"
   },
@@ -1320,6 +1325,19 @@
       }
     ],
     "name": "setBaseAttackCost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_bridge",
+        "type": "address"
+      }
+    ],
+    "name": "setBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

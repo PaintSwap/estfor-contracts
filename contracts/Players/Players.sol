@@ -34,6 +34,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   error GameIsPaused();
   error NotBeta();
   error PlayerLocked();
+  error NotBridge();
 
   modifier isOwnerOfPlayerAndActiveMod(uint _playerId) {
     if (!isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -66,6 +67,13 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   modifier gameNotPaused() {
     if (gamePaused) {
       revert GameIsPaused();
+    }
+    _;
+  }
+
+  modifier onlyBridge() {
+    if (msg.sender != bridge) {
+      revert NotBridge();
     }
     _;
   }
@@ -207,7 +215,7 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
   }
 
   /// @notice Process actions for a player up to the current block timestamp
-  function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant gameNotPaused {
+  function processActions(uint _playerId) external isOwnerOfPlayerAndActiveMod(_playerId) nonReentrant {
     _processActionsAndSetState(_playerId);
   }
 
@@ -600,6 +608,20 @@ contract Players is OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradea
       implProcessActions,
       abi.encodeWithSelector(IPlayersDelegate.testModifyXP.selector, _from, _playerId, _skill, _xp, _force)
     );
+  }
+
+  function getBridgeablePlayer(uint _playerId) external view returns (bool _isPlayerUpgraded) {
+    _isPlayerUpgraded = _isPlayerFullMode(_playerId);
+  }
+
+  function bridgePlayer(address _from, uint _playerId) external onlyBridge {
+    if (players_[_playerId].actionQueue.length != 0) {
+      _clearEverything(_from, _playerId, true);
+    }
+  }
+
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
   }
 
   // For the various view functions that require delegatecall

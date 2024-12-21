@@ -40,6 +40,7 @@ let bazaar;
 let petNFTLibrary;
 let petNFT;
 let passiveActions;
+let bridge;
 
 if (!isBeta) {
   worldLibrary = "0xcba2273a46649cc0ce76e69eb0bb05d9b699ca38";
@@ -82,6 +83,7 @@ if (!isBeta) {
   petNFTLibrary = "0x517792d5cbb33cd337a2ef1bc6290ad964ea434e";
   petNFT = "0x1681f593ac5cba407c2a190de0ca2beb4a69b5d3";
   passiveActions = "0xa3e3a69edaee89b8dbbd1ca37704cc574cb8e1d4";
+  bridge = "";
 } else {
   worldLibrary = "0x31edace030c71d33bd8b6e53c1df123c0404e5ca";
   world = "0xe2f0b5cb118da85be68de1801d40726ce48009aa";
@@ -114,7 +116,7 @@ if (!isBeta) {
   genericInstantVRFActionStrategy = "0xc4c92d3987cc0bad3219e696653eb87eddda78c6";
   eggInstantVRFActionStrategy = "0x941369948CC8a4b5b8eFb1F688Eddfe26A736039";
   lockedBankVaults = "0x40567ad9cd25c56422807ed67f0e66f1825bdb91";
-  lockedBankVaultsLibrary = "0x4361e1825cf5c910d1589600df613322e0e704b0";
+  lockedBankVaultsLibrary = "0x003ed1ca53a5fd1fb9c8f95e41bfbe0c68580078";
   territories = "0xf31517db9f0987002f3a0fb4f787dfb9e892f184";
   decoratorProvider = "0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2";
   combatantsHelper = "0xe8231ac805a88b3c72e9602c2ae14a5d3421bc7c";
@@ -124,6 +126,7 @@ if (!isBeta) {
   petNFTLibrary = "0x1445660336c1b0bcb2b484e86a56297f1da6575d";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
   passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
+  bridge = "0x14b69305897a645ed5a4b542e4c45d629d0fe381";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;
@@ -168,6 +171,7 @@ export const COMBATANTS_HELPER_ADDRESS = combatantsHelper;
 export const PET_NFT_LIBRARY_ADDRESS = petNFTLibrary;
 export const PET_NFT_ADDRESS = petNFT;
 export const PASSIVE_ACTIONS_ADDRESS = passiveActions;
+export const BRIDGE_ADDRESS = bridge;
 
 // Only chain 250 (ftm)
 export const BRUSH_ADDRESS = "0x85dec8c4B2680793661bCA91a8F129607571863d";

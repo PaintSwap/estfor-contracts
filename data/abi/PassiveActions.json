@@ -178,6 +178,11 @@
   },
   {
     "inputs": [],
+    "name": "NotBridge",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -214,6 +219,11 @@
   {
     "inputs": [],
     "name": "ReentrantCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StartActionsPrevented",
     "type": "error"
   },
   {
@@ -1018,6 +1028,30 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBridgeablePassiveAction",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "actionId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint40",
+        "name": "startTime",
+        "type": "uint40"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "contract IPlayers",
         "name": "_players",
         "type": "address"
@@ -1245,6 +1279,19 @@
       }
     ],
     "name": "setAvailable",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_bridge",
+        "type": "address"
+      }
+    ],
+    "name": "setBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

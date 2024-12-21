@@ -37,6 +37,7 @@ import {
   PASSIVE_ACTIONS_ADDRESS,
   PET_NFT_LIBRARY_ADDRESS,
   LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
+  BRIDGE_ADDRESS,
 } from "./contractAddresses";
 import {verifyContracts} from "./utils";
 
@@ -293,7 +294,7 @@ async function main() {
   console.log(`vrfRequestInfo = "${vrfRequestInfo.address.toLowerCase()}"`);
 
   // LockedBankVaults
-  const newLockedBankVaultsLibrary = false;
+  const newLockedBankVaultsLibrary = true;
   const LockedBankVaultsLibrary = await ethers.getContractFactory("LockedBankVaultsLibrary");
   let lockedBankVaultsLibrary: LockedBankVaultsLibrary;
   if (newLockedBankVaultsLibrary) {
@@ -367,6 +368,16 @@ async function main() {
   await passiveActions.deployed();
   console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
 
+  const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c";
+  const Bridge = (await ethers.getContractFactory("Bridge")).connect(owner);
+  const bridge = await upgrades.upgradeProxy(BRIDGE_ADDRESS, Bridge, {
+    kind: "uups",
+    timeout,
+    unsafeAllow: ["delegatecall", "constructor", "state-variable-immutable"],
+    constructorArgs: [lzEndpoint],
+  });
+  await bridge.deployed();
+
   if (network.chainId == 250) {
     await verifyContracts([players.address]);
     await verifyContracts([playerNFT.address]);
@@ -394,6 +405,7 @@ async function main() {
     await verifyContracts([decoratorProvider.address]);
     await verifyContracts([royaltyReceiver.address]);
     await verifyContracts([passiveActions.address]);
+    await verifyContracts([bridge.address]);
   }
 }
 

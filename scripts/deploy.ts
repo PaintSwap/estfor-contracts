@@ -721,18 +721,16 @@ async function main() {
   console.log("petNFT.setTerritories");
 
   tx = await itemNFT.setBazaar(BAZAAR_ADDRESS);
+  await tx.wait();
   console.log("Set Bazaar");
 
-  const clanWars = [lockedBankVaults, territories];
-  for (const clanWar of clanWars) {
-    try {
-      tx = await clanWar.setAddresses(territories.address, combatantsHelper.address);
-      await tx.wait();
-      console.log("clanWar setAddresses");
-    } catch (error) {
-      console.error(`Error: ${error}`);
-    }
-  }
+  tx = await lockedBankVaults.setAddresses(territories.address, combatantsHelper.address);
+  await tx.wait();
+  console.log("lockedBankVaults.setAddresses");
+
+  tx = await territories.setCombatantsHelper(combatantsHelper.address);
+  await tx.wait();
+  console.log("territories.setCombatantsHelper");
 
   const territoryIds = allTerritories.map((territory) => {
     return territory.territoryId;

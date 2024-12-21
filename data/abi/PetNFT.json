@@ -1101,6 +1101,24 @@
         "type": "address"
       },
       {
+        "internalType": "uint256[]",
+        "name": "_petIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "bridgePets",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_tokenId",
         "type": "uint256"
@@ -1240,6 +1258,70 @@
     "name": "editPet",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "petIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "throwOnError",
+        "type": "bool"
+      }
+    ],
+    "name": "getBridgeablePets",
+    "outputs": [
+      {
+        "internalType": "uint24[]",
+        "name": "basePetIds",
+        "type": "uint24[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "petNames",
+        "type": "string[]"
+      },
+      {
+        "internalType": "enum Skill[]",
+        "name": "skillEnhancement1s",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "skillFixedEnhancement1s",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "skillPercentageEnhancement1",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "enum Skill[]",
+        "name": "skillEnhancement2s",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "skillFixedEnhancement2s",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "skillPercentageEnhancement2s",
+        "type": "uint8[]"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1614,6 +1696,19 @@
       }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_bridge",
+        "type": "address"
+      }
+    ],
+    "name": "setBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

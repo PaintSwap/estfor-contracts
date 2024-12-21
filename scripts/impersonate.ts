@@ -15,7 +15,7 @@ import {
   TERRITORIES_ADDRESS,
   WORLD_ADDRESS,
 } from "./contractAddresses";
-import {deployPlayerImplementations} from "./utils";
+import {createPlayer, deployPlayerImplementations} from "./utils";
 import {
   Clans,
   EggInstantVRFActionStrategy,
@@ -35,7 +35,6 @@ import {
   Territories,
   WorldLibrary,
 } from "../typechain-types";
-import {LockedBankVault} from "@paintswap/estfor-definitions/types";
 
 // When you need to fork a chain and debug
 async function main() {
@@ -69,7 +68,6 @@ async function main() {
       playersImplMisc1.address
     );
   await tx.wait();
-  /*
   // PlayerNFT
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
@@ -187,11 +185,12 @@ async function main() {
     kind: "uups",
     timeout: 100000,
   })) as InstantVRFActions;
-*/
   //  await players.connect(player).testModifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, true);
 
   const pendingQueuedActionState = await players.pendingQueuedActionState(player.address, playerId);
   console.log(pendingQueuedActionState);
+
+  await players.connect(player).processActions(playerId);
 }
 
 main().catch((error) => {

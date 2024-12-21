@@ -62,6 +62,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   error NotDoingAnyActions();
   error InvalidStrategy();
   error StrategyAlreadyExists();
+  error ActionsPrevented();
 
   struct PlayerActionInfo {
     uint16[10] actionIdAmountPairs; // actionId, amount
@@ -98,6 +99,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   address private oracle;
   ISamWitchVRF private samWitchVRF;
   PetNFT private petNFT;
+  bool private preventActions;
 
   uint public constant MAX_ACTION_AMOUNT = 64;
   uint private constant CALLBACK_GAS_LIMIT_PER_ACTION = 120_000;
@@ -147,6 +149,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint16[] calldata _actionIds,
     uint[] calldata _actionAmounts
   ) external payable isOwnerOfPlayerAndActive(_playerId) {
+    if (preventActions) {
+      revert ActionsPrevented();
+    }
+
     if (_actionIds.length != _actionAmounts.length) {
       revert LengthMismatch();
     }
@@ -524,6 +530,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       actions[_actionIds[i]].packedData = packedData;
     }
     emit SetAvailableActions(_actionIds, _isAvailable);
+  }
+
+  function setPreventActions(bool _preventActions) external onlyOwner {
+    preventActions = _preventActions;
   }
 
   // solhint-disable-next-line no-empty-blocks

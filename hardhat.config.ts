@@ -74,10 +74,10 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [defaultConfig, mediumRunsConfig, lowRunsConfig, lowestRunsConfig],
     overrides: {
-      "contracts/Clans/Clans.sol": mediumRunsConfig,
+      "contracts/Clans/Clans.sol": lowRunsConfig,
       "contracts/Clans/LockedBankVaults.sol": lowRunsConfig,
       "contracts/Clans/Territories.sol": mediumRunsConfig,
-      "contracts/Players/Players.sol": lowRunsConfig,
+      "contracts/Players/Players.sol": lowestRunsConfig,
       "contracts/Players/PlayersImplMisc.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplProcessActions.sol": mediumRunsConfig,
       "contracts/Players/PlayersImplQueueActions.sol": mediumRunsConfig,
@@ -85,7 +85,7 @@ const config: HardhatUserConfig = {
       "contracts/Promotions.sol": mediumRunsConfig,
       "contracts/World.sol": lowRunsConfig,
       "contracts/ItemNFT.sol": mediumRunsConfig,
-      "contracts/PetNFT.sol": lowRunsConfig,
+      "contracts/PetNFT.sol": lowestRunsConfig,
     },
   },
   gasReporter: {
@@ -101,7 +101,7 @@ const config: HardhatUserConfig = {
     fantom: {
       url: process.env.FTM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: ethers.utils.parseUnits("30", "gwei").toNumber(),
+      gasPrice: ethers.utils.parseUnits("20", "gwei").toNumber(),
     },
     fantom_testnet: {
       url: process.env.FTM_RPC_TESTNET,

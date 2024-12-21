@@ -1,0 +1,22 @@
+[
+  {
+    "inputs": [],
+    "name": "Executor_InvalidLzComposeOption",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Executor_InvalidLzReadOption",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Executor_InvalidLzReceiveOption",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Executor_InvalidNativeDropOption",
+    "type": "error"
+  }
+]

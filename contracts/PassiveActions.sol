@@ -61,6 +61,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   error TooManyInputItems();
   error InvalidInputTokenId();
   error NoInputItemsSpecified();
+  error NotBridge();
+  error StartActionsPrevented();
 
   struct PassiveActionInput {
     uint16 actionId;
@@ -123,10 +125,18 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   mapping(uint actionId => PassiveAction action) public actions;
   mapping(uint actionId => ActionRewards) private actionRewards;
   mapping(uint playerId => ActivePassiveInfo activePassiveInfo) private activePassiveActions;
+  address bridge;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
       revert NotOwnerOfPlayerAndActive();
+    }
+    _;
+  }
+
+  modifier onlyBridge() {
+    if (msg.sender != bridge) {
+      revert NotBridge();
     }
     _;
   }
@@ -151,6 +161,10 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
     uint16 _actionId,
     uint16 _boostItemTokenId
   ) external isOwnerOfPlayerAndActive(_playerId) {
+    if (bridge != address(0)) {
+      revert StartActionsPrevented();
+    }
+
     // Cannot start a passive action when one is active already for this player
     if (activePassiveActions[_playerId].actionId != NONE) {
       (bool finished, , , , ) = finishedInfo(_playerId);
@@ -652,6 +666,15 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
       actions[_actionIds[i]].packedData = packedData;
     }
     emit SetAvailableActions(_actionIds, _isAvailable);
+  }
+
+  // Just returns the data for current passive action
+  function getBridgeablePassiveAction(uint _playerId) external view returns (uint16 actionId, uint40 startTime) {
+    return (activePassiveActions[_playerId].actionId, activePassiveActions[_playerId].startTime);
+  }
+
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
   }
 
   // solhint-disable-next-line no-empty-blocks
