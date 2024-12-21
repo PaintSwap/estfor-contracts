@@ -33,8 +33,8 @@ contract TestSamWitchERC1155UpgradeableSinglePerToken is
     _burn(account, id, amount);
   }
 
-  function burnBatch(address account, uint256[] memory ids, uint256[] memory amounts) external {
-    _burnBatch(account, ids, amounts);
+  function burnBatch(address account, uint256[] memory ids) external {
+    _burnBatch(account, ids);
   }
 
   // solhint-disable-next-line no-empty-blocks

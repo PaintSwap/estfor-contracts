@@ -305,16 +305,17 @@ describe("SamWitchERC1155UpgradeableSinglePerToken", function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
-      await expect(
-        erc1155UpgradeableSinglePerToken.burnBatch(owner, [firstTokenId], [firstAmount + 1])
-      ).to.be.revertedWithCustomError(erc1155UpgradeableSinglePerToken, "ERC1155InsufficientBalance");
+      await expect(erc1155UpgradeableSinglePerToken.burnBatch(owner, [secondTokenId])).to.be.revertedWithCustomError(
+        erc1155UpgradeableSinglePerToken,
+        "ERC1155InsufficientBalance"
+      );
     });
 
     it("Burning should remove from totalSupply and remove balance", async function () {
       const {owner, erc1155UpgradeableSinglePerToken} = await loadFixture(deployContracts);
       await erc1155UpgradeableSinglePerToken.mint(owner, firstTokenId, firstAmount, "0x");
 
-      await erc1155UpgradeableSinglePerToken.burnBatch(owner, [firstTokenId], [firstAmount]);
+      await erc1155UpgradeableSinglePerToken.burnBatch(owner, [firstTokenId]);
 
       expect(await erc1155UpgradeableSinglePerToken["totalSupply()"]()).to.be.eq(0);
       expect(await erc1155UpgradeableSinglePerToken["totalSupply(uint256)"](firstTokenId)).to.be.eq(0);

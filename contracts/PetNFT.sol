@@ -382,12 +382,8 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     emit NewPets(petIds[0], pets, petNames, petOwner);
   }
 
-  function burnBatch(address from, uint256[] memory tokenIds) external onlyBurners(from) {
-    uint256[] memory amounts = new uint256[](tokenIds.length);
-    for (uint256 i = 0; i < tokenIds.length; ++i) {
-      amounts[i] = 1;
-    }
-    _burnBatch(from, tokenIds, amounts);
+  function burnBatch(address from, uint256[] calldata tokenIds) external onlyBurners(from) {
+    _burnBatch(from, tokenIds);
   }
 
   function burn(address from, uint256 tokenId) external onlyBurners(from) {
