@@ -87,7 +87,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     uint64 playerId;
   }
 
-  uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 135_000;
+  uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 140_000;
   uint256 private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
 
   ItemNFT private _itemNFT;
