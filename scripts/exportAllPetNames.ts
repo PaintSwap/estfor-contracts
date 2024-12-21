@@ -1,5 +1,6 @@
 import * as fs from "fs/promises";
-import {exportPetNamesFilePath, sleep} from "./utils";
+import {exportPetNamesFilePath, isBeta, sleep} from "./utils";
+import "dotenv/config";
 
 // Fetch pets function
 export async function exportAllPetNames(): Promise<void> {
@@ -21,7 +22,8 @@ export async function exportAllPetNames(): Promise<void> {
       console.log(`Processed batch starting at ${skip}`);
 
       // Construct URL with current skip value
-      const url = `https://api.estfor.com/pets?numToFetch=1000&numToSkip=${skip}`;
+      const apiBaseUrl = isBeta ? process.env.API_BETA_URL : process.env.API_URL;
+      const url = `${apiBaseUrl}/pets?numToFetch=1000&numToSkip=${skip}`;
 
       // Make the request
       const response = await fetch(url);

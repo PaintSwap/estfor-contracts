@@ -203,7 +203,6 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     setEditNameCost(editNameCost);
     // TODO: Remove after migration is done
     _reservedPetNames._initialize();
-    _createdTime = uint40(block.timestamp);
     _bridge = bridge;
   }
 
@@ -391,7 +390,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   }
 
   // Not used yet
-  function requestTrain(
+  /*  function requestTrain(
     uint256 playerId,
     uint256 petId,
     uint256 timestamp
@@ -410,7 +409,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     _pets[petId].lastTrainedTimestamp = uint40(timestamp);
     // TODO: Levelled up?
     emit Train(playerId, petId, xpGained);
-  }
+  } */
 
   function _createRandomPet(uint256 petId, uint256 _basePetId, uint256 randomWord) private returns (Pet memory pet) {
     require(_basePetMetadatas[_basePetId].skillEnhancement1 != Skill.NONE, PetDoesNotExist());
