@@ -633,9 +633,15 @@
       },
       {
         "indexed": false,
-        "internalType": "uint16",
+        "internalType": "uint256",
         "name": "boostItemTokenId",
-        "type": "uint16"
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "startTimestamp",
+        "type": "uint256"
       }
     ],
     "name": "StartPassiveAction",

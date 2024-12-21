@@ -970,6 +970,101 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetSkin",
+            "name": "skin",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetEnhancementType",
+            "name": "enhancementType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[2]",
+            "name": "skillEnhancements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillMinLevels",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "fixedStarThreshold",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "percentageStarThreshold",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct PetNFT.BasePetInput[]",
+        "name": "basePetInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addBasePets",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "from",
         "type": "address"
@@ -1075,6 +1170,101 @@
       }
     ],
     "name": "burnBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "tier",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetSkin",
+            "name": "skin",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum PetEnhancementType",
+            "name": "enhancementType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum Skill[2]",
+            "name": "skillEnhancements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillFixedIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMins",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageMaxs",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillPercentageIncrements",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint8[2]",
+            "name": "skillMinLevels",
+            "type": "uint8[2]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "fixedStarThreshold",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "percentageStarThreshold",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct PetNFT.BasePetInput[]",
+        "name": "basePetInputs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "editBasePets",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1678,6 +1868,19 @@
       }
     ],
     "name": "setEditNameCost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "imageBaseUri",
+        "type": "string"
+      }
+    ],
+    "name": "setImageBaseUri",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

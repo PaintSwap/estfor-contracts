@@ -23,7 +23,14 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
   event AddPassiveActions(PassiveActionInput[] passiveActionInputs);
   event EditPassiveActions(PassiveActionInput[] passiveActionInputs);
-  event StartPassiveAction(uint256 playerId, address from, uint256 actionId, uint256 queueId, uint16 boostItemTokenId);
+  event StartPassiveAction(
+    uint256 playerId,
+    address from,
+    uint256 actionId,
+    uint256 queueId,
+    uint256 boostItemTokenId,
+    uint256 startTimestamp
+  );
   event EarlyEndPassiveAction(uint256 playerId, address from, uint256 queueId);
   event ClaimPassiveAction(
     uint256 playerId,
@@ -194,7 +201,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
 
     _burnInputs(action, boostItemTokenId);
 
-    emit StartPassiveAction(playerId, _msgSender(), actionId, queueId, boostItemTokenId);
+    emit StartPassiveAction(playerId, _msgSender(), actionId, queueId, boostItemTokenId, block.timestamp);
   }
 
   function claim(uint256 playerId) external isOwnerOfPlayerAndActive(playerId) nonReentrant {
@@ -319,7 +326,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
         boostItemTokenId: boostItemTokenId
       });
 
-      emit StartPassiveAction(playerId, _msgSender(), actionId, queueId, boostItemTokenId);
+      emit StartPassiveAction(playerId, _msgSender(), actionId, queueId, boostItemTokenId, startTime);
     }
   }
 

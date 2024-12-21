@@ -37769,7 +37769,7 @@
             "label": "_players",
             "offset": 0,
             "slot": "0",
-            "type": "t_contract(IPlayers)16864",
+            "type": "t_contract(IPlayers)16886",
             "contract": "PassiveActions",
             "src": "contracts\\PassiveActions.sol:120"
           },
@@ -37785,7 +37785,7 @@
             "label": "_randomnessBeacon",
             "offset": 0,
             "slot": "2",
-            "type": "t_contract(RandomnessBeacon)14936",
+            "type": "t_contract(RandomnessBeacon)14944",
             "contract": "PassiveActions",
             "src": "contracts\\PassiveActions.sol:122"
           },
@@ -37809,7 +37809,7 @@
             "label": "_actionRewards",
             "offset": 0,
             "slot": "4",
-            "type": "t_mapping(t_uint256,t_struct(ActionRewards)16441_storage)",
+            "type": "t_mapping(t_uint256,t_struct(ActionRewards)16449_storage)",
             "contract": "PassiveActions",
             "src": "contracts\\PassiveActions.sol:125"
           },
@@ -37893,7 +37893,7 @@
             "label": "bytes1",
             "numberOfBytes": "1"
           },
-          "t_contract(IPlayers)16864": {
+          "t_contract(IPlayers)16886": {
             "label": "contract IPlayers",
             "numberOfBytes": "20"
           },
@@ -37901,11 +37901,11 @@
             "label": "contract ItemNFT",
             "numberOfBytes": "20"
           },
-          "t_contract(RandomnessBeacon)14936": {
+          "t_contract(RandomnessBeacon)14944": {
             "label": "contract RandomnessBeacon",
             "numberOfBytes": "20"
           },
-          "t_enum(Skill)15418": {
+          "t_enum(Skill)15426": {
             "label": "enum Skill",
             "members": [
               "NONE",
@@ -37951,7 +37951,7 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_mapping(t_uint256,t_struct(ActionRewards)16441_storage)": {
+          "t_mapping(t_uint256,t_struct(ActionRewards)16449_storage)": {
             "label": "mapping(uint256 => struct ActionRewards)",
             "numberOfBytes": "32"
           },
@@ -37963,7 +37963,7 @@
             "label": "mapping(uint256 => struct PassiveActions.PassiveAction)",
             "numberOfBytes": "32"
           },
-          "t_struct(ActionRewards)16441_storage": {
+          "t_struct(ActionRewards)16449_storage": {
             "label": "struct ActionRewards",
             "members": [
               {
@@ -38154,7 +38154,7 @@
               },
               {
                 "label": "minSkill1",
-                "type": "t_enum(Skill)15418",
+                "type": "t_enum(Skill)15426",
                 "offset": 16,
                 "slot": "0"
               },
@@ -38166,7 +38166,7 @@
               },
               {
                 "label": "minSkill2",
-                "type": "t_enum(Skill)15418",
+                "type": "t_enum(Skill)15426",
                 "offset": 18,
                 "slot": "0"
               },
@@ -38178,7 +38178,7 @@
               },
               {
                 "label": "minSkill3",
-                "type": "t_enum(Skill)15418",
+                "type": "t_enum(Skill)15426",
                 "offset": 20,
                 "slot": "0"
               },
@@ -52936,6 +52936,523 @@
           }
         },
         "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "4ad0d6a2d1f4af1d018fa043ab3126041f456611433eb3d1210d81bb5177f069": {
+      "address": "0x3d7b07D6541C25dc0f0258F0f60B01C448Eb94b8",
+      "txHash": "0x562e1d6f661dffa5837e31d407edec59209eaaebc3826e94561559b288012046",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_players",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IPlayers)16891",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:120"
+          },
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(ItemNFT)11420",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:121"
+          },
+          {
+            "label": "_randomnessBeacon",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(RandomnessBeacon)14949",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:122"
+          },
+          {
+            "label": "_lastQueueId",
+            "offset": 20,
+            "slot": "2",
+            "type": "t_uint80",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:123"
+          },
+          {
+            "label": "_actions",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_struct(PassiveAction)11846_storage)",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:124"
+          },
+          {
+            "label": "_actionRewards",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_uint256,t_struct(ActionRewards)16454_storage)",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:125"
+          },
+          {
+            "label": "_activePassiveActions",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_struct(ActivePassiveInfo)11874_storage)",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:126"
+          },
+          {
+            "label": "_bridge",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_address",
+            "contract": "PassiveActions",
+            "src": "contracts\\PassiveActions.sol:127"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ReentrancyGuardStorage)564_storage": {
+            "label": "struct ReentrancyGuardUpgradeable.ReentrancyGuardStorage",
+            "members": [
+              {
+                "label": "_status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IPlayers)16891": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)11420": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(RandomnessBeacon)14949": {
+            "label": "contract RandomnessBeacon",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Skill)15431": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "FARMING",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_uint256,t_struct(ActionRewards)16454_storage)": {
+            "label": "mapping(uint256 => struct ActionRewards)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ActivePassiveInfo)11874_storage)": {
+            "label": "mapping(uint256 => struct PassiveActions.ActivePassiveInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PassiveAction)11846_storage)": {
+            "label": "mapping(uint256 => struct PassiveActions.PassiveAction)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ActionRewards)16454_storage": {
+            "label": "struct ActionRewards",
+            "members": [
+              {
+                "label": "guaranteedRewardTokenId1",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate1",
+                "type": "t_uint16",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardTokenId2",
+                "type": "t_uint16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate2",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardTokenId3",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "guaranteedRewardRate3",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId1",
+                "type": "t_uint16",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance1",
+                "type": "t_uint16",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount1",
+                "type": "t_uint8",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId2",
+                "type": "t_uint16",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance2",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount2",
+                "type": "t_uint8",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId3",
+                "type": "t_uint16",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance3",
+                "type": "t_uint16",
+                "offset": 24,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount3",
+                "type": "t_uint8",
+                "offset": 26,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardTokenId4",
+                "type": "t_uint16",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardChance4",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "randomRewardAmount4",
+                "type": "t_uint8",
+                "offset": 31,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ActivePassiveInfo)11874_storage": {
+            "label": "struct PassiveActions.ActivePassiveInfo",
+            "members": [
+              {
+                "label": "actionId",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "queueId",
+                "type": "t_uint96",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "startTime",
+                "type": "t_uint40",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "boostItemTokenId",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PassiveAction)11846_storage": {
+            "label": "struct PassiveActions.PassiveAction",
+            "members": [
+              {
+                "label": "durationDays",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId1",
+                "type": "t_uint16",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount1",
+                "type": "t_uint24",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId2",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount2",
+                "type": "t_uint24",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "inputTokenId3",
+                "type": "t_uint16",
+                "offset": 11,
+                "slot": "0"
+              },
+              {
+                "label": "inputAmount3",
+                "type": "t_uint24",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill1",
+                "type": "t_enum(Skill)15431",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "minLevel1",
+                "type": "t_uint8",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill2",
+                "type": "t_enum(Skill)15431",
+                "offset": 18,
+                "slot": "0"
+              },
+              {
+                "label": "minLevel2",
+                "type": "t_uint8",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "minSkill3",
+                "type": "t_enum(Skill)15431",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "minLevel3",
+                "type": "t_uint8",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "skipSuccessPercent",
+                "type": "t_uint8",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "questPrerequisiteId",
+                "type": "t_uint16",
+                "offset": 24,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          },
+          "t_uint96": {
+            "label": "uint96",
+            "numberOfBytes": "12"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.ReentrancyGuard": [
+            {
+              "contract": "ReentrancyGuardUpgradeable",
+              "label": "_status",
+              "type": "t_uint256",
+              "src": "@openzeppelin\\contracts-upgradeable\\utils\\ReentrancyGuardUpgradeable.sol:43",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
           "erc7201:openzeppelin.storage.Ownable": [
             {
               "contract": "OwnableUpgradeable",
