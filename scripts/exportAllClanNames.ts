@@ -1,7 +1,7 @@
 import * as fs from "fs/promises";
 import {sleep} from "./utils";
 
-export const exportClanNamesFilePath = "./export/clans.txt";
+const exportClanNamesFilePath = "./export/clans.txt";
 
 // Fetch clans function
 export async function exportAllClanNames(): Promise<void> {

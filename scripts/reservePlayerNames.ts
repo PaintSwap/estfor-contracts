@@ -1,8 +1,7 @@
 import * as fs from "fs/promises";
 import {ethers} from "hardhat";
 import {PLAYER_NFT_ADDRESS} from "./contractAddresses";
-import {generateUniqueBitPositions} from "./utils";
-import {exportHeroNamesFilePath} from "./exportAllHeroNames";
+import {exportHeroNamesFilePath, generateUniqueBitPositions} from "./utils";
 
 async function setReservedPlayerNames() {
   console.log(`Setting reserved player names`);

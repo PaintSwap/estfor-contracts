@@ -1,8 +1,6 @@
 import * as fs from "fs/promises";
 import {sleep} from "./utils";
 
-export const exportHeroNamesFilePath = "./export/players.txt";
-
 // Fetch players function
 export async function exportAllHeroNames(): Promise<void> {
   // Ensure directory and file exist

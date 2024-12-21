@@ -1,8 +1,7 @@
 import * as fs from "fs/promises";
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS} from "./contractAddresses";
-import {generateUniqueBitPositions} from "./utils";
-import {exportClanNamesFilePath} from "./exportAllClanNames";
+import {exportClanNamesFilePath, generateUniqueBitPositions} from "./utils";
 
 async function setReservedClanNames() {
   console.log(`Setting reserved clan names`);

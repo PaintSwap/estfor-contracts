@@ -1,9 +1,7 @@
 import * as fs from "fs/promises";
 import {ethers} from "hardhat";
 import {PET_NFT_ADDRESS} from "./contractAddresses";
-import {generateUniqueBitPositions} from "./utils";
-
-import {exportPetNamesFilePath} from "./exportAllPetNames";
+import {exportPetNamesFilePath, generateUniqueBitPositions} from "./utils";
 
 async function setReservedPetNames() {
   console.log(`Setting reserved pet names`);
