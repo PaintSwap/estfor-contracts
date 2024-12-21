@@ -6,7 +6,7 @@ import {exportPetNamesFilePath} from "./utils";
 const NAMES_TO_CHECK = 20;
 
 async function checkPlayerNames() {
-  console.log(`Checking reserved player names`);
+  console.log(`Checking reserved pet names`);
   const [owner] = await ethers.getSigners();
 
   const petNFT = (await ethers.getContractAt("PetNFT", PET_NFT_ADDRESS)).connect(owner);
