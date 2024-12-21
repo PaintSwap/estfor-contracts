@@ -474,7 +474,6 @@ async function main() {
   console.log(`bank = "${(await bank.getAddress()).toLowerCase()}"`);
 
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
-
   console.log(`petNFTLibrary = "${(await petNFTLibrary.getAddress()).toLowerCase()}"`);
 
   const PetNFT = await ethers.getContractFactory("PetNFT", {
@@ -491,6 +490,7 @@ async function main() {
       await treasury.getAddress(),
       await randomnessBeacon.getAddress(),
       startPetId,
+      await bridge.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
