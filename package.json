@@ -33,7 +33,7 @@
     "dotenv": "^16.4.5",
     "eslint": "9",
     "ethers": "6",
-    "hardhat": "^2.22.16",
+    "hardhat": "^2.22.17",
     "hardhat-abi-exporter": "^2.10.1",
     "hardhat-contract-sizer": "^2.10.0",
     "hardhat-deploy": "^0.14.0",
