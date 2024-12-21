@@ -995,6 +995,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     }
   }
 
+  function clearReservedClanNames() external onlyOwner {
+    _reservedClanNames._clear(0, 256);
+  }
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

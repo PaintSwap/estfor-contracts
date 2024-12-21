@@ -1360,6 +1360,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "clearReservedClanNames",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",

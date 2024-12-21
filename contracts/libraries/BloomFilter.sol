@@ -170,4 +170,17 @@ library BloomFilter {
       filter.bitmap.set(positions[i]);
     }
   }
+
+  /**
+   * @notice Clears the bitmap of the Bloom filter.
+   * @param filter The Bloom filter to clear.
+   * @param bucketStart The starting bucket index to clear.
+   * @param bucketEnd The ending bucket index to clear.
+   */
+  function _clear(Filter storage filter, uint256 bucketStart, uint256 bucketEnd) internal {
+    require(bucketStart <= bucketEnd);
+    for (uint256 i = bucketStart; i < bucketEnd; ++i) {
+      filter.bitmap._data[i] = 0;
+    }
+  }
 }
