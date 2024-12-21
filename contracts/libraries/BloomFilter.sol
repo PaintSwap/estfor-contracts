@@ -105,7 +105,7 @@ library BloomFilter {
 
   function _defaults(Filter storage filter) internal {
     filter.hashCount = 8;
-    filter.bitCount = 65536; // Default to 65,536 bits
+    filter.bitCount = 65536 * 2; // Default number of bits
     delete filter.bitmap; // Clear the bitmap
   }
 

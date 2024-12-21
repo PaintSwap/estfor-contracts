@@ -132,7 +132,7 @@ export const deployMockPaintSwapContracts = async (): Promise<{
 export function generateUniqueBitPositions(
   items: string[],
   existing: bigint[] = [],
-  bitCount: bigint = 65536n
+  bitCount: bigint = 65536n * 2n
 ): bigint[] {
   const positions = new Set<bigint>(existing);
   const calculatedHashCount = (bitCount * 144n) / (BigInt(items.length) * 100n) + 1n;
