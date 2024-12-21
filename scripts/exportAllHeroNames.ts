@@ -1,15 +1,15 @@
 import * as fs from "fs/promises";
 import {sleep} from "./utils";
 
-const filePath = "./export/players.txt";
+export const exportHeroNamesFilePath = "./export/players.txt";
 
 // Fetch players function
-async function fetchPlayers(): Promise<void> {
+export async function exportAllHeroNames(): Promise<void> {
   // Ensure directory and file exist
-  const dir = filePath.substring(0, filePath.lastIndexOf("/"));
+  const dir = exportHeroNamesFilePath.substring(0, exportHeroNamesFilePath.lastIndexOf("/"));
   try {
     await fs.mkdir(dir, {recursive: true});
-    await fs.writeFile(filePath, "");
+    await fs.writeFile(exportHeroNamesFilePath, "");
   } catch (error: any) {
     if (error.code !== "EEXIST") {
       throw error;
@@ -43,7 +43,7 @@ async function fetchPlayers(): Promise<void> {
 
       // Extract and save player names
       const playerNames = data.players.map((player: {name: string}) => player.name).join("\n") + "\n";
-      await fs.appendFile(filePath, playerNames);
+      await fs.appendFile(exportHeroNamesFilePath, playerNames);
 
       // Increment skip for the next batch
       skip += 1000;
@@ -59,6 +59,6 @@ async function fetchPlayers(): Promise<void> {
 // Main function
 (async () => {
   console.log("Starting to fetch players...");
-  await fetchPlayers();
+  await exportAllHeroNames();
   console.log("Finished fetching players");
 })();

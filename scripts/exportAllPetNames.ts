@@ -1,15 +1,15 @@
 import * as fs from "fs/promises";
 import {sleep} from "./utils";
 
-const filePath = "./export/pets.txt";
+export const exportPetNamesFilePath = "./export/pets.txt";
 
 // Fetch pets function
-async function fetchPets(): Promise<void> {
+export async function exportAllPetNames(): Promise<void> {
   // Ensure directory and file exist
-  const dir = filePath.substring(0, filePath.lastIndexOf("/"));
+  const dir = exportPetNamesFilePath.substring(0, exportPetNamesFilePath.lastIndexOf("/"));
   try {
     await fs.mkdir(dir, {recursive: true});
-    await fs.writeFile(filePath, "");
+    await fs.writeFile(exportPetNamesFilePath, "");
   } catch (error: any) {
     if (error.code !== "EEXIST") {
       throw error;
@@ -43,7 +43,7 @@ async function fetchPets(): Promise<void> {
 
       // Extract and save pet names
       const petNames = data.pets.map((pet: {name: string}) => pet.name).join("\n") + "\n";
-      await fs.appendFile(filePath, petNames);
+      await fs.appendFile(exportPetNamesFilePath, petNames);
 
       // Increment skip for the next batch
       skip += 1000;
@@ -59,7 +59,7 @@ async function fetchPets(): Promise<void> {
 // Main function
 (async () => {
   console.log("Starting to fetch pets...");
-  await fetchPets();
+  await exportAllPetNames();
   // await petBitPositions();
   console.log("Finished fetching pets");
 })();
