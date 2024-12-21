@@ -176,6 +176,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     address treasury,
     RandomnessBeacon randomnessBeacon,
     uint40 startPetId,
+    address bridge,
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
@@ -203,6 +204,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     // TODO: Remove after migration is done
     _reservedPetNames._initialize();
     _createdTime = uint40(block.timestamp);
+    _bridge = bridge;
   }
 
   function editPet(
@@ -302,8 +304,6 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     uint8[] calldata skillFixedEnhancement2s,
     uint8[] calldata skillPercentageEnhancement2s
   ) external onlyBridge {
-    assert(false);
-    /*
     uint256 length = petIds.length;
     require(
       length == basePetIds.length &&
@@ -316,15 +316,17 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
       LengthMismatch()
     );
 
-    Pet[] memory pets = new Pet[](basePetIds.length);
-    uint256[] memory amounts = new uint256[](basePetIds.length);
+    Pet[] memory pets = new Pet[](length);
+    uint256[] memory amounts = new uint256[](length);
 
     // Use the randomness beacon with the first day to assign some random pet enhancements
     uint256 id = 1; // Doesn't really matter
-    bytes memory randomBytes = _randomnessBeacon.getRandomBytes(length, _createdTime - 1 days, _createdTime, id);
+
+    uint256 startTimeWorld = _randomnessBeacon.getStartTime();
+    bytes memory randomBytes = _randomnessBeacon.getRandomBytes(length, startTimeWorld, startTimeWorld + 1 days, id);
 
     for (uint256 i = 0; i < length; ++i) {
-      // Take 2 byte portions of the bytes for each pet
+      // Take 2 byte portions of all the bytes for each pet
       uint16 randomness = EstforLibrary._get16bitSlice(randomBytes, i);
       uint24 basePetId = basePetIds[i];
 
@@ -346,15 +348,14 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
       uint8 percentageMax1 = EstforLibrary._getRandomInRange8(
         uint8(skillPercentageEnhancement1[i]),
         _basePetMetadatas[basePetId].skillPercentageMax1,
-        uint8((randomness * 7919) >> 8) // Use scrambled bits for more randomness
+        uint8((uint256(randomness) * 7919) >> 8) // Use scrambled bits for more randomness
       );
 
       uint8 percentageMax2 = EstforLibrary._getRandomInRange8(
         uint8(skillPercentageEnhancement2s[i]),
         _basePetMetadatas[basePetId].skillPercentageMax2,
-        uint8((randomness * 6271) >> 8) // Use different scrambled bits
+        uint8((uint256(randomness) * 6271) >> 8) // Use different scrambled bits
       );
-
       pets[i] = _createPet(
         petIds[i],
         skillEnhancement1s[i],
@@ -370,14 +371,22 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
         percentageMax2
       );
       amounts[i] = 1;
-      _setName(petIds[i], petNames[i]);
+      bool isDefaultPetName = bytes(petNames[i]).length == 0;
+      if (!isDefaultPetName) {
+        _names[petIds[i]] = petNames[i];
+        string memory lowercaseName = EstforLibrary.toLower(petNames[i]);
+        _lowercaseNames[lowercaseName] = true;
+      }
     }
     _mintBatch(petOwner, petIds, amounts, "");
-    emit NewPets(petIds[0], pets, petNames, petOwner); */
+    emit NewPets(petIds[0], pets, petNames, petOwner);
   }
 
   function burnBatch(address from, uint256[] memory tokenIds) external onlyBurners(from) {
     uint256[] memory amounts = new uint256[](tokenIds.length);
+    for (uint256 i = 0; i < tokenIds.length; ++i) {
+      amounts[i] = 1;
+    }
     _burnBatch(from, tokenIds, amounts);
   }
 
@@ -811,6 +820,10 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
 
   function setReservedPetNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
     _reservedPetNames._initialize(itemCount, positions);
+  }
+
+  function setBridge(address bridge) external onlyOwner {
+    _bridge = bridge;
   }
 
   function isPetNameReserved(string calldata petName) public view returns (bool) {

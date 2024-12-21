@@ -120,6 +120,31 @@ contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable {
     return _randomWords[_requestIds[uint256(_offset)]];
   }
 
+  function _getRandomComponent(
+    bytes32 word,
+    uint256 startTimestamp,
+    uint256 endTimestamp,
+    uint256 id
+  ) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(word, startTimestamp, endTimestamp, id));
+  }
+
+  function _fulfillRandomWords(uint256 requestId, uint256[] memory fulfilledRandomWords) internal {
+    require(_randomWords[requestId] == 0, RequestAlreadyFulfilled());
+    require(fulfilledRandomWords.length == NUM_WORDS, LengthMismatch());
+
+    uint256 randomWord = fulfilledRandomWords[0];
+    _randomWords[requestId] = randomWord;
+    _wishingWell.newOracleRandomWords(randomWord);
+    _dailyRewardsScheduler.newOracleRandomWords(randomWord);
+    emit RequestFulfilled(requestId, randomWord);
+  }
+
+  function initializeAddresses(IOracleCB wishingWell, IOracleCB dailyRewardsScheduler) external onlyOwner {
+    _wishingWell = IOracleCB(wishingWell);
+    _dailyRewardsScheduler = IOracleCB(dailyRewardsScheduler);
+  }
+
   function hasRandomWord(uint256 timestamp) external view returns (bool) {
     return _getRandomWord(timestamp) != 0;
   }
@@ -161,29 +186,8 @@ contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable {
     }
   }
 
-  function _getRandomComponent(
-    bytes32 word,
-    uint256 startTimestamp,
-    uint256 endTimestamp,
-    uint256 id
-  ) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(word, startTimestamp, endTimestamp, id));
-  }
-
-  function _fulfillRandomWords(uint256 requestId, uint256[] memory fulfilledRandomWords) internal {
-    require(_randomWords[requestId] == 0, RequestAlreadyFulfilled());
-    require(fulfilledRandomWords.length == NUM_WORDS, LengthMismatch());
-
-    uint256 randomWord = fulfilledRandomWords[0];
-    _randomWords[requestId] = randomWord;
-    _wishingWell.newOracleRandomWords(randomWord);
-    _dailyRewardsScheduler.newOracleRandomWords(randomWord);
-    emit RequestFulfilled(requestId, randomWord);
-  }
-
-  function initializeAddresses(IOracleCB wishingWell, IOracleCB dailyRewardsScheduler) external onlyOwner {
-    _wishingWell = IOracleCB(wishingWell);
-    _dailyRewardsScheduler = IOracleCB(dailyRewardsScheduler);
+  function getStartTime() external view returns (uint256) {
+    return _startTime;
   }
 
   function initializeRandomWords() external onlyOwner {

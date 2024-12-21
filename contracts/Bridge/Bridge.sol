@@ -85,9 +85,36 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
   }
 
   function _handlePetMessage(bytes calldata payload) private {
-    // Decode the payload to get the message
-    // (string memory message, uint40 timestamp) = abi.decode(payload, (string, uint40));
-    // Do something with the message
+    (
+      uint256 messageType,
+      address from,
+      uint256[] memory petIds,
+      uint24[] memory basePetIds,
+      string[] memory petNames,
+      Skill[] memory skillEnhancement1s,
+      uint8[] memory skillFixedEnhancement1s,
+      uint8[] memory skillPercentageEnhancement1,
+      Skill[] memory skillEnhancement2s,
+      uint8[] memory skillFixedEnhancement2s,
+      uint8[] memory skillPercentageEnhancement2s
+    ) = abi.decode(
+        payload,
+        (uint256, address, uint256[], uint24[], string[], Skill[], uint8[], uint8[], Skill[], uint8[], uint8[])
+      );
+
+    // Mint the pet
+    _petNFT.mintBridge(
+      from,
+      petIds,
+      basePetIds,
+      petNames,
+      skillEnhancement1s,
+      skillFixedEnhancement1s,
+      skillPercentageEnhancement1,
+      skillEnhancement2s,
+      skillFixedEnhancement2s,
+      skillPercentageEnhancement2s
+    );
   }
 
   function _handleItemMessage(bytes calldata payload) private {

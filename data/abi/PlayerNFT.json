@@ -492,25 +492,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "avatarId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum Skill[2]",
-        "name": "skills",
-        "type": "uint8[2]"
-      }
-    ],
-    "name": "S",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "uint256[]",
         "name": "avatarIds",
         "type": "uint256[]"

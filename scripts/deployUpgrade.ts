@@ -201,7 +201,6 @@ async function main() {
   await worldActions.waitForDeployment();
   console.log(`worldActions = "${(await worldActions.getAddress()).toLowerCase()}"`);
 
-  // World
   const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
   const randomnessBeacon = await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
     kind: "uups",
@@ -210,7 +209,6 @@ async function main() {
   await randomnessBeacon.waitForDeployment();
   console.log(`randomnessBeacon = "${(await randomnessBeacon.getAddress()).toLowerCase()}"`);
 
-  // AdminAccess
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
   const adminAccess = await upgrades.upgradeProxy(ADMIN_ACCESS_ADDRESS, AdminAccess, {
     kind: "uups",
