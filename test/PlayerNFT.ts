@@ -3,7 +3,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {createPlayer, exportHeroNamesFilePath, generateUniqueBitPositions} from "../scripts/utils";
+import {createPlayer, exportPlayerNamesFilePath, generateUniqueBitPositions} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
@@ -123,10 +123,10 @@ describe("PlayerNFT", function () {
 
     // if we have exported a list of reserved names, we can use them to generate bit positions
     const fileExists = await fs
-      .access(exportHeroNamesFilePath)
+      .access(exportPlayerNamesFilePath)
       .then(() => true)
       .catch(() => false);
-    const reservedNames = fileExists ? (await fs.readFile(exportHeroNamesFilePath, "utf-8")).split("\n") : [];
+    const reservedNames = fileExists ? (await fs.readFile(exportPlayerNamesFilePath, "utf-8")).split("\n") : [];
     const firstReservedName = reservedNames.length > 0 ? reservedNames[0] : reservedName;
 
     // but for tests we are going to use a small list

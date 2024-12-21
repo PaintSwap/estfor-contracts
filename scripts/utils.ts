@@ -163,7 +163,7 @@ export const TIER_4_DAILY_REWARD_START_XP = 195_864;
 export const TIER_5_DAILY_REWARD_START_XP = 784_726;
 export const TIER_6_DAILY_REWARD_START_XP = 2_219_451;
 
-export const exportHeroNamesFilePath = "./export/players.txt";
+export const exportPlayerNamesFilePath = "./export/players.txt";
 export const exportPetNamesFilePath = "./export/pets.txt";
 export const exportClanNamesFilePath = "./export/clans.txt";
 

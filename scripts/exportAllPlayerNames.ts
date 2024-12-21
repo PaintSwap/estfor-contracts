@@ -1,14 +1,14 @@
 import * as fs from "fs/promises";
-import {exportHeroNamesFilePath, isBeta, sleep} from "./utils";
+import {exportPlayerNamesFilePath, isBeta, sleep} from "./utils";
 import "dotenv/config";
 
 // Fetch players function
 export async function exportAllPlayerNames(): Promise<void> {
   // Ensure directory and file exist
-  const dir = exportHeroNamesFilePath.substring(0, exportHeroNamesFilePath.lastIndexOf("/"));
+  const dir = exportPlayerNamesFilePath.substring(0, exportPlayerNamesFilePath.lastIndexOf("/"));
   try {
     await fs.mkdir(dir, {recursive: true});
-    await fs.writeFile(exportHeroNamesFilePath, "");
+    await fs.writeFile(exportPlayerNamesFilePath, "");
   } catch (error: any) {
     if (error.code !== "EEXIST") {
       throw error;
@@ -43,7 +43,7 @@ export async function exportAllPlayerNames(): Promise<void> {
 
       // Extract and save player names
       const playerNames = data.players.map((player: {name: string}) => player.name).join("\n") + "\n";
-      await fs.appendFile(exportHeroNamesFilePath, playerNames);
+      await fs.appendFile(exportPlayerNamesFilePath, playerNames);
 
       // Increment skip for the next batch
       skip += 1000;
