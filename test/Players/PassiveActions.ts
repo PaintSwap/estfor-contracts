@@ -432,9 +432,11 @@ describe("Passive actions", function () {
     expect(finishedInfo.hasRandomRewards).to.be.true;
 
     const queueId = 2;
+    const block = await ethers.provider.getBlock("latest");
+    const timestamp = (block?.timestamp ?? -1) + 1;
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput1.actionId, 0))
       .to.emit(passiveActions, "StartPassiveAction")
-      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId, 0)
+      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId, 0, timestamp)
       .and.to.emit(passiveActions, "ClaimPassiveAction")
       .withArgs(playerId, alice, queueId - 1, [EstforConstants.OAK_LOG], [10], true);
 
@@ -444,9 +446,12 @@ describe("Passive actions", function () {
 
     await ethers.provider.send("evm_increaseTime", [passiveActionInput1.info.durationDays * 24 * 60 * 60]);
     await ethers.provider.send("evm_mine", []);
+
+    const block2 = await ethers.provider.getBlock("latest");
+    const timestamp2 = (block2?.timestamp ?? -1) + 1;
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput1.actionId, 0))
       .to.emit(passiveActions, "StartPassiveAction")
-      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId + 1, 0)
+      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId + 1, 0, timestamp2)
       .and.to.emit(passiveActions, "ClaimPassiveAction")
       .withArgs(playerId, alice, queueId, [EstforConstants.MAGICAL_LOG], [10], true);
 
@@ -492,10 +497,13 @@ describe("Passive actions", function () {
     expect(finishedInfo.oracleCalled).to.be.true;
     expect(finishedInfo.hasRandomRewards).to.be.true;
 
+    const block = await ethers.provider.getBlock("latest");
+    const timestamp = (block?.timestamp ?? -1) + 1;
+
     const queueId = 2;
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput1.actionId, 0))
       .to.emit(passiveActions, "StartPassiveAction")
-      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId, 0)
+      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId, 0, timestamp)
       .and.to.emit(passiveActions, "ClaimPassiveAction")
       .withArgs(
         playerId,
@@ -525,9 +533,11 @@ describe("Passive actions", function () {
       passiveActionInput1.info.durationDays * passiveActionInput1.randomRewards[0].amount
     );
 
+    const block2 = await ethers.provider.getBlock("latest");
+    const timestamp2 = (block2?.timestamp ?? -1) + 1;
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput1.actionId, 0))
       .to.emit(passiveActions, "StartPassiveAction")
-      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId + 1, 0)
+      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId + 1, 0, timestamp2)
       .and.to.emit(passiveActions, "ClaimPassiveAction")
       .withArgs(
         playerId,
@@ -587,9 +597,10 @@ describe("Passive actions", function () {
       .to.emit(passiveActions, "EarlyEndPassiveAction")
       .withArgs(playerId, alice, queueId);
 
+    const timestamp = ((await ethers.provider.getBlock("latest"))?.timestamp ?? -1) + 1;
     await expect(passiveActions.connect(alice).startAction(playerId, passiveActionInput1.actionId, 0))
       .to.emit(passiveActions, "StartPassiveAction")
-      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId + 1, 0);
+      .withArgs(playerId, alice, passiveActionInput1.actionId, queueId + 1, 0, timestamp);
   });
 
   it("Do not allow completing unless the oracle is called when using random rewards", async function () {

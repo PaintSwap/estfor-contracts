@@ -3,13 +3,12 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {createPlayer, generateUniqueBitPositions} from "../scripts/utils";
+import {createPlayer, exportHeroNamesFilePath, generateUniqueBitPositions} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
 import {Block, parseEther} from "ethers";
 import {initializerSlot} from "./utils";
-import {exportHeroNamesFilePath} from "../scripts/exportAllHeroNames";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
@@ -141,7 +140,8 @@ describe("PlayerNFT", function () {
       const batch = positions.slice(i, i + batchSize);
       // const gas = await playerNFT.setReservedHeroNames.estimateGas(reservedNames.length, batch);
       // console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-      await playerNFT.setReservedHeroNames(reservedNames.length, batch);
+      const tx = await playerNFT.setReservedHeroNames(reservedNames.length, batch);
+      await tx.wait();
     }
 
     const isReservedNameStillReserved = await playerNFT.isHeroNameReserved(reservedName);

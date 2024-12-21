@@ -409,11 +409,15 @@ abstract contract SamWitchERC1155UpgradeableSinglePerToken is
    * - `from` must have at least `value` amount of tokens of type `id`.
    * - `ids` and `values` must have the same length.
    */
-  function _burnBatch(address from, uint256[] memory ids, uint256[] memory values) internal {
+  function _burnBatch(address from, uint256[] memory ids) internal {
     if (from == address(0)) {
       revert ERC1155InvalidSender(address(0));
     }
-    _updateWithAcceptanceCheck(from, address(0), ids, values, "");
+    uint256[] memory amounts = new uint256[](ids.length);
+    for (uint256 i = 0; i < ids.length; ++i) {
+      amounts[i] = 1;
+    }
+    _updateWithAcceptanceCheck(from, address(0), ids, amounts, "");
   }
 
   /**

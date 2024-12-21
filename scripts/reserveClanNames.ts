@@ -1,8 +1,7 @@
 import * as fs from "fs/promises";
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS} from "./contractAddresses";
-import {generateUniqueBitPositions} from "./utils";
-import {exportClanNamesFilePath} from "./exportAllClanNames";
+import {exportClanNamesFilePath, generateUniqueBitPositions} from "./utils";
 
 async function setReservedClanNames() {
   console.log(`Setting reserved clan names`);
@@ -28,7 +27,8 @@ async function setReservedClanNames() {
     const batch = positions.slice(i, i + batchSize);
     const gas = await clans.setReservedClanNames.estimateGas(reservedNames.length, batch);
     console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-    await clans.setReservedClanNames(reservedNames.length, batch);
+    const tx = await clans.setReservedClanNames(reservedNames.length, batch);
+    await tx.wait();
   }
 }
 async function main() {

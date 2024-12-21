@@ -1,10 +1,8 @@
 import * as fs from "fs/promises";
-import {sleep} from "./utils";
-
-export const exportHeroNamesFilePath = "./export/players.txt";
+import {exportHeroNamesFilePath, sleep} from "./utils";
 
 // Fetch players function
-export async function exportAllHeroNames(): Promise<void> {
+export async function exportAllPlayerNames(): Promise<void> {
   // Ensure directory and file exist
   const dir = exportHeroNamesFilePath.substring(0, exportHeroNamesFilePath.lastIndexOf("/"));
   try {
@@ -59,6 +57,6 @@ export async function exportAllHeroNames(): Promise<void> {
 // Main function
 (async () => {
   console.log("Starting to fetch players...");
-  await exportAllHeroNames();
+  await exportAllPlayerNames();
   console.log("Finished fetching players");
 })();
