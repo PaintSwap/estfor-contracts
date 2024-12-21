@@ -9,6 +9,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
 import {Block, parseEther} from "ethers";
 import {initializerSlot} from "./utils";
+import {exportHeroNamesFilePath} from "../scripts/exportAllHeroNames";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
@@ -122,12 +123,11 @@ describe("PlayerNFT", function () {
     expect(isSecondNameReserved1).to.be.false;
 
     // if we have exported a list of reserved names, we can use them to generate bit positions
-    const filePath = "./export/players.txt";
     const fileExists = await fs
-      .access(filePath)
+      .access(exportHeroNamesFilePath)
       .then(() => true)
       .catch(() => false);
-    const reservedNames = fileExists ? (await fs.readFile(filePath, "utf-8")).split("\n") : [];
+    const reservedNames = fileExists ? (await fs.readFile(exportHeroNamesFilePath, "utf-8")).split("\n") : [];
     const firstReservedName = reservedNames.length > 0 ? reservedNames[0] : reservedName;
 
     // but for tests we are going to use a small list

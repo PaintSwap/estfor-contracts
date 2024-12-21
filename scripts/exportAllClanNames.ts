@@ -1,15 +1,15 @@
 import * as fs from "fs/promises";
 import {sleep} from "./utils";
 
-const filePath = "./export/clans.txt";
+export const exportClanNamesFilePath = "./export/clans.txt";
 
 // Fetch clans function
-async function fetchClans(): Promise<void> {
+export async function exportAllClanNames(): Promise<void> {
   // Ensure directory and file exist
-  const dir = filePath.substring(0, filePath.lastIndexOf("/"));
+  const dir = exportClanNamesFilePath.substring(0, exportClanNamesFilePath.lastIndexOf("/"));
   try {
     await fs.mkdir(dir, {recursive: true});
-    await fs.writeFile(filePath, "");
+    await fs.writeFile(exportClanNamesFilePath, "");
   } catch (error: any) {
     if (error.code !== "EEXIST") {
       throw error;
@@ -43,7 +43,7 @@ async function fetchClans(): Promise<void> {
 
       // Extract and save clan names
       const clanNames = data.clans.map((clan: {name: string}) => clan.name).join("\n") + "\n";
-      await fs.appendFile(filePath, clanNames);
+      await fs.appendFile(exportClanNamesFilePath, clanNames);
 
       // Increment skip for the next batch
       skip += 1000;
@@ -59,7 +59,7 @@ async function fetchClans(): Promise<void> {
 // Main function
 (async () => {
   console.log("Starting to fetch clans...");
-  await fetchClans();
+  await exportAllClanNames();
   // await clanBitPositions();
   console.log("Finished fetching clans");
 })();
