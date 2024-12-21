@@ -140,7 +140,8 @@ describe("PlayerNFT", function () {
       const batch = positions.slice(i, i + batchSize);
       // const gas = await playerNFT.setReservedHeroNames.estimateGas(reservedNames.length, batch);
       // console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-      await playerNFT.setReservedHeroNames(reservedNames.length, batch);
+      const tx = await playerNFT.setReservedHeroNames(reservedNames.length, batch);
+      await tx.wait();
     }
 
     const isReservedNameStillReserved = await playerNFT.isHeroNameReserved(reservedName);

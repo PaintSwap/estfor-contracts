@@ -27,7 +27,8 @@ async function setReservedClanNames() {
     const batch = positions.slice(i, i + batchSize);
     const gas = await clans.setReservedClanNames.estimateGas(reservedNames.length, batch);
     console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-    await clans.setReservedClanNames(reservedNames.length, batch);
+    const tx = await clans.setReservedClanNames(reservedNames.length, batch);
+    await tx.wait();
   }
 }
 async function main() {

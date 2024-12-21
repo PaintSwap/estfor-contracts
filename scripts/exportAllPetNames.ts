@@ -1,5 +1,5 @@
 import * as fs from "fs/promises";
-import {sleep} from "./utils";
+import {exportPetNamesFilePath, sleep} from "./utils";
 
 // Fetch pets function
 export async function exportAllPetNames(): Promise<void> {
