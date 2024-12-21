@@ -246,6 +246,7 @@ export const playersFixture = async function () {
       await treasury.getAddress(),
       await randomnessBeacon.getAddress(),
       startPetId,
+      await bridge.getAddress(),
       await adminAccess.getAddress(),
       isBeta
     ],
