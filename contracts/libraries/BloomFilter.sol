@@ -104,7 +104,7 @@ library BloomFilter {
   }
 
   function _defaults(Filter storage filter) internal {
-    filter.hashCount = 8;
+    filter.hashCount = 8; // The number of hash functions to use.
     filter.bitCount = 1024 * 32; // Default number of bits
     delete filter.bitmap; // Clear the bitmap
   }
@@ -120,24 +120,23 @@ library BloomFilter {
   /**
    * @notice Initializes a Bloom filter with a specified hash count.
    * @param filter The Bloom filter to initialize.
-   * @param hashCount The number of expected items.
+   * @param hashCount The number of hash functions to use.
    */
   function _initialize(Filter storage filter, uint8 hashCount) internal {
     _defaults(filter);
-    filter.hashCount = hashCount; //_getOptimalHashCount(itemCount, filter.bitCount);
+    filter.hashCount = hashCount;
   }
 
   /**
    * @notice Initializes a Bloom filter with a specified hash count.
    * @param filter The Bloom filter to initialize.
-   * @param hashCount The number of expected items.
+   * @param hashCount The number of hash functions to use.
    * @param bitCount The number of bits in the bitmap.
    */
   function _initialize(Filter storage filter, uint8 hashCount, uint64 bitCount) internal {
     _defaults(filter);
     filter.bitCount = bitCount;
-    filter.hashCount = hashCount; //_getOptimalHashCount(itemCount, filter.bitCount);
-    //filter.hashCount = _getOptimalHashCount(itemCount, bitCount);
+    filter.hashCount = hashCount;
   }
 
   /**
@@ -154,7 +153,7 @@ library BloomFilter {
   /**
    * @notice Initializes a Bloom filter with a specified hash count and clears the bitmap.
    * @param filter The Bloom filter to initialize.
-   * @param hashCount The times to hash each item.
+   * @param hashCount The number of hash functions to use.
    * @param bitCount The number of bits in the bitmap.
    * @param positions Array of positions to set in the bitmap.
    */
@@ -163,6 +162,11 @@ library BloomFilter {
     _addPositions(filter, positions);
   }
 
+  /**
+   * @notice Adds an array of positions to the filter by setting bits in the bitmap.
+   * @param filter The Bloom filter to update.
+   * @param positions Array of positions to set in the bitmap.
+   */
   function _addPositions(Filter storage filter, uint256[] calldata positions) internal {
     for (uint256 i = 0; i < positions.length; ++i) {
       filter.bitmap.set(positions[i]);
