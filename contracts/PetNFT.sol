@@ -202,7 +202,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     _randomnessBeacon = randomnessBeacon;
     setEditNameCost(editNameCost);
     // TODO: Remove after migration is done
-    _reservedPetNames._initialize();
+    _reservedPetNames._initialize(4, 20000);
     _bridge = bridge;
   }
 
@@ -813,8 +813,8 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
-  function setReservedPetNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
-    _reservedPetNames._initialize(itemCount, positions);
+  function setReservedNameBits(uint256[] calldata positions) external onlyOwner {
+    _reservedPetNames._addPositions(positions);
   }
 
   function setBridge(address bridge) external onlyOwner {

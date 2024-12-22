@@ -3,7 +3,7 @@ import {ethers} from "hardhat";
 import {PLAYER_NFT_ADDRESS} from "./contractAddresses";
 import {exportPlayerNamesFilePath} from "./utils";
 
-const NAMES_TO_CHECK = 20;
+const NAMES_TO_CHECK = 2000;
 
 async function checkPlayerNames() {
   console.log(`Checking reserved player names`);

@@ -1865,17 +1865,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "itemCount",
-        "type": "uint256"
-      },
-      {
         "internalType": "uint256[]",
         "name": "positions",
         "type": "uint256[]"
       }
     ],
-    "name": "setReservedPetNames",
+    "name": "setReservedNameBits",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

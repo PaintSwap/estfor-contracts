@@ -133,22 +133,47 @@ describe("PlayerNFT", function () {
     reservedNames.push(firstReservedName);
     reservedNames.push(secondReservedName);
 
-    const positions = generateUniqueBitPositions(reservedNames);
-    // console.log(`Generated ${positions.length} bit positions`);
-    const batchSize = 15000;
+    const gasPrices = [];
+    `Using hash count: 4 and bit count: 2000000n`;
+    const positions = await generateUniqueBitPositions(reservedNames, 4, 2000000n);
+    console.log(`Generated ${positions.length} bit positions`);
+    const batchSize = 7500;
     for (let i = 0; i < positions.length; i += batchSize) {
       const batch = positions.slice(i, i + batchSize);
-      // const gas = await playerNFT.setReservedHeroNames.estimateGas(reservedNames.length, batch);
+      const gas = await playerNFT.setReservedNameBits.estimateGas(batch);
+      gasPrices.push(gas);
       // console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-      const tx = await playerNFT.setReservedHeroNames(reservedNames.length, batch);
+      const tx = await playerNFT.setReservedNameBits(batch);
       await tx.wait();
     }
 
-    const isReservedNameStillReserved = await playerNFT.isHeroNameReserved(reservedName);
-    expect(isReservedNameStillReserved).to.be.true;
+    const averageGasPrice = gasPrices.reduce((a, b) => a + b, 0n) / BigInt(gasPrices.length);
+    console.log(
+      `Average gas price for ${gasPrices.length} txns: ${averageGasPrice}, ${
+        averageGasPrice * BigInt(gasPrices.length)
+      } total`
+    );
 
-    const isSecondNameReserved2 = await playerNFT.isHeroNameReserved(secondReservedName);
-    expect(isSecondNameReserved2).to.be.true;
+    const FALSE_POSITIVE_CHECKS = 20000;
+    let falsePositives = 0;
+    for (let i = 0; i < FALSE_POSITIVE_CHECKS && i < reservedNames.length; i++) {
+      const randomIndex = Math.floor(Math.random() * reservedNames.length);
+      const name = reservedNames.splice(randomIndex, 1)[0];
+      const isReserved = await playerNFT.isHeroNameReserved(name);
+      // console.log(`Name: ${name}, Reserved: ${isReserved}`);
+      expect(isReserved).to.be.true;
+
+      const rndm = Math.floor(Math.random() * 100);
+      const notReservedName = "xxx" + name + "xxx" + rndm;
+      const shouldNotBeReserved = await playerNFT.isHeroNameReserved(notReservedName);
+      // console.log(`Name: ${notReservedName}, Reserved: ${shouldNotBeReserved}`);
+      if (shouldNotBeReserved) {
+        falsePositives++;
+      }
+    }
+    const falsePositiveRate = Math.round((falsePositives / FALSE_POSITIVE_CHECKS) * 100);
+    console.log(`False positives: ${falsePositives}/${FALSE_POSITIVE_CHECKS} for ${falsePositiveRate}%`);
+    expect(falsePositiveRate).to.be.lessThan(2);
 
     // this should work
     await createPlayer(playerNFT, 1, alice, unreservedName, true);

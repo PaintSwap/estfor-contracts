@@ -1360,13 +1360,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "clearReservedClanNames",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -2419,17 +2412,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "itemCount",
-        "type": "uint256"
-      },
-      {
         "internalType": "uint256[]",
         "name": "positions",
         "type": "uint256[]"
       }
     ],
-    "name": "setReservedClanNames",
+    "name": "setReservedNameBits",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

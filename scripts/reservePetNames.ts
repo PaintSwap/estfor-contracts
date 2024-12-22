@@ -20,14 +20,14 @@ async function setReservedPetNames() {
 
   const reservedNames = fileExists ? (await fs.readFile(exportPetNamesFilePath, "utf-8")).split("\n") : [];
 
-  const positions = generateUniqueBitPositions(reservedNames);
+  const positions = await generateUniqueBitPositions(reservedNames, 4, 20000n);
   console.log(`Generated ${positions.length} bit positions`);
-  const batchSize = 15000;
+  const batchSize = 7500;
   for (let i = 0; i < positions.length; i += batchSize) {
     const batch = positions.slice(i, i + batchSize);
-    const gas = await petNFT.setReservedPetNames.estimateGas(reservedNames.length, batch);
+    const gas = await petNFT.setReservedNameBits.estimateGas(batch);
     console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-    const tx = await petNFT.setReservedPetNames(reservedNames.length, batch);
+    const tx = await petNFT.setReservedNameBits(batch);
     await tx.wait();
   }
 }

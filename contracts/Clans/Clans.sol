@@ -234,7 +234,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
     setEditNameCost(editNameCost);
     setInitialMMR(initialMMR);
-    _reservedClanNames._initialize();
+    _reservedClanNames._initialize(4, 420000);
     _bridge = bridge;
   }
 
@@ -309,8 +309,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     PlayerInfo storage player = _playerInfo[playerId];
     player.clanId = uint32(clanId);
     player.rank = ClanRank.OWNER;
-    (string memory trimmedName, ) = _setName(clanId, name);
-    string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
+    string[] memory clanInfo = _createClanInfo(name, discord, telegram, twitter);
     emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId);
     _bankFactory.createBank(from, clanId);
   }
@@ -985,18 +984,14 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
-  function setReservedClanNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
-    _reservedClanNames._initialize(itemCount, positions);
+  function setReservedNameBits(uint256[] calldata positions) external onlyOwner {
+    _reservedClanNames._addPositions(positions);
   }
 
   function addReservedClanNames(string[] calldata names) external onlyOwner {
     for (uint256 i = 0; i < names.length; ++i) {
       _reservedClanNames._addString(EstforLibrary.toLower(names[i]));
     }
-  }
-
-  function clearReservedClanNames() external onlyOwner {
-    _reservedClanNames._clear(0, 256);
   }
 
   // solhint-disable-next-line no-empty-blocks

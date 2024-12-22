@@ -14,6 +14,8 @@ import {Skill} from "@paintswap/estfor-definitions/types";
 import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
 import {getEventLog} from "../test/utils";
 import {HardhatEthersSigner, SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers";
+import {Worker} from "worker_threads";
+import path from "path";
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -125,29 +127,58 @@ export const deployMockPaintSwapContracts = async (): Promise<{
 /**
  * Generates unique bit positions for each item in the Bloom filter.
  * @param items Array of items to add to the Bloom filter (strings).
- * @param existing Set of unique bit positions for the Bloom filter.
+ * @param hashCount Number of hash functions to use.
  * @param bitCount Number of bits in the Bloom filter.
  * @returns Set of unique bit positions for the Bloom filter.
  */
-export function generateUniqueBitPositions(
+export async function generateUniqueBitPositions(
   items: string[],
-  existing: bigint[] = [],
-  bitCount: bigint = 65536n * 2n
-): bigint[] {
-  const positions = new Set<bigint>(existing);
-  const calculatedHashCount = (bitCount * 144n) / (BigInt(items.length) * 100n) + 1n;
-  const hashCount = calculatedHashCount < 256n ? calculatedHashCount : 255n;
+  hashCount: number = 4,
+  bitCount: bigint = 1100000n
+): Promise<bigint[]> {
+  const positions = new Set<bigint>();
 
-  for (const item of items) {
-    const itemHash = ethers.solidityPackedKeccak256(["string"], [item.trim().toLowerCase()]);
+  // use multiple threads to parallelize the hashing
+  const THREADCOUNT = Math.max(1, Math.min(8, require("os").cpus().length - 1));
 
-    for (let i = 0n; i < hashCount; i++) {
-      const position = BigInt(ethers.solidityPackedKeccak256(["bytes32", "uint8"], [itemHash, i])) % bitCount;
-      positions.add(position); // Automatically prevents duplicate entries
+  // run a worker to hash the values to get the bit positions
+  function runWorker(workerData: any): Promise<bigint[]> {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(path.resolve(__dirname, "worker_generateUniqueBitPositions.js"), {workerData});
+      worker.on("message", resolve);
+      worker.on("error", reject);
+      worker.on("exit", (code) => {
+        if (code !== 0) {
+          reject(new Error(`Worker stopped with exit code ${code}`));
+        }
+      });
+    });
+  }
+
+  // split the items into batches and run the worker on each batch
+  const batchSize = Math.ceil(items.length / THREADCOUNT);
+  const promises = [];
+
+  // push each batch to a worker
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    promises.push(runWorker({items: batch, hashCount, bitCount}));
+  }
+
+  // wait for all workers to finish
+  const results = await Promise.all(promises);
+  // combine the results
+  for (const result of results) {
+    for (const position of result) {
+      positions.add(position);
     }
   }
 
-  return [...positions];
+  // convert the set to an array and sort it
+  const positionsArray = [...positions];
+  positionsArray.sort((a, b) => Number(a) - Number(b));
+
+  return positionsArray;
 }
 
 // Delay function

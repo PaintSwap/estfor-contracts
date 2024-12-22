@@ -3,7 +3,7 @@ import {ethers} from "hardhat";
 import {CLANS_ADDRESS} from "./contractAddresses";
 import {exportClanNamesFilePath} from "./utils";
 
-const NAMES_TO_CHECK = 20;
+const NAMES_TO_CHECK = 200;
 
 async function checkClanNames() {
   console.log(`Checking reserved clan names`);

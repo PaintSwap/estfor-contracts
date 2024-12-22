@@ -155,7 +155,7 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     _isBeta = isBeta;
     _bridge = bridge;
 
-    _reservedHeroNames._initialize();
+    _reservedHeroNames._initialize(4, 2000000);
   }
 
   function mint(
@@ -442,8 +442,8 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     emit UpgradePlayerCost(upgradePlayerCost);
   }
 
-  function setReservedHeroNames(uint256 itemCount, uint256[] calldata positions) external onlyOwner {
-    _reservedHeroNames._initialize(itemCount, positions);
+  function setReservedNameBits(uint256[] calldata positions) external onlyOwner {
+    _reservedHeroNames._addPositions(positions);
   }
 
   function isHeroNameReserved(string calldata heroName) public view returns (bool) {

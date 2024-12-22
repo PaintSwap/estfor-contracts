@@ -105,7 +105,7 @@ library BloomFilter {
 
   function _defaults(Filter storage filter) internal {
     filter.hashCount = 8;
-    filter.bitCount = 65536 * 2; // Default number of bits
+    filter.bitCount = 1024 * 32; // Default number of bits
     delete filter.bitmap; // Clear the bitmap
   }
 
@@ -120,67 +120,52 @@ library BloomFilter {
   /**
    * @notice Initializes a Bloom filter with a specified hash count.
    * @param filter The Bloom filter to initialize.
-   * @param itemCount The number of expected items.
+   * @param hashCount The number of expected items.
    */
-  function _initialize(Filter storage filter, uint256 itemCount) internal {
+  function _initialize(Filter storage filter, uint8 hashCount) internal {
     _defaults(filter);
-    filter.hashCount = _getOptimalHashCount(itemCount, filter.bitCount);
+    filter.hashCount = hashCount; //_getOptimalHashCount(itemCount, filter.bitCount);
   }
 
   /**
    * @notice Initializes a Bloom filter with a specified hash count.
    * @param filter The Bloom filter to initialize.
-   * @param itemCount The number of expected items.
+   * @param hashCount The number of expected items.
    * @param bitCount The number of bits in the bitmap.
    */
-  function _initialize(Filter storage filter, uint256 itemCount, uint64 bitCount) internal {
+  function _initialize(Filter storage filter, uint8 hashCount, uint64 bitCount) internal {
     _defaults(filter);
     filter.bitCount = bitCount;
-    filter.hashCount = _getOptimalHashCount(itemCount, bitCount);
+    filter.hashCount = hashCount; //_getOptimalHashCount(itemCount, filter.bitCount);
+    //filter.hashCount = _getOptimalHashCount(itemCount, bitCount);
   }
 
   /**
    * @notice Initializes a Bloom filter with a specified hash count and clears the bitmap.
    * @param filter The Bloom filter to initialize.
-   * @param itemCount The number of expected items.
+   * @param hashCount The times to hash each item.
    * @param positions Array of positions to set in the bitmap.
    */
-  function _initialize(Filter storage filter, uint256 itemCount, uint256[] calldata positions) internal {
-    _initialize(filter, itemCount);
-    for (uint256 i = 0; i < positions.length; ++i) {
-      filter.bitmap.set(positions[i]);
-    }
+  function _initialize(Filter storage filter, uint8 hashCount, uint256[] calldata positions) internal {
+    _initialize(filter, hashCount);
+    _addPositions(filter, positions);
   }
 
   /**
    * @notice Initializes a Bloom filter with a specified hash count and clears the bitmap.
    * @param filter The Bloom filter to initialize.
-   * @param itemCount The number of hash functions to use.
+   * @param hashCount The times to hash each item.
    * @param bitCount The number of bits in the bitmap.
    * @param positions Array of positions to set in the bitmap.
    */
-  function _initialize(
-    Filter storage filter,
-    uint256 itemCount,
-    uint64 bitCount,
-    uint256[] calldata positions
-  ) internal {
-    _initialize(filter, itemCount, bitCount);
-    for (uint256 i = 0; i < positions.length; ++i) {
-      filter.bitmap.set(positions[i]);
-    }
+  function _initialize(Filter storage filter, uint8 hashCount, uint64 bitCount, uint256[] calldata positions) internal {
+    _initialize(filter, hashCount, bitCount);
+    _addPositions(filter, positions);
   }
 
-  /**
-   * @notice Clears the bitmap of the Bloom filter.
-   * @param filter The Bloom filter to clear.
-   * @param bucketStart The starting bucket index to clear.
-   * @param bucketEnd The ending bucket index to clear.
-   */
-  function _clear(Filter storage filter, uint256 bucketStart, uint256 bucketEnd) internal {
-    require(bucketStart <= bucketEnd);
-    for (uint256 i = bucketStart; i < bucketEnd; ++i) {
-      filter.bitmap._data[i] = 0;
+  function _addPositions(Filter storage filter, uint256[] calldata positions) internal {
+    for (uint256 i = 0; i < positions.length; ++i) {
+      filter.bitmap.set(positions[i]);
     }
   }
 }
