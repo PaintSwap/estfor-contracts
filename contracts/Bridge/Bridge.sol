@@ -97,7 +97,7 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     if (_petIds.length == 0) {
       revert SendingNoPets();
     }
-    if (_petIds.length > 32) {
+    if (_petIds.length > 25) {
       revert SendingTooManyPets();
     }
 
