@@ -309,6 +309,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     PlayerInfo storage player = _playerInfo[playerId];
     player.clanId = uint32(clanId);
     player.rank = ClanRank.OWNER;
+
+    // don't call _setName to avoid name reservation check
+    clan.name = name;
+    _lowercaseNames[EstforLibrary.toLower(name)] = true; // already trimmed
+
     string[] memory clanInfo = _createClanInfo(name, discord, telegram, twitter);
     emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId);
     _bankFactory.createBank(from, clanId);
