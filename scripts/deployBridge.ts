@@ -18,6 +18,7 @@ import {
   TERRITORIES_ADDRESS,
   WORLD_LIBRARY_ADDRESS,
 } from "./contractAddresses";
+import {Clans, PetNFT, PlayerNFT} from "../typechain-types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -26,7 +27,6 @@ async function main() {
 
   const dstEid = "30332"; // Sonic
   const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c"; // Fantom
-
   const Bridge = (await ethers.getContractFactory("Bridge")).connect(owner);
   const bridge = await upgrades.deployProxy(
     Bridge,
@@ -49,6 +49,7 @@ async function main() {
   );
   await bridge.deployed();
   console.log(`bridge = "${bridge.address.toLowerCase()}"`);
+  //  const bridge = (await ethers.getContractAt("Bridge", BRIDGE_ADDRESS)).connect(owner);
 
   // Upgrade appropriate contracts
   const timeout = 60 * 1000;
@@ -93,11 +94,11 @@ async function main() {
       libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
     })
   ).connect(owner);
-  const clans = await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
+  const clans = (await upgrades.upgradeProxy(CLANS_ADDRESS, Clans, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-  });
+  })) as Clans;
   await clans.deployed();
   console.log(`clans = "${clans.address.toLowerCase()}"`);
 
@@ -130,11 +131,11 @@ async function main() {
       libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS},
     })
   ).connect(owner);
-  const playerNFT = await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
+  const playerNFT = (await upgrades.upgradeProxy(PLAYER_NFT_ADDRESS, PlayerNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-  });
+  })) as PlayerNFT;
   await playerNFT.deployed();
   console.log(`playerNFT = "${playerNFT.address.toLowerCase()}"`);
 
@@ -179,15 +180,48 @@ async function main() {
       libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, PetNFTLibrary: PET_NFT_LIBRARY_ADDRESS},
     })
   ).connect(owner);
-  const petNFT = await upgrades.upgradeProxy(PET_NFT_ADDRESS, PetNFT, {
+  const petNFT = (await upgrades.upgradeProxy(PET_NFT_ADDRESS, PetNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
     timeout,
-  });
+  })) as PetNFT;
   console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
 
+  // Set names to highest amount possible to reduce conflicts
+  let tx = await clans.setEditNameCost(ethers.utils.parseEther("4700"));
+  await tx.wait();
+  console.log("Set clans cost");
+
+  tx = await petNFT.setEditNameCost(ethers.utils.parseEther("4700"));
+  await tx.wait();
+  console.log("Set pet cost");
+
+  tx = await playerNFT.setEditNameCost(ethers.utils.parseEther("4700"));
+  await tx.wait();
+  console.log("Set player cost");
+
+  tx = await clans.setBridge(bridge.address);
+  await tx.wait();
+  console.log("Bridge set on clans, also prevents creating clan");
+
+  tx = await playerNFT.setBridge(bridge.address);
+  await tx.wait();
+  console.log("Bridge set on playerNFT, to prevent creating players");
+
+  // Now can export (TODO) while the rest of the game continues
+  return;
+
   const disableGame = true;
-  let tx = await players.pauseGame(disableGame);
+
+  tx = await instantActions.setPreventActions(disableGame);
+  await tx.wait();
+  console.log("Instant Actions prevented");
+
+  tx = await instantVRFActions.setPreventActions(disableGame);
+  await tx.wait();
+  console.log("VRF Actions prevented");
+
+  tx = await players.pauseGame(disableGame);
   await tx.wait();
   console.log("Game paused");
 
@@ -198,14 +232,6 @@ async function main() {
   tx = await territories.setPreventAttacks(disableGame);
   await tx.wait();
   console.log("Attacks prevented territories");
-
-  tx = await instantActions.setPreventActions(disableGame);
-  await tx.wait();
-  console.log("Instant Actions prevented");
-
-  tx = await instantVRFActions.setPreventActions(disableGame);
-  await tx.wait();
-  console.log("VRF Actions prevented");
 
   tx = await shop.setSellingPrevented(disableGame);
   await tx.wait();
@@ -219,7 +245,7 @@ async function main() {
   }
 
   // Do this after preventing actions
-  const contractsToSetBridge = [itemNFT, quests, passiveActions, lockedBankVaults, playerNFT, players, clans, petNFT];
+  const contractsToSetBridge = [itemNFT, quests, passiveActions, lockedBankVaults, players, petNFT];
   const bridgeAddress = disableGame ? bridge.address : ethers.constants.AddressZero;
   for (const contract of contractsToSetBridge) {
     tx = await contract.setBridge(bridgeAddress);
