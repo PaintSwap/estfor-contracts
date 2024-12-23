@@ -5,7 +5,13 @@ import {expect} from "chai";
 import {Block} from "ethers";
 import {ethers} from "hardhat";
 import {Tier} from "../../scripts/data/clans";
-import {createPlayer, exportClanNamesFilePath, generateUniqueBitPositions} from "../../scripts/utils";
+import {
+  clanNamesBitCount,
+  clanNamesHashCount,
+  createPlayer,
+  exportClanNamesFilePath,
+  generateUniqueBitPositions
+} from "../../scripts/utils";
 import {clanFixture} from "./utils";
 
 describe("Clans", function () {
@@ -97,10 +103,11 @@ describe("Clans", function () {
       reservedNames.push(secondReservedName);
 
       const gasPrices = [];
-      `Using hash count: 4 and bit count: 420000n`;
-      const positions = await generateUniqueBitPositions(reservedNames, 4, 420000n);
+      `Using hash count: ${clanNamesHashCount} and bit count: ${clanNamesBitCount}`;
+      const positions = await generateUniqueBitPositions(reservedNames, clanNamesHashCount, clanNamesBitCount);
       console.log(`Generated ${positions.length} bit positions`);
       const batchSize = Math.min(Math.max(Math.floor(positions.length / 100), 500), 6000);
+      console.log(`Batch size: ${batchSize}`);
       for (let i = 0; i < positions.length; i += batchSize) {
         const batch = positions.slice(i, i + batchSize);
         const gas = await clans.setReservedNameBits.estimateGas(batch);

@@ -1,7 +1,7 @@
 import * as fs from "fs/promises";
 import {ethers} from "hardhat";
 import {CLANS_ADDRESS} from "./contractAddresses";
-import {exportClanNamesFilePath, generateUniqueBitPositions} from "./utils";
+import {clanNamesBitCount, clanNamesHashCount, exportClanNamesFilePath, generateUniqueBitPositions} from "./utils";
 
 async function setReservedClanNames() {
   console.log(`Setting reserved clan names`);
@@ -20,7 +20,7 @@ async function setReservedClanNames() {
 
   const reservedNames = fileExists ? (await fs.readFile(exportClanNamesFilePath, "utf-8")).split("\n") : [];
 
-  const positions = await generateUniqueBitPositions(reservedNames, 4, 420000n);
+  const positions = await generateUniqueBitPositions(reservedNames, clanNamesHashCount, clanNamesBitCount);
   console.log(`Generated ${positions.length} bit positions`);
   const batchSize = 2500;
   for (let i = 0; i < positions.length; i += batchSize) {

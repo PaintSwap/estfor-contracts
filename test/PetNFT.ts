@@ -8,7 +8,13 @@ import {PetNFT} from "../typechain-types";
 import {getXPFromLevel, makeSigner} from "./Players/utils";
 import {parseEther} from "ethers";
 import {EstforTypes} from "@paintswap/estfor-definitions";
-import {exportPetNamesFilePath, generateUniqueBitPositions, SKIP_XP_THRESHOLD_EFFECTS} from "../scripts/utils";
+import {
+  exportPetNamesFilePath,
+  generateUniqueBitPositions,
+  petNamesBitCount,
+  petNamesHashCount,
+  SKIP_XP_THRESHOLD_EFFECTS
+} from "../scripts/utils";
 
 describe("PetNFT", function () {
   async function deployContracts() {
@@ -466,7 +472,7 @@ describe("PetNFT", function () {
       const secondReservedName = "Reserved Name 2";
       const unreservedName = "Unreserved Name";
 
-      let positions = await generateUniqueBitPositions([reservedName], 4, 100000n);
+      let positions = await generateUniqueBitPositions([reservedName], petNamesHashCount, petNamesBitCount);
       const tx = await petNFT.setReservedNameBits(positions);
       await tx.wait();
 
@@ -498,10 +504,11 @@ describe("PetNFT", function () {
       reservedNames.push(secondReservedName);
 
       const gasPrices = [];
-      `Using hash count: 4 and bit count: 20000n`;
-      positions = await generateUniqueBitPositions(reservedNames, 4, 100000n);
+      `Using hash count: ${petNamesHashCount} and bit count: ${petNamesBitCount}`;
+      positions = await generateUniqueBitPositions(reservedNames, petNamesHashCount, petNamesBitCount);
       console.log(`Generated ${positions.length} bit positions`);
       const batchSize = Math.min(Math.max(Math.floor(positions.length / 150), 500), 7500);
+      console.log(`Batch size: ${batchSize}`);
       for (let i = 0; i < positions.length; i += batchSize) {
         const batch = positions.slice(i, i + batchSize);
         const gas = await petNFT.setReservedNameBits.estimateGas(batch);

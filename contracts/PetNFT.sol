@@ -128,6 +128,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   RandomnessBeacon private _randomnessBeacon;
   BloomFilter.Filter private __unused; // TODO: old filter
   address private _bridge; // TODO: Bridge Can remove later
+  BloomFilter.Filter private __unused2; // TODO: old filter 2
   BloomFilter.Filter private _reservedPetNames; // TODO: remove 90 days after launch
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";

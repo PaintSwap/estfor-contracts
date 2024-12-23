@@ -3,7 +3,13 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {createPlayer, exportPlayerNamesFilePath, generateUniqueBitPositions} from "../scripts/utils";
+import {
+  createPlayer,
+  exportPlayerNamesFilePath,
+  generateUniqueBitPositions,
+  playerNamesBitCount,
+  playerNamesHashCount
+} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
@@ -134,8 +140,8 @@ describe("PlayerNFT", function () {
     reservedNames.push(secondReservedName);
 
     const gasPrices = [];
-    `Using hash count: 4 and bit count: 2000000n`;
-    const positions = await generateUniqueBitPositions(reservedNames, 4, 2000000n);
+    `Using hash count: ${playerNamesHashCount} and bit count: ${playerNamesBitCount}`;
+    const positions = await generateUniqueBitPositions(reservedNames, playerNamesHashCount, playerNamesBitCount);
     console.log(`Generated ${positions.length} bit positions`);
     const batchSize = Math.min(Math.max(Math.floor(positions.length / 150), 500), 5000);
     for (let i = 0; i < positions.length; i += batchSize) {

@@ -1,7 +1,7 @@
 import * as fs from "fs/promises";
 import {ethers} from "hardhat";
 import {PET_NFT_ADDRESS} from "./contractAddresses";
-import {exportPetNamesFilePath, generateUniqueBitPositions} from "./utils";
+import {exportPetNamesFilePath, generateUniqueBitPositions, petNamesBitCount, petNamesHashCount} from "./utils";
 
 async function setReservedPetNames() {
   console.log(`Setting reserved pet names`);
@@ -20,7 +20,7 @@ async function setReservedPetNames() {
 
   const reservedNames = fileExists ? (await fs.readFile(exportPetNamesFilePath, "utf-8")).split("\n") : [];
 
-  const positions = await generateUniqueBitPositions(reservedNames, 4, 20000n);
+  const positions = await generateUniqueBitPositions(reservedNames, petNamesHashCount, petNamesBitCount);
   console.log(`Generated ${positions.length} bit positions`);
   const batchSize = 2500;
   for (let i = 0; i < positions.length; i += batchSize) {

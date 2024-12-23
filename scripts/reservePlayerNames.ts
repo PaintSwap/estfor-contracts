@@ -1,7 +1,12 @@
 import * as fs from "fs/promises";
 import {ethers} from "hardhat";
 import {PLAYER_NFT_ADDRESS} from "./contractAddresses";
-import {exportPlayerNamesFilePath, generateUniqueBitPositions} from "./utils";
+import {
+  exportPlayerNamesFilePath,
+  generateUniqueBitPositions,
+  playerNamesBitCount,
+  playerNamesHashCount
+} from "./utils";
 
 async function setReservedPlayerNames() {
   console.log(`Setting reserved player names`);
@@ -19,7 +24,7 @@ async function setReservedPlayerNames() {
   }
   const reservedNames = (await fs.readFile(exportPlayerNamesFilePath, "utf-8")).split("\n");
 
-  const positions = await generateUniqueBitPositions(reservedNames, 4, 2000000n);
+  const positions = await generateUniqueBitPositions(reservedNames, playerNamesHashCount, playerNamesBitCount);
   console.log(`Generated ${positions.length} bit positions`);
   const batchSize = 2500;
   for (let i = 0; i < positions.length; i += batchSize) {
