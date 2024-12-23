@@ -131,6 +131,7 @@
     "setAvatars": "npx hardhat run scripts/setAvatars.ts",
     "deployBridge": "npx hardhat run scripts/deployBridge.ts",
     "setPeer": "npx hardhat run scripts/setPeer.ts",
+    "setConfig": "npx hardhat run scripts/setConfig.ts",
     "overhaulUpgrade": "npx hardhat run scripts/overhaulUpgrade.ts",
     "donate": "npx hardhat run scripts/donate.ts",
     "fork": "npx hardhat node --fork",

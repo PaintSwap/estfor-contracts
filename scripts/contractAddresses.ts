@@ -126,7 +126,7 @@ if (!isBeta) {
   petNFTLibrary = "0x1445660336c1b0bcb2b484e86a56297f1da6575d";
   petNFT = "0xa6489181b24e966402891225c65f8e2d136ddd2e";
   passiveActions = "0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6";
-  bridge = "0x14b69305897a645ed5a4b542e4c45d629d0fe381";
+  bridge = "0x93e478f428a070ecf11d79cdd6a60f3dee3a92da";
 }
 
 export const WORLD_LIBRARY_ADDRESS = worldLibrary;

@@ -49,7 +49,6 @@ async function main() {
   );
   await bridge.deployed();
   console.log(`bridge = "${bridge.address.toLowerCase()}"`);
-  //  const bridge = (await ethers.getContractAt("Bridge", BRIDGE_ADDRESS)).connect(owner);
 
   // Upgrade appropriate contracts
   const timeout = 60 * 1000;
@@ -208,11 +207,7 @@ async function main() {
   await tx.wait();
   console.log("Bridge set on playerNFT, to prevent creating players");
 
-  // Now can export (TODO) while the rest of the game continues
-  return;
-
   const disableGame = true;
-
   tx = await instantActions.setPreventActions(disableGame);
   await tx.wait();
   console.log("Instant Actions prevented");

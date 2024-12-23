@@ -4,7 +4,9 @@ import {BRIDGE_ADDRESS} from "./contractAddresses";
 async function main() {
   const [owner] = await ethers.getSigners();
 
-  console.log(`Bridge some adapter brush to sonic oft from ${owner.address} on chain: ${await owner.getChainId()}`);
+  console.log(
+    `Set config on Fantom to bridge hero to on Sonic from ${owner.address} on chain: ${await owner.getChainId()}`
+  );
   const dstEid = 30332; // Sonic
 
   const endpointAddress = "0x1a44076050125825900e736c501f859c50fE728c";
