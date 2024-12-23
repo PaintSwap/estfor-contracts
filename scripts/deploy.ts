@@ -222,7 +222,7 @@ async function main() {
     raffleEntryCost = parseEther("7");
     startGlobalDonationThresholdRewards = parseEther("100000");
     clanDonationThresholdRewardIncrement = parseEther("2500");
-    mmrAttackDistance = 4;
+    mmrAttackDistance = 3;
   } else {
     itemsUri = "ipfs://bafybeiebmf7ov2hpicrscvobmyhuwcdl2pmtb2fibinlospkjtrg7rl2ny/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
@@ -242,8 +242,8 @@ async function main() {
   const sellingCutoffDuration = 48 * 3600; // 48 hours
   const startPlayerId = 200_000;
   const startClanId = 30_000;
-  const startPetId = 2_000;
-  const srcEid = 30112; // Fantom (TODO: Update as necessary)
+  const startPetId = 20_000;
+  const srcEid = 30112; // Fantom
 
   const Bridge = await ethers.getContractFactory("Bridge");
   const bridge = (await upgrades.deployProxy(Bridge, [srcEid], {
