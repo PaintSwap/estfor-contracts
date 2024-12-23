@@ -126,8 +126,9 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   address private _territories;
   address private _players;
   RandomnessBeacon private _randomnessBeacon;
-  BloomFilter.Filter private _reservedPetNames; // TODO: remove 90 days after launch
+  BloomFilter.Filter private __unused; // TODO: old filter
   address private _bridge; // TODO: Bridge Can remove later
+  BloomFilter.Filter private _reservedPetNames; // TODO: remove 90 days after launch
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
@@ -201,7 +202,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     _randomnessBeacon = randomnessBeacon;
     setEditNameCost(editNameCost);
     // TODO: Remove after migration is done
-    _reservedPetNames._initialize(4, 20000);
+    _reservedPetNames._initialize(4, 100000);
     _bridge = bridge;
   }
 

@@ -466,7 +466,7 @@ describe("PetNFT", function () {
       const secondReservedName = "Reserved Name 2";
       const unreservedName = "Unreserved Name";
 
-      let positions = await generateUniqueBitPositions([reservedName], 4, 20000n);
+      let positions = await generateUniqueBitPositions([reservedName], 4, 100000n);
       const tx = await petNFT.setReservedNameBits(positions);
       await tx.wait();
 
@@ -499,9 +499,9 @@ describe("PetNFT", function () {
 
       const gasPrices = [];
       `Using hash count: 4 and bit count: 20000n`;
-      positions = await generateUniqueBitPositions(reservedNames, 4, 20000n);
+      positions = await generateUniqueBitPositions(reservedNames, 4, 100000n);
       console.log(`Generated ${positions.length} bit positions`);
-      const batchSize = 7500;
+      const batchSize = Math.min(Math.max(Math.floor(positions.length / 150), 500), 7500);
       for (let i = 0; i < positions.length; i += batchSize) {
         const batch = positions.slice(i, i + batchSize);
         const gas = await petNFT.setReservedNameBits.estimateGas(batch);

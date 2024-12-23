@@ -100,7 +100,7 @@ describe("Clans", function () {
       `Using hash count: 4 and bit count: 420000n`;
       const positions = await generateUniqueBitPositions(reservedNames, 4, 420000n);
       console.log(`Generated ${positions.length} bit positions`);
-      const batchSize = 6000;
+      const batchSize = Math.min(Math.max(Math.floor(positions.length / 100), 500), 6000);
       for (let i = 0; i < positions.length; i += batchSize) {
         const batch = positions.slice(i, i + batchSize);
         const gas = await clans.setReservedNameBits.estimateGas(batch);
