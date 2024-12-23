@@ -118,8 +118,8 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(IPlayers players, ItemNFT itemNFT, Quests quests) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _quests = quests;
     _players = players;

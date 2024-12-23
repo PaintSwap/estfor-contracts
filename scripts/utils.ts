@@ -42,9 +42,13 @@ export type AvatarInfo = {
 // If there's an error with build-info not matching then delete cache/artifacts folder and try again
 export const verifyContracts = async (addresses: string[]) => {
   for (const address of addresses) {
-    await run("verify:verify", {
-      address
-    });
+    try {
+      await run("verify:verify", {
+        address
+      });
+    } catch (e) {
+      console.error(`Failed to verify contract at address ${address}`);
+    }
   }
   console.log("Verified all contracts");
 };

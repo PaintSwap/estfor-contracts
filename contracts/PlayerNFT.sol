@@ -17,7 +17,7 @@ import {BloomFilter} from "./libraries/BloomFilter.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
+contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IERC2981 {
   using BloomFilter for BloomFilter.Filter;
 
   event NewPlayer(
@@ -138,8 +138,8 @@ contract PlayerNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable,
     bool isBeta,
     address bridge
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
     __SamWitchERC1155UpgradeableSinglePerToken_init("");
 
     _brush = brush;

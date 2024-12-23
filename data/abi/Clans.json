@@ -467,6 +467,12 @@
         "internalType": "uint256",
         "name": "tierId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "createdTimestamp",
+        "type": "uint256"
       }
     ],
     "name": "ClanCreated",

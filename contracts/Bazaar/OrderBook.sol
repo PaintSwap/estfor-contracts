@@ -77,8 +77,8 @@ contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrder
     uint8 burntFee,
     uint16 maxOrdersPerPrice
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     setFees(devAddr, devFee, burntFee);
     // nft must be an ERC1155 via ERC165

@@ -207,8 +207,8 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     uint16[] calldata combatActionIds,
     bool isBeta
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _players = players;
     _itemNFT = itemNFT;

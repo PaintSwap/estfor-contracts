@@ -11,8 +11,8 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize() external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
   }
 
   // solhint-disable-next-line no-empty-blocks

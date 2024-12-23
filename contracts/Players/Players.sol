@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuardTransientUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardTransientUpgradeable.sol";
 
 import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {DailyRewardsScheduler} from "../DailyRewardsScheduler.sol";
@@ -24,7 +24,7 @@ import {PlayersLibrary} from "./PlayersLibrary.sol";
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, IPlayers {
+contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransientUpgradeable, PlayersBase, IPlayers {
   event GamePaused(bool gamePaused);
   event LockPlayer(uint256 playerId, uint256 cooldownTimestamp);
   event UnlockPlayer(uint256 playerId);
@@ -88,9 +88,9 @@ contract Players is PlayersBase, UUPSUpgradeable, OwnableUpgradeable, Reentrancy
     address bridge,
     bool isBeta
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
-    __ReentrancyGuard_init();
+    __UUPSUpgradeable_init();
+    __ReentrancyGuardTransient_init();
 
     _itemNFT = itemNFT;
     _playerNFT = playerNFT;

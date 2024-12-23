@@ -113,8 +113,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     ISolidlyRouter router,
     address[2] calldata path
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _randomnessBeacon = randomnessBeacon;
     _bridge = bridge;

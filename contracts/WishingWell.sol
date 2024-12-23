@@ -98,8 +98,8 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     uint256 globalThresholdIncrement,
     uint256 clanThresholdIncrement
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _brush = brush;
     _playerNFT = playerNFT;

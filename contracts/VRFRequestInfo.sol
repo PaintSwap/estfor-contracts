@@ -30,8 +30,8 @@ contract VRFRequestInfo is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize() external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     setBaseAttackCost(0.01 ether);
     _updateMovingAverageGasPrice(uint64(tx.gasprice));

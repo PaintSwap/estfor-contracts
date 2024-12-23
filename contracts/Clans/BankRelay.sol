@@ -25,8 +25,8 @@ contract BankRelay is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(address clans) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _clans = Clans(clans);
   }

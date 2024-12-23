@@ -6,7 +6,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuardTransientUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardTransientUpgradeable.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
 
@@ -17,7 +17,7 @@ import {ItemNFT} from "../ItemNFT.sol";
 import {BankRegistry} from "./BankRegistry.sol";
 import {BulkTransferInfo} from "../globals/items.sol";
 
-contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, IBank {
+contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgradeable, IBank {
   using SafeCast for uint256;
   using BitMaps for BitMaps.BitMap;
 
@@ -106,7 +106,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardUpgradeable, ContextUpgradeable, 
   }
 
   function initialize() external override initializer {
-    __ReentrancyGuard_init();
+    __ReentrancyGuardTransient_init();
   }
 
   function initializeAddresses(

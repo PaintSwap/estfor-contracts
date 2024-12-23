@@ -55,8 +55,8 @@ contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function initialize(address vrf) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     uint40 startTime = uint40(
       (block.timestamp / MIN_RANDOM_WORDS_UPDATE_TIME) *

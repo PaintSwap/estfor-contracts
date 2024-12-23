@@ -36,8 +36,8 @@ contract RoyaltyReceiver is UUPSUpgradeable, OwnableUpgradeable {
     IBrushToken brush,
     address wNative
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     require(address(router) != address(0), AddressZero());
     require(pool != address(0), AddressZero());

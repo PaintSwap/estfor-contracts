@@ -33,8 +33,8 @@ contract DailyRewardsScheduler is UUPSUpgradeable, OwnableUpgradeable, IOracleCB
   }
 
   function initialize(address randomnessBeacon) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _randomnessBeacon = randomnessBeacon;
     _weeklyRewardCheckpoint = uint40((block.timestamp - 4 days) / 1 weeks) * 1 weeks + 4 days + 1 weeks;

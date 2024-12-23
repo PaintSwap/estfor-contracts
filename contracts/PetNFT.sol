@@ -115,7 +115,6 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
 
   AdminAccess private _adminAccess;
   bool private _isBeta;
-  uint40 private _createdTime; // TODO: Only used for bridging atm
 
   address private _dev;
   IBrushToken private _brush;
@@ -180,8 +179,8 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
     __SamWitchERC1155UpgradeableSinglePerToken_init("");
 
     bool storageSlotCorrect;
@@ -295,7 +294,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     address petOwner,
     uint256[] calldata petIds,
     uint24[] calldata basePetIds,
-    string[] calldata petNames,
+    string[] memory petNames,
     Skill[] calldata skillEnhancement1s,
     uint8[] calldata skillFixedEnhancement1s,
     uint8[] calldata skillPercentageEnhancement1,
@@ -375,6 +374,8 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
         _names[petIds[i]] = petNames[i];
         string memory lowercaseName = EstforLibrary.toLower(petNames[i]);
         _lowercaseNames[lowercaseName] = true;
+      } else {
+        petNames[i] = PetNFTLibrary._defaultPetName(petIds[i]);
       }
     }
     _mintBatch(petOwner, petIds, amounts, "");

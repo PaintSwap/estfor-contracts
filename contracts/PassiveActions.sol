@@ -5,7 +5,7 @@ import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuardTransientUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardTransientUpgradeable.sol";
 
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {ItemNFT} from "./ItemNFT.sol";
@@ -18,7 +18,7 @@ import "./globals/all.sol";
 
 // Stake some items which get burnt and get something else in return for waiting a certain time. All or nothing.
 // Supports skipping a day based on random chance & random items in Passive Actions
-contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, ERC1155Holder {
+contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransientUpgradeable, ERC1155Holder {
   using Math for uint256;
 
   event AddPassiveActions(PassiveActionInput[] passiveActionInputs);
@@ -156,7 +156,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardU
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
-    __ReentrancyGuard_init();
+    __ReentrancyGuardTransient_init();
 
     _players = players;
     _itemNFT = itemNFT;

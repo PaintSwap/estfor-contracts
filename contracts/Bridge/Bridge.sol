@@ -41,8 +41,8 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
   }
 
   function initialize(uint32 srcEid) public initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
     __OApp_init(_msgSender());
     _srcEid = srcEid;
   }

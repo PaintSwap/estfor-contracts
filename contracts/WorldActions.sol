@@ -58,8 +58,8 @@ contract WorldActions is UUPSUpgradeable, OwnableUpgradeable, IWorldActions {
   }
 
   function initialize() external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
   }
 
   function getAction(uint256 actionId) external view returns (ActionInfo memory) {

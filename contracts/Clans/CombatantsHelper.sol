@@ -74,8 +74,8 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _players = players;
     _clans = clans;

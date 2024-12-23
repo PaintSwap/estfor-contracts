@@ -83,8 +83,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     uint24 minItemQuantityBeforeSellsAllowed,
     uint24 sellingCutoffDuration
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _brush = brush;
     _treasury = treasury;

@@ -16,7 +16,7 @@ import {AdminAccess} from "./AdminAccess.sol";
 import {BoostType, BulkTransferInfo, CombatStats, EquipPosition, Item, ItemInput, Skill, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./globals/all.sol";
 
 // The NFT contract contains data related to the items and who owns them
-contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IERC2981, IItemNFT {
+contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IERC2981, IItemNFT {
   event AddItems(ItemInput[] items);
   event EditItems(ItemInput[] items);
   event RemoveItems(uint16[] tokenIds);
@@ -77,8 +77,8 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     AdminAccess adminAccess,
     bool isBeta
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
     __ERC1155_init("");
 
     _baseURI = baseURI;

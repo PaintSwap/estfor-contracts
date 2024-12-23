@@ -53,20 +53,21 @@ async function main() {
 
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
 
-  const player = await ethers.getImpersonatedSigner("0x8ca12fb5438252ab8efa25d3fb34166eda1c17ed");
-  const playerId = 3;
+  const player = await ethers.getImpersonatedSigner("0x6dC225F7f21ACB842761b8df52AE46208705c942");
+  const playerId = 252;
 
   await helpers.mine();
 
   const estforLibrary = await ethers.deployContract("EstforLibrary");
   // Players
+  /*
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
     kind: "uups",
     unsafeAllow: ["delegatecall"]
   })) as unknown as Players;
-  /*
+
   // Set the implementations
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(await playersLibrary.getAddress());
@@ -148,13 +149,16 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   })) as unknown as LockedBankVaults;
-
-  const Territories = await ethers.getContractFactory("Territories");
+*/
+  const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
   const territories = (await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   })) as unknown as Territories;
 
+  await territories.connect(player).attackTerritory(63, 1, 252);
+
+  /*
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   const PetNFT = (
     await ethers.getContractFactory("PetNFT", {
@@ -198,8 +202,8 @@ async function main() {
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 */
   //  await players.connect(player).modifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, SKIP_XP_THRESHOLD_EFFECTS);
-  const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
-  console.log(pendingQueuedActionState);
+  //  const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
+  //  console.log(pendingQueuedActionState);
   /*
   // Debugging bridging
   const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c";

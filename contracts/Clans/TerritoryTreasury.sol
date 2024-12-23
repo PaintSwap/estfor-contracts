@@ -47,8 +47,8 @@ contract TerritoryTreasury is UUPSUpgradeable, OwnableUpgradeable {
     Treasury treasury,
     uint16 minHarvestInterval
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _territories = territories;
     _playerNFT = playerNFT;

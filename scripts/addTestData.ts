@@ -190,6 +190,8 @@ export const addTestData = async (
   await tx.wait();
   console.log("Approve brush for buying in the shop");
 
+  await new Promise((r) => setTimeout(r, 5000));
+
   tx = await shop.buy(owner, EstforConstants.MAGIC_FIRE_STARTER, 1);
   await tx.wait();
   console.log("Buy from shop");
@@ -249,6 +251,9 @@ export const addTestData = async (
   tx = await brush.approve(clans, parseEther("1000"));
   await tx.wait();
   console.log("Approve brush for clan creation");
+
+  // Sleep 5 seconds
+  await new Promise((r) => setTimeout(r, 5000));
 
   const imageId = 2;
   const tierId = 1;
@@ -335,6 +340,8 @@ export const addTestData = async (
     tx = await brush.approve(quests, ethers.parseEther("1"));
     await tx.wait();
     console.log("Approve brush for selling in quests");
+
+    await new Promise((r) => setTimeout(r, 5000));
 
     tx = await quests.sellBrush(owner, ethers.parseEther("0.001"), 0, false);
     await tx.wait();

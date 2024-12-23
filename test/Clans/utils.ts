@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {playersFixture} from "../Players/PlayersFixture";
 import {ethers} from "hardhat";
 import {expect} from "chai";
+import {Block} from "ethers";
 
 export async function calculateClanBankAddress(
   clanId: number,
@@ -63,9 +64,10 @@ export async function clanFixture() {
 
   const bankAddress = await calculateClanBankAddress(clanId, await bankFactory.getAddress(), await bank.getAddress());
 
+  const timestamp = ((await ethers.provider.getBlock("latest")) as Block).timestamp + 1;
   await expect(clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, imageId, tierId))
     .to.emit(clans, "ClanCreated")
-    .withArgs(clanId, playerId, [clanName, discord, telegram, twitter], imageId, tierId)
+    .withArgs(clanId, playerId, [clanName, discord, telegram, twitter], imageId, tierId, timestamp)
     .and.to.emit(bankFactory, "BankContractCreated")
     .withArgs(alice.address, clanId, bankAddress);
 

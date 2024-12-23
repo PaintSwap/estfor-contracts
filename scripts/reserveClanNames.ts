@@ -22,7 +22,7 @@ async function setReservedClanNames() {
 
   const positions = await generateUniqueBitPositions(reservedNames, 4, 420000n);
   console.log(`Generated ${positions.length} bit positions`);
-  const batchSize = 7500;
+  const batchSize = 2500;
   for (let i = 0; i < positions.length; i += batchSize) {
     const batch = positions.slice(i, i + batchSize);
     const gas = await clans.setReservedNameBits.estimateGas(batch);

@@ -22,7 +22,14 @@ import {ClanRank} from "../globals/clans.sol";
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   using BloomFilter for BloomFilter.Filter;
 
-  event ClanCreated(uint256 clanId, uint256 playerId, string[] clanInfo, uint256 imageId, uint256 tierId);
+  event ClanCreated(
+    uint256 clanId,
+    uint256 playerId,
+    string[] clanInfo,
+    uint256 imageId,
+    uint256 tierId,
+    uint256 createdTimestamp
+  );
   event SetClanRank(uint256 clanId, uint256 playerId, ClanRank clan);
   event InviteSent(uint256 clanId, uint256 playerId, uint256 fromPlayerId);
   event InvitesSent(uint256 clanId, uint256[] playerIds, uint256 fromPlayerId);
@@ -223,8 +230,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint40 startClanId,
     address bridge
   ) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _brush = brush;
     _playerNFT = playerNFT;
@@ -272,7 +279,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     (string memory trimmedName, ) = _setName(clanId, name);
     _checkSocials(discord, telegram, twitter);
     string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
-    emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId);
+    emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId, block.timestamp);
     _pay(tier.price);
 
     _bankFactory.createBank(_msgSender(), clanId);
@@ -299,12 +306,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     clan.memberCount = 1;
     clan.createdTimestamp = uint40(createdTimestamp);
     clan.mmr = uint16(mmr);
-    emit SetMMR(clanId, mmr);
-
-    if (disableJoinRequests) {
-      clan.disableJoinRequests = disableJoinRequests;
-      emit JoinRequestsEnabled(clanId, !disableJoinRequests, playerId);
-    }
 
     PlayerInfo storage player = _playerInfo[playerId];
     player.clanId = uint32(clanId);
@@ -315,7 +316,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _lowercaseNames[EstforLibrary.toLower(name)] = true; // already trimmed
 
     string[] memory clanInfo = _createClanInfo(name, discord, telegram, twitter);
-    emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId);
+    emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId, createdTimestamp);
+    if (disableJoinRequests) {
+      clan.disableJoinRequests = disableJoinRequests;
+      emit JoinRequestsEnabled(clanId, !disableJoinRequests, playerId);
+    }
+    emit SetMMR(clanId, mmr);
     _bankFactory.createBank(from, clanId);
   }
 
