@@ -460,7 +460,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     string calldata _telegram
   ) external view returns (uint24 avatarId, string memory name_) {
     _checkSocials(_discord, _twitter, _telegram);
-    avatarId = playerInfos[_playerId].originalAvatarId;
+
+    uint24 originalAvatarId = playerInfos[_playerId].originalAvatarId;
+    if (originalAvatarId == 0) {
+      originalAvatarId = playerInfos[_playerId].avatarId;
+    }
+
+    avatarId = originalAvatarId;
     name_ = names[_playerId];
   }
 
