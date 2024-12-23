@@ -97,7 +97,7 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     if (_petIds.length == 0) {
       revert SendingNoPets();
     }
-    if (_petIds.length > 25) {
+    if (_petIds.length > 10) {
       revert SendingTooManyPets();
     }
 
@@ -113,7 +113,7 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     ) = petNFT.getBridgeablePets(to, _petIds, _throwOnError);
 
     uint128 gas = 300_000; // base gas
-    gas += uint128(100_000 * _petIds.length);
+    gas += uint128(250_000 * _petIds.length);
 
     uint128 value = 0;
     bytes memory option = encodeLzReceiveOption(gas, value);

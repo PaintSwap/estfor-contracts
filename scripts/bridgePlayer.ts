@@ -30,6 +30,10 @@ async function main() {
   await tx.wait();
   console.log("Approve brush for upgrading");
 
+  tx = await playerNFT.connect(owner).setBridge(ethers.constants.AddressZero);
+  await tx.wait();
+  console.log("Set bridge to empty");
+
   const playerId = await createPlayer(
     playerNFT,
     1,
@@ -42,6 +46,10 @@ async function main() {
     true
   );
   console.log("Created player", playerId);
+
+  tx = await playerNFT.connect(owner).setBridge(BRIDGE_ADDRESS);
+  await tx.wait();
+  console.log("Set bridge back");
 
   const clans = (await ethers.getContractAt("Clans", CLANS_ADDRESS)).connect(alice);
 
