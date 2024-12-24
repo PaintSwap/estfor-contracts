@@ -896,7 +896,7 @@ async function main() {
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
-  if (network.chainId == 416n) {
+  if (network.chainId == 146n) {
     try {
       const addresses = [
         await players.getAddress(),
