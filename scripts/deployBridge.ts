@@ -8,6 +8,7 @@ import {
   ITEM_NFT_ADDRESS,
   ITEM_NFT_LIBRARY_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
+  LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
   PASSIVE_ACTIONS_ADDRESS,
   PET_NFT_ADDRESS,
   PET_NFT_LIBRARY_ADDRESS,
@@ -58,7 +59,7 @@ async function main() {
   console.log(`lockedBankVaultsLibrary = ${lockedBankVaultsLibrary.address}`);
   const LockedBankVaults = (
     await ethers.getContractFactory("LockedBankVaults", {
-      libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, LockedBankVaultsLibrary: lockedBankVaultsLibrary.address},
+      libraries: {EstforLibrary: ESTFOR_LIBRARY_ADDRESS, LockedBankVaultsLibrary: LOCKED_BANK_VAULTS_LIBRARY_ADDRESS},
     })
   ).connect(owner);
   const lockedBankVaults = await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
@@ -123,7 +124,9 @@ async function main() {
   await passiveActions.deployed();
   console.log(`passiveActions = "${passiveActions.address.toLowerCase()}"`);
 
-  await passiveActions.setBridge(BRIDGE_ADDRESS);
+  let tx = await passiveActions.setBridge(bridge.address);
+  await tx.wait();
+  console.log("Bridge set on passiveActions");
 
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
@@ -187,7 +190,7 @@ async function main() {
   console.log(`petNFT = "${petNFT.address.toLowerCase()}"`);
 
   // Set names to highest amount possible to reduce conflicts
-  let tx = await clans.setEditNameCost(ethers.utils.parseEther("4700"));
+  tx = await clans.setEditNameCost(ethers.utils.parseEther("4700"));
   await tx.wait();
   console.log("Set clans cost");
 
@@ -240,7 +243,7 @@ async function main() {
   }
 
   // Do this after preventing actions
-  const contractsToSetBridge = [itemNFT, quests, passiveActions, lockedBankVaults, players, petNFT];
+  const contractsToSetBridge = [itemNFT, quests, lockedBankVaults, players, petNFT];
   const bridgeAddress = disableGame ? bridge.address : ethers.constants.AddressZero;
   for (const contract of contractsToSetBridge) {
     tx = await contract.setBridge(bridgeAddress);

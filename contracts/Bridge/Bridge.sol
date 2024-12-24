@@ -153,12 +153,12 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     if (_itemTokenIds.length == 0) {
       revert SendingNoItems();
     }
-    if (_itemTokenIds.length > 150) {
+    if (_itemTokenIds.length > 100) {
       revert SendingTooManyItems();
     }
     uint256 messageType = 2;
     uint128 gas = 300_000; // base gas
-    gas += uint128(50_000 * _itemTokenIds.length); // for minting all the items
+    gas += uint128(45_000 * _itemTokenIds.length); // for minting all the items
 
     uint128 value = 0;
     bytes memory option = encodeLzReceiveOption(gas, value);
@@ -196,7 +196,7 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     string memory _clanTwitter
   ) private view returns (bytes memory payload, bytes memory options) {
     uint256 messageType = 3;
-    uint128 gas = 1_500_000; // base gas for all the skills
+    uint128 gas = 1_800_000; // base gas for all the skills
 
     // Players
     bool isPlayerUpgraded;
@@ -230,8 +230,8 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
       uint256[] memory questBurnCompletedAmounts
     ) = quests.getBridgeableQuests(_playerId);
 
-    gas += uint128(questIds.length * 100_000);
-    gas += uint128(questsCompleted.length * 100_000); // In case some are the quests that give XP
+    gas += uint128(questIds.length * 80_000);
+    gas += uint128(questsCompleted.length * 80_000); // In case some are the quests that give XP
 
     // Bridge the skills
     Skill[] memory skills = new Skill[](16);
@@ -262,7 +262,7 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     // Passive action
     (uint16 passiveActionId, uint40 passiveActionStartTime) = passiveActions.getBridgeablePassiveAction(_playerId);
     if (passiveActionId != 0) {
-      gas += 200_000;
+      gas += 300_000;
     }
 
     uint128 value = 0;
