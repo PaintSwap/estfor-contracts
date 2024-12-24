@@ -86,11 +86,19 @@ async function main() {
     PET_NFT_ADDRESS,
     PET_NFT_LIBRARY_ADDRESS,
     PASSIVE_ACTIONS_ADDRESS,
-    TREASURY_ADDRESS,
+    TREASURY_ADDRESS
     //    PVP_BATTLEGROUND_ADDRESS,
     //    RAIDS_ADDRESS,
-    BRIDGE_ADDRESS
   ];
+  const lzEndpointV2 = "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B";
+  try {
+    await run("verify:verify", {
+      BRIDGE_ADDRESS,
+      constructorArguments: [lzEndpointV2]
+    });
+  } catch (e) {
+    console.error(`Failed to verify contract at address ${address}`);
+  }
 
   await verifyContracts(addresses);
 }
