@@ -411,7 +411,7 @@ async function main() {
   await passiveActions.waitForDeployment();
   console.log(`passiveActions = "${(await passiveActions.getAddress()).toLowerCase()}"`);
 
-  const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c"; // On Sonic
+  const lzEndpoint = "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B"; // On Sonic
   const Bridge = await ethers.getContractFactory("Bridge");
   const bridge = await upgrades.upgradeProxy(BRIDGE_ADDRESS, Bridge, {
     kind: "uups",
