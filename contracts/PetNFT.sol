@@ -33,6 +33,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   using BloomFilter for BloomFilter.Filter;
 
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
+  event BridgePets(uint256[] tokenIds, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
@@ -381,7 +382,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
       }
     }
     _mintBatch(petOwner, petIds, amounts, "");
-    emit NewPets(petIds[0], pets, petNames, petOwner);
+    emit BridgePets(petIds, pets, petNames, petOwner);
   }
 
   function burnBatch(address from, uint256[] calldata tokenIds) external onlyBurners(from) {
