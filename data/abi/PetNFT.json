@@ -518,6 +518,119 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "tokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastAssignmentTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastTrainedTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Pet[]",
+        "name": "pets",
+        "type": "tuple[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "string[]",
+        "name": "names",
+        "type": "string[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      }
+    ],
+    "name": "BridgePets",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "string",
@@ -796,6 +909,119 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "tokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum Skill",
+            "name": "skillEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancement2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastAssignmentTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint24",
+            "name": "baseId",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastTrainedTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillFixedEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax1",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "skillPercentageEnhancementMax2",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint64",
+            "name": "xp",
+            "type": "uint64"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Pet[]",
+        "name": "pets",
+        "type": "tuple[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "string[]",
+        "name": "names",
+        "type": "string[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "owners",
+        "type": "address[]"
+      }
+    ],
+    "name": "RefreshPets",
     "type": "event"
   },
   {

@@ -33,7 +33,6 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   using BloomFilter for BloomFilter.Filter;
 
   event NewPets(uint256 startPetId, Pet[] pets, string[] names, address from);
-  event BridgePets(uint256[] tokenIds, Pet[] pets, string[] names, address from);
   event SetBrushDistributionPercentages(
     uint256 brushBurntPercentage,
     uint256 brushTreasuryPercentage,
@@ -44,6 +43,10 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   event EditBasePets(BasePetInput[] basePetInputs);
   event EditNameCost(uint256 newCost);
   event Train(uint256 playerId, uint256 petId, uint256 xpGained);
+
+  // Legacy, Needed for bridging
+  event BridgePets(uint256[] tokenIds, Pet[] pets, string[] names, address from);
+  event RefreshPets(uint256[] tokenIds, Pet[] pets, string[] names, address[] owners);
 
   error PetAlreadyExists();
   error PetDoesNotExist();
