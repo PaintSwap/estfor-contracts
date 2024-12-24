@@ -191,13 +191,13 @@ describe("PlayerNFT", function () {
     const name = "A123";
     const avatarId = 1;
     const makeActive = true;
-    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     await createPlayer(playerNFT, avatarId, alice, name, makeActive);
+    const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
 
     // Check avatar ids are as expected
     expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(1);
     expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
-    expect((await playerNFT.getPlayerInfo(playerId)).mintedTimestamp).to.eq(NOW);
+    expect((await playerNFT.getPlayerInfo(playerId)).mintedTimestamp).to.eq(NOW - 1);
     expect((await playerNFT.getPlayerInfo(playerId)).upgradedTimestamp).to.eq(0);
   });
 
