@@ -422,7 +422,7 @@ async function main() {
   await bridge.waitForDeployment();
   console.log("bridge = ", (await bridge.getAddress()).toLowerCase());
 
-  if (network.chainId == 250n) {
+  if (network.chainId == 146n) {
     await verifyContracts([await players.getAddress()]);
     await verifyContracts([await playerNFT.getAddress()]);
     await verifyContracts([await itemNFT.getAddress()]);
@@ -451,7 +451,15 @@ async function main() {
     await verifyContracts([await royaltyReceiver.getAddress()]);
     await verifyContracts([await passiveActions.getAddress()]);
     await verifyContracts([await treasury.getAddress()]);
-    await verifyContracts([await bridge.getAddress()]);
+
+    try {
+      await run("verify:verify", {
+        BRIDGE_ADDRESS,
+        constructorArguments: [lzEndpoint]
+      });
+    } catch (e) {
+      console.error(`Failed to verify contract at address ${BRIDGE_ADDRESS}`);
+    }
   }
 }
 

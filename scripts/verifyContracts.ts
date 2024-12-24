@@ -97,7 +97,7 @@ async function main() {
       constructorArguments: [lzEndpointV2]
     });
   } catch (e) {
-    console.error(`Failed to verify contract at address ${address}`);
+    console.error(`Failed to verify contract at address ${BRIDGE_ADDRESS}`);
   }
 
   await verifyContracts(addresses);

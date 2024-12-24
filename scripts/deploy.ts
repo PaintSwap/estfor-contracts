@@ -936,13 +936,21 @@ async function main() {
         await upgrades.beacon.getImplementationAddress(await bank.getAddress()),
         await bankRegistry.getAddress(),
         await bankFactory.getAddress(),
-        await bankRelay.getAddress(),
-        await bridge.getAddress()
+        await bankRelay.getAddress()
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
     } catch (e) {
       console.log("Error verifying contracts", e);
+    }
+
+    try {
+      await run("verify:verify", {
+        address: await bridge.getAddress(),
+        constructorArguments: [lzEndpoint]
+      });
+    } catch (e) {
+      console.error(`Failed to verify contract at address ${await bridge.getAddress()}`);
     }
   } else {
     console.log("Skipping verifying contracts");
