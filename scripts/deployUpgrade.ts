@@ -405,8 +405,12 @@ async function main() {
     await verifyContracts([decoratorProvider.address]);
     await verifyContracts([royaltyReceiver.address]);
     await verifyContracts([passiveActions.address]);
-    await verifyContracts([bridge.address]);
   }
+
+  await run("verify:verify", {
+    address: BRIDGE_ADDRESS,
+    constructorArguments: [lzEndpoint],
+  });
 }
 
 main().catch((error) => {

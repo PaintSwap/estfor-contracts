@@ -82514,6 +82514,194 @@
           }
         }
       }
+    },
+    "6fa56296395790f6b0803985d50eb3c7a94967f9dd62f06097f4d63f69c4e1b3": {
+      "address": "0xCfEf9218329880067dAde8C6d5945eA20a4a7193",
+      "txHash": "0x2e7b9bca3b18f785fd62995a1fb6345b4dd5801c103705747bb3ad5c8fada621",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "petNFT",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_contract(PetNFT)26507",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:26"
+          },
+          {
+            "label": "playerNFT",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(PlayerNFT)28791",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:27"
+          },
+          {
+            "label": "players",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_contract(Players)30607",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:28"
+          },
+          {
+            "label": "itemNFT",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_contract(ItemNFT)21125",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:29"
+          },
+          {
+            "label": "clans",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_contract(Clans)17740",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:30"
+          },
+          {
+            "label": "quests",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_contract(Quests)39114",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:31"
+          },
+          {
+            "label": "passiveActions",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_contract(PassiveActions)23858",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:32"
+          },
+          {
+            "label": "dstEid",
+            "offset": 20,
+            "slot": "207",
+            "type": "t_uint32",
+            "contract": "Bridge",
+            "src": "contracts\\Bridge\\Bridge.sol:33"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(Clans)17740": {
+            "label": "contract Clans",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)21125": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PassiveActions)23858": {
+            "label": "contract PassiveActions",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)26507": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PlayerNFT)28791": {
+            "label": "contract PlayerNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Players)30607": {
+            "label": "contract Players",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Quests)39114": {
+            "label": "contract Quests",
+            "numberOfBytes": "20"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
     }
   }
 }

@@ -81,6 +81,12 @@ async function main() {
   ];
 
   await verifyContracts(addresses);
+
+  const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c"; // Fantom
+  await run("verify:verify", {
+    address: "0x4381ba70358b46e220b3e9188acfef224e9f8a8f",
+    constructorArguments: [lzEndpoint],
+  });
 }
 
 main().catch((error) => {
