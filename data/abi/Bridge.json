@@ -155,6 +155,11 @@
   },
   {
     "inputs": [],
+    "name": "PlayerAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "UUPSUnauthorizedCallContext",
     "type": "error"
   },

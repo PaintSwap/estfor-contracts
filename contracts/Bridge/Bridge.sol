@@ -22,6 +22,7 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
   error MessageAlreadyProcessed();
   error InvalidSourceChain();
   error UnknownMessageType();
+  error PlayerAlreadyExists();
 
   PetNFT private _petNFT;
   PlayerNFT private _playerNFT;
@@ -190,6 +191,9 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
           uint256
         )
       );
+
+    // Check player does not exist
+    require(!_playerNFT.exists(playerId), PlayerAlreadyExists());
 
     // Mint the player
     _playerNFT.mintBridge(from, playerId, avatarId, heroName, discord, twitter, telegram, isUpgraded);
