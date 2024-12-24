@@ -1,4 +1,4 @@
-import {ethers, upgrades} from "hardhat";
+import {ethers} from "hardhat";
 import {BRIDGE_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 
