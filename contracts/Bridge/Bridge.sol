@@ -158,7 +158,7 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     }
     uint256 messageType = 2;
     uint128 gas = 300_000; // base gas
-    gas += uint128(45_000 * _itemTokenIds.length); // for minting all the items
+    gas += uint128(60_000 * _itemTokenIds.length); // for minting all the items
 
     uint128 value = 0;
     bytes memory option = encodeLzReceiveOption(gas, value);
