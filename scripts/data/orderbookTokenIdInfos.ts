@@ -2573,11 +2573,6 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     minQuantity: "1"
   },
   {
-    tokenId: EstforConstants.COIN,
-    tick: ethers.parseEther("0.00001").toString(),
-    minQuantity: "1"
-  },
-  {
     tokenId: EstforConstants.KRAGSTYR_EGG_TIER1,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"

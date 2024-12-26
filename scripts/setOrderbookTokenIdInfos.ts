@@ -14,22 +14,19 @@ async function main() {
   const orderBook = await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS);
   const chunkSize = 100;
 
-  const newTokenIds = new Set([
-    EstforConstants.KRAGSTYR_EGG_TIER1,
-    EstforConstants.KRAGSTYR_EGG_TIER2,
-    EstforConstants.KRAGSTYR_EGG_TIER3,
-    EstforConstants.KRAGSTYR_EGG_TIER4,
-    EstforConstants.KRAGSTYR_EGG_TIER5,
-    EstforConstants.TRICK_CHEST2024,
-    EstforConstants.TREAT_CHEST2024,
-    EstforConstants.TRICK_OR_TREAT_KEY,
-    EstforConstants.RING_OF_TUR,
-    EstforConstants.KEPHRI_AMULET,
-    EstforConstants.LIFFYN,
-    EstforConstants.VANAGLOT,
-    EstforConstants.FANGENSTORM
-  ]);
+  const newTokenIds = new Set([EstforConstants.COIN]);
 
+  const tx = await orderBook.setTokenIdInfos(
+    [EstforConstants.COIN],
+    [
+      {
+        tick: ethers.parseEther("0").toString(),
+        minQuantity: "1"
+      }
+    ]
+  );
+
+  /*
   const orderBookTokenIdInfos = allOrderBookTokenIdInfos.filter((tokenIdInfo) => newTokenIds.has(tokenIdInfo.tokenId));
 
   for (let i = 0; i < orderBookTokenIdInfos.length; i += chunkSize) {
@@ -44,6 +41,7 @@ async function main() {
     await tx.wait();
     console.log("orderBook.setTokenIdInfos");
   }
+  */
 }
 
 main().catch((error) => {
