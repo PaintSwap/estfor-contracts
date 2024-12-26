@@ -49,7 +49,7 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.LARGE_NET,
-    price: parseEther("240")
+    price: parseEther("160")
   },
   {
     tokenId: EstforConstants.TITANIUM_FISHING_ROD,
@@ -57,11 +57,11 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.MAGIC_NET,
-    price: parseEther("250")
+    price: parseEther("240")
   },
   {
     tokenId: EstforConstants.HARPOON,
-    price: parseEther("300")
+    price: parseEther("280")
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
