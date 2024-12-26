@@ -921,8 +921,6 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       statsOut.magicDefence += skillDiff;
     } else if (skill == Skill.HEALTH) {
       statsOut.health += skillDiff;
-    } else {
-      assert(false);
     }
   }
 
