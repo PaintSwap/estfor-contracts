@@ -288,7 +288,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
       pets[i] = pet;
       tokenIds[i] = petId;
       amounts[i] = 1;
-      _names[i] = PetNFTLibrary._defaultPetName(petId);
+      names[i] = PetNFTLibrary._defaultPetName(petId);
     }
     // Mint first
     _mintBatch(to, tokenIds, amounts, "");
