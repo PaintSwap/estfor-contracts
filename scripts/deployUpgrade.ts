@@ -61,7 +61,7 @@ async function main() {
   let estforLibrary: EstforLibrary;
   if (newEstforLibrary) {
     estforLibrary = await ethers.deployContract("EstforLibrary");
-    if (network.chainId == 250n) {
+    if (network.chainId == 146n) {
       await verifyContracts([await estforLibrary.getAddress()]);
     }
   } else {

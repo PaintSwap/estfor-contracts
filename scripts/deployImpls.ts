@@ -24,7 +24,7 @@ async function main() {
   if (newPlayersLibrary) {
     playersLibrary = await ethers.deployContract("PlayersLibrary");
 
-    if (chainId == 250n) {
+    if (chainId == 146n) {
       await verifyContracts([await playersLibrary.getAddress()]);
     }
     // If deploying a new players library then also upgrade raids
@@ -55,7 +55,7 @@ async function main() {
   console.log(`PlayersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 */
 
-  if (chainId == 250n) {
+  if (chainId == 146n) {
     await verifyContracts([
       await playersImplQueueActions.getAddress(),
       await playersImplProcessActions.getAddress(),
