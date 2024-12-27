@@ -10,7 +10,7 @@ async function main() {
 
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
   const _allShopItems = isBeta ? allShopItemsBeta : allShopItems;
-  const items = new Set([EstforConstants.LARGE_NET, EstforConstants.MAGIC_NET, EstforConstants.HARPOON]);
+  const items = new Set([EstforConstants.BLUEPRINT_ALCHEMY_004_V4]);
   const shopItems = _allShopItems.filter((shopItem) => items.has(shopItem.tokenId));
 
   if (shopItems.length !== items.size) {

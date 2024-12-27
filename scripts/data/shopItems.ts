@@ -141,7 +141,7 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_004_V4,
-    price: parseEther("100")
+    price: parseEther("150")
   },
   {
     tokenId: EstforConstants.POTION_005_SMALL_MELEE,
