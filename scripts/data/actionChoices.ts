@@ -2695,7 +2695,6 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     questPrerequisiteId: 0
   }
 ];
-
 export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
     skill: Skill.CRAFTING,
@@ -5510,7 +5509,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     rate: 10 * 1000,
     xpPerHour: 200,
     inputTokenIds: [EstforConstants.HERB_001_GLIMMER_LEAF, EstforConstants.HERB_012_WIDOWS_CHERRIES],
-    inputAmounts: [10, 10],
+    inputAmounts: [5, 10],
     outputTokenId: EstforConstants.POTION_001_SMALL_HEALING,
     outputAmount: 1,
     successPercent: 100,
@@ -5528,7 +5527,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     rate: 10 * 1000,
     xpPerHour: 400,
     inputTokenIds: [EstforConstants.HERB_002_RIPARIS, EstforConstants.HERB_013_LINDWYN_BERRIES],
-    inputAmounts: [10, 10],
+    inputAmounts: [5, 10],
     outputTokenId: EstforConstants.POTION_002_MEDIUM_HEALING,
     outputAmount: 1,
     successPercent: 100,
@@ -5546,7 +5545,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     rate: 10 * 1000,
     xpPerHour: 700,
     inputTokenIds: [EstforConstants.HERB_003_SHIMMERWEED, EstforConstants.HERB_014_ALDERSKORN_BERRIES],
-    inputAmounts: [10, 10],
+    inputAmounts: [5, 10],
     outputTokenId: EstforConstants.POTION_003_LARGE_HEALING,
     outputAmount: 1,
     successPercent: 100,
@@ -5564,7 +5563,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     rate: 10 * 1000,
     xpPerHour: 1100,
     inputTokenIds: [EstforConstants.HERB_004_FROST_BLOSSOM, EstforConstants.HERB_015_EVIGOR_FRUIT],
-    inputAmounts: [10, 10],
+    inputAmounts: [5, 10],
     outputTokenId: EstforConstants.POTION_004_EXTRA_LARGE_HEALING,
     outputAmount: 1,
     successPercent: 100,
@@ -5762,7 +5761,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     rate: 10 * 1000,
     xpPerHour: 250,
     inputTokenIds: [EstforConstants.HERB_001_GLIMMER_LEAF, EstforConstants.HERB_010_FOOLS_BERRY],
-    inputAmounts: [10, 10],
+    inputAmounts: [1, 10],
     outputTokenId: EstforConstants.FOOLS_BERRY_EXTRACT,
     outputAmount: 5,
     successPercent: 100,
@@ -5780,7 +5779,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     rate: 10 * 1000,
     xpPerHour: 450,
     inputTokenIds: [EstforConstants.HERB_003_SHIMMERWEED, EstforConstants.HERB_011_LUMELILA],
-    inputAmounts: [10, 10],
+    inputAmounts: [1, 10],
     outputTokenId: EstforConstants.LUMELILA_TOXIN,
     outputAmount: 5,
     successPercent: 100,

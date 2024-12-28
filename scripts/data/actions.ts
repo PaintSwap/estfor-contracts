@@ -3599,7 +3599,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 20 * 10},
       {itemTokenId: EstforConstants.LIVING_LOG, rate: 18 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 2731, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 2731, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 83, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3630,7 +3633,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 25 * 10},
       {itemTokenId: EstforConstants.LIVING_LOG, rate: 24 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 5461, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 5461, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 116, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3661,7 +3667,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 36 * 10},
       {itemTokenId: EstforConstants.LIVING_LOG, rate: 30 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 8191, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 8191, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 332, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3692,7 +3701,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 45 * 10},
       {itemTokenId: EstforConstants.LIVING_LOG, rate: 40 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 10922, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 10922, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 664, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3723,7 +3735,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.ENCHANTED_LOG, rate: 50 * 10},
       {itemTokenId: EstforConstants.LIVING_LOG, rate: 48 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 13653, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_001_PRIMORDIAL, chance: 13653, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 1328, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3755,7 +3770,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGONSTONE, rate: 10 * 10},
       {itemTokenId: EstforConstants.CHARCOAL, rate: 30 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 2731, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 2731, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 83, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3787,7 +3805,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGONSTONE, rate: 15 * 10},
       {itemTokenId: EstforConstants.CHARCOAL, rate: 40 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 5461, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 5461, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 116, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3819,7 +3840,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGONSTONE, rate: 20 * 10},
       {itemTokenId: EstforConstants.CHARCOAL, rate: 50 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 8191, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 8191, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 332, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3851,7 +3875,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGONSTONE, rate: 25 * 10},
       {itemTokenId: EstforConstants.CHARCOAL, rate: 60 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 10922, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 10922, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 664, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3883,7 +3910,10 @@ export const allActions: ActionInput[] = [
       {itemTokenId: EstforConstants.DRAGONSTONE, rate: 36 * 10},
       {itemTokenId: EstforConstants.CHARCOAL, rate: 75 * 10}
     ],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 13653, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_004_ASTRAL, chance: 13653, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 1328, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3911,7 +3941,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SPHINX_FISH, rate: 45 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 2731, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 2731, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 83, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3939,7 +3972,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_SHAW, rate: 36 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 4095, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 4095, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 116, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3967,7 +4003,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_VANISHING_PERCH, rate: 36 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 5461, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 5461, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 116, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -3995,7 +4034,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_VIPER_BASS, rate: 45 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 8191, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 8191, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 332, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -4023,7 +4065,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_WATER_SERPENT, rate: 45 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 10922, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 10922, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 664, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -4051,7 +4096,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_BAIT_AND_STRING_V
     },
     guaranteedRewards: [{itemTokenId: EstforConstants.RAW_WHISKFIN, rate: 45 * 10}],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 13653, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_002_AETHER, chance: 13653, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 1328, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -4079,7 +4127,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 2731, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_005_VOID, chance: 2731, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 83, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -4107,7 +4158,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 5461, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_005_VOID, chance: 5461, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 116, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -4135,7 +4189,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 8191, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_005_VOID, chance: 8191, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 332, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -4163,7 +4220,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 10922, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_005_VOID, chance: 10922, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 664, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,
@@ -4191,7 +4251,10 @@ export const allActions: ActionInput[] = [
       questPrerequisiteId: EstforConstants.QUEST_SPECIAL_ASSIGNMENT_V
     },
     guaranteedRewards: [],
-    randomRewards: [{itemTokenId: EstforConstants.CHEST_005_VOID, chance: 13653, amount: 2}],
+    randomRewards: [
+      {itemTokenId: EstforConstants.CHEST_005_VOID, chance: 13653, amount: 2},
+      {itemTokenId: EstforConstants.SHARD_006_OMNI, chance: 1328, amount: 1}
+    ],
     combatStats: {
       meleeAttack: 0,
       magicAttack: 0,

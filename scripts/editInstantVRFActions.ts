@@ -11,31 +11,11 @@ async function main() {
   const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
 
   const actionsToUpdate = new Set([
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_EGG_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_1_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_2_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_3_TIER5,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_SECRET_EGG_4_TIER5,
+    EstforConstants.INSTANT_VRF_ACTION_FARMING_WILD_SEED,
+    EstforConstants.INSTANT_VRF_ACTION_FARMING_UNKNOWN_SEED,
+    EstforConstants.INSTANT_VRF_ACTION_FARMING_MYSTERIOUS_SEED,
+    EstforConstants.INSTANT_VRF_ACTION_FARMING_OBSCURE_SEED,
+    EstforConstants.INSTANT_VRF_ACTION_FARMING_ANCIENT_SEED
   ]);
 
   const actions = allInstantVRFActions.filter((action) => actionsToUpdate.has(action.actionId));

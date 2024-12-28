@@ -16,10 +16,10 @@ export const allFullAttireBonuses: FullAttireBonus[] = [
       EstforConstants.NATURE_BODY,
       EstforConstants.NATURE_BRACERS,
       EstforConstants.NATURE_TROUSERS,
-      EstforConstants.NATURE_BOOTS,
+      EstforConstants.NATURE_BOOTS
     ],
     bonusXPPercent: 3,
-    bonusRewardsPercent: 0,
+    bonusRewardsPercent: 0
   },
   {
     skill: Skill.THIEVING,
@@ -28,10 +28,10 @@ export const allFullAttireBonuses: FullAttireBonus[] = [
       EstforConstants.NATUOW_BODY,
       EstforConstants.NATUOW_BRACERS,
       EstforConstants.NATUOW_TASSETS,
-      EstforConstants.NATUOW_BOOTS,
+      EstforConstants.NATUOW_BOOTS
     ],
     bonusXPPercent: 3,
-    bonusRewardsPercent: 3,
+    bonusRewardsPercent: 3
   },
   {
     skill: Skill.CRAFTING,
@@ -40,9 +40,9 @@ export const allFullAttireBonuses: FullAttireBonus[] = [
       EstforConstants.BAT_WING_BODY,
       EstforConstants.BAT_WING_BRACERS,
       EstforConstants.BAT_WING_TROUSERS,
-      EstforConstants.BAT_WING_BOOTS,
+      EstforConstants.BAT_WING_BOOTS
     ],
     bonusXPPercent: 3,
-    bonusRewardsPercent: 0,
-  },
+    bonusRewardsPercent: 0
+  }
 ];

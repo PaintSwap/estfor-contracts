@@ -988,8 +988,8 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.EDIBLES_002_WILD_CHERRY, chance: 39321, amount: 30},
           {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 29491, amount: 2},
           {itemTokenId: EstforConstants.HERB_010_FOOLS_BERRY, chance: 19661, amount: 10},
-          {itemTokenId: EstforConstants.HERB_001_GLIMMER_LEAF, chance: 13107, amount: 5},
-          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 6554, amount: 1}
+          {itemTokenId: EstforConstants.HERB_001_GLIMMER_LEAF, chance: 13107, amount: 20},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 6554, amount: 2}
         ]
       ]
     ),
@@ -1011,7 +1011,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 52428, amount: 20},
           {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 39321, amount: 2},
           {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 29491, amount: 2},
-          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 19661, amount: 3},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 19661, amount: 10},
           {itemTokenId: EstforConstants.EDIBLES_004_RED_APPLE, chance: 13107, amount: 40},
           {itemTokenId: EstforConstants.EDIBLES_005_PEACH, chance: 6554, amount: 40}
         ]
@@ -1036,7 +1036,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 42598, amount: 2},
           {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 32768, amount: 5},
           {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 22937, amount: 5},
-          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 13107, amount: 5},
+          {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 13107, amount: 3},
           {itemTokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES, chance: 6554, amount: 40}
         ]
       ]
@@ -1079,7 +1079,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       [
         0,
         [
-          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 65535, amount: 20},
+          {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 65535, amount: 15},
           {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 52428, amount: 10},
           {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 39321, amount: 10},
           {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 31457, amount: 10},

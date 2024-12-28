@@ -15,7 +15,7 @@ export const allClanTiers: Tier[] = [
     maxBankCapacity: 5,
     maxImageId: 10000,
     price: parseEther("100"),
-    minimumAge: 0,
+    minimumAge: 0
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ export const allClanTiers: Tier[] = [
     maxBankCapacity: 20,
     maxImageId: 20000,
     price: parseEther("350"),
-    minimumAge: 0,
+    minimumAge: 0
   },
   {
     id: 3,
@@ -31,13 +31,13 @@ export const allClanTiers: Tier[] = [
     maxBankCapacity: 75,
     maxImageId: 30000,
     price: parseEther("2000"),
-    minimumAge: 0,
-  },
+    minimumAge: 0
+  }
 ];
 
 export const allClanTiersBeta: Tier[] = allClanTiers.map((tier) => {
   return {
     ...tier,
-    price: tier.price / 10n,
+    price: tier.price / 10n
   };
 });
