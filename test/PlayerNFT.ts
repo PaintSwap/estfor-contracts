@@ -186,18 +186,18 @@ describe("PlayerNFT", function () {
   });
 
   it("Mint a standard player", async function () {
-    const {playerId, playerNFT, alice} = await loadFixture(deployContracts);
+    const {playerNFT, alice} = await loadFixture(deployContracts);
 
     const name = "A123";
     const avatarId = 1;
     const makeActive = true;
-    await createPlayer(playerNFT, avatarId, alice, name, makeActive);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
+    const playerId = await createPlayer(playerNFT, avatarId, alice, name, makeActive);
 
     // Check avatar ids are as expected
     expect((await playerNFT.getPlayerInfo(playerId)).avatarId).to.eq(1);
     expect((await playerNFT.getPlayerInfo(playerId)).originalAvatarId).to.eq(1);
-    expect((await playerNFT.getPlayerInfo(playerId)).mintedTimestamp).to.eq(NOW - 1);
+    expect((await playerNFT.getPlayerInfo(playerId)).mintedTimestamp).to.eq(NOW + 1);
     expect((await playerNFT.getPlayerInfo(playerId)).upgradedTimestamp).to.eq(0);
   });
 
