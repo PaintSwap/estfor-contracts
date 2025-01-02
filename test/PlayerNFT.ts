@@ -191,6 +191,7 @@ describe("PlayerNFT", function () {
     const name = "A123";
     const avatarId = 1;
     const makeActive = true;
+    await ethers.provider.send("evm_mine", []);
     const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
     const playerId = await createPlayer(playerNFT, avatarId, alice, name, makeActive);
 
