@@ -143,11 +143,11 @@ if (!isBeta) {
   petNFTLibrary = "0x89312e531c11e34aa404feee01d2a6640088cc75";
   petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
   playersLibrary = "0x705a4730e9fa8387390651f89bd9b68a43fa384e";
-  playersImplQueueActions = "0xebf81430853fd2d8af9ed0c2ddc82791b86eb06a";
-  playersImplProcessActions = "0x1cbe73d272d9a1724b5f20c97dc8ab715cbdc721";
-  playersImplRewards = "0x17d9c9176aa13f796c529d7a1bb8d513acab5e3b";
-  playersImplMisc = "0xcdce5e793d72e2cec8ed7543093be43de6453671";
-  playersImplMisc1 = "0xc81df3179d1ef0def8a36058d80011e681bb0669";
+  playersImplQueueActions = "0xf8ac11a0d73aba9f64736712798e5b858656a8a5";
+  playersImplProcessActions = "0x6f95b6f0c4154679f9cedb2208af07bd0cd9b44f";
+  playersImplRewards = "0x914ec4cdfb12f97e0cb853151b9e96cd7cc36b6d";
+  playersImplMisc = "0x5b1fd821b6ac0caaf095e83ac35a65093a0cf1d4";
+  playersImplMisc1 = "0x8ea79e3ed01f4aa7f039b0be8abfd86de440a425";
   players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
   promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
   promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";

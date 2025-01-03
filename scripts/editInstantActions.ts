@@ -110,7 +110,7 @@ async function main() {
     EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BODY_5,
     EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_CHAPS_5,
     EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BRACERS_5,
-    EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_5,
+    EstforConstants.INSTANT_ACTION_FORGING_SCORCHING_BOOTS_5
   ]);
 
   const actions = allInstantActions.filter((action) => {

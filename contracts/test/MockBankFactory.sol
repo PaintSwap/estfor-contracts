@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 contract MockBankFactory {
-  function getCreatedHere(address bank) external view returns (bool) {
+  function getCreatedHere(address) external pure returns (bool) {
     return false;
   }
 }

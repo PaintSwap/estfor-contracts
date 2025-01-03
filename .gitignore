@@ -3,9 +3,9 @@ node_modules
 *.log
 unknown-*.json
 # sonic blaze
-!unknown-57054
+!unknown-57054.json
 # sonic
-!unknown-146
+!unknown-146.json
 coverage
 coverage.json
 typechain

@@ -12,7 +12,7 @@ async function main() {
   const itemNFT = await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"],
-    timeout,
+    timeout
   });
 
   await itemNFT.setBazaar(BAZAAR_ADDRESS);

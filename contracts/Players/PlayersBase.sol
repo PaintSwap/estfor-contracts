@@ -252,7 +252,7 @@ abstract contract PlayersBase {
   function _setInitialCheckpoints(
     address from,
     uint256 playerId,
-    uint256 existingActionQueueLength,
+    uint256 numActionsFinished,
     QueuedAction[] memory queuedActions,
     Attire[] memory attire
   ) internal {
@@ -262,7 +262,7 @@ abstract contract PlayersBase {
         IPlayersQueuedActionsDelegate.setInitialCheckpoints.selector,
         from,
         playerId,
-        existingActionQueueLength,
+        numActionsFinished,
         queuedActions,
         attire
       )

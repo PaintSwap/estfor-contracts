@@ -1654,7 +1654,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "existingActionQueueLength",
+        "name": "numActionsFinished",
         "type": "uint256"
       },
       {

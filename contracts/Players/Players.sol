@@ -318,7 +318,7 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
   function _processActionsAndSetState(uint256 playerId) private {
     // Read current actions which are completed
     Player storage player = _players[playerId];
-    uint256 existingActionQueueLength = player.actionQueue.length;
+    uint256 previousActionQueueLength = player.actionQueue.length;
 
     bytes memory data = _delegatecall(
       _implProcessActions,
@@ -328,8 +328,13 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
       data,
       (QueuedAction[], Attire[])
     );
+
+    uint256 numActionsFinished = previousActionQueueLength > remainingQueuedActions.length
+      ? previousActionQueueLength - remainingQueuedActions.length
+      : 0;
+
     // Put here due to stack too deep error if doing it inside processActionsAndSetState
-    _setInitialCheckpoints(msg.sender, playerId, existingActionQueueLength, remainingQueuedActions, remainingAttire);
+    _setInitialCheckpoints(msg.sender, playerId, numActionsFinished, remainingQueuedActions, remainingAttire);
   }
 
   function _setActivePlayer(address from, uint256 playerId) private {
@@ -464,27 +469,8 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
     return _players[playerId].totalLevel;
   }
 
-  function getPackedXP(uint256 playerId) external view returns (PackedXP memory) {
-    return _playerXP[playerId];
-  }
-
-  function getPlayer(uint256 playerId) external view returns (Player memory) {
-    return _players[playerId];
-  }
-
-  // Only used by tests, could remove and replace with getStorageAt like another test uses
   function getActiveBoost(uint256 playerId) external view override returns (PlayerBoostInfo memory) {
     return _activeBoosts[playerId];
-  }
-
-  // Only used by tests, could remove and replace with getStorageAt like another test uses
-  function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory) {
-    return _clanBoosts[clanId];
-  }
-
-  // Only used by tests, could remove and replace with getStorageAt like another test uses
-  function getGlobalBoost() external view returns (PlayerBoostInfo memory) {
-    return _globalBoost;
   }
 
   function isPlayerEvolved(uint256 playerId) external view override returns (bool) {
@@ -590,7 +576,14 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
       selector == IPlayersQueuedActionsDelegateView.checkAddToQueue.selector
     ) {
       implementation = _implQueueActions;
-    } else if (selector == IPlayersMisc1DelegateView.uri.selector) {
+    } else if (
+      selector == IPlayersMisc1DelegateView.uri.selector ||
+      selector == IPlayersMisc1DelegateView.getPackedXP.selector ||
+      selector == IPlayersMisc1DelegateView.getPlayer.selector ||
+      selector == IPlayersMisc1DelegateView.getClanBoost.selector ||
+      selector == IPlayersMisc1DelegateView.getGlobalBoost.selector ||
+      selector == IPlayersMisc1DelegateView.getCheckpointEquipments.selector
+    ) {
       implementation = _implMisc1;
     } else {
       revert InvalidSelector();

@@ -29,13 +29,17 @@ contract PlayersImplQueueActions is PlayersBase {
     ActionQueueStrategy queueStrategy
   ) external {
     address from = msg.sender;
+
+    Player storage player = _players[playerId];
+    uint256 previousActionQueueLength = player.actionQueue.length;
     uint256 totalTimespan;
     (
       QueuedAction[] memory remainingQueuedActions,
       PendingQueuedActionData memory currentActionProcessed
     ) = _processActions(from, playerId);
 
-    Player storage player = _players[playerId];
+    uint remainingQueuedActionsLength = remainingQueuedActions.length;
+
     if (queueStrategy == ActionQueueStrategy.OVERWRITE) {
       if (player.actionQueue.length != 0) {
         // Clear action queue
@@ -123,8 +127,7 @@ contract PlayersImplQueueActions is PlayersBase {
     }
 
     // Create an array from remainingAttire and queuedActions passed in
-    uint256 length = remainingQueuedActions.length + queuedActionInputs.length;
-    Attire[] memory attire = new Attire[](length);
+    Attire[] memory attire = new Attire[](totalLength);
     for (uint256 i = 0; i < remainingQueuedActions.length; ++i) {
       attire[i] = _attire[playerId][remainingQueuedActions[i].queueId];
     }
@@ -132,7 +135,11 @@ contract PlayersImplQueueActions is PlayersBase {
       attire[i + remainingQueuedActions.length] = queuedActionInputs[i].attire;
     }
 
-    setInitialCheckpoints(from, playerId, 0, player.actionQueue, attire);
+    uint256 numActionsFinished = previousActionQueueLength > remainingQueuedActionsLength
+      ? previousActionQueueLength - remainingQueuedActionsLength
+      : 0;
+
+    setInitialCheckpoints(from, playerId, numActionsFinished, queuedActions, attire);
     emit SetActionQueue(from, playerId, queuedActions, attire, player.currentActionStartTimestamp);
 
     //    assert(totalTimespan < MAX_TIME + 1 hours); // Should never happen (TODO: Can uncomment when we have more bytecode available)
@@ -622,7 +629,7 @@ contract PlayersImplQueueActions is PlayersBase {
   function setInitialCheckpoints(
     address from,
     uint256 playerId,
-    uint256 existingActionQueueLength,
+    uint256 numActionsFinished,
     QueuedAction[] memory queuedActions,
     Attire[] memory attire
   ) public {
@@ -635,13 +642,10 @@ contract PlayersImplQueueActions is PlayersBase {
     }
     _activePlayerInfos[from].checkpoint = uint40(checkpoint);
 
-    uint256 numActionsFinished = existingActionQueueLength > queuedActions.length
-      ? existingActionQueueLength - queuedActions.length
-      : 0;
-
     if (numActionsFinished > 0) {
       for (uint256 i; i < MAX_QUEUEABLE_ACTIONS; ++i) {
         if (i + numActionsFinished < MAX_QUEUEABLE_ACTIONS) {
+          // Shift the checkpoint left
           _checkpointEquipments[playerId][i] = _checkpointEquipments[playerId][i + numActionsFinished];
         } else {
           delete _checkpointEquipments[playerId][i];

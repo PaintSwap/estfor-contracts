@@ -6,7 +6,7 @@ import {parseEther} from "ethers";
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log(
-    `Set upgrade/edit player costs on PlayerNFT using account: ${owner.address} on chain id ${await getChainId(owner)}`,
+    `Set upgrade/edit player costs on PlayerNFT using account: ${owner.address} on chain id ${await getChainId(owner)}`
   );
 
   const playerNFT = await ethers.getContractAt("PlayerNFT", PLAYER_NFT_ADDRESS);
