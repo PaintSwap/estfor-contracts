@@ -28,6 +28,7 @@ import {allXPThresholdRewards} from "../../scripts/data/xpThresholdRewards";
 import {allItems} from "../../scripts/data/items";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
 import {Block} from "ethers";
+import {getPlayersHelper} from "./utils";
 
 describe("Fuzz testing", async function () {
   // TODO - Add fuzz testing for clans
@@ -244,9 +245,15 @@ describe("Fuzz testing", async function () {
         // Check if the first action has finished
         const {timestamp: NOW} = (await ethers.provider.getBlock("latest")) as Block;
         const firstAction = (await players.getActionQueue(playerId))[0];
-        if ((await players.getPlayer(playerId)).currentActionStartTimestamp + firstAction.timespan >= NOW) {
+        if (
+          (await (await getPlayersHelper(players)).getPlayer(playerId)).currentActionStartTimestamp +
+            firstAction.timespan >=
+          NOW
+        ) {
           await ethers.provider.send("evm_increaseTime", [
-            (await players.getPlayer(playerId)).currentActionStartTimestamp + firstAction.timespan - BigInt(NOW)
+            (await (await getPlayersHelper(players)).getPlayer(playerId)).currentActionStartTimestamp +
+              firstAction.timespan -
+              BigInt(NOW)
           ]);
           await ethers.provider.send("evm_mine", []);
         }

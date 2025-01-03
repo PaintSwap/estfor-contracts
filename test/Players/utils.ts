@@ -2,7 +2,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {ActionInput, Equipment, defaultActionChoice, defaultActionInfo} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
-import {ItemNFT, WorldActions} from "../../typechain-types";
+import {ItemNFT, Players, WorldActions} from "../../typechain-types";
 import {bronzeHelmetStats, getActionChoiceId, getActionId} from "../utils";
 import {
   ACTION_FIREMAKING_ITEM,
@@ -1060,3 +1060,7 @@ export const getXPFromLevel = (level: number) => {
 };
 
 export const BOOST_START_NOW = 2;
+
+export const getPlayersHelper = async (players: Players) => {
+  return ethers.getContractAt("IPlayersMisc1DelegateView", await players.getAddress());
+};

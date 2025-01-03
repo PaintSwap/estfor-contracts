@@ -163,4 +163,17 @@ interface IPlayersMisc1DelegateView {
     string calldata imageURI,
     uint256 playerId
   ) external view returns (string memory uri);
+
+  // Only used in tests
+  function getPackedXP(uint256 playerId) external view returns (PackedXP memory);
+
+  function getPlayer(uint256 playerId) external view returns (Player memory);
+
+  function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory);
+
+  function getGlobalBoost() external view returns (PlayerBoostInfo memory);
+
+  function getCheckpointEquipments(
+    uint256 playerId
+  ) external view returns (CheckpointEquipments[3] memory checkpointEquipments);
 }

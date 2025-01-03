@@ -15,6 +15,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
 import {Block, parseEther} from "ethers";
 import {initializerSlot} from "./utils";
+import {getPlayersHelper} from "./Players/utils";
 
 describe("PlayerNFT", function () {
   async function deployContracts() {
@@ -227,7 +228,7 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(alice)).to.eq(0);
 
     // Check upgraded flag
-    const player = await players.getPlayer(newPlayerId);
+    const player = await (await getPlayersHelper(players)).getPlayer(newPlayerId);
     expect(player.packedData == "0x80");
   });
 
@@ -310,7 +311,7 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n + editNameBrushPrice / 2n);
 
     // Check upgraded flag
-    const player = await players.getPlayer(playerId);
+    const player = await (await getPlayersHelper(players)).getPlayer(playerId);
     expect(player.packedData == "0x80");
 
     // Upgrading should fail the second time
@@ -360,7 +361,7 @@ describe("PlayerNFT", function () {
     expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n);
 
     // Check upgraded flag
-    const player = await players.getPlayer(playerId);
+    const player = await (await getPlayersHelper(players)).getPlayer(playerId);
     expect(player.packedData == "0x80");
 
     // Check avatar ids are as expected

@@ -302,4 +302,27 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
       );
     }
   }
+
+  // Only used in tests
+  function getPackedXP(uint256 playerId) external view returns (PackedXP memory) {
+    return _playerXP[playerId];
+  }
+
+  function getPlayer(uint256 playerId) external view returns (Player memory) {
+    return _players[playerId];
+  }
+
+  function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory) {
+    return _clanBoosts[clanId];
+  }
+
+  function getGlobalBoost() external view returns (PlayerBoostInfo memory) {
+    return _globalBoost;
+  }
+
+  function getCheckpointEquipments(
+    uint256 playerId
+  ) external view returns (CheckpointEquipments[3] memory checkpointEquipments) {
+    return _checkpointEquipments[playerId];
+  }
 }

@@ -20,6 +20,7 @@ import {ethers} from "hardhat";
 import {allQuests, defaultMinRequirements, QuestInput} from "../scripts/data/quests";
 import {playersFixture} from "./Players/PlayersFixture";
 import {
+  getPlayersHelper,
   setupBasicCooking,
   setupBasicFiremaking,
   setupBasicFishing,
@@ -906,7 +907,7 @@ describe("Quests", function () {
     await players.connect(alice).processActions(playerId);
     const cookingXP = await players.getPlayerXP(playerId, Skill.COOKING);
     expect(await players.getPlayerXP(playerId, Skill.WOODCUTTING)).to.eq(10000);
-    expect((await players.getPlayer(playerId)).totalXP).to.eq(START_XP + cookingXP + 10000n);
+    expect((await (await getPlayersHelper(players)).getPlayer(playerId)).totalXP).to.eq(START_XP + cookingXP + 10000n);
     expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_BAR)).to.eq(3);
   });
 

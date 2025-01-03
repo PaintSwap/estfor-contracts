@@ -12,7 +12,7 @@ import {
   requestAndFulfillRandomWordsSeeded
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
-import {setupBasicMeleeCombat, setupBasicWoodcutting} from "./utils";
+import {getPlayersHelper, setupBasicMeleeCombat, setupBasicWoodcutting} from "./utils";
 import {timeTravel24Hours, timeTravelToNextCheckpoint} from "../utils";
 import {defaultActionChoice, emptyCombatStats} from "@paintswap/estfor-definitions/types";
 import {Block} from "ethers";
@@ -483,7 +483,9 @@ describe("Rewards", function () {
         {
           const actionQueue = await players.getActionQueue(playerId);
           expect(actionQueue.length).to.eq(1);
-          endTime = (await players.getPlayer(playerId)).currentActionStartTimestamp + actionQueue[0].timespan;
+          endTime =
+            (await (await getPlayersHelper(players)).getPlayer(playerId)).currentActionStartTimestamp +
+            actionQueue[0].timespan;
         }
 
         expect(await randomnessBeacon.hasRandomWord(endTime)).to.be.false;
@@ -618,7 +620,7 @@ describe("Rewards", function () {
           const actionQueue = await players.getActionQueue(playerId);
           expect(actionQueue.length).to.eq(2);
           endTime =
-            (await players.getPlayer(playerId)).currentActionStartTimestamp +
+            (await (await getPlayersHelper(players)).getPlayer(playerId)).currentActionStartTimestamp +
             actionQueue[0].timespan +
             actionQueue[1].timespan;
         }

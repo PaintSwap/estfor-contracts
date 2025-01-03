@@ -11,7 +11,8 @@ import {
   setupBasicAlchemy,
   BOOST_START_NOW,
   setupBasicFishing,
-  setupBasicMining
+  setupBasicMining,
+  getPlayersHelper
 } from "./utils";
 import {defaultActionInfo, noAttire} from "@paintswap/estfor-definitions/types";
 import {createPlayer} from "../../scripts/utils";
@@ -900,7 +901,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + 1]);
     await ethers.provider.send("evm_mine", []);
 
-    const clanBoost = await players.getClanBoost(clanId);
+    const clanBoost = await (await getPlayersHelper(players)).getClanBoost(clanId);
     expect(clanBoost.startTime).to.eq(NOW1);
     expect(clanBoost.duration).to.eq(boostDuration);
     expect(clanBoost.value).to.eq(boostValue);
@@ -1045,7 +1046,7 @@ describe("Boosts", function () {
     await ethers.provider.send("evm_setNextBlockTimestamp", [NOW + boostDuration + boostDuration + 1]);
     await ethers.provider.send("evm_mine", []);
 
-    const globalBoost = await players.getGlobalBoost();
+    const globalBoost = await (await getPlayersHelper(players)).getGlobalBoost();
     expect(globalBoost.startTime).to.eq(NOW1);
     expect(globalBoost.duration).to.eq(boostDuration);
     expect(globalBoost.value).to.eq(nonCombatBoostValue);
