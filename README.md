@@ -94,7 +94,7 @@ TerritoryTreasury [0x4b1da5984c89312f852c798154a171a5ddc07d43](https://ftmscan.c
 BankRegistry [0xf213febd3889c5bf18086356e7eff79e2a9fe391](https://ftmscan.com/address/0xf213febd3889c5bf18086356e7eff79e2a9fe391)  
 BankFactory [0x76af5869f1b902f7a16c128a1daa7734819ec327](https://ftmscan.com/address/0x76af5869f1b902f7a16c128a1daa7734819ec327)
 
-### Sonic testnet beta deployed contract addresses:
+### Sonic mainnet beta deployed contract addresses:
 
 Bridge [0x4a4988daecaad326aec386e70fb0e6e6af5bda1a](https://ftmscan.com/address/0x4a4988daecaad326aec386e70fb0e6e6af5bda1a)  
 WorldActions [0x3a965bf890e5ac353603420cc8d4c821d1f8a765](https://ftmscan.com/address/0x3a965bf890e5ac353603420cc8d4c821d1f8a765)  
