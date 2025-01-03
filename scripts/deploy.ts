@@ -215,7 +215,7 @@ async function main() {
     // prod version
     itemsUri = "ipfs://bafybeigv35aag7dowwogpu2qkzt3z4brguwlc7pkho55v6yvotor72xy5a/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
-    petImageBaseUri = "ipfs://Qma93THZoAXmPR4Ug3JHmJxf3CYch3CxdAPipsxA5NGxsR/";
+    petImageBaseUri = "ipfs://QmYawZvUvkEzF8vjqja24oSSmZv3t6asTpMJBzQJRDGXPs/";
     editNameBrushPrice = parseEther("200");
     editPetNameBrushPrice = parseEther("1");
     upgradePlayerBrushPrice = parseEther("400");
@@ -225,8 +225,8 @@ async function main() {
     mmrAttackDistance = 3;
   } else {
     itemsUri = "ipfs://bafybeiebmf7ov2hpicrscvobmyhuwcdl2pmtb2fibinlospkjtrg7rl2ny/";
-    heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
-    petImageBaseUri = "ipfs://QmcLcqcYwPRcTeBRaX8BtfDCpwZSrNzt22z5gAG3CRXTw7/";
+    heroImageBaseUri = "ipfs://QmVeDAUVj4F4F84WZpuP9pDdKNvcLFSWUV5rhTKMiN99EH/";
+    petImageBaseUri = "ipfs://QmVKb8HiZaLBYD7xiCECkjZ8pj8h4VxX2754hZZUCbmWGq/";
     editNameBrushPrice = parseEther("1");
     editPetNameBrushPrice = parseEther("1");
     upgradePlayerBrushPrice = parseEther("1");
