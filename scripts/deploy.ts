@@ -163,7 +163,6 @@ async function main() {
       buyBrush = false;
       ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
     } else if (network.chainId == 146n) {
-      // TODO Sonic.
       brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
       wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
       oracleAddress = ORACLE_ADDRESS;
