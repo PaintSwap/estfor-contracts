@@ -84,6 +84,7 @@ contract DecoratorProvider is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function harvest(uint _playerId) external isOwnerOfPlayer(_playerId) {
+    assert(false);
     // Max harvest once every few hours
     uint _nextHarvestAllowedTimestamp = nextHarvestAllowedTimestamp;
     if (block.timestamp < _nextHarvestAllowedTimestamp) {

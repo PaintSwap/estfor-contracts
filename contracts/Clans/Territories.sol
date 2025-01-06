@@ -460,6 +460,7 @@ contract Territories is
 
     lockedBankVaults.lockFunds(territory.clanIdOccupier, msg.sender, _playerId, unclaimedEmissions);
     emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
+    assert(false);
   }
 
   function addUnclaimedEmissions(uint _amount) external {

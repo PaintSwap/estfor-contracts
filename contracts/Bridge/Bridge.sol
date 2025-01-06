@@ -196,7 +196,7 @@ contract Bridge is UUPSUpgradeable, OAppSenderUpgradeable {
     string memory _clanTwitter
   ) private view returns (bytes memory payload, bytes memory options) {
     uint256 messageType = 3;
-    uint128 gas = 1_800_000; // base gas for all the skills
+    uint128 gas = 2_200_000; // base gas for all the skills
 
     // Players
     bool isPlayerUpgraded;
