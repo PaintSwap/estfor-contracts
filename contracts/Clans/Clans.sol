@@ -222,7 +222,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function initialize(
     IBrushToken brush,
     IERC1155 playerNFT,
-    address pool,
+    address treasury,
     address dev,
     uint80 editNameCost,
     address paintswapMarketplaceWhitelist,
@@ -235,7 +235,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
 
     _brush = brush;
     _playerNFT = playerNFT;
-    _treasury = pool;
+    _treasury = treasury;
     _dev = dev;
     _nextClanId = startClanId;
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;

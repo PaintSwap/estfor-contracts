@@ -1987,7 +1987,7 @@
       },
       {
         "internalType": "address",
-        "name": "pool",
+        "name": "treasury",
         "type": "address"
       },
       {

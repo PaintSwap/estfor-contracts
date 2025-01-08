@@ -117,7 +117,7 @@ export const playersFixture = async function () {
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = (await upgrades.deployProxy(
     RoyaltyReceiver,
-    [await router.getAddress(), await shop.getAddress(), dev.address, await brush.getAddress(), alice.address],
+    [await router.getAddress(), await treasury.getAddress(), dev.address, await brush.getAddress(), alice.address],
     {
       kind: "uups"
     }
@@ -161,7 +161,7 @@ export const playersFixture = async function () {
     PlayerNFT,
     [
       await brush.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       dev.address,
       await royaltyReceiver.getAddress(),
       editNameBrushPrice,
@@ -198,7 +198,7 @@ export const playersFixture = async function () {
     [
       await brush.getAddress(),
       await playerNFT.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       dev.address,
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
@@ -218,7 +218,7 @@ export const playersFixture = async function () {
     [
       await brush.getAddress(),
       await playerNFT.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       await randomnessBeacon.getAddress(),
       await clans.getAddress(),
       parseEther("5"),
@@ -639,7 +639,6 @@ export const playersFixture = async function () {
     true
   );
 
-  await royaltyReceiver.setTerritories(territories);
   await territories.setCombatantsHelper(combatantsHelper);
   await raids.initializeAddresses(combatantsHelper, bankFactory);
   await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);

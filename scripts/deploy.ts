@@ -317,7 +317,7 @@ async function main() {
     RoyaltyReceiver,
     [
       await router.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       DEV_ADDRESS,
       await brush.getAddress(),
       await wftm.getAddress()
@@ -389,7 +389,7 @@ async function main() {
     PlayerNFT,
     [
       await brush.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       DEV_ADDRESS,
       await royaltyReceiver.getAddress(),
       editNameBrushPrice,
@@ -429,7 +429,7 @@ async function main() {
     [
       await brush.getAddress(),
       await playerNFT.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       DEV_ADDRESS,
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
@@ -452,7 +452,7 @@ async function main() {
     [
       await brush.getAddress(),
       await playerNFT.getAddress(),
-      await shop.getAddress(),
+      await treasury.getAddress(),
       await randomnessBeacon.getAddress(),
       await clans.getAddress(),
       raffleEntryCost,
@@ -1033,10 +1033,6 @@ async function main() {
   );
   await tx.wait();
   console.log("itemNFT.setApproved");
-
-  tx = await royaltyReceiver.setTerritories(territories);
-  await tx.wait();
-  console.log("royaltyReceiver.setTerritories");
 
   tx = await raids.initializeAddresses(combatantsHelper, bankFactory);
   await tx.wait();

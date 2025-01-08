@@ -47,7 +47,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
   IBrushToken private _brush;
   PlayerNFT private _playerNFT;
-  address private _shop;
+  address private _treasury;
   mapping(uint256 lotteryId => BitMaps.BitMap) private _playersEntered;
   mapping(uint256 lotteryId => mapping(uint256 raffleId => uint256 playerId)) private _raffleIdToPlayerId; // So that we can work out the playerId winner from the raffle
   mapping(uint256 lotteryId => LotteryWinnerInfo winner) private _winners;
@@ -91,7 +91,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   function initialize(
     IBrushToken brush,
     PlayerNFT playerNFT,
-    address shop,
+    address treasury,
     address randomnessBeacon,
     Clans clans,
     uint256 raffleEntryCost,
@@ -103,7 +103,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
     _brush = brush;
     _playerNFT = playerNFT;
-    _shop = shop;
+    _treasury = treasury;
     _randomnessBeacon = randomnessBeacon;
     _clans = clans;
 
@@ -136,7 +136,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     onlyPlayers
     returns (uint16 itemTokenId, uint16 globalItemTokenId, uint256 clanId, uint16 clanItemTokenId)
   {
-    require(_brush.transferFrom(from, _shop, amount), NotEnoughBrush());
+    require(_brush.transferFrom(from, _treasury, amount), NotEnoughBrush());
 
     bool isRaffleDonation = false;
 

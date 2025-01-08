@@ -1208,6 +1208,8 @@ describe("LockedBankVaults", function () {
 
     expect((await lockedBankVaults.getClanInfo(clanId)).totalBrushLocked).to.eq(1000);
 
+    const treasuryBeforeBalance = await brush.balanceOf(treasury);
+
     // Alice's clan attacks but will lose.
     await lockedBankVaults
       .connect(alice)
@@ -1218,7 +1220,7 @@ describe("LockedBankVaults", function () {
     expect((await lockedBankVaults.getClanInfo(bobClanId)).totalBrushLocked).to.eq(800);
 
     // Check it went to the correct places
-    expect(await brush.balanceOf(treasury)).to.eq(25);
+    expect(await brush.balanceOf(treasury)).to.eq(treasuryBeforeBalance + 25n);
     expect(await brush.balanceOf(dev)).to.eq(brushBalanceBefore + 12n);
     expect(await brush.amountBurnt()).to.eq(brushBalanceBefore + 12n);
   });

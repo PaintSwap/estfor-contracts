@@ -1,11 +1,11 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {MockTerritories, RoyaltyReceiver} from "../typechain-types";
+import {RoyaltyReceiver} from "../typechain-types";
 
 describe("RoyaltyReceiver", function () {
   async function deployContracts() {
-    const [owner, alice, pool, dev] = await ethers.getSigners();
+    const [owner, alice, treasury, dev] = await ethers.getSigners();
 
     const brush = await ethers.deployContract("MockBrushToken");
 
@@ -16,33 +16,27 @@ describe("RoyaltyReceiver", function () {
     const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
     const royaltyReceiver = (await upgrades.deployProxy(
       RoyaltyReceiver,
-      [await router.getAddress(), pool.address, dev.address, await brush.getAddress(), wftm],
+      [await router.getAddress(), treasury.address, dev.address, await brush.getAddress(), wftm],
       {
         kind: "uups"
       }
     )) as unknown as RoyaltyReceiver;
-
-    const mockTerritories = (await ethers.deployContract("MockTerritories", [
-      await brush.getAddress()
-    ])) as MockTerritories;
-    await royaltyReceiver.setTerritories(await mockTerritories.getAddress());
 
     return {
       RoyaltyReceiver,
       royaltyReceiver,
       owner,
       alice,
-      pool,
+      treasury,
       dev,
       brush,
       wftm,
-      router,
-      mockTerritories
+      router
     };
   }
 
   it("Check recipients", async function () {
-    const {royaltyReceiver, alice, brush, pool, dev} = await loadFixture(deployContracts);
+    const {royaltyReceiver, alice, brush, treasury, dev} = await loadFixture(deployContracts);
 
     const beforeBalance = await ethers.provider.getBalance(dev);
     await alice.sendTransaction({
@@ -53,25 +47,15 @@ describe("RoyaltyReceiver", function () {
     // 1/3 to dao
     expect(await ethers.provider.getBalance(dev)).to.equal(beforeBalance + 33n);
 
-    // 2/3 buys brush and sends to pool
-    expect(await brush.balanceOf(pool)).to.equal(6);
+    // 2/3 buys brush and sends to treasury
+    expect(await brush.balanceOf(treasury)).to.equal(6);
   });
 
   it("Distribute brush", async function () {
-    const {mockTerritories, brush, royaltyReceiver} = await loadFixture(deployContracts);
-
-    const MIN_BRUSH_TO_DISTRIBUTE = await royaltyReceiver.MIN_BRUSH_TO_DISTRIBUTE();
-    await brush.mint(royaltyReceiver, MIN_BRUSH_TO_DISTRIBUTE - 1n);
-    expect(await royaltyReceiver.canDistribute()).to.be.false;
-    expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(0);
-    await expect(royaltyReceiver.distributeBrush()).to.be.revertedWithCustomError(
-      royaltyReceiver,
-      "BrushTooLowToDistribute"
-    );
-    await brush.mint(royaltyReceiver, 1);
-    expect(await royaltyReceiver.canDistribute()).to.be.true;
+    const {treasury, brush, royaltyReceiver} = await loadFixture(deployContracts);
+    expect(await brush.balanceOf(treasury)).to.eq(0);
+    await brush.mint(royaltyReceiver, 100);
     await royaltyReceiver.distributeBrush();
-    expect(await royaltyReceiver.canDistribute()).to.be.false;
-    expect(await mockTerritories.addUnclaimedEmissionsCBCount()).to.eq(1);
+    expect(await brush.balanceOf(treasury)).to.eq(100);
   });
 });

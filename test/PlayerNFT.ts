@@ -283,7 +283,7 @@ describe("PlayerNFT", function () {
   });
 
   it("Editing upgrade player should cost brush", async function () {
-    const {playerId, playerNFT, players, alice, brush, dev, shop, editNameBrushPrice, upgradePlayerBrushPrice} =
+    const {playerId, playerNFT, players, alice, brush, dev, treasury, editNameBrushPrice, upgradePlayerBrushPrice} =
       await loadFixture(deployContracts);
     const discord = "";
     const twitter = "1231231";
@@ -308,7 +308,7 @@ describe("PlayerNFT", function () {
 
     // 25% goes to the dev address, 25% burned & 50% goes to the treasury for player upgrades & editing name.
     expect(await brush.balanceOf(dev)).to.eq(upgradePlayerBrushPrice / 4n + editNameBrushPrice / 4n);
-    expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n + editNameBrushPrice / 2n);
+    expect(await brush.balanceOf(treasury)).to.eq(upgradePlayerBrushPrice / 2n + editNameBrushPrice / 2n);
 
     // Check upgraded flag
     const player = await (await getPlayersHelper(players)).getPlayer(playerId);
@@ -333,7 +333,7 @@ describe("PlayerNFT", function () {
       players,
       alice,
       dev,
-      shop,
+      treasury,
       brush,
       upgradePlayerBrushPrice
     } = await loadFixture(deployContracts);
@@ -358,7 +358,7 @@ describe("PlayerNFT", function () {
 
     // 25% goes to the dev address, 25% burned & 50% goes to the treasury for player upgrades & editing name.
     expect(await brush.balanceOf(dev)).to.eq(upgradePlayerBrushPrice / 4n);
-    expect(await brush.balanceOf(shop)).to.eq(upgradePlayerBrushPrice / 2n);
+    expect(await brush.balanceOf(treasury)).to.eq(upgradePlayerBrushPrice / 2n);
 
     // Check upgraded flag
     const player = await (await getPlayersHelper(players)).getPlayer(playerId);

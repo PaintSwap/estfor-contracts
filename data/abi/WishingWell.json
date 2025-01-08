@@ -769,7 +769,7 @@
       },
       {
         "internalType": "address",
-        "name": "shop",
+        "name": "treasury",
         "type": "address"
       },
       {

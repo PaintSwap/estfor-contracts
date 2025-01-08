@@ -120,18 +120,18 @@ describe("WishingWell", function () {
   });
 
   it("Donate without using a player", async function () {
-    const {shop, players, brush, alice, totalBrush} = await loadFixture(deployContracts);
+    const {treasury, players, brush, alice, totalBrush} = await loadFixture(deployContracts);
     await players.connect(alice).donate(0, parseEther("1"));
     expect(await brush.balanceOf(alice)).to.eq(totalBrush - parseEther("1"));
-    expect(await brush.balanceOf(shop)).to.eq(parseEther("1"));
+    expect(await brush.balanceOf(treasury)).to.eq(parseEther("1"));
   });
 
   it("Donate with player", async function () {
-    const {shop, players, brush, alice, totalBrush, playerId} = await loadFixture(deployContracts);
+    const {treasury, players, brush, alice, totalBrush, playerId} = await loadFixture(deployContracts);
     const amount = parseEther("1");
     await players.connect(alice).donate(playerId, amount);
     expect(await brush.balanceOf(alice)).to.eq(totalBrush - amount);
-    expect(await brush.balanceOf(shop)).to.eq(amount);
+    expect(await brush.balanceOf(treasury)).to.eq(amount);
 
     await expect(players.connect(alice).donate(playerId + 1n, amount)).to.be.revertedWithCustomError(
       players,
