@@ -1566,7 +1566,7 @@ describe("Rewards", function () {
         }
       ]);
 
-      const randomChanceFractions = [99.9 / 100, 10.0 / 100]; // 99.9%, 10%
+      const randomChanceFractions = [99.999 / 100, 10.0 / 100]; // 99.999%, 10%
       const randomChance = Math.floor(65535 * randomChanceFractions[0]);
       const randomChance1 = Math.floor(65535 * randomChanceFractions[1]);
 
@@ -1600,8 +1600,8 @@ describe("Rewards", function () {
       const numHours = 23;
 
       await timeTravelToNextCheckpoint();
-      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
-      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 11111111111111111111111n);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 11111111111111111111111n);
 
       const queuedAction: EstforTypes.QueuedActionInput = {
         attire: EstforTypes.noAttire,
@@ -1618,9 +1618,10 @@ describe("Rewards", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await timeTravel24Hours();
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 11111111111111111111111n);
 
-      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
       const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
+      console.log(pendingQueuedActionState.producedPastRandomRewards.length);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
     });
 

@@ -768,8 +768,7 @@ library PlayersLibrary {
     // Check if they have the full equipment required
     if (itemTokenIds.length == 5) {
       for (uint256 i; i < 5; ++i) {
-        if (itemTokenIds[i] != expectedItemTokenIds[i]) {
-          // || balances[i] == 0) {
+        if (itemTokenIds[i] != expectedItemTokenIds[i] || balances[i] == 0) {
           return false;
         }
       }
@@ -872,9 +871,9 @@ library PlayersLibrary {
     if (itemTokenIds.length != 0) {
       Item[] memory items = IItemNFT(itemNFT).getItems(itemTokenIds);
       for (uint256 i = 0; i < items.length; ++i) {
-        // if (balances[i] != 0) {
-        _updateCombatStatsFromItem(statsOut, items[i]);
-        // }
+        if (balances[i] != 0) {
+          _updateCombatStatsFromItem(statsOut, items[i]);
+        }
       }
     }
   }
@@ -1087,15 +1086,12 @@ library PlayersLibrary {
           pendingQueuedActionEquipmentStates,
           checkpointEquipments
         );
-        /*
         if (balance == 0) {
           // Assume that if the player doesn't have the non-combat item that this action cannot be done or if the action choice required it (e.g range bows)
           if (!isCombat || handItemTokenIdRangeMin != NONE) {
             missingRequiredHandEquipment = true;
           }
-        } else */ if (
-          isCombat
-        ) {
+        } else if (isCombat) {
           // Update the combat stats
           Item memory item = IItemNFT(itemNFT).getItem(handEquipmentTokenId);
           _updateCombatStatsFromItem(statsOut, item);

@@ -17,7 +17,6 @@ import {GUAR_MUL} from "@paintswap/estfor-definitions/constants";
 import {Block} from "ethers";
 import {allFullAttireBonuses} from "../../scripts/data/fullAttireBonuses";
 import {FullAttireBonusInputStruct} from "../../typechain-types/contracts/Players/Players";
-import {IPlayersMisc1DelegateView} from "../../typechain-types";
 
 const actionIsAvailable = true;
 

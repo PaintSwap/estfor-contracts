@@ -55,17 +55,6 @@ async function main() {
   console.log(`PlayersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 */
 
-  if (chainId == 146n) {
-    await verifyContracts([
-      await playersImplQueueActions.getAddress(),
-      await playersImplProcessActions.getAddress(),
-      await playersImplRewards.getAddress(),
-      await playersImplMisc.getAddress(),
-      await playersImplMisc1.getAddress(),
-      await raids.getAddress()
-    ]);
-  }
-
   /* Use these when keeping old implementations
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
     PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
@@ -82,6 +71,18 @@ async function main() {
     await playersImplMisc1.getAddress()
   );
   await tx.wait();
+  console.log("Players implementations set");
+
+  if (chainId == 146n) {
+    await verifyContracts([
+      await playersImplQueueActions.getAddress(),
+      await playersImplProcessActions.getAddress(),
+      await playersImplRewards.getAddress(),
+      await playersImplMisc.getAddress(),
+      await playersImplMisc1.getAddress(),
+      await raids.getAddress()
+    ]);
+  }
 }
 
 main().catch((error) => {
