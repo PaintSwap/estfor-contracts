@@ -16922,7 +16922,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "POTION_001_SMALL_HEALING.json",
-    name: "Healing Potion (S)",
+    name: "Widow's Elixir",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -16947,7 +16947,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "POTION_002_MEDIUM_HEALING.json",
-    name: "Healing Potion (M)",
+    name: "Lyndwyn Elixir",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -16972,7 +16972,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "POTION_003_LARGE_HEALING.json",
-    name: "Healing Potion (L)",
+    name: "Alderskorn Elixir",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -16997,7 +16997,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "POTION_004_EXTRA_LARGE_HEALING.json",
-    name: "Healing Potion (XL)",
+    name: "Evigor Elixir",
     isAvailable: true,
     questPrerequisiteId: 0
   },

@@ -8,33 +8,16 @@ async function main() {
   const [owner] = await ethers.getSigners();
   console.log(`Edit items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
-  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS); /*
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
   const itemsToEdit = new Set([
-    EstforConstants.EGG_TIER1,
-    EstforConstants.EGG_TIER2,
-    EstforConstants.EGG_TIER3,
-    EstforConstants.EGG_TIER4,
-    EstforConstants.EGG_TIER5,
-    EstforConstants.SECRET_EGG_1_TIER2,
-    EstforConstants.SECRET_EGG_1_TIER3,
-    EstforConstants.SECRET_EGG_1_TIER4,
-    EstforConstants.SECRET_EGG_1_TIER5,
-    EstforConstants.SECRET_EGG_2_TIER2,
-    EstforConstants.SECRET_EGG_2_TIER3,
-    EstforConstants.SECRET_EGG_2_TIER4,
-    EstforConstants.SECRET_EGG_2_TIER5,
-    EstforConstants.SECRET_EGG_3_TIER2,
-    EstforConstants.SECRET_EGG_3_TIER3,
-    EstforConstants.SECRET_EGG_3_TIER4,
-    EstforConstants.SECRET_EGG_3_TIER5,
-    EstforConstants.SECRET_EGG_4_TIER2,
-    EstforConstants.SECRET_EGG_4_TIER3,
-    EstforConstants.SECRET_EGG_4_TIER4,
-    EstforConstants.SECRET_EGG_4_TIER5,
+    EstforConstants.POTION_001_SMALL_HEALING,
+    EstforConstants.POTION_002_MEDIUM_HEALING,
+    EstforConstants.POTION_003_LARGE_HEALING,
+    EstforConstants.POTION_004_EXTRA_LARGE_HEALING
   ]);
 
   const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
-*/
+  /*
   const items = allItems;
 
   const chunkSize = 100;
@@ -44,12 +27,12 @@ async function main() {
     await tx.wait();
     console.log("Add items chunk ", i);
   }
-  /*
-  if (items) { // .length !== itemsToEdit.size) {
+  */
+  if (items.length !== itemsToEdit.size) {
     console.log("Cannot find all items");
   } else {
     await itemNFT.editItems(items);
-  } */
+  }
 }
 
 main().catch((error) => {
