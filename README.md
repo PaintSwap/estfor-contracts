@@ -1,10 +1,10 @@
 # Estfor Kingdom contracts
 
-![image](https://user-images.githubusercontent.com/84033732/223739503-c53a888a-443f-4fb5-98a3-d40f94956799.png)
+![EK_logomark-light_shadow_4K](https://github.com/user-attachments/assets/053d8e67-7e83-41ba-98cd-88d0b4bc3908)
 
 [![Continuous integration](https://github.com/PaintSwap/estfor-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/PaintSwap/estfor-contracts/actions/workflows/ci.yml)
 
-All the smart contract code for the Estfor Kingdom RPG game on the Sonic Blockchain.
+All the smart contract code for the Estfor Kingdom MMORPG game on the Sonic Blockchain.
 
 Make sure `yarn` is installed (or replace with equivalent npm instructions)
 
@@ -66,7 +66,7 @@ Clans [0xbc6ed9e6cb54661ed9682c5055a6631d92e9e1d0](https://ftmscan.com/address/0
 WishingWell [0x1207d2f1dc47a9228f20e9d0ce5094ff08bcb00b](https://ftmscan.com/address/0x1207d2f1dc47a9228f20e9d0ce5094ff08bcb00b)  
 Bank [0x144884e1b42ccc9c648adee9b5dc1479ce1c8fe3](https://ftmscan.com/address/0x144884e1b42ccc9c648adee9b5dc1479ce1c8fe3)  
 PetNFTLibrary [0xdb24883dee4100a98bfec32ad95b9abf87c1a32f](https://ftmscan.com/address/0xdb24883dee4100a98bfec32ad95b9abf87c1a32f)  
-PetNFT [0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed](https://ftmscan.com/address/0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed)
+PetNFT [0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed](https://ftmscan.com/address/0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed)  
 PlayersLibrary [0x480c3e2c73173b25caebc50bf188e984743f52c4](https://ftmscan.com/address/0x480c3e2c73173b25caebc50bf188e984743f52c4)  
 PlayersImplQueueActions [0x80ca34d47090080159db46409ef7868df88f464e](https://ftmscan.com/address/0x80ca34d47090080159db46409ef7868df88f464e)  
 PlayersImplProcessActions [0x129149ff66bc70bb884efa99b0ae31df3c92e0d6](https://ftmscan.com/address/0x129149ff66bc70bb884efa99b0ae31df3c92e0d6)  
@@ -114,7 +114,7 @@ Clans [0x84d9d334c5b64fcbcb17d6b853a0434818d052bb](https://ftmscan.com/address/0
 WishingWell [0xb2570777de043adbc7bfcc4bfed747e2e44fbeea](https://ftmscan.com/address/0xb2570777de043adbc7bfcc4bfed747e2e44fbeea)  
 Bank [0x72598e7d7a6652ebb29026f83512bce1455999f6](https://ftmscan.com/address/0x72598e7d7a6652ebb29026f83512bce1455999f6)  
 PetNFTLibrary [0x89312e531c11e34aa404feee01d2a6640088cc75](https://ftmscan.com/address/0x89312e531c11e34aa404feee01d2a6640088cc75)  
-PetNFT [0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082](https://ftmscan.com/address/0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082)
+PetNFT [0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082](https://ftmscan.com/address/0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082)  
 PlayersLibrary [0x635176fd31b0b50a598b84ea228e3809f008ec2c](https://ftmscan.com/address/0x635176fd31b0b50a598b84ea228e3809f008ec2c)  
 PlayersImplQueueActions [0x4fd4228ff4dc36f4336ab5c7293f48fb8ab1665e](https://ftmscan.com/address/0x4fd4228ff4dc36f4336ab5c7293f48fb8ab1665e)  
 PlayersImplProcessActions [0x77e8a306b9393617056123cb571e6260ecfbdd8e](https://ftmscan.com/address/0x77e8a306b9393617056123cb571e6260ecfbdd8e)  
