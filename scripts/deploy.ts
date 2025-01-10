@@ -200,7 +200,7 @@ async function main() {
 
   const timeout = 600 * 1000; // 10 minutes
 
-  let itemsUri: string;
+  let itemsBaseUri: string;
   let heroImageBaseUri: string;
   let petImageBaseUri: string;
   let editNameBrushPrice: bigint;
@@ -212,7 +212,7 @@ async function main() {
   let mmrAttackDistance;
   if (!isBeta) {
     // prod version
-    itemsUri = "ipfs://bafybeigv35aag7dowwogpu2qkzt3z4brguwlc7pkho55v6yvotor72xy5a/";
+    itemsBaseUri = "ipfs://bafybeiaixhwqaftfbaeytp2sx6pupmglxlrx7om7qlkkzl57o7hbvfrmom/";
     heroImageBaseUri = "ipfs://QmY5bwB4212iqziFapqFqUnN6dJk47D3f47HxseW1dX3aX/";
     petImageBaseUri = "ipfs://QmYawZvUvkEzF8vjqja24oSSmZv3t6asTpMJBzQJRDGXPs/";
     editNameBrushPrice = parseEther("200");
@@ -223,7 +223,7 @@ async function main() {
     clanDonationThresholdRewardIncrement = parseEther("2500");
     mmrAttackDistance = 3;
   } else {
-    itemsUri = "ipfs://bafybeiebmf7ov2hpicrscvobmyhuwcdl2pmtb2fibinlospkjtrg7rl2ny/";
+    itemsBaseUri = "ipfs://bafybeifgi4pb4goscrdasvxgnfljpstzjqkfrc2xyhl33eq5qlswdbpoq4/";
     heroImageBaseUri = "ipfs://QmVeDAUVj4F4F84WZpuP9pDdKNvcLFSWUV5rhTKMiN99EH/";
     petImageBaseUri = "ipfs://QmVKb8HiZaLBYD7xiCECkjZ8pj8h4VxX2754hZZUCbmWGq/";
     editNameBrushPrice = parseEther("1");
@@ -353,7 +353,7 @@ async function main() {
   });
   const itemNFT = (await upgrades.deployProxy(
     ItemNFT,
-    [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
+    [await royaltyReceiver.getAddress(), itemsBaseUri, await adminAccess.getAddress(), isBeta],
     {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
