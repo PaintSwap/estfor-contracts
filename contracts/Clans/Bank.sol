@@ -179,7 +179,9 @@ contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgr
     _itemNFT.safeBatchTransferFrom(address(this), to, ids, amounts, "");
 
     // Update uniqueItemCount after transferring the items
-    _withdraw(ids);
+    uint256 uniqueItemsToRemove = _withdraw(ids);
+    _uniqueItemCount -= uint16(uniqueItemsToRemove);
+
     emit WithdrawItems(sender, to, playerId, ids, amounts);
   }
 

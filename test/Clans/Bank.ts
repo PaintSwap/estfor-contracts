@@ -166,7 +166,6 @@ describe("Bank", function () {
       telegram,
       twitter,
       bankRelay,
-      bankFactory,
       Bank,
       itemNFT,
       clanBankAddress
@@ -180,6 +179,34 @@ describe("Bank", function () {
     await expect(bankRelay.connect(alice).withdrawItems(bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "WithdrawItems")
       .withArgs(alice.address, bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
+  });
+
+  it("Withdraw (Distribute) to someone else", async function () {
+    const {
+      clans,
+      playerId,
+      alice,
+      bob,
+      clanName,
+      discord,
+      telegram,
+      twitter,
+      bankRelay,
+      Bank,
+      itemNFT,
+      clanBankAddress
+    } = await loadFixture(bankFixture);
+
+    const bank = (await Bank.attach(clanBankAddress)) as unknown as Bank;
+
+    await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
+    await itemNFT.mint(clanBankAddress, EstforConstants.BRONZE_SHIELD, 1);
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(1);
+
+    await expect(bankRelay.connect(alice).withdrawItems(bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
+      .to.emit(bank, "WithdrawItems")
+      .withArgs(alice.address, bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(0);
   });
 
   it("Withdraw (Distribute) to many users", async function () {
@@ -256,7 +283,9 @@ describe("Bank", function () {
       }
     }
 
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(6);
     await expect(bankRelay.connect(alice).withdrawItemsBulk(nftInfos, playerId)).to.emit(bank, "WithdrawItemsBulk");
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(2);
 
     // Check balances of the NFTs are as expected
     expect(
