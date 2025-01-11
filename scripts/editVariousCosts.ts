@@ -44,12 +44,12 @@ async function main() {
   console.log("Update wishing well raffle cost");
 
   const playerNFT = await ethers.getContractAt("PlayerNFT", PLAYER_NFT_ADDRESS);
-  const upgradeCost = isBeta ? parseEther("11") : parseEther("700");
+  const upgradeCost = isBeta ? parseEther("11") : parseEther("400");
   tx = await playerNFT.setUpgradeCost(upgradeCost);
   await tx.wait();
   console.log("Edit upgrade player cost");
 
-  const editNameCost = isBeta ? parseEther("2") : parseEther("300");
+  const editNameCost = isBeta ? parseEther("2") : parseEther("50");
   tx = await playerNFT.setEditNameCost(editNameCost);
   await tx.wait();
   console.log("Edit player name cost");
@@ -62,7 +62,7 @@ async function main() {
   console.log("Edited clan tiers");
 
   // Edit clan editing prices
-  const editClanNameCost = isBeta ? parseEther("2") : parseEther("300");
+  const editClanNameCost = isBeta ? parseEther("2") : parseEther("50");
   tx = await clans.setEditNameCost(editClanNameCost);
   await tx.wait();
   console.log("Clan edit name cost");
