@@ -8,8 +8,10 @@ async function main() {
   console.log(`Updating donation thresholds using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const wishingWell = await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS);
-  //  await wishingWell.setClanDonationThresholdIncrement(parseEther("5000"));
-  await wishingWell.setGlobalDonationThresholdIncrement(parseEther("75000"));
+  let tx = await wishingWell.setClanDonationThresholdIncrement(parseEther("3"));
+  await tx.wait();
+  tx = await wishingWell.setGlobalDonationThresholdIncrement(parseEther("5"));
+  await tx.wait();
 }
 
 main().catch((error) => {

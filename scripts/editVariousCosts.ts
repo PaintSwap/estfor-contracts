@@ -38,7 +38,7 @@ async function main() {
   console.log("Edited shop items");
 
   // Wishing well
-  const wishingWellCost = isBeta ? parseEther("4") : parseEther("10");
+  const wishingWellCost = isBeta ? parseEther("1") : parseEther("7");
   const wishingWell = await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS);
   tx = await wishingWell.setRaffleEntryCost(wishingWellCost);
   console.log("Update wishing well raffle cost");
