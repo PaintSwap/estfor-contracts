@@ -156,7 +156,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
         // Do not override this boost if you have one that started at this timestamp already (i.e winning lottery boost)
         // Note: Ideally this would be set inside Players but contract size issues....
-        if (_players.getActiveBoost(playerId).extraOrLastStartTime != uint40(block.timestamp)) {
+        if (_players.getActiveBoost(playerId).extraStartTime != uint40(block.timestamp)) {
           itemTokenId = _donationRewardItemTokenId;
         }
         _playersEntered[lastLotteryId].set(playerId);
@@ -401,6 +401,10 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
     _clanThresholdIncrement = uint24(clanThresholdIncrement / 1 ether);
     emit ClanDonationThreshold(clanThresholdIncrement, _clanBoostRewardItemTokenIds[0]); // This passes in the first reward
+  }
+
+  function setNextLotteryWinnerRewardItemTokenId(uint16 donationRewardItemTokenId) external onlyOwner {
+    _nextLotteryWinnerRewardItemTokenId = donationRewardItemTokenId;
   }
 
   // solhint-disable-next-line no-empty-blocks

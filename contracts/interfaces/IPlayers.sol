@@ -44,7 +44,7 @@ interface IPlayers {
 
   function getTotalLevel(uint256 playerId) external view returns (uint256 totalLevel);
 
-  function getActiveBoost(uint256 playerId) external view returns (PlayerBoostInfo memory);
+  function getActiveBoost(uint256 playerId) external view returns (ExtendedBoostInfo memory);
 
   function modifyXP(address from, uint256 playerId, Skill skill, uint56 xp, bool skipEffects) external;
 

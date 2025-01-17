@@ -2066,6 +2066,7 @@ describe("Non-Combat Actions", function () {
       const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const {queuedAction, rate} = await setupBasicAlchemy(itemNFT, worldActions);
+      expect(queuedAction.timespan).to.not.eq(0);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -2103,6 +2104,7 @@ describe("Non-Combat Actions", function () {
     const outputAmount = 255;
     const rate = 300 * RATE_MUL;
     const {queuedAction} = await setupBasicAlchemy(itemNFT, worldActions, rate, outputAmount);
+    expect(queuedAction.timespan).to.not.eq(0);
 
     const startingAmount = 1000000;
     await itemNFT.mintBatch(
@@ -2139,6 +2141,7 @@ describe("Non-Combat Actions", function () {
       const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const {queuedAction, rate} = await setupBasicFletching(itemNFT, worldActions);
+      expect(queuedAction.timespan).to.not.eq(0);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -2175,6 +2178,7 @@ describe("Non-Combat Actions", function () {
       const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const {queuedAction, rate} = await setupBasicForging(itemNFT, worldActions);
+      expect(queuedAction.timespan).to.not.eq(0);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(
@@ -2211,6 +2215,7 @@ describe("Non-Combat Actions", function () {
       const {playerId, players, itemNFT, worldActions, alice} = await loadFixture(playersFixture);
 
       const {queuedAction, rate} = await setupBasicFarming(itemNFT, worldActions);
+      expect(queuedAction.timespan).to.not.eq(0);
 
       const startingAmount = 200;
       await itemNFT.mintBatch(

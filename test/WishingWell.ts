@@ -402,7 +402,7 @@ describe("WishingWell", function () {
       .and.to.emit(wishingWell, "DonateToClan")
       .withArgs(alice.address, playerId, raffleEntryCost, clanId, clanXP);
 
-    expect((await players.getActiveBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.getActiveBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await (await getPlayersHelper(players)).getClanBoost(clanId)).itemTokenId).to.eq(
       EstforConstants.CLAN_BOOSTER
     );
@@ -412,7 +412,7 @@ describe("WishingWell", function () {
       .withArgs(clanId, raffleEntryCost * 2n, EstforConstants.CLAN_BOOSTER_3)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.getActiveBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.getActiveBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await (await getPlayersHelper(players)).getClanBoost(clanId)).itemTokenId).to.eq(
       EstforConstants.CLAN_BOOSTER_2
     );
@@ -422,7 +422,7 @@ describe("WishingWell", function () {
       .withArgs(clanId, raffleEntryCost * 3n, EstforConstants.CLAN_BOOSTER)
       .and.to.emit(players, "ConsumeClanBoostVial");
 
-    expect((await players.getActiveBoost(playerId)).extraOrLastItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
+    expect((await players.getActiveBoost(playerId)).extraItemTokenId).to.eq(EstforConstants.LUCK_OF_THE_DRAW);
     expect((await (await getPlayersHelper(players)).getClanBoost(clanId)).itemTokenId).to.eq(
       EstforConstants.CLAN_BOOSTER_3
     );
@@ -589,8 +589,8 @@ describe("WishingWell", function () {
 
     // Should have the implicit boost
     const activeBoost = await players.getActiveBoost(playerId);
-    expect(activeBoost.extraOrLastBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
-    expect(activeBoost.extraOrLastValue).to.eq(5);
+    expect(activeBoost.extraBoostType).to.eq(EstforTypes.BoostType.ANY_XP);
+    expect(activeBoost.extraValue).to.eq(5);
   });
 
   it("Get extra XP boost as part of queueing a wishingWell, do not override lottery winnings", async function () {
@@ -632,7 +632,7 @@ describe("WishingWell", function () {
 
     // Should have the lucky boost not luck of the draw boost
     const activeBoost = await players.getActiveBoost(playerId);
-    expect(activeBoost.extraOrLastItemTokenId).to.eq(EstforConstants.LUCKY_POTION);
+    expect(activeBoost.extraItemTokenId).to.eq(EstforConstants.LUCKY_POTION);
   });
 
   it("Check full amount is added to the clans total donations", async function () {

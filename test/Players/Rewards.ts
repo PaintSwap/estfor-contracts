@@ -1621,7 +1621,6 @@ describe("Rewards", function () {
       await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 11111111111111111111111n);
 
       const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
-      console.log(pendingQueuedActionState.producedPastRandomRewards.length);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
     });
 

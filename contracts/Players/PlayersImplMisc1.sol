@@ -312,11 +312,11 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
     return _players[playerId];
   }
 
-  function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory) {
+  function getClanBoost(uint256 clanId) external view returns (StandardBoostInfo memory) {
     return _clanBoosts[clanId];
   }
 
-  function getGlobalBoost() external view returns (PlayerBoostInfo memory) {
+  function getGlobalBoost() external view returns (StandardBoostInfo memory) {
     return _globalBoost;
   }
 

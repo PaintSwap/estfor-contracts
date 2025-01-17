@@ -155,12 +155,12 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         }
 
         // Only gives combat stats if the boost is active from the start of the action for the whole one
-        PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
-        if (activeBoost.boostType == BoostType.COMBAT_FIXED) {
-          bool boostIsActiveFromStartOfAction = activeBoost.startTime <= veryStartTime;
-          bool boostIsActiveForTheWholeDuration = endTime <= (activeBoost.startTime + activeBoost.duration);
+        ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+        if (playerBoost.boostType == BoostType.COMBAT_FIXED) {
+          bool boostIsActiveFromStartOfAction = playerBoost.startTime <= veryStartTime;
+          bool boostIsActiveForTheWholeDuration = endTime <= (playerBoost.startTime + playerBoost.duration);
           if (boostIsActiveFromStartOfAction && boostIsActiveForTheWholeDuration) {
-            Item memory item = _itemNFT.getItem(activeBoost.itemTokenId);
+            Item memory item = _itemNFT.getItem(playerBoost.itemTokenId);
             PlayersLibrary._updateCombatStatsFromItem(combatStats, item);
           }
         }
@@ -723,29 +723,49 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     }
 
     // Check for any boosts for random rewards (guaranteed rewards already have boosts applied)
-    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
-    if (activeBoost.boostType == BoostType.GATHERING) {
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+    if (playerBoost.boostType == BoostType.GATHERING || playerBoost.lastBoostType == BoostType.GATHERING) {
       uint256 boostedTime = PlayersLibrary._getBoostedTime(
         startTime,
         xpElapsedTime,
-        activeBoost.startTime,
-        activeBoost.duration
+        playerBoost.startTime,
+        playerBoost.duration
       );
-      _addGatheringBoostedAmounts(boostedTime, randomAmounts, activeBoost.value, elapsedTime);
+      uint256 lastBoostedTime = PlayersLibrary._getBoostedTime(
+        startTime,
+        xpElapsedTime,
+        playerBoost.lastStartTime,
+        playerBoost.lastDuration
+      );
+
+      uint256 boostedVal = playerBoost.boostType == BoostType.GATHERING ? playerBoost.value : 0;
+      uint256 lastBoostedVal = playerBoost.lastBoostType == BoostType.GATHERING ? playerBoost.lastValue : 0;
+
+      _addGatheringBoostedAmounts(
+        boostedTime,
+        boostedVal,
+        lastBoostedTime,
+        lastBoostedVal,
+        randomAmounts,
+        xpElapsedTime
+      );
     }
   }
 
   function _addGatheringBoostedAmounts(
     uint256 boostedTime,
-    uint256[] memory amounts,
     uint256 boostedVal,
+    uint256 lastBoostedTime,
+    uint256 lastBoostedVal,
+    uint256[] memory amounts,
     uint256 xpElapsedTime
   ) private pure {
     if (xpElapsedTime != 0) {
-      uint256 bounds = amounts.length;
-      for (uint256 i; i < bounds; ++i) {
+      for (uint256 i; i < amounts.length; ++i) {
         // amounts[i] takes into account the whole elapsed time so additional boosted amount is a fraction of that.
-        amounts[i] += uint32((boostedTime * amounts[i] * boostedVal) / (xpElapsedTime * 100));
+        amounts[i] += uint32(
+          (amounts[i] * ((boostedTime * boostedVal) + (lastBoostedTime * lastBoostedVal))) / (xpElapsedTime * 100)
+        );
       }
     }
   }
@@ -778,15 +798,25 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     }
 
     // Check for any boosts
-    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
-    if (activeBoost.boostType == BoostType.GATHERING) {
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+    if (playerBoost.boostType == BoostType.GATHERING || playerBoost.lastBoostType == BoostType.GATHERING) {
       uint256 boostedTime = PlayersLibrary._getBoostedTime(
         skillStartTime,
         xpElapsedTime,
-        activeBoost.startTime,
-        activeBoost.duration
+        playerBoost.startTime,
+        playerBoost.duration
       );
-      _addGatheringBoostedAmounts(boostedTime, amounts, activeBoost.value, xpElapsedTime);
+      uint256 lastBoostedTime = PlayersLibrary._getBoostedTime(
+        skillStartTime,
+        xpElapsedTime,
+        playerBoost.lastStartTime,
+        playerBoost.lastDuration
+      );
+
+      uint256 boostedVal = playerBoost.boostType == BoostType.GATHERING ? playerBoost.value : 0;
+      uint256 lastBoostedVal = playerBoost.lastBoostType == BoostType.GATHERING ? playerBoost.lastValue : 0;
+
+      _addGatheringBoostedAmounts(boostedTime, boostedVal, lastBoostedTime, lastBoostedVal, amounts, xpElapsedTime);
     }
   }
 
@@ -872,7 +902,7 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
             pendingRandomReward.boostItemTokenId
           );
           if (boostType == BoostType.GATHERING) {
-            uint256 elapsedTime = pendingRandomReward.elapsedTime;
+            uint256 elapsedTime = pendingRandomReward.elapsedTime; // TODO: Should this be xpElapsedTime?
 
             uint256 boostedTime = PlayersLibrary._getBoostedTime(
               pendingRandomReward.startTime,
@@ -881,7 +911,9 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
               boostDuration
             );
 
-            _addGatheringBoostedAmounts(boostedTime, randomAmounts, boostValue, elapsedTime);
+            // These times already take into account the current and last boosts available at the time, would be nicer
+            // to pass them over but needs more storage slots
+            _addGatheringBoostedAmounts(boostedTime, boostValue, 0, 0, randomAmounts, elapsedTime);
           }
         }
 

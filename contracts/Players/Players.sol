@@ -469,7 +469,7 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
     return _players[playerId].totalLevel;
   }
 
-  function getActiveBoost(uint256 playerId) external view override returns (PlayerBoostInfo memory) {
+  function getActiveBoost(uint256 playerId) external view override returns (ExtendedBoostInfo memory) {
     return _activeBoosts[playerId];
   }
 

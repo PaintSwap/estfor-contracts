@@ -82,7 +82,7 @@ struct Item {
   uint32 minXP;
 }
 
-// Used for events
+// Used for events and also things like extra boost info
 struct BoostInfo {
   uint40 startTime;
   uint24 duration;
@@ -91,19 +91,48 @@ struct BoostInfo {
   BoostType boostType;
 }
 
-struct PlayerBoostInfo {
+struct StandardBoostInfo {
   uint40 startTime;
   uint24 duration;
   uint16 value;
   uint16 itemTokenId; // Get the effect of it
   BoostType boostType;
-  // Another boost slot (for global/clan boosts this is the "last", for users it is the "extra")
-  uint40 extraOrLastStartTime;
-  uint24 extraOrLastDuration;
-  uint16 extraOrLastValue;
-  uint16 extraOrLastItemTokenId;
-  BoostType extraOrLastBoostType;
+  // Another boost slot for storing the last boost someone had active
+  uint40 lastStartTime;
+  uint24 lastDuration;
+  uint16 lastValue;
+  uint16 lastItemTokenId;
+  BoostType lastBoostType;
   uint40 cooldown; // Just put here for packing
+}
+
+struct ExtendedBoostInfo {
+  uint40 startTime;
+  uint24 duration;
+  uint16 value;
+  uint16 itemTokenId; // Get the effect of it
+  BoostType boostType;
+  // Last boost
+  uint40 lastStartTime;
+  uint24 lastDuration;
+  uint16 lastValue;
+  uint16 lastItemTokenId;
+  BoostType lastBoostType;
+  // Others
+  uint40 cooldown; // Just put here for packing
+  bytes1 packedData; // 1st bit is hasExtraBoost. This is typically for a wish boost. Gas optimization to read this first
+  // New storage slot for another boost (only wish boost for heroes currently)
+  uint40 extraStartTime;
+  uint24 extraDuration;
+  uint16 extraValue;
+  uint16 extraItemTokenId;
+  BoostType extraBoostType;
+  // Last extra boost
+  uint40 lastExtraStartTime;
+  uint24 lastExtraDuration;
+  uint16 lastExtraValue;
+  uint16 lastExtraItemTokenId;
+  BoostType lastExtraBoostType;
 }
 
 // This is effectively a ratio to produce 1 of outputTokenId.
@@ -339,3 +368,7 @@ uint256 constant HAS_RANDOM_REWARDS_BIT = 5;
 // Queued action
 uint256 constant HAS_PET_BIT = 2;
 uint256 constant IS_VALID_BIT = 1;
+
+// Player Boost
+uint256 constant HAS_EXTRA_BOOST_BIT = 1;
+uint256 constant BOOST_VERSION_BIT = 0;

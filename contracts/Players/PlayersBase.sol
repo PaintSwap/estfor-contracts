@@ -57,6 +57,8 @@ abstract contract PlayersBase {
   event BoostFinished(uint256 playerId);
   event ExtraBoostFinished(uint256 playerId);
   event SetCombatParams(uint256 alphaCombat, uint256 betaCombat, uint256 alphaCombatHealing);
+  event UpdateLastBoost(uint256 playerId, BoostInfo boostInfo);
+  event UpdateLastExtraBoost(uint256 playerId, BoostInfo boostInfo);
 
   // For logging
   event Died(address from, uint256 playerId, uint256 queueId);
@@ -182,10 +184,10 @@ abstract contract PlayersBase {
   WishingWell internal _wishingWell;
   PetNFT internal _petNFT;
 
-  PlayerBoostInfo internal _globalBoost; // A boost shared by everyone
+  StandardBoostInfo internal _globalBoost; // A boost shared by all heroes
 
   mapping(address user => ActivePlayerInfo playerInfo) internal _activePlayerInfos;
-  mapping(uint256 playerId => PlayerBoostInfo boostInfo) internal _activeBoosts;
+  mapping(uint256 playerId => ExtendedBoostInfo boostInfo) internal _activeBoosts;
   mapping(uint256 playerId => PackedXP packedXP) internal _playerXP;
   mapping(uint256 playerId => Player player) internal _players;
   mapping(uint256 playerId => mapping(uint256 queuedId => Attire attire)) internal _attire;
@@ -195,7 +197,7 @@ abstract contract PlayersBase {
   mapping(uint256 playerId => bytes32) internal _dailyRewardMasks;
   mapping(uint256 xp => Equipment[] equipments) internal _xpRewardThresholds; // Thresholds and all items rewarded for it
   mapping(Skill skill => FullAttireBonus) internal _fullAttireBonus;
-  mapping(uint256 clanId => PlayerBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
+  mapping(uint256 clanId => StandardBoostInfo clanBoost) internal _clanBoosts; // Clan specific boosts
   mapping(address user => WalletDailyInfo walletDailyInfo) internal _walletDailyInfo;
   mapping(uint256 playerId => CheckpointEquipments[3] checkpointEquipments) internal _checkpointEquipments;
   mapping(address account => bool isModifier) internal _xpModifiers;
@@ -476,8 +478,9 @@ abstract contract PlayersBase {
     }
   }
 
+  // Caller must check that this is appropriate to delete
   function _clearPlayerMainBoost(uint256 playerId) internal {
-    PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
     delete playerBoost.value;
     delete playerBoost.startTime;
     delete playerBoost.duration;
@@ -485,6 +488,85 @@ abstract contract PlayersBase {
     delete playerBoost.itemTokenId;
     delete playerBoost.boostType;
     emit BoostFinished(playerId);
+  }
+
+  // Caller must check that this is appropriate to delete
+  function _clearPlayerLastBoost(uint256 playerId) internal {
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+    delete playerBoost.lastValue;
+    delete playerBoost.lastStartTime;
+    delete playerBoost.lastDuration;
+    delete playerBoost.lastValue;
+    delete playerBoost.lastItemTokenId;
+    delete playerBoost.lastBoostType;
+
+    // At the beginning of Estfor on Sonic (Dec 2024) there was no support for "last" boosts and it used to be lastOrExtra
+    // So we need to check which version it is (0 means old) just to keep events in sync. If everyone who bridged has a last timestamp > Feb 2025 or no extra boost active
+    // then this check can be removed and just use LastBoostFinished. TODO
+    bool isVersion0 = (playerBoost.packedData & bytes1(uint8(1))) == 0;
+    if (isVersion0) {
+      emit ExtraBoostFinished(playerId);
+      if (block.chainid == 31337) {
+        // Makes sure this is never hit in tests as another check. TODO can be removed later (see comment above)
+        assert(false);
+      }
+      emit BoostFinished(playerId);
+    } else {
+      BoostInfo memory boostInfo;
+      emit UpdateLastBoost(playerId, boostInfo);
+    }
+  }
+
+  function _clearPlayerExtraBoost(uint256 playerId) internal {
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+    delete playerBoost.extraValue;
+    delete playerBoost.extraStartTime;
+    delete playerBoost.extraDuration;
+    delete playerBoost.extraValue;
+    delete playerBoost.extraItemTokenId;
+    delete playerBoost.extraBoostType;
+
+    // Clear the has extra boost of packedData if it's no longer relevant. Assumes last boost is always lower in timestamp so always clear
+    playerBoost.packedData &= bytes1(uint8(0xFF) ^ uint8((1 << HAS_EXTRA_BOOST_BIT)));
+    emit ExtraBoostFinished(playerId);
+  }
+
+  function _clearPlayerLastExtraBoost(uint256 playerId) internal {
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+    delete playerBoost.lastExtraValue;
+    delete playerBoost.lastExtraStartTime;
+    delete playerBoost.lastExtraDuration;
+    delete playerBoost.lastExtraValue;
+    delete playerBoost.lastExtraItemTokenId;
+    delete playerBoost.lastExtraBoostType;
+    if (playerBoost.extraValue == 0) {
+      bytes1 packedData = playerBoost.packedData;
+      packedData &= bytes1(uint8(0xFF) ^ uint8((1 << HAS_EXTRA_BOOST_BIT)));
+      playerBoost.packedData = packedData;
+    }
+    BoostInfo memory boostInfo;
+    emit UpdateLastExtraBoost(playerId, boostInfo);
+  }
+
+  // Is there a current boost ongoing when this one will be overriden? If so set last* up to the current time so that it can be used
+  // to give the player the remaining boost time for any queued actions on-going at this time.
+  function _setLastBoost(uint256 playerId, ExtendedBoostInfo storage playerBoost, uint24 lastDuration) internal {
+    playerBoost.lastStartTime = playerBoost.startTime;
+    playerBoost.lastDuration = lastDuration;
+    playerBoost.lastValue = playerBoost.value;
+    playerBoost.lastBoostType = playerBoost.boostType;
+    playerBoost.lastItemTokenId = playerBoost.itemTokenId;
+    playerBoost.packedData |= bytes1(uint8(1));
+    emit UpdateLastBoost(
+      playerId,
+      BoostInfo({
+        startTime: playerBoost.lastStartTime,
+        duration: playerBoost.lastDuration,
+        value: playerBoost.lastValue,
+        boostType: playerBoost.lastBoostType,
+        itemTokenId: playerBoost.lastItemTokenId
+      })
+    );
   }
 
   function _hasPet(bytes1 packed) internal pure returns (bool) {

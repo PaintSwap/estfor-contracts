@@ -282,15 +282,32 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
 
       if (xpElapsedTime != 0) {
         // Check for any gathering boosts
-        PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
-        uint256 boostedTime = PlayersLibrary.getBoostedTime(
-          currentActionStartTimestamp,
-          xpElapsedTime,
-          activeBoost.startTime,
-          activeBoost.duration
-        );
-        if (boostedTime != 0 && activeBoost.boostType == BoostType.GATHERING) {
-          numProduced += uint24((boostedTime * numProduced * activeBoost.value) / (xpElapsedTime * 100));
+        ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+        if (playerBoost.boostType == BoostType.GATHERING || playerBoost.lastBoostType == BoostType.GATHERING) {
+          uint256 boostedTime = playerBoost.boostType == BoostType.GATHERING
+            ? PlayersLibrary.getBoostedTime(
+              currentActionStartTimestamp,
+              xpElapsedTime,
+              playerBoost.startTime,
+              playerBoost.duration
+            )
+            : 0;
+
+          uint256 lastBoostedTime = playerBoost.lastBoostType == BoostType.GATHERING
+            ? PlayersLibrary.getBoostedTime(
+              currentActionStartTimestamp,
+              xpElapsedTime,
+              playerBoost.lastStartTime,
+              playerBoost.lastDuration
+            )
+            : 0;
+
+          uint256 boostedVal = playerBoost.boostType == BoostType.GATHERING ? playerBoost.value : 0;
+          uint256 lastBoostedVal = playerBoost.lastBoostType == BoostType.GATHERING ? playerBoost.lastValue : 0;
+
+          numProduced += uint24(
+            (numProduced * ((boostedTime * boostedVal) + (lastBoostedTime * lastBoostedVal))) / (xpElapsedTime * 100)
+          );
         }
       }
 
