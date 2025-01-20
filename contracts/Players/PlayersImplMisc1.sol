@@ -164,21 +164,21 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
     uint256 queuedIndex
   ) private {
     if (block.timestamp < nextCheckpointTimestamp) {
-      // Action 1 has not finished yet
+      // Action has not finished yet
       for (uint256 i; i < ids.length; ++i) {
-        uint256 itemId = ids[i];
+        uint256 itemTokenId = ids[i];
         uint256 amount = amounts[i];
-        if (itemId == 0) {
+        if (itemTokenId == 0) {
           continue;
         }
         for (uint256 j; j < _checkpointEquipments[playerId][queuedIndex].itemTokenIds.length; ++j) {
-          if (_checkpointEquipments[playerId][queuedIndex].itemTokenIds[j] == itemId) {
+          if (_checkpointEquipments[playerId][queuedIndex].itemTokenIds[j] == itemTokenId) {
             // An item being transferred is currently in use.
             uint256 checkpointBalance = _checkpointEquipments[playerId][queuedIndex].balances[j];
             if (checkpointBalance == type(uint16).max) {
-              // special sentinel case of owning case
+              // special sentinel case of owning more than 65k
               // They own a lot so need to check balance
-              checkpointBalance = _itemNFT.balanceOf(from, itemId) - amount;
+              checkpointBalance = _itemNFT.balanceOf(from, itemTokenId) - amount;
               if (checkpointBalance > type(uint16).max) {
                 // They will still own a lot after the transfer
                 checkpointBalance = type(uint16).max; // Reset back to this sentinel value
@@ -187,7 +187,12 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
               if (checkpointBalance >= amount) {
                 checkpointBalance -= amount;
               } else {
-                checkpointBalance = 0;
+                // Before setting to 0, check if current amount being sent is more than the balance
+                uint256 balance = _itemNFT.balanceOf(from, itemTokenId);
+                // If sending less than you own don't change checkpointBalance
+                if (balance <= amount) {
+                  checkpointBalance = 0;
+                }
               }
             }
             _checkpointEquipments[playerId][queuedIndex].balances[j] = uint16(checkpointBalance);
