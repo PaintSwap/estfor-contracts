@@ -90,6 +90,20 @@ describe("Checkpoints", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
     });
 
+    it("Transfer away required equipment after processing an action, should not invalidate it transfer away exact checkpoint balance but were transferred some more before", async function () {
+      const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this so we have 2 now
+      await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x"); // Transfer 1 away, but still have 1 left
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    });
+
     it("Transfer away required equipment before an action starts and back after an action starts should invalidate it all", async function () {
       const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
 
@@ -1323,7 +1337,6 @@ describe("Checkpoints", function () {
     });
   });
 
-  //
   it("Checkpoints should be cleared when making a character inactive", async function () {
     const {players, playerId, itemNFT, playerNFT, avatarId, worldActions, alice} = await loadFixture(playersFixture);
     const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);

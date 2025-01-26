@@ -101,7 +101,7 @@ if (!isBeta) {
   playersImplProcessActions = "0x129149ff66bc70bb884efa99b0ae31df3c92e0d6";
   playersImplRewards = "0xe83f7057066f165bbf0590efa50d6dbb544b8a91";
   playersImplMisc = "0xee6fc8e098fdee9ac4275ca3ece9bafe451ae57e";
-  playersImplMisc1 = "0xa3686c30a3af31659f3661fffc645bf9354c2aa7";
+  playersImplMisc1 = "0xcd7a2d070324b5401d9748d2a4a4d10826074f99";
   players = "0xefa670aad6d5921236e9655f346ca13a5c56481b";
   promotionsLibrary = "0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9";
   promotions = "0xaf48a8a12f29e30b3831392aa2ee6344d07d188b";
@@ -147,7 +147,7 @@ if (!isBeta) {
   playersImplProcessActions = "0xed5d792c79058afe6b0aa39903896f8c67aec9e4";
   playersImplRewards = "0xb4a370e069feafa7c81cc750e4f7cf6c0955de85";
   playersImplMisc = "0x0cada06d811e6781824c3fd76cffb2d159d36817";
-  playersImplMisc1 = "0x887cf3bc7141bfbe9f068e8dfd3deded308df884";
+  playersImplMisc1 = "0x5de966ee37c7bc28ca6be984b3cc8337539e5117";
   players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
   promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
   promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";

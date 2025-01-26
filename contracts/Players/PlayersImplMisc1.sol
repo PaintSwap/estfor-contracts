@@ -174,7 +174,8 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
         for (uint256 j; j < _checkpointEquipments[playerId][queuedIndex].itemTokenIds.length; ++j) {
           if (_checkpointEquipments[playerId][queuedIndex].itemTokenIds[j] == itemTokenId) {
             // An item being transferred is currently in use.
-            uint256 checkpointBalance = _checkpointEquipments[playerId][queuedIndex].balances[j];
+            uint256 originalBalance = _checkpointEquipments[playerId][queuedIndex].balances[j];
+            uint256 checkpointBalance = originalBalance;
             if (checkpointBalance == type(uint16).max) {
               // special sentinel case of owning more than 65k
               // They own a lot so need to check balance
@@ -184,18 +185,21 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
                 checkpointBalance = type(uint16).max; // Reset back to this sentinel value
               }
             } else {
-              if (checkpointBalance >= amount) {
+              if (checkpointBalance > amount) {
                 checkpointBalance -= amount;
               } else {
                 // Before setting to 0, check if current amount being sent is more than the balance
-                uint256 balance = _itemNFT.balanceOf(from, itemTokenId);
-                // If sending less than you own don't change checkpointBalance
+                uint256 balance = _itemNFT.balanceOf(from, itemId);
                 if (balance <= amount) {
                   checkpointBalance = 0;
+                } else {
+                  checkpointBalance = uint16(balance - amount);
                 }
               }
             }
-            _checkpointEquipments[playerId][queuedIndex].balances[j] = uint16(checkpointBalance);
+            if (originalBalance != checkpointBalance) {
+              _checkpointEquipments[playerId][queuedIndex].balances[j] = uint16(checkpointBalance);
+            }
           }
         }
       }
