@@ -53,14 +53,14 @@ async function main() {
 
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
 
-  const player = await ethers.getImpersonatedSigner("0xe9684cc079adce40652d3baeb4c2696b92ef61e8");
-  const playerId = 35947;
+  const player = await ethers.getImpersonatedSigner("0x6dC225F7f21ACB842761b8df52AE46208705c942");
+  const playerId = 252;
 
   await helpers.mine();
 
   const estforLibrary = await ethers.deployContract("EstforLibrary");
   // Players
-
+  /*
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
@@ -80,7 +80,7 @@ async function main() {
     await playersImplMisc1.getAddress()
   );
   await tx.wait();
-  /*
+
   // PlayerNFT
   const PlayerNFT = (
     await ethers.getContractFactory("PlayerNFT", {
@@ -108,20 +108,18 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   });
-*/
+
   // ItemNFT
   const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
 
-  const ItemNFT = (
-    await ethers.getContractFactory("ItemNFT", {
-      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
-    })
-  ).connect(owner);
+  const ItemNFT = await ethers.getContractFactory("ItemNFT", {
+    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
+  });
   const itemNFT = (await upgrades.upgradeProxy(ITEM_NFT_ADDRESS, ItemNFT, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   })) as unknown as ItemNFT;
-  /*
+
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
   const Promotions = await ethers.getContractFactory("Promotions", {
     libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
@@ -151,6 +149,7 @@ async function main() {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   })) as unknown as LockedBankVaults;
+*/
   const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
   const territories = (await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
@@ -158,6 +157,8 @@ async function main() {
   })) as unknown as Territories;
 
   await territories.connect(player).attackTerritory(63, 1, 252);
+
+  /*
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   const PetNFT = (
     await ethers.getContractFactory("PetNFT", {
@@ -200,11 +201,9 @@ async function main() {
   await bankFactory.waitForDeployment();
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 */
-  //   await players.connect(player).modifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, SKIP_XP_THRESHOLD_EFFECTS);
+  //  await players.connect(player).modifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, SKIP_XP_THRESHOLD_EFFECTS);
   //  const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
   //  console.log(pendingQueuedActionState);
-
-  await itemNFT.connect(player).safeTransferFrom(player, "0x9D7d06E1f425aD534B68E60403Cd0a1C099862Ae", 13953, 1, "0x");
   /*
   // Debugging bridging
   const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c";

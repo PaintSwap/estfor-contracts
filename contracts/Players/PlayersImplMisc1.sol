@@ -189,7 +189,7 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
                 checkpointBalance -= amount;
               } else {
                 // Before setting to 0, check if current amount being sent is more than the balance
-                uint256 balance = _itemNFT.balanceOf(from, itemTokenId);
+                uint256 balance = _itemNFT.balanceOf(from, itemId);
                 if (balance <= amount) {
                   checkpointBalance = 0;
                 } else {

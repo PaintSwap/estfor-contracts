@@ -44,15 +44,16 @@ async function main() {
   }
   console.log(`playersLibrary = "${(await playersLibrary.getAddress()).toLowerCase()}"`);
 
-  //  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
-  //    await deployPlayerImplementations(await playersLibrary.getAddress());
+  const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
+    await deployPlayerImplementations(await playersLibrary.getAddress());
+  /*
   // Single
-  const playersImplMisc1 = await ethers.deployContract(
-    "PlayersImplMisc1"
-    //    libraries: {PlayersLibrary: await playersLibrary.getAddress()}
-  );
-  await playersImplMisc1.waitForDeployment();
-  console.log(`PlayersImplMisc1 = "${(await playersImplMisc1.getAddress()).toLowerCase()}"`);
+  const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
+    libraries: {PlayersLibrary: (await playersLibrary.getAddress())},
+  });
+  await playersImplRewards.waitForDeployment();
+  console.log(`PlayersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
+*/
 
   /* Use these when keeping old implementations
     PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
@@ -63,19 +64,15 @@ async function main() {
   */
   const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
   const tx = await players.setImpls(
-    /*    await playersImplQueueActions.getAddress(),
+    await playersImplQueueActions.getAddress(),
     await playersImplProcessActions.getAddress(),
     await playersImplRewards.getAddress(),
-    await playersImplMisc.getAddress(), */
-    PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS,
-    PLAYERS_IMPL_REWARDS_ADDRESS,
-    PLAYERS_IMPL_MISC_ADDRESS,
+    await playersImplMisc.getAddress(),
     await playersImplMisc1.getAddress()
   );
   await tx.wait();
   console.log("Players implementations set");
-  /*
+
   if (chainId == 146n) {
     await verifyContracts([
       await playersImplQueueActions.getAddress(),
@@ -85,7 +82,7 @@ async function main() {
       await playersImplMisc1.getAddress(),
       await raids.getAddress()
     ]);
-  } */
+  }
 }
 
 main().catch((error) => {
