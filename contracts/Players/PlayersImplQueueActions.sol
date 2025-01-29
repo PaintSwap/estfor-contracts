@@ -180,17 +180,17 @@ contract PlayersImplQueueActions is PlayersBase {
       // If there's an active boost which hasn't been consumed yet, then we can mint it back
       if (playerBoost.startTime > block.timestamp) {
         _itemNFT.mint(from, playerBoost.itemTokenId, 1);
-        // Might need to update last boost if it would have gone over the time here insted of cutting it off
         if (playerBoost.lastItemTokenId != NONE) {
           Item memory lastItem = _itemNFT.getItem(playerBoost.lastItemTokenId);
-          uint40 realEndTimestamp = playerBoost.lastStartTime + lastItem.boostDuration;
-
+          uint40 lastFullEndTimestamp = playerBoost.lastStartTime + lastItem.boostDuration;
+          // Update last boost to either extend or cut it back, to ensure it lasts sufficiently long and also has no overlaps
+          bool isOverlapping = lastFullEndTimestamp > boostStartTimestamp;
           playerBoost.lastDuration = uint24(
             Math.min(
-              realEndTimestamp,
-              realEndTimestamp > boostStartTimestamp
-                ? realEndTimestamp - playerBoost.lastStartTime
-                : boostStartTimestamp - playerBoost.lastStartTime
+              lastItem.boostDuration,
+              isOverlapping
+                ? (boostStartTimestamp - playerBoost.lastStartTime)
+                : (lastFullEndTimestamp - playerBoost.lastStartTime)
             )
           );
           emit UpdateLastBoost(

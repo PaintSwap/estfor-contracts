@@ -65323,6 +65323,1358 @@
           ]
         }
       }
+    },
+    "43fbe8b966f3b34c5706e44072b2c9257bf803981d905c4399807dd682e937ba": {
+      "address": "0x65e747266ee5F6d9BE9CEd2c60950d6A80219a6a",
+      "txHash": "0x0f3ec933a9b986eb622b31aa46a808dfe72e716603dbe4d3e8b3d100fcebacd7",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_randomnessBeacon",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(RandomnessBeacon)34264",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:159"
+          },
+          {
+            "label": "_worldActions",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IWorldActions)39610",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:160"
+          },
+          {
+            "label": "_dailyRewardsScheduler",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(DailyRewardsScheduler)13322",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:161"
+          },
+          {
+            "label": "_dailyRewardsEnabled",
+            "offset": 20,
+            "slot": "2",
+            "type": "t_bool",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:162"
+          },
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(ItemNFT)16876",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:163"
+          },
+          {
+            "label": "_alphaCombat",
+            "offset": 20,
+            "slot": "3",
+            "type": "t_uint8",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:165"
+          },
+          {
+            "label": "_betaCombat",
+            "offset": 21,
+            "slot": "3",
+            "type": "t_uint8",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:166"
+          },
+          {
+            "label": "_alphaCombatHealing",
+            "offset": 22,
+            "slot": "3",
+            "type": "t_uint8",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:167"
+          },
+          {
+            "label": "_playerNFT",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_contract(PlayerNFT)22604",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:168"
+          },
+          {
+            "label": "_nextQueueId",
+            "offset": 20,
+            "slot": "4",
+            "type": "t_uint64",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:169"
+          },
+          {
+            "label": "_gamePaused",
+            "offset": 28,
+            "slot": "4",
+            "type": "t_bool",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:170"
+          },
+          {
+            "label": "_adminAccess",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(AdminAccess)8809",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:172"
+          },
+          {
+            "label": "_isBeta",
+            "offset": 20,
+            "slot": "5",
+            "type": "t_bool",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:173"
+          },
+          {
+            "label": "_implQueueActions",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_address",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:176"
+          },
+          {
+            "label": "_implProcessActions",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_address",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:177"
+          },
+          {
+            "label": "_implRewards",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_address",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:178"
+          },
+          {
+            "label": "_implMisc",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_address",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:179"
+          },
+          {
+            "label": "_implMisc1",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_address",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:180"
+          },
+          {
+            "label": "_quests",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_contract(Quests)33459",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:182"
+          },
+          {
+            "label": "_clans",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_contract(Clans)12777",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:183"
+          },
+          {
+            "label": "_wishingWell",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_contract(WishingWell)36979",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:184"
+          },
+          {
+            "label": "_petNFT",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_contract(PetNFT)20017",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:185"
+          },
+          {
+            "label": "_globalBoost",
+            "offset": 0,
+            "slot": "15",
+            "type": "t_struct(StandardBoostInfo)37768_storage",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:187"
+          },
+          {
+            "label": "_activePlayerInfos",
+            "offset": 0,
+            "slot": "16",
+            "type": "t_mapping(t_address,t_struct(ActivePlayerInfo)38180_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:189"
+          },
+          {
+            "label": "_activeBoosts",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_mapping(t_uint256,t_struct(ExtendedBoostInfo)37817_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:190"
+          },
+          {
+            "label": "_playerXP",
+            "offset": 0,
+            "slot": "18",
+            "type": "t_mapping(t_uint256,t_struct(PackedXP)37949_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:191"
+          },
+          {
+            "label": "_players",
+            "offset": 0,
+            "slot": "19",
+            "type": "t_mapping(t_uint256,t_struct(Player)37693_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:192"
+          },
+          {
+            "label": "_attire",
+            "offset": 0,
+            "slot": "20",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(Attire)37478_storage))",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:193"
+          },
+          {
+            "label": "_pendingRandomRewards",
+            "offset": 0,
+            "slot": "21",
+            "type": "t_mapping(t_uint256,t_array(t_struct(PendingRandomReward)38502_storage)dyn_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:194"
+          },
+          {
+            "label": "_dailyRewardMasks",
+            "offset": 0,
+            "slot": "22",
+            "type": "t_mapping(t_uint256,t_bytes32)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:197"
+          },
+          {
+            "label": "_xpRewardThresholds",
+            "offset": 0,
+            "slot": "23",
+            "type": "t_mapping(t_uint256,t_array(t_struct(Equipment)37420_storage)dyn_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:198"
+          },
+          {
+            "label": "_fullAttireBonus",
+            "offset": 0,
+            "slot": "24",
+            "type": "t_mapping(t_enum(Skill)37461,t_struct(FullAttireBonus)24846_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:199"
+          },
+          {
+            "label": "_clanBoosts",
+            "offset": 0,
+            "slot": "25",
+            "type": "t_mapping(t_uint256,t_struct(StandardBoostInfo)37768_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:200"
+          },
+          {
+            "label": "_walletDailyInfo",
+            "offset": 0,
+            "slot": "26",
+            "type": "t_mapping(t_address,t_struct(WalletDailyInfo)24849_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:201"
+          },
+          {
+            "label": "_checkpointEquipments",
+            "offset": 0,
+            "slot": "27",
+            "type": "t_mapping(t_uint256,t_array(t_struct(CheckpointEquipments)38169_storage)3_storage)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:202"
+          },
+          {
+            "label": "_xpModifiers",
+            "offset": 0,
+            "slot": "28",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:203"
+          },
+          {
+            "label": "_bridge",
+            "offset": 0,
+            "slot": "29",
+            "type": "t_address",
+            "contract": "PlayersBase",
+            "src": "contracts\\Players\\PlayersBase.sol:205"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_struct(CheckpointEquipments)38169_storage)3_storage": {
+            "label": "struct CheckpointEquipments[3]",
+            "numberOfBytes": "192"
+          },
+          "t_array(t_struct(Equipment)37420_storage)dyn_storage": {
+            "label": "struct Equipment[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(PendingRandomReward)38502_storage)dyn_storage": {
+            "label": "struct PendingRandomReward[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(QueuedAction)37040_storage)dyn_storage": {
+            "label": "struct QueuedAction[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint16)16_storage": {
+            "label": "uint16[16]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint16)5_storage": {
+            "label": "uint16[5]",
+            "numberOfBytes": "32"
+          },
+          "t_bytes1": {
+            "label": "bytes1",
+            "numberOfBytes": "1"
+          },
+          "t_bytes2": {
+            "label": "bytes2",
+            "numberOfBytes": "2"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(AdminAccess)8809": {
+            "label": "contract AdminAccess",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Clans)12777": {
+            "label": "contract Clans",
+            "numberOfBytes": "20"
+          },
+          "t_contract(DailyRewardsScheduler)13322": {
+            "label": "contract DailyRewardsScheduler",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IWorldActions)39610": {
+            "label": "contract IWorldActions",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)16876": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)20017": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PlayerNFT)22604": {
+            "label": "contract PlayerNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Quests)33459": {
+            "label": "contract Quests",
+            "numberOfBytes": "20"
+          },
+          "t_contract(RandomnessBeacon)34264": {
+            "label": "contract RandomnessBeacon",
+            "numberOfBytes": "20"
+          },
+          "t_contract(WishingWell)36979": {
+            "label": "contract WishingWell",
+            "numberOfBytes": "20"
+          },
+          "t_enum(BoostType)37415": {
+            "label": "enum BoostType",
+            "members": [
+              "NONE",
+              "ANY_XP",
+              "COMBAT_XP",
+              "NON_COMBAT_XP",
+              "GATHERING",
+              "ABSENCE",
+              "PASSIVE_SKIP_CHANCE",
+              "PVP_BLOCK",
+              "PVP_REATTACK",
+              "PVP_SUPER_ATTACK",
+              "COMBAT_FIXED"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(Skill)37461": {
+            "label": "enum Skill",
+            "members": [
+              "NONE",
+              "COMBAT",
+              "MELEE",
+              "RANGED",
+              "MAGIC",
+              "DEFENCE",
+              "HEALTH",
+              "RESERVED_COMBAT",
+              "MINING",
+              "WOODCUTTING",
+              "FISHING",
+              "SMITHING",
+              "THIEVING",
+              "CRAFTING",
+              "COOKING",
+              "FIREMAKING",
+              "FARMING",
+              "ALCHEMY",
+              "FLETCHING",
+              "FORGING",
+              "RESERVED2",
+              "RESERVED3",
+              "RESERVED4",
+              "RESERVED5",
+              "RESERVED6",
+              "RESERVED7",
+              "RESERVED8",
+              "RESERVED9",
+              "RESERVED10",
+              "RESERVED11",
+              "RESERVED12",
+              "RESERVED13",
+              "RESERVED14",
+              "RESERVED15",
+              "RESERVED16",
+              "RESERVED17",
+              "RESERVED18",
+              "RESERVED19",
+              "RESERVED20",
+              "TRAVELING"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(ActivePlayerInfo)38180_storage)": {
+            "label": "mapping(address => struct ActivePlayerInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(WalletDailyInfo)24849_storage)": {
+            "label": "mapping(address => struct PlayersBase.WalletDailyInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(Skill)37461,t_struct(FullAttireBonus)24846_storage)": {
+            "label": "mapping(enum Skill => struct PlayersBase.FullAttireBonus)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_array(t_struct(CheckpointEquipments)38169_storage)3_storage)": {
+            "label": "mapping(uint256 => struct CheckpointEquipments[3])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_array(t_struct(Equipment)37420_storage)dyn_storage)": {
+            "label": "mapping(uint256 => struct Equipment[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_array(t_struct(PendingRandomReward)38502_storage)dyn_storage)": {
+            "label": "mapping(uint256 => struct PendingRandomReward[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bytes32)": {
+            "label": "mapping(uint256 => bytes32)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(Attire)37478_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct Attire))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Attire)37478_storage)": {
+            "label": "mapping(uint256 => struct Attire)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ExtendedBoostInfo)37817_storage)": {
+            "label": "mapping(uint256 => struct ExtendedBoostInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PackedXP)37949_storage)": {
+            "label": "mapping(uint256 => struct PackedXP)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Player)37693_storage)": {
+            "label": "mapping(uint256 => struct Player)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(StandardBoostInfo)37768_storage)": {
+            "label": "mapping(uint256 => struct StandardBoostInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ActivePlayerInfo)38180_storage": {
+            "label": "struct ActivePlayerInfo",
+            "members": [
+              {
+                "label": "playerId",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "checkpoint",
+                "type": "t_uint40",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "timespan",
+                "type": "t_uint24",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "timespan1",
+                "type": "t_uint24",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "timespan2",
+                "type": "t_uint24",
+                "offset": 19,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Attire)37478_storage": {
+            "label": "struct Attire",
+            "members": [
+              {
+                "label": "head",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "neck",
+                "type": "t_uint16",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "body",
+                "type": "t_uint16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "arms",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "legs",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "feet",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "ring",
+                "type": "t_uint16",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "reserved1",
+                "type": "t_uint16",
+                "offset": 14,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(CheckpointEquipments)38169_storage": {
+            "label": "struct CheckpointEquipments",
+            "members": [
+              {
+                "label": "itemTokenIds",
+                "type": "t_array(t_uint16)16_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "balances",
+                "type": "t_array(t_uint16)16_storage",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Equipment)37420_storage": {
+            "label": "struct Equipment",
+            "members": [
+              {
+                "label": "itemTokenId",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint24",
+                "offset": 2,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ExtendedBoostInfo)37817_storage": {
+            "label": "struct ExtendedBoostInfo",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint24",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "value",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "itemTokenId",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "boostType",
+                "type": "t_enum(BoostType)37415",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "lastStartTime",
+                "type": "t_uint40",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "lastDuration",
+                "type": "t_uint24",
+                "offset": 18,
+                "slot": "0"
+              },
+              {
+                "label": "lastValue",
+                "type": "t_uint16",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "lastItemTokenId",
+                "type": "t_uint16",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "lastBoostType",
+                "type": "t_enum(BoostType)37415",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "cooldown",
+                "type": "t_uint40",
+                "offset": 26,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 31,
+                "slot": "0"
+              },
+              {
+                "label": "extraStartTime",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "extraDuration",
+                "type": "t_uint24",
+                "offset": 5,
+                "slot": "1"
+              },
+              {
+                "label": "extraValue",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "1"
+              },
+              {
+                "label": "extraItemTokenId",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "1"
+              },
+              {
+                "label": "extraBoostType",
+                "type": "t_enum(BoostType)37415",
+                "offset": 12,
+                "slot": "1"
+              },
+              {
+                "label": "lastExtraStartTime",
+                "type": "t_uint40",
+                "offset": 13,
+                "slot": "1"
+              },
+              {
+                "label": "lastExtraDuration",
+                "type": "t_uint24",
+                "offset": 18,
+                "slot": "1"
+              },
+              {
+                "label": "lastExtraValue",
+                "type": "t_uint16",
+                "offset": 21,
+                "slot": "1"
+              },
+              {
+                "label": "lastExtraItemTokenId",
+                "type": "t_uint16",
+                "offset": 23,
+                "slot": "1"
+              },
+              {
+                "label": "lastExtraBoostType",
+                "type": "t_enum(BoostType)37415",
+                "offset": 25,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(FullAttireBonus)24846_storage": {
+            "label": "struct PlayersBase.FullAttireBonus",
+            "members": [
+              {
+                "label": "bonusXPPercent",
+                "type": "t_uint8",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "bonusRewardsPercent",
+                "type": "t_uint8",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "itemTokenIds",
+                "type": "t_array(t_uint16)5_storage",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(PackedXP)37949_storage": {
+            "label": "struct PackedXP",
+            "members": [
+              {
+                "label": "melee",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "ranged",
+                "type": "t_uint40",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "magic",
+                "type": "t_uint40",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "defence",
+                "type": "t_uint40",
+                "offset": 15,
+                "slot": "0"
+              },
+              {
+                "label": "health",
+                "type": "t_uint40",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "reservedCombat",
+                "type": "t_uint40",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "packedDataIsMaxed",
+                "type": "t_bytes2",
+                "offset": 30,
+                "slot": "0"
+              },
+              {
+                "label": "mining",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "woodcutting",
+                "type": "t_uint40",
+                "offset": 5,
+                "slot": "1"
+              },
+              {
+                "label": "fishing",
+                "type": "t_uint40",
+                "offset": 10,
+                "slot": "1"
+              },
+              {
+                "label": "smithing",
+                "type": "t_uint40",
+                "offset": 15,
+                "slot": "1"
+              },
+              {
+                "label": "thieving",
+                "type": "t_uint40",
+                "offset": 20,
+                "slot": "1"
+              },
+              {
+                "label": "crafting",
+                "type": "t_uint40",
+                "offset": 25,
+                "slot": "1"
+              },
+              {
+                "label": "packedDataIsMaxed1",
+                "type": "t_bytes2",
+                "offset": 30,
+                "slot": "1"
+              },
+              {
+                "label": "cooking",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "firemaking",
+                "type": "t_uint40",
+                "offset": 5,
+                "slot": "2"
+              },
+              {
+                "label": "farming",
+                "type": "t_uint40",
+                "offset": 10,
+                "slot": "2"
+              },
+              {
+                "label": "alchemy",
+                "type": "t_uint40",
+                "offset": 15,
+                "slot": "2"
+              },
+              {
+                "label": "fletching",
+                "type": "t_uint40",
+                "offset": 20,
+                "slot": "2"
+              },
+              {
+                "label": "forging",
+                "type": "t_uint40",
+                "offset": 25,
+                "slot": "2"
+              },
+              {
+                "label": "packedDataIsMaxed2",
+                "type": "t_bytes2",
+                "offset": 30,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(PendingRandomReward)38502_storage": {
+            "label": "struct PendingRandomReward",
+            "members": [
+              {
+                "label": "actionId",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "startTime",
+                "type": "t_uint40",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "xpElapsedTime",
+                "type": "t_uint24",
+                "offset": 7,
+                "slot": "0"
+              },
+              {
+                "label": "boostItemTokenId",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "elapsedTime",
+                "type": "t_uint24",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "boostStartTime",
+                "type": "t_uint40",
+                "offset": 15,
+                "slot": "0"
+              },
+              {
+                "label": "sentinelElapsedTime",
+                "type": "t_uint24",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "fullAttireBonusRewardsPercent",
+                "type": "t_uint8",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "queueId",
+                "type": "t_uint64",
+                "offset": 24,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Player)37693_storage": {
+            "label": "struct Player",
+            "members": [
+              {
+                "label": "currentActionStartTimestamp",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedSkill1",
+                "type": "t_enum(Skill)37461",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedXPGained1",
+                "type": "t_uint24",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedSkill2",
+                "type": "t_enum(Skill)37461",
+                "offset": 9,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedXPGained2",
+                "type": "t_uint24",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedSkill3",
+                "type": "t_enum(Skill)37461",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedXPGained3",
+                "type": "t_uint24",
+                "offset": 14,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedFoodConsumed",
+                "type": "t_uint16",
+                "offset": 17,
+                "slot": "0"
+              },
+              {
+                "label": "currentActionProcessedBaseInputItemsConsumedNum",
+                "type": "t_uint16",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "skillBoosted1",
+                "type": "t_enum(Skill)37461",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "skillBoosted2",
+                "type": "t_enum(Skill)37461",
+                "offset": 22,
+                "slot": "0"
+              },
+              {
+                "label": "totalXP",
+                "type": "t_uint48",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "totalLevel",
+                "type": "t_uint16",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "packedData",
+                "type": "t_bytes1",
+                "offset": 31,
+                "slot": "0"
+              },
+              {
+                "label": "actionQueue",
+                "type": "t_array(t_struct(QueuedAction)37040_storage)dyn_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(QueuedAction)37040_storage": {
+            "label": "struct QueuedAction",
+            "members": [
+              {
+                "label": "actionId",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "regenerateId",
+                "type": "t_uint16",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "choiceId",
+                "type": "t_uint16",
+                "offset": 4,
+                "slot": "0"
+              },
+              {
+                "label": "rightHandEquipmentTokenId",
+                "type": "t_uint16",
+                "offset": 6,
+                "slot": "0"
+              },
+              {
+                "label": "leftHandEquipmentTokenId",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "timespan",
+                "type": "t_uint24",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "prevProcessedTime",
+                "type": "t_uint24",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "prevProcessedXPTime",
+                "type": "t_uint24",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "queueId",
+                "type": "t_uint64",
+                "offset": 19,
+                "slot": "0"
+              },
+              {
+                "label": "packed",
+                "type": "t_bytes1",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "combatStyle",
+                "type": "t_uint8",
+                "offset": 28,
+                "slot": "0"
+              },
+              {
+                "label": "reserved",
+                "type": "t_uint24",
+                "offset": 29,
+                "slot": "0"
+              },
+              {
+                "label": "petId",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(StandardBoostInfo)37768_storage": {
+            "label": "struct StandardBoostInfo",
+            "members": [
+              {
+                "label": "startTime",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint24",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "value",
+                "type": "t_uint16",
+                "offset": 8,
+                "slot": "0"
+              },
+              {
+                "label": "itemTokenId",
+                "type": "t_uint16",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "boostType",
+                "type": "t_enum(BoostType)37415",
+                "offset": 12,
+                "slot": "0"
+              },
+              {
+                "label": "lastStartTime",
+                "type": "t_uint40",
+                "offset": 13,
+                "slot": "0"
+              },
+              {
+                "label": "lastDuration",
+                "type": "t_uint24",
+                "offset": 18,
+                "slot": "0"
+              },
+              {
+                "label": "lastValue",
+                "type": "t_uint16",
+                "offset": 21,
+                "slot": "0"
+              },
+              {
+                "label": "lastItemTokenId",
+                "type": "t_uint16",
+                "offset": 23,
+                "slot": "0"
+              },
+              {
+                "label": "lastBoostType",
+                "type": "t_enum(BoostType)37415",
+                "offset": 25,
+                "slot": "0"
+              },
+              {
+                "label": "cooldown",
+                "type": "t_uint40",
+                "offset": 26,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(WalletDailyInfo)24849_storage": {
+            "label": "struct PlayersBase.WalletDailyInfo",
+            "members": [
+              {
+                "label": "lastDailyRewardClaimedTimestamp",
+                "type": "t_uint40",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint48": {
+            "label": "uint48",
+            "numberOfBytes": "6"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }

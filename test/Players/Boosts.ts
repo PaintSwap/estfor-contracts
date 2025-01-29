@@ -1631,7 +1631,7 @@ describe("Boosts", function () {
     expect(playerBoost.startTime).to.eq(NOW + queuedAction.timespan);
     expect(playerBoost.duration).to.eq(boostDuration);
     expect(playerBoost.lastStartTime).to.eq(NOW1);
-    expect(playerBoost.lastDuration).to.eq(boostDuration);
+    expect(playerBoost.lastDuration).to.eq(boostDuration / 2 - 1);
   });
 
   describe("Gathering boost", async function () {
