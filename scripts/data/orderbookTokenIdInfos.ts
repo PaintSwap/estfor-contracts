@@ -3346,5 +3346,10 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     tokenId: EstforConstants.SHARD_006_OMNI,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SONIC_GEM_TICKET,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
   }
 ];

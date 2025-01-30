@@ -17650,5 +17650,30 @@ export const allItems: ItemInput[] = [
     name: "Omni Shard",
     isAvailable: true,
     questPrerequisiteId: 0
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0
+    },
+    tokenId: EstforConstants.SONIC_GEM_TICKET,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SONIC_GEM_TICKET.json",
+    name: "Sonic Gem Ticket",
+    isAvailable: true,
+    questPrerequisiteId: 0
   }
 ];
