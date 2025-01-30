@@ -10,7 +10,6 @@ describe("TerritoryTreasury", function () {
     const fixture = await loadFixture(playersFixture);
     const {brush, playerNFT, dev, treasury, shop, minHarvestInterval} = fixture;
 
-    // Mock territories
     const mockTerritories = await ethers.deployContract("MockTerritories", [await brush.getAddress()]);
 
     const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
