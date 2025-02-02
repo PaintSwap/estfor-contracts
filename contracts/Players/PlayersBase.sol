@@ -506,11 +506,6 @@ abstract contract PlayersBase {
     bool isVersion0 = (playerBoost.packedData & bytes1(uint8(1))) == 0;
     if (isVersion0) {
       emit ExtraBoostFinished(playerId);
-      if (block.chainid == 31337) {
-        // Makes sure this is never hit in tests as another check. TODO can be removed later (see comment above)
-        assert(false);
-      }
-      emit BoostFinished(playerId);
     } else {
       BoostInfo memory boostInfo;
       emit UpdateLastBoost(playerId, boostInfo);
