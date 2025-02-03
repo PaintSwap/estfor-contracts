@@ -14,13 +14,15 @@ async function main() {
   const orderBook = await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS);
   const chunkSize = 100;
 
-  const newTokenIds = new Set([EstforConstants.SONIC_GEM_TICKET]);
-
   const tx = await orderBook.setTokenIdInfos(
-    [EstforConstants.COIN],
+    [EstforConstants.ACTIVITY_TICKET, EstforConstants.SONIC_GEM_TICKET],
     [
       {
-        tick: ethers.parseEther("0").toString(),
+        tick: ethers.parseEther("0.00001").toString(),
+        minQuantity: "1"
+      },
+      {
+        tick: ethers.parseEther("0.00001").toString(),
         minQuantity: "1"
       }
     ]
