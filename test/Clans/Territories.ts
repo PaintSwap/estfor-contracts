@@ -4,7 +4,7 @@ import {clanFixture} from "./utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ethers} from "hardhat";
 import {createPlayer, SKIP_XP_THRESHOLD_EFFECTS} from "../../scripts/utils";
-import {fulfillRandomWords, upgradePlayer} from "../utils";
+import {fulfillRandomWords, fulfillRandomWordsSeeded, getEventLog, upgradePlayer} from "../utils";
 import {getXPFromLevel} from "../Players/utils";
 import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {allItems} from "../../scripts/data/items";
@@ -1003,6 +1003,66 @@ describe("Territories", function () {
         .connect(alice)
         .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()})
     ).to.not.be.reverted;
+  });
+
+  it("Check shuffling works correctly in the BattleResult event", async () => {
+    const {
+      clans,
+      clanId,
+      playerId,
+      ownerPlayerId,
+      territories,
+      combatantsHelper,
+      alice,
+      bob,
+      charlie,
+      bobPlayerId,
+      charliePlayerId,
+      clanName,
+      discord,
+      telegram,
+      twitter,
+      imageId,
+      tierId,
+      mockVRF
+    } = await loadFixture(territoriesVaultsFixture);
+
+    const territoryId = 1;
+    // Add owner to alice's clan
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
+
+    await combatantsHelper
+      .connect(alice)
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
+
+    // Create a new clan to attack/defend
+    await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
+
+    const bobClanId = clanId + 1;
+    await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
+    await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
+
+    // Bob has 2 players
+    await combatantsHelper
+      .connect(bob)
+      .assignCombatants(bobClanId, true, [bobPlayerId, charliePlayerId], false, [], false, [], bobPlayerId);
+
+    await territories
+      .connect(alice)
+      .attackTerritory(clanId, territoryId, playerId, {value: await territories.getAttackCost()});
+
+    await fulfillRandomWords(1, territories, mockVRF);
+
+    await territories
+      .connect(bob)
+      .attackTerritory(bobClanId, territoryId, bobPlayerId, {value: await territories.getAttackCost()});
+
+    const seed = 1n; // Change this seed until we get the shuffling order we want. If the ClanBattleLibrary battle outcome function has not changed, this seed should give the expected result
+    const tx = await fulfillRandomWordsSeeded(2, territories, mockVRF, seed);
+    const log = await getEventLog(tx, territories, "BattleResult");
+    expect(log.attackingPlayerIds).to.deep.eq([charliePlayerId, bobPlayerId]);
+    expect(log.defendingPlayerIds).to.deep.eq([ownerPlayerId, playerId]);
   });
 
   it("Cannot be used to attack a territory if you are defending a locked bank vault", async () => {});

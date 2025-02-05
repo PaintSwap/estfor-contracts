@@ -1,5 +1,5 @@
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {BaseContract, Block, ContractTransactionReceipt, ContractTransactionResponse} from "ethers";
+import {BaseContract, BigNumberish, Block, ContractTransactionReceipt, ContractTransactionResponse} from "ethers";
 import {MockBrushToken, MockVRF, PlayerNFT, Players, Quests, RandomnessBeacon} from "../typechain-types";
 import {expect} from "chai";
 import {ethers} from "hardhat";
@@ -34,7 +34,7 @@ export const requestAndFulfillRandomWords = async (randomnessBeacon: RandomnessB
 };
 
 export const fulfillRandomWords = async (
-  requestId: number | bigint,
+  requestId: BigNumberish,
   contract: BaseContract,
   mockVRF: MockVRF,
   gasPrice = 0n
@@ -55,10 +55,10 @@ export const requestAndFulfillRandomWordsSeeded = async (
 };
 
 export const fulfillRandomWordsSeeded = async (
-  requestId: number | bigint,
+  requestId: BigNumberish,
   contract: BaseContract,
   mockVRF: MockVRF,
-  seed: bigint,
+  seed: BigNumberish,
   gasPrice = 0n
 ): Promise<ContractTransactionResponse> => {
   return mockVRF.fulfillSeeded(requestId, contract, seed, {gasPrice});

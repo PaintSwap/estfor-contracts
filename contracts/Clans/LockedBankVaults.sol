@@ -407,7 +407,9 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       uint8[] memory battleResults,
       uint256[] memory attackingRolls,
       uint256[] memory defendingRolls,
-      bool didAttackersWin
+      bool didAttackersWin,
+      uint64[] memory shuffledPlayerIdsA,
+      uint64[] memory shuffledPlayerPlayerIdsB
     ) = ClanBattleLibrary.determineBattleOutcome(
         address(_players),
         attackingPlayerIds,
@@ -417,6 +419,9 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
         pendingAttack.extraRollsAttacker,
         pendingAttack.extraRollsDefender
       );
+
+    attackingPlayerIds = shuffledPlayerIdsA;
+    defendingPlayerIds = shuffledPlayerPlayerIdsB;
 
     pendingAttack.attackInProgress = false;
     _clanInfos[attackingClanId].currentlyAttacking = false;

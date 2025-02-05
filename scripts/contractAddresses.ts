@@ -114,7 +114,7 @@ if (!isBeta) {
   bankRelay = "0x0df55b940e993f8d3b06a64212962c3d0fef8cba";
   pvpBattleground = "0x679193f35e696651e125b2851ee7c4e44bf40a18";
   raids = "0xec57b7988ee3344bcf4ce64e5d11f495df7cd951";
-  clanBattleLibrary = "0x10a540055069172cf74bb7e06133d887a7e3a3d8";
+  clanBattleLibrary = "0x6545f99f0753acbc4276a1ff317159690eef9111";
   lockedBankVaultsLibrary = "0x10de14eafea8f841689b01fa682c63e52255b148";
   lockedBankVaults = "0xfaa31b6ddb7e07cae5ff15475b3966d78d660240";
   territories = "0x5a6d80bb035318d2a24c1fdfd055032a15f11b12";
@@ -160,7 +160,7 @@ if (!isBeta) {
   bankRelay = "0xd6cdc1d365e505f0546361782c4336c829c39568";
   pvpBattleground = "0xe91a6cdac47dfd546578273253bff1fddc350764";
   raids = "0xbfd416e76519cf199dd95b82f6928b3a4b5ac995";
-  clanBattleLibrary = "0x1a2abfb2c7c5084148a3f0674999c4de2c817138";
+  clanBattleLibrary = "0xfdeccc0c52864998d37121989944519be47c5a6a";
   lockedBankVaultsLibrary = "0x29b1095ed9e89826704e9e8fe326869d51d7b14e";
   lockedBankVaults = "0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb";
   territories = "0xa2ca7daad4b86819c455fafc704d727a23c5a513";
