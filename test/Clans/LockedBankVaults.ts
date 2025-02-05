@@ -109,7 +109,11 @@ describe("LockedBankVaults", function () {
       .connect(alice)
       .assignCombatants(clanId, false, [], true, [playerId, ownerPlayerId], false, [], playerId);
     expect((await lockedBankVaults.getClanInfo(clanId)).playerIds).to.deep.eq([playerId, ownerPlayerId]);
-    await clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
+
+    await expect(clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId))
+      .to.emit(lockedBankVaults, "RemoveCombatant")
+      .withArgs(ownerPlayerId, clanId);
+
     expect((await lockedBankVaults.getClanInfo(clanId)).playerIds).to.deep.eq([playerId]);
   });
 

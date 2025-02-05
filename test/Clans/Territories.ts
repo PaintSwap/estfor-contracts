@@ -548,6 +548,23 @@ describe("Territories", function () {
     await territories.attackTerritory(clanId, territoryId, ownerPlayerId, {value: await territories.getAttackCost()});
   });
 
+  it("Leaving clan removes you as a combatant", async function () {
+    const {clans, clanId, playerId, ownerPlayerId, territories, combatantsHelper, alice} = await loadFixture(
+      territoriesVaultsFixture
+    );
+
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
+
+    await combatantsHelper
+      .connect(alice)
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
+
+    await expect(clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId))
+      .to.emit(territories, "RemoveCombatant")
+      .withArgs(ownerPlayerId, clanId);
+  });
+
   it("Is owner of player when attacking", async () => {
     const {clanId, playerId, territories} = await loadFixture(territoriesVaultsFixture);
 
