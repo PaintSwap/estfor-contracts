@@ -68101,6 +68101,377 @@
           ]
         }
       }
+    },
+    "26e8036679bc7e7e7de9c7dbe5056212ee1769c349fdf1e00b6991e87f4e66d0": {
+      "address": "0xC661e1545a48d1b82a8bFC461Dba7CE6F25e4B5A",
+      "txHash": "0x854c5499950d7502339105df9b7d54a59a7da6585600bdffec7468a16f9e0c73",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_nft",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IERC1155)1244",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:34"
+          },
+          {
+            "label": "_coin",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IBrushToken)10054",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:37"
+          },
+          {
+            "label": "_devAddr",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:40"
+          },
+          {
+            "label": "_devFee",
+            "offset": 20,
+            "slot": "2",
+            "type": "t_uint16",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:41"
+          },
+          {
+            "label": "_burntFee",
+            "offset": 22,
+            "slot": "2",
+            "type": "t_uint8",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:42"
+          },
+          {
+            "label": "_royaltyFee",
+            "offset": 23,
+            "slot": "2",
+            "type": "t_uint16",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:43"
+          },
+          {
+            "label": "_maxOrdersPerPrice",
+            "offset": 25,
+            "slot": "2",
+            "type": "t_uint16",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:44"
+          },
+          {
+            "label": "_nextOrderId",
+            "offset": 27,
+            "slot": "2",
+            "type": "t_uint40",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:45"
+          },
+          {
+            "label": "_royaltyRecipient",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:48"
+          },
+          {
+            "label": "_tokenIdInfos",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_uint256,t_struct(TokenIdInfo)9685_storage)",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:51"
+          },
+          {
+            "label": "_asks",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_struct(Tree)4087_storage)",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:52"
+          },
+          {
+            "label": "_bids",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_struct(Tree)4087_storage)",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:53"
+          },
+          {
+            "label": "_asksAtPrice",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_array(t_bytes32)dyn_storage))",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:55"
+          },
+          {
+            "label": "_bidsAtPrice",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_array(t_bytes32)dyn_storage))",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:57"
+          },
+          {
+            "label": "_tokenClaimables",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_array(t_struct(ClaimableTokenInfo)9720_storage)1099511627776_storage",
+            "contract": "OrderBook",
+            "src": "contracts\\Bazaar\\OrderBook.sol:58"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(ClaimableTokenInfo)9720_storage)1099511627776_storage": {
+            "label": "struct IOrderBook.ClaimableTokenInfo[1099511627776]",
+            "numberOfBytes": "35184372088832"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IBrushToken)10054": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IERC1155)1244": {
+            "label": "contract IERC1155",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_array(t_bytes32)dyn_storage)": {
+            "label": "mapping(uint256 => bytes32[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_array(t_bytes32)dyn_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => bytes32[]))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(TokenIdInfo)9685_storage)": {
+            "label": "mapping(uint256 => struct IOrderBook.TokenIdInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Tree)4087_storage)": {
+            "label": "mapping(uint256 => struct BokkyPooBahsRedBlackTreeLibrary.Tree)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint72,t_struct(Node)4079_storage)": {
+            "label": "mapping(uint72 => struct BokkyPooBahsRedBlackTreeLibrary.Node)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ClaimableTokenInfo)9720_storage": {
+            "label": "struct IOrderBook.ClaimableTokenInfo",
+            "members": [
+              {
+                "label": "maker",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint80",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "tokenId",
+                "type": "t_uint16",
+                "offset": 30,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Node)4079_storage": {
+            "label": "struct BokkyPooBahsRedBlackTreeLibrary.Node",
+            "members": [
+              {
+                "label": "parent",
+                "type": "t_uint72",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "left",
+                "type": "t_uint72",
+                "offset": 9,
+                "slot": "0"
+              },
+              {
+                "label": "right",
+                "type": "t_uint72",
+                "offset": 18,
+                "slot": "0"
+              },
+              {
+                "label": "tombstoneOffset",
+                "type": "t_uint32",
+                "offset": 27,
+                "slot": "0"
+              },
+              {
+                "label": "red",
+                "type": "t_bool",
+                "offset": 31,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(TokenIdInfo)9685_storage": {
+            "label": "struct IOrderBook.TokenIdInfo",
+            "members": [
+              {
+                "label": "tick",
+                "type": "t_uint128",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "minQuantity",
+                "type": "t_uint128",
+                "offset": 16,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Tree)4087_storage": {
+            "label": "struct BokkyPooBahsRedBlackTreeLibrary.Tree",
+            "members": [
+              {
+                "label": "root",
+                "type": "t_uint72",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "nodes",
+                "type": "t_mapping(t_uint72,t_struct(Node)4079_storage)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint128": {
+            "label": "uint128",
+            "numberOfBytes": "16"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint72": {
+            "label": "uint72",
+            "numberOfBytes": "9"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }
