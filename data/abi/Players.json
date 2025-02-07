@@ -1504,6 +1504,98 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "boostInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateLastBoost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "boostInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateLastExtraBoost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -1978,36 +2070,91 @@
           },
           {
             "internalType": "uint40",
-            "name": "extraOrLastStartTime",
+            "name": "lastStartTime",
             "type": "uint40"
           },
           {
             "internalType": "uint24",
-            "name": "extraOrLastDuration",
+            "name": "lastDuration",
             "type": "uint24"
           },
           {
             "internalType": "uint16",
-            "name": "extraOrLastValue",
+            "name": "lastValue",
             "type": "uint16"
           },
           {
             "internalType": "uint16",
-            "name": "extraOrLastItemTokenId",
+            "name": "lastItemTokenId",
             "type": "uint16"
           },
           {
             "internalType": "enum BoostType",
-            "name": "extraOrLastBoostType",
+            "name": "lastBoostType",
             "type": "uint8"
           },
           {
             "internalType": "uint40",
             "name": "cooldown",
             "type": "uint40"
+          },
+          {
+            "internalType": "bytes1",
+            "name": "packedData",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "uint40",
+            "name": "extraStartTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "extraDuration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "extraValue",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "extraItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "extraBoostType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastExtraStartTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "lastExtraDuration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "lastExtraValue",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "lastExtraItemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "lastExtraBoostType",
+            "type": "uint8"
           }
         ],
-        "internalType": "struct PlayerBoostInfo",
+        "internalType": "struct ExtendedBoostInfo",
         "name": "",
         "type": "tuple"
       }

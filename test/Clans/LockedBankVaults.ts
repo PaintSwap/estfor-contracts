@@ -6,7 +6,7 @@ import {ClanRank, ItemInput} from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {LockedBankVaults, MockBrushToken, Territories} from "../../typechain-types";
 
-import {fulfillRandomWords, timeTravel, upgradePlayer} from "../utils";
+import {fulfillRandomWords, fulfillRandomWordsSeeded, getEventLog, timeTravel, upgradePlayer} from "../utils";
 import {Block, ContractTransactionReceipt} from "ethers";
 import {allBattleSkills} from "../../scripts/data/territories";
 import {getXPFromLevel, makeSigner} from "../Players/utils";
@@ -109,11 +109,15 @@ describe("LockedBankVaults", function () {
       .connect(alice)
       .assignCombatants(clanId, false, [], true, [playerId, ownerPlayerId], false, [], playerId);
     expect((await lockedBankVaults.getClanInfo(clanId)).playerIds).to.deep.eq([playerId, ownerPlayerId]);
-    await clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId);
+
+    await expect(clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId))
+      .to.emit(lockedBankVaults, "RemoveCombatant")
+      .withArgs(ownerPlayerId, clanId);
+
     expect((await lockedBankVaults.getClanInfo(clanId)).playerIds).to.deep.eq([playerId]);
   });
 
-  it("Cannot only change combatants after the cooldown change deadline has passed", async function () {
+  it("Can only change combatants after the cooldown change deadline has passed", async function () {
     const {lockedBankVaultsLibrary, clanId, playerId, alice, combatantChangeCooldown, combatantsHelper} =
       await loadFixture(lockedBankVaultsFixture);
 
@@ -2759,5 +2763,60 @@ describe("LockedBankVaults", function () {
     });
 
     it("TODO - Test attacking vaults with a clan not in the ranking and which has a higher index that the attacking clan", async () => {});
+
+    it("Check shuffling works correctly in the BattleResult event", async () => {
+      const {
+        clans,
+        lockedBankVaults,
+        combatantsHelper,
+        territories,
+        clanId,
+        ownerPlayerId,
+        playerId,
+        bobPlayerId,
+        charliePlayerId,
+        alice,
+        bob,
+        charlie,
+        clanName,
+        discord,
+        telegram,
+        twitter,
+        imageId,
+        tierId,
+        brush,
+        mockVRF
+      } = await loadFixture(lockedBankVaultsFixture);
+
+      await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
+
+      // Add owner to alice's clan
+      await clans.requestToJoin(clanId, ownerPlayerId, 0);
+      await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
+      await combatantsHelper
+        .connect(alice)
+        .assignCombatants(clanId, false, [], true, [playerId, ownerPlayerId], false, [], playerId);
+
+      // Create a new clan to attack/defend
+      await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
+
+      const bobClanId = clanId + 1;
+      await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
+      await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId], bobPlayerId);
+
+      // Bob has 2 players
+      await combatantsHelper
+        .connect(bob)
+        .assignCombatants(bobClanId, false, [], true, [bobPlayerId, charliePlayerId], false, [], bobPlayerId);
+      await lockedBankVaults
+        .connect(bob)
+        .attackVaults(bobClanId, clanId, 0, bobPlayerId, {value: await lockedBankVaults.getAttackCost()});
+
+      const seed = 2n; // Change this seed until we get the shuffling order we want. If the ClanBattleLibrary battle outcome function has not changed, this seed should give the expected result
+      const tx = await fulfillRandomWordsSeeded(1, lockedBankVaults, mockVRF, seed);
+      const log = await getEventLog(tx, lockedBankVaults, "BattleResult");
+      expect(log.attackingPlayerIds).to.deep.eq([charliePlayerId, bobPlayerId]);
+      expect(log.defendingPlayerIds).to.deep.eq([ownerPlayerId, playerId]);
+    });
   });
 });

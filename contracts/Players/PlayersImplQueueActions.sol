@@ -6,6 +6,7 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {RandomnessBeacon} from "../RandomnessBeacon.sol";
 import {ItemNFT} from "../ItemNFT.sol";
 import {AdminAccess} from "../AdminAccess.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {SkillLibrary} from "../libraries/SkillLibrary.sol";
@@ -154,7 +155,8 @@ contract PlayersImplQueueActions is PlayersBase {
       if (boostStartReverseIndex >= (queuedActions.length - 1)) {
         boostStartTimestamp = uint40(block.timestamp);
       } else {
-        boostStartTimestamp = uint40(veryStartTime);
+        boostStartTimestamp = uint40(player.currentActionStartTimestamp);
+        assert(player.currentActionStartTimestamp != 0);
         uint256 bounds = queuedActions.length - boostStartReverseIndex - 1;
         for (uint256 i = 0; i < bounds; ++i) {
           boostStartTimestamp += queuedActions[i].timespan;
@@ -172,14 +174,47 @@ contract PlayersImplQueueActions is PlayersBase {
     Item memory item = _itemNFT.getItem(itemTokenId);
     require(item.equipPosition == EquipPosition.BOOST_VIAL, NotABoostVial());
 
-    // Burn it
-    _itemNFT.burn(from, itemTokenId, 1);
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
 
-    // If there's an active boost which hasn't been consumed yet, then we can mint it back
-    PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
-    if (playerBoost.itemTokenId != NONE && playerBoost.startTime > block.timestamp) {
-      _itemNFT.mint(from, playerBoost.itemTokenId, 1);
+    if (playerBoost.itemTokenId != NONE) {
+      // If there's an active boost which hasn't been consumed yet, then we can mint it back
+      if (playerBoost.startTime > block.timestamp) {
+        _itemNFT.mint(from, playerBoost.itemTokenId, 1);
+        if (playerBoost.lastItemTokenId != NONE) {
+          Item memory lastItem = _itemNFT.getItem(playerBoost.lastItemTokenId);
+          uint40 lastFullEndTimestamp = playerBoost.lastStartTime + lastItem.boostDuration;
+          // Update last boost to either extend or cut it back, to ensure it lasts sufficiently long and also has no overlaps
+          bool isOverlapping = lastFullEndTimestamp > boostStartTimestamp;
+          playerBoost.lastDuration = uint24(
+            Math.min(
+              lastItem.boostDuration,
+              isOverlapping
+                ? (boostStartTimestamp - playerBoost.lastStartTime)
+                : (lastFullEndTimestamp - playerBoost.lastStartTime)
+            )
+          );
+          emit UpdateLastBoost(
+            playerId,
+            BoostInfo({
+              startTime: playerBoost.lastStartTime,
+              duration: playerBoost.lastDuration,
+              value: playerBoost.lastValue,
+              boostType: playerBoost.lastBoostType,
+              itemTokenId: playerBoost.lastItemTokenId
+            })
+          );
+        }
+      } else {
+        uint40 currentBoostEndTimestamp = playerBoost.startTime + playerBoost.duration;
+
+        // Timestamp either goes to the full extend of the boost, or up to the timestamp of the next boost
+        uint40 timestamp = uint40(Math.min(boostStartTimestamp, currentBoostEndTimestamp));
+        _setLastBoost(playerId, playerBoost, uint24(timestamp - playerBoost.startTime));
+      }
     }
+
+    // Burn it after in case we minted same one again
+    _itemNFT.burn(from, itemTokenId, 1);
 
     playerBoost.startTime = boostStartTimestamp;
     playerBoost.duration = item.boostDuration;
@@ -600,7 +635,7 @@ contract PlayersImplQueueActions is PlayersBase {
   }
 
   // Consumes all the actions in the queue up to this time.
-  // Mints the boost vial if it hasn't been consumed at all yet, otherwise removese any active ones
+  // Mints the boost vial if it hasn't been consumed at all yet and removes any active ones
   // Removes all the actions from the queue
   function clearEverything(address from, uint256 playerId, bool processTheActions) external {
     if (processTheActions) {
@@ -614,13 +649,22 @@ contract PlayersImplQueueActions is PlayersBase {
     emit ClearAll(from, playerId);
     _clearActionQueue(from, playerId);
     // Remove any active boost
-    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
-    if (activeBoost.boostType != BoostType.NONE) {
-      uint256 startTime = activeBoost.startTime;
-      uint16 itemTokenId = activeBoost.itemTokenId;
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+
+    if (playerBoost.extraBoostType != BoostType.NONE) {
+      _clearPlayerExtraBoost(playerId);
+      _clearPlayerLastExtraBoost(playerId);
+    }
+
+    if (playerBoost.boostType != BoostType.NONE) {
+      uint256 startTime = playerBoost.startTime;
+      uint16 itemTokenId = playerBoost.itemTokenId;
       _clearPlayerMainBoost(playerId);
+      if (playerBoost.lastItemTokenId != NONE) {
+        _clearPlayerLastBoost(playerId);
+      }
       if (startTime > block.timestamp) {
-        // Mint it if it hasn't been consumed yet
+        // Mint it if it hasn't been consumed yet, don't worry about
         _itemNFT.mint(from, itemTokenId, 1);
       }
     }

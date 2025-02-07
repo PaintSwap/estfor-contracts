@@ -10,21 +10,7 @@ async function main() {
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
-  const itemIds = new Set([
-    EstforConstants.KRAGSTYR_EGG_TIER1,
-    EstforConstants.KRAGSTYR_EGG_TIER2,
-    EstforConstants.KRAGSTYR_EGG_TIER3,
-    EstforConstants.KRAGSTYR_EGG_TIER4,
-    EstforConstants.KRAGSTYR_EGG_TIER5,
-    EstforConstants.TRICK_CHEST2024,
-    EstforConstants.TREAT_CHEST2024,
-    EstforConstants.TRICK_OR_TREAT_KEY,
-    EstforConstants.RING_OF_TUR,
-    EstforConstants.KEPHRI_AMULET,
-    EstforConstants.LIFFYN,
-    EstforConstants.VANAGLOT,
-    EstforConstants.FANGENSTORM
-  ]);
+  const itemIds = new Set([EstforConstants.ACTIVITY_TICKET]); // EstforConstants.SONIC_GEM_TICKET]);
 
   const items = allItems.filter((item) => itemIds.has(item.tokenId));
   if (items.length !== itemIds.size) {

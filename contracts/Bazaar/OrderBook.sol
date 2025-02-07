@@ -303,7 +303,7 @@ contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrder
     require(orderIds.length <= MAX_CLAIMABLE_ORDERS, ClaimingTooManyOrders());
     uint256 amount;
     for (uint256 i = 0; i < orderIds.length; ++i) {
-      uint40 orderId = uint40(orderIds[i]);
+      uint40 orderId = SafeCast.toUint40(orderIds[i]);
       ClaimableTokenInfo storage claimableTokenInfo = _tokenClaimables[orderId];
       uint256 claimableAmount = claimableTokenInfo.amount;
       require(claimableAmount != 0, NothingToClaim());
@@ -328,7 +328,7 @@ contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrder
     uint256[] memory nftAmountsFromUs = new uint256[](orderIds.length);
     uint256[] memory tokenIds = new uint256[](orderIds.length);
     for (uint256 i = 0; i < tokenIds.length; ++i) {
-      uint40 orderId = uint40(orderIds[i]);
+      uint40 orderId = SafeCast.toUint40(orderIds[i]);
       ClaimableTokenInfo storage claimableTokenInfo = _tokenClaimables[orderId];
       uint256 tokenId = claimableTokenInfo.tokenId;
       tokenIds[i] = tokenId;

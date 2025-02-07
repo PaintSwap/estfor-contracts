@@ -5,6 +5,7 @@ import {PlayersBase} from "./PlayersBase.sol";
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelegate} from "../interfaces/IPlayersDelegates.sol";
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -272,22 +273,28 @@ contract PlayersImplProcessActions is PlayersBase {
   }
 
   function _clearPlayerBoostsIfExpired(uint256 playerId) private {
-    PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime + playerBoost.duration <= block.timestamp) {
       _clearPlayerMainBoost(playerId);
     }
 
     if (
-      playerBoost.extraOrLastItemTokenId != NONE &&
-      playerBoost.extraOrLastStartTime + playerBoost.extraOrLastDuration <= block.timestamp
+      playerBoost.lastItemTokenId != NONE && playerBoost.lastStartTime + playerBoost.lastDuration <= block.timestamp
     ) {
-      delete playerBoost.extraOrLastValue;
-      delete playerBoost.extraOrLastStartTime;
-      delete playerBoost.extraOrLastDuration;
-      delete playerBoost.extraOrLastValue;
-      delete playerBoost.extraOrLastItemTokenId;
-      delete playerBoost.extraOrLastBoostType;
-      emit ExtraBoostFinished(playerId);
+      _clearPlayerLastBoost(playerId);
+    }
+
+    if (
+      playerBoost.extraItemTokenId != NONE && playerBoost.extraStartTime + playerBoost.extraDuration <= block.timestamp
+    ) {
+      _clearPlayerExtraBoost(playerId);
+    }
+
+    if (
+      playerBoost.lastExtraItemTokenId != NONE &&
+      playerBoost.lastExtraStartTime + playerBoost.lastExtraDuration <= block.timestamp
+    ) {
+      _clearPlayerLastExtraBoost(playerId);
     }
   }
 
@@ -308,16 +315,35 @@ contract PlayersImplProcessActions is PlayersBase {
     }
   }
 
-  // Is there a current boost ongoing when this one will be overriden? If so set extraOrLast* up to the current time so that it can be used
+  // Is there a current boost ongoing when this one will be overriden? If so set last* up to the current time so that it can be used
   // to give the player the remaining boost time for any queued actions on-going at this time.
-  function _setLastBoostIfAppropriate(PlayerBoostInfo storage boost) private {
-    if (block.timestamp < boost.startTime + boost.duration) {
-      boost.extraOrLastStartTime = boost.startTime;
-      boost.extraOrLastDuration = uint24(block.timestamp - boost.startTime); // duration from start to current time
-      boost.extraOrLastValue = boost.value;
-      boost.extraOrLastBoostType = boost.boostType;
-      boost.extraOrLastItemTokenId = boost.itemTokenId;
-    }
+  function _setLastBoost(StandardBoostInfo storage boost, uint24 lastDuration) private {
+    boost.lastStartTime = boost.startTime;
+    boost.lastDuration = lastDuration;
+    boost.lastValue = boost.value;
+    boost.lastBoostType = boost.boostType;
+    boost.lastItemTokenId = boost.itemTokenId;
+  }
+
+  // Is there a current boost ongoing when this one will be overriden? If so set lastExtra up to the current time so that it can be used
+  // to give the player the remaining boost time for any queued actions on-going at this time.
+  function _setLastExtraBoost(uint256 playerId, ExtendedBoostInfo storage boost, uint24 lastExtraDuration) private {
+    boost.lastExtraStartTime = boost.extraStartTime;
+    boost.lastExtraDuration = lastExtraDuration;
+    boost.lastExtraValue = boost.extraValue;
+    boost.lastExtraBoostType = boost.extraBoostType;
+    boost.lastExtraItemTokenId = boost.extraItemTokenId;
+
+    emit UpdateLastExtraBoost(
+      playerId,
+      BoostInfo({
+        startTime: boost.lastStartTime,
+        duration: boost.lastDuration,
+        value: boost.lastValue,
+        boostType: boost.lastBoostType,
+        itemTokenId: boost.lastItemTokenId
+      })
+    );
   }
 
   // There is no need to burn anything because it is implicitly minted/burned in the same transaction
@@ -348,15 +374,25 @@ contract PlayersImplProcessActions is PlayersBase {
     });
 
     if (item.equipPosition == EquipPosition.EXTRA_BOOST_VIAL) {
-      PlayerBoostInfo storage playerBoost = _activeBoosts[playerId];
-      playerBoost.extraOrLastStartTime = startTime;
-      playerBoost.extraOrLastDuration = item.boostDuration;
-      playerBoost.extraOrLastValue = item.boostValue;
-      playerBoost.extraOrLastBoostType = item.boostType;
-      playerBoost.extraOrLastItemTokenId = itemTokenId;
+      ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
+      uint24 lastExtraDuration = uint24(
+        Math.min(block.timestamp - playerBoost.extraStartTime, playerBoost.extraStartTime + playerBoost.extraDuration)
+      );
+      _setLastExtraBoost(playerId, playerBoost, lastExtraDuration); // Must be set before making any changes
+      playerBoost.extraStartTime = startTime;
+      playerBoost.extraDuration = item.boostDuration;
+      playerBoost.extraValue = item.boostValue;
+      playerBoost.extraBoostType = item.boostType;
+      playerBoost.extraItemTokenId = itemTokenId;
+
+      bytes1 packedData = bytes1(uint8(0x1 | (1 << HAS_EXTRA_BOOST_BIT))); // set the version bit and also bit for needed extraStartTime
+      playerBoost.packedData |= packedData; // Set the version bit
       emit ConsumeExtraBoostVial(from, playerId, boostInfo);
     } else if (item.equipPosition == EquipPosition.GLOBAL_BOOST_VIAL) {
-      _setLastBoostIfAppropriate(_globalBoost); // Must be set before making any changes
+      uint24 lastDuration = uint24(
+        Math.min(block.timestamp - _globalBoost.startTime, _globalBoost.startTime + _globalBoost.duration)
+      );
+      _setLastBoost(_globalBoost, lastDuration); // Must be set before making any changes
       _globalBoost.startTime = startTime;
       _globalBoost.duration = item.boostDuration;
       _globalBoost.value = item.boostValue;
@@ -364,8 +400,11 @@ contract PlayersImplProcessActions is PlayersBase {
       _globalBoost.itemTokenId = itemTokenId;
       emit ConsumeGlobalBoostVial(from, playerId, boostInfo);
     } else {
-      PlayerBoostInfo storage clanBoost = _clanBoosts[clanId];
-      _setLastBoostIfAppropriate(clanBoost); // Must be set before making any changes
+      StandardBoostInfo storage clanBoost = _clanBoosts[clanId];
+      uint24 lastDuration = uint24(
+        Math.min(block.timestamp - clanBoost.startTime, clanBoost.startTime + clanBoost.duration)
+      );
+      _setLastBoost(clanBoost, lastDuration); // Must be set before making any changes
       clanBoost.startTime = startTime;
       clanBoost.duration = item.boostDuration;
       clanBoost.value = item.boostValue;
@@ -418,21 +457,41 @@ contract PlayersImplProcessActions is PlayersBase {
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
     CheckpointEquipments storage checkpointEquipments
   ) private {
-    PlayerBoostInfo storage activeBoost = _activeBoosts[playerId];
+    ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
     BoostType boostType;
     uint40 boostStartTime;
     uint16 boostItemTokenId;
-    if (activeBoost.boostType == BoostType.GATHERING) {
+    if (playerBoost.boostType == BoostType.GATHERING || playerBoost.lastBoostType == BoostType.GATHERING) {
       uint24 boostedTime = PlayersLibrary.getBoostedTime(
         skillStartTime,
         xpElapsedTime,
-        activeBoost.startTime,
-        activeBoost.duration
+        playerBoost.startTime,
+        playerBoost.duration
       );
-      if (boostedTime != 0) {
-        boostType = activeBoost.boostType;
-        boostItemTokenId = activeBoost.itemTokenId;
-        boostStartTime = activeBoost.startTime;
+      uint24 lastBoostedTime = PlayersLibrary.getBoostedTime(
+        skillStartTime,
+        xpElapsedTime,
+        playerBoost.lastStartTime,
+        playerBoost.lastDuration
+      );
+
+      bool isCurrentBoostActive = playerBoost.boostType == BoostType.GATHERING && boostedTime != 0;
+      bool isLastBoostActive = playerBoost.lastBoostType == BoostType.GATHERING && lastBoostedTime != 0;
+
+      if (isCurrentBoostActive && isLastBoostActive && playerBoost.lastItemTokenId == playerBoost.itemTokenId) {
+        boostType = playerBoost.boostType;
+        boostItemTokenId = playerBoost.itemTokenId;
+        boostStartTime = playerBoost.lastStartTime < playerBoost.startTime
+          ? playerBoost.lastStartTime
+          : playerBoost.startTime;
+      } else if (isCurrentBoostActive) {
+        boostType = playerBoost.boostType;
+        boostItemTokenId = playerBoost.itemTokenId;
+        boostStartTime = playerBoost.startTime;
+      } else if (isLastBoostActive) {
+        boostType = playerBoost.lastBoostType;
+        boostItemTokenId = playerBoost.lastItemTokenId;
+        boostStartTime = playerBoost.lastStartTime;
       }
     }
 

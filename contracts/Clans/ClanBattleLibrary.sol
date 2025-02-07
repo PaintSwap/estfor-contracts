@@ -27,9 +27,27 @@ library ClanBattleLibrary {
   )
     external
     view
-    returns (uint8[] memory battleResults, uint256[] memory rollsA, uint256[] memory rollsB, bool didAWin)
+    returns (
+      uint8[] memory battleResults,
+      uint256[] memory rollsA,
+      uint256[] memory rollsB,
+      bool didAWin,
+      uint64[] memory shuffledClanMembersA,
+      uint64[] memory shuffledClanMembersB
+    )
   {
-    return _determineBattleOutcome(players, clanMembersA, clanMembersB, skills, randomWords, extraRollsA, extraRollsB);
+    (battleResults, rollsA, rollsB, didAWin) = _determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      randomWords,
+      extraRollsA,
+      extraRollsB
+    );
+    // These have now been shuffled, so return them to the caller
+    shuffledClanMembersA = clanMembersA;
+    shuffledClanMembersB = clanMembersB;
   }
 
   function _determineBattleOutcome(

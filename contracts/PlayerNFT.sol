@@ -207,7 +207,17 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     _mint(from, playerId, 1, "");
     uint256[] memory startingItemTokenIds;
     uint256[] memory startingAmounts;
-    _players.mintedPlayer(from, playerId, _avatars[avatarId].startSkills, true, startingItemTokenIds, startingAmounts);
+
+    // Only make active if the account has no active player
+    bool makeActive = _players.getActivePlayer(from) == 0;
+    _players.mintedPlayer(
+      from,
+      playerId,
+      _avatars[avatarId].startSkills,
+      makeActive,
+      startingItemTokenIds,
+      startingAmounts
+    );
     if (isUpgrade) {
       uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
       // _upgradePlayer equivalent

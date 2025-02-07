@@ -169,9 +169,9 @@ interface IPlayersMisc1DelegateView {
 
   function getPlayer(uint256 playerId) external view returns (Player memory);
 
-  function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory);
+  function getClanBoost(uint256 clanId) external view returns (StandardBoostInfo memory);
 
-  function getGlobalBoost() external view returns (PlayerBoostInfo memory);
+  function getGlobalBoost() external view returns (StandardBoostInfo memory);
 
   function getCheckpointEquipments(
     uint256 playerId

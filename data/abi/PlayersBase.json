@@ -1313,6 +1313,98 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "boostInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateLastBoost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "startTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "duration",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "value",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "itemTokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "enum BoostType",
+            "name": "boostType",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BoostInfo",
+        "name": "boostInfo",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateLastExtraBoost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "from",
         "type": "address"

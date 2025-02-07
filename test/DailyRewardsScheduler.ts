@@ -104,7 +104,6 @@ describe("DailyRewardsScheduler", function () {
     const {randomnessBeacon, dailyRewardsScheduler, mockVRF} = await loadFixture(deployContracts);
 
     const playerId = 1;
-    const oneDay = 24 * 3600;
     await timeTravelToNextCheckpoint();
 
     // Keep requesting

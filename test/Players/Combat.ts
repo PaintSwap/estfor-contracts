@@ -1046,7 +1046,7 @@ describe("Combat Actions", function () {
       await ethers.provider.send("evm_increaseTime", [240]);
       await ethers.provider.send("evm_mine", []);
       expect((await players.getActiveBoost(playerId)).boostType).to.not.eq(0);
-      expect((await players.getActiveBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
+      expect((await players.getActiveBoost(playerId)).extraBoostType).to.not.eq(0);
 
       // Make a new player active so the old one is cleared
       const makeActive = true;
@@ -1055,8 +1055,8 @@ describe("Combat Actions", function () {
       expect((await players.getActionQueue(playerId)).length).to.eq(0);
       // Active boost should be removed
       expect((await players.getActiveBoost(playerId)).boostType).to.eq(0);
-      // Should not remove the extra boost though
-      expect((await players.getActiveBoost(playerId)).extraOrLastBoostType).to.not.eq(0);
+      // Should remove the extra boost
+      expect((await players.getActiveBoost(playerId)).extraBoostType).to.eq(0);
     });
 
     it("Check random rewards", async function () {

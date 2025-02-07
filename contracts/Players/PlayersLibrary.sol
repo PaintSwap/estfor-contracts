@@ -10,7 +10,7 @@ import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import {SkillLibrary} from "../libraries/SkillLibrary.sol";
 
 import {Skill, CombatStats, CombatStyle, BoostType, Attire} from "../globals/misc.sol";
-import {PendingQueuedActionEquipmentState, QueuedAction, ActionChoice, PlayerBoostInfo, PackedXP, PendingQueuedActionProcessed, Item, Player, Player, XP_BYTES, IS_FULL_MODE_BIT, CheckpointEquipments} from "../globals/players.sol";
+import {PendingQueuedActionEquipmentState, QueuedAction, ActionChoice, StandardBoostInfo, ExtendedBoostInfo, PackedXP, PendingQueuedActionProcessed, Item, Player, Player, XP_BYTES, IS_FULL_MODE_BIT, HAS_EXTRA_BOOST_BIT, CheckpointEquipments} from "../globals/players.sol";
 import {ActionRewards} from "../globals/rewards.sol";
 import {NONE} from "../globals/items.sol";
 import {RATE_MUL, SPAWN_MUL, GUAR_MUL} from "../globals/actions.sol";
@@ -717,47 +717,22 @@ library PlayersLibrary {
     uint256 actionStartTime,
     uint256 xpElapsedTime,
     uint24 xpPerHour,
-    PlayerBoostInfo storage boostInfo
-  ) private view returns (uint32 boostPointsAccrued) {
-    if (boostInfo.itemTokenId != NONE && boostInfo.startTime < block.timestamp && xpElapsedTime != 0) {
-      // A boost is active
-      return
-        _getXPFromBoostImpl(
-          isCombatSkill,
-          actionStartTime,
-          xpElapsedTime,
-          xpPerHour,
-          boostInfo.boostType,
-          boostInfo.startTime,
-          boostInfo.duration,
-          boostInfo.value
-        );
-    }
-  }
-
-  function _getXPFromExtraOrLastBoost(
-    bool isCombatSkill,
-    uint256 actionStartTime,
-    uint256 xpElapsedTime,
-    uint24 xpPerHour,
-    PlayerBoostInfo storage boostInfo
-  ) private view returns (uint32 boostPointsAccrued) {
-    if (
-      boostInfo.extraOrLastItemTokenId != NONE && boostInfo.extraOrLastStartTime < block.timestamp && xpElapsedTime != 0
-    ) {
-      // An extra boost is active or an overriden one was active at this time
-      return
-        _getXPFromBoostImpl(
-          isCombatSkill,
-          actionStartTime,
-          xpElapsedTime,
-          xpPerHour,
-          boostInfo.extraOrLastBoostType,
-          boostInfo.extraOrLastStartTime,
-          boostInfo.extraOrLastDuration,
-          boostInfo.extraOrLastValue
-        );
-    }
+    BoostType boostType,
+    uint40 boostStartTime,
+    uint24 boostDuration,
+    uint16 boostValue
+  ) private pure returns (uint32 boostPointsAccrued) {
+    return
+      _getXPFromBoostImpl(
+        isCombatSkill,
+        actionStartTime,
+        xpElapsedTime,
+        xpPerHour,
+        boostType,
+        boostStartTime,
+        boostDuration,
+        boostValue
+      );
   }
 
   function _extraBoostFromFullAttire(
@@ -1143,9 +1118,9 @@ library PlayersLibrary {
     uint8 skillId,
     uint256 xpElapsedTime,
     Attire storage attire,
-    PlayerBoostInfo storage activeBoost,
-    PlayerBoostInfo storage globalBoost,
-    PlayerBoostInfo storage clanBoost,
+    ExtendedBoostInfo storage playerBoost,
+    StandardBoostInfo storage globalBoost,
+    StandardBoostInfo storage clanBoost,
     address worldActions,
     uint8 bonusAttirePercent,
     uint16[5] calldata expectedItemTokenIds,
@@ -1158,16 +1133,97 @@ library PlayersLibrary {
       queuedAction.actionId,
       isCombatSkill ? NONE : queuedAction.choiceId
     );
+    // Add logs right after base XP calculation
     pointsAccrued = uint32((xpElapsedTime * xpPerHour) / 3600);
     // Normal Player specific boosts
-    pointsAccrued += _getXPFromBoost(isCombatSkill, startTime, xpElapsedTime, xpPerHour, activeBoost);
-    pointsAccrued += _getXPFromExtraOrLastBoost(isCombatSkill, startTime, xpElapsedTime, xpPerHour, activeBoost);
+    pointsAccrued += _getXPFromBoost(
+      isCombatSkill,
+      startTime,
+      xpElapsedTime,
+      xpPerHour,
+      playerBoost.boostType,
+      playerBoost.startTime,
+      playerBoost.duration,
+      playerBoost.value
+    );
+    pointsAccrued += _getXPFromBoost(
+      isCombatSkill,
+      startTime,
+      xpElapsedTime,
+      xpPerHour,
+      playerBoost.lastBoostType,
+      playerBoost.lastStartTime,
+      playerBoost.lastDuration,
+      playerBoost.lastValue
+    );
+    // Any extra boosts like wish or lucky boosts. Only needed if bit is set (TODO)
+    if (((uint8(playerBoost.packedData) >> HAS_EXTRA_BOOST_BIT) & 1) == 1) {
+      pointsAccrued += _getXPFromBoost(
+        isCombatSkill,
+        startTime,
+        xpElapsedTime,
+        xpPerHour,
+        playerBoost.extraBoostType,
+        playerBoost.extraStartTime,
+        playerBoost.extraDuration,
+        playerBoost.extraValue
+      );
+      pointsAccrued += _getXPFromBoost(
+        isCombatSkill,
+        startTime,
+        xpElapsedTime,
+        xpPerHour,
+        playerBoost.lastExtraBoostType,
+        playerBoost.lastExtraStartTime,
+        playerBoost.lastExtraDuration,
+        playerBoost.lastExtraValue
+      );
+    }
     // Global boost
-    pointsAccrued += _getXPFromBoost(isCombatSkill, startTime, xpElapsedTime, xpPerHour, globalBoost);
-    pointsAccrued += _getXPFromExtraOrLastBoost(isCombatSkill, startTime, xpElapsedTime, xpPerHour, globalBoost);
+    StandardBoostInfo memory globalBoost_ = globalBoost;
+    pointsAccrued += _getXPFromBoost(
+      isCombatSkill,
+      startTime,
+      xpElapsedTime,
+      xpPerHour,
+      globalBoost_.boostType,
+      globalBoost_.startTime,
+      globalBoost_.duration,
+      globalBoost_.value
+    );
+    pointsAccrued += _getXPFromBoost(
+      isCombatSkill,
+      startTime,
+      xpElapsedTime,
+      xpPerHour,
+      globalBoost_.lastBoostType,
+      globalBoost_.lastStartTime,
+      globalBoost_.lastDuration,
+      globalBoost_.lastValue
+    );
+    StandardBoostInfo memory clanBoost_ = clanBoost;
     // Clan boost
-    pointsAccrued += _getXPFromBoost(isCombatSkill, startTime, xpElapsedTime, xpPerHour, clanBoost);
-    pointsAccrued += _getXPFromExtraOrLastBoost(isCombatSkill, startTime, xpElapsedTime, xpPerHour, clanBoost);
+    pointsAccrued += _getXPFromBoost(
+      isCombatSkill,
+      startTime,
+      xpElapsedTime,
+      xpPerHour,
+      clanBoost_.boostType,
+      clanBoost_.startTime,
+      clanBoost_.duration,
+      clanBoost_.value
+    );
+    pointsAccrued += _getXPFromBoost(
+      isCombatSkill,
+      startTime,
+      xpElapsedTime,
+      xpPerHour,
+      clanBoost_.lastBoostType,
+      clanBoost_.lastStartTime,
+      clanBoost_.lastDuration,
+      clanBoost_.lastValue
+    );
+
     pointsAccrued += _extraXPFromFullAttire(
       attire,
       xpElapsedTime,

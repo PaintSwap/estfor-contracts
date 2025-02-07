@@ -533,7 +533,7 @@ describe("ClanBattleLibrary", function () {
     ).to.be.revertedWithCustomError(clanBattleLibrary, "TooManyDefenders");
   });
 
-  it("Check shuffling works", async () => {
+  it.only("Check shuffling works", async () => {
     const {alice, players, playerId, playerNFT, clanBattleLibrary} = await loadFixture(clanFixture);
 
     const avatarId = 1;
@@ -560,6 +560,8 @@ describe("ClanBattleLibrary", function () {
     expect(res.battleResults[0]).to.eq(BattleResult.DRAW);
     expect(res.battleResults[1]).to.eq(BattleResult.DRAW);
     expect(res.didAWin).to.be.true;
+    expect(res.shuffledClanMembersA).to.deep.eq(clanMembersA);
+    expect(res.shuffledClanMembersB).to.deep.eq(clanMembersB);
 
     randomWordAs = [1, 5, 0]; // Add some shuffling to attackers
     randomWordBs = [0, 5, 0];
@@ -575,6 +577,8 @@ describe("ClanBattleLibrary", function () {
     expect(res.battleResults[0]).to.eq(BattleResult.LOSE);
     expect(res.battleResults[1]).to.eq(BattleResult.DRAW); // There are no bytes for the second player
     expect(res.didAWin).to.be.false;
+    expect(res.shuffledClanMembersA).to.not.deep.eq(clanMembersA);
+    expect(res.shuffledClanMembersB).to.deep.eq(clanMembersB);
 
     randomWordAs = [0, 5, 0];
     randomWordBs = [1, 5, 0]; // Add some shuffling to defenders
@@ -590,5 +594,7 @@ describe("ClanBattleLibrary", function () {
     expect(res.battleResults[0]).to.eq(BattleResult.WIN);
     expect(res.battleResults[1]).to.eq(BattleResult.DRAW);
     expect(res.didAWin).to.be.true;
+    expect(res.shuffledClanMembersA).to.deep.eq(clanMembersA);
+    expect(res.shuffledClanMembersB).to.not.deep.eq(clanMembersB);
   });
 });

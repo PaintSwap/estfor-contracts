@@ -73,6 +73,16 @@
         "internalType": "bool",
         "name": "didAWin",
         "type": "bool"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "shuffledClanMembersA",
+        "type": "uint64[]"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "shuffledClanMembersB",
+        "type": "uint64[]"
       }
     ],
     "stateMutability": "view",

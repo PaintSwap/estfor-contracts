@@ -173,16 +173,7 @@ const config: HardhatUserConfig = {
     flat: true,
     spacing: 2,
     format: "json",
-    except: [
-      "/interfaces",
-      "/test",
-      "/helper",
-      "/debug",
-      "/legacy",
-      "SamWitchVRFConsumerUpgradeable",
-      "@openzeppelin",
-      "@layerzerolabs"
-    ]
+    except: ["/interfaces", "/test", "/helper", "@openzeppelin", "@layerzerolabs"]
   },
   typechain: {
     target: "ethers-v6"

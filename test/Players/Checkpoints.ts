@@ -73,6 +73,37 @@ describe("Checkpoints", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
     });
 
+    it("Transfer away required equipment after processing an action, should not invalidate it if you kept at least 1", async function () {
+      const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan / 2);
+      await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 2); // Minting this so we have 3 now
+      await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 2, "0x"); // Transfer 2 away, but still have 1 left
+      await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this should have no effect for the rest of the action
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    });
+
+    it("Transfer away required equipment after processing an action, should not invalidate it transfer away exact checkpoint balance but were transferred some more before", async function () {
+      const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
+
+      const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
+      await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
+
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await itemNFT.mint(alice.address, EstforConstants.BRONZE_AXE, 1); // Minting this so we have 2 now
+      await itemNFT.connect(alice).safeTransferFrom(alice.address, owner.address, EstforConstants.BRONZE_AXE, 1, "0x"); // Transfer 1 away, but still have 1 left
+      await ethers.provider.send("evm_increaseTime", [queuedAction.timespan / 2]);
+      await players.connect(alice).processActions(playerId);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(queuedAction.timespan);
+    });
+
     it("Transfer away required equipment before an action starts and back after an action starts should invalidate it all", async function () {
       const {playerId, players, itemNFT, worldActions, alice, owner} = await loadFixture(playersFixture);
 
@@ -1304,5 +1335,22 @@ describe("Checkpoints", function () {
       expect(checkpointEquipments[2].itemTokenIds[9]).to.eq(EstforConstants.BRONZE_PICKAXE);
       expect(checkpointEquipments[2].balances[9]).to.eq(0);
     });
+  });
+
+  it("Checkpoints should be cleared when making a character inactive", async function () {
+    const {players, playerId, itemNFT, playerNFT, avatarId, worldActions, alice} = await loadFixture(playersFixture);
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
+    await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
+
+    // Check checkpoints
+    let activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+
+    // Sending an item you've received should not revert if there is 1 at the checkpoint.
+
+    expect(activePlayerInfo.checkpoint).to.be.gt(0);
+    // Make a new player active, checkpoint should be cleared
+    await createPlayer(playerNFT, avatarId, alice, "New name", true);
+    activePlayerInfo = await players.getActivePlayerInfo(alice.address);
+    expect(activePlayerInfo.checkpoint).to.eq(0);
   });
 });

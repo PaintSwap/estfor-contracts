@@ -164,33 +164,42 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
     uint256 queuedIndex
   ) private {
     if (block.timestamp < nextCheckpointTimestamp) {
-      // Action 1 has not finished yet
+      // Action has not finished yet
       for (uint256 i; i < ids.length; ++i) {
-        uint256 itemId = ids[i];
+        uint256 itemTokenId = ids[i];
         uint256 amount = amounts[i];
-        if (itemId == 0) {
+        if (itemTokenId == 0) {
           continue;
         }
         for (uint256 j; j < _checkpointEquipments[playerId][queuedIndex].itemTokenIds.length; ++j) {
-          if (_checkpointEquipments[playerId][queuedIndex].itemTokenIds[j] == itemId) {
+          if (_checkpointEquipments[playerId][queuedIndex].itemTokenIds[j] == itemTokenId) {
             // An item being transferred is currently in use.
-            uint256 checkpointBalance = _checkpointEquipments[playerId][queuedIndex].balances[j];
+            uint256 originalBalance = _checkpointEquipments[playerId][queuedIndex].balances[j];
+            uint256 checkpointBalance = originalBalance;
             if (checkpointBalance == type(uint16).max) {
-              // special sentinel case of owning case
+              // special sentinel case of owning more than 65k
               // They own a lot so need to check balance
-              checkpointBalance = _itemNFT.balanceOf(from, itemId) - amount;
+              checkpointBalance = _itemNFT.balanceOf(from, itemTokenId) - amount;
               if (checkpointBalance > type(uint16).max) {
                 // They will still own a lot after the transfer
                 checkpointBalance = type(uint16).max; // Reset back to this sentinel value
               }
             } else {
-              if (checkpointBalance >= amount) {
+              if (checkpointBalance > amount) {
                 checkpointBalance -= amount;
               } else {
-                checkpointBalance = 0;
+                // Before setting to 0, check if current amount being sent is more than the balance
+                uint256 balance = _itemNFT.balanceOf(from, itemTokenId);
+                if (balance <= amount) {
+                  checkpointBalance = 0;
+                } else {
+                  checkpointBalance = uint16(balance - amount);
+                }
               }
             }
-            _checkpointEquipments[playerId][queuedIndex].balances[j] = uint16(checkpointBalance);
+            if (originalBalance != checkpointBalance) {
+              _checkpointEquipments[playerId][queuedIndex].balances[j] = uint16(checkpointBalance);
+            }
           }
         }
       }
@@ -312,11 +321,11 @@ contract PlayersImplMisc1 is PlayersBase, IPlayersMisc1DelegateView {
     return _players[playerId];
   }
 
-  function getClanBoost(uint256 clanId) external view returns (PlayerBoostInfo memory) {
+  function getClanBoost(uint256 clanId) external view returns (StandardBoostInfo memory) {
     return _clanBoosts[clanId];
   }
 
-  function getGlobalBoost() external view returns (PlayerBoostInfo memory) {
+  function getGlobalBoost() external view returns (StandardBoostInfo memory) {
     return _globalBoost;
   }
 

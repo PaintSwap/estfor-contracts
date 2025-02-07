@@ -4,10 +4,10 @@ import {getChainId} from "./utils";
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  console.log(`Set base uri with: ${owner.address} on chain id ${await getChainId(owner)}`);
+  console.log(`Set itemNFT base uri with: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  await itemNFT.setBaseURI("ipfs://bafybeiaixhwqaftfbaeytp2sx6pupmglxlrx7om7qlkkzl57o7hbvfrmom/");
+  await itemNFT.setBaseURI("ipfs://bafybeig6rmsasqsuuivh2qltd5wujirbaaxeyahyfl6pbo77gidrkg6zim/");
 }
 
 main().catch((error) => {
