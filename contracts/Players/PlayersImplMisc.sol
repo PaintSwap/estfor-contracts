@@ -11,6 +11,7 @@ import {Quests} from "../Quests.sol";
 import {Clans} from "../Clans/Clans.sol";
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import {IPlayersMiscDelegate, IPlayersMiscDelegateView} from "../interfaces/IPlayersDelegates.sol";
+import {ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
@@ -599,6 +600,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     (uint256[] memory itemTokenIds, uint256[] memory amounts) = _claimableXPThresholdRewards(oldTotalXP, newTotalXP);
     if (itemTokenIds.length != 0) {
       _itemNFT.mintBatch(from, itemTokenIds, amounts);
+      _activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, from, 1);
       emit ClaimedXPThresholdRewards(from, playerId, itemTokenIds, amounts);
     }
   }

@@ -29,6 +29,8 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 import {LockedBankVaultsLibrary} from "./LockedBankVaultsLibrary.sol";
 import {BankRelay} from "./BankRelay.sol";
 
+import {IActivityPoints, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVaults, IClanMemberLeftCB {
   event AttackVaults(
     uint256 clanId,
@@ -167,6 +169,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   //   2.1 - Whoever was there first gets a higher rank (higher index)
   //   2.2 - The attacker is always ranked higher than the defender whether they win or lose as they are placed in the array first
   uint48[] private _sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -231,6 +234,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint8 maxClanCombatants,
     uint8 maxLockedVaults,
     AdminAccess adminAccess,
+    IActivityPoints activityPoints,
     bool isBeta
   ) external initializer {
     __Ownable_init(_msgSender());
@@ -252,6 +256,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _reattackingCooldown = isBeta ? 6 minutes : 1 days;
     _vrfRequestInfo = vrfRequestInfo;
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
+
+    _activityPoints = activityPoints;
 
     setExpectedGasLimitFulfill(3_500_000);
     setKValues(32, 32);
@@ -368,10 +374,13 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     bytes32 requestId = _requestRandomWords();
     _requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
+    address msgSender = _msgSender();
+    _activityPoints.reward(ActivityType.lockedbankvaults_evt_attackvaults, msgSender, 1);
+
     emit AttackVaults(
       clanId,
       defendingClanId,
-      _msgSender(),
+      msgSender,
       leaderPlayerId,
       uint256(requestId),
       nextPendingAttackId,

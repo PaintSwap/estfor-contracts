@@ -812,6 +812,11 @@
         "internalType": "uint8",
         "name": "maxActionAmount",
         "type": "uint8"
+      },
+      {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
       }
     ],
     "name": "initialize",

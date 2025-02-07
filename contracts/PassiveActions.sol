@@ -13,6 +13,8 @@ import {RandomnessBeacon} from "./RandomnessBeacon.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 
+import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
@@ -132,6 +134,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
   mapping(uint256 actionId => ActionRewards) private _actionRewards;
   mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private _activePassiveActions;
   address private _bridge; // TODO: Bridge Can remove later
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -152,7 +155,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
     IPlayers players,
     ItemNFT itemNFT,
     RandomnessBeacon randomnessBeacon,
-    address bridge
+    address bridge,
+    IActivityPoints activityPoints
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
@@ -162,6 +166,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
     _itemNFT = itemNFT;
     _randomnessBeacon = randomnessBeacon;
     _bridge = bridge;
+    _activityPoints = activityPoints;
     _lastQueueId = 1;
   }
 
@@ -366,10 +371,12 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
       amounts[i + _pendingPassiveActionState.producedItemTokenIds.length] = _pendingPassiveActionState
         .producedRandomRewardAmounts[i];
     }
+    address msgSender = _msgSender();
     if (numItemsToMint != 0) {
-      _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
+      _itemNFT.mintBatch(msgSender, itemTokenIds, amounts);
     }
-    emit ClaimPassiveAction(playerId, _msgSender(), queueId, itemTokenIds, amounts, startingAnother);
+    _activityPoints.reward(ActivityType.passiveactions_evt_claimpassiveaction, msgSender, 1);
+    emit ClaimPassiveAction(playerId, msgSender, queueId, itemTokenIds, amounts, startingAnother);
   }
 
   function _isWinner(

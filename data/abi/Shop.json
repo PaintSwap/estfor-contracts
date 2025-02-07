@@ -868,6 +868,19 @@
   {
     "inputs": [
       {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
+      }
+    ],
+    "name": "setActivityPoints",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint8",
         "name": "brushBurntPercentage",
         "type": "uint8"

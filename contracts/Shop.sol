@@ -8,6 +8,8 @@ import {Treasury} from "./Treasury.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
+import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   event AddShopItems(ShopItem[] shopItems);
@@ -70,6 +72,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   uint8 private _brushDevPercentage;
   uint24 private _sellingCutoffDuration;
   mapping(uint256 itemId => uint256 price) private _shopItems;
+  IActivityPoints private _activityPoints;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -123,6 +126,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     address sender = _msgSender();
     _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mint(to, tokenId, quantity);
+    _activityPoints.reward(ActivityType.shop_evt_buy, sender, tokenCost / 1 ether);
     emit Buy(sender, to, tokenId, quantity, price);
   }
 
@@ -154,6 +158,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     address sender = _msgSender();
     _treasury.spend(sender, totalBrush);
     _itemNFT.burn(sender, tokenId, quantity);
+    _activityPoints.reward(ActivityType.shop_evt_sell, sender, totalBrush / 1 ether);
     emit Sell(sender, tokenId, quantity, price);
   }
 
@@ -318,6 +323,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function setItemNFT(IItemNFT itemNFT) external onlyOwner {
     _itemNFT = itemNFT;
+  }
+
+  // TODO: Remove once on prod
+  function setActivityPoints(IActivityPoints activityPoints) external onlyOwner {
+    _activityPoints = activityPoints;
   }
 
   function setMinItemQuantityBeforeSellsAllowed(uint24 minItemQuantityBeforeSellsAllowed) public onlyOwner {

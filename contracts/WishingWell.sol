@@ -12,6 +12,8 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {Clans} from "./Clans/Clans.sol";
 
+import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
 import {XP_EMITTED_ELSEWHERE} from "./globals/clans.sol";
@@ -72,6 +74,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   uint24 private _clanThresholdIncrement;
   uint16[3] private _globalBoostRewardItemTokenIds;
   uint16[3] private _clanBoostRewardItemTokenIds;
+  IActivityPoints private _activityPoints;
 
   modifier onlyPlayers() {
     require(address(_players) == _msgSender(), NotPlayers());
@@ -96,7 +99,8 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     Clans clans,
     uint256 raffleEntryCost,
     uint256 globalThresholdIncrement,
-    uint256 clanThresholdIncrement
+    uint256 clanThresholdIncrement,
+    IActivityPoints activityPoints
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -106,6 +110,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     _treasury = treasury;
     _randomnessBeacon = randomnessBeacon;
     _clans = clans;
+    _activityPoints = activityPoints;
 
     // Note: _clanBoostRewardItemTokenIds must be set before setClanDonationThresholdIncrement is called as it reads from them
     _globalBoostRewardItemTokenIds = [PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3];
@@ -200,9 +205,13 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
         }
 
         _clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
+        _activityPoints.reward(ActivityType.wishingwell_evt_donatetoclan, from, amount / 1 ether);
         emit DonateToClan(from, playerId, flooredAmountWei, clanId, clanXPGained);
       }
     }
+
+    // amount / 1 ether;
+    _activityPoints.reward(ActivityType.wishingwell_evt_donate, from, amount / 1 ether);
 
     if (isRaffleDonation) {
       emit Donate(from, playerId, flooredAmountWei, _lastLotteryId, _lastRaffleId);

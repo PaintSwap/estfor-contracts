@@ -1300,6 +1300,11 @@
         "internalType": "address[2]",
         "name": "path",
         "type": "address[2]"
+      },
+      {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
       }
     ],
     "name": "initialize",

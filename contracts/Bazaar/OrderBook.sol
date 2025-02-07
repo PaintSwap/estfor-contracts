@@ -15,6 +15,8 @@ import {BokkyPooBahsRedBlackTreeLibrary} from "./BokkyPooBahsRedBlackTreeLibrary
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IOrderBook} from "./interfaces/IOrderBook.sol";
 
+import {IActivityPoints, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing
 ///         limit orders, cancelling limit orders, and claiming NFTs and tokens from filled or partially filled orders.
 ///         It suppports ERC2981 royalties, and optional dev & burn fees on successful trades.
@@ -64,6 +66,8 @@ contract OrderBook is
   mapping(uint256 tokenId => mapping(uint256 price => bytes32[] segments)) private _bidsAtPrice;
   ClaimableTokenInfo[MAX_ORDER_ID] private _tokenClaimables;
 
+  IActivityPoints private _activityPoints;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -82,7 +86,8 @@ contract OrderBook is
     address devAddr,
     uint16 devFee,
     uint8 burntFee,
-    uint16 maxOrdersPerPrice
+    uint16 maxOrdersPerPrice,
+    IActivityPoints activityPoints
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -91,6 +96,7 @@ contract OrderBook is
     // nft must be an ERC1155 via ERC165
     require(nft.supportsInterface(type(IERC1155).interfaceId), NotERC1155());
 
+    _activityPoints = activityPoints;
     _nft = nft;
     _coin = IBrushToken(token);
     updateRoyaltyFee();
@@ -622,7 +628,10 @@ contract OrderBook is
         mstore(quantitiesPool, numberOfOrders)
       }
 
-      emit OrdersMatched(_msgSender(), orderIdsPool, quantitiesPool);
+      address msgSender = _msgSender();
+      _activityPoints.reward(ActivityType.orderbook_evt_ordersmatched, msgSender, cost / 1 ether);
+
+      emit OrdersMatched(msgSender, orderIdsPool, quantitiesPool);
     }
   }
 

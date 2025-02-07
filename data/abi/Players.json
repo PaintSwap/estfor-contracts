@@ -2928,12 +2928,30 @@
         "type": "address"
       },
       {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
+      },
+      {
         "internalType": "bool",
         "name": "isBeta",
         "type": "bool"
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "activityPoints",
+        "type": "address"
+      }
+    ],
+    "name": "initializeAddresses",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

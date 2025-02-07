@@ -7,6 +7,8 @@ import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelega
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
@@ -163,6 +165,7 @@ contract PlayersImplProcessActions is PlayersBase {
 
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
+        _activityPoints.reward(ActivityType.players_evt_actionfinished, from, 1);
         emit ActionFinished(from, playerId, actionMetadata.queueId);
       } else {
         emit ActionPartiallyFinished(from, playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
@@ -173,6 +176,7 @@ contract PlayersImplProcessActions is PlayersBase {
     // XP rewards
     if (pendingQueuedActionState.xpRewardItemTokenIds.length != 0) {
       _itemNFT.mintBatch(from, pendingQueuedActionState.xpRewardItemTokenIds, pendingQueuedActionState.xpRewardAmounts);
+      _activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, from, 1);
       emit ClaimedXPThresholdRewards(
         from,
         playerId,
@@ -240,6 +244,13 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardItemTokenIds,
         pendingQueuedActionState.dailyRewardAmounts
       );
+
+      _activityPoints.reward(
+        ActivityType.players_evt_dailyreward,
+        from,
+        pendingQueuedActionState.dailyRewardAmounts[0]
+      );
+
       emit DailyReward(
         from,
         playerId,
@@ -248,6 +259,11 @@ contract PlayersImplProcessActions is PlayersBase {
       );
 
       if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
+        _activityPoints.reward(
+          ActivityType.players_evt_weeklyreward,
+          from,
+          pendingQueuedActionState.dailyRewardAmounts[1]
+        );
         emit WeeklyReward(
           from,
           playerId,
@@ -263,7 +279,7 @@ contract PlayersImplProcessActions is PlayersBase {
 
     _handleLotteryWinnings(from, playerId, pendingQueuedActionState.lotteryWinner);
 
-    _clearPlayerBoostsIfExpired(playerId);
+    _clearPlayerBoostsIfExpired(from, playerId);
 
     bytes1 packedData = player.packedData;
     // Clear first 6 bits which holds the worldLocation
@@ -272,10 +288,10 @@ contract PlayersImplProcessActions is PlayersBase {
     player.packedData = packedData;
   }
 
-  function _clearPlayerBoostsIfExpired(uint256 playerId) private {
+  function _clearPlayerBoostsIfExpired(address from, uint256 playerId) private {
     ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime + playerBoost.duration <= block.timestamp) {
-      _clearPlayerMainBoost(playerId);
+      _clearPlayerMainBoost(from, playerId);
     }
 
     if (
@@ -423,7 +439,7 @@ contract PlayersImplProcessActions is PlayersBase {
     _claimRandomRewards(from, playerId, _pendingQueuedActionProcessed);
     _handleDailyRewards(from, playerId);
     _handleLotteryWinnings(from, playerId, lotteryWinner);
-    _clearPlayerBoostsIfExpired(playerId);
+    _clearPlayerBoostsIfExpired(from, playerId);
   }
 
   function _claimRandomRewards(

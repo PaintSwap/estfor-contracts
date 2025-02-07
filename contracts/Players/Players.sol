@@ -21,6 +21,8 @@ import {IWorldActions} from "../interfaces/IWorldActions.sol";
 
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
+import {IActivityPoints} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
@@ -86,6 +88,7 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
     address implMisc,
     address implMisc1,
     address bridge,
+    IActivityPoints activityPoints,
     bool isBeta
   ) external initializer {
     __Ownable_init(_msgSender());
@@ -112,6 +115,12 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
 
     _nextQueueId = 1;
     setAlphaCombatParams(1, 1, 8);
+
+    _activityPoints = activityPoints;
+  }
+
+  function initializeAddresses(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   /// @notice Start actions for a player

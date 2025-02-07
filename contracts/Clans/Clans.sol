@@ -19,6 +19,8 @@ import {BloomFilter} from "../libraries/BloomFilter.sol";
 
 import {ClanRank} from "../globals/clans.sol";
 
+import {IActivityPoints, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   using BloomFilter for BloomFilter.Filter;
 
@@ -176,6 +178,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(address account => bool isModifier) private _xpModifiers;
   BloomFilter.Filter private _reservedClanNames; // TODO: remove 90 days after launch
   address private _bridge; // TODO: Bridge Can remove later if no longer need the bridge
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
@@ -228,7 +231,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     address paintswapMarketplaceWhitelist,
     uint16 initialMMR,
     uint40 startClanId,
-    address bridge
+    address bridge,
+    IActivityPoints activityPoints
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -243,6 +247,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     setInitialMMR(initialMMR);
     _reservedClanNames._initialize(4, 420000);
     _bridge = bridge;
+    _activityPoints = activityPoints;
   }
 
   function createClan(
@@ -276,13 +281,15 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       removeJoinRequest(player.requestedClanId, playerId);
     }
 
+    address msgSender = _msgSender();
     (string memory trimmedName, ) = _setName(clanId, name);
     _checkSocials(discord, telegram, twitter);
     string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
+    _activityPoints.reward(ActivityType.clans_evt_clancreated, msgSender, 1);
     emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId, block.timestamp);
     _pay(tier.price);
 
-    _bankFactory.createBank(_msgSender(), clanId);
+    _bankFactory.createBank(msgSender, clanId);
   }
 
   function createClanBridge(

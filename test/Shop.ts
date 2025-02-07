@@ -108,9 +108,16 @@ describe("Shop", function () {
       }
     )) as unknown as ItemNFT;
 
-    await itemNFT.setApproved([shop], true);
-
+    const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
+    const activityPoints = await upgrades.deployProxy(ActivityPoints, [itemNFT.target], {
+      kind: "uups"
+    });
+    // add shop as an AP minter
+    await activityPoints.addMinter(await shop.getAddress());
     await shop.setItemNFT(itemNFT);
+    await shop.setActivityPoints(activityPoints);
+    // allow the activity points contract to mint AP itemNFTs
+    await itemNFT.setApproved([shop, activityPoints], true);
 
     const bankFactory = alice;
     const mockPlayers = await ethers.deployContract("MockPlayers");

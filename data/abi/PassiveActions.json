@@ -1115,6 +1115,11 @@
         "internalType": "address",
         "name": "bridge",
         "type": "address"
+      },
+      {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
       }
     ],
     "name": "initialize",

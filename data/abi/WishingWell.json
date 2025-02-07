@@ -796,6 +796,11 @@
         "internalType": "uint256",
         "name": "clanThresholdIncrement",
         "type": "uint256"
+      },
+      {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
       }
     ],
     "name": "initialize",

@@ -1362,6 +1362,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
+      },
+      {
         "internalType": "bool",
         "name": "isBeta",
         "type": "bool"

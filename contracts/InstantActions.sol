@@ -9,6 +9,8 @@ import {ItemNFT} from "./ItemNFT.sol";
 import {Quests} from "./Quests.sol";
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
+import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
@@ -106,6 +108,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   Quests private _quests;
   mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) private _actions;
   ItemNFT private _itemNFT;
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -117,13 +120,19 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     _disableInitializers();
   }
 
-  function initialize(IPlayers players, ItemNFT itemNFT, Quests quests) external initializer {
+  function initialize(
+    IPlayers players,
+    ItemNFT itemNFT,
+    Quests quests,
+    IActivityPoints activityPoints
+  ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
 
     _quests = quests;
     _players = players;
     _itemNFT = itemNFT;
+    _activityPoints = activityPoints;
   }
 
   function getAction(InstantActionType actionType, uint16 actionId) external view returns (InstantAction memory) {
@@ -138,12 +147,15 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   ) external isOwnerOfPlayerAndActive(playerId) {
     InstantActionState memory instantActionState = getInstantActionState(playerId, actionIds, amounts, actionType);
 
-    _itemNFT.burnBatch(_msgSender(), instantActionState.consumedTokenIds, instantActionState.consumedAmounts);
-    _itemNFT.mintBatch(_msgSender(), instantActionState.producedTokenIds, instantActionState.producedAmounts);
+    address msgSender = _msgSender();
+    _itemNFT.burnBatch(msgSender, instantActionState.consumedTokenIds, instantActionState.consumedAmounts);
+    _itemNFT.mintBatch(msgSender, instantActionState.producedTokenIds, instantActionState.producedAmounts);
+
+    _activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, msgSender, 1);
 
     emit DoInstantActions(
       playerId,
-      _msgSender(),
+      msgSender,
       actionIds,
       amounts,
       instantActionState.consumedTokenIds,

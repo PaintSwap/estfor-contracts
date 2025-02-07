@@ -962,6 +962,11 @@
         "internalType": "uint16",
         "name": "maxOrdersPerPrice",
         "type": "uint16"
+      },
+      {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
       }
     ],
     "name": "initialize",

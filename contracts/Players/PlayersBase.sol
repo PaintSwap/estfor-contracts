@@ -15,6 +15,8 @@ import {IWorldActions} from "../interfaces/IWorldActions.sol";
 import {DailyRewardsScheduler} from "../DailyRewardsScheduler.sol";
 import "../interfaces/IPlayersDelegates.sol";
 
+import {IActivityPoints, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
@@ -204,6 +206,8 @@ abstract contract PlayersBase {
 
   address internal _bridge; // TODO: Remove later
 
+  IActivityPoints internal _activityPoints;
+
   modifier onlyPlayerNFT() {
     require(msg.sender == address(_playerNFT), NotPlayerNFT());
     _;
@@ -361,6 +365,10 @@ abstract contract PlayersBase {
 
       sstore(add(packedXP.slot, slotNum), val)
     }
+
+    // assign the activity points for the action
+    _activityPoints.reward(ActivityType.players_evt_addxp, from, pointsAccrued);
+
     emit AddXP(from, playerId, skill, pointsAccrued);
 
     uint256 oldLevel = PlayersLibrary.getLevel(oldPoints);
@@ -375,7 +383,9 @@ abstract contract PlayersBase {
     }
     // Update the player's level
     levelsGained = uint8(newLevel - oldLevel);
-    if (levelsGained > 0) {
+    if (levelsGained != 0) {
+      // assign activity points for the new level
+      _activityPoints.reward(ActivityType.players_evt_levelup, from, newLevel);
       emit LevelUp(from, playerId, skill, oldLevel, newLevel);
     }
   }
@@ -479,7 +489,7 @@ abstract contract PlayersBase {
   }
 
   // Caller must check that this is appropriate to delete
-  function _clearPlayerMainBoost(uint256 playerId) internal {
+  function _clearPlayerMainBoost(address from, uint256 playerId) internal {
     ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
     delete playerBoost.value;
     delete playerBoost.startTime;
@@ -487,6 +497,9 @@ abstract contract PlayersBase {
     delete playerBoost.value;
     delete playerBoost.itemTokenId;
     delete playerBoost.boostType;
+
+    _activityPoints.reward(ActivityType.players_evt_boostfinished, from, 1);
+
     emit BoostFinished(playerId);
   }
 

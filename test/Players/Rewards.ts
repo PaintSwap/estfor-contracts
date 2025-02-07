@@ -1,6 +1,12 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import NONE, {ACTION_THIEVING_CHILD, BRONZE_ARROW, GUAR_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
+import NONE, {
+  ACTION_THIEVING_CHILD,
+  BRONZE_ARROW,
+  GUAR_MUL,
+  SPAWN_MUL,
+  SPECIAL_BASE
+} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
@@ -174,12 +180,17 @@ describe("Rewards", function () {
     });
 
     it("modifyXP rewards", async function () {
-      const {playerId, players, alice} = await loadFixture(playersFixture);
+      const {playerId, players, alice, itemNFT} = await loadFixture(playersFixture);
 
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
       await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
       const rewards1: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_HELMET, amount: 4}];
       await players.addXPThresholdRewards([{xpThreshold: 1000, rewards: rewards1}]);
+
+      const ACTIVITY_POINTS_SEASON_1 = SPECIAL_BASE + 3;
+
+      const balanceBefore = await itemNFT.balanceOf(alice, ACTIVITY_POINTS_SEASON_1);
+      await itemNFT.connect(alice).burn(alice, ACTIVITY_POINTS_SEASON_1, balanceBefore);
 
       // Test max level works
       await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2070952, DONT_SKIP_XP_THRESHOLD_EFFECTS))
@@ -188,6 +199,9 @@ describe("Rewards", function () {
         .and.to.emit(players, "ClaimedXPThresholdRewards")
         .withArgs(alice, playerId, [EstforConstants.BRONZE_BAR, EstforConstants.BRONZE_HELMET], [3, 4]);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
+
+      const balanceAfter = await itemNFT.balanceOf(alice, ACTIVITY_POINTS_SEASON_1);
+      expect(balanceAfter).to.equal(725);
 
       await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2080952, DONT_SKIP_XP_THRESHOLD_EFFECTS))
         .to.emit(players, "AddXP")

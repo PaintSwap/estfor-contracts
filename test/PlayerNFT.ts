@@ -460,7 +460,8 @@ describe("PlayerNFT", function () {
       bankFactory,
       petNFT,
       estforLibrary,
-      bridge
+      bridge,
+      activityPoints
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
@@ -511,6 +512,7 @@ describe("PlayerNFT", function () {
         await playersImplMisc.getAddress(),
         await playersImplMisc1.getAddress(),
         await bridge.getAddress(),
+        await activityPoints.getAddress(),
         isBeta
       ],
       {
@@ -519,8 +521,10 @@ describe("PlayerNFT", function () {
       }
     );
 
+    await activityPoints.addMinter(await players.getAddress());
+
     await itemNFT.initializeAddresses(bankFactory, players);
-    await itemNFT.setApproved([shop, players], true);
+    await itemNFT.setApproved([shop, players, activityPoints], true);
 
     await playerNFTNotBeta.setPlayers(await players.getAddress());
     await playerNFTNotBeta.setAvatars([avatarId], [avatarInfo]);

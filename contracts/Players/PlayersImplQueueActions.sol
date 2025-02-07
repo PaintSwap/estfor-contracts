@@ -659,7 +659,7 @@ contract PlayersImplQueueActions is PlayersBase {
     if (playerBoost.boostType != BoostType.NONE) {
       uint256 startTime = playerBoost.startTime;
       uint16 itemTokenId = playerBoost.itemTokenId;
-      _clearPlayerMainBoost(playerId);
+      _clearPlayerMainBoost(from, playerId);
       if (playerBoost.lastItemTokenId != NONE) {
         _clearPlayerLastBoost(playerId);
       }
