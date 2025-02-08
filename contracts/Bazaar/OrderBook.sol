@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import {ReentrancyGuardTransientUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardTransientUpgradeable.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -17,7 +18,13 @@ import {IOrderBook} from "./interfaces/IOrderBook.sol";
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing
 ///         limit orders, cancelling limit orders, and claiming NFTs and tokens from filled or partially filled orders.
 ///         It suppports ERC2981 royalties, and optional dev & burn fees on successful trades.
-contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrderBook {
+contract OrderBook is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  ERC1155Holder,
+  IOrderBook,
+  ReentrancyGuardTransientUpgradeable
+{
   using BokkyPooBahsRedBlackTreeLibrary for BokkyPooBahsRedBlackTreeLibrary.Tree;
   using BokkyPooBahsRedBlackTreeLibrary for BokkyPooBahsRedBlackTreeLibrary.Node;
   using SafeERC20 for IBrushToken;
@@ -95,7 +102,7 @@ contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrder
 
   /// @notice Place market order
   /// @param order market order to be placed
-  function marketOrder(MarketOrder calldata order) external override {
+  function marketOrder(MarketOrder calldata order) external override nonReentrant {
     // Must fufill the order and be below the total cost (or above depending on the side)
     uint256 coinsToUs;
     uint256 coinsFromUs;
@@ -140,147 +147,15 @@ contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrder
 
   /// @notice Place multiple limit orders in the order book
   /// @param orders Array of limit orders to be placed
-  function limitOrders(LimitOrder[] calldata orders) public override {
-    uint256 royalty;
-    uint256 dev;
-    uint256 burn;
-    uint256 coinsToUs;
-    uint256 coinsFromUs;
-    uint256 nftsToUs;
-    uint256[] memory nftIdsToUs = new uint256[](orders.length);
-    uint256[] memory nftAmountsToUs = new uint256[](orders.length);
-    uint256 lengthFromUs;
-    uint256[] memory nftIdsFromUs = new uint256[](orders.length);
-    uint256[] memory nftAmountsFromUs = new uint256[](orders.length);
-    address sender = _msgSender();
-
-    // Reuse this array in all the orders
-    uint256[] memory orderIdsPool = new uint256[](MAX_ORDERS_HIT);
-    uint256[] memory quantitiesPool = new uint256[](MAX_ORDERS_HIT);
-
-    // read the next order ID so we can increment in memory
-    uint40 currentOrderId = _nextOrderId;
-    for (uint256 i = 0; i < orders.length; ++i) {
-      LimitOrder calldata limitOrder = orders[i];
-      (uint24 quantityAddedToBook, uint24 failedQuantity, uint256 cost) = _makeLimitOrder(
-        currentOrderId,
-        limitOrder,
-        orderIdsPool,
-        quantitiesPool
-      );
-      if (quantityAddedToBook != 0) {
-        ++currentOrderId;
-      }
-
-      uint256 feesOrder;
-      if (cost != 0) {
-        (uint256 royaltyOrder, uint256 devOrder, uint256 burnOrder) = _calcFees(cost);
-        royalty += royaltyOrder;
-        dev += devOrder;
-        burn += burnOrder;
-        feesOrder = royaltyOrder + devOrder + burnOrder;
-      }
-
-      if (limitOrder.side == OrderSide.Buy) {
-        coinsToUs += cost + uint256(limitOrder.price) * quantityAddedToBook;
-        if (cost != 0) {
-          // Transfer the NFTs taken from the order book straight to the taker
-          nftIdsFromUs[lengthFromUs] = limitOrder.tokenId;
-          nftAmountsFromUs[lengthFromUs] = uint256(limitOrder.quantity) - quantityAddedToBook;
-          ++lengthFromUs;
-        }
-      } else {
-        // Selling, transfer all NFTs to us
-        uint256 amount = limitOrder.quantity - failedQuantity;
-        if (amount != 0) {
-          nftIdsToUs[nftsToUs] = limitOrder.tokenId;
-          nftAmountsToUs[nftsToUs] = amount;
-          ++nftsToUs;
-        }
-
-        // Transfer tokens to the seller if any have sold
-        coinsFromUs += cost - feesOrder;
-      }
-    }
-
-    // update the state if any orders were added to the book
-    if (currentOrderId != _nextOrderId) {
-      _nextOrderId = currentOrderId;
-    }
-
-    if (coinsToUs != 0) {
-      _coin.safeTransferFrom(sender, address(this), coinsToUs);
-    }
-
-    if (coinsFromUs != 0) {
-      _coin.safeTransfer(sender, coinsFromUs);
-    }
-
-    if (nftsToUs != 0) {
-      assembly ("memory-safe") {
-        mstore(nftIdsToUs, nftsToUs)
-        mstore(nftAmountsToUs, nftsToUs)
-      }
-      _safeBatchTransferNFTsToUs(sender, nftIdsToUs, nftAmountsToUs);
-    }
-
-    if (lengthFromUs != 0) {
-      assembly ("memory-safe") {
-        mstore(nftIdsFromUs, lengthFromUs)
-        mstore(nftAmountsFromUs, lengthFromUs)
-      }
-      _safeBatchTransferNFTsFromUs(sender, nftIdsFromUs, nftAmountsFromUs);
-    }
-
-    _sendFees(royalty, dev, burn);
+  function limitOrders(LimitOrder[] calldata orders) external override nonReentrant {
+    _limitOrders(orders);
   }
 
   /// @notice Cancel multiple orders in the order book
   /// @param orderIds Array of order IDs to be cancelled
   /// @param orders Information about the orders so that they can be found in the order book
-  function cancelOrders(uint256[] calldata orderIds, CancelOrder[] calldata orders) public override {
-    require(orderIds.length == orders.length, LengthMismatch());
-
-    address sender = _msgSender();
-
-    uint256 coinsFromUs = 0;
-    uint256 nftsFromUs = 0;
-    uint256 numberOfOrders = orderIds.length;
-    uint256[] memory nftIdsFromUs = new uint256[](numberOfOrders);
-    uint256[] memory nftAmountsFromUs = new uint256[](numberOfOrders);
-    for (uint256 i = 0; i < numberOfOrders; ++i) {
-      CancelOrder calldata cancelOrder = orders[i];
-      (OrderSide side, uint256 tokenId, uint72 price) = (cancelOrder.side, cancelOrder.tokenId, cancelOrder.price);
-
-      if (side == OrderSide.Buy) {
-        uint256 quantity = _cancelOrdersSide(orderIds[i], price, _bidsAtPrice[tokenId][price], _bids[tokenId]);
-        // Send the remaining token back to them
-        coinsFromUs += quantity * price;
-      } else {
-        uint256 quantity = _cancelOrdersSide(orderIds[i], price, _asksAtPrice[tokenId][price], _asks[tokenId]);
-        // Send the remaining NFTs back to them
-        nftIdsFromUs[nftsFromUs] = tokenId;
-        nftAmountsFromUs[nftsFromUs] = quantity;
-        ++nftsFromUs;
-      }
-    }
-
-    emit OrdersCancelled(sender, orderIds);
-
-    // Transfer tokens if there are any to send
-    if (coinsFromUs != 0) {
-      _coin.safeTransfer(sender, coinsFromUs);
-    }
-
-    // Send the NFTs
-    if (nftsFromUs != 0) {
-      // shrink the size
-      assembly ("memory-safe") {
-        mstore(nftIdsFromUs, nftsFromUs)
-        mstore(nftAmountsFromUs, nftsFromUs)
-      }
-      _safeBatchTransferNFTsFromUs(sender, nftIdsFromUs, nftAmountsFromUs);
-    }
+  function cancelOrders(uint256[] calldata orderIds, CancelOrder[] calldata orders) external override nonReentrant {
+    _cancelOrders(orderIds, orders);
   }
 
   /// @notice Cancel multiple orders and place multiple limit orders in the order book. Can be used to replace orders
@@ -291,73 +166,39 @@ contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrder
     uint256[] calldata orderIds,
     CancelOrder[] calldata orders,
     LimitOrder[] calldata newOrders
-  ) external override {
-    cancelOrders(orderIds, orders);
-    limitOrders(newOrders);
+  ) external override nonReentrant {
+    _cancelOrders(orderIds, orders);
+    _limitOrders(newOrders);
   }
 
   /// @notice Claim tokens associated with filled or partially filled orders.
   ///         Must be the maker of these orders.
   /// @param orderIds Array of order IDs from which to claim NFTs
-  function claimTokens(uint256[] calldata orderIds) public override {
-    require(orderIds.length <= MAX_CLAIMABLE_ORDERS, ClaimingTooManyOrders());
-    uint256 amount;
-    for (uint256 i = 0; i < orderIds.length; ++i) {
-      uint40 orderId = SafeCast.toUint40(orderIds[i]);
-      ClaimableTokenInfo storage claimableTokenInfo = _tokenClaimables[orderId];
-      uint256 claimableAmount = claimableTokenInfo.amount;
-      require(claimableAmount != 0, NothingToClaim());
-      require(claimableTokenInfo.maker == _msgSender(), NotMaker());
-
-      claimableTokenInfo.amount = 0;
-      amount += claimableAmount;
-    }
-
-    require(amount != 0, NothingToClaim());
-    _coin.safeTransfer(_msgSender(), amount);
-    emit ClaimedTokens(_msgSender(), orderIds, amount);
+  function claimTokens(uint256[] calldata orderIds) external override nonReentrant {
+    _claimTokens(orderIds);
   }
 
   /// @notice Claim NFTs associated with filled or partially filled orders
   ///         Must be the maker of these orders.
   /// @param orderIds Array of order IDs from which to claim NFTs
-  function claimNFTs(uint256[] calldata orderIds) public override {
-    require(orderIds.length <= MAX_CLAIMABLE_ORDERS, ClaimingTooManyOrders());
-    require(orderIds.length != 0, NothingToClaim());
-
-    uint256[] memory nftAmountsFromUs = new uint256[](orderIds.length);
-    uint256[] memory tokenIds = new uint256[](orderIds.length);
-    for (uint256 i = 0; i < tokenIds.length; ++i) {
-      uint40 orderId = SafeCast.toUint40(orderIds[i]);
-      ClaimableTokenInfo storage claimableTokenInfo = _tokenClaimables[orderId];
-      uint256 tokenId = claimableTokenInfo.tokenId;
-      tokenIds[i] = tokenId;
-      uint256 claimableAmount = claimableTokenInfo.amount;
-      require(claimableAmount != 0, NothingToClaim());
-      require(_tokenClaimables[orderId].maker == _msgSender(), NotMaker());
-
-      nftAmountsFromUs[i] = claimableAmount;
-      _tokenClaimables[orderId].amount = 0;
-    }
-
-    _safeBatchTransferNFTsFromUs(_msgSender(), tokenIds, nftAmountsFromUs);
-    emit ClaimedNFTs(_msgSender(), orderIds, tokenIds, nftAmountsFromUs);
+  function claimNFTs(uint256[] calldata orderIds) external override nonReentrant {
+    _claimNFTs(orderIds);
   }
 
   /// @notice Convience function to claim both tokens and nfts in filled or partially filled orders.
   ///         Must be the maker of these orders.
   /// @param coinOrderIds Array of order IDs from which to claim tokens
   /// @param nftOrderIds Array of order IDs from which to claim NFTs
-  function claimAll(uint256[] calldata coinOrderIds, uint256[] calldata nftOrderIds) external override {
+  function claimAll(uint256[] calldata coinOrderIds, uint256[] calldata nftOrderIds) external override nonReentrant {
     require(coinOrderIds.length != 0 || nftOrderIds.length != 0, NothingToClaim());
     require(coinOrderIds.length + nftOrderIds.length <= MAX_CLAIMABLE_ORDERS, ClaimingTooManyOrders());
 
     if (coinOrderIds.length != 0) {
-      claimTokens(coinOrderIds);
+      _claimTokens(coinOrderIds);
     }
 
     if (nftOrderIds.length != 0) {
-      claimNFTs(nftOrderIds);
+      _claimNFTs(nftOrderIds);
     }
   }
 
@@ -460,6 +301,188 @@ contract OrderBook is UUPSUpgradeable, OwnableUpgradeable, ERC1155Holder, IOrder
     } else {
       return _allOrdersAtPriceSide(_asksAtPrice[tokenId][price], _asks[tokenId], price);
     }
+  }
+
+  function _limitOrders(LimitOrder[] calldata orders) private {
+    uint256 royalty;
+    uint256 dev;
+    uint256 burn;
+    uint256 coinsToUs;
+    uint256 coinsFromUs;
+    uint256 nftsToUs;
+    uint256[] memory nftIdsToUs = new uint256[](orders.length);
+    uint256[] memory nftAmountsToUs = new uint256[](orders.length);
+    uint256 lengthFromUs;
+    uint256[] memory nftIdsFromUs = new uint256[](orders.length);
+    uint256[] memory nftAmountsFromUs = new uint256[](orders.length);
+    address sender = _msgSender();
+
+    // Reuse this array in all the orders
+    uint256[] memory orderIdsPool = new uint256[](MAX_ORDERS_HIT);
+    uint256[] memory quantitiesPool = new uint256[](MAX_ORDERS_HIT);
+
+    // read the next order ID so we can increment in memory
+    uint40 currentOrderId = _nextOrderId;
+    for (uint256 i = 0; i < orders.length; ++i) {
+      LimitOrder calldata limitOrder = orders[i];
+      (uint24 quantityAddedToBook, uint24 failedQuantity, uint256 cost) = _makeLimitOrder(
+        currentOrderId,
+        limitOrder,
+        orderIdsPool,
+        quantitiesPool
+      );
+      if (quantityAddedToBook != 0) {
+        ++currentOrderId;
+      }
+
+      uint256 feesOrder;
+      if (cost != 0) {
+        (uint256 royaltyOrder, uint256 devOrder, uint256 burnOrder) = _calcFees(cost);
+        royalty += royaltyOrder;
+        dev += devOrder;
+        burn += burnOrder;
+        feesOrder = royaltyOrder + devOrder + burnOrder;
+      }
+
+      if (limitOrder.side == OrderSide.Buy) {
+        coinsToUs += cost + uint256(limitOrder.price) * quantityAddedToBook;
+        if (cost != 0) {
+          // Transfer the NFTs taken from the order book straight to the taker
+          nftIdsFromUs[lengthFromUs] = limitOrder.tokenId;
+          nftAmountsFromUs[lengthFromUs] = uint256(limitOrder.quantity) - quantityAddedToBook;
+          ++lengthFromUs;
+        }
+      } else {
+        // Selling, transfer all NFTs to us
+        uint256 amount = limitOrder.quantity - failedQuantity;
+        if (amount != 0) {
+          nftIdsToUs[nftsToUs] = limitOrder.tokenId;
+          nftAmountsToUs[nftsToUs] = amount;
+          ++nftsToUs;
+        }
+
+        // Transfer tokens to the seller if any have sold
+        coinsFromUs += cost - feesOrder;
+      }
+    }
+
+    // update the state if any orders were added to the book
+    if (currentOrderId != _nextOrderId) {
+      _nextOrderId = currentOrderId;
+    }
+
+    if (coinsToUs != 0) {
+      _coin.safeTransferFrom(sender, address(this), coinsToUs);
+    }
+
+    if (coinsFromUs != 0) {
+      _coin.safeTransfer(sender, coinsFromUs);
+    }
+
+    if (nftsToUs != 0) {
+      assembly ("memory-safe") {
+        mstore(nftIdsToUs, nftsToUs)
+        mstore(nftAmountsToUs, nftsToUs)
+      }
+      _safeBatchTransferNFTsToUs(sender, nftIdsToUs, nftAmountsToUs);
+    }
+
+    if (lengthFromUs != 0) {
+      assembly ("memory-safe") {
+        mstore(nftIdsFromUs, lengthFromUs)
+        mstore(nftAmountsFromUs, lengthFromUs)
+      }
+      _safeBatchTransferNFTsFromUs(sender, nftIdsFromUs, nftAmountsFromUs);
+    }
+
+    _sendFees(royalty, dev, burn);
+  }
+
+  function _cancelOrders(uint256[] calldata orderIds, CancelOrder[] calldata orders) private {
+    require(orderIds.length == orders.length, LengthMismatch());
+
+    address sender = _msgSender();
+
+    uint256 coinsFromUs = 0;
+    uint256 nftsFromUs = 0;
+    uint256 numberOfOrders = orderIds.length;
+    uint256[] memory nftIdsFromUs = new uint256[](numberOfOrders);
+    uint256[] memory nftAmountsFromUs = new uint256[](numberOfOrders);
+    for (uint256 i = 0; i < numberOfOrders; ++i) {
+      CancelOrder calldata cancelOrder = orders[i];
+      (OrderSide side, uint256 tokenId, uint72 price) = (cancelOrder.side, cancelOrder.tokenId, cancelOrder.price);
+
+      if (side == OrderSide.Buy) {
+        uint256 quantity = _cancelOrdersSide(orderIds[i], price, _bidsAtPrice[tokenId][price], _bids[tokenId]);
+        // Send the remaining token back to them
+        coinsFromUs += quantity * price;
+      } else {
+        uint256 quantity = _cancelOrdersSide(orderIds[i], price, _asksAtPrice[tokenId][price], _asks[tokenId]);
+        // Send the remaining NFTs back to them
+        nftIdsFromUs[nftsFromUs] = tokenId;
+        nftAmountsFromUs[nftsFromUs] = quantity;
+        ++nftsFromUs;
+      }
+    }
+
+    emit OrdersCancelled(sender, orderIds);
+
+    // Transfer tokens if there are any to send
+    if (coinsFromUs != 0) {
+      _coin.safeTransfer(sender, coinsFromUs);
+    }
+
+    // Send the NFTs
+    if (nftsFromUs != 0) {
+      // shrink the size
+      assembly ("memory-safe") {
+        mstore(nftIdsFromUs, nftsFromUs)
+        mstore(nftAmountsFromUs, nftsFromUs)
+      }
+      _safeBatchTransferNFTsFromUs(sender, nftIdsFromUs, nftAmountsFromUs);
+    }
+  }
+
+  function _claimTokens(uint256[] calldata orderIds) private {
+    require(orderIds.length <= MAX_CLAIMABLE_ORDERS, ClaimingTooManyOrders());
+    uint256 amount;
+    for (uint256 i = 0; i < orderIds.length; ++i) {
+      uint40 orderId = SafeCast.toUint40(orderIds[i]);
+      ClaimableTokenInfo storage claimableTokenInfo = _tokenClaimables[orderId];
+      uint256 claimableAmount = claimableTokenInfo.amount;
+      require(claimableAmount != 0, NothingToClaim());
+      require(claimableTokenInfo.maker == _msgSender(), NotMaker());
+
+      claimableTokenInfo.amount = 0;
+      amount += claimableAmount;
+    }
+
+    require(amount != 0, NothingToClaim());
+    _coin.safeTransfer(_msgSender(), amount);
+    emit ClaimedTokens(_msgSender(), orderIds, amount);
+  }
+
+  function _claimNFTs(uint256[] calldata orderIds) private {
+    require(orderIds.length <= MAX_CLAIMABLE_ORDERS, ClaimingTooManyOrders());
+    require(orderIds.length != 0, NothingToClaim());
+
+    uint256[] memory nftAmountsFromUs = new uint256[](orderIds.length);
+    uint256[] memory tokenIds = new uint256[](orderIds.length);
+    for (uint256 i = 0; i < tokenIds.length; ++i) {
+      uint40 orderId = SafeCast.toUint40(orderIds[i]);
+      ClaimableTokenInfo storage claimableTokenInfo = _tokenClaimables[orderId];
+      uint256 tokenId = claimableTokenInfo.tokenId;
+      tokenIds[i] = tokenId;
+      uint256 claimableAmount = claimableTokenInfo.amount;
+      require(claimableAmount != 0, NothingToClaim());
+      require(_tokenClaimables[orderId].maker == _msgSender(), NotMaker());
+
+      nftAmountsFromUs[i] = claimableAmount;
+      _tokenClaimables[orderId].amount = 0;
+    }
+
+    _safeBatchTransferNFTsFromUs(_msgSender(), tokenIds, nftAmountsFromUs);
+    emit ClaimedNFTs(_msgSender(), orderIds, tokenIds, nftAmountsFromUs);
   }
 
   function _takeFromOrderBookSide(

@@ -4,7 +4,7 @@ import {expect} from "chai";
 import {IOrderBook, OrderBook} from "../typechain-types";
 import {OrderSide} from "@paintswap/estfor-definitions/types";
 
-describe("OrderBook", function () {
+describe.only("OrderBook", function () {
   async function deployContractsFixture() {
     const [owner, alice, bob, charlie, dev, erin, frank, royaltyRecipient] = await ethers.getSigners();
 
@@ -3302,7 +3302,7 @@ describe("OrderBook", function () {
   });
 
   describe("Edit orders", function () {
-    it("Cancels and makes a new order", async function () {
+    it("Cancels a buy and makes a new order", async function () {
       const {orderBook, tokenId, tick, owner} = await loadFixture(deployContractsFixture);
 
       // Set up order book
@@ -3329,6 +3329,39 @@ describe("OrderBook", function () {
       expect((await orderBook.allOrdersAtPrice(OrderSide.BUY, tokenId, price + 1 * tick)).length).to.eq(1);
       const orderId = 2;
       expect((await orderBook.allOrdersAtPrice(OrderSide.BUY, tokenId, price + 1 * tick))[0]).to.deep.eq([
+        owner.address,
+        quantity + 2,
+        orderId
+      ]);
+    });
+
+    it("Cancels a sell and makes a new order", async function () {
+      const {orderBook, tokenId, tick, owner, initialQuantity} = await loadFixture(deployContractsFixture);
+
+      // Set up order book
+      const price = 100;
+      const quantity = initialQuantity - 2;
+      await orderBook.limitOrders([
+        {
+          side: OrderSide.SELL,
+          tokenId,
+          price,
+          quantity
+        }
+      ]);
+
+      const newOrder = {side: OrderSide.SELL, tokenId, price: price - tick, quantity: quantity + 2};
+      await orderBook.cancelAndMakeLimitOrders([1], [{side: OrderSide.SELL, tokenId, price}], [newOrder]);
+
+      const nextOrderIdSlot = 2;
+      let packedSlot = await ethers.provider.getStorage(orderBook, nextOrderIdSlot);
+      let nextOrderId = parseInt(packedSlot.slice(2, 12), 16);
+      expect(nextOrderId).to.eq(3);
+
+      expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price)).length).to.eq(0);
+      expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price - tick)).length).to.eq(1);
+      const orderId = 2;
+      expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price - tick))[0]).to.deep.eq([
         owner.address,
         quantity + 2,
         orderId
@@ -3379,6 +3412,160 @@ describe("OrderBook", function () {
         kind: "uups"
       })
     ).to.not.be.reverted;
+  });
+
+  it("Check re-entrancy is prevented in all functions", async function () {
+    const {owner, orderBook, alice, erc1155, initialQuantity, coins, tokenId, dev} = await loadFixture(
+      deployContractsFixture
+    );
+
+    const maliciousReentrancy = new ethers.Contract(
+      (await ethers.deployContract("TestMaliciousReentrancy", [orderBook.target])).target,
+      (await ethers.getContractFactory("OrderBook")).interface,
+      owner
+    ) as unknown as OrderBook;
+
+    const maliciousReentrancySigner = await ethers.getImpersonatedSigner(await maliciousReentrancy.getAddress());
+    await ethers.provider.send("hardhat_setBalance", [maliciousReentrancySigner.address, "0x100000000000000000"]);
+
+    const initialCoins = 100000000000;
+    await coins.mint(maliciousReentrancy, initialCoins);
+    await coins.connect(maliciousReentrancySigner).approve(orderBook, initialCoins);
+
+    await erc1155.safeTransferFrom(owner, maliciousReentrancy, tokenId, initialQuantity, "0x01");
+    await erc1155.connect(maliciousReentrancySigner).setApprovalForAll(orderBook, true);
+
+    // Set up initial orders
+    const price = 100;
+    const quantity = initialQuantity;
+    await orderBook.connect(alice).limitOrders([
+      {
+        side: OrderSide.SELL,
+        tokenId,
+        price,
+        quantity
+      }
+    ]);
+
+    // 1. Test limitOrders reentrancy
+    await expect(
+      maliciousReentrancy.limitOrders([
+        {
+          side: OrderSide.BUY,
+          tokenId,
+          price,
+          quantity: 1
+        }
+      ])
+    ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
+
+    // 2. Test marketOrders reentrancy
+    await expect(
+      maliciousReentrancy.marketOrder({
+        side: OrderSide.BUY,
+        tokenId,
+        totalCost: price * quantity,
+        quantity: 1
+      })
+    ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
+
+    // 3. Test cancelOrders reentrancy
+    await orderBook.connect(maliciousReentrancySigner).limitOrders([
+      {
+        side: OrderSide.SELL,
+        tokenId,
+        price,
+        quantity: 1
+      }
+    ]);
+
+    const maliciousReentrancyOrderId = 2;
+    let orderId = maliciousReentrancyOrderId;
+    await expect(
+      maliciousReentrancy.cancelOrders([orderId], [{side: OrderSide.SELL, tokenId, price}])
+    ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
+
+    // 4. Test cancelAndMakeLimitOrders reentrancy
+    await expect(
+      maliciousReentrancy.cancelAndMakeLimitOrders(
+        [orderId],
+        [{side: OrderSide.SELL, tokenId, price}],
+        [
+          {
+            side: OrderSide.SELL,
+            tokenId,
+            price,
+            quantity: 1
+          }
+        ]
+      )
+    ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
+
+    // 5. Test claimNFTs reentrancy
+    // First make a successful trade so there are NFTs to claim
+    await orderBook.connect(alice).cancelOrders([1], [{side: OrderSide.SELL, tokenId, price}]);
+    await orderBook
+      .connect(maliciousReentrancySigner)
+      .cancelOrders([orderId], [{side: OrderSide.SELL, tokenId, price}]);
+
+    orderId = 3;
+    await orderBook.connect(maliciousReentrancySigner).limitOrders([
+      {
+        side: OrderSide.BUY,
+        tokenId,
+        price,
+        quantity: 2
+      }
+    ]);
+
+    await orderBook.connect(alice).marketOrder({
+      side: OrderSide.SELL,
+      tokenId,
+      totalCost: price,
+      quantity: 1
+    });
+
+    await expect(maliciousReentrancy.claimNFTs([orderId])).to.be.revertedWithCustomError(
+      orderBook,
+      "ReentrancyGuardReentrantCall"
+    );
+
+    // 6. Test claimAll reentrancy
+    await expect(maliciousReentrancy.claimAll([], [orderId])).to.be.revertedWithCustomError(
+      orderBook,
+      "ReentrancyGuardReentrantCall"
+    );
+
+    // 7. Test claimTokens reentrancy. Has to be done a bit differently due to no re-rentrancy of erc20s
+    const erc20Reentrancy = await ethers.deployContract("TestERC20Reentrancy");
+    const maxOrdersPerPrice = 100;
+    const OrderBook = await ethers.getContractFactory("OrderBook");
+    const orderBookERC20Reentrancy = (await upgrades.deployProxy(
+      OrderBook,
+      [await erc1155.getAddress(), await erc20Reentrancy.getAddress(), dev.address, 30, 30, maxOrdersPerPrice],
+      {
+        kind: "uups"
+      }
+    )) as unknown as OrderBook;
+
+    await erc20Reentrancy.setOrderBook(orderBookERC20Reentrancy);
+    await erc20Reentrancy.mint(owner, initialCoins);
+    await erc20Reentrancy.approve(orderBookERC20Reentrancy, initialCoins);
+
+    const tick = 1;
+    const minQuantity = 1;
+    await orderBookERC20Reentrancy.setTokenIdInfos([tokenId], [{tick, minQuantity}]);
+
+    await expect(
+      orderBookERC20Reentrancy.connect(owner).limitOrders([
+        {
+          side: OrderSide.BUY,
+          tokenId,
+          price,
+          quantity: 1
+        }
+      ])
+    ).to.be.revertedWithCustomError(orderBook, "ReentrancyGuardReentrantCall");
   });
 
   it("System test (many orders)", async function () {
