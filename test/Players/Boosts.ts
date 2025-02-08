@@ -837,9 +837,16 @@ describe("Boosts", function () {
     await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     const {timestamp: NOW1} = (await ethers.provider.getBlock("latest")) as Block;
     let extraBoostedTime = NOW1 - donationTimestamp;
-
     // Enter raffle again
-    await players.connect(alice).donate(playerId, raffleCost);
+    await expect(players.connect(alice).donate(playerId, raffleCost))
+      .to.emit(players, "UpdateLastExtraBoost")
+      .withArgs(playerId, [
+        donationTimestamp,
+        extraBoostedTime + 1,
+        boostValue,
+        EstforConstants.LUCK_OF_THE_DRAW,
+        EstforTypes.BoostType.ANY_XP
+      ]);
     let playerBoost = await players.getActiveBoost(playerId);
 
     expect(playerBoost.lastExtraStartTime).to.eq(donationTimestamp);
