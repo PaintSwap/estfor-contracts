@@ -533,7 +533,7 @@ describe("ClanBattleLibrary", function () {
     ).to.be.revertedWithCustomError(clanBattleLibrary, "TooManyDefenders");
   });
 
-  it.only("Check shuffling works", async () => {
+  it("Check shuffling works", async () => {
     const {alice, players, playerId, playerNFT, clanBattleLibrary} = await loadFixture(clanFixture);
 
     const avatarId = 1;

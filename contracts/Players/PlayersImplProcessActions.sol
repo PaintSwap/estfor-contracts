@@ -337,11 +337,11 @@ contract PlayersImplProcessActions is PlayersBase {
     emit UpdateLastExtraBoost(
       playerId,
       BoostInfo({
-        startTime: boost.lastStartTime,
-        duration: boost.lastDuration,
-        value: boost.lastValue,
-        boostType: boost.lastBoostType,
-        itemTokenId: boost.lastItemTokenId
+        startTime: boost.lastExtraStartTime,
+        duration: boost.lastExtraDuration,
+        value: boost.lastExtraValue,
+        boostType: boost.lastExtraBoostType,
+        itemTokenId: boost.lastExtraItemTokenId
       })
     );
   }
