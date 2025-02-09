@@ -4,6 +4,7 @@ import {expect} from "chai";
 import {ActivityPoints, IOrderBook, OrderBook} from "../typechain-types";
 import {OrderSide} from "@paintswap/estfor-definitions/types";
 import {formatEther, parseEther} from "ethers";
+import {activityPoints} from "../typechain-types/contracts";
 
 describe.only("OrderBook", function () {
   async function deployContractsFixture() {
@@ -3549,7 +3550,7 @@ describe.only("OrderBook", function () {
   });
 
   it("Check re-entrancy is prevented in all functions", async function () {
-    const {owner, orderBook, alice, erc1155, initialQuantity, coins, tokenId, dev} = await loadFixture(
+    const {owner, orderBook, activityPoints, alice, erc1155, initialQuantity, coins, tokenId, dev} = await loadFixture(
       deployContractsFixture
     );
 
@@ -3676,7 +3677,15 @@ describe.only("OrderBook", function () {
     const OrderBook = await ethers.getContractFactory("OrderBook");
     const orderBookERC20Reentrancy = (await upgrades.deployProxy(
       OrderBook,
-      [await erc1155.getAddress(), await erc20Reentrancy.getAddress(), dev.address, 30, 30, maxOrdersPerPrice],
+      [
+        await erc1155.getAddress(),
+        await erc20Reentrancy.getAddress(),
+        dev.address,
+        30,
+        30,
+        maxOrdersPerPrice,
+        await activityPoints.getAddress()
+      ],
       {
         kind: "uups"
       }
