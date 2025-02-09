@@ -42,6 +42,7 @@ import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ContractFactory, parseEther} from "ethers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {ACTIVITY_TICKET} from "@paintswap/estfor-definitions/constants";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
@@ -137,7 +138,7 @@ export const playersFixture = async function () {
   )) as unknown as ItemNFT;
 
   const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
-  const activityPoints = (await upgrades.deployProxy(ActivityPoints, [await itemNFT.getAddress()], {
+  const activityPoints = (await upgrades.deployProxy(ActivityPoints, [await itemNFT.getAddress(), ACTIVITY_TICKET], {
     kind: "uups"
   })) as unknown as ActivityPoints;
   await itemNFT.setApproved([activityPoints], true);

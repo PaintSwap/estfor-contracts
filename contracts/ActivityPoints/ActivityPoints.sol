@@ -13,8 +13,6 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {IActivityPoints, ActivityType} from "./interfaces/IActivityPoints.sol";
 
-import {ACTIVITY_POINTS_SEASON_1} from "../globals/items.sol";
-
 import "hardhat/console.sol";
 
 contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgradeable, OwnableUpgradeable {
@@ -61,7 +59,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   // The item NFT contract to mint points
   IItemNFT private _itemsNFT;
   // The token ID for the points
-  uint16 private _itemsTokenId;
+  uint16 private _itemTokenId;
 
   // The calculations for each activity type
   mapping(ActivityType => Calculation) private _calculations;
@@ -86,14 +84,14 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _disableInitializers();
   }
 
-  function initialize(address itemNFT) external initializer {
+  function initialize(address itemNFT, uint16 seasonTokenId) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
     _grantRole(ACTIVITY_POINT_MINTER, _msgSender());
 
     _itemsNFT = IItemNFT(itemNFT);
-    _itemsTokenId = ACTIVITY_POINTS_SEASON_1;
+    _itemTokenId = seasonTokenId;
 
     // players
     _setPointsDiscreteCalculation(ActivityType.players_evt_actionfinished, 10, 2000);
@@ -174,13 +172,13 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
       // console.log("ActivityPoints:reward - player: %s, type: %d, points: %d", player, uint8(activityType), points);
       if (points != 0) {
         emit ActivityPointsEarned(player, activityType, value, points);
-        _itemsNFT.mint(player, _itemsTokenId, points);
+        _itemsNFT.mint(player, _itemTokenId, points);
       }
     }
   }
 
   function getItemTokenId() external view returns (uint256) {
-    return _itemsTokenId;
+    return _itemTokenId;
   }
 
   function addPointsCalculation(

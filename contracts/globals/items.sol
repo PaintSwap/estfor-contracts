@@ -78,7 +78,6 @@ uint16 constant SPECIAL_MAX = 13567;
 // Miscs
 uint16 constant MISC_BASE = 65535;
 uint16 constant RAID_PASS = MISC_BASE - 1;
-uint16 constant ACTIVITY_POINTS_SEASON_1 = MISC_BASE - 70;
 
 struct BulkTransferInfo {
   uint256[] tokenIds;

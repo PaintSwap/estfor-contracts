@@ -441,6 +441,11 @@
         "internalType": "address",
         "name": "itemNFT",
         "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "seasonTokenId",
+        "type": "uint16"
       }
     ],
     "name": "initialize",

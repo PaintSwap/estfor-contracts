@@ -5,6 +5,7 @@ import {ActivityPoints, IOrderBook, OrderBook} from "../typechain-types";
 import {OrderSide} from "@paintswap/estfor-definitions/types";
 import {formatEther, parseEther} from "ethers";
 import {activityPoints} from "../typechain-types/contracts";
+import {ACTIVITY_TICKET} from "@paintswap/estfor-definitions/constants";
 
 describe.only("OrderBook", function () {
   async function deployContractsFixture() {
@@ -16,9 +17,13 @@ describe.only("OrderBook", function () {
     const mockItemNFT = await ethers.deployContract("MockItemNFT");
 
     const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
-    const activityPoints = (await upgrades.deployProxy(ActivityPoints, [await mockItemNFT.getAddress()], {
-      kind: "uups"
-    })) as unknown as ActivityPoints;
+    const activityPoints = (await upgrades.deployProxy(
+      ActivityPoints,
+      [await mockItemNFT.getAddress(), ACTIVITY_TICKET],
+      {
+        kind: "uups"
+      }
+    )) as unknown as ActivityPoints;
 
     const maxOrdersPerPrice = 100n;
     const OrderBook = await ethers.getContractFactory("OrderBook");

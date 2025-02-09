@@ -1,6 +1,6 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import {BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
+import {ACTIVITY_TICKET, BRONZE_SHIELD} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import {
@@ -109,7 +109,7 @@ describe("Shop", function () {
     )) as unknown as ItemNFT;
 
     const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
-    const activityPoints = await upgrades.deployProxy(ActivityPoints, [itemNFT.target], {
+    const activityPoints = await upgrades.deployProxy(ActivityPoints, [await itemNFT.getAddress(), ACTIVITY_TICKET], {
       kind: "uups"
     });
     // add shop as an AP minter

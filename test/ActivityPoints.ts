@@ -3,6 +3,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ActivityPoints} from "../typechain-types";
 import {ContractTransactionResponse} from "ethers";
+import {ACTIVITY_TICKET} from "@paintswap/estfor-definitions/constants";
 
 enum ActivityType {
   NONE,
@@ -51,9 +52,13 @@ describe("ActivityPoints", function () {
     const mockItemNFT = await ethers.deployContract("MockItemNFT");
 
     const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
-    const activityPoints = (await upgrades.deployProxy(ActivityPoints, [mockItemNFT.target], {
-      kind: "uups"
-    })) as unknown as ActivityPoints;
+    const activityPoints = (await upgrades.deployProxy(
+      ActivityPoints,
+      [await mockItemNFT.getAddress(), ACTIVITY_TICKET],
+      {
+        kind: "uups"
+      }
+    )) as unknown as ActivityPoints;
     await activityPoints.waitForDeployment();
 
     const testERC721 = await ethers.deployContract("TestERC721");
