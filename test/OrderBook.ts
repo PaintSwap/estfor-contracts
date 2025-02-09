@@ -3473,8 +3473,8 @@ describe.only("OrderBook", function () {
       const {orderBook, tokenId, tick, owner, initialQuantity} = await loadFixture(deployContractsFixture);
 
       // Set up order book
-      const price = 100;
-      const quantity = initialQuantity - 2;
+      const price = 100n;
+      const quantity = initialQuantity - 2n;
       await orderBook.limitOrders([
         {
           side: OrderSide.SELL,
@@ -3484,7 +3484,7 @@ describe.only("OrderBook", function () {
         }
       ]);
 
-      const newOrder = {side: OrderSide.SELL, tokenId, price: price - tick, quantity: quantity + 2};
+      const newOrder = {side: OrderSide.SELL, tokenId, price: price - tick, quantity: quantity + 2n};
       await orderBook.cancelAndMakeLimitOrders([1], [{side: OrderSide.SELL, tokenId, price}], [newOrder]);
 
       const nextOrderIdSlot = 2;
@@ -3497,7 +3497,7 @@ describe.only("OrderBook", function () {
       const orderId = 2;
       expect((await orderBook.allOrdersAtPrice(OrderSide.SELL, tokenId, price - tick))[0]).to.deep.eq([
         owner.address,
-        quantity + 2,
+        quantity + 2n,
         orderId
       ]);
     });
@@ -3570,7 +3570,7 @@ describe.only("OrderBook", function () {
     await erc1155.connect(maliciousReentrancySigner).setApprovalForAll(orderBook, true);
 
     // Set up initial orders
-    const price = 100;
+    const price = 100n;
     const quantity = initialQuantity;
     await orderBook.connect(alice).limitOrders([
       {
