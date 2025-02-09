@@ -106,6 +106,11 @@ contract OrderBook is
     _nextOrderId = 1;
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   /// @notice Place market order
   /// @param order market order to be placed
   function marketOrder(MarketOrder calldata order) external override nonReentrant {

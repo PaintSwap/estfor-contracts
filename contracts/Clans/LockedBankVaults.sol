@@ -268,6 +268,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _nextPendingAttackId = 1;
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   function assignCombatants(
     uint256 clanId,
     uint64[] calldata playerIds,

@@ -241,11 +241,11 @@ describe("ActivityPoints", function () {
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, basePoints * 2);
     });
 
-    it.only("Should not boost points before boost activates", async function () {
+    it("Should not boost points before boost activates", async function () {
       const {activityPoints, alice, testERC721} = await loadFixture(deployActivityPointsFixture);
 
       const nftTokenId = await getTokenId(testERC721.mint(alice));
-      console.log("nftTokenId", nftTokenId);
+      // console.log("nftTokenId", nftTokenId);
       await activityPoints.connect(alice).registerPointBoost(testERC721, nftTokenId);
 
       const basePoints = 200;
@@ -272,7 +272,7 @@ describe("ActivityPoints", function () {
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, (basePoints * 110) / 100);
     });
 
-    it.only("Should not boost points if NFT is transferred", async function () {
+    it("Should not boost points if NFT is transferred", async function () {
       const {activityPoints, alice, bob, testERC721} = await loadFixture(deployActivityPointsFixture);
 
       const nftTokenId = await getTokenId(testERC721.mint(alice));

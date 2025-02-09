@@ -158,7 +158,8 @@ export const playersFixture = async function () {
       kind: "uups"
     }
   )) as unknown as Shop;
-  await activityPoints.addMinter(await shop.getAddress());
+  await shop.setActivityPoints(activityPoints);
+  await activityPoints.addMinter(shop);
 
   await shop.setItemNFT(itemNFT);
 
@@ -206,6 +207,7 @@ export const playersFixture = async function () {
       kind: "uups"
     }
   )) as unknown as Quests;
+  await quests.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await quests.getAddress());
 
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
@@ -234,6 +236,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as Clans;
 
+  await clans.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await clans.getAddress());
 
   const WishingWell = await ethers.getContractFactory("WishingWell");
@@ -254,6 +257,8 @@ export const playersFixture = async function () {
       kind: "uups"
     }
   )) as unknown as WishingWell;
+
+  await wishingWell.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await wishingWell.getAddress());
 
   const startPetId = 1;
@@ -327,6 +332,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as Players;
 
+  await players.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await players.getAddress());
 
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
@@ -368,6 +374,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as InstantActions;
 
+  await instantActions.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await instantActions.getAddress());
 
   const oracleAddress = await dev.getAddress();
@@ -397,6 +404,8 @@ export const playersFixture = async function () {
       kind: "uups"
     }
   )) as unknown as InstantVRFActions;
+
+  await instantVRFActions.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await instantVRFActions.getAddress());
 
   const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
@@ -545,6 +554,8 @@ export const playersFixture = async function () {
       unsafeAllow: ["external-library-linking"]
     }
   )) as unknown as LockedBankVaults;
+
+  await lockedBankVaults.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await lockedBankVaults.getAddress());
 
   // Set K values to 3, 3 to make it easier to get consistent values close to each for same MMR testing
@@ -578,6 +589,8 @@ export const playersFixture = async function () {
       unsafeAllow: ["external-library-linking"]
     }
   )) as unknown as Territories;
+
+  await territories.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await territories.getAddress());
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
@@ -615,6 +628,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as PassiveActions;
 
+  await passiveActions.setActivityPoints(activityPoints);
   await activityPoints.addMinter(await passiveActions.getAddress());
 
   const Bank = await ethers.getContractFactory("Bank");

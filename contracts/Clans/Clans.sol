@@ -250,6 +250,11 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _activityPoints = activityPoints;
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   function createClan(
     uint256 playerId,
     string calldata name,

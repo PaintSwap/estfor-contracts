@@ -38,6 +38,7 @@ describe.only("OrderBook", function () {
     )) as unknown as OrderBook;
 
     // let the orderbook mint
+    await orderBook.setActivityPoints(await activityPoints.getAddress());
     await activityPoints.addMinter(await orderBook.getAddress());
 
     const initialCoins = parseEther("100");

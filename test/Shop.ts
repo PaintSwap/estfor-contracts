@@ -113,9 +113,9 @@ describe("Shop", function () {
       kind: "uups"
     });
     // add shop as an AP minter
+    await shop.setActivityPoints(activityPoints);
     await activityPoints.addMinter(await shop.getAddress());
     await shop.setItemNFT(itemNFT);
-    await shop.setActivityPoints(activityPoints);
     // allow the activity points contract to mint AP itemNFTs
     await itemNFT.setApproved([shop, activityPoints], true);
 

@@ -119,7 +119,8 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
     _activityPoints = activityPoints;
   }
 
-  function initializeAddresses(address activityPoints) external onlyOwner {
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

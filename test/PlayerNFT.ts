@@ -521,6 +521,7 @@ describe("PlayerNFT", function () {
       }
     );
 
+    await players.setActivityPoints(await activityPoints.getAddress());
     await activityPoints.addMinter(await players.getAddress());
 
     await itemNFT.initializeAddresses(bankFactory, players);

@@ -135,6 +135,11 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     _activityPoints = activityPoints;
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   function getAction(InstantActionType actionType, uint16 actionId) external view returns (InstantAction memory) {
     return _actions[actionType][actionId];
   }

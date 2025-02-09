@@ -151,6 +151,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _activityPoints = activityPoints;
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   function doInstantVRFActions(
     uint256 playerId,
     uint16[] calldata actionIds,

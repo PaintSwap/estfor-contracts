@@ -170,6 +170,11 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
     _lastQueueId = 1;
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   function startAction(
     uint256 playerId,
     uint16 actionId,

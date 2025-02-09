@@ -277,6 +277,11 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     addTerritories(territories);
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   function assignCombatants(
     uint256 clanId,
     uint64[] calldata playerIds,

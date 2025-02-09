@@ -2947,19 +2947,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "activityPoints",
-        "type": "address"
-      }
-    ],
-    "name": "initializeAddresses",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -3138,6 +3125,19 @@
       }
     ],
     "name": "setActivePlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "activityPoints",
+        "type": "address"
+      }
+    ],
+    "name": "setActivityPoints",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

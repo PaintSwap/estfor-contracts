@@ -130,6 +130,11 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     IERC20(_brush).approve(address(router), type(uint256).max);
   }
 
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
+  }
+
   function allFixedQuests(uint256 questId) external view returns (Quest memory) {
     return _allFixedQuests[questId];
   }
