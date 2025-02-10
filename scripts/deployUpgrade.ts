@@ -120,6 +120,7 @@ async function main() {
     timeout
   })) as unknown as OrderBook;
   await orderbook.waitForDeployment();
+  console.log(`orderbook = "${(await orderbook.getAddress()).toLowerCase()}"`);
 
   // Treasury
   const Treasury = await ethers.getContractFactory("Treasury");
@@ -451,6 +452,13 @@ async function main() {
     await verifyContracts([await royaltyReceiver.getAddress()]);
     await verifyContracts([await passiveActions.getAddress()]);
     await verifyContracts([await treasury.getAddress()]);
+    await verifyContracts([await territories.getAddress()]);
+    await verifyContracts([await bankRegistry.getAddress()]);
+    await verifyContracts([await bankRelay.getAddress()]);
+    await verifyContracts([await bankFactory.getAddress()]);
+    await verifyContracts([await orderbook.getAddress()]);
+    await verifyContracts([await pvpBattleground.getAddress()]);
+    await verifyContracts([await raids.getAddress()]);
 
     try {
       await run("verify:verify", {
