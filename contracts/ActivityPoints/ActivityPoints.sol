@@ -20,7 +20,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   error InvalidBoostMultiplier();
   error MustBeTokenIdOwner();
 
-  bytes32 public constant ACTIVITY_POINT_MINTER = keccak256("ACTIVITY_POINT_MINTER");
+  bytes32 public constant ACTIVITY_POINT_CALLER = keccak256("ACTIVITY_POINT_CALLER");
 
   enum CalculationType {
     NONE,
@@ -88,7 +88,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
-    _grantRole(ACTIVITY_POINT_MINTER, _msgSender());
+    _grantRole(ACTIVITY_POINT_CALLER, _msgSender());
 
     _itemsNFT = IItemNFT(itemNFT);
     _itemTokenId = seasonTokenId;
@@ -147,7 +147,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     ActivityType activityType,
     address player,
     uint256 value
-  ) public override onlyRole(ACTIVITY_POINT_MINTER) returns (uint256 points) {
+  ) public override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 points) {
     // get the calculation from the type
     Calculation memory calculation = _calculations[activityType];
 
@@ -192,8 +192,10 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _calculations[activityType] = Calculation(calculation, base, multiplier, divider, maxPointsPerDay);
   }
 
-  function addMinter(address minter) external onlyOwner {
-    _grantRole(ACTIVITY_POINT_MINTER, minter);
+  function addCallers(address[] calldata callers) external onlyOwner {
+    for (uint256 i = 0; i < callers.length; ++i) {
+      _grantRole(ACTIVITY_POINT_CALLER, callers[i]);
+    }
   }
 
   function updateBoostedNFT(address nft, bool isBoosted) external onlyOwner {

@@ -273,7 +273,7 @@
   },
   {
     "inputs": [],
-    "name": "ACTIVITY_POINT_MINTER",
+    "name": "ACTIVITY_POINT_CALLER",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -313,12 +313,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "minter",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "callers",
+        "type": "address[]"
       }
     ],
-    "name": "addMinter",
+    "name": "addCallers",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

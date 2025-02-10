@@ -160,7 +160,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as Shop;
   await shop.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(shop);
+  await activityPoints.addCallers([shop]);
 
   await shop.setItemNFT(itemNFT);
 
@@ -209,7 +209,7 @@ export const playersFixture = async function () {
     }
   )) as unknown as Quests;
   await quests.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await quests.getAddress());
+  await activityPoints.addCallers([await quests.getAddress()]);
 
   const paintSwapMarketplaceWhitelist = await ethers.deployContract("MockPaintSwapMarketplaceWhitelist");
   const initialMMR = 500;
@@ -238,7 +238,7 @@ export const playersFixture = async function () {
   )) as unknown as Clans;
 
   await clans.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await clans.getAddress());
+  await activityPoints.addCallers([await clans.getAddress()]);
 
   const WishingWell = await ethers.getContractFactory("WishingWell");
   const wishingWell = (await upgrades.deployProxy(
@@ -260,7 +260,7 @@ export const playersFixture = async function () {
   )) as unknown as WishingWell;
 
   await wishingWell.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await wishingWell.getAddress());
+  await activityPoints.addCallers([await wishingWell.getAddress()]);
 
   const startPetId = 1;
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
@@ -334,7 +334,7 @@ export const playersFixture = async function () {
   )) as unknown as Players;
 
   await players.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await players.getAddress());
+  await activityPoints.addCallers([await players.getAddress()]);
 
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
   const Promotions = await ethers.getContractFactory("Promotions", {
@@ -376,7 +376,7 @@ export const playersFixture = async function () {
   )) as unknown as InstantActions;
 
   await instantActions.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await instantActions.getAddress());
+  await activityPoints.addCallers([await instantActions.getAddress()]);
 
   const oracleAddress = await dev.getAddress();
 
@@ -384,7 +384,7 @@ export const playersFixture = async function () {
   const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
     kind: "uups"
   })) as unknown as VRFRequestInfo;
-  // await activityPoints.addMinter(await vrfRequestInfo.getAddress());
+  // await activityPoints.addCallers([await vrfRequestInfo.getAddress()]);
 
   const maxInstantVRFActionAmount = 64n;
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
@@ -407,7 +407,7 @@ export const playersFixture = async function () {
   )) as unknown as InstantVRFActions;
 
   await instantVRFActions.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await instantVRFActions.getAddress());
+  await activityPoints.addCallers([await instantVRFActions.getAddress()]);
 
   const GenericInstantVRFActionStrategy = await ethers.getContractFactory("GenericInstantVRFActionStrategy");
   const genericInstantVRFActionStrategy = (await upgrades.deployProxy(
@@ -557,7 +557,7 @@ export const playersFixture = async function () {
   )) as unknown as LockedBankVaults;
 
   await lockedBankVaults.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await lockedBankVaults.getAddress());
+  await activityPoints.addCallers([await lockedBankVaults.getAddress()]);
 
   // Set K values to 3, 3 to make it easier to get consistent values close to each for same MMR testing
   await lockedBankVaults.setKValues(3, 3);
@@ -592,7 +592,7 @@ export const playersFixture = async function () {
   )) as unknown as Territories;
 
   await territories.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await territories.getAddress());
+  await activityPoints.addCallers([await territories.getAddress()]);
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()}
@@ -630,7 +630,7 @@ export const playersFixture = async function () {
   )) as unknown as PassiveActions;
 
   await passiveActions.setActivityPoints(activityPoints);
-  await activityPoints.addMinter(await passiveActions.getAddress());
+  await activityPoints.addCallers([await passiveActions.getAddress()]);
 
   const Bank = await ethers.getContractFactory("Bank");
   const bank = (await upgrades.deployBeacon(Bank)) as unknown as Bank;

@@ -522,7 +522,7 @@ describe("PlayerNFT", function () {
     );
 
     await players.setActivityPoints(await activityPoints.getAddress());
-    await activityPoints.addMinter(await players.getAddress());
+    await activityPoints.addCallers([await players.getAddress()]);
 
     await itemNFT.initializeAddresses(bankFactory, players);
     await itemNFT.setApproved([shop, players, activityPoints], true);
