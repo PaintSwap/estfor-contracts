@@ -86,6 +86,7 @@ contract OrderBook is
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
+    __ReentrancyGuardTransient_init();
 
     setFees(devAddr, devFee, burntFee);
     // nft must be an ERC1155 via ERC165
