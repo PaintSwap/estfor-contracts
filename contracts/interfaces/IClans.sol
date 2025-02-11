@@ -19,4 +19,6 @@ interface IClans {
   function getMMR(uint256 clanId) external view returns (uint16);
 
   function addXP(uint256 clanId, uint40 xp, bool xpEmittedElsewhere) external;
+
+  function getClanBankAddress(uint256 clanId) external view returns (address);
 }

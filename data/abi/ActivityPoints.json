@@ -126,7 +126,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "player",
+        "name": "recipient",
         "type": "address"
       },
       {
@@ -549,8 +549,13 @@
       },
       {
         "internalType": "address",
-        "name": "player",
+        "name": "recipient",
         "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "isEvolvedOrNA",
+        "type": "bool"
       },
       {
         "internalType": "uint256",

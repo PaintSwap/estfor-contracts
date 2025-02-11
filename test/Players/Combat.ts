@@ -1170,7 +1170,7 @@ describe("Combat Actions", function () {
       await players.connect(alice).processActions(playerId);
 
       await timeTravel24Hours();
-      await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 10_000_000n);
 
       const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(1);

@@ -3,11 +3,10 @@ import {ethers, upgrades} from "hardhat";
 import {expect} from "chai";
 import {ActivityPoints, IOrderBook, OrderBook} from "../typechain-types";
 import {OrderSide} from "@paintswap/estfor-definitions/types";
-import {formatEther, parseEther} from "ethers";
-import {activityPoints} from "../typechain-types/contracts";
+import {parseEther} from "ethers";
 import {ACTIVITY_TICKET} from "@paintswap/estfor-definitions/constants";
 
-describe.only("OrderBook", function () {
+describe("OrderBook", function () {
   async function deployContractsFixture() {
     const [owner, alice, bob, charlie, dev, erin, frank, royaltyRecipient] = await ethers.getSigners();
 

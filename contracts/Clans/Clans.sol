@@ -11,6 +11,7 @@ import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
+import {IBank} from "../interfaces/IBank.sol";
 import {IMarketplaceWhitelist} from "../interfaces/external/IMarketplaceWhitelist.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
@@ -290,11 +291,15 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     (string memory trimmedName, ) = _setName(clanId, name);
     _checkSocials(discord, telegram, twitter);
     string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
-    _activityPoints.reward(ActivityType.clans_evt_clancreated, msgSender, 1);
     emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId, block.timestamp);
     _pay(tier.price);
 
-    _bankFactory.createBank(msgSender, clanId);
+    _activityPoints.reward(
+      ActivityType.clans_evt_clancreated,
+      _bankFactory.createBank(msgSender, clanId),
+      _players.isPlayerEvolved(playerId),
+      1
+    );
   }
 
   function createClanBridge(
@@ -942,6 +947,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     );
   }
 
+  /// @dev used by Territories to get Clan Bank for Activity Points
+  function getClanBankAddress(uint256 clanId) external view override returns (address bankAddress) {
+    return _bankFactory.getBankAddress(clanId);
+  }
+
+  /// @dev used to check bloom filter for reserved names from Fantom
   function isClanNameReserved(string calldata clanName) public view returns (bool) {
     return _reservedClanNames._probablyContainsString(EstforLibrary.toLower(clanName));
   }

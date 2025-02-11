@@ -150,6 +150,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "depositor",
+        "type": "address"
+      }
+    ],
+    "name": "isForceItemDepositor",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -178,6 +197,24 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "depositors",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool[]",
+        "name": "allowed",
+        "type": "bool[]"
+      }
+    ],
+    "name": "setForceItemDepositors",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

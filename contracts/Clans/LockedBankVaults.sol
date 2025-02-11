@@ -379,19 +379,24 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     bytes32 requestId = _requestRandomWords();
     _requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
-    address msgSender = _msgSender();
-    _activityPoints.reward(ActivityType.lockedbankvaults_evt_attackvaults, msgSender, 1);
-
     emit AttackVaults(
       clanId,
       defendingClanId,
-      msgSender,
+      _msgSender(),
       leaderPlayerId,
       uint256(requestId),
       nextPendingAttackId,
       attackingCooldownTimestamp,
       reattackingCooldownTimestamp,
       itemTokenId
+    );
+
+    // issue activity points
+    _activityPoints.reward(
+      ActivityType.lockedbankvaults_evt_attackvaults,
+      _bankFactory.getBankAddress(clanId),
+      _players.isPlayerEvolved(leaderPlayerId),
+      1
     );
 
     if (isUsingSuperAttack) {

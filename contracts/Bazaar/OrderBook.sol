@@ -634,7 +634,7 @@ contract OrderBook is
       }
 
       address msgSender = _msgSender();
-      _activityPoints.reward(ActivityType.orderbook_evt_ordersmatched, msgSender, cost / 1 ether);
+      _activityPoints.reward(ActivityType.orderbook_evt_ordersmatched, msgSender, true, cost / 1 ether);
 
       emit OrdersMatched(msgSender, orderIdsPool, quantitiesPool);
     }

@@ -1,8 +1,11 @@
 import {ethers, upgrades} from "hardhat";
 import {
   BANK_ADDRESS,
+  BANK_FACTORY_ADDRESS,
+  BANK_REGISTRY_ADDRESS,
   BANK_RELAY_ADDRESS,
   BAZAAR_ADDRESS,
+  CLANS_ADDRESS,
   INSTANT_ACTIONS_ADDRESS,
   INSTANT_VRF_ACTIONS_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -10,6 +13,7 @@ import {
   PASSIVE_ACTIONS_ADDRESS,
   PLAYERS_ADDRESS,
   QUESTS_ADDRESS,
+  RAIDS_ADDRESS,
   SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
   WISHING_WELL_ADDRESS
@@ -41,10 +45,18 @@ async function main() {
     WISHING_WELL_ADDRESS,
     INSTANT_ACTIONS_ADDRESS,
     INSTANT_VRF_ACTIONS_ADDRESS,
+    PASSIVE_ACTIONS_ADDRESS,
+    CLANS_ADDRESS,
     LOCKED_BANK_VAULTS_ADDRESS,
-    TERRITORIES_ADDRESS,
-    PASSIVE_ACTIONS_ADDRESS
+    TERRITORIES_ADDRESS
   ]);
+
+  // Set the force item depositors to allow minting to clan bank
+  const BankRegistry = await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS);
+  await BankRegistry.setForceItemDepositors([await activityPoints.getAddress(), RAIDS_ADDRESS], [true, true]);
+  console.log("BankRegistry setForceItemDepositors: activity points, raids");
+
+  // Set the activity points contract on all other contracts
 
   const orderBook = await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS);
   await orderBook.setActivityPoints(activityPoints);
@@ -73,6 +85,18 @@ async function main() {
   const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
   await instantVRFActions.setActivityPoints(activityPoints);
   console.log("InstantVRFActions set activity points");
+
+  const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);
+  await clans.setActivityPoints(activityPoints);
+  console.log("Clans set activity points");
+
+  const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);
+  await lockedBankVaults.setActivityPoints(activityPoints);
+  console.log("LockedBankVaults set activity points");
+
+  const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS);
+  await territories.setActivityPoints(activityPoints);
+  console.log("Territories set activity points");
 }
 
 main().catch((error) => {

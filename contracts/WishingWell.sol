@@ -210,19 +210,31 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
         }
 
         _clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
-        _activityPoints.reward(ActivityType.wishingwell_evt_donatetoclan, from, amount / 1 ether);
+
         emit DonateToClan(from, playerId, flooredAmountWei, clanId, clanXPGained);
+
+        _activityPoints.reward(
+          ActivityType.wishingwell_evt_donatetoclan,
+          from,
+          _players.isPlayerEvolved(playerId),
+          amount / 1 ether
+        );
       }
     }
-
-    // amount / 1 ether;
-    _activityPoints.reward(ActivityType.wishingwell_evt_donate, from, amount / 1 ether);
 
     if (isRaffleDonation) {
       emit Donate(from, playerId, flooredAmountWei, _lastLotteryId, _lastRaffleId);
     } else {
       emit Donate(from, playerId, flooredAmountWei, 0, 0);
     }
+
+    // amount / 1 ether;
+    _activityPoints.reward(
+      ActivityType.wishingwell_evt_donate,
+      from,
+      _players.isPlayerEvolved(playerId),
+      amount / 1 ether
+    );
 
     _totalDonated += uint40(amount / 1 ether);
 

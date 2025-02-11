@@ -58,6 +58,8 @@ contract PlayersImplProcessActions is PlayersBase {
       return (remainingQueuedActions, emptyPendingQueuedActionProcessed.currentAction);
     }
 
+    bool isEvolved = _isEvolved(playerId);
+
     remainingQueuedActions = pendingQueuedActionState.remainingQueuedActions;
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
     currentActionProcessed = pendingQueuedActionProcessed.currentAction;
@@ -136,6 +138,7 @@ contract PlayersImplProcessActions is PlayersBase {
       if (actionMetadata.died) {
         emit Died(from, playerId, actionMetadata.queueId);
       }
+
       // XP gained
       if (actionMetadata.xpGained != 0) {
         // Keep reading until the xp expected is reached
@@ -165,8 +168,8 @@ contract PlayersImplProcessActions is PlayersBase {
 
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
-        _activityPoints.reward(ActivityType.players_evt_actionfinished, from, 1);
         emit ActionFinished(from, playerId, actionMetadata.queueId);
+        _activityPoints.reward(ActivityType.players_evt_actionfinished, from, isEvolved, 1);
       } else {
         emit ActionPartiallyFinished(from, playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
       }
@@ -176,13 +179,13 @@ contract PlayersImplProcessActions is PlayersBase {
     // XP rewards
     if (pendingQueuedActionState.xpRewardItemTokenIds.length != 0) {
       _itemNFT.mintBatch(from, pendingQueuedActionState.xpRewardItemTokenIds, pendingQueuedActionState.xpRewardAmounts);
-      _activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, from, 1);
       emit ClaimedXPThresholdRewards(
         from,
         playerId,
         pendingQueuedActionState.xpRewardItemTokenIds,
         pendingQueuedActionState.xpRewardAmounts
       );
+      _activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, from, isEvolved, 1);
     }
 
     // Oracle loot from past random rewards
@@ -245,12 +248,6 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardAmounts
       );
 
-      _activityPoints.reward(
-        ActivityType.players_evt_dailyreward,
-        from,
-        pendingQueuedActionState.dailyRewardAmounts[0]
-      );
-
       emit DailyReward(
         from,
         playerId,
@@ -258,16 +255,25 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
 
+      _activityPoints.reward(
+        ActivityType.players_evt_dailyreward,
+        from,
+        isEvolved,
+        pendingQueuedActionState.dailyRewardAmounts[0]
+      );
+
       if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
-        _activityPoints.reward(
-          ActivityType.players_evt_weeklyreward,
-          from,
-          pendingQueuedActionState.dailyRewardAmounts[1]
-        );
         emit WeeklyReward(
           from,
           playerId,
           pendingQueuedActionState.dailyRewardItemTokenIds[1],
+          pendingQueuedActionState.dailyRewardAmounts[1]
+        );
+
+        _activityPoints.reward(
+          ActivityType.players_evt_weeklyreward,
+          from,
+          isEvolved,
           pendingQueuedActionState.dailyRewardAmounts[1]
         );
       }

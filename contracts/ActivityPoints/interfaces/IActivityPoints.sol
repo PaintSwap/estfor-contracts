@@ -14,10 +14,10 @@ enum ActivityType {
   orderbook_evt_ordersmatched,
   orderbook_evt_claimedtokens,
   orderbook_evt_claimednfts,
-  clans_evt_clancreated,
-  lockedbankvaults_evt_attackvaults,
-  territories_evt_attackterritory,
-  territories_evt_claimunoccupiedterritory,
+  clans_evt_clancreated, // _isClanActivityType
+  lockedbankvaults_evt_attackvaults, // _isClanActivityType
+  territories_evt_attackterritory, // _isClanActivityType
+  territories_evt_claimunoccupiedterritory, // _isClanActivityType
   players_evt_actionfinished,
   players_evt_addxp,
   players_evt_levelup,
@@ -28,7 +28,17 @@ enum ActivityType {
 }
 
 interface IActivityPoints {
-  event ActivityPointsEarned(address indexed player, ActivityType indexed activityType, uint256 value, uint256 points);
+  event ActivityPointsEarned(
+    address indexed recipient,
+    ActivityType indexed activityType,
+    uint256 value,
+    uint256 points
+  );
 
-  function reward(ActivityType activityType, address player, uint256 value) external returns (uint256 points);
+  function reward(
+    ActivityType activityType,
+    address recipient,
+    bool isEvolvedOrNA,
+    uint256 value
+  ) external returns (uint256 points);
 }

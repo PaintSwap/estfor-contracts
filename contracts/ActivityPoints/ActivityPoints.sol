@@ -11,9 +11,8 @@ import {IItemNFT} from "../interfaces/IItemNFT.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {IBank} from "../interfaces/IBank.sol";
 import {IActivityPoints, ActivityType} from "./interfaces/IActivityPoints.sol";
-
-import "hardhat/console.sol";
 
 contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgradeable, OwnableUpgradeable {
   error CannotBeZeroAddress();
@@ -64,15 +63,15 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   // The calculations for each activity type
   mapping(ActivityType => Calculation) private _calculations;
 
-  // The daily checkpoints for each player and activity type
-  mapping(address player => mapping(ActivityType => DailyCheckpoint)) private _checkpoints;
+  // The daily checkpoints for each recipient and activity type
+  mapping(address recipient => mapping(ActivityType => DailyCheckpoint)) private _checkpoints;
 
   // NFTs that can boost points
   mapping(address nft => bool isBoosted) private _boostedNFTs;
   // This tracks the owners of each token when it is registered to prevent transfer abuse
-  mapping(address nft => mapping(uint256 tokenId => address player)) private _nftBoostOwners;
-  // NFTs that are boosting points per player
-  mapping(address player => PointBoost boost) private _boosts;
+  mapping(address nft => mapping(uint256 tokenId => address recipient)) private _nftBoostOwners;
+  // NFTs that are boosting points per recipient
+  mapping(address recipient => PointBoost boost) private _boosts;
 
   // Track points earned by the boosted nfts and in total for today and the previous day, rolling
 
@@ -145,7 +144,8 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
 
   function reward(
     ActivityType activityType,
-    address player,
+    address recipient,
+    bool isEvolvedOrNA,
     uint256 value
   ) public override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 points) {
     // get the calculation from the type
@@ -164,15 +164,27 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     // if they have points...
     if (points != 0) {
       // increase the points by the multiplier if they have a boost
-      points = _applyPointBoost(player, points);
+      points = _applyPointBoost(recipient, points);
 
       // apply the max points per day
-      points = _applyMaxPointsPerDay(player, activityType, calculation.maxPointsPerDay, points);
+      points = _applyMaxPointsPerDay(recipient, activityType, calculation.maxPointsPerDay, points);
 
-      // console.log("ActivityPoints:reward - player: %s, type: %d, points: %d", player, uint8(activityType), points);
       if (points != 0) {
-        emit ActivityPointsEarned(player, activityType, value, points);
-        _itemsNFT.mint(player, _itemTokenId, points);
+        // adjust for non-evolved heroes
+        if (!isEvolvedOrNA) {
+          points = points / 2;
+        }
+
+        emit ActivityPointsEarned(recipient, activityType, value, points);
+
+        bool isBankRecipient = _isClanActivityType(activityType);
+        if (isBankRecipient) {
+          IBank(recipient).setAllowBreachedCapacity(true);
+        }
+        _itemsNFT.mint(recipient, _itemTokenId, points);
+        if (isBankRecipient) {
+          IBank(recipient).setAllowBreachedCapacity(false);
+        }
       }
     }
   }
@@ -203,15 +215,31 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _boostedNFTs[nft] = isBoosted;
   }
 
-  function _applyPointBoost(address player, uint256 points) private returns (uint256 boosted) {
+  function _isClanActivityType(ActivityType activityType) private returns (bool) {
+    if (activityType == ActivityType.clans_evt_clancreated) {
+      return true;
+    }
+    if (activityType == ActivityType.lockedbankvaults_evt_attackvaults) {
+      return true;
+    }
+    if (activityType == ActivityType.territories_evt_attackterritory) {
+      return true;
+    }
+    if (activityType == ActivityType.territories_evt_claimunoccupiedterritory) {
+      return true;
+    }
+    return false;
+  }
+
+  function _applyPointBoost(address recipient, uint256 points) private returns (uint256 boosted) {
     boosted = points;
-    PointBoost memory boost = _boosts[player];
+    PointBoost memory boost = _boosts[recipient];
     uint40 timestamp = uint40(block.timestamp);
     // check to see if the boost is active
     if (_boostedNFTs[boost.nft] && boost.activated + 1 days < timestamp) {
       address boostOwner = _nftBoostOwners[boost.nft][boost.tokenId];
       // the registered and current owner must be the same
-      if (player == boostOwner && player == IERC721(boost.nft).ownerOf(boost.tokenId)) {
+      if (recipient == boostOwner && recipient == IERC721(boost.nft).ownerOf(boost.tokenId)) {
         uint16 current = uint16(timestamp / 1 days);
         BoostDailyCheckpoint storage checkpoint = _boostNFTCheckpoints[boost.nft];
 
@@ -245,14 +273,14 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   }
 
   function _applyMaxPointsPerDay(
-    address player,
+    address recipient,
     ActivityType activityType,
     uint256 maxPointsPerDay,
     uint256 points
   ) private returns (uint256 adjusted) {
     adjusted = points;
     if (maxPointsPerDay != 0) {
-      DailyCheckpoint storage checkpoint = _checkpoints[player][activityType];
+      DailyCheckpoint storage checkpoint = _checkpoints[recipient][activityType];
       uint112 amount = checkpoint.amount;
       // uint32 current = uint32(block.timestamp - (block.timestamp % 1 days));
       uint16 current = uint16(block.timestamp / 1 days);

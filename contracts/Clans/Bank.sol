@@ -76,7 +76,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgr
   IPlayers private _players;
   address private _lockedBankVaults;
   address private _raids;
-  bool private notused_allowBreachedCapacity; // Be nice if this is transient storage
+  bool private notused_allowBreachedCapacity; // moved to transient storage
   bool private _initialized;
 
   BitMaps.BitMap private _uniqueItems; // itemTokenId => bool hasAny
@@ -365,8 +365,8 @@ contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgr
     }
   }
 
-  function _isForceItemDepositor(address account) private view returns (bool) {
-    return account == _raids;
+  function _isForceItemDepositor(address account) private view returns (bool allowed) {
+    return _bankRegistry.isForceItemDepositor(account);
   }
 
   function setAllowBreachedCapacity(bool allow) external override onlyForceItemDepositor {

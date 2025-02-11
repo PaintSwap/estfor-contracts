@@ -376,12 +376,22 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
       amounts[i + _pendingPassiveActionState.producedItemTokenIds.length] = _pendingPassiveActionState
         .producedRandomRewardAmounts[i];
     }
+
     address msgSender = _msgSender();
+
     if (numItemsToMint != 0) {
       _itemNFT.mintBatch(msgSender, itemTokenIds, amounts);
     }
-    _activityPoints.reward(ActivityType.passiveactions_evt_claimpassiveaction, msgSender, 1);
+
     emit ClaimPassiveAction(playerId, msgSender, queueId, itemTokenIds, amounts, startingAnother);
+
+    // issue activity points
+    _activityPoints.reward(
+      ActivityType.passiveactions_evt_claimpassiveaction,
+      msgSender,
+      _players.isPlayerEvolved(playerId),
+      1
+    );
   }
 
   function _isWinner(

@@ -229,8 +229,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
 
     _itemNFT.burnBatch(msgSender, consumedItemTokenIds, consumedAmounts);
 
-    _activityPoints.reward(ActivityType.instantvrfactions_evt_doinstantvrfactions, msgSender, 1);
-
     emit DoInstantVRFActions(
       msgSender,
       playerId,
@@ -240,6 +238,9 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       consumedItemTokenIds,
       consumedAmounts
     );
+
+    // issue activity points
+    _activityPoints.reward(ActivityType.instantvrfactions_evt_doinstantvrfactions, msgSender, isPlayerEvolved, 1);
   }
 
   function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {

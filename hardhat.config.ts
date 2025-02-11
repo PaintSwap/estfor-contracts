@@ -87,7 +87,7 @@ const config: HardhatUserConfig = {
     overrides: {
       "contracts/Clans/Clans.sol": lowestRunsConfig,
       "contracts/Clans/LockedBankVaults.sol": lowRunsConfig,
-      "contracts/Clans/Territories.sol": mediumRunsConfig,
+      "contracts/Clans/Territories.sol": lowRunsConfig,
       "contracts/Clans/Raids.sol": lowRunsConfig,
       "contracts/PassiveActions.sol": mediumRunsConfig,
       "contracts/Players/Players.sol": lowestRunsConfig,

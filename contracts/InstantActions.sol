@@ -156,8 +156,6 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     _itemNFT.burnBatch(msgSender, instantActionState.consumedTokenIds, instantActionState.consumedAmounts);
     _itemNFT.mintBatch(msgSender, instantActionState.producedTokenIds, instantActionState.producedAmounts);
 
-    _activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, msgSender, 1);
-
     emit DoInstantActions(
       playerId,
       msgSender,
@@ -168,6 +166,14 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       instantActionState.producedTokenIds,
       instantActionState.producedAmounts,
       actionType
+    );
+
+    // issue activity points
+    _activityPoints.reward(
+      ActivityType.instantactions_evt_doinstantactions,
+      msgSender,
+      _players.isPlayerEvolved(playerId),
+      1
     );
   }
 

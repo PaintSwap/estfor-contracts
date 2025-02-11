@@ -82,7 +82,7 @@ describe("ActivityPoints", function () {
       const {activityPoints, alice} = await loadFixture(deployActivityPointsFixture);
 
       const instantActionsAP = 200;
-      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, 0))
+      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, instantActionsAP);
     });
@@ -92,25 +92,25 @@ describe("ActivityPoints", function () {
 
       const brush0 = 1;
       const brushAP0 = 63;
-      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, brush0))
+      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, true, brush0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.shop_evt_buy, brush0, brushAP0);
 
       const brush = 100;
       const brushAP = 189;
-      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, brush))
+      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, true, brush))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.shop_evt_buy, brush, brushAP);
 
       const brush2 = 4000;
       const brushAP2 = 315;
-      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, brush2))
+      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, true, brush2))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.shop_evt_buy, brush2, brushAP2);
 
       const brush3 = 40000;
       const brushAP3 = 378;
-      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, brush3))
+      await expect(activityPoints.reward(ActivityType.shop_evt_buy, alice.address, true, brush3))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.shop_evt_buy, brush3, brushAP3);
     });
@@ -120,26 +120,26 @@ describe("ActivityPoints", function () {
 
       const xp = 1;
       const xpAP = 0;
-      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, xp)).not.to.emit(
+      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, true, xp)).not.to.emit(
         activityPoints,
         "ActivityPointsEarned"
       );
 
       const xp2 = 3;
       const xpAP2 = 15;
-      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, xp2))
+      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, true, xp2))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_addxp, xp2, xpAP2);
 
       const xp3 = 966;
       const xpAP3 = 135;
-      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, xp3))
+      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, true, xp3))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_addxp, xp3, xpAP3);
 
       const xp4 = 10000;
       const xpAP4 = 180;
-      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, xp4))
+      await expect(activityPoints.reward(ActivityType.players_evt_addxp, alice.address, true, xp4))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_addxp, xp4, xpAP4);
     });
@@ -149,45 +149,45 @@ describe("ActivityPoints", function () {
 
       const level1 = 1;
       const levelAP1 = 0;
-      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, level1)).not.to.emit(
+      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, true, level1)).not.to.emit(
         activityPoints,
         "ActivityPointsEarned"
       );
 
       const level3 = 4;
       const levelAP3 = 65;
-      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, level3))
+      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, true, level3))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_levelup, level3, levelAP3);
 
       const level10 = 10;
       const levelAP10 = 130;
-      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, level10))
+      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, true, level10))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_levelup, level10, levelAP10);
 
       const level25 = 25;
       const levelAP25 = 195;
-      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, level25))
+      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, true, level25))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_levelup, level25, levelAP25);
 
       const level89 = 89;
       const levelAP89 = 325;
-      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, level89))
+      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, true, level89))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_levelup, level89, levelAP89);
 
       const level130 = 130;
       const levelAP130 = 390;
-      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, level130))
+      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, true, level130))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_levelup, level130, levelAP130);
 
       //add 140
       const level140 = 140;
       const levelAP140 = 390;
-      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, level140))
+      await expect(activityPoints.reward(ActivityType.players_evt_levelup, alice.address, true, level140))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_levelup, level140, levelAP140);
     });
@@ -198,7 +198,7 @@ describe("ActivityPoints", function () {
       const xpThreshold = 1;
       const xpThresholdAP = 100;
       await expect(
-        activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, alice.address, xpThreshold)
+        activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, alice.address, true, xpThreshold)
       )
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_claimedxpthresholdrewards, xpThreshold, xpThresholdAP);
@@ -206,7 +206,7 @@ describe("ActivityPoints", function () {
       // at the max so no more points
       const xpThreshold2 = 1;
       await expect(
-        activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, alice.address, xpThreshold2)
+        activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, alice.address, true, xpThreshold2)
       ).not.to.emit(activityPoints, "ActivityPointsEarned");
 
       // advance one day
@@ -215,7 +215,7 @@ describe("ActivityPoints", function () {
 
       // should get points again
       await expect(
-        activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, alice.address, xpThreshold2)
+        activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, alice.address, true, xpThreshold2)
       )
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.players_evt_claimedxpthresholdrewards, xpThreshold2, xpThresholdAP);
@@ -227,7 +227,7 @@ describe("ActivityPoints", function () {
       const {activityPoints, alice} = await loadFixture(deployActivityPointsFixture);
       const points = 100;
 
-      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, 0))
+      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, points * 2);
     });
@@ -241,7 +241,7 @@ describe("ActivityPoints", function () {
 
       // Calculate points with boost
       const basePoints = 100;
-      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, 0))
+      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, basePoints * 2);
     });
@@ -254,7 +254,7 @@ describe("ActivityPoints", function () {
       await activityPoints.connect(alice).registerPointBoost(testERC721, nftTokenId);
 
       const basePoints = 200;
-      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, 0))
+      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, basePoints);
 
@@ -263,7 +263,7 @@ describe("ActivityPoints", function () {
       await ethers.provider.send("evm_mine", []);
 
       // Points should not be boosted since there were no boosted the first day...
-      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, 0))
+      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, basePoints);
 
@@ -272,7 +272,7 @@ describe("ActivityPoints", function () {
       await ethers.provider.send("evm_mine", []);
 
       // Points should now be boosted since there were no boosted the first day...
-      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, 0))
+      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice.address, ActivityType.instantactions_evt_doinstantactions, 0, (basePoints * 110) / 100);
     });
@@ -293,7 +293,7 @@ describe("ActivityPoints", function () {
 
       // Points should not be boosted for alice
       const basePoints = 200;
-      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice, 0))
+      await expect(activityPoints.reward(ActivityType.instantactions_evt_doinstantactions, alice, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(alice, ActivityType.instantactions_evt_doinstantactions, 0, basePoints);
     });

@@ -640,6 +640,11 @@ export const playersFixture = async function () {
     kind: "uups"
   })) as unknown as BankRegistry;
 
+  await bankRegistry.setForceItemDepositors(
+    [await raids.getAddress(), await activityPoints.getAddress()],
+    [true, true]
+  );
+
   const BankFactory = await ethers.getContractFactory("BankFactory");
   const bankFactory = (await upgrades.deployProxy(
     BankFactory,

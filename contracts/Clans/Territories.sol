@@ -329,8 +329,6 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     bytes32 requestId = _requestRandomWords();
     _requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
-    _activityPoints.reward(ActivityType.territories_evt_attackterritory, msgSender, 1);
-
     emit AttackTerritory(
       clanId,
       territoryId,
@@ -339,6 +337,13 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
       uint256(requestId),
       nextPendingAttackId,
       attackingCooldownTimestamp
+    );
+
+    _activityPoints.reward(
+      ActivityType.territories_evt_attackterritory,
+      _clans.getClanBankAddress(clanId),
+      IPlayers(_players).isPlayerEvolved(leaderPlayerId),
+      1
     );
   }
 
@@ -360,7 +365,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     bool clanUnoccupied = defendingClanId == 0;
     if (clanUnoccupied) {
       _claimTerritory(territoryId, attackingClanId);
-      _activityPoints.reward(ActivityType.territories_evt_claimunoccupiedterritory, pendingAttack.from, 1);
+
       emit ClaimUnoccupiedTerritory(
         territoryId,
         attackingClanId,
@@ -368,6 +373,14 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
         pendingAttack.leaderPlayerId,
         uint256(requestId)
       );
+
+      _activityPoints.reward(
+        ActivityType.territories_evt_claimunoccupiedterritory,
+        _clans.getClanBankAddress(attackingClanId),
+        IPlayers(_players).isPlayerEvolved(pendingAttack.leaderPlayerId),
+        1
+      );
+
       return;
     }
 

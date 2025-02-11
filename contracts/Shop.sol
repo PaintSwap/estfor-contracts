@@ -124,10 +124,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     // Pay
     (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
     address sender = _msgSender();
+    emit Buy(sender, to, tokenId, quantity, price);
     _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mint(to, tokenId, quantity);
-    _activityPoints.reward(ActivityType.shop_evt_buy, sender, tokenCost / 1 ether);
-    emit Buy(sender, to, tokenId, quantity, price);
+    _activityPoints.reward(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
   }
 
   function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
@@ -145,9 +145,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     // Pay
     (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
     address sender = _msgSender();
+    emit BuyBatch(sender, to, tokenIds, quantities, prices);
     _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mintBatch(to, tokenIds, quantities);
-    emit BuyBatch(sender, to, tokenIds, quantities, prices);
+    _activityPoints.reward(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
   }
 
   function sell(uint16 tokenId, uint256 quantity, uint256 minExpectedBrush) external {
@@ -156,10 +157,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     _sell(tokenId, quantity, price);
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
     address sender = _msgSender();
+    emit Sell(sender, tokenId, quantity, price);
     _treasury.spend(sender, totalBrush);
     _itemNFT.burn(sender, tokenId, quantity);
-    _activityPoints.reward(ActivityType.shop_evt_sell, sender, totalBrush / 1 ether);
-    emit Sell(sender, tokenId, quantity, price);
+    _activityPoints.reward(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
   }
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
@@ -178,9 +179,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     }
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
     address sender = _msgSender();
+    emit SellBatch(sender, tokenIds, quantities, prices);
     _treasury.spend(sender, totalBrush);
     _itemNFT.burnBatch(sender, tokenIds, quantities);
-    emit SellBatch(sender, tokenIds, quantities, prices);
+    _activityPoints.reward(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
   }
 
   // Does not burn!
