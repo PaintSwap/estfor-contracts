@@ -431,22 +431,22 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
 
   // Staticcall into ourselves and hit the fallback. This is done so that pendingQueuedActionState/dailyClaimedRewards can be exposed on the json abi.
   function getPendingQueuedActionState(
-    address owner,
+    address playerOwner,
     uint256 playerId
   ) public view returns (PendingQueuedActionState memory) {
     bytes memory data = _staticcall(
       address(this),
-      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, owner, playerId)
+      abi.encodeWithSelector(IPlayersRewardsDelegateView.pendingQueuedActionStateImpl.selector, playerOwner, playerId)
     );
     return abi.decode(data, (PendingQueuedActionState));
   }
 
-  function getActivePlayer(address owner) external view override returns (uint256 playerId) {
-    return _activePlayerInfos[owner].playerId; // TODO: Can use activePlayerInfo?
+  function getActivePlayer(address playerOwner) external view override returns (uint256 playerId) {
+    return _activePlayerInfos[playerOwner].playerId; // TODO: Can use activePlayerInfo?
   }
 
-  function getActivePlayerInfo(address owner) external view returns (ActivePlayerInfo memory) {
-    return _activePlayerInfos[owner];
+  function getActivePlayerInfo(address playerOwner) external view returns (ActivePlayerInfo memory) {
+    return _activePlayerInfos[playerOwner];
   }
 
   function getPlayerXP(uint256 playerId, Skill skill) external view override returns (uint256) {

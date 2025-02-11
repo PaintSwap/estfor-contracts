@@ -2166,7 +2166,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "playerOwner",
         "type": "address"
       }
     ],
@@ -2185,7 +2185,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "playerOwner",
         "type": "address"
       }
     ],
@@ -2278,7 +2278,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "playerOwner",
         "type": "address"
       },
       {
