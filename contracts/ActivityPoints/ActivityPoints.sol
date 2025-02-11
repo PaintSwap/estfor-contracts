@@ -215,7 +215,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _boostedNFTs[nft] = isBoosted;
   }
 
-  function _isClanActivityType(ActivityType activityType) private returns (bool) {
+  function _isClanActivityType(ActivityType activityType) private pure returns (bool) {
     if (activityType == ActivityType.clans_evt_clancreated) {
       return true;
     }
