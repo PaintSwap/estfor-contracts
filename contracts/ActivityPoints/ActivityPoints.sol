@@ -249,8 +249,10 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
 
         if (checkpoint.previousPoints != 0) {
           _rollCheckpoint(globalCheckpoint, current);
-          // use the previous checkpoint to calculate the multiplier, capped at 10%
-          uint256 multiplier = 100 + Math.min(10, (checkpoint.previousPoints * 100) / globalCheckpoint.previousPoints);
+
+          // use the previous checkpoint to calculate the multiplier out of 15%, capped at 10%
+          uint256 multiplier = 100 +
+            Math.min(10, (checkpoint.previousPoints * 15 * 100) / globalCheckpoint.previousPoints / 100);
           // calculate the boosted points
           boosted = (points * multiplier) / 100;
         }
