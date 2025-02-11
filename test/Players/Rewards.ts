@@ -1630,7 +1630,7 @@ describe("Rewards", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await timeTravel24Hours();
-      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 11111111111111111111111n);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 10_000_000_000n);
 
       const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);
