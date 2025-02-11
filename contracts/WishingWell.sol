@@ -238,13 +238,16 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
     _totalDonated += uint40(amount / 1 ether);
 
+    uint40 lastGlobalThreshold = _lastGlobalThreshold;
+    uint24 globalThresholdIncrement = _globalThresholdIncrement;
     // Is a global donation threshold hit?
-    uint256 nextGlobalThreshold = _lastGlobalThreshold + _globalThresholdIncrement;
+    uint256 nextGlobalThreshold = lastGlobalThreshold + globalThresholdIncrement;
     if (_totalDonated >= nextGlobalThreshold) {
       globalItemTokenId = _nextGlobalRewardItemTokenId;
       uint256 remainder = (_totalDonated - nextGlobalThreshold);
-      uint256 numThresholdIncrements = (remainder / _globalThresholdIncrement) + 1;
-      _lastGlobalThreshold += uint40(numThresholdIncrements * _globalThresholdIncrement);
+      uint256 numThresholdIncrements = (remainder / globalThresholdIncrement) + 1;
+      lastGlobalThreshold += uint40(numThresholdIncrements * globalThresholdIncrement);
+      _lastGlobalThreshold = lastGlobalThreshold;
 
       // Cycle through them
       uint16 nextReward;
@@ -258,7 +261,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
       _nextGlobalRewardItemTokenId = nextReward;
 
-      emit LastGlobalDonationThreshold(uint256(_lastGlobalThreshold) * 1 ether, nextReward);
+      emit LastGlobalDonationThreshold(uint256(lastGlobalThreshold) * 1 ether, nextReward);
     }
   }
 
@@ -272,27 +275,30 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
       return;
     }
 
+    uint16 nextLotteryWinnerRewardItemTokenId = _nextLotteryWinnerRewardItemTokenId;
+
     if (_hasDonations) {
       // Decide the winner
       uint24 _raffleIdWinner = uint24(randomWord % lastRaffleId) + 1;
+      uint40 playerId = uint40(_raffleIdToPlayerId[lastLotteryId][_raffleIdWinner]);
       _winners[lastLotteryId] = LotteryWinnerInfo({
         lotteryId: lastLotteryId,
         raffleId: _raffleIdWinner,
-        itemTokenId: _nextLotteryWinnerRewardItemTokenId,
+        itemTokenId: nextLotteryWinnerRewardItemTokenId,
         amount: 1,
         instantConsume: _nextLotteryWinnerRewardInstantConsume,
-        playerId: uint40(_raffleIdToPlayerId[lastLotteryId][_raffleIdWinner])
+        playerId: playerId
       });
 
       _lastRaffleId = 0;
       // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId & nextLotteryWinnerRewardInstantConsume;
-      emit WinnerAndNewLottery(lastLotteryId, _raffleIdWinner, _nextLotteryWinnerRewardItemTokenId, 1);
+      emit WinnerAndNewLottery(lastLotteryId, _raffleIdWinner, nextLotteryWinnerRewardItemTokenId, 1);
 
       // Add to the last unclaimed winners queue
       bool added;
       for (uint256 i = 0; i < _lastUnclaimedWinners.length; i += 2) {
         if (_lastUnclaimedWinners[i] == 0) {
-          _lastUnclaimedWinners[i] = _winners[lastLotteryId].playerId;
+          _lastUnclaimedWinners[i] = playerId;
           _lastUnclaimedWinners[i + 1] = lastLotteryId;
           added = true;
           break;
@@ -305,11 +311,11 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
           _lastUnclaimedWinners[i - 2] = _lastUnclaimedWinners[i];
           _lastUnclaimedWinners[i - 1] = _lastUnclaimedWinners[i + 1];
         }
-        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 2] = _winners[lastLotteryId].playerId;
+        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 2] = playerId;
         _lastUnclaimedWinners[_lastUnclaimedWinners.length - 1] = lastLotteryId;
       }
     } else {
-      emit WinnerAndNewLottery(lastLotteryId, 0, _nextLotteryWinnerRewardItemTokenId, 1);
+      emit WinnerAndNewLottery(lastLotteryId, 0, nextLotteryWinnerRewardItemTokenId, 1);
     }
 
     // Start new lottery
