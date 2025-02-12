@@ -285,15 +285,10 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   }
 
   function _isClanActivityType(ActivityType activityType) private pure returns (bool) {
-    if (
-      activityType == ActivityType.clans_evt_clancreated ||
+    return (activityType == ActivityType.clans_evt_clancreated ||
       activityType == ActivityType.lockedbankvaults_evt_attackvaults ||
       activityType == ActivityType.territories_evt_attackterritory ||
-      activityType == ActivityType.territories_evt_claimunoccupiedterritory
-    ) {
-      return true;
-    }
-    return false;
+      activityType == ActivityType.territories_evt_claimunoccupiedterritory);
   }
 
   function _isHolder(
@@ -373,7 +368,6 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     if (maxPointsPerDay != 0) {
       DailyCheckpoint storage checkpoint = _checkpoints[recipient][activityType];
       uint112 amount = checkpoint.amount;
-      // uint32 current = uint32(block.timestamp - (block.timestamp % 1 days));
       uint16 current = uint16(block.timestamp / 1 days);
       if (checkpoint.current != current) {
         // reset the checkpoint
