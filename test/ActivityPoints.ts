@@ -370,11 +370,11 @@ describe("ActivityPoints", function () {
   });
 
   describe("Green Point Calculation", function () {
-    it("Should get activity points for wishingwell_luckofthedraw", async function () {
+    it("Should get activity points for wishingwell_luckofthedraw when evolved", async function () {
       const {alice, activityPoints, mockItemNFT} = await loadFixture(deployActivityPointsFixture);
 
       const expectedGreenTickets = 3;
-      await expect(activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckofthedraw, alice))
+      await expect(activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckofthedraw, alice, true))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.wishingwell_luckofthedraw, 0, alice.address, SONIC_GEM_TICKET, expectedGreenTickets);
 
@@ -382,25 +382,61 @@ describe("ActivityPoints", function () {
       expect(balance).to.equal(expectedGreenTickets);
     });
 
-    it("Should get activity points for players_dailyreward", async function () {
+    it("Should get activity points for players_dailyreward when evolved", async function () {
       const {alice, activityPoints} = await loadFixture(deployActivityPointsFixture);
 
       const expectedGreenTickets = 8;
-      await expect(activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, alice))
+      await expect(activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, alice, true))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_dailyreward, 0, alice.address, SONIC_GEM_TICKET, expectedGreenTickets);
     });
 
-    it("Should get activity points for wishingwell_luckypotion", async function () {
+    it("Should get activity points for wishingwell_luckypotion when evolved", async function () {
       const {alice, activityPoints, mockItemNFT} = await loadFixture(deployActivityPointsFixture);
 
       const expectedGreenTickets = 50;
-      await expect(activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckypotion, alice))
+      await expect(activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckypotion, alice, true))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.wishingwell_luckypotion, 0, alice.address, SONIC_GEM_TICKET, expectedGreenTickets);
 
       const balance = await mockItemNFT.balanceOf(alice, SONIC_GEM_TICKET);
       expect(balance).to.equal(expectedGreenTickets);
+    });
+
+    it("Should not get activity points for wishingwell_luckofthedraw when not evolved", async function () {
+      const {alice, activityPoints, mockItemNFT} = await loadFixture(deployActivityPointsFixture);
+
+      await expect(activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckofthedraw, alice, false)).to.not.emit(
+        activityPoints,
+        "ActivityPointsEarned"
+      );
+
+      const balance = await mockItemNFT.balanceOf(alice, SONIC_GEM_TICKET);
+      expect(balance).to.equal(0);
+    });
+
+    it("Should not get activity points for players_dailyreward when not evolved", async function () {
+      const {alice, activityPoints, mockItemNFT} = await loadFixture(deployActivityPointsFixture);
+
+      await expect(activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, alice, false)).to.not.emit(
+        activityPoints,
+        "ActivityPointsEarned"
+      );
+
+      const balance = await mockItemNFT.balanceOf(alice, SONIC_GEM_TICKET);
+      expect(balance).to.equal(0);
+    });
+
+    it("Should not get activity points for wishingwell_luckypotion when not evolved", async function () {
+      const {alice, activityPoints, mockItemNFT} = await loadFixture(deployActivityPointsFixture);
+
+      await expect(activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckypotion, alice, false)).to.not.emit(
+        activityPoints,
+        "ActivityPointsEarned"
+      );
+
+      const balance = await mockItemNFT.balanceOf(alice, SONIC_GEM_TICKET);
+      expect(balance).to.equal(0);
     });
   });
 });
