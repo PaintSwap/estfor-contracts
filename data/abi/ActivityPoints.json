@@ -74,7 +74,7 @@
   },
   {
     "inputs": [],
-    "name": "MustBeTokenIdOwner",
+    "name": "MustBeBoostedTokenIdOwner",
     "type": "error"
   },
   {
@@ -161,6 +161,49 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "enum ActivityType",
+        "name": "activityType",
+        "type": "uint8"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum ActivityPoints.CalculationType",
+        "name": "calculation",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "base",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "multiplier",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "divider",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "maxPointsPerDay",
+        "type": "uint64"
+      }
+    ],
+    "name": "AddPointsCalculation",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint64",
         "name": "version",
@@ -187,6 +230,43 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "nft",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ActivityPoints.NFTContractType",
+        "name": "contractType",
+        "type": "uint8"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint40",
+        "name": "timestamp",
+        "type": "uint40"
+      }
+    ],
+    "name": "RegisterPointBoost",
     "type": "event"
   },
   {
@@ -262,6 +342,25 @@
       }
     ],
     "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "nft",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum ActivityPoints.NFTContractType",
+        "name": "contractType",
+        "type": "uint8"
+      }
+    ],
+    "name": "UpdatePointBoostNFT",
     "type": "event"
   },
   {
@@ -365,6 +464,42 @@
     "name": "addPointsCalculation",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getBoostForUser",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint40",
+            "name": "activated",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ActivityPoints.PointBoost",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -604,6 +739,24 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "nfts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "enum ActivityPoints.NFTContractType[]",
+        "name": "contractTypes",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "setBoostedNFTs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "interfaceId",
         "type": "bytes4"
@@ -629,24 +782,6 @@
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "nft",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isBoosted",
-        "type": "bool"
-      }
-    ],
-    "name": "updateBoostedNFT",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

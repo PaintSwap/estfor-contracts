@@ -7,6 +7,7 @@ import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 import {BeaconProxy} from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IItemNFT} from "../interfaces/IItemNFT.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
@@ -17,9 +18,32 @@ import {IActivityPoints, ActivityType} from "./interfaces/IActivityPoints.sol";
 contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgradeable, OwnableUpgradeable {
   error CannotBeZeroAddress();
   error InvalidBoostMultiplier();
-  error MustBeTokenIdOwner();
+  error MustBeBoostedTokenIdOwner();
+
+  event UpdatePointBoostNFT(address indexed nft, NFTContractType contractType);
+  event RegisterPointBoost(
+    address indexed nft,
+    NFTContractType contractType,
+    uint256 indexed tokenId,
+    address indexed recipient,
+    uint40 timestamp
+  );
+  event AddPointsCalculation(
+    ActivityType indexed activityType,
+    CalculationType indexed calculation,
+    uint16 base,
+    uint16 multiplier,
+    uint16 divider,
+    uint64 maxPointsPerDay
+  );
 
   bytes32 public constant ACTIVITY_POINT_CALLER = keccak256("ACTIVITY_POINT_CALLER");
+
+  enum NFTContractType {
+    NONE,
+    ERC721,
+    ERC1155
+  }
 
   enum CalculationType {
     NONE,
@@ -68,7 +92,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   mapping(address recipient => mapping(ActivityType => DailyCheckpoint)) private _checkpoints;
 
   // NFTs that can boost points
-  mapping(address nft => bool isBoosted) private _boostedNFTs;
+  mapping(address nft => NFTContractType contractType) private _boostedNFTs;
   // This tracks the owners of each token when it is registered to prevent transfer abuse
   mapping(address nft => mapping(uint256 tokenId => address recipient)) private _nftBoostOwners;
   // NFTs that are boosting points per recipient
@@ -137,11 +161,36 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _setPointsDiscreteCalculation(ActivityType.territories_evt_claimunoccupiedterritory, 100, 100);
   }
 
+  /// @notice Register an NFT to boost points for a user wallet.
+  /// @notice Daily points are tracked by the NFT collection and used to calculate the boost.
+  /// @param nft The NFT contract address
+  /// @param tokenId The token ID
   function registerPointBoost(address nft, uint16 tokenId) external {
     address msgSender = _msgSender();
-    require(IERC721(nft).ownerOf(tokenId) == msgSender, MustBeTokenIdOwner());
-    _boosts[msgSender] = PointBoost(nft, uint40(block.timestamp), tokenId);
+    bool isHolder = _isHolder(_boostedNFTs[nft], nft, tokenId, msgSender);
+    require(isHolder, MustBeBoostedTokenIdOwner());
+    _registerPointBoost(msgSender, NFTContractType.ERC721, nft, tokenId);
+  }
+
+  function _registerPointBoost(address msgSender, NFTContractType contractType, address nft, uint16 tokenId) private {
+    uint40 timestamp = uint40(block.timestamp);
+    _boosts[msgSender] = PointBoost(nft, timestamp, tokenId);
     _nftBoostOwners[nft][tokenId] = msgSender;
+    emit RegisterPointBoost(nft, contractType, tokenId, msgSender, timestamp);
+  }
+
+  /// @notice Get the registered nft boost for a user wallet
+  /// @param user The user wallet
+  /// @return The boost information. ERC721=1, ERC1155=2
+  function getBoostForUser(address user) external view returns (PointBoost memory) {
+    PointBoost memory boost = _boosts[user];
+    if (boost.nft != address(0)) {
+      bool isHolder = _isHolder(_boostedNFTs[boost.nft], boost.nft, boost.tokenId, user);
+      if (isHolder) {
+        return boost;
+      }
+    }
+    return PointBoost(address(0), 0, 0);
   }
 
   function rewardBlueTickets(
@@ -191,10 +240,6 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     }
   }
 
-  /// @dev green tickets
-  ///      Daily Reward = 8
-  ///      Luck of the Draw = 3
-  ///      Lucky Potion = 50
   function rewardGreenTickets(
     ActivityType activityType,
     address recipient,
@@ -223,7 +268,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     uint16 divider,
     uint64 maxPointsPerDay
   ) external onlyOwner {
-    _calculations[activityType] = Calculation(calculation, base, multiplier, divider, maxPointsPerDay);
+    _addPointsCalculation(activityType, calculation, base, multiplier, divider, maxPointsPerDay);
   }
 
   function addCallers(address[] calldata callers) external onlyOwner {
@@ -232,36 +277,58 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     }
   }
 
-  function updateBoostedNFT(address nft, bool isBoosted) external onlyOwner {
-    require(nft != address(0), CannotBeZeroAddress());
-    _boostedNFTs[nft] = isBoosted;
+  function setBoostedNFTs(address[] calldata nfts, NFTContractType[] calldata contractTypes) external onlyOwner {
+    for (uint256 i = 0; i < nfts.length; ++i) {
+      emit UpdatePointBoostNFT(nfts[i], contractTypes[i]);
+      _boostedNFTs[nfts[i]] = contractTypes[i];
+    }
   }
 
   function _isClanActivityType(ActivityType activityType) private pure returns (bool) {
-    if (activityType == ActivityType.clans_evt_clancreated) {
-      return true;
-    }
-    if (activityType == ActivityType.lockedbankvaults_evt_attackvaults) {
-      return true;
-    }
-    if (activityType == ActivityType.territories_evt_attackterritory) {
-      return true;
-    }
-    if (activityType == ActivityType.territories_evt_claimunoccupiedterritory) {
+    if (
+      activityType == ActivityType.clans_evt_clancreated ||
+      activityType == ActivityType.lockedbankvaults_evt_attackvaults ||
+      activityType == ActivityType.territories_evt_attackterritory ||
+      activityType == ActivityType.territories_evt_claimunoccupiedterritory
+    ) {
       return true;
     }
     return false;
   }
 
+  function _isHolder(
+    NFTContractType contractType,
+    address nft,
+    uint256 tokenId,
+    address msgSender
+  ) private view returns (bool isHolder) {
+    if (contractType == NFTContractType.ERC721) {
+      isHolder = IERC721(nft).ownerOf(tokenId) == msgSender;
+    } else if (contractType == NFTContractType.ERC1155) {
+      isHolder = IERC1155(nft).balanceOf(msgSender, tokenId) == 1;
+    }
+  }
+
   function _applyPointBoost(address recipient, uint256 points) private returns (uint256 boosted) {
     boosted = points;
-    PointBoost memory boost = _boosts[recipient];
     uint40 timestamp = uint40(block.timestamp);
+    PointBoost memory boost = _boosts[recipient];
     // check to see if the boost is active
-    if (_boostedNFTs[boost.nft] && boost.activated + 1 days < timestamp) {
-      address boostOwner = _nftBoostOwners[boost.nft][boost.tokenId];
+    NFTContractType contractType = _boostedNFTs[boost.nft];
+    if (
+      contractType != NFTContractType.NONE &&
+      boost.activated + 1 days < timestamp &&
       // the registered and current owner must be the same
-      if (recipient == boostOwner && recipient == IERC721(boost.nft).ownerOf(boost.tokenId)) {
+      recipient == _nftBoostOwners[boost.nft][boost.tokenId]
+    ) {
+      bool isOwner;
+      if (contractType == NFTContractType.ERC721) {
+        isOwner = IERC721(boost.nft).ownerOf(boost.tokenId) == recipient;
+      } else if (contractType == NFTContractType.ERC1155) {
+        isOwner = IERC1155(boost.nft).balanceOf(recipient, boost.tokenId) == 1;
+      }
+
+      if (isOwner) {
         uint16 current = uint16(timestamp / 1 days);
         BoostDailyCheckpoint storage checkpoint = _boostNFTCheckpoints[boost.nft];
 
@@ -309,7 +376,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
       // uint32 current = uint32(block.timestamp - (block.timestamp % 1 days));
       uint16 current = uint16(block.timestamp / 1 days);
       if (checkpoint.current != current) {
-        // reset the checkoint
+        // reset the checkpoint
         checkpoint.current = current;
         amount = 0;
       } else if (amount >= maxPointsPerDay) {
@@ -335,7 +402,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   /// @param points The points to add
   /// @param maxPointsPerDay The maximum points per day, 0 for no limit
   function _setPointsDiscreteCalculation(ActivityType activityType, uint16 points, uint64 maxPointsPerDay) private {
-    _calculations[activityType] = Calculation(CalculationType.discrete, points, 1, 1, maxPointsPerDay);
+    _addPointsCalculation(activityType, CalculationType.discrete, points, 1, 1, maxPointsPerDay);
   }
 
   /// @dev Add a log2 points calculation
@@ -351,7 +418,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     uint16 divider,
     uint64 maxPointsPerDay
   ) private {
-    _calculations[activityType] = Calculation(CalculationType.log2, base, multiplier, divider, maxPointsPerDay);
+    _addPointsCalculation(activityType, CalculationType.log2, base, multiplier, divider, maxPointsPerDay);
   }
 
   /// @dev Add a log10 points calculation
@@ -367,7 +434,19 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     uint16 divider,
     uint64 maxPointsPerDay
   ) private {
-    _calculations[activityType] = Calculation(CalculationType.log10, base, multiplier, divider, maxPointsPerDay);
+    _addPointsCalculation(activityType, CalculationType.log10, base, multiplier, divider, maxPointsPerDay);
+  }
+
+  function _addPointsCalculation(
+    ActivityType activityType,
+    CalculationType calculation,
+    uint16 base,
+    uint16 multiplier,
+    uint16 divider,
+    uint64 maxPointsPerDay
+  ) private {
+    _calculations[activityType] = Calculation(calculation, base, multiplier, divider, maxPointsPerDay);
+    emit AddPointsCalculation(activityType, calculation, base, multiplier, divider, maxPointsPerDay);
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
