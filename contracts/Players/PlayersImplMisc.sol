@@ -600,7 +600,12 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     (uint256[] memory itemTokenIds, uint256[] memory amounts) = _claimableXPThresholdRewards(oldTotalXP, newTotalXP);
     if (itemTokenIds.length != 0) {
       _itemNFT.mintBatch(from, itemTokenIds, amounts);
-      _activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, from, _isEvolved(playerId), 1);
+      _activityPoints.rewardBlueTickets(
+        ActivityType.players_evt_claimedxpthresholdrewards,
+        from,
+        _isEvolved(playerId),
+        1
+      );
       emit ClaimedXPThresholdRewards(from, playerId, itemTokenIds, amounts);
     }
   }

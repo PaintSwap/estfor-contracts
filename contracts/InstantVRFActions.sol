@@ -240,7 +240,12 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     );
 
     // issue activity points
-    _activityPoints.reward(ActivityType.instantvrfactions_evt_doinstantvrfactions, msgSender, isPlayerEvolved, 1);
+    _activityPoints.rewardBlueTickets(
+      ActivityType.instantvrfactions_evt_doinstantvrfactions,
+      msgSender,
+      isPlayerEvolved,
+      1
+    );
   }
 
   function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {

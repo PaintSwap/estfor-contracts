@@ -339,7 +339,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
       attackingCooldownTimestamp
     );
 
-    _activityPoints.reward(
+    _activityPoints.rewardBlueTickets(
       ActivityType.territories_evt_attackterritory,
       _clans.getClanBankAddress(clanId),
       IPlayers(_players).isPlayerEvolved(leaderPlayerId),
@@ -374,7 +374,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
         uint256(requestId)
       );
 
-      _activityPoints.reward(
+      _activityPoints.rewardBlueTickets(
         ActivityType.territories_evt_claimunoccupiedterritory,
         _clans.getClanBankAddress(attackingClanId),
         IPlayers(_players).isPlayerEvolved(pendingAttack.leaderPlayerId),

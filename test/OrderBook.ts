@@ -4,7 +4,7 @@ import {expect} from "chai";
 import {ActivityPoints, IOrderBook, OrderBook} from "../typechain-types";
 import {OrderSide} from "@paintswap/estfor-definitions/types";
 import {parseEther} from "ethers";
-import {ACTIVITY_TICKET} from "@paintswap/estfor-definitions/constants";
+import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
 
 describe("OrderBook", function () {
   async function deployContractsFixture() {
@@ -18,7 +18,7 @@ describe("OrderBook", function () {
     const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
     const activityPoints = (await upgrades.deployProxy(
       ActivityPoints,
-      [await mockItemNFT.getAddress(), ACTIVITY_TICKET],
+      [await mockItemNFT.getAddress(), ACTIVITY_TICKET, SONIC_GEM_TICKET],
       {
         kind: "uups"
       }
@@ -681,9 +681,7 @@ describe("OrderBook", function () {
     });
 
     it("Should emit Activity Points", async function () {
-      const {orderBook, activityPoints, mockItemNFT, alice, tokenId} = await loadFixture(deployContractsFixture);
-
-      const apTokenId = await activityPoints.getItemTokenId();
+      const {orderBook, mockItemNFT, alice, tokenId} = await loadFixture(deployContractsFixture);
 
       // Set up order books
       const price = parseEther("5");
@@ -709,7 +707,7 @@ describe("OrderBook", function () {
         }
       ]);
 
-      const balanceOfMockItem = await mockItemNFT.balanceOf(alice.address, apTokenId);
+      const balanceOfMockItem = await mockItemNFT.balanceOf(alice.address, ACTIVITY_TICKET);
 
       // Sell
       const orderId = 1;
@@ -726,7 +724,7 @@ describe("OrderBook", function () {
         .to.emit(orderBook, "OrdersMatched")
         .withArgs(alice.address, [orderId], [quantity]);
 
-      const balanceOfMockItemAfter = await mockItemNFT.balanceOf(alice.address, apTokenId);
+      const balanceOfMockItemAfter = await mockItemNFT.balanceOf(alice.address, ACTIVITY_TICKET);
       expect(balanceOfMockItemAfter).to.be.greaterThan(balanceOfMockItem);
     });
 

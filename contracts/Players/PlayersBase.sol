@@ -370,7 +370,7 @@ abstract contract PlayersBase {
 
     bool isEvolved = _isEvolved(playerId);
     // assign the activity points for the action
-    _activityPoints.reward(ActivityType.players_evt_addxp, from, isEvolved, pointsAccrued);
+    _activityPoints.rewardBlueTickets(ActivityType.players_evt_addxp, from, isEvolved, pointsAccrued);
 
     uint256 oldLevel = PlayersLibrary.getLevel(oldPoints);
     if (oldMaxLevelVersion != newMaxLevelVersion && oldLevel == newLevel) {
@@ -387,7 +387,7 @@ abstract contract PlayersBase {
     if (levelsGained != 0) {
       // assign activity points for the new level
       emit LevelUp(from, playerId, skill, oldLevel, newLevel);
-      _activityPoints.reward(ActivityType.players_evt_levelup, from, isEvolved, newLevel);
+      _activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, from, isEvolved, newLevel);
     }
   }
 
@@ -499,7 +499,7 @@ abstract contract PlayersBase {
     delete playerBoost.itemTokenId;
     delete playerBoost.boostType;
 
-    _activityPoints.reward(ActivityType.players_evt_boostfinished, from, _isEvolved(playerId), 1);
+    _activityPoints.rewardBlueTickets(ActivityType.players_evt_boostfinished, from, _isEvolved(playerId), 1);
 
     emit BoostFinished(playerId);
   }

@@ -168,6 +168,9 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
         // Note: Ideally this would be set inside Players but contract size issues....
         if (_players.getActiveBoost(playerId).extraStartTime != uint40(block.timestamp)) {
           itemTokenId = _donationRewardItemTokenId;
+
+          // airdrop ticket
+          _activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckofthedraw, from);
         }
         _playersEntered[lastLotteryId].set(playerId);
         isRaffleDonation = true;
@@ -213,7 +216,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
         emit DonateToClan(from, playerId, flooredAmountWei, clanId, clanXPGained);
 
-        _activityPoints.reward(
+        _activityPoints.rewardBlueTickets(
           ActivityType.wishingwell_evt_donatetoclan,
           from,
           _players.isPlayerEvolved(playerId),
@@ -229,7 +232,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     }
 
     // amount / 1 ether;
-    _activityPoints.reward(
+    _activityPoints.rewardBlueTickets(
       ActivityType.wishingwell_evt_donate,
       from,
       _players.isPlayerEvolved(playerId),
@@ -279,27 +282,31 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
     if (_hasDonations) {
       // Decide the winner
-      uint24 _raffleIdWinner = uint24(randomWord % lastRaffleId) + 1;
-      uint40 playerId = uint40(_raffleIdToPlayerId[lastLotteryId][_raffleIdWinner]);
+      uint24 raffleIdWinner = uint24(randomWord % lastRaffleId) + 1;
+      uint40 playerId = uint40(_raffleIdToPlayerId[lastLotteryId][raffleIdWinner]);
       _winners[lastLotteryId] = LotteryWinnerInfo({
         lotteryId: lastLotteryId,
-        raffleId: _raffleIdWinner,
+        raffleId: raffleIdWinner,
         itemTokenId: nextLotteryWinnerRewardItemTokenId,
         amount: 1,
         instantConsume: _nextLotteryWinnerRewardInstantConsume,
         playerId: playerId
       });
 
+      // airdrop ticket
+      _activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckypotion, _playerNFT.ownerOf(playerId));
+
       _lastRaffleId = 0;
       // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId & nextLotteryWinnerRewardInstantConsume;
-      emit WinnerAndNewLottery(lastLotteryId, _raffleIdWinner, nextLotteryWinnerRewardItemTokenId, 1);
+      emit WinnerAndNewLottery(lastLotteryId, raffleIdWinner, nextLotteryWinnerRewardItemTokenId, 1);
 
       // Add to the last unclaimed winners queue
       bool added;
-      for (uint256 i = 0; i < _lastUnclaimedWinners.length; i += 2) {
-        if (_lastUnclaimedWinners[i] == 0) {
-          _lastUnclaimedWinners[i] = playerId;
-          _lastUnclaimedWinners[i + 1] = lastLotteryId;
+      uint64[4] storage lastUnclaimedWinners = _lastUnclaimedWinners;
+      for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
+        if (lastUnclaimedWinners[i] == 0) {
+          lastUnclaimedWinners[i] = playerId;
+          lastUnclaimedWinners[i + 1] = lastLotteryId;
           added = true;
           break;
         }
@@ -307,12 +314,12 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
       if (!added) {
         // Shift the remaining ones down and add it to the end
-        for (uint256 i = 2; i < _lastUnclaimedWinners.length; i += 2) {
-          _lastUnclaimedWinners[i - 2] = _lastUnclaimedWinners[i];
-          _lastUnclaimedWinners[i - 1] = _lastUnclaimedWinners[i + 1];
+        for (uint256 i = 2; i < lastUnclaimedWinners.length; i += 2) {
+          lastUnclaimedWinners[i - 2] = lastUnclaimedWinners[i];
+          lastUnclaimedWinners[i - 1] = lastUnclaimedWinners[i + 1];
         }
-        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 2] = playerId;
-        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 1] = lastLotteryId;
+        lastUnclaimedWinners[lastUnclaimedWinners.length - 2] = playerId;
+        lastUnclaimedWinners[lastUnclaimedWinners.length - 1] = lastLotteryId;
       }
     } else {
       emit WinnerAndNewLottery(lastLotteryId, 0, nextLotteryWinnerRewardItemTokenId, 1);

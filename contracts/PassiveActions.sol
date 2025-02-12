@@ -386,7 +386,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
     emit ClaimPassiveAction(playerId, msgSender, queueId, itemTokenIds, amounts, startingAnother);
 
     // issue activity points
-    _activityPoints.reward(
+    _activityPoints.rewardBlueTickets(
       ActivityType.passiveactions_evt_claimpassiveaction,
       msgSender,
       _players.isPlayerEvolved(playerId),

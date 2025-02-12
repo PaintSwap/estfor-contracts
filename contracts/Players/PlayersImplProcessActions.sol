@@ -169,7 +169,7 @@ contract PlayersImplProcessActions is PlayersBase {
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
         emit ActionFinished(from, playerId, actionMetadata.queueId);
-        _activityPoints.reward(ActivityType.players_evt_actionfinished, from, isEvolved, 1);
+        _activityPoints.rewardBlueTickets(ActivityType.players_evt_actionfinished, from, isEvolved, 1);
       } else {
         emit ActionPartiallyFinished(from, playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
       }
@@ -185,7 +185,7 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.xpRewardItemTokenIds,
         pendingQueuedActionState.xpRewardAmounts
       );
-      _activityPoints.reward(ActivityType.players_evt_claimedxpthresholdrewards, from, isEvolved, 1);
+      _activityPoints.rewardBlueTickets(ActivityType.players_evt_claimedxpthresholdrewards, from, isEvolved, 1);
     }
 
     // Oracle loot from past random rewards
@@ -255,12 +255,14 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
 
-      _activityPoints.reward(
+      _activityPoints.rewardBlueTickets(
         ActivityType.players_evt_dailyreward,
         from,
         isEvolved,
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
+
+      _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from);
 
       if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
         emit WeeklyReward(
@@ -270,7 +272,7 @@ contract PlayersImplProcessActions is PlayersBase {
           pendingQueuedActionState.dailyRewardAmounts[1]
         );
 
-        _activityPoints.reward(
+        _activityPoints.rewardBlueTickets(
           ActivityType.players_evt_weeklyreward,
           from,
           isEvolved,

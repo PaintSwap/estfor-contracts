@@ -58,7 +58,8 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   // The item NFT contract to mint points
   IItemNFT private _itemsNFT;
   // The token ID for the points
-  uint16 private _itemTokenId;
+  uint16 private _blueTicketItemId;
+  uint16 private _greenTicketItemId;
 
   // The calculations for each activity type
   mapping(ActivityType => Calculation) private _calculations;
@@ -83,14 +84,15 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _disableInitializers();
   }
 
-  function initialize(address itemNFT, uint16 seasonTokenId) external initializer {
+  function initialize(address itemNFT, uint16 blueTokenId, uint16 greenTokenId) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
 
     _grantRole(ACTIVITY_POINT_CALLER, _msgSender());
 
     _itemsNFT = IItemNFT(itemNFT);
-    _itemTokenId = seasonTokenId;
+    _blueTicketItemId = blueTokenId;
+    _greenTicketItemId = greenTokenId;
 
     // players
     _setPointsDiscreteCalculation(ActivityType.players_evt_actionfinished, 10, 2000);
@@ -142,12 +144,12 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _nftBoostOwners[nft][tokenId] = msgSender;
   }
 
-  function reward(
+  function rewardBlueTickets(
     ActivityType activityType,
     address recipient,
     bool isEvolvedOrNA,
     uint256 value
-  ) public override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 points) {
+  ) external override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 points) {
     // get the calculation from the type
     Calculation memory calculation = _calculations[activityType];
 
@@ -172,16 +174,16 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
       if (points != 0) {
         // adjust for non-evolved heroes
         if (!isEvolvedOrNA) {
-          points = points / 2;
+          points /= 2; // %50 reduction for non-evolved heroes
         }
 
-        emit ActivityPointsEarned(recipient, activityType, value, points);
+        emit ActivityPointsEarned(activityType, value, recipient, _blueTicketItemId, points);
 
         bool isBankRecipient = _isClanActivityType(activityType);
         if (isBankRecipient) {
           IBank(recipient).setAllowBreachedCapacity(true);
         }
-        _itemsNFT.mint(recipient, _itemTokenId, points);
+        _itemsNFT.mint(recipient, _blueTicketItemId, points);
         if (isBankRecipient) {
           IBank(recipient).setAllowBreachedCapacity(false);
         }
@@ -189,8 +191,25 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     }
   }
 
-  function getItemTokenId() external view returns (uint256) {
-    return _itemTokenId;
+  /// @dev green tickets
+  ///      Daily Reward = 8
+  ///      Luck of the Draw = 3
+  ///      Lucky Potion = 50
+  function rewardGreenTickets(
+    ActivityType activityType,
+    address recipient
+  ) external override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 tickets) {
+    if (activityType == ActivityType.players_dailyreward) {
+      tickets = 8;
+    } else if (activityType == ActivityType.wishingwell_luckofthedraw) {
+      tickets = 3;
+    } else if (activityType == ActivityType.wishingwell_luckypotion) {
+      tickets = 50;
+    }
+    if (tickets != 0) {
+      emit ActivityPointsEarned(activityType, 0, recipient, _greenTicketItemId, tickets);
+      _itemsNFT.mint(recipient, _greenTicketItemId, tickets);
+    }
   }
 
   function addPointsCalculation(

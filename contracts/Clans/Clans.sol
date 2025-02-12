@@ -294,7 +294,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId, block.timestamp);
     _pay(tier.price);
 
-    _activityPoints.reward(
+    _activityPoints.rewardBlueTickets(
       ActivityType.clans_evt_clancreated,
       _bankFactory.createBank(msgSender, clanId),
       _players.isPlayerEvolved(playerId),

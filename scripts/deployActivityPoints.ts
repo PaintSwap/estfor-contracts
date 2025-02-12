@@ -19,7 +19,7 @@ import {
   WISHING_WELL_ADDRESS
 } from "./contractAddresses";
 import {getChainId, verifyContracts} from "./utils";
-import {ACTIVITY_TICKET} from "@paintswap/estfor-definitions/constants";
+import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
 import {ActivityPoints} from "../typechain-types";
 
 async function main() {
@@ -31,9 +31,13 @@ async function main() {
   );
 
   const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
-  const activityPoints = (await upgrades.deployProxy(ActivityPoints, [ITEM_NFT_ADDRESS, ACTIVITY_TICKET], {
-    kind: "uups"
-  })) as unknown as ActivityPoints;
+  const activityPoints = (await upgrades.deployProxy(
+    ActivityPoints,
+    [ITEM_NFT_ADDRESS, ACTIVITY_TICKET, SONIC_GEM_TICKET],
+    {
+      kind: "uups"
+    }
+  )) as unknown as ActivityPoints;
   console.log("Deployed activity points", await activityPoints.getAddress());
   await activityPoints.waitForDeployment();
 

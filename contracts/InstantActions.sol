@@ -169,7 +169,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     );
 
     // issue activity points
-    _activityPoints.reward(
+    _activityPoints.rewardBlueTickets(
       ActivityType.instantactions_evt_doinstantactions,
       msgSender,
       _players.isPlayerEvolved(playerId),

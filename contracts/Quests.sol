@@ -325,7 +325,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
 
   function _questCompleted(address from, uint256 playerId, uint256 questId) private {
     emit QuestCompleted(from, playerId, questId);
-    _activityPoints.reward(ActivityType.quests_evt_questcompleted, from, _players.isPlayerEvolved(playerId), 1);
+    _activityPoints.rewardBlueTickets(
+      ActivityType.quests_evt_questcompleted,
+      from,
+      _players.isPlayerEvolved(playerId),
+      1
+    );
     _questsCompleted[playerId].set(questId);
     delete _activeQuests[playerId];
     ++_playerInfo[playerId].numFixedQuestsCompleted;

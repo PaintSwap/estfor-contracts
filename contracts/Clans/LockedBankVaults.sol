@@ -392,7 +392,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     );
 
     // issue activity points
-    _activityPoints.reward(
+    _activityPoints.rewardBlueTickets(
       ActivityType.lockedbankvaults_evt_attackvaults,
       _bankFactory.getBankAddress(clanId),
       _players.isPlayerEvolved(leaderPlayerId),
