@@ -5,6 +5,8 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
+  error LengthMismatch();
+
   mapping(address depositor => bool allowed) private _forceItemDepositors;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -18,7 +20,7 @@ contract BankRegistry is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function setForceItemDepositors(address[] calldata depositors, bool[] calldata allowed) external onlyOwner {
-    require(depositors.length == allowed.length, "BankRegistry: Arrays length mismatch");
+    require(depositors.length == allowed.length, LengthMismatch());
     for (uint256 i = 0; i < depositors.length; i++) {
       _forceItemDepositors[depositors[i]] = allowed[i];
     }

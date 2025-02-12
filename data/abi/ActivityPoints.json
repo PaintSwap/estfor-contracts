@@ -489,9 +489,9 @@
             "type": "uint40"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint16",
             "name": "tokenId",
-            "type": "uint256"
+            "type": "uint16"
           }
         ],
         "internalType": "struct ActivityPoints.PointBoost",

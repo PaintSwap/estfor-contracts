@@ -141,6 +141,7 @@ CombatantsHelper [0x7fa2b4c19093e0777d72235ea28d302f53227fa0](https://ftmscan.co
 TerritoryTreasury [0x5d1429f842891ea0ed80e856762b48bc117ac2a8](https://ftmscan.com/address/0x5d1429f842891ea0ed80e856762b48bc117ac2a8)  
 BankRegistry [0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6](https://ftmscan.com/address/0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6)  
 BankFactory [0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c](https://ftmscan.com/address/0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c)
+ActivityPoints [0x7fDF947AdA5B8979E8AA05C373e1a6Ed7457348a](https://ftmscan.com/address/0x7fDF947AdA5B8979E8AA05C373e1a6Ed7457348a)
 
 ### Other addresses:
 

@@ -8,6 +8,7 @@ import {
   ITEM_NFT_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
   PASSIVE_ACTIONS_ADDRESS,
+  PET_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   QUESTS_ADDRESS,
   RAIDS_ADDRESS,
@@ -18,6 +19,7 @@ import {
 import {getChainId, verifyContracts} from "./utils";
 import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
 import {ActivityPoints} from "../typechain-types";
+import {NFTContractType} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -54,7 +56,15 @@ async function main() {
     PLAYERS_ADDRESS
   ];
 
-  await activityPoints.addCallers(contracts);
+  let tx = await activityPoints.addCallers(contracts);
+  await tx.wait();
+
+  const beardies = "0xf20bd8b3a20a6d9884121d7a6e37a95a810183e2";
+  tx = await activityPoints.setBoostedNFTs(
+    [PET_NFT_ADDRESS, beardies],
+    [NFTContractType.ERC1155, NFTContractType.ERC721]
+  ); // TODO: Remove this later
+  await tx.wait();
 
   // Set the force item depositors to allow minting to clan bank
   const BankRegistry = await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS);
@@ -63,14 +73,11 @@ async function main() {
 
   for (const address of contracts) {
     const contract = await ethers.getContractAt("IActivityPointsCaller", address);
-    const tx = await contract.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
+    tx = await contract.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
     await tx.wait();
     console.log(`Contract ${address} set activity points`);
   }
   console.log("-- All contracts set activity points --");
-
-  // verify contracts with updates
-  await verifyContracts(contracts);
 }
 
 main().catch((error) => {

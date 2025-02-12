@@ -69,7 +69,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   struct PointBoost {
     address nft;
     uint40 activated;
-    uint256 tokenId;
+    uint16 tokenId;
   }
 
   struct BoostDailyCheckpoint {
@@ -80,7 +80,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   }
 
   // The item NFT contract to mint points
-  IItemNFT private _itemsNFT;
+  IItemNFT private _itemNFT;
   // The token ID for the points
   uint16 private _blueTicketItemId;
   uint16 private _greenTicketItemId;
@@ -109,12 +109,12 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   }
 
   function initialize(address itemNFT, uint16 blueTokenId, uint16 greenTokenId) external initializer {
-    __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __UUPSUpgradeable_init();
 
     _grantRole(ACTIVITY_POINT_CALLER, _msgSender());
 
-    _itemsNFT = IItemNFT(itemNFT);
+    _itemNFT = IItemNFT(itemNFT);
     _blueTicketItemId = blueTokenId;
     _greenTicketItemId = greenTokenId;
 
@@ -232,7 +232,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
         if (isBankRecipient) {
           IBank(recipient).setAllowBreachedCapacity(true);
         }
-        _itemsNFT.mint(recipient, _blueTicketItemId, points);
+        _itemNFT.mint(recipient, _blueTicketItemId, points);
         if (isBankRecipient) {
           IBank(recipient).setAllowBreachedCapacity(false);
         }
@@ -255,7 +255,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
       }
       if (tickets != 0) {
         emit ActivityPointsEarned(activityType, 0, recipient, _greenTicketItemId, tickets);
-        _itemsNFT.mint(recipient, _greenTicketItemId, tickets);
+        _itemNFT.mint(recipient, _greenTicketItemId, tickets);
       }
     }
   }

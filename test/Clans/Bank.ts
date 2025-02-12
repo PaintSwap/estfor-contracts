@@ -79,7 +79,7 @@ describe("Bank", function () {
     expect(await bankFactory.getCreatedHere(clanBankAddress)).to.be.true;
     expect(await bankFactory.getBankAddress(clanId)).to.eq(clanBankAddress);
 
-    // withdraw all the AP!
+    // withdraw all the AP! to not take up bank space
     const apBalance = await itemNFT.balanceOf(clanBankAddress, EstforConstants.ACTIVITY_TICKET);
     await expect(
       bankRelay.connect(alice).withdrawItems(alice.address, playerId, [EstforConstants.ACTIVITY_TICKET], [apBalance])
@@ -246,7 +246,7 @@ describe("Bank", function () {
     ]);
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 2);
 
-    // withdraw all the AP!
+    // withdraw all the AP! to not take up bank space
     const apBalance = await itemNFT.balanceOf(clanBankAddress, EstforConstants.ACTIVITY_TICKET);
     await expect(
       bankRelay.connect(alice).withdrawItems(alice.address, playerId, [EstforConstants.ACTIVITY_TICKET], [apBalance])
