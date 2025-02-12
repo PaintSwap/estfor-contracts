@@ -268,13 +268,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   ) external payable onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = _activeQuests[playerId];
     require(playerQuest.questId == QUEST_PURSE_STRINGS, InvalidActiveQuest());
+    // mark complete for re-entrancy
+    _questCompleted(from, playerId, playerQuest.questId);
     uint256[] memory amounts = buyBrush(to, minimumBrushBack, useExactETH);
     if (amounts[0] != 0) {
       // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
       (success, ) = from.call{value: msg.value - amounts[0]}("");
       require(success, RefundFailed());
     }
-    _questCompleted(from, playerId, playerQuest.questId);
     success = true;
   }
 
