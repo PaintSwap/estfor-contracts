@@ -173,10 +173,10 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   }
 
   function _registerPointBoost(address msgSender, NFTContractType contractType, address nft, uint16 tokenId) private {
-    uint40 timestamp = uint40(block.timestamp);
-    _boosts[msgSender] = PointBoost(nft, timestamp, tokenId);
+    uint40 activated = uint40(block.timestamp + 1 days);
+    _boosts[msgSender] = PointBoost(nft, activated, tokenId);
     _nftBoostOwners[nft][tokenId] = msgSender;
-    emit RegisterPointBoost(nft, contractType, tokenId, msgSender, timestamp);
+    emit RegisterPointBoost(nft, contractType, tokenId, msgSender, activated);
   }
 
   /// @notice Get the registered nft boost for a user wallet
@@ -312,7 +312,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     NFTContractType contractType = _boostedNFTs[boost.nft];
     if (
       contractType != NFTContractType.NONE &&
-      boost.activated + 1 days < timestamp &&
+      boost.activated < timestamp &&
       // the registered and current owner must be the same
       recipient == _nftBoostOwners[boost.nft][boost.tokenId]
     ) {
