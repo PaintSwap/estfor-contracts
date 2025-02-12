@@ -9,12 +9,12 @@ import {ItemNFT} from "./ItemNFT.sol";
 import {Quests} from "./Quests.sol";
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
-import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
+contract InstantActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
@@ -136,7 +136,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

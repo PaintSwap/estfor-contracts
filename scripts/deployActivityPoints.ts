@@ -1,9 +1,6 @@
 import {ethers, upgrades} from "hardhat";
 import {
-  BANK_ADDRESS,
-  BANK_FACTORY_ADDRESS,
   BANK_REGISTRY_ADDRESS,
-  BANK_RELAY_ADDRESS,
   BAZAAR_ADDRESS,
   CLANS_ADDRESS,
   INSTANT_ACTIONS_ADDRESS,
@@ -40,67 +37,40 @@ async function main() {
   )) as unknown as ActivityPoints;
   console.log("Deployed activity points", await activityPoints.getAddress());
   await activityPoints.waitForDeployment();
+  const ACTIVITY_POINTS_ADDRESS = await activityPoints.getAddress();
 
-  await activityPoints.addCallers([
-    BAZAAR_ADDRESS,
-    PLAYERS_ADDRESS,
-    SHOP_ADDRESS,
-    QUESTS_ADDRESS,
-    WISHING_WELL_ADDRESS,
+  // Set the activity points contract on all other contracts
+  const contracts = [
     INSTANT_ACTIONS_ADDRESS,
     INSTANT_VRF_ACTIONS_ADDRESS,
     PASSIVE_ACTIONS_ADDRESS,
+    QUESTS_ADDRESS,
+    SHOP_ADDRESS,
+    WISHING_WELL_ADDRESS,
+    BAZAAR_ADDRESS, // OrderBook
     CLANS_ADDRESS,
     LOCKED_BANK_VAULTS_ADDRESS,
-    TERRITORIES_ADDRESS
-  ]);
+    TERRITORIES_ADDRESS,
+    PLAYERS_ADDRESS
+  ];
+
+  await activityPoints.addCallers(contracts);
 
   // Set the force item depositors to allow minting to clan bank
   const BankRegistry = await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS);
-  await BankRegistry.setForceItemDepositors([await activityPoints.getAddress(), RAIDS_ADDRESS], [true, true]);
+  await BankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, RAIDS_ADDRESS], [true, true]);
   console.log("BankRegistry setForceItemDepositors: activity points, raids");
 
-  // Set the activity points contract on all other contracts
+  for (const address of contracts) {
+    const contract = await ethers.getContractAt("IActivityPointsCaller", address);
+    const tx = await contract.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
+    await tx.wait();
+    console.log(`Contract ${address} set activity points`);
+  }
+  console.log("-- All contracts set activity points --");
 
-  const orderBook = await ethers.getContractAt("OrderBook", BAZAAR_ADDRESS);
-  await orderBook.setActivityPoints(activityPoints);
-  console.log("OrderBook set activity points");
-
-  const players = await ethers.getContractAt("Players", PLAYERS_ADDRESS);
-  await players.setActivityPoints(activityPoints);
-  console.log("Players set activity points");
-
-  const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
-  await shop.setActivityPoints(activityPoints);
-  console.log("Shop set activity points");
-
-  const quests = await ethers.getContractAt("Quests", QUESTS_ADDRESS);
-  await quests.setActivityPoints(activityPoints);
-  console.log("Quests set activity points");
-
-  const wishingWell = await ethers.getContractAt("WishingWell", WISHING_WELL_ADDRESS);
-  await wishingWell.setActivityPoints(activityPoints);
-  console.log("WishingWell set activity points");
-
-  const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
-  await instantActions.setActivityPoints(activityPoints);
-  console.log("InstantActions set activity points");
-
-  const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
-  await instantVRFActions.setActivityPoints(activityPoints);
-  console.log("InstantVRFActions set activity points");
-
-  const clans = await ethers.getContractAt("Clans", CLANS_ADDRESS);
-  await clans.setActivityPoints(activityPoints);
-  console.log("Clans set activity points");
-
-  const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);
-  await lockedBankVaults.setActivityPoints(activityPoints);
-  console.log("LockedBankVaults set activity points");
-
-  const territories = await ethers.getContractAt("Territories", TERRITORIES_ADDRESS);
-  await territories.setActivityPoints(activityPoints);
-  console.log("Territories set activity points");
+  // verify contracts with updates
+  await verifyContracts(contracts);
 }
 
 main().catch((error) => {

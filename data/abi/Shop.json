@@ -868,7 +868,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IActivityPoints",
+        "internalType": "address",
         "name": "activityPoints",
         "type": "address"
       }

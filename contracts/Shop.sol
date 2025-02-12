@@ -8,10 +8,10 @@ import {Treasury} from "./Treasury.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
-import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
 // The contract allows items to be bought/sold
-contract Shop is UUPSUpgradeable, OwnableUpgradeable {
+contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   event AddShopItems(ShopItem[] shopItems);
   event EditShopItems(ShopItem[] shopItems);
   event RemoveShopItems(uint16[] tokenIds);
@@ -328,8 +328,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // TODO: Remove once on prod
-  function setActivityPoints(IActivityPoints activityPoints) external onlyOwner {
-    _activityPoints = activityPoints;
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function setMinItemQuantityBeforeSellsAllowed(uint24 minItemQuantityBeforeSellsAllowed) public onlyOwner {

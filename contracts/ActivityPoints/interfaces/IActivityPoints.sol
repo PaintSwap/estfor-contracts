@@ -38,6 +38,10 @@ enum ActivityType {
   wishingwell_luckypotion // = 50
 }
 
+interface IActivityPointsCaller {
+  function setActivityPoints(address activityPoints) external;
+}
+
 interface IActivityPoints {
   event ActivityPointsEarned(
     ActivityType indexed activityType,

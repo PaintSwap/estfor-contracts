@@ -21,12 +21,19 @@ import {IWorldActions} from "../interfaces/IWorldActions.sol";
 
 import {PlayersLibrary} from "./PlayersLibrary.sol";
 
-import {IActivityPoints} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPointsCaller, IActivityPoints} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
-contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransientUpgradeable, PlayersBase, IPlayers {
+contract Players is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  ReentrancyGuardTransientUpgradeable,
+  PlayersBase,
+  IPlayers,
+  IActivityPointsCaller
+{
   event GamePaused(bool gamePaused);
   event LockPlayer(uint256 playerId, uint256 cooldownTimestamp);
   event UnlockPlayer(uint256 playerId);
@@ -120,7 +127,7 @@ contract Players is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransien
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

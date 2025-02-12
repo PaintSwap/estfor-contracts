@@ -13,14 +13,20 @@ import {RandomnessBeacon} from "./RandomnessBeacon.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 
-import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
 // Stake some items which get burnt and get something else in return for waiting a certain time. All or nothing.
 // Supports skipping a day based on random chance & random items in Passive Actions
-contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransientUpgradeable, ERC1155Holder {
+contract PassiveActions is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  ReentrancyGuardTransientUpgradeable,
+  ERC1155Holder,
+  IActivityPointsCaller
+{
   using Math for uint256;
 
   event AddPassiveActions(PassiveActionInput[] passiveActionInputs);
@@ -171,7 +177,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

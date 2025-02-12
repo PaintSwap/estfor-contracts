@@ -11,12 +11,12 @@ import {ISolidlyRouter, Route} from "./interfaces/external/ISolidlyRouter.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract Quests is UUPSUpgradeable, OwnableUpgradeable {
+contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;
 
@@ -131,7 +131,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

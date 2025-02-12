@@ -15,7 +15,7 @@ import {BokkyPooBahsRedBlackTreeLibrary} from "./BokkyPooBahsRedBlackTreeLibrary
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IOrderBook} from "./interfaces/IOrderBook.sol";
 
-import {IActivityPoints, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing
 ///         limit orders, cancelling limit orders, and claiming NFTs and tokens from filled or partially filled orders.
@@ -25,6 +25,7 @@ contract OrderBook is
   OwnableUpgradeable,
   ERC1155Holder,
   IOrderBook,
+  IActivityPointsCaller,
   ReentrancyGuardTransientUpgradeable
 {
   using BokkyPooBahsRedBlackTreeLibrary for BokkyPooBahsRedBlackTreeLibrary.Tree;
@@ -107,7 +108,7 @@ contract OrderBook is
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

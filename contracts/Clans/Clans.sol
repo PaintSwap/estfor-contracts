@@ -20,9 +20,9 @@ import {BloomFilter} from "../libraries/BloomFilter.sol";
 
 import {ClanRank} from "../globals/clans.sol";
 
-import {IActivityPoints, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
+contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCaller {
   using BloomFilter for BloomFilter.Filter;
 
   event ClanCreated(
@@ -252,7 +252,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

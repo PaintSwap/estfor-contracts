@@ -29,9 +29,15 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 import {LockedBankVaultsLibrary} from "./LockedBankVaultsLibrary.sol";
 import {BankRelay} from "./BankRelay.sol";
 
-import {IActivityPoints, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVaults, IClanMemberLeftCB {
+contract LockedBankVaults is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  ILockedBankVaults,
+  IClanMemberLeftCB,
+  IActivityPointsCaller
+{
   event AttackVaults(
     uint256 clanId,
     uint256 defendingClanId,
@@ -269,7 +275,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

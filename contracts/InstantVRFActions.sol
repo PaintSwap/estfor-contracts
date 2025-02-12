@@ -16,9 +16,9 @@ import {Skill, EquipPosition, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./global
 import {InstantVRFActionInput, InstantVRFActionType} from "./globals/rewards.sol";
 import {NONE} from "./globals/items.sol";
 
-import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
-contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
+contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   event AddInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
   event EditInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
   event RemoveInstantVRFActions(uint16[] actionIds);
@@ -152,7 +152,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 

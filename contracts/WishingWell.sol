@@ -12,13 +12,13 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {Clans} from "./Clans/Clans.sol";
 
-import {IActivityPoints, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
 // solhint-disable-next-line no-global-import
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
 import {XP_EMITTED_ELSEWHERE} from "./globals/clans.sol";
 
-contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
+contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB, IActivityPointsCaller {
   using BitMaps for BitMaps.BitMap;
 
   event Donate(address from, uint256 playerId, uint256 amount, uint256 lotteryId, uint256 raffleId);
@@ -131,7 +131,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   }
 
   // TODO: remove in prod
-  function setActivityPoints(address activityPoints) external onlyOwner {
+  function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
   }
 
