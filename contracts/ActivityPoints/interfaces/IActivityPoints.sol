@@ -47,7 +47,11 @@ interface IActivityPoints {
     uint256 points
   );
 
-  function rewardGreenTickets(ActivityType activityType, address recipient) external returns (uint256 tickets);
+  function rewardGreenTickets(
+    ActivityType activityType,
+    address recipient,
+    bool isEvolved
+  ) external returns (uint256 tickets);
 
   function rewardBlueTickets(
     ActivityType activityType,

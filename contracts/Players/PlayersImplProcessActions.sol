@@ -255,6 +255,7 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
 
+      // blue tickets
       _activityPoints.rewardBlueTickets(
         ActivityType.players_evt_dailyreward,
         from,
@@ -262,7 +263,8 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
 
-      _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from);
+      // airdrop ticket
+      _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from, isEvolved);
 
       if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
         emit WeeklyReward(

@@ -153,6 +153,8 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     uint256 flooredAmountWei = (amount / 1 ether) * 1 ether;
     require(flooredAmountWei != 0, MinimumOneBrush());
 
+    bool isEvolved = playerId != 0 && _players.isPlayerEvolved(playerId);
+
     if (playerId != 0) {
       bool hasEnoughForRaffle = (amount / 1 ether) >= _raffleEntryCost;
       uint256 lastLotteryId = _lastLotteryId;
@@ -170,7 +172,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
           itemTokenId = _donationRewardItemTokenId;
 
           // airdrop ticket
-          _activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckofthedraw, from);
+          _activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckofthedraw, from, isEvolved);
         }
         _playersEntered[lastLotteryId].set(playerId);
         isRaffleDonation = true;
@@ -216,12 +218,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
         emit DonateToClan(from, playerId, flooredAmountWei, clanId, clanXPGained);
 
-        _activityPoints.rewardBlueTickets(
-          ActivityType.wishingwell_evt_donatetoclan,
-          from,
-          _players.isPlayerEvolved(playerId),
-          amount / 1 ether
-        );
+        _activityPoints.rewardBlueTickets(ActivityType.wishingwell_evt_donatetoclan, from, isEvolved, amount / 1 ether);
       }
     }
 
@@ -232,12 +229,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     }
 
     // amount / 1 ether;
-    _activityPoints.rewardBlueTickets(
-      ActivityType.wishingwell_evt_donate,
-      from,
-      _players.isPlayerEvolved(playerId),
-      amount / 1 ether
-    );
+    _activityPoints.rewardBlueTickets(ActivityType.wishingwell_evt_donate, from, isEvolved, amount / 1 ether);
 
     _totalDonated += uint40(amount / 1 ether);
 
@@ -294,7 +286,11 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
       });
 
       // airdrop ticket
-      _activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckypotion, _playerNFT.ownerOf(playerId));
+      _activityPoints.rewardGreenTickets(
+        ActivityType.wishingwell_luckypotion,
+        _playerNFT.ownerOf(playerId),
+        _players.isPlayerEvolved(playerId)
+      );
 
       _lastRaffleId = 0;
       // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId & nextLotteryWinnerRewardInstantConsume;

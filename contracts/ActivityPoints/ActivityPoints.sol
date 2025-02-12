@@ -197,18 +197,21 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
   ///      Lucky Potion = 50
   function rewardGreenTickets(
     ActivityType activityType,
-    address recipient
+    address recipient,
+    bool isEvolved
   ) external override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 tickets) {
-    if (activityType == ActivityType.players_dailyreward) {
-      tickets = 8;
-    } else if (activityType == ActivityType.wishingwell_luckofthedraw) {
-      tickets = 3;
-    } else if (activityType == ActivityType.wishingwell_luckypotion) {
-      tickets = 50;
-    }
-    if (tickets != 0) {
-      emit ActivityPointsEarned(activityType, 0, recipient, _greenTicketItemId, tickets);
-      _itemsNFT.mint(recipient, _greenTicketItemId, tickets);
+    if (isEvolved) {
+      if (activityType == ActivityType.players_dailyreward) {
+        tickets = 8;
+      } else if (activityType == ActivityType.wishingwell_luckofthedraw) {
+        tickets = 3;
+      } else if (activityType == ActivityType.wishingwell_luckypotion) {
+        tickets = 50;
+      }
+      if (tickets != 0) {
+        emit ActivityPointsEarned(activityType, 0, recipient, _greenTicketItemId, tickets);
+        _itemsNFT.mint(recipient, _greenTicketItemId, tickets);
+      }
     }
   }
 
