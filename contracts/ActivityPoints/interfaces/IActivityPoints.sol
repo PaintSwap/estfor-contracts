@@ -46,7 +46,7 @@ interface IActivityPoints {
   event ActivityPointsEarned(
     ActivityType indexed activityType,
     uint256 value,
-    address indexed recipient,
+    address indexed from,
     uint16 indexed tokenId,
     uint256 points
   );
@@ -59,7 +59,7 @@ interface IActivityPoints {
 
   function rewardBlueTickets(
     ActivityType activityType,
-    address recipient,
+    address from,
     bool isEvolvedOrNA,
     uint256 value
   ) external returns (uint256 points);
