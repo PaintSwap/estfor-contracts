@@ -71,6 +71,9 @@ async function main() {
   await BankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, RAIDS_ADDRESS], [true, true]);
   console.log("BankRegistry setForceItemDepositors: activity points, raids");
 
+  const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
+  await itemNFT.setApproved([activityPoints], true);
+
   for (const address of contracts) {
     const contract = await ethers.getContractAt("IActivityPointsCaller", address);
     tx = await contract.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
