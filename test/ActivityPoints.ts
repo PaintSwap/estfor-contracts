@@ -136,7 +136,7 @@ describe("ActivityPoints", function () {
     it("Should get activity points for instantactions_evt_doinstantactions", async function () {
       const {activityPoints, alice} = await loadFixture(deployActivityPointsFixture);
 
-      const instantActionsAP = 200;
+      const instantActionsAP = 5;
       await expect(
         activityPoints.rewardBlueTickets(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0)
       )
@@ -154,25 +154,25 @@ describe("ActivityPoints", function () {
       const {activityPoints, alice} = await loadFixture(deployActivityPointsFixture);
 
       const brush0 = 1;
-      const brushAP0 = 63;
+      const brushAP0 = 33;
       await expect(activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, alice.address, true, brush0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.shop_evt_buy, brush0, alice.address, ACTIVITY_TICKET, brushAP0);
 
       const brush = 100;
-      const brushAP = 189;
+      const brushAP = 99;
       await expect(activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, alice.address, true, brush))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.shop_evt_buy, brush, alice.address, ACTIVITY_TICKET, brushAP);
 
       const brush2 = 4000;
-      const brushAP2 = 315;
+      const brushAP2 = 165;
       await expect(activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, alice.address, true, brush2))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.shop_evt_buy, brush2, alice.address, ACTIVITY_TICKET, brushAP2);
 
       const brush3 = 40000;
-      const brushAP3 = 378;
+      const brushAP3 = 198;
       await expect(activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, alice.address, true, brush3))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.shop_evt_buy, brush3, alice.address, ACTIVITY_TICKET, brushAP3);
@@ -188,19 +188,19 @@ describe("ActivityPoints", function () {
       ).to.not.emit(activityPoints, "ActivityPointsEarned");
 
       const xp2 = 3;
-      const xpAP2 = 15;
+      const xpAP2 = 5;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_addxp, alice.address, true, xp2))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_addxp, xp2, alice.address, ACTIVITY_TICKET, xpAP2);
 
       const xp3 = 966;
-      const xpAP3 = 135;
+      const xpAP3 = 45;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_addxp, alice.address, true, xp3))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_addxp, xp3, alice.address, ACTIVITY_TICKET, xpAP3);
 
       const xp4 = 10000;
-      const xpAP4 = 180;
+      const xpAP4 = 60;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_addxp, alice.address, true, xp4))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_addxp, xp4, alice.address, ACTIVITY_TICKET, xpAP4);
@@ -216,38 +216,38 @@ describe("ActivityPoints", function () {
       ).not.to.emit(activityPoints, "ActivityPointsEarned");
 
       const level3 = 4;
-      const levelAP3 = 65;
+      const levelAP3 = 33;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, alice.address, true, level3))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_levelup, level3, alice.address, ACTIVITY_TICKET, levelAP3);
 
       const level10 = 10;
-      const levelAP10 = 130;
+      const levelAP10 = 66;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, alice.address, true, level10))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_levelup, level10, alice.address, ACTIVITY_TICKET, levelAP10);
 
       const level25 = 25;
-      const levelAP25 = 195;
+      const levelAP25 = 99;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, alice.address, true, level25))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_levelup, level25, alice.address, ACTIVITY_TICKET, levelAP25);
 
       const level89 = 89;
-      const levelAP89 = 325;
+      const levelAP89 = 165;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, alice.address, true, level89))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_levelup, level89, alice.address, ACTIVITY_TICKET, levelAP89);
 
       const level130 = 130;
-      const levelAP130 = 390;
+      const levelAP130 = 198;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, alice.address, true, level130))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_levelup, level130, alice.address, ACTIVITY_TICKET, levelAP130);
 
       //add 140
       const level140 = 140;
-      const levelAP140 = 390;
+      const levelAP140 = 198;
       await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, alice.address, true, level140))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.players_evt_levelup, level140, alice.address, ACTIVITY_TICKET, levelAP140);
@@ -313,7 +313,7 @@ describe("ActivityPoints", function () {
   describe("Blue Point NFT Boosts", function () {
     it("Should not boost points when no boost is active", async function () {
       const {activityPoints, alice} = await loadFixture(deployActivityPointsFixture);
-      const points = 200n;
+      const points = 5n;
 
       await expect(
         activityPoints.rewardBlueTickets(ActivityType.instantactions_evt_doinstantactions, alice.address, true, 0)
@@ -324,7 +324,7 @@ describe("ActivityPoints", function () {
 
     it("Should boost points when ERC721 NFT boost is active", async function () {
       const {activityPoints, alice, testERC721} = await loadFixture(deployActivityPointsFixture);
-      const points = 200n;
+      const points = 5n;
 
       const nftTokenId = await getTokenId(testERC721.mint(alice.address), ContractType.ERC721);
       // Register boost
@@ -361,7 +361,7 @@ describe("ActivityPoints", function () {
 
     it("Should boost points when ERC1155 NFT boosts are active", async function () {
       const {activityPoints, alice, testERC1155} = await loadFixture(deployActivityPointsFixture);
-      const points = 200n;
+      const points = 5n;
 
       const erc1155TokenId = await getTokenId(testERC1155.mint(alice, 1), ContractType.ERC1155);
       // Register boost
@@ -424,7 +424,7 @@ describe("ActivityPoints", function () {
       await testERC721.connect(alice).transferFrom(alice, bob, nftTokenId);
 
       // Points should not be boosted for alice
-      const basePoints = 200;
+      const basePoints = 5;
       await expect(activityPoints.rewardBlueTickets(ActivityType.instantactions_evt_doinstantactions, alice, true, 0))
         .to.emit(activityPoints, "ActivityPointsEarned")
         .withArgs(ActivityType.instantactions_evt_doinstantactions, 0, alice, ACTIVITY_TICKET, basePoints);

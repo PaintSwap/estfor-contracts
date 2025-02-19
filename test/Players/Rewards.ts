@@ -199,7 +199,7 @@ describe("Rewards", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
 
       const balanceAfter = await itemNFT.balanceOf(alice, ACTIVITY_TICKET);
-      expect(balanceAfter).to.equal(362);
+      expect(balanceAfter).to.equal(182);
 
       await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2080952, DONT_SKIP_XP_THRESHOLD_EFFECTS))
         .to.emit(players, "AddXP")

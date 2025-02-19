@@ -119,39 +119,39 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _greenTicketItemId = greenTokenId;
 
     // players
-    _setPointsDiscreteCalculation(ActivityType.players_evt_actionfinished, 10, 2000);
+    _setPointsDiscreteCalculation(ActivityType.players_evt_actionfinished, 23, 2001);
 
-    _setLog2PointsCalculation(ActivityType.players_evt_addxp, 15, 8, 10, 5000);
-    _setLog2PointsCalculation(ActivityType.players_evt_levelup, 65, 5, 10, 5000);
+    _setLog2PointsCalculation(ActivityType.players_evt_addxp, 5, 8, 10, 5000);
+    _setLog2PointsCalculation(ActivityType.players_evt_levelup, 33, 5, 10, 5000);
 
-    _setPointsDiscreteCalculation(ActivityType.players_evt_boostfinished, 250, 750);
-    _setPointsDiscreteCalculation(ActivityType.players_evt_dailyreward, 225, 0);
+    _setPointsDiscreteCalculation(ActivityType.players_evt_boostfinished, 75, 750);
+    _setPointsDiscreteCalculation(ActivityType.players_evt_dailyreward, 80, 0);
     _setPointsDiscreteCalculation(ActivityType.players_evt_weeklyreward, 450, 0);
     _setPointsDiscreteCalculation(ActivityType.players_evt_claimedxpthresholdrewards, 100, 100);
 
     // instant actions
-    _setPointsDiscreteCalculation(ActivityType.instantactions_evt_doinstantactions, 200, 0);
-    _setPointsDiscreteCalculation(ActivityType.instantvrfactions_evt_doinstantvrfactions, 200, 0);
+    _setPointsDiscreteCalculation(ActivityType.instantactions_evt_doinstantactions, 5, 0);
+    _setPointsDiscreteCalculation(ActivityType.instantvrfactions_evt_doinstantvrfactions, 5, 0);
 
     // passive actions
     _setPointsDiscreteCalculation(ActivityType.passiveactions_evt_claimpassiveaction, 200, 0);
 
     // quests
-    _setPointsDiscreteCalculation(ActivityType.quests_evt_questcompleted, 750, 3000);
+    _setPointsDiscreteCalculation(ActivityType.quests_evt_questcompleted, 250, 1000);
 
     // shop
-    _setLog2PointsCalculation(ActivityType.shop_evt_buy, 21, 10, 1, 2000);
-    _setLog2PointsCalculation(ActivityType.shop_evt_sell, 5, 20, 1, 500);
+    _setLog2PointsCalculation(ActivityType.shop_evt_buy, 11, 10, 1, 2000);
+    _setLog2PointsCalculation(ActivityType.shop_evt_sell, 3, 20, 1, 500);
+
+    // orderbook
+    _setLog2PointsCalculation(ActivityType.orderbook_evt_ordersmatched, 11, 10, 1, 2000);
 
     // wishing well
     _setLog10PointsCalculation(ActivityType.wishingwell_evt_donate, 100, 20, 1, 0);
     _setLog10PointsCalculation(ActivityType.wishingwell_evt_donatetoclan, 10, 20, 1, 0);
 
-    // orderbook
-    _setLog2PointsCalculation(ActivityType.orderbook_evt_ordersmatched, 21, 10, 1, 2000);
-
     // clans
-    _setPointsDiscreteCalculation(ActivityType.clans_evt_clancreated, 500, 500);
+    _setPointsDiscreteCalculation(ActivityType.clans_evt_clancreated, 300, 300);
 
     // locked bank vaults
     _setPointsDiscreteCalculation(ActivityType.lockedbankvaults_evt_attackvaults, 250, 250);
