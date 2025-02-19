@@ -52,8 +52,7 @@ async function main() {
     } on chain id ${await getChainId(owner)}`
   );
 
-  const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
-  const activityPoints = ActivityPoints.attach(ACTIVITY_POINTS_ADDRESS) as ActivityPoints;
+  const activityPoints = await ethers.getContractAt("ActivityPoints", ACTIVITY_POINTS_ADDRESS);
 
   // ActivityType activityType,
   // CalculationType calculation,
@@ -87,7 +86,15 @@ async function main() {
 
   for (const [activityType, calculation, base, multiplier, divider, maxPointsPerDay] of calculations) {
     console.log(`Setting activity points for ${ActivityType[activityType]}`);
-    await activityPoints.addPointsCalculation(activityType, calculation, base, multiplier, divider, maxPointsPerDay);
+    const tx = await activityPoints.addPointsCalculation(
+      activityType,
+      calculation,
+      base,
+      multiplier,
+      divider,
+      maxPointsPerDay
+    );
+    await tx.wait();
   }
 
   console.log("Done");
