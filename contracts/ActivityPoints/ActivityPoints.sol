@@ -147,14 +147,14 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     _setLog2PointsCalculation(ActivityType.orderbook_evt_ordersmatched, 11, 10, 1, 2000);
 
     // wishing well
-    _setLog10PointsCalculation(ActivityType.wishingwell_evt_donate, 100, 20, 1, 0);
-    _setLog10PointsCalculation(ActivityType.wishingwell_evt_donatetoclan, 10, 20, 1, 0);
+    _setLog10PointsCalculation(ActivityType.wishingwell_evt_donate, 50, 20, 1, 0);
+    _setLog10PointsCalculation(ActivityType.wishingwell_evt_donatetoclan, 5, 20, 1, 0);
 
     // clans
     _setPointsDiscreteCalculation(ActivityType.clans_evt_clancreated, 300, 300);
 
     // locked bank vaults
-    _setPointsDiscreteCalculation(ActivityType.lockedbankvaults_evt_attackvaults, 250, 250);
+    _setPointsDiscreteCalculation(ActivityType.lockedbankvaults_evt_attackvaults, 50, 250);
 
     // territories
     _setPointsDiscreteCalculation(ActivityType.territories_evt_attackterritory, 250, 250);

@@ -68,8 +68,8 @@ async function main() {
     [ActivityType.quests_evt_questcompleted, CalculationType.discrete, 250, 0, 0, 1000],
     [ActivityType.shop_evt_buy, CalculationType.log2, 11, 10, 1, 2000],
     [ActivityType.shop_evt_sell, CalculationType.log2, 3, 20, 1, 500],
-    [ActivityType.wishingwell_evt_donate, CalculationType.log10, 100, 20, 1, 0],
-    [ActivityType.wishingwell_evt_donatetoclan, CalculationType.log10, 10, 20, 1, 0],
+    [ActivityType.wishingwell_evt_donate, CalculationType.log10, 50, 20, 1, 0],
+    [ActivityType.wishingwell_evt_donatetoclan, CalculationType.log10, 5, 20, 1, 0],
     [ActivityType.orderbook_evt_ordersmatched, CalculationType.log2, 11, 10, 1, 2000],
     [ActivityType.players_evt_actionfinished, CalculationType.discrete, 23, 0, 0, 2001],
     [ActivityType.players_evt_addxp, CalculationType.log2, 5, 8, 10, 5000],
@@ -79,7 +79,7 @@ async function main() {
     [ActivityType.players_evt_weeklyreward, CalculationType.discrete, 450, 0, 0, 0],
     [ActivityType.players_evt_claimedxpthresholdrewards, CalculationType.discrete, 100, 0, 0, 100],
     [ActivityType.clans_evt_clancreated, CalculationType.discrete, 300, 0, 0, 300],
-    [ActivityType.lockedbankvaults_evt_attackvaults, CalculationType.discrete, 250, 0, 0, 250],
+    [ActivityType.lockedbankvaults_evt_attackvaults, CalculationType.discrete, 50, 0, 0, 250],
     [ActivityType.territories_evt_attackterritory, CalculationType.discrete, 250, 0, 0, 250],
     [ActivityType.territories_evt_claimunoccupiedterritory, CalculationType.discrete, 100, 0, 0, 100]
   ];
