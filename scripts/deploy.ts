@@ -434,7 +434,13 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(
     Quests,
-    [await randomnessBeacon.getAddress(), await bridge.getAddress(), await router.getAddress(), buyPath],
+    [
+      await randomnessBeacon.getAddress(),
+      await bridge.getAddress(),
+      await router.getAddress(),
+      buyPath,
+      ACTIVITY_POINTS_ADDRESS
+    ],
     {
       kind: "uups",
       timeout
@@ -457,7 +463,8 @@ async function main() {
       await paintSwapMarketplaceWhitelist.getAddress(),
       initialMMR,
       startClanId,
-      await bridge.getAddress()
+      await bridge.getAddress(),
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -479,7 +486,8 @@ async function main() {
       await clans.getAddress(),
       raffleEntryCost,
       startGlobalDonationThresholdRewards,
-      clanDonationThresholdRewardIncrement
+      clanDonationThresholdRewardIncrement,
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -552,6 +560,7 @@ async function main() {
       await playersImplMisc.getAddress(),
       await playersImplMisc1.getAddress(),
       await bridge.getAddress(),
+      ACTIVITY_POINTS_ADDRESS,
       isBeta
     ],
     {
@@ -601,7 +610,8 @@ async function main() {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await randomnessBeacon.getAddress(),
-      await bridge.getAddress()
+      await bridge.getAddress(),
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -614,7 +624,7 @@ async function main() {
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
     InstantActions,
-    [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress()],
+    [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress(), ACTIVITY_POINTS_ADDRESS],
     {
       kind: "uups",
       timeout
@@ -645,7 +655,8 @@ async function main() {
       oracleAddress,
       await vrf.getAddress(),
       await vrfRequestInfo.getAddress(),
-      maxActionAmount
+      maxActionAmount,
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -809,6 +820,7 @@ async function main() {
       maxClanComabtantsLockedBankVaults,
       maxLockedVaults,
       await adminAccess.getAddress(),
+      ACTIVITY_POINTS_ADDRESS,
       isBeta
     ],
     {
@@ -839,6 +851,7 @@ async function main() {
       maxClanCombatantsTerritories,
       attackingCooldownTerritories,
       await adminAccess.getAddress(),
+      ACTIVITY_POINTS_ADDRESS,
       isBeta
     ],
     {
