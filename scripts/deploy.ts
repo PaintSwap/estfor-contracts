@@ -933,6 +933,14 @@ async function main() {
   await bankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, await raids.getAddress()], [true, true]);
   console.log("BankRegistry setForceItemDepositors: activity points, raids");
 
+  // Approve the activity points contract to mint on itemNFT
+  await itemNFT.setApproved([activityPoints], true);
+  console.log("itemNFT setApproved for activity points");
+
+  tx = await shop.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
+  await tx.wait();
+  console.log("shop setActivityPoints address");
+
   // Set the activity points contract on all other contracts
   const activityPointsCallers = [
     await instantActions.getAddress(),
@@ -949,17 +957,7 @@ async function main() {
   ];
   tx = await activityPoints.addCallers(activityPointsCallers);
   await tx.wait();
-
-  // Approve the activity points contract to mint on itemNFT
-  await itemNFT.setApproved([activityPoints], true);
-
-  for (const address of activityPointsCallers) {
-    const contract = await ethers.getContractAt("IActivityPointsCaller", address);
-    tx = await contract.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
-    await tx.wait();
-    console.log(`Contract ${address} set activity points`);
-  }
-  console.log("-- All contracts set activity points --");
+  console.log("activityPoints addCallers for calling contract addresses");
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 146n) {
