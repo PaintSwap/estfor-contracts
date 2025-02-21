@@ -123,7 +123,7 @@ if (!isBeta) {
   territoryTreasury = "0x4b1da5984c89312f852c798154a171a5ddc07d43";
   bankRegistry = "0xf213febd3889c5bf18086356e7eff79e2a9fe391";
   bankFactory = "0x76af5869f1b902f7a16c128a1daa7734819ec327";
-  activityPoints = "";
+  activityPoints = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -170,7 +170,7 @@ if (!isBeta) {
   territoryTreasury = "0x5d1429f842891ea0ed80e856762b48bc117ac2a8";
   bankRegistry = "0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6";
   bankFactory = "0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c";
-  activityPoints = "0x7fDF947AdA5B8979E8AA05C373e1a6Ed7457348a";
+  activityPoints = "0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a";
 }
 
 export const BRIDGE_ADDRESS = bridge;

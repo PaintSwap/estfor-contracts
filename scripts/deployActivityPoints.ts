@@ -39,6 +39,7 @@ async function main() {
   )) as unknown as ActivityPoints;
   console.log("Deployed activity points", await activityPoints.getAddress());
   await activityPoints.waitForDeployment();
+
   const ACTIVITY_POINTS_ADDRESS = await activityPoints.getAddress();
 
   // Set the activity points contract on all other contracts
@@ -59,16 +60,9 @@ async function main() {
   let tx = await activityPoints.addCallers(contracts);
   await tx.wait();
 
-  const beardies = "0xf20bd8b3a20a6d9884121d7a6e37a95a810183e2";
-  tx = await activityPoints.setBoostedNFTs(
-    [PET_NFT_ADDRESS, beardies],
-    [NFTContractType.ERC1155, NFTContractType.ERC721]
-  ); // TODO: Remove this later
-  await tx.wait();
-
   // Set the force item depositors to allow minting to clan bank
-  const BankRegistry = await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS);
-  await BankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, RAIDS_ADDRESS], [true, true]);
+  const bankRegistry = await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS);
+  await bankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, RAIDS_ADDRESS], [true, true]);
   console.log("BankRegistry setForceItemDepositors: activity points, raids");
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);

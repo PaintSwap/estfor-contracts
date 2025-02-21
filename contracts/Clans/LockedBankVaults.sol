@@ -401,7 +401,7 @@ contract LockedBankVaults is
     _activityPoints.rewardBlueTickets(
       ActivityType.lockedbankvaults_evt_attackvaults,
       _bankFactory.getBankAddress(clanId),
-      _players.isPlayerEvolved(leaderPlayerId),
+      true,
       1
     );
 
