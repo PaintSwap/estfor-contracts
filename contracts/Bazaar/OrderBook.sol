@@ -15,6 +15,8 @@ import {BokkyPooBahsRedBlackTreeLibrary} from "./BokkyPooBahsRedBlackTreeLibrary
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IOrderBook} from "./interfaces/IOrderBook.sol";
 
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 /// @notice This efficient ERC1155 order book is an upgradeable UUPS proxy contract. It has functions for bulk placing
 ///         limit orders, cancelling limit orders, and claiming NFTs and tokens from filled or partially filled orders.
 ///         It suppports ERC2981 royalties, and optional dev & burn fees on successful trades.
@@ -23,6 +25,7 @@ contract OrderBook is
   OwnableUpgradeable,
   ERC1155Holder,
   IOrderBook,
+  IActivityPointsCaller,
   ReentrancyGuardTransientUpgradeable
 {
   using BokkyPooBahsRedBlackTreeLibrary for BokkyPooBahsRedBlackTreeLibrary.Tree;
@@ -64,6 +67,8 @@ contract OrderBook is
   mapping(uint256 tokenId => mapping(uint256 price => bytes32[] segments)) private _bidsAtPrice;
   ClaimableTokenInfo[MAX_ORDER_ID] private _tokenClaimables;
 
+  IActivityPoints private _activityPoints;
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -82,15 +87,18 @@ contract OrderBook is
     address devAddr,
     uint16 devFee,
     uint8 burntFee,
-    uint16 maxOrdersPerPrice
+    uint16 maxOrdersPerPrice,
+    IActivityPoints activityPoints
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
+    __ReentrancyGuardTransient_init();
 
     setFees(devAddr, devFee, burntFee);
     // nft must be an ERC1155 via ERC165
     require(nft.supportsInterface(type(IERC1155).interfaceId), NotERC1155());
 
+    _activityPoints = activityPoints;
     _nft = nft;
     _coin = IBrushToken(token);
     updateRoyaltyFee();
@@ -98,6 +106,11 @@ contract OrderBook is
     // The max orders spans segments, so num segments = maxOrdersPrice / NUM_ORDERS_PER_SEGMENT
     setMaxOrdersPerPrice(maxOrdersPerPrice);
     _nextOrderId = 1;
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   /// @notice Place market order
@@ -622,7 +635,10 @@ contract OrderBook is
         mstore(quantitiesPool, numberOfOrders)
       }
 
-      emit OrdersMatched(_msgSender(), orderIdsPool, quantitiesPool);
+      address msgSender = _msgSender();
+      _activityPoints.rewardBlueTickets(ActivityType.orderbook_evt_ordersmatched, msgSender, true, cost / 1 ether);
+
+      emit OrdersMatched(msgSender, orderIdsPool, quantitiesPool);
     }
   }
 

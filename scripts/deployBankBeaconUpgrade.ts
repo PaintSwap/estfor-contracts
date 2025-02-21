@@ -12,7 +12,7 @@ async function main() {
 
   const Bank = await ethers.getContractFactory("Bank");
   const bank = await upgrades.upgradeBeacon(BANK_ADDRESS, Bank);
-  console.log("Deployed bank beacon", await bank.getAddress());
+  console.log("Upgraded bank beacon", await bank.getAddress());
   await bank.waitForDeployment();
 
   const bankImplAddress = await upgrades.beacon.getImplementationAddress(BANK_ADDRESS);
@@ -21,7 +21,7 @@ async function main() {
 
   const BankRelay = await ethers.getContractFactory("BankRelay");
   const bankRelay = await upgrades.upgradeProxy(BANK_RELAY_ADDRESS, BankRelay);
-  console.log("Deployed bank relay", await bankRelay.getAddress());
+  console.log("Upgraded bank relay", await bankRelay.getAddress());
   await bankRelay.waitForDeployment();
 }
 

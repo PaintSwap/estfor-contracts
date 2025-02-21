@@ -18,7 +18,6 @@ async function main() {
         await tx.wait();
       } catch (error) {
         console.error(error);
-        return;
       }
     } else {
       console.log("Cannot request random words yet");

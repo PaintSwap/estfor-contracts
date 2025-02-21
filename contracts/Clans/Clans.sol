@@ -11,6 +11,7 @@ import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
+import {IBank} from "../interfaces/IBank.sol";
 import {IMarketplaceWhitelist} from "../interfaces/external/IMarketplaceWhitelist.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
@@ -19,7 +20,9 @@ import {BloomFilter} from "../libraries/BloomFilter.sol";
 
 import {ClanRank} from "../globals/clans.sol";
 
-contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
+contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCaller {
   using BloomFilter for BloomFilter.Filter;
 
   event ClanCreated(
@@ -176,6 +179,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   mapping(address account => bool isModifier) private _xpModifiers;
   BloomFilter.Filter private _reservedClanNames; // TODO: remove 90 days after launch
   address private _bridge; // TODO: Bridge Can remove later if no longer need the bridge
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
@@ -228,7 +232,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     address paintswapMarketplaceWhitelist,
     uint16 initialMMR,
     uint40 startClanId,
-    address bridge
+    address bridge,
+    IActivityPoints activityPoints
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -243,6 +248,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     setInitialMMR(initialMMR);
     _reservedClanNames._initialize(4, 420000);
     _bridge = bridge;
+    _activityPoints = activityPoints;
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function createClan(
@@ -276,13 +287,19 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
       removeJoinRequest(player.requestedClanId, playerId);
     }
 
+    address msgSender = _msgSender();
     (string memory trimmedName, ) = _setName(clanId, name);
     _checkSocials(discord, telegram, twitter);
     string[] memory clanInfo = _createClanInfo(trimmedName, discord, telegram, twitter);
     emit ClanCreated(clanId, playerId, clanInfo, imageId, tierId, block.timestamp);
     _pay(tier.price);
 
-    _bankFactory.createBank(_msgSender(), clanId);
+    _activityPoints.rewardBlueTickets(
+      ActivityType.clans_evt_clancreated,
+      _bankFactory.createBank(msgSender, clanId),
+      _players.isPlayerEvolved(playerId),
+      1
+    );
   }
 
   function createClanBridge(
@@ -930,6 +947,12 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     );
   }
 
+  /// @dev used by Territories to get Clan Bank for Activity Points
+  function getClanBankAddress(uint256 clanId) external view override returns (address bankAddress) {
+    return _bankFactory.getBankAddress(clanId);
+  }
+
+  /// @dev used to check bloom filter for reserved names from Fantom
   function isClanNameReserved(string calldata clanName) public view returns (bool) {
     return _reservedClanNames._probablyContainsString(EstforLibrary.toLower(clanName));
   }

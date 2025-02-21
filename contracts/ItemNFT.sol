@@ -27,7 +27,7 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
   error ItemAlreadyExists();
   error ItemDoesNotExist(uint16);
   error EquipmentPositionShouldNotChange();
-  error NotMinter();
+  error NotMinter(address minter);
   error NotBurner();
   error LengthMismatch();
 
@@ -56,7 +56,7 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
 
   modifier onlyMinters() {
     address sender = _msgSender();
-    require(_isApproved(sender) || (_adminAccess.isAdmin(sender) && _isBeta), NotMinter());
+    require(_isApproved(sender) || (_adminAccess.isAdmin(sender) && _isBeta), NotMinter(sender));
     _;
   }
 

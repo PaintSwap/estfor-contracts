@@ -1,6 +1,12 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
-import NONE, {ACTION_THIEVING_CHILD, BRONZE_ARROW, GUAR_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
+import NONE, {
+  ACTION_THIEVING_CHILD,
+  ACTIVITY_TICKET,
+  BRONZE_ARROW,
+  GUAR_MUL,
+  SPAWN_MUL
+} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {
@@ -174,7 +180,10 @@ describe("Rewards", function () {
     });
 
     it("modifyXP rewards", async function () {
-      const {playerId, players, alice} = await loadFixture(playersFixture);
+      const {playerId, players, alice, itemNFT} = await loadFixture(playersFixture);
+
+      const balanceBefore = await itemNFT.balanceOf(alice, ACTIVITY_TICKET);
+      await itemNFT.connect(alice).burn(alice, ACTIVITY_TICKET, balanceBefore);
 
       const rewards: EstforTypes.Equipment[] = [{itemTokenId: EstforConstants.BRONZE_BAR, amount: 3}];
       await players.addXPThresholdRewards([{xpThreshold: 500, rewards}]);
@@ -188,6 +197,9 @@ describe("Rewards", function () {
         .and.to.emit(players, "ClaimedXPThresholdRewards")
         .withArgs(alice, playerId, [EstforConstants.BRONZE_BAR, EstforConstants.BRONZE_HELMET], [3, 4]);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.equal(2070952);
+
+      const balanceAfter = await itemNFT.balanceOf(alice, ACTIVITY_TICKET);
+      expect(balanceAfter).to.equal(182);
 
       await expect(players.modifyXP(alice, playerId, EstforTypes.Skill.MELEE, 2080952, DONT_SKIP_XP_THRESHOLD_EFFECTS))
         .to.emit(players, "AddXP")
@@ -1618,7 +1630,7 @@ describe("Rewards", function () {
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
 
       await timeTravel24Hours();
-      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 11111111111111111111111n);
+      await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 10_000_000_000n);
 
       const pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       expect(pendingQueuedActionState.producedPastRandomRewards.length).to.eq(2);

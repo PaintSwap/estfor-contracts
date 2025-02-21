@@ -7,6 +7,7 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {BOOST_START_NOW, getPlayersHelper, setupBasicWoodcutting} from "./Players/utils";
 import {parseEther} from "ethers";
+import {activityPoints} from "../typechain-types/contracts";
 
 describe("WishingWell", function () {
   async function deployContracts() {
@@ -140,7 +141,7 @@ describe("WishingWell", function () {
   });
 
   it("Check initialization params", async function () {
-    const {randomnessBeacon, brush, playerNFT, shop, clans} = await loadFixture(deployContracts);
+    const {randomnessBeacon, brush, playerNFT, shop, clans, activityPoints} = await loadFixture(deployContracts);
 
     const wishingWell = await ethers.deployContract("WishingWell");
 
@@ -159,7 +160,8 @@ describe("WishingWell", function () {
         await clans.getAddress(),
         parseEther("5"),
         parseEther("1000"),
-        parseEther("250")
+        parseEther("250"),
+        await activityPoints.getAddress()
       )
     )
       .to.emit(wishingWell, "ClanDonationThreshold")

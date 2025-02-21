@@ -79,6 +79,12 @@ describe("Bank", function () {
     expect(await bankFactory.getCreatedHere(clanBankAddress)).to.be.true;
     expect(await bankFactory.getBankAddress(clanId)).to.eq(clanBankAddress);
 
+    // withdraw all the AP! to not take up bank space
+    const apBalance = await itemNFT.balanceOf(clanBankAddress, EstforConstants.ACTIVITY_TICKET);
+    await expect(
+      bankRelay.connect(alice).withdrawItems(alice.address, playerId, [EstforConstants.ACTIVITY_TICKET], [apBalance])
+    ).to.emit(bank, "WithdrawItems");
+
     await expect(bankRelay.connect(alice).depositItems(playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "DepositItems")
       .withArgs(alice.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
@@ -201,12 +207,12 @@ describe("Bank", function () {
 
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
     await itemNFT.mint(clanBankAddress, EstforConstants.BRONZE_SHIELD, 1);
-    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(1);
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(2);
 
     await expect(bankRelay.connect(alice).withdrawItems(bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "WithdrawItems")
       .withArgs(alice.address, bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
-    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(0);
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(1);
   });
 
   it("Withdraw (Distribute) to many users", async function () {
@@ -239,6 +245,12 @@ describe("Bank", function () {
       }
     ]);
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 2);
+
+    // withdraw all the AP! to not take up bank space
+    const apBalance = await itemNFT.balanceOf(clanBankAddress, EstforConstants.ACTIVITY_TICKET);
+    await expect(
+      bankRelay.connect(alice).withdrawItems(alice.address, playerId, [EstforConstants.ACTIVITY_TICKET], [apBalance])
+    ).to.emit(bank, "WithdrawItems");
 
     // Send directly
     await itemNFT.mint(clanBankAddress, EstforConstants.TITANIUM_AXE, 2); // to alice

@@ -17181,9 +17181,9 @@ export const allItems: ItemInput[] = [
       meleeAttack: 0,
       magicAttack: 0,
       rangedAttack: 0,
-      meleeDefence: 40,
-      magicDefence: 40,
-      rangedDefence: 40,
+      meleeDefence: 30,
+      magicDefence: 30,
+      rangedDefence: 30,
       health: 0
     },
     tokenId: EstforConstants.POTION_012_LARGE_DEFENCE,
@@ -17672,7 +17672,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "SONIC_GEM_TICKET.json",
-    name: "Green Ticket",
+    name: "Sonic Gem Ticket",
     isAvailable: true,
     questPrerequisiteId: 0
   },

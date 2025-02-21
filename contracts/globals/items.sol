@@ -41,6 +41,12 @@ uint16 constant COOKED_FEOLA = COOKED_FISH_BASE + 3;
 uint16 constant SCROLL_BASE = 12032;
 uint16 constant SHADOW_SCROLL = SCROLL_BASE;
 
+// Eggs
+uint16 constant EGG_BASE = 12544;
+uint16 constant SECRET_EGG_1_TIER1 = EGG_BASE;
+uint16 constant SECRET_EGG_2_TIER1 = EGG_BASE + 1;
+uint16 constant EGG_MAX = 12799;
+
 // Boosts
 uint16 constant BOOST_BASE = 12800;
 uint16 constant COMBAT_BOOST = BOOST_BASE;
@@ -66,11 +72,8 @@ uint16 constant BOOST_RESERVED_5 = BOOST_BASE + 19;
 uint16 constant BOOST_RESERVED_6 = BOOST_BASE + 20;
 uint16 constant BOOST_MAX = 13055;
 
-// Eggs
-uint16 constant EGG_BASE = 12544;
-uint16 constant SECRET_EGG_1_TIER1 = EGG_BASE;
-uint16 constant SECRET_EGG_2_TIER1 = EGG_BASE + 1;
-uint16 constant EGG_MAX = 12799;
+uint16 constant SPECIAL_BASE = 13312;
+uint16 constant SPECIAL_MAX = 13567;
 
 // Miscs
 uint16 constant MISC_BASE = 65535;

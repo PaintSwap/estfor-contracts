@@ -34,6 +34,7 @@ contract TestMaliciousReentrancy is ERC1155Holder {
     }
 
     ++_stackCount;
+    // Forward the error
     (bool success, bytes memory returnData) = _orderBook.call(_data);
     if (!success) {
       assembly ("memory-safe") {

@@ -8,8 +8,10 @@ import {Treasury} from "./Treasury.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
 
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // The contract allows items to be bought/sold
-contract Shop is UUPSUpgradeable, OwnableUpgradeable {
+contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   event AddShopItems(ShopItem[] shopItems);
   event EditShopItems(ShopItem[] shopItems);
   event RemoveShopItems(uint16[] tokenIds);
@@ -70,6 +72,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
   uint8 private _brushDevPercentage;
   uint24 private _sellingCutoffDuration;
   mapping(uint256 itemId => uint256 price) private _shopItems;
+  IActivityPoints private _activityPoints;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -121,9 +124,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     // Pay
     (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
     address sender = _msgSender();
+    emit Buy(sender, to, tokenId, quantity, price);
     _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mint(to, tokenId, quantity);
-    emit Buy(sender, to, tokenId, quantity, price);
+    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
   }
 
   function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
@@ -141,9 +145,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     // Pay
     (address[] memory accounts, uint256[] memory amounts) = _buyDistribution(tokenCost);
     address sender = _msgSender();
+    emit BuyBatch(sender, to, tokenIds, quantities, prices);
     _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mintBatch(to, tokenIds, quantities);
-    emit BuyBatch(sender, to, tokenIds, quantities, prices);
+    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
   }
 
   function sell(uint16 tokenId, uint256 quantity, uint256 minExpectedBrush) external {
@@ -152,9 +157,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     _sell(tokenId, quantity, price);
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
     address sender = _msgSender();
+    emit Sell(sender, tokenId, quantity, price);
     _treasury.spend(sender, totalBrush);
     _itemNFT.burn(sender, tokenId, quantity);
-    emit Sell(sender, tokenId, quantity, price);
+    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
   }
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
@@ -173,9 +179,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
     }
     require(totalBrush >= minExpectedBrush, MinExpectedBrushNotReached(totalBrush, minExpectedBrush));
     address sender = _msgSender();
+    emit SellBatch(sender, tokenIds, quantities, prices);
     _treasury.spend(sender, totalBrush);
     _itemNFT.burnBatch(sender, tokenIds, quantities);
-    emit SellBatch(sender, tokenIds, quantities, prices);
+    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
   }
 
   // Does not burn!
@@ -318,6 +325,11 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable {
 
   function setItemNFT(IItemNFT itemNFT) external onlyOwner {
     _itemNFT = itemNFT;
+  }
+
+  // TODO: Remove once on prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function setMinItemQuantityBeforeSellsAllowed(uint24 minItemQuantityBeforeSellsAllowed) public onlyOwner {

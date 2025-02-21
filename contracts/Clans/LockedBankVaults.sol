@@ -29,7 +29,15 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 import {LockedBankVaultsLibrary} from "./LockedBankVaultsLibrary.sol";
 import {BankRelay} from "./BankRelay.sol";
 
-contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVaults, IClanMemberLeftCB {
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
+contract LockedBankVaults is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  ILockedBankVaults,
+  IClanMemberLeftCB,
+  IActivityPointsCaller
+{
   event AttackVaults(
     uint256 clanId,
     uint256 defendingClanId,
@@ -167,6 +175,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
   //   2.1 - Whoever was there first gets a higher rank (higher index)
   //   2.2 - The attacker is always ranked higher than the defender whether they win or lose as they are placed in the array first
   uint48[] private _sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -231,6 +240,7 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     uint8 maxClanCombatants,
     uint8 maxLockedVaults,
     AdminAccess adminAccess,
+    IActivityPoints activityPoints,
     bool isBeta
   ) external initializer {
     __Ownable_init(_msgSender());
@@ -253,6 +263,8 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     _vrfRequestInfo = vrfRequestInfo;
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
+    _activityPoints = activityPoints;
+
     setExpectedGasLimitFulfill(3_500_000);
     setKValues(32, 32);
     setMaxClanCombatants(maxClanCombatants);
@@ -260,6 +272,11 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
     setMMRAttackDistance(mmrAttackDistance);
     setMaxLockedVaults(maxLockedVaults);
     _nextPendingAttackId = 1;
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function assignCombatants(
@@ -378,6 +395,14 @@ contract LockedBankVaults is UUPSUpgradeable, OwnableUpgradeable, ILockedBankVau
       attackingCooldownTimestamp,
       reattackingCooldownTimestamp,
       itemTokenId
+    );
+
+    // issue activity points
+    _activityPoints.rewardBlueTickets(
+      ActivityType.lockedbankvaults_evt_attackvaults,
+      _bankFactory.getBankAddress(clanId),
+      true,
+      1
     );
 
     if (isUsingSuperAttack) {

@@ -796,6 +796,11 @@
         "internalType": "uint256",
         "name": "clanThresholdIncrement",
         "type": "uint256"
+      },
+      {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -845,6 +850,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "activityPoints",
+        "type": "address"
+      }
+    ],
+    "name": "setActivityPoints",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

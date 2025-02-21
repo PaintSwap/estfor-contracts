@@ -9,6 +9,7 @@ import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Cont
 import {ReentrancyGuardTransientUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardTransientUpgradeable.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {BitMaps} from "@openzeppelin/contracts/utils/structs/BitMaps.sol";
+import {TransientSlot} from "@openzeppelin/contracts/utils/TransientSlot.sol";
 
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IClans} from "../interfaces/IClans.sol";
@@ -20,6 +21,7 @@ import {BulkTransferInfo} from "../globals/items.sol";
 contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgradeable, IBank {
   using SafeCast for uint256;
   using BitMaps for BitMaps.BitMap;
+  using TransientSlot for *;
 
   event DepositItems(address from, uint256 playerId, uint256[] ids, uint256[] values);
   event DepositItem(address from, uint256 playerId, uint256 id, uint256 value);
@@ -60,6 +62,10 @@ contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgr
   error NotForceItemDepositor();
   error AlreadyInitialized();
 
+  // keccak256(abi.encode(uint256(keccak256("estfor.storage.BANK_FORCE_ITEM_DEPOSIT")) - 1)) & ~bytes32(uint256(0xff))
+  bytes32 private constant ALLOW_BREACH_DEPOSIT_STORAGE =
+    0xe1cc2a79077b9b85fa7b7090722bc6046bc96060f22c019f0577708488ee8400;
+
   uint40 private _clanId;
   BankRegistry private _bankRegistry;
   address private _bankRelay;
@@ -70,7 +76,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgr
   IPlayers private _players;
   address private _lockedBankVaults;
   address private _raids;
-  bool private _allowBreachedCapacity; // Be nice if this is transient storage
+  bool private notused_allowBreachedCapacity; // moved to transient storage
   bool private _initialized;
 
   BitMaps.BitMap private _uniqueItems; // itemTokenId => bool hasAny
@@ -349,7 +355,7 @@ contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgr
     if (isNewItem) {
       if (uniqueItemCount >= maxCapacity && !isForceItemDepositor) {
         // Only a force depositor is able to extend the bank capacity, stuff like raid loot
-        require(_allowBreachedCapacity, MaxBankCapacityReached());
+        require(_getAllowBreachedCapacity(), MaxBankCapacityReached());
         isForceItemDepositor_ = true;
       }
       _uniqueItems.set(id);
@@ -359,12 +365,16 @@ contract Bank is ERC1155Holder, ReentrancyGuardTransientUpgradeable, ContextUpgr
     }
   }
 
-  function _isForceItemDepositor(address account) private view returns (bool) {
-    return account == _raids;
+  function _isForceItemDepositor(address account) private view returns (bool allowed) {
+    return _bankRegistry.isForceItemDepositor(account);
   }
 
   function setAllowBreachedCapacity(bool allow) external override onlyForceItemDepositor {
-    _allowBreachedCapacity = allow;
+    ALLOW_BREACH_DEPOSIT_STORAGE.asBoolean().tstore(allow);
+  }
+
+  function _getAllowBreachedCapacity() private view returns (bool) {
+    return ALLOW_BREACH_DEPOSIT_STORAGE.asBoolean().tload();
   }
 
   // Untested

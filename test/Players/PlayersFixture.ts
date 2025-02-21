@@ -35,12 +35,14 @@ import {
   Raids,
   WorldActions,
   DailyRewardsScheduler,
-  Bridge
+  Bridge,
+  ActivityPoints
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ContractFactory, parseEther} from "ethers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
+import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
@@ -96,28 +98,17 @@ export const playersFixture = async function () {
     kind: "uups"
   })) as unknown as Treasury;
 
-  const minItemQuantityBeforeSellsAllowed = 500n;
-  const sellingCutoffDuration = 48 * 3600; // 48 hours
-  const Shop = await ethers.getContractFactory("Shop");
-  const shop = (await upgrades.deployProxy(
-    Shop,
-    [
-      await brush.getAddress(),
-      await treasury.getAddress(),
-      dev.address,
-      minItemQuantityBeforeSellsAllowed,
-      sellingCutoffDuration
-    ],
-    {
-      kind: "uups"
-    }
-  )) as unknown as Shop;
-
   const router = (await ethers.deployContract("MockRouter")) as MockRouter;
   const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver");
   const royaltyReceiver = (await upgrades.deployProxy(
     RoyaltyReceiver,
-    [await router.getAddress(), await treasury.getAddress(), dev.address, await brush.getAddress(), alice.address],
+    [
+      await router.getAddress(),
+      await treasury.getAddress(),
+      await dev.getAddress(),
+      await brush.getAddress(),
+      alice.address
+    ],
     {
       kind: "uups"
     }
@@ -146,6 +137,33 @@ export const playersFixture = async function () {
     }
   )) as unknown as ItemNFT;
 
+  const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
+  const activityPoints = (await upgrades.deployProxy(
+    ActivityPoints,
+    [await itemNFT.getAddress(), ACTIVITY_TICKET, SONIC_GEM_TICKET],
+    {
+      kind: "uups"
+    }
+  )) as unknown as ActivityPoints;
+  await itemNFT.setApproved([activityPoints], true);
+
+  const minItemQuantityBeforeSellsAllowed = 500n;
+  const sellingCutoffDuration = 48 * 3600; // 48 hours
+  const Shop = await ethers.getContractFactory("Shop");
+  const shop = (await upgrades.deployProxy(
+    Shop,
+    [
+      await brush.getAddress(),
+      await treasury.getAddress(),
+      await dev.getAddress(),
+      minItemQuantityBeforeSellsAllowed,
+      sellingCutoffDuration
+    ],
+    {
+      kind: "uups"
+    }
+  )) as unknown as Shop;
+
   await shop.setItemNFT(itemNFT);
 
   const startPlayerId = 1;
@@ -162,7 +180,7 @@ export const playersFixture = async function () {
     [
       await brush.getAddress(),
       await treasury.getAddress(),
-      dev.address,
+      await dev.getAddress(),
       await royaltyReceiver.getAddress(),
       editNameBrushPrice,
       upgradePlayerBrushPrice,
@@ -181,7 +199,13 @@ export const playersFixture = async function () {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(
     Quests,
-    [await randomnessBeacon.getAddress(), await bridge.getAddress(), await router.getAddress(), buyPath],
+    [
+      await randomnessBeacon.getAddress(),
+      await bridge.getAddress(),
+      await router.getAddress(),
+      buyPath,
+      await activityPoints.getAddress()
+    ],
     {
       kind: "uups"
     }
@@ -199,12 +223,13 @@ export const playersFixture = async function () {
       await brush.getAddress(),
       await playerNFT.getAddress(),
       await treasury.getAddress(),
-      dev.address,
+      await dev.getAddress(),
       editNameBrushPrice,
       await paintSwapMarketplaceWhitelist.getAddress(),
       initialMMR,
       startClanId,
-      await bridge.getAddress()
+      await bridge.getAddress(),
+      await activityPoints.getAddress()
     ],
     {
       kind: "uups",
@@ -223,7 +248,8 @@ export const playersFixture = async function () {
       await clans.getAddress(),
       parseEther("5"),
       parseEther("1000"),
-      parseEther("250")
+      parseEther("250"),
+      await activityPoints.getAddress()
     ],
     {
       kind: "uups"
@@ -241,7 +267,7 @@ export const playersFixture = async function () {
       await brush.getAddress(),
       await royaltyReceiver.getAddress(),
       imageBaseUri,
-      dev.address,
+      await dev.getAddress(),
       editNameBrushPrice,
       await treasury.getAddress(),
       await randomnessBeacon.getAddress(),
@@ -292,6 +318,7 @@ export const playersFixture = async function () {
       await playersImplMisc.getAddress(),
       await playersImplMisc1.getAddress(),
       await bridge.getAddress(),
+      await activityPoints.getAddress(),
       isBeta
     ],
     {
@@ -328,18 +355,24 @@ export const playersFixture = async function () {
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
     InstantActions,
-    [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress()],
+    [
+      await players.getAddress(),
+      await itemNFT.getAddress(),
+      await quests.getAddress(),
+      await activityPoints.getAddress()
+    ],
     {
       kind: "uups"
     }
   )) as unknown as InstantActions;
 
-  const oracleAddress = dev.address;
+  const oracleAddress = await dev.getAddress();
 
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
   const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
     kind: "uups"
   })) as unknown as VRFRequestInfo;
+  // await activityPoints.addCallers([await vrfRequestInfo.getAddress()]);
 
   const maxInstantVRFActionAmount = 64n;
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
@@ -353,7 +386,8 @@ export const playersFixture = async function () {
       oracleAddress,
       await mockVRF.getAddress(),
       await vrfRequestInfo.getAddress(),
-      maxInstantVRFActionAmount
+      maxInstantVRFActionAmount,
+      await activityPoints.getAddress()
     ],
     {
       kind: "uups"
@@ -488,7 +522,7 @@ export const playersFixture = async function () {
       await bankRelay.getAddress(),
       await itemNFT.getAddress(),
       await treasury.getAddress(),
-      dev.address,
+      await dev.getAddress(),
       oracleAddress,
       await mockVRF.getAddress(),
       await vrfRequestInfo.getAddress(),
@@ -498,6 +532,7 @@ export const playersFixture = async function () {
       maxClanComabtantsLockedBankVaults,
       maxLockedVaults,
       await adminAccess.getAddress(),
+      await activityPoints.getAddress(),
       isBeta
     ],
     {
@@ -529,6 +564,7 @@ export const playersFixture = async function () {
       maxClanCombatantsTerritories,
       attackingCooldownTerritories,
       await adminAccess.getAddress(),
+      await activityPoints.getAddress(),
       isBeta
     ],
     {
@@ -564,7 +600,8 @@ export const playersFixture = async function () {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await randomnessBeacon.getAddress(),
-      await bridge.getAddress()
+      await bridge.getAddress(),
+      await activityPoints.getAddress()
     ],
     {
       kind: "uups"
@@ -578,6 +615,11 @@ export const playersFixture = async function () {
   const bankRegistry = (await upgrades.deployProxy(BankRegistry, [], {
     kind: "uups"
   })) as unknown as BankRegistry;
+
+  await bankRegistry.setForceItemDepositors(
+    [await raids.getAddress(), await activityPoints.getAddress()],
+    [true, true]
+  );
 
   const BankFactory = await ethers.getContractFactory("BankFactory");
   const bankFactory = (await upgrades.deployProxy(
@@ -645,6 +687,27 @@ export const playersFixture = async function () {
   await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories, pvpBattleground], true);
   await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
   await players.setAlphaCombatParams(1, 1, 0); // Alpha combat healing was introduced later, so to not mess up existing tests set this to 0
+
+  // Set activity points on all contracts
+  const contracts = [
+    lockedBankVaults,
+    territories,
+    instantVRFActions,
+    instantActions,
+    players,
+    wishingWell,
+    clans,
+    quests,
+    shop,
+    passiveActions
+  ];
+
+  await activityPoints.addCallers(contracts);
+
+  for (const address of contracts) {
+    const contract = await ethers.getContractAt("IActivityPointsCaller", address);
+    await contract.setActivityPoints(await activityPoints.getAddress());
+  }
 
   const avatarId = 1;
   const avatarInfo: AvatarInfo = {
@@ -735,6 +798,7 @@ export const playersFixture = async function () {
     spawnRaidCooldown,
     maxRaidCombatants,
     startPetId,
-    bridge
+    bridge,
+    activityPoints
   };
 };
