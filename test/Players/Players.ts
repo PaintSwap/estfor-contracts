@@ -27,6 +27,7 @@ import {
 import {Players} from "../../typechain-types";
 import {ACTION_FISHING_MINNUS, GUAR_MUL, MAX_LEVEL, RATE_MUL, SPAWN_MUL} from "@paintswap/estfor-definitions/constants";
 import {Block, ContractTransactionReceipt} from "ethers";
+import {activityPoints} from "../../typechain-types/contracts";
 
 const actionIsAvailable = true;
 
@@ -48,7 +49,8 @@ describe("Players", function () {
       playersImplRewards,
       playersImplMisc,
       playersImplMisc1,
-      bridge
+      bridge,
+      activityPoints
     } = await loadFixture(playersFixture);
 
     const isBeta = true;
@@ -73,6 +75,7 @@ describe("Players", function () {
         await playersImplMisc.getAddress(),
         await playersImplMisc1.getAddress(),
         await bridge.getAddress(),
+        await activityPoints.getAddress(),
         isBeta
       ],
       {

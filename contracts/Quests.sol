@@ -11,10 +11,12 @@ import {ISolidlyRouter, Route} from "./interfaces/external/ISolidlyRouter.sol";
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
-contract Quests is UUPSUpgradeable, OwnableUpgradeable {
+contract Quests is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   using Math for uint256;
   using BitMaps for BitMaps.BitMap;
 
@@ -86,6 +88,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint256 questId => MinimumRequirement[3]) private _minimumRequirements;
   mapping(uint256 playerId => PlayerQuestInfo) private _playerInfo;
   address private _bridge; // TODO: Bridge Can remove later
+  IActivityPoints private _activityPoints;
 
   modifier onlyPlayers() {
     require(_msgSender() == address(_players), NotPlayers());
@@ -111,7 +114,8 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     address randomnessBeacon,
     address bridge,
     ISolidlyRouter router,
-    address[2] calldata path
+    address[2] calldata path,
+    IActivityPoints activityPoints
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -121,8 +125,14 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
     _router = router;
     _wNative = path[0];
     _brush = path[1];
+    _activityPoints = activityPoints;
 
     IERC20(_brush).approve(address(router), type(uint256).max);
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function allFixedQuests(uint256 questId) external view returns (Quest memory) {
@@ -258,13 +268,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
   ) external payable onlyPlayers returns (bool success) {
     PlayerQuest storage playerQuest = _activeQuests[playerId];
     require(playerQuest.questId == QUEST_PURSE_STRINGS, InvalidActiveQuest());
+    _questCompleted(from, playerId, playerQuest.questId);
     uint256[] memory amounts = buyBrush(to, minimumBrushBack, useExactETH);
     if (amounts[0] != 0) {
       // Refund the rest if it isn't players contract calling it otherwise do it elsewhere
       (success, ) = from.call{value: msg.value - amounts[0]}("");
       require(success, RefundFailed());
     }
-    _questCompleted(from, playerId, playerQuest.questId);
     success = true;
   }
 
@@ -315,6 +325,12 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable {
 
   function _questCompleted(address from, uint256 playerId, uint256 questId) private {
     emit QuestCompleted(from, playerId, questId);
+    _activityPoints.rewardBlueTickets(
+      ActivityType.quests_evt_questcompleted,
+      from,
+      _players.isPlayerEvolved(playerId),
+      1
+    );
     _questsCompleted[playerId].set(questId);
     delete _activeQuests[playerId];
     ++_playerInfo[playerId].numFixedQuestsCompleted;

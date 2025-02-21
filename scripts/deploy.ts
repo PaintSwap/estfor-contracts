@@ -1,5 +1,5 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {deployments, ethers, upgrades} from "hardhat";
+import {deployments, ethers, run, upgrades} from "hardhat";
 import {
   BankFactory,
   Clans,
@@ -38,7 +38,8 @@ import {
   Raids,
   WorldActions,
   DailyRewardsScheduler,
-  Bridge
+  Bridge,
+  ActivityPoints
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -87,7 +88,7 @@ import {
   WFTM_ADDRESS
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
-import {whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
+import {ACTIVITY_TICKET, SONIC_GEM_TICKET, whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
@@ -365,11 +366,31 @@ async function main() {
 
   console.log(`itemNFT = "${(await itemNFT.getAddress()).toLowerCase()}"`);
 
+  const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
+  const activityPoints = (await upgrades.deployProxy(
+    ActivityPoints,
+    [await itemNFT.getAddress(), ACTIVITY_TICKET, SONIC_GEM_TICKET],
+    {
+      kind: "uups"
+    }
+  )) as unknown as ActivityPoints;
+  const ACTIVITY_POINTS_ADDRESS = await activityPoints.getAddress();
+  console.log("Deployed activity points", ACTIVITY_POINTS_ADDRESS);
+  await activityPoints.waitForDeployment();
+
   const maxOrdersPerPrice = 100;
   const OrderBook = await ethers.getContractFactory("OrderBook");
   const orderBook = (await upgrades.deployProxy(
     OrderBook,
-    [await itemNFT.getAddress(), await brush.getAddress(), DEV_ADDRESS, 30, 30, maxOrdersPerPrice],
+    [
+      await itemNFT.getAddress(),
+      await brush.getAddress(),
+      DEV_ADDRESS,
+      30,
+      30,
+      maxOrdersPerPrice,
+      ACTIVITY_POINTS_ADDRESS
+    ],
     {
       kind: "uups",
       timeout
@@ -413,7 +434,13 @@ async function main() {
   const Quests = await ethers.getContractFactory("Quests");
   const quests = (await upgrades.deployProxy(
     Quests,
-    [await randomnessBeacon.getAddress(), await bridge.getAddress(), await router.getAddress(), buyPath],
+    [
+      await randomnessBeacon.getAddress(),
+      await bridge.getAddress(),
+      await router.getAddress(),
+      buyPath,
+      ACTIVITY_POINTS_ADDRESS
+    ],
     {
       kind: "uups",
       timeout
@@ -436,7 +463,8 @@ async function main() {
       await paintSwapMarketplaceWhitelist.getAddress(),
       initialMMR,
       startClanId,
-      await bridge.getAddress()
+      await bridge.getAddress(),
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -458,7 +486,8 @@ async function main() {
       await clans.getAddress(),
       raffleEntryCost,
       startGlobalDonationThresholdRewards,
-      clanDonationThresholdRewardIncrement
+      clanDonationThresholdRewardIncrement,
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -531,6 +560,7 @@ async function main() {
       await playersImplMisc.getAddress(),
       await playersImplMisc1.getAddress(),
       await bridge.getAddress(),
+      ACTIVITY_POINTS_ADDRESS,
       isBeta
     ],
     {
@@ -580,7 +610,8 @@ async function main() {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await randomnessBeacon.getAddress(),
-      await bridge.getAddress()
+      await bridge.getAddress(),
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -593,7 +624,7 @@ async function main() {
   const InstantActions = await ethers.getContractFactory("InstantActions");
   const instantActions = (await upgrades.deployProxy(
     InstantActions,
-    [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress()],
+    [await players.getAddress(), await itemNFT.getAddress(), await quests.getAddress(), ACTIVITY_POINTS_ADDRESS],
     {
       kind: "uups",
       timeout
@@ -624,7 +655,8 @@ async function main() {
       oracleAddress,
       await vrf.getAddress(),
       await vrfRequestInfo.getAddress(),
-      maxActionAmount
+      maxActionAmount,
+      ACTIVITY_POINTS_ADDRESS
     ],
     {
       kind: "uups",
@@ -788,6 +820,7 @@ async function main() {
       maxClanComabtantsLockedBankVaults,
       maxLockedVaults,
       await adminAccess.getAddress(),
+      ACTIVITY_POINTS_ADDRESS,
       isBeta
     ],
     {
@@ -818,6 +851,7 @@ async function main() {
       maxClanCombatantsTerritories,
       attackingCooldownTerritories,
       await adminAccess.getAddress(),
+      ACTIVITY_POINTS_ADDRESS,
       isBeta
     ],
     {
@@ -894,6 +928,36 @@ async function main() {
   )) as unknown as BankFactory;
   await bankFactory.waitForDeployment();
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
+
+  // Set the force item depositors to allow minting to clan bank
+  await bankRegistry.setForceItemDepositors([ACTIVITY_POINTS_ADDRESS, await raids.getAddress()], [true, true]);
+  console.log("BankRegistry setForceItemDepositors: activity points, raids");
+
+  // Approve the activity points contract to mint on itemNFT
+  await itemNFT.setApproved([activityPoints], true);
+  console.log("itemNFT setApproved for activity points");
+
+  tx = await shop.setActivityPoints(ACTIVITY_POINTS_ADDRESS);
+  await tx.wait();
+  console.log("shop setActivityPoints address");
+
+  // Set the activity points contract on all other contracts
+  const activityPointsCallers = [
+    await instantActions.getAddress(),
+    await instantVRFActions.getAddress(),
+    await passiveActions.getAddress(),
+    await quests.getAddress(),
+    await shop.getAddress(),
+    await wishingWell.getAddress(),
+    await orderBook.getAddress(),
+    await clans.getAddress(),
+    await lockedBankVaults.getAddress(),
+    await territories.getAddress(),
+    await players.getAddress()
+  ];
+  tx = await activityPoints.addCallers(activityPointsCallers);
+  await tx.wait();
+  console.log("activityPoints addCallers for calling contract addresses");
 
   // Verify the contracts now, better to bail now before we start setting up the contract data
   if (network.chainId == 146n) {

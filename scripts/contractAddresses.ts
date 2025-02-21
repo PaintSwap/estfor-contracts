@@ -51,6 +51,7 @@ let passiveActions;
 let pvpBattleground;
 let raids;
 let bridge;
+let activityPoints;
 
 // Third party stuff chain specific addresses
 const chainId = process.env.CHAIN_ID;
@@ -122,6 +123,7 @@ if (!isBeta) {
   territoryTreasury = "0x4b1da5984c89312f852c798154a171a5ddc07d43";
   bankRegistry = "0xf213febd3889c5bf18086356e7eff79e2a9fe391";
   bankFactory = "0x76af5869f1b902f7a16c128a1daa7734819ec327";
+  activityPoints = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -143,11 +145,11 @@ if (!isBeta) {
   petNFTLibrary = "0x89312e531c11e34aa404feee01d2a6640088cc75";
   petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
   playersLibrary = "0xc9ceda474642e39f05c3e8fed75b3f45ed4ae210";
-  playersImplQueueActions = "0x2c608ca71e41d2f1c2538e37595d4ee8f15cdb6e";
-  playersImplProcessActions = "0xbb552775d05379fb506e9db43af90b0a9287554e";
-  playersImplRewards = "0xd79d374c77a24f3183ee04bf9c6cae7e1d7e8890";
-  playersImplMisc = "0x9fd98602cce12d8ce304e5015026b7c0578285f6";
-  playersImplMisc1 = "0xe39e4e62c53715fa1634ebb9446f73a213ad67b1";
+  playersImplQueueActions = "0xb8797e025690330d7d599d557ecac379477ad0af";
+  playersImplProcessActions = "0x6124b4b932aea4258a8062162b3995f1d825a608";
+  playersImplRewards = "0xf76985e7fcf023a4869a6a54fa365b9f30802faa";
+  playersImplMisc = "0x4a2001aa498d3087a2d1e085873137cebce64b82";
+  playersImplMisc1 = "0x9d0a6490eb127c4cdd7e27478903eadd0d4ee5cd";
   players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
   promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
   promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";
@@ -168,6 +170,7 @@ if (!isBeta) {
   territoryTreasury = "0x5d1429f842891ea0ed80e856762b48bc117ac2a8";
   bankRegistry = "0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6";
   bankFactory = "0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c";
+  activityPoints = "0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a";
 }
 
 export const BRIDGE_ADDRESS = bridge;
@@ -220,6 +223,7 @@ export const PASSIVE_ACTIONS_ADDRESS = passiveActions;
 export const BAZAAR_ADDRESS = bazaar;
 export const PVP_BATTLEGROUND_ADDRESS = pvpBattleground;
 export const RAIDS_ADDRESS = raids;
+export const ACTIVITY_POINTS_ADDRESS = activityPoints;
 
 export const WFTM_ADDRESS = wftm;
 export const BRUSH_ADDRESS = brush;

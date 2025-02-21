@@ -16,7 +16,9 @@ import {Skill, EquipPosition, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./global
 import {InstantVRFActionInput, InstantVRFActionType} from "./globals/rewards.sol";
 import {NONE} from "./globals/items.sol";
 
-contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
+contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   event AddInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
   event EditInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
   event RemoveInstantVRFActions(uint16[] actionIds);
@@ -105,6 +107,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
   mapping(uint256 actionId => InstantVRFAction action) private _actions;
   mapping(bytes32 requestId => Player player) private _requestIdToPlayer;
   mapping(InstantVRFActionType actionType => IInstantVRFActionStrategy strategy) private _strategies;
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -130,7 +133,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     address oracle,
     ISamWitchVRF samWitchVRF,
     VRFRequestInfo vrfRequestInfo,
-    uint8 maxActionAmount
+    uint8 maxActionAmount,
+    IActivityPoints activityPoints
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
@@ -144,6 +148,12 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     _vrfRequestInfo = vrfRequestInfo;
     setGasCostPerUnit(15_000);
     setMaxActionAmount(maxActionAmount);
+    _activityPoints = activityPoints;
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function doInstantVRFActions(
@@ -184,8 +194,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
     (bool success, ) = _oracle.call{value: msg.value}("");
     require(success, TransferFailed());
 
+    address msgSender = _msgSender();
+
     bytes32 requestId = _requestRandomWords(numRandomWords, totalAmount);
-    _requestIdToPlayer[requestId] = Player({owner: _msgSender(), playerId: uint64(playerId)});
+    _requestIdToPlayer[requestId] = Player({owner: msgSender, playerId: uint64(playerId)});
 
     // Get the tokenIds to burn
     uint256[] memory consumedItemTokenIds = new uint256[](actionIds.length * MAX_INPUTS_PER_ACTION);
@@ -215,16 +227,24 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable {
       mstore(consumedAmounts, actualLength)
     }
 
-    _itemNFT.burnBatch(_msgSender(), consumedItemTokenIds, consumedAmounts);
+    _itemNFT.burnBatch(msgSender, consumedItemTokenIds, consumedAmounts);
 
     emit DoInstantVRFActions(
-      _msgSender(),
+      msgSender,
       playerId,
       uint256(requestId),
       actionIds,
       actionAmounts,
       consumedItemTokenIds,
       consumedAmounts
+    );
+
+    // issue activity points
+    _activityPoints.rewardBlueTickets(
+      ActivityType.instantvrfactions_evt_doinstantvrfactions,
+      msgSender,
+      isPlayerEvolved,
+      1
     );
   }
 

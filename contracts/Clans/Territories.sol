@@ -27,7 +27,9 @@ import {BattleResultEnum} from "../globals/clans.sol";
 import {ClanBattleLibrary} from "./ClanBattleLibrary.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
-contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClanMemberLeftCB {
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
+contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClanMemberLeftCB, IActivityPointsCaller {
   using SafeCast for uint256;
 
   event AddTerritories(TerritoryInput[] territories);
@@ -186,6 +188,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   ISamWitchVRF private _samWitchVRF;
   uint24 private _expectedGasLimitFulfill;
 
+  IActivityPoints private _activityPoints;
+
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(IPlayers(_players).isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
     _;
@@ -241,6 +245,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint8 maxClanCombatants,
     uint24 attackingCooldown,
     AdminAccess adminAccess,
+    IActivityPoints activityPoints,
     bool isBeta
   ) external initializer {
     __Ownable_init(_msgSender());
@@ -255,6 +260,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _samWitchVRF = samWitchVRF;
     _vrfRequestInfo = vrfRequestInfo;
 
+    _activityPoints = activityPoints;
+
     _nextTerritoryId = 1;
     _nextPendingAttackId = 1;
     _adminAccess = adminAccess;
@@ -268,6 +275,11 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     setComparableSkills(comparableSkills);
     setMaxClanCombatants(maxClanCombatants);
     addTerritories(territories);
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function assignCombatants(
@@ -306,12 +318,13 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
 
     clanInfo.currentlyAttacking = true;
 
+    address msgSender = _msgSender();
     _pendingAttacks[nextPendingAttackId] = PendingAttack({
       clanId: clanId.toUint32(),
       territoryId: uint16(territoryId),
       attackInProgress: true,
       leaderPlayerId: uint40(leaderPlayerId),
-      from: _msgSender()
+      from: msgSender
     });
     bytes32 requestId = _requestRandomWords();
     _requestToPendingAttackIds[requestId] = nextPendingAttackId;
@@ -319,11 +332,18 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     emit AttackTerritory(
       clanId,
       territoryId,
-      _msgSender(),
+      msgSender,
       leaderPlayerId,
       uint256(requestId),
       nextPendingAttackId,
       attackingCooldownTimestamp
+    );
+
+    _activityPoints.rewardBlueTickets(
+      ActivityType.territories_evt_attackterritory,
+      _clans.getClanBankAddress(clanId),
+      IPlayers(_players).isPlayerEvolved(leaderPlayerId),
+      1
     );
   }
 
@@ -345,6 +365,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     bool clanUnoccupied = defendingClanId == 0;
     if (clanUnoccupied) {
       _claimTerritory(territoryId, attackingClanId);
+
       emit ClaimUnoccupiedTerritory(
         territoryId,
         attackingClanId,
@@ -352,6 +373,14 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
         pendingAttack.leaderPlayerId,
         uint256(requestId)
       );
+
+      _activityPoints.rewardBlueTickets(
+        ActivityType.territories_evt_claimunoccupiedterritory,
+        _clans.getClanBankAddress(attackingClanId),
+        IPlayers(_players).isPlayerEvolved(pendingAttack.leaderPlayerId),
+        1
+      );
+
       return;
     }
 

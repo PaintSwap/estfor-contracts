@@ -7,6 +7,8 @@ import {IPlayersRewardsDelegateView, IPlayersRewardsDelegate, IPlayersMiscDelega
 import {CombatStyleLibrary} from "../libraries/CombatStyleLibrary.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "../globals/all.sol";
 
@@ -55,6 +57,8 @@ contract PlayersImplProcessActions is PlayersBase {
       ); // TODO: Could still use pendingQueuedActionState
       return (remainingQueuedActions, emptyPendingQueuedActionProcessed.currentAction);
     }
+
+    bool isEvolved = _isEvolved(playerId);
 
     remainingQueuedActions = pendingQueuedActionState.remainingQueuedActions;
     PendingQueuedActionProcessed memory pendingQueuedActionProcessed = pendingQueuedActionState.processedData;
@@ -134,6 +138,7 @@ contract PlayersImplProcessActions is PlayersBase {
       if (actionMetadata.died) {
         emit Died(from, playerId, actionMetadata.queueId);
       }
+
       // XP gained
       if (actionMetadata.xpGained != 0) {
         // Keep reading until the xp expected is reached
@@ -164,6 +169,7 @@ contract PlayersImplProcessActions is PlayersBase {
       bool fullyFinished = actionMetadata.elapsedTime >= queuedAction.timespan;
       if (fullyFinished) {
         emit ActionFinished(from, playerId, actionMetadata.queueId);
+        _activityPoints.rewardBlueTickets(ActivityType.players_evt_actionfinished, from, isEvolved, 1);
       } else {
         emit ActionPartiallyFinished(from, playerId, actionMetadata.queueId, actionMetadata.elapsedTime);
       }
@@ -179,6 +185,7 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.xpRewardItemTokenIds,
         pendingQueuedActionState.xpRewardAmounts
       );
+      _activityPoints.rewardBlueTickets(ActivityType.players_evt_claimedxpthresholdrewards, from, isEvolved, 1);
     }
 
     // Oracle loot from past random rewards
@@ -240,6 +247,7 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardItemTokenIds,
         pendingQueuedActionState.dailyRewardAmounts
       );
+
       emit DailyReward(
         from,
         playerId,
@@ -247,11 +255,29 @@ contract PlayersImplProcessActions is PlayersBase {
         pendingQueuedActionState.dailyRewardAmounts[0]
       );
 
+      // blue tickets
+      _activityPoints.rewardBlueTickets(
+        ActivityType.players_evt_dailyreward,
+        from,
+        isEvolved,
+        pendingQueuedActionState.dailyRewardAmounts[0]
+      );
+
+      // airdrop ticket
+      _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from, isEvolved);
+
       if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
         emit WeeklyReward(
           from,
           playerId,
           pendingQueuedActionState.dailyRewardItemTokenIds[1],
+          pendingQueuedActionState.dailyRewardAmounts[1]
+        );
+
+        _activityPoints.rewardBlueTickets(
+          ActivityType.players_evt_weeklyreward,
+          from,
+          isEvolved,
           pendingQueuedActionState.dailyRewardAmounts[1]
         );
       }
@@ -263,7 +289,7 @@ contract PlayersImplProcessActions is PlayersBase {
 
     _handleLotteryWinnings(from, playerId, pendingQueuedActionState.lotteryWinner);
 
-    _clearPlayerBoostsIfExpired(playerId);
+    _clearPlayerBoostsIfExpired(from, playerId);
 
     bytes1 packedData = player.packedData;
     // Clear first 6 bits which holds the worldLocation
@@ -272,10 +298,10 @@ contract PlayersImplProcessActions is PlayersBase {
     player.packedData = packedData;
   }
 
-  function _clearPlayerBoostsIfExpired(uint256 playerId) private {
+  function _clearPlayerBoostsIfExpired(address from, uint256 playerId) private {
     ExtendedBoostInfo storage playerBoost = _activeBoosts[playerId];
     if (playerBoost.itemTokenId != NONE && playerBoost.startTime + playerBoost.duration <= block.timestamp) {
-      _clearPlayerMainBoost(playerId);
+      _clearPlayerMainBoost(from, playerId);
     }
 
     if (
@@ -423,7 +449,7 @@ contract PlayersImplProcessActions is PlayersBase {
     _claimRandomRewards(from, playerId, _pendingQueuedActionProcessed);
     _handleDailyRewards(from, playerId);
     _handleLotteryWinnings(from, playerId, lotteryWinner);
-    _clearPlayerBoostsIfExpired(playerId);
+    _clearPlayerBoostsIfExpired(from, playerId);
   }
 
   function _claimRandomRewards(

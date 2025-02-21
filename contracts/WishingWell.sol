@@ -12,11 +12,13 @@ import {IPlayers} from "./interfaces/IPlayers.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 import {Clans} from "./Clans/Clans.sol";
 
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import {Equipment, LUCKY_POTION, LUCK_OF_THE_DRAW, PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3, CLAN_BOOSTER, CLAN_BOOSTER_2, CLAN_BOOSTER_3, LotteryWinnerInfo} from "./globals/all.sol";
 import {XP_EMITTED_ELSEWHERE} from "./globals/clans.sol";
 
-contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
+contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB, IActivityPointsCaller {
   using BitMaps for BitMaps.BitMap;
 
   event Donate(address from, uint256 playerId, uint256 amount, uint256 lotteryId, uint256 raffleId);
@@ -72,6 +74,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
   uint24 private _clanThresholdIncrement;
   uint16[3] private _globalBoostRewardItemTokenIds;
   uint16[3] private _clanBoostRewardItemTokenIds;
+  IActivityPoints private _activityPoints;
 
   modifier onlyPlayers() {
     require(address(_players) == _msgSender(), NotPlayers());
@@ -96,7 +99,8 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     Clans clans,
     uint256 raffleEntryCost,
     uint256 globalThresholdIncrement,
-    uint256 clanThresholdIncrement
+    uint256 clanThresholdIncrement,
+    IActivityPoints activityPoints
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
@@ -106,6 +110,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     _treasury = treasury;
     _randomnessBeacon = randomnessBeacon;
     _clans = clans;
+    _activityPoints = activityPoints;
 
     // Note: _clanBoostRewardItemTokenIds must be set before setClanDonationThresholdIncrement is called as it reads from them
     _globalBoostRewardItemTokenIds = [PRAY_TO_THE_BEARDIE, PRAY_TO_THE_BEARDIE_2, PRAY_TO_THE_BEARDIE_3];
@@ -123,6 +128,11 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
     emit LastGlobalDonationThreshold(0, _globalBoostRewardItemTokenIds[0]);
     emit WinnerAndNewLottery(0, 0, _nextLotteryWinnerRewardItemTokenId, 1);
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   // playerId can be 0 to ignore it, otherwise sender must own it
@@ -143,6 +153,8 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
     uint256 flooredAmountWei = (amount / 1 ether) * 1 ether;
     require(flooredAmountWei != 0, MinimumOneBrush());
 
+    bool isEvolved = playerId != 0 && _players.isPlayerEvolved(playerId);
+
     if (playerId != 0) {
       bool hasEnoughForRaffle = (amount / 1 ether) >= _raffleEntryCost;
       uint256 lastLotteryId = _lastLotteryId;
@@ -158,6 +170,9 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
         // Note: Ideally this would be set inside Players but contract size issues....
         if (_players.getActiveBoost(playerId).extraStartTime != uint40(block.timestamp)) {
           itemTokenId = _donationRewardItemTokenId;
+
+          // airdrop ticket
+          _activityPoints.rewardGreenTickets(ActivityType.wishingwell_luckofthedraw, from, isEvolved);
         }
         _playersEntered[lastLotteryId].set(playerId);
         isRaffleDonation = true;
@@ -200,7 +215,10 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
         }
 
         _clanDonationInfo[clanId].totalDonated = totalDonatedToClan;
+
         emit DonateToClan(from, playerId, flooredAmountWei, clanId, clanXPGained);
+
+        _activityPoints.rewardBlueTickets(ActivityType.wishingwell_evt_donatetoclan, from, isEvolved, amount / 1 ether);
       }
     }
 
@@ -210,15 +228,21 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
       emit Donate(from, playerId, flooredAmountWei, 0, 0);
     }
 
+    // amount / 1 ether;
+    _activityPoints.rewardBlueTickets(ActivityType.wishingwell_evt_donate, from, isEvolved, amount / 1 ether);
+
     _totalDonated += uint40(amount / 1 ether);
 
+    uint40 lastGlobalThreshold = _lastGlobalThreshold;
+    uint24 globalThresholdIncrement = _globalThresholdIncrement;
     // Is a global donation threshold hit?
-    uint256 nextGlobalThreshold = _lastGlobalThreshold + _globalThresholdIncrement;
+    uint256 nextGlobalThreshold = lastGlobalThreshold + globalThresholdIncrement;
     if (_totalDonated >= nextGlobalThreshold) {
       globalItemTokenId = _nextGlobalRewardItemTokenId;
       uint256 remainder = (_totalDonated - nextGlobalThreshold);
-      uint256 numThresholdIncrements = (remainder / _globalThresholdIncrement) + 1;
-      _lastGlobalThreshold += uint40(numThresholdIncrements * _globalThresholdIncrement);
+      uint256 numThresholdIncrements = (remainder / globalThresholdIncrement) + 1;
+      lastGlobalThreshold += uint40(numThresholdIncrements * globalThresholdIncrement);
+      _lastGlobalThreshold = lastGlobalThreshold;
 
       // Cycle through them
       uint16 nextReward;
@@ -232,7 +256,7 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
       _nextGlobalRewardItemTokenId = nextReward;
 
-      emit LastGlobalDonationThreshold(uint256(_lastGlobalThreshold) * 1 ether, nextReward);
+      emit LastGlobalDonationThreshold(uint256(lastGlobalThreshold) * 1 ether, nextReward);
     }
   }
 
@@ -246,28 +270,39 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
       return;
     }
 
+    uint16 nextLotteryWinnerRewardItemTokenId = _nextLotteryWinnerRewardItemTokenId;
+
     if (_hasDonations) {
       // Decide the winner
-      uint24 _raffleIdWinner = uint24(randomWord % lastRaffleId) + 1;
+      uint24 raffleIdWinner = uint24(randomWord % lastRaffleId) + 1;
+      uint40 playerId = uint40(_raffleIdToPlayerId[lastLotteryId][raffleIdWinner]);
       _winners[lastLotteryId] = LotteryWinnerInfo({
         lotteryId: lastLotteryId,
-        raffleId: _raffleIdWinner,
-        itemTokenId: _nextLotteryWinnerRewardItemTokenId,
+        raffleId: raffleIdWinner,
+        itemTokenId: nextLotteryWinnerRewardItemTokenId,
         amount: 1,
         instantConsume: _nextLotteryWinnerRewardInstantConsume,
-        playerId: uint40(_raffleIdToPlayerId[lastLotteryId][_raffleIdWinner])
+        playerId: playerId
       });
+
+      // airdrop ticket
+      _activityPoints.rewardGreenTickets(
+        ActivityType.wishingwell_luckypotion,
+        _playerNFT.ownerOf(playerId),
+        _players.isPlayerEvolved(playerId)
+      );
 
       _lastRaffleId = 0;
       // Currently not set as currently the same each time: nextLotteryWinnerRewardItemTokenId & nextLotteryWinnerRewardInstantConsume;
-      emit WinnerAndNewLottery(lastLotteryId, _raffleIdWinner, _nextLotteryWinnerRewardItemTokenId, 1);
+      emit WinnerAndNewLottery(lastLotteryId, raffleIdWinner, nextLotteryWinnerRewardItemTokenId, 1);
 
       // Add to the last unclaimed winners queue
       bool added;
-      for (uint256 i = 0; i < _lastUnclaimedWinners.length; i += 2) {
-        if (_lastUnclaimedWinners[i] == 0) {
-          _lastUnclaimedWinners[i] = _winners[lastLotteryId].playerId;
-          _lastUnclaimedWinners[i + 1] = lastLotteryId;
+      uint64[4] storage lastUnclaimedWinners = _lastUnclaimedWinners;
+      for (uint256 i = 0; i < lastUnclaimedWinners.length; i += 2) {
+        if (lastUnclaimedWinners[i] == 0) {
+          lastUnclaimedWinners[i] = playerId;
+          lastUnclaimedWinners[i + 1] = lastLotteryId;
           added = true;
           break;
         }
@@ -275,15 +310,15 @@ contract WishingWell is UUPSUpgradeable, OwnableUpgradeable, IOracleCB {
 
       if (!added) {
         // Shift the remaining ones down and add it to the end
-        for (uint256 i = 2; i < _lastUnclaimedWinners.length; i += 2) {
-          _lastUnclaimedWinners[i - 2] = _lastUnclaimedWinners[i];
-          _lastUnclaimedWinners[i - 1] = _lastUnclaimedWinners[i + 1];
+        for (uint256 i = 2; i < lastUnclaimedWinners.length; i += 2) {
+          lastUnclaimedWinners[i - 2] = lastUnclaimedWinners[i];
+          lastUnclaimedWinners[i - 1] = lastUnclaimedWinners[i + 1];
         }
-        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 2] = _winners[lastLotteryId].playerId;
-        _lastUnclaimedWinners[_lastUnclaimedWinners.length - 1] = lastLotteryId;
+        lastUnclaimedWinners[lastUnclaimedWinners.length - 2] = playerId;
+        lastUnclaimedWinners[lastUnclaimedWinners.length - 1] = lastLotteryId;
       }
     } else {
-      emit WinnerAndNewLottery(lastLotteryId, 0, _nextLotteryWinnerRewardItemTokenId, 1);
+      emit WinnerAndNewLottery(lastLotteryId, 0, nextLotteryWinnerRewardItemTokenId, 1);
     }
 
     // Start new lottery

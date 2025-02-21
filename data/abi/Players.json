@@ -2166,7 +2166,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "playerOwner",
         "type": "address"
       }
     ],
@@ -2185,7 +2185,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "playerOwner",
         "type": "address"
       }
     ],
@@ -2278,7 +2278,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "playerOwner",
         "type": "address"
       },
       {
@@ -2928,6 +2928,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
+      },
+      {
         "internalType": "bool",
         "name": "isBeta",
         "type": "bool"
@@ -3120,6 +3125,19 @@
       }
     ],
     "name": "setActivePlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "activityPoints",
+        "type": "address"
+      }
+    ],
+    "name": "setActivityPoints",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

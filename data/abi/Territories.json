@@ -1362,6 +1362,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract IActivityPoints",
+        "name": "activityPoints",
+        "type": "address"
+      },
+      {
         "internalType": "bool",
         "name": "isBeta",
         "type": "bool"
@@ -1438,6 +1443,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "activityPoints",
+        "type": "address"
+      }
+    ],
+    "name": "setActivityPoints",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

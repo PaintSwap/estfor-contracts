@@ -13,12 +13,20 @@ import {RandomnessBeacon} from "./RandomnessBeacon.sol";
 
 import {EstforLibrary} from "./EstforLibrary.sol";
 
+import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
+
 // solhint-disable-next-line no-global-import
 import "./globals/all.sol";
 
 // Stake some items which get burnt and get something else in return for waiting a certain time. All or nothing.
 // Supports skipping a day based on random chance & random items in Passive Actions
-contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardTransientUpgradeable, ERC1155Holder {
+contract PassiveActions is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  ReentrancyGuardTransientUpgradeable,
+  ERC1155Holder,
+  IActivityPointsCaller
+{
   using Math for uint256;
 
   event AddPassiveActions(PassiveActionInput[] passiveActionInputs);
@@ -132,6 +140,7 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
   mapping(uint256 actionId => ActionRewards) private _actionRewards;
   mapping(uint256 playerId => ActivePassiveInfo activePassiveInfo) private _activePassiveActions;
   address private _bridge; // TODO: Bridge Can remove later
+  IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -152,7 +161,8 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
     IPlayers players,
     ItemNFT itemNFT,
     RandomnessBeacon randomnessBeacon,
-    address bridge
+    address bridge,
+    IActivityPoints activityPoints
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
@@ -162,7 +172,13 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
     _itemNFT = itemNFT;
     _randomnessBeacon = randomnessBeacon;
     _bridge = bridge;
+    _activityPoints = activityPoints;
     _lastQueueId = 1;
+  }
+
+  // TODO: remove in prod
+  function setActivityPoints(address activityPoints) external override onlyOwner {
+    _activityPoints = IActivityPoints(activityPoints);
   }
 
   function startAction(
@@ -366,10 +382,22 @@ contract PassiveActions is UUPSUpgradeable, OwnableUpgradeable, ReentrancyGuardT
       amounts[i + _pendingPassiveActionState.producedItemTokenIds.length] = _pendingPassiveActionState
         .producedRandomRewardAmounts[i];
     }
+
+    address msgSender = _msgSender();
+
     if (numItemsToMint != 0) {
-      _itemNFT.mintBatch(_msgSender(), itemTokenIds, amounts);
+      _itemNFT.mintBatch(msgSender, itemTokenIds, amounts);
     }
-    emit ClaimPassiveAction(playerId, _msgSender(), queueId, itemTokenIds, amounts, startingAnother);
+
+    emit ClaimPassiveAction(playerId, msgSender, queueId, itemTokenIds, amounts, startingAnother);
+
+    // issue activity points
+    _activityPoints.rewardBlueTickets(
+      ActivityType.passiveactions_evt_claimpassiveaction,
+      msgSender,
+      _players.isPlayerEvolved(playerId),
+      1
+    );
   }
 
   function _isWinner(
