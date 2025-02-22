@@ -206,8 +206,16 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
       _dailyRewardMasks[playerId] = dailyRewardMask;
     }
     if (rewardAmounts.length != 0) {
+      bool isEvolved = _isEvolved(playerId);
+
       _itemNFT.mint(from, rewardItemTokenIds[0], rewardAmounts[0]);
       emit DailyReward(from, playerId, rewardItemTokenIds[0], rewardAmounts[0]);
+
+      // blue tickets
+      _activityPoints.rewardBlueTickets(ActivityType.players_evt_dailyreward, from, isEvolved, rewardAmounts[0]);
+
+      // airdrop ticket
+      _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from, isEvolved);
 
       _walletDailyInfo[from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }

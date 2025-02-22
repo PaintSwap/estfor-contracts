@@ -308,6 +308,20 @@ describe("ActivityPoints", function () {
           xpThresholdAP
         );
     });
+
+    it("Should get activity points for players_evt_dailyreward and half if unevolved", async function () {
+      const {activityPoints, alice} = await loadFixture(deployActivityPointsFixture);
+
+      const dailyRewardAP = 80;
+      await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_dailyreward, alice.address, true, 0))
+        .to.emit(activityPoints, "ActivityPointsEarned")
+        .withArgs(ActivityType.players_evt_dailyreward, 0, alice.address, ACTIVITY_TICKET, dailyRewardAP);
+
+      const dailyRewardAPUnevolved = 40;
+      await expect(activityPoints.rewardBlueTickets(ActivityType.players_evt_dailyreward, alice.address, false, 0))
+        .to.emit(activityPoints, "ActivityPointsEarned")
+        .withArgs(ActivityType.players_evt_dailyreward, 0, alice.address, ACTIVITY_TICKET, dailyRewardAPUnevolved);
+    });
   });
 
   describe("Blue Point NFT Boosts", function () {
