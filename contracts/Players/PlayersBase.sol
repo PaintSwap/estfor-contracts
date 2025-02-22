@@ -311,7 +311,8 @@ abstract contract PlayersBase {
     address from,
     uint256 playerId,
     Skill skill,
-    uint128 pointsAccrued
+    uint128 pointsAccrued,
+    bool isNewPlayer
   ) internal returns (uint8 levelsGained) {
     PackedXP storage packedXP = _playerXP[playerId];
     uint256 oldPoints = PlayersLibrary.readXP(skill, packedXP);
@@ -370,7 +371,9 @@ abstract contract PlayersBase {
 
     bool isEvolved = _isEvolved(playerId);
     // assign the activity points for the action
-    _activityPoints.rewardBlueTickets(ActivityType.players_evt_addxp, from, isEvolved, pointsAccrued);
+    if (!isNewPlayer) {
+      _activityPoints.rewardBlueTickets(ActivityType.players_evt_addxp, from, isEvolved, pointsAccrued);
+    }
 
     uint256 oldLevel = PlayersLibrary.getLevel(oldPoints);
     if (oldMaxLevelVersion != newMaxLevelVersion && oldLevel == newLevel) {
@@ -387,7 +390,9 @@ abstract contract PlayersBase {
     if (levelsGained != 0) {
       // assign activity points for the new level
       emit LevelUp(from, playerId, skill, oldLevel, newLevel);
-      _activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, from, isEvolved, newLevel);
+      if (!isNewPlayer) {
+        _activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, from, isEvolved, newLevel);
+      }
     }
   }
 
