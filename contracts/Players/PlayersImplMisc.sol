@@ -205,9 +205,16 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     if (uint256(dailyRewardMask) != 0) {
       _dailyRewardMasks[playerId] = dailyRewardMask;
     }
+    bool isEvolved = _isEvolved(playerId);
     if (rewardAmounts.length != 0) {
       _itemNFT.mint(from, rewardItemTokenIds[0], rewardAmounts[0]);
       emit DailyReward(from, playerId, rewardItemTokenIds[0], rewardAmounts[0]);
+
+      // blue tickets
+      _activityPoints.rewardBlueTickets(ActivityType.players_evt_dailyreward, from, isEvolved, rewardAmounts[0]);
+
+      // airdrop ticket
+      _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from, isEvolved);
 
       _walletDailyInfo[from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }
@@ -215,6 +222,8 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     if (rewardAmounts.length > 1) {
       _itemNFT.mint(from, rewardItemTokenIds[1], rewardAmounts[1]);
       emit WeeklyReward(from, playerId, rewardItemTokenIds[1], rewardAmounts[1]);
+
+      _activityPoints.rewardBlueTickets(ActivityType.players_evt_weeklyreward, from, isEvolved, rewardAmounts[1]);
     }
   }
 
@@ -575,7 +584,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     if (!fromBridge) {
       for (uint256 i; i < length; ++i) {
         Skill skill = startSkills[i];
-        levelsGained += _updateXP(from, playerId, skill, xpEach);
+        levelsGained += _updateXP(from, playerId, skill, xpEach, true);
       }
     }
 
@@ -612,7 +621,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
 
   function _modifyXPRelative(address from, uint256 playerId, Skill skill, uint56 gainedXP, bool skipEffects) private {
     require(_playerNFT.balanceOf(from, playerId) != 0, NotOwnerOfPlayer());
-    uint256 levelsGained = _updateXP(from, playerId, skill, gainedXP);
+    uint256 levelsGained = _updateXP(from, playerId, skill, gainedXP, false);
     uint48 newTotalXP = uint48(_players[playerId].totalXP + gainedXP);
     if (!skipEffects) {
       _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);

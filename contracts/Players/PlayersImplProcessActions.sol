@@ -152,7 +152,8 @@ contract PlayersImplProcessActions is PlayersBase {
               from,
               playerId,
               pendingQueuedActionProcessed.skills[j],
-              pendingQueuedActionProcessed.xpGainedSkills[j]
+              pendingQueuedActionProcessed.xpGainedSkills[j],
+              false
             );
 
             levelsGained += newLevels;
@@ -232,7 +233,7 @@ contract PlayersImplProcessActions is PlayersBase {
     uint256 questXpGained;
     uint256 questLevelsGained;
     for (uint256 j; j < questState.skills.length; ++j) {
-      questLevelsGained += _updateXP(from, playerId, questState.skills[j], questState.xpGainedSkills[j]);
+      questLevelsGained += _updateXP(from, playerId, questState.skills[j], questState.xpGainedSkills[j], false);
       questXpGained += questState.xpGainedSkills[j];
     }
     if (questXpGained != 0) {
