@@ -312,7 +312,7 @@ abstract contract PlayersBase {
     uint256 playerId,
     Skill skill,
     uint128 pointsAccrued,
-    bool isNewPlayer
+    bool isNewOrBridgedPlayer
   ) internal returns (uint8 levelsGained) {
     PackedXP storage packedXP = _playerXP[playerId];
     uint256 oldPoints = PlayersLibrary.readXP(skill, packedXP);
@@ -371,7 +371,7 @@ abstract contract PlayersBase {
 
     bool isEvolved = _isEvolved(playerId);
     // assign the activity points for the action
-    if (!isNewPlayer) {
+    if (!isNewOrBridgedPlayer) {
       _activityPoints.rewardBlueTickets(ActivityType.players_evt_addxp, from, isEvolved, pointsAccrued);
     }
 
@@ -390,7 +390,7 @@ abstract contract PlayersBase {
     if (levelsGained != 0) {
       // assign activity points for the new level
       emit LevelUp(from, playerId, skill, oldLevel, newLevel);
-      if (!isNewPlayer) {
+      if (!isNewOrBridgedPlayer) {
         _activityPoints.rewardBlueTickets(ActivityType.players_evt_levelup, from, isEvolved, newLevel);
       }
     }

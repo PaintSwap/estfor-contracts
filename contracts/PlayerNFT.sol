@@ -72,13 +72,6 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   error HeroNameIsReserved(string reservedName);
   error NotBridge();
 
-  struct PlayerInfo {
-    uint24 avatarId;
-    uint24 originalAvatarId; // The base avatar id that you were born with
-    uint40 mintedTimestamp;
-    uint40 upgradedTimestamp; // What time you upgraded your avatar
-  }
-
   uint256 private constant EVOLVED_OFFSET = 10000;
   uint256 public constant NUM_BASE_AVATARS = 8;
 

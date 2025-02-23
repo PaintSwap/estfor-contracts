@@ -621,7 +621,12 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
 
   function _modifyXPRelative(address from, uint256 playerId, Skill skill, uint56 gainedXP, bool skipEffects) private {
     require(_playerNFT.balanceOf(from, playerId) != 0, NotOwnerOfPlayer());
-    uint256 levelsGained = _updateXP(from, playerId, skill, gainedXP, false);
+
+    // TODO: For now, could pass it in but requires a lot of changes
+    PlayerInfo memory playerInfo = _playerNFT.getPlayerInfo(playerId);
+    bool isNewOrBridgedPlayer = playerInfo.mintedTimestamp == uint40(block.timestamp);
+
+    uint256 levelsGained = _updateXP(from, playerId, skill, gainedXP, isNewOrBridgedPlayer);
     uint48 newTotalXP = uint48(_players[playerId].totalXP + gainedXP);
     if (!skipEffects) {
       _claimTotalXPThresholdRewards(from, playerId, _players[playerId].totalXP, newTotalXP);
