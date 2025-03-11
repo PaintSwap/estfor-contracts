@@ -935,7 +935,7 @@
             "type": "uint40"
           }
         ],
-        "internalType": "struct PlayerNFT.PlayerInfo",
+        "internalType": "struct PlayerInfo",
         "name": "",
         "type": "tuple"
       }

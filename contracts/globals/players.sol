@@ -351,6 +351,13 @@ struct ActivePlayerInfo {
   uint24 timespan2;
 }
 
+struct PlayerInfo {
+  uint24 avatarId;
+  uint24 originalAvatarId; // The base avatar id that you were born with
+  uint40 mintedTimestamp;
+  uint40 upgradedTimestamp; // What time you upgraded your avatar
+}
+
 uint8 constant START_LEVEL = 17; // Needs updating when there is a new skill. Only useful for new heroes.
 
 uint256 constant MAX_UNIQUE_TICKETS = 64;
