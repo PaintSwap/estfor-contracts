@@ -1126,6 +1126,43 @@ describe("Clans", function () {
         await clans.connect(alice).acceptJoinRequests(clanId, [bobPlayerId], playerId);
       });
 
+      it("Gate keep join request with many ERC721s where some of the tokenIds don't exist and revert when checking owner", async function () {
+        const {clans, playerId, alice, bob, clanId, playerNFT, avatarId, paintSwapMarketplaceWhitelist} =
+          await loadFixture(clanFixture);
+        await clans.connect(alice).changeRank(clanId, playerId, ClanRank.LEADER, playerId);
+        const erc721 = await ethers.deployContract("TestERC721");
+        await paintSwapMarketplaceWhitelist.setWhitelisted(erc721, true);
+
+        const erc721Another = await ethers.deployContract("TestERC721");
+        await paintSwapMarketplaceWhitelist.setWhitelisted(erc721Another, true);
+
+        // Order is important, make sure the one that doesn't exist is 1st
+        await clans.connect(alice).gateKeep(
+          clanId,
+          [
+            {nft: await erc721Another.getAddress(), nftType: 721},
+            {nft: await erc721.getAddress(), nftType: 721}
+          ],
+          playerId
+        );
+
+        const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
+        const tokenId = 1;
+        await erc721.mint(bob);
+
+        await expect(erc721Another.ownerOf(tokenId)).to.be.revertedWithCustomError(
+          erc721Another,
+          "ERC721NonexistentToken"
+        );
+
+        const clan = await clans.getClan(clanId);
+        expect(await clan.gateKeptNFTs[0].nft).to.eq(await erc721Another.getAddress());
+
+        // Execute the transaction that should hit the catch block (TODO ideally we would use a trace for this)
+        await clans.connect(bob).requestToJoin(clanId, bobPlayerId, tokenId);
+        await clans.connect(alice).acceptJoinRequests(clanId, [bobPlayerId], playerId);
+      });
+
       it("Gate keep accepting invites with ERC1155", async function () {
         // Sending invites without the nft is fine, they must have the NFT to accept it though.
         const {clans, playerId, alice, bob, clanId, playerNFT, avatarId, paintSwapMarketplaceWhitelist} =
@@ -1168,15 +1205,15 @@ describe("Clans", function () {
         await clans.connect(alice).gateKeep(clanId, [{nft: await erc721.getAddress(), nftType: 721}], playerId);
 
         const tokenId = 1;
-        // await clans.connect(bob).acceptInvite(clanId, bobPlayerId, tokenId);
         await expect(clans.connect(bob).acceptInvite(clanId, bobPlayerId, tokenId)).to.be.revertedWithCustomError(
-          erc721,
-          "ERC721NonexistentToken"
+          clans,
+          "NoGateKeptNFTFound"
         );
         await erc721.mint(bob);
         await clans.connect(bob).acceptInvite(clanId, bobPlayerId, tokenId);
       });
     });
+
     describe("Message Pinning", function () {
       it("Must be owner of player to pin", async function () {
         const {playerId, alice, clans, clanId} = await loadFixture(clanFixture);
