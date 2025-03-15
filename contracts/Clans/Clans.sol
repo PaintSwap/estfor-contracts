@@ -695,11 +695,15 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
       bool foundNFT;
       // Check the player owns one of these NFTs
       address sender = _msgSender();
-      for (uint256 i = 0; i < nftInfo.length; ++i) {
+      for (uint256 i = 0; i < nftInfo.length && !foundNFT; ++i) {
         if (nftInfo[i].nftType == 1155) {
-          foundNFT = foundNFT || IERC1155(nftInfo[i].nft).balanceOf(sender, gateKeepTokenId) != 0;
+          foundNFT = IERC1155(nftInfo[i].nft).balanceOf(sender, gateKeepTokenId) != 0;
         } else if (nftInfo[i].nftType == 721) {
-          foundNFT = foundNFT || IERC721(nftInfo[i].nft).ownerOf(gateKeepTokenId) == sender;
+          try IERC721(nftInfo[i].nft).ownerOf(gateKeepTokenId) returns (address nftOwner) {
+            foundNFT = nftOwner == sender;
+          } catch {
+            // Reverting is fine, the tokenId just might not exist
+          }
         }
       }
 
