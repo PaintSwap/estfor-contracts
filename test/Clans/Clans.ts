@@ -1117,8 +1117,8 @@ describe("Clans", function () {
         const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
         const tokenId = 1;
         await expect(clans.connect(bob).requestToJoin(clanId, bobPlayerId, tokenId)).to.be.revertedWithCustomError(
-          erc721,
-          "ERC721NonexistentToken"
+          clans,
+          "NoGateKeptNFTFound"
         );
 
         await erc721.mint(bob);
