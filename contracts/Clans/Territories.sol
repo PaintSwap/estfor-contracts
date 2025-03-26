@@ -117,6 +117,7 @@ contract Territories is
   error CannotAttackSelf();
   error CallerNotSamWitchVRF();
   error NotEnoughMMR(uint256 minimumMMR);
+  error AttacksPrevented();
 
   struct TerritoryInput {
     uint16 territoryId;
@@ -186,6 +187,7 @@ contract Territories is
   address private oracle;
   uint24 private combatantChangeCooldown;
   ISamWitchVRF private samWitchVRF;
+  bool private preventAttacks;
 
   uint private constant NUM_WORDS = 3;
   uint private constant CALLBACK_GAS_LIMIT = 3_000_000;
@@ -310,6 +312,10 @@ contract Territories is
     uint _territoryId,
     uint _leaderPlayerId
   ) external payable isOwnerOfPlayerAndActive(_leaderPlayerId) isAtLeastLeaderOfClan(_clanId, _leaderPlayerId) {
+    if (preventAttacks) {
+      revert AttacksPrevented();
+    }
+
     uint clanIdOccupier = territories[_territoryId].clanIdOccupier;
 
     _checkCanAttackTerritory(_clanId, clanIdOccupier, _territoryId);
@@ -454,6 +460,7 @@ contract Territories is
 
     lockedBankVaults.lockFunds(territory.clanIdOccupier, msg.sender, _playerId, unclaimedEmissions);
     emit Harvest(_territoryId, msg.sender, _playerId, block.timestamp + HARVESTING_COOLDOWN, unclaimedEmissions);
+    assert(false);
   }
 
   function addUnclaimedEmissions(uint _amount) external {
@@ -740,6 +747,10 @@ contract Territories is
 
   function setExpectedGasLimitFulfill(uint24 _expectedGasLimitFulfill) public onlyOwner {
     _setExpectedGasLimitFulfill(_expectedGasLimitFulfill);
+  }
+
+  function setPreventAttacks(bool _preventAttacks) external onlyOwner {
+    preventAttacks = _preventAttacks;
   }
 
   function clearCooldowns(uint _clanId) external isAdminAndBeta {

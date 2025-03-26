@@ -47,6 +47,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   error InvalidActionId();
   error OutputAmountCannotBeZero();
   error OutputTokenIdCannotBeEmpty();
+  error ActionsPrevented();
 
   enum InstantActionType {
     NONE,
@@ -94,6 +95,7 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
   IPlayers public players;
   mapping(InstantActionType actionType => mapping(uint16 actionId => InstantAction instantAction)) public actions;
   ItemNFT public itemNFT;
+  bool private preventActions;
 
   modifier isOwnerOfPlayerAndActive(uint _playerId) {
     if (!players.isOwnerOfPlayerAndActive(msg.sender, _playerId)) {
@@ -120,6 +122,10 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
     uint[] calldata _amounts,
     InstantActionType _actionType
   ) external isOwnerOfPlayerAndActive(_playerId) {
+    if (preventActions) {
+      revert ActionsPrevented();
+    }
+
     InstantActionState memory instantActionState = getInstantActionState(_playerId, _actionIds, _amounts, _actionType);
 
     itemNFT.burnBatch(msg.sender, instantActionState.consumedTokenIds, instantActionState.consumedAmounts);
@@ -420,6 +426,10 @@ contract InstantActions is UUPSUpgradeable, OwnableUpgradeable {
       delete actions[_actionTypes[i]][_instantActionIds[i]];
     }
     emit RemoveInstantActions(_actionTypes, _instantActionIds);
+  }
+
+  function setPreventActions(bool _preventActions) external onlyOwner {
+    preventActions = _preventActions;
   }
 
   // solhint-disable-next-line no-empty-blocks

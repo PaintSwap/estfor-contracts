@@ -101,7 +101,8 @@ library LockedBankVaultsLibrary {
   function claimFunds(
     uint48[] storage _sortedClansByMMR,
     VaultClanInfo storage _clanInfo,
-    uint256 _clanId
+    uint256 _clanId,
+    uint256 _timestamp
   ) external returns (uint256 total, uint256 numLocksClaimed) {
     uint defendingVaultsOffset = _clanInfo.defendingVaultsOffset;
     // There a few cases to consider here:
@@ -111,7 +112,7 @@ library LockedBankVaultsLibrary {
     // We don't need to set claimed = true unless we know the second one is not expired yet
     for (uint i = defendingVaultsOffset; i < _clanInfo.defendingVaults.length; ++i) {
       Vault storage defendingVault = _clanInfo.defendingVaults[i];
-      if (defendingVault.timestamp > block.timestamp) {
+      if (defendingVault.timestamp > _timestamp) {
         // Has not expired yet
         break;
       }
@@ -121,7 +122,7 @@ library LockedBankVaultsLibrary {
         ++numLocksClaimed;
       }
 
-      if (defendingVault.timestamp1 > block.timestamp) {
+      if (defendingVault.timestamp1 > _timestamp) {
         // Has not expired yet
         defendingVault.amount = 0; // Clear the first one so that we don't try to use it again
         defendingVault.timestamp = 0;

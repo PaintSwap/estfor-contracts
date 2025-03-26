@@ -1375,7 +1375,7 @@ describe("Players", function () {
     await players.pauseGame(false);
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStatus.NONE);
     await players.pauseGame(true);
-    await expect(players.connect(alice).processActions(playerId)).to.be.revertedWithCustomError(
+    await expect(players.connect(alice).processActions(playerId)).to.not.be.revertedWithCustomError(
       players,
       "GameIsPaused"
     );

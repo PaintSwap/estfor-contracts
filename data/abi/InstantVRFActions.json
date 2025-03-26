@@ -26,6 +26,11 @@
   },
   {
     "inputs": [],
+    "name": "ActionsPrevented",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "AddressIsNotContract",
     "type": "error"
   },
@@ -884,6 +889,19 @@
       }
     ],
     "name": "setPetNFT",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_preventActions",
+        "type": "bool"
+      }
+    ],
+    "name": "setPreventActions",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

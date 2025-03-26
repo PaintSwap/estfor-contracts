@@ -186,6 +186,11 @@
   },
   {
     "inputs": [],
+    "name": "SellingPrevented",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "SellingTooQuicklyAfterItemIntroduction",
     "type": "error"
   },
@@ -952,6 +957,19 @@
   {
     "inputs": [
       {
+        "internalType": "bool",
+        "name": "_sellingPrevented",
+        "type": "bool"
+      }
+    ],
+    "name": "setSellingPrevented",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "itemId",
         "type": "uint256"
@@ -1044,6 +1062,13 @@
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

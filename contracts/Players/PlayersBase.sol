@@ -203,6 +203,7 @@ abstract contract PlayersBase {
   mapping(uint queueId => QueuedActionExtra queuedActionExtra) internal queuedActionsExtra;
 
   PetNFT internal petNFT;
+  address internal bridge;
 
   modifier onlyPlayerNFT() {
     if (msg.sender != address(playerNFT)) {

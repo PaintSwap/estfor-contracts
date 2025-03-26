@@ -69,6 +69,8 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   error TelegramInvalidCharacters();
   error TwitterTooLong();
   error LengthMismatch();
+  error NotBridge();
+  error CannotMint();
 
   struct PlayerInfo {
     uint24 avatarId;
@@ -101,6 +103,7 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   mapping(address whitelistedUser => uint amount) private numMintedFromWhitelist; // Unused now
   AdminAccess private adminAccess; // Unused but is set
   uint32 numBurned;
+  address bridge;
   uint constant NUM_BASE_AVATARS = 8;
 
   modifier isOwnerOfPlayer(uint playerId) {
@@ -113,6 +116,13 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   modifier onlyPlayers() {
     if (_msgSender() != address(players)) {
       revert NotPlayers();
+    }
+    _;
+  }
+
+  modifier onlyBridge() {
+    if (_msgSender() != bridge) {
+      revert NotBridge();
     }
     _;
   }
@@ -160,6 +170,9 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
     bool _upgrade,
     bool _makeActive
   ) external {
+    if (bridge != address(0)) {
+      revert CannotMint();
+    }
     address from = _msgSender();
     uint playerId = nextPlayerId++;
     (string memory trimmedName, ) = _setName(playerId, _name);
@@ -438,6 +451,31 @@ contract PlayerNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, I
   function setUpgradeCost(uint80 _upgradePlayerCost) external onlyOwner {
     upgradePlayerCost = _upgradePlayerCost;
     emit UpgradePlayerCost(_upgradePlayerCost);
+  }
+
+  function getBridgeablePlayer(
+    uint _playerId,
+    string calldata _discord,
+    string calldata _twitter,
+    string calldata _telegram
+  ) external view returns (uint24 avatarId, string memory name_) {
+    _checkSocials(_discord, _twitter, _telegram);
+
+    uint24 originalAvatarId = playerInfos[_playerId].originalAvatarId;
+    if (originalAvatarId == 0) {
+      originalAvatarId = playerInfos[_playerId].avatarId;
+    }
+
+    avatarId = originalAvatarId;
+    name_ = names[_playerId];
+  }
+
+  function bridgePlayer(address _from, uint _playerId) external onlyBridge {
+    _burn(_from, _playerId, 1);
+  }
+
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
   }
 
   // solhint-disable-next-line no-empty-blocks

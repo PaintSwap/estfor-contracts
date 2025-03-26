@@ -122,6 +122,7 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   uint8 private brushTerritoriesPercentage;
   address private territories;
   address private players;
+  address private bridge;
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
@@ -156,6 +157,13 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   modifier isOwnerOfPlayer(uint _playerId) {
     if (!IPlayers(players).isOwnerOfPlayerAndActive(_msgSender(), _playerId)) {
       revert NotOwnerOfPlayer();
+    }
+    _;
+  }
+
+  modifier onlyBridge() {
+    if (_msgSender() != bridge) {
+      revert NotAdminAndBeta();
     }
     _;
   }
@@ -292,7 +300,10 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
   }
 
   function burnBatch(address _from, uint[] memory _tokenIds) external onlyBurners(_from) {
-    uint[] memory amounts = new uint[](_tokenIds.length);
+    uint256[] memory amounts = new uint256[](_tokenIds.length);
+    for (uint256 i = 0; i < _tokenIds.length; ++i) {
+      amounts[i] = 1;
+    }
     _burnBatch(_from, _tokenIds, amounts);
   }
 
@@ -610,6 +621,53 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
     return string(abi.encodePacked("EK_PETS", isBeta ? "_B" : ""));
   }
 
+  function getBridgeablePets(
+    address to,
+    uint256[] memory petIds,
+    bool throwOnError
+  )
+    external
+    view
+    returns (
+      uint24[] memory basePetIds,
+      string[] memory petNames,
+      Skill[] memory skillEnhancement1s,
+      uint8[] memory skillFixedEnhancement1s,
+      uint8[] memory skillPercentageEnhancement1,
+      Skill[] memory skillEnhancement2s,
+      uint8[] memory skillFixedEnhancement2s,
+      uint8[] memory skillPercentageEnhancement2s
+    )
+  {
+    basePetIds = new uint24[](petIds.length);
+    petNames = new string[](petIds.length);
+    skillEnhancement1s = new Skill[](petIds.length);
+    skillFixedEnhancement1s = new uint8[](petIds.length);
+    skillPercentageEnhancement1 = new uint8[](petIds.length);
+    skillEnhancement2s = new Skill[](petIds.length);
+    skillFixedEnhancement2s = new uint8[](petIds.length);
+    skillPercentageEnhancement2s = new uint8[](petIds.length);
+
+    for (uint i = 0; i < petIds.length; ++i) {
+      // Confirm this user owns the pet
+      if (throwOnError && getOwner(petIds[i]) != to) {
+        revert NotOwnerOfPet();
+      }
+
+      Pet storage pet = pets[petIds[i]];
+      BasePetMetadata storage basePetMetadata = basePetMetadatas[pet.baseId];
+      basePetIds[i] = pet.baseId;
+      petNames[i] = names[petIds[i]];
+      skillEnhancement1s[i] = basePetMetadata.skillEnhancement1;
+
+      skillFixedEnhancement1s[i] = pet.skillFixedEnhancement1;
+      skillPercentageEnhancement1[i] = pet.skillPercentageEnhancement1;
+      skillEnhancement2s[i] = pet.skillEnhancement2;
+      skillFixedEnhancement2s[i] = pet.skillFixedEnhancement2;
+      skillPercentageEnhancement2s[i] = pet.skillPercentageEnhancement2;
+    }
+  }
+
   function setImageBaseUri(string calldata _imageBaseUri) external onlyOwner {
     imageBaseUri = _imageBaseUri;
   }
@@ -673,6 +731,18 @@ contract PetNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155UpgradeableSingle
       _brushDevPercentage,
       _brushTerritoriesPercentage
     );
+  }
+
+  function bridgePets(address _from, uint256[] calldata _petIds) external onlyBridge {
+    uint256[] memory amounts = new uint256[](_petIds.length);
+    for (uint256 i = 0; i < _petIds.length; ++i) {
+      amounts[i] = 1;
+    }
+    _burnBatch(_from, _petIds, amounts);
+  }
+
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
   }
 
   // solhint-disable-next-line no-empty-blocks

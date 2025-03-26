@@ -73,6 +73,7 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
   address private bazaar;
   address private instantVRFActions;
   address private passiveActions;
+  address private bridge;
 
   modifier onlyMinters() {
     if (
@@ -101,6 +102,13 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
       _msgSender() != passiveActions
     ) {
       revert NotBurner();
+    }
+    _;
+  }
+
+  modifier onlyBridge() {
+    if (_msgSender() != bridge) {
+      revert NotAdminAndBeta();
     }
     _;
   }
@@ -532,6 +540,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     bazaar = _bazaar;
   }
 
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
+  }
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
@@ -550,5 +562,10 @@ contract ItemNFT is ERC1155Upgradeable, UUPSUpgradeable, OwnableUpgradeable, IER
     for (uint i = 0; i < _tos.length; ++i) {
       _mintItem(_tos[i], _tokenId, _amounts[i]);
     }
+  }
+
+  function bridgeItems(address _from, uint[] calldata _itemTokenIds, uint[] calldata _amounts) external onlyBridge {
+    // Burn all the items
+    _burnBatch(_from, _itemTokenIds, _amounts);
   }
 }

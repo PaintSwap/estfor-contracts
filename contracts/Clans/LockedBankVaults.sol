@@ -103,6 +103,7 @@ contract LockedBankVaults is
   error RequestIdNotKnown();
   error CallerNotSamWitchVRF();
   error AttacksPrevented();
+  error NotBridge();
 
   struct PendingAttack {
     uint40 clanId;
@@ -159,6 +160,7 @@ contract LockedBankVaults is
   //   2.1 - Whoever was there first gets a higher rank (higher index)
   //   2.2 - The attacker is always ranked higher than the defender whether they win or lose as they are placed in the array first
   uint48[] private sortedClansByMMR; // Packed uint32 clanId | uint16 MMR
+  address private bridge;
 
   uint private constant NUM_WORDS = 3;
   uint private constant CALLBACK_GAS_LIMIT = 3_500_000;
@@ -507,10 +509,12 @@ contract LockedBankVaults is
   }
 
   function claimFunds(uint _clanId, uint _playerId) external isOwnerOfPlayerAndActive(_playerId) {
+    uint256 timestamp = bridge == address(0) ? block.timestamp : block.timestamp + lockFundsPeriod;
     (uint256 total, uint256 numLocksClaimed) = LockedBankVaultsLibrary.claimFunds(
       sortedClansByMMR,
       clanInfos[_clanId],
-      _clanId
+      _clanId,
+      timestamp
     );
     emit ClaimFunds(_clanId, msg.sender, _playerId, total, numLocksClaimed);
     address bankAddress = _getBankAddress(_clanId);
@@ -719,6 +723,10 @@ contract LockedBankVaults is
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint _requestId) external isAdminAndBeta {
     pendingAttacks[requestToPendingAttackIds[bytes32(_requestId)]].attackInProgress = true;
+  }
+
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
   }
 
   // solhint-disable-next-line no-empty-blocks

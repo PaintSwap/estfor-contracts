@@ -103,6 +103,8 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   error UnsupportedNFTType();
   error MessageTooLong();
   error NotMMRSetter();
+  error NotBridge();
+  error CreatingClanPrevented();
 
   struct Clan {
     uint80 owner;
@@ -154,6 +156,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   address private paintswapMarketplaceWhitelist;
   IClanMemberLeftCB private territories;
   IClanMemberLeftCB private lockedBankVaults;
+  address private bridge;
 
   modifier isOwnerOfPlayer(uint _playerId) {
     if (playerNFT.balanceOf(msg.sender, _playerId) == 0) {
@@ -197,6 +200,13 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _;
   }
 
+  modifier onlyBridge() {
+    if (msg.sender != bridge) {
+      revert NotBridge();
+    }
+    _;
+  }
+
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -233,6 +243,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     uint16 _imageId,
     uint8 _tierId
   ) external isOwnerOfPlayerAndActive(_playerId) {
+    if (bridge != address(0)) {
+      revert CreatingClanPrevented();
+    }
+
     PlayerInfo storage player = playerInfo[_playerId];
     if (isMemberOfAnyClan(_playerId)) {
       revert AlreadyInClan();
@@ -265,6 +279,49 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
     _pay(tier.price);
 
     bankFactory.createBank(msg.sender, clanId);
+  }
+
+  function getBridgeableClan(
+    uint256 _playerId,
+    uint256 _clanId,
+    string calldata _discord,
+    string calldata _telegram,
+    string calldata _twitter
+  )
+    external
+    view
+    returns (
+      string memory name,
+      uint16 imageId,
+      uint40 createdTimestamp,
+      uint8 tierId,
+      uint16 mmr,
+      bool disableJoinRequests
+    )
+  {
+    if (_clanId != 0) {
+      _checkSocials(_discord, _telegram, _twitter);
+
+      Clan storage clan = clans[_clanId];
+      // Must be clan owner
+      if (clan.owner != _playerId) {
+        revert RankNotHighEnough();
+      }
+      imageId = clan.imageId;
+      createdTimestamp = clan.createdTimestamp;
+      tierId = clan.tierId;
+      mmr = clan.mmr;
+      disableJoinRequests = clan.disableJoinRequests;
+      name = clan.name;
+    }
+  }
+
+  function bridgeClan(uint _clanId) external onlyBridge {
+    // Kill the clan
+    if (_clanId != 0) {
+      delete clans[_clanId];
+      emit ClanDestroyed(_clanId);
+    }
   }
 
   function editClan(
@@ -974,6 +1031,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans {
   function setEditNameCost(uint72 _editNameCost) external onlyOwner {
     editNameCost = _editNameCost;
     emit EditNameCost(_editNameCost);
+  }
+
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
   }
 
   function setPaintSwapMarketplaceWhitelist(address _paintswapMarketplaceWhitelist) external onlyOwner {

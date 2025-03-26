@@ -87,6 +87,7 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   IRouterV2 private router;
   address private buyPath1; // For buying brush
   address private buyPath2;
+  address private bridge;
 
   modifier onlyWorld() {
     if (msg.sender != world) {
@@ -98,6 +99,13 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
   modifier onlyPlayers() {
     if (msg.sender != address(players)) {
       revert NotPlayers();
+    }
+    _;
+  }
+
+  modifier onlyBridge() {
+    if (msg.sender != bridge) {
+      revert NotSupported();
     }
     _;
   }
@@ -225,6 +233,62 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
         activeQuests[_playerId] = activeQuestInfo;
         emit UpdateQuestProgress(_playerId, activeQuestInfo);
       }
+    }
+  }
+
+  function getBridgeableQuests(
+    uint256 _playerId
+  )
+    external
+    view
+    returns (
+      uint256[] memory _questsCompleted,
+      uint256[] memory questIds,
+      uint256[] memory actionCompletedNum1s,
+      uint256[] memory actionCompletedNum2s,
+      uint256[] memory actionChoiceCompletedNums,
+      uint256[] memory burnCompletedAmounts
+    )
+  {
+    _questsCompleted = new uint256[](51);
+
+    // In progress quests
+    questIds = new uint256[](51);
+    actionCompletedNum1s = new uint256[](51);
+    actionCompletedNum2s = new uint256[](51);
+    actionChoiceCompletedNums = new uint256[](51);
+    burnCompletedAmounts = new uint256[](51);
+
+    uint256 questsCompletedLength;
+    uint256 inprogressPlayerQuestsLength;
+
+    // Up to 51 quests 1 -> 51
+    for (uint questId = 1; questId <= 51; ++questId) {
+      if (questsCompleted[_playerId].get(questId)) {
+        _questsCompleted[questsCompletedLength++] = questId;
+      } else {
+        PlayerQuest storage playerQuest = inProgressFixedQuests[_playerId][questId];
+        if (playerQuest.questId != questId) {
+          playerQuest = activeQuests[_playerId];
+          if (playerQuest.questId != questId) {
+            continue;
+          }
+        }
+        questIds[inprogressPlayerQuestsLength] = playerQuest.questId;
+        actionCompletedNum1s[inprogressPlayerQuestsLength] = playerQuest.actionCompletedNum1;
+        actionCompletedNum2s[inprogressPlayerQuestsLength] = playerQuest.actionCompletedNum2;
+        actionChoiceCompletedNums[inprogressPlayerQuestsLength] = playerQuest.actionChoiceCompletedNum;
+        burnCompletedAmounts[inprogressPlayerQuestsLength++] = playerQuest.burnCompletedAmount;
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(_questsCompleted, questsCompletedLength)
+      mstore(questIds, inprogressPlayerQuestsLength)
+      mstore(actionCompletedNum1s, inprogressPlayerQuestsLength)
+      mstore(actionCompletedNum2s, inprogressPlayerQuestsLength)
+      mstore(actionChoiceCompletedNums, inprogressPlayerQuestsLength)
+      mstore(burnCompletedAmounts, inprogressPlayerQuestsLength)
     }
   }
 
@@ -695,6 +759,10 @@ contract Quests is UUPSUpgradeable, OwnableUpgradeable, IOracleRewardCB {
     delete allFixedQuests[_questId];
     emit RemoveQuest(_questId);
     --numTotalQuests;
+  }
+
+  function setBridge(address _bridge) external onlyOwner {
+    bridge = _bridge;
   }
 
   receive() external payable {}

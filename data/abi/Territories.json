@@ -21,6 +21,11 @@
   },
   {
     "inputs": [],
+    "name": "AttacksPrevented",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "BeaconImplementationIsNotAContract",
     "type": "error"
   },
@@ -1597,6 +1602,19 @@
       }
     ],
     "name": "setMinimumMMRs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_preventAttacks",
+        "type": "bool"
+      }
+    ],
+    "name": "setPreventAttacks",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
