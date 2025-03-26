@@ -20,7 +20,7 @@ async function main() {
         ["tuple(uint32 maxMessageSize, address executor)"],
         [
           {
-            maxMessageSize: 10000,
+            maxMessageSize: 1, // Can no longer bridge
             executor: "0x2957ebc0d2931270d4a539696514b047756b3056",
           },
         ]
