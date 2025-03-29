@@ -3,13 +3,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
-import {
-  createPlayer,
-  exportPlayerNamesFilePath,
-  generateUniqueBitPositions,
-  playerNamesBitCount,
-  playerNamesHashCount
-} from "../scripts/utils";
+import {createPlayer} from "../scripts/utils";
 import {PlayerNFT} from "../typechain-types";
 import {playersFixture} from "./Players/PlayersFixture";
 import {avatarIds, avatarInfos} from "../scripts/data/avatars";
@@ -103,87 +97,6 @@ describe("PlayerNFT", function () {
       playerNFT,
       "NameAlreadyExists"
     );
-  });
-
-  it("Mint should not allow using a reserved hero name", async function () {
-    const {playerNFT, alice} = await loadFixture(deployContracts);
-
-    const reservedName = "Reserved Name";
-    const secondReservedName = "Reserved Name 2";
-    const unreservedName = "Unreserved Name";
-    await playerNFT.addReservedHeroNames([reservedName]);
-
-    const isProbablyReserved = await playerNFT.isHeroNameReserved(reservedName);
-    expect(isProbablyReserved).to.be.true;
-
-    const isNotReserved = await playerNFT.isHeroNameReserved(unreservedName);
-    expect(isNotReserved).to.be.false;
-
-    // should get custom error HeroNameIsReserved(name) if name is reserved
-    await expect(createPlayer(playerNFT, 1, alice, reservedName, true)).to.be.revertedWithCustomError(
-      playerNFT,
-      "HeroNameIsReserved"
-    );
-
-    const isSecondNameReserved1 = await playerNFT.isHeroNameReserved(secondReservedName);
-    expect(isSecondNameReserved1).to.be.false;
-
-    // if we have exported a list of reserved names, we can use them to generate bit positions
-    const fileExists = await fs
-      .access(exportPlayerNamesFilePath)
-      .then(() => true)
-      .catch(() => false);
-    const reservedNames = fileExists ? (await fs.readFile(exportPlayerNamesFilePath, "utf-8")).split("\n") : [];
-    const firstReservedName = reservedNames.length > 0 ? reservedNames[0] : reservedName;
-
-    // but for tests we are going to use a small list
-    reservedNames.push(firstReservedName);
-    reservedNames.push(secondReservedName);
-
-    const gasPrices = [];
-    `Using hash count: ${playerNamesHashCount} and bit count: ${playerNamesBitCount}`;
-    const positions = await generateUniqueBitPositions(reservedNames, playerNamesHashCount, playerNamesBitCount);
-    console.log(`Generated ${positions.length} bit positions`);
-    const batchSize = Math.min(Math.max(Math.floor(positions.length / 150), 500), 5000);
-    for (let i = 0; i < positions.length; i += batchSize) {
-      const batch = positions.slice(i, i + batchSize);
-      const gas = await playerNFT.setReservedNameBits.estimateGas(batch);
-      gasPrices.push(gas);
-      // console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-      const tx = await playerNFT.setReservedNameBits(batch);
-      await tx.wait();
-    }
-
-    const averageGasPrice = gasPrices.reduce((a, b) => a + b, 0n) / BigInt(gasPrices.length);
-    console.log(
-      `Average gas price for ${gasPrices.length} txns: ${averageGasPrice}, ${
-        averageGasPrice * BigInt(gasPrices.length)
-      } total`
-    );
-
-    const FALSE_POSITIVE_CHECKS = 20000;
-    let falsePositives = 0;
-    for (let i = 0; i < FALSE_POSITIVE_CHECKS && i < reservedNames.length; i++) {
-      const randomIndex = Math.floor(Math.random() * reservedNames.length);
-      const name = reservedNames.splice(randomIndex, 1)[0];
-      const isReserved = await playerNFT.isHeroNameReserved(name);
-      // console.log(`Name: ${name}, Reserved: ${isReserved}`);
-      expect(isReserved).to.be.true;
-
-      const rndm = Math.floor(Math.random() * 100);
-      const notReservedName = "xxx" + name + "xxx" + rndm;
-      const shouldNotBeReserved = await playerNFT.isHeroNameReserved(notReservedName);
-      // console.log(`Name: ${notReservedName}, Reserved: ${shouldNotBeReserved}`);
-      if (shouldNotBeReserved) {
-        falsePositives++;
-      }
-    }
-    const falsePositiveRate = Math.round((falsePositives / FALSE_POSITIVE_CHECKS) * 100);
-    console.log(`False positives: ${falsePositives}/${FALSE_POSITIVE_CHECKS} for ${falsePositiveRate}%`);
-    expect(falsePositiveRate).to.be.lessThan(2);
-
-    // this should work
-    await createPlayer(playerNFT, 1, alice, unreservedName, true);
   });
 
   it("Mint a standard player", async function () {

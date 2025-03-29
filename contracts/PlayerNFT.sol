@@ -69,7 +69,6 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   error TwitterInvalidCharacters();
   error LengthMismatch();
   error PercentNotTotal100();
-  error HeroNameIsReserved(string reservedName);
   error NotBridge();
 
   uint256 private constant EVOLVED_OFFSET = 10000;
@@ -96,7 +95,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
   mapping(uint256 playerId => string name) private _names;
   mapping(string name => bool exists) private _lowercaseNames;
-  BloomFilter.Filter private _reservedHeroNames; // TODO: remove 90 days after launch
+  BloomFilter.Filter private _reservedHeroNames; // TODO: unused
   address private _bridge; // TODO: Bridge Can remove later
 
   modifier isOwnerOfPlayer(uint256 playerId) {
@@ -147,8 +146,6 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     _royaltyReceiver = royaltyReceiver;
     _isBeta = isBeta;
     _bridge = bridge;
-
-    _reservedHeroNames._initialize(4, 2000000);
   }
 
   function mint(
@@ -310,7 +307,6 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     string memory oldName = EstforLibrary.toLower(_names[playerId]);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      require(!_reservedHeroNames._probablyContainsString(trimmedAndLowercaseName), HeroNameIsReserved(playerName));
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
@@ -443,20 +439,6 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   function setUpgradeCost(uint72 upgradePlayerCost) public onlyOwner {
     _upgradePlayerCost = upgradePlayerCost;
     emit UpgradePlayerCost(upgradePlayerCost);
-  }
-
-  function setReservedNameBits(uint256[] calldata positions) external onlyOwner {
-    _reservedHeroNames._addPositions(positions);
-  }
-
-  function isHeroNameReserved(string calldata heroName) public view returns (bool) {
-    return _reservedHeroNames._probablyContainsString(EstforLibrary.toLower(heroName));
-  }
-
-  function addReservedHeroNames(string[] calldata names) external onlyOwner {
-    for (uint256 i = 0; i < names.length; ++i) {
-      _reservedHeroNames._addString(EstforLibrary.toLower(names[i]));
-    }
   }
 
   function setBrushDistributionPercentages(

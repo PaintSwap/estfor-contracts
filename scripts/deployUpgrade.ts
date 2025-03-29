@@ -68,7 +68,7 @@ async function main() {
     estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
   }
   console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
-
+  /*
   // Players
   const Players = await ethers.getContractFactory("Players");
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
@@ -78,7 +78,7 @@ async function main() {
   })) as unknown as Players;
   await players.waitForDeployment();
   console.log(`players = "${(await players.getAddress()).toLowerCase()}"`);
-
+*/
   // PlayerNFT
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()}
@@ -90,7 +90,7 @@ async function main() {
   });
   await playerNFT.waitForDeployment();
   console.log(`playerNFT = "${(await playerNFT.getAddress()).toLowerCase()}"`);
-
+  /*
   // ItemNFT
   const newItemNFTLibrary = false;
   const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
@@ -156,7 +156,7 @@ async function main() {
   });
   await quests.waitForDeployment();
   console.log(`quests = "${(await quests.getAddress()).toLowerCase()}"`);
-
+*/
   // Clan
   const Clans = await ethers.getContractFactory("Clans", {
     libraries: {EstforLibrary: await estforLibrary.getAddress()}
@@ -168,7 +168,7 @@ async function main() {
   });
   await clans.waitForDeployment();
   console.log(`clans = "${(await clans.getAddress()).toLowerCase()}"`);
-
+  /*
   // Bank Registry
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = await upgrades.upgradeProxy(BANK_REGISTRY_ADDRESS, BankRegistry, {
@@ -285,7 +285,7 @@ async function main() {
   );
   await eggInstantVRFActionStrategy.waitForDeployment();
   console.log(`eggInstantVRFActionStrategy = "${(await eggInstantVRFActionStrategy.getAddress()).toLowerCase()}"`);
-
+*/
   const newPetNFTLibrary = false;
   let petNFTLibrary: PetNFTLibrary;
   if (newPetNFTLibrary) {
@@ -305,7 +305,7 @@ async function main() {
   });
   await petNFT.waitForDeployment();
   console.log(`petNFT = "${(await petNFT.getAddress()).toLowerCase()}"`);
-
+  /*
   const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
   const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
     kind: "uups",
@@ -422,44 +422,44 @@ async function main() {
   });
   await bridge.waitForDeployment();
   console.log("bridge = ", (await bridge.getAddress()).toLowerCase());
-
+*/
   if (network.chainId == 146n) {
-    await verifyContracts([await players.getAddress()]);
+    // await verifyContracts([await players.getAddress()]);
     await verifyContracts([await playerNFT.getAddress()]);
-    await verifyContracts([await itemNFT.getAddress()]);
-    await verifyContracts([await shop.getAddress()]);
-    await verifyContracts([await quests.getAddress()]);
+    // await verifyContracts([await itemNFT.getAddress()]);
+    // await verifyContracts([await shop.getAddress()]);
+    // await verifyContracts([await quests.getAddress()]);
     await verifyContracts([await clans.getAddress()]);
-    await verifyContracts([await worldActions.getAddress()]);
-    await verifyContracts([await randomnessBeacon.getAddress()]);
-    await verifyContracts([await estforLibrary.getAddress()]);
-    await verifyContracts([await adminAccess.getAddress()]);
-    await verifyContracts([await wishingWell.getAddress()]);
-    await verifyContracts([await promotions.getAddress()]);
-    await verifyContracts([await promotionsLibrary.getAddress()]);
-    await verifyContracts([await instantActions.getAddress()]);
-    await verifyContracts([await vrfRequestInfo.getAddress()]);
-    await verifyContracts([await instantVRFActions.getAddress()]);
-    await verifyContracts([await genericInstantVRFActionStrategy.getAddress()]);
-    await verifyContracts([await eggInstantVRFActionStrategy.getAddress()]);
+    // await verifyContracts([await worldActions.getAddress()]);
+    // await verifyContracts([await randomnessBeacon.getAddress()]);
+    // await verifyContracts([await estforLibrary.getAddress()]);
+    // await verifyContracts([await adminAccess.getAddress()]);
+    // await verifyContracts([await wishingWell.getAddress()]);
+    // await verifyContracts([await promotions.getAddress()]);
+    // await verifyContracts([await promotionsLibrary.getAddress()]);
+    // await verifyContracts([await instantActions.getAddress()]);
+    // await verifyContracts([await vrfRequestInfo.getAddress()]);
+    // await verifyContracts([await instantVRFActions.getAddress()]);
+    // await verifyContracts([await genericInstantVRFActionStrategy.getAddress()]);
+    // await verifyContracts([await eggInstantVRFActionStrategy.getAddress()]);
     await verifyContracts([await petNFT.getAddress()]);
     await verifyContracts([await petNFTLibrary.getAddress()]);
-    await verifyContracts([await clanBattleLibrary.getAddress()]);
-    await verifyContracts([await lockedBankVaults.getAddress()]);
-    await verifyContracts([await lockedBankVaultsLibrary.getAddress()]);
-    await verifyContracts([await combatantsHelper.getAddress()]);
-    await verifyContracts([await territoryTreasury.getAddress()]);
-    await verifyContracts([await royaltyReceiver.getAddress()]);
-    await verifyContracts([await passiveActions.getAddress()]);
-    await verifyContracts([await treasury.getAddress()]);
-    await verifyContracts([await territories.getAddress()]);
-    await verifyContracts([await bankRegistry.getAddress()]);
-    await verifyContracts([await bankRelay.getAddress()]);
-    await verifyContracts([await bankFactory.getAddress()]);
-    await verifyContracts([await orderbook.getAddress()]);
-    await verifyContracts([await pvpBattleground.getAddress()]);
-    await verifyContracts([await raids.getAddress()]);
-
+    // await verifyContracts([await clanBattleLibrary.getAddress()]);
+    // await verifyContracts([await lockedBankVaults.getAddress()]);
+    // await verifyContracts([await lockedBankVaultsLibrary.getAddress()]);
+    // await verifyContracts([await combatantsHelper.getAddress()]);
+    // await verifyContracts([await territoryTreasury.getAddress()]);
+    // await verifyContracts([await royaltyReceiver.getAddress()]);
+    // await verifyContracts([await passiveActions.getAddress()]);
+    // await verifyContracts([await treasury.getAddress()]);
+    // await verifyContracts([await territories.getAddress()]);
+    // await verifyContracts([await bankRegistry.getAddress()]);
+    // await verifyContracts([await bankRelay.getAddress()]);
+    // await verifyContracts([await bankFactory.getAddress()]);
+    // await verifyContracts([await orderbook.getAddress()]);
+    // await verifyContracts([await pvpBattleground.getAddress()]);
+    // await verifyContracts([await raids.getAddress()]);
+    /*
     try {
       await run("verify:verify", {
         BRIDGE_ADDRESS,
@@ -467,7 +467,7 @@ async function main() {
       });
     } catch (e) {
       console.error(`Failed to verify contract at address ${BRIDGE_ADDRESS}`);
-    }
+    } */
   }
 }
 

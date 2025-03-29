@@ -63,89 +63,6 @@ describe("Clans", function () {
       ).to.be.revertedWithCustomError(clans, "NameAlreadyExists");
     });
 
-    it("Cannot create a clan with a reserved name", async () => {
-      const {clans, bob, playerNFT, avatarId, imageId, tierId, clanName, discord, telegram, twitter} =
-        await loadFixture(clanFixture);
-
-      const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
-
-      const reservedName = "Reserved Name";
-      await clans.addReservedClanNames([reservedName]);
-
-      const secondReservedName = "Reserved Name 2";
-      const unreservedName = "Unreserved Name";
-      await clans.addReservedClanNames([reservedName]);
-
-      const isProbablyReserved = await clans.isClanNameReserved(reservedName);
-      expect(isProbablyReserved).to.be.true;
-
-      const isNotReserved = await clans.isClanNameReserved(unreservedName);
-      expect(isNotReserved).to.be.false;
-
-      // should get custom error ClanNameIsReserved(name) if name is reserved
-      await expect(
-        clans.connect(bob).createClan(bobPlayerId, reservedName, discord, telegram, twitter, imageId, tierId)
-      ).to.be.revertedWithCustomError(clans, "ClanNameIsReserved");
-
-      const isSecondNameReserved1 = await clans.isClanNameReserved(secondReservedName);
-      expect(isSecondNameReserved1).to.be.false;
-
-      // if we have exported a list of reserved names, we can use them to generate bit positions
-      const fileExists = await fs
-        .access(exportClanNamesFilePath)
-        .then(() => true)
-        .catch(() => false);
-      const reservedNames = fileExists ? (await fs.readFile(exportClanNamesFilePath, "utf-8")).split("\n") : [];
-      const firstReservedName = reservedNames.length > 0 ? reservedNames[0] : reservedName;
-
-      // but for tests we are going to use a small list
-      reservedNames.push(firstReservedName);
-      reservedNames.push(secondReservedName);
-
-      const gasPrices = [];
-      `Using hash count: ${clanNamesHashCount} and bit count: ${clanNamesBitCount}`;
-      const positions = await generateUniqueBitPositions(reservedNames, clanNamesHashCount, clanNamesBitCount);
-      console.log(`Generated ${positions.length} bit positions`);
-      const batchSize = Math.min(Math.max(Math.floor(positions.length / 100), 500), 6000);
-      console.log(`Batch size: ${batchSize}`);
-      for (let i = 0; i < positions.length; i += batchSize) {
-        const batch = positions.slice(i, i + batchSize);
-        const gas = await clans.setReservedNameBits.estimateGas(batch);
-        gasPrices.push(gas);
-        // console.log(`Gas estimate for batch ${i / batchSize + 1}/${Math.ceil(positions.length / batchSize)}: ${gas}`);
-        const tx = await clans.setReservedNameBits(batch);
-        await tx.wait();
-      }
-
-      const averageGasPrice = gasPrices.reduce((a, b) => a + b, 0n) / BigInt(gasPrices.length);
-      console.log(
-        `Average gas price for ${gasPrices.length} txns: ${averageGasPrice}, ${
-          averageGasPrice * BigInt(gasPrices.length)
-        } total`
-      );
-
-      const FALSE_POSITIVE_CHECKS = 20000;
-      let falsePositives = 0;
-      for (let i = 0; i < FALSE_POSITIVE_CHECKS && i < reservedNames.length; i++) {
-        const randomIndex = Math.floor(Math.random() * reservedNames.length);
-        const name = reservedNames.splice(randomIndex, 1)[0];
-        const isReserved = await clans.isClanNameReserved(name);
-        // console.log(`Name: ${name}, Reserved: ${isReserved}`);
-        expect(isReserved).to.be.true;
-
-        const rndm = Math.floor(Math.random() * 100);
-        const notReservedName = "xxx" + name + "xxx" + rndm;
-        const shouldNotBeReserved = await clans.isClanNameReserved(notReservedName);
-        // console.log(`Name: ${notReservedName}, Reserved: ${shouldNotBeReserved}`);
-        if (shouldNotBeReserved) {
-          falsePositives++;
-        }
-      }
-      const falsePositiveRate = Math.round((falsePositives / FALSE_POSITIVE_CHECKS) * 100);
-      console.log(`False positives: ${falsePositives}/${FALSE_POSITIVE_CHECKS} for ${falsePositiveRate}%`);
-      expect(falsePositiveRate).to.be.lessThan(2);
-    });
-
     it("Cannot create a clan, with invalid name (empty or > 20 chars)", async () => {
       // Also check that whitespace is trimmed
       const {clans, bob, playerNFT, avatarId, imageId, tierId, discord, telegram, twitter} = await loadFixture(
@@ -1117,8 +1034,8 @@ describe("Clans", function () {
         const bobPlayerId = await createPlayer(playerNFT, avatarId, bob, "bob", true);
         const tokenId = 1;
         await expect(clans.connect(bob).requestToJoin(clanId, bobPlayerId, tokenId)).to.be.revertedWithCustomError(
-          erc721,
-          "ERC721NonexistentToken"
+          clans,
+          "NoGateKeptNFTFound"
         );
 
         await erc721.mint(bob);
