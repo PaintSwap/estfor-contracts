@@ -117,7 +117,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   error PercentNotTotal100();
   error PlayersAlreadySet();
   error BankFactoryAlreadySet();
-  error ClanNameIsReserved(string name);
   error NotXPModifier();
   error NotBridge();
 
@@ -177,7 +176,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   mapping(string name => bool exists) private _lowercaseNames;
   mapping(uint256 clanId => uint40 timestampLeft) private _ownerlessClanTimestamps; // timestamp
   mapping(address account => bool isModifier) private _xpModifiers;
-  BloomFilter.Filter private _reservedClanNames; // TODO: remove 90 days after launch
+  BloomFilter.Filter private _reservedClanNames; // TODO: unused
   address private _bridge; // TODO: Bridge Can remove later if no longer need the bridge
   IActivityPoints private _activityPoints;
 
@@ -246,7 +245,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     _paintswapMarketplaceWhitelist = paintswapMarketplaceWhitelist;
     setEditNameCost(editNameCost);
     setInitialMMR(initialMMR);
-    _reservedClanNames._initialize(4, 420000);
     _bridge = bridge;
     _activityPoints = activityPoints;
   }
@@ -648,10 +646,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     string memory oldName = EstforLibrary.toLower(clan.name);
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      require(
-        !_reservedClanNames._probablyContainsString(trimmedAndLowercaseName),
-        ClanNameIsReserved(trimmedAndLowercaseName)
-      );
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
@@ -956,11 +950,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     return _bankFactory.getBankAddress(clanId);
   }
 
-  /// @dev used to check bloom filter for reserved names from Fantom
-  function isClanNameReserved(string calldata clanName) public view returns (bool) {
-    return _reservedClanNames._probablyContainsString(EstforLibrary.toLower(clanName));
-  }
-
   function addTiers(Tier[] calldata tiers) external onlyOwner {
     for (uint256 i; i < tiers.length; ++i) {
       require(tiers[i].id != 0 && _tiers[tiers[i].id].id == 0, TierAlreadyExists());
@@ -1020,16 +1009,6 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     _brushTreasuryPercentage = brushTreasuryPercentage;
     _brushDevPercentage = brushDevPercentage;
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
-  }
-
-  function setReservedNameBits(uint256[] calldata positions) external onlyOwner {
-    _reservedClanNames._addPositions(positions);
-  }
-
-  function addReservedClanNames(string[] calldata names) external onlyOwner {
-    for (uint256 i = 0; i < names.length; ++i) {
-      _reservedClanNames._addString(EstforLibrary.toLower(names[i]));
-    }
   }
 
   // solhint-disable-next-line no-empty-blocks

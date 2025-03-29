@@ -198,21 +198,6 @@ export const TIER_4_DAILY_REWARD_START_XP = 195_864;
 export const TIER_5_DAILY_REWARD_START_XP = 784_726;
 export const TIER_6_DAILY_REWARD_START_XP = 2_219_451;
 
-export const exportPlayerNamesFilePath = "./export/players.txt";
-//4, 2000000n
-export const playerNamesHashCount = 4;
-export const playerNamesBitCount = 2000000n;
-
-export const exportPetNamesFilePath = "./export/pets.txt";
-//4, 100000n
-export const petNamesHashCount = 4;
-export const petNamesBitCount = 100000n; // bigger to account for beta pets
-
-export const exportClanNamesFilePath = "./export/clans.txt";
-//4, 420000
-export const clanNamesHashCount = 4;
-export const clanNamesBitCount = 420000n;
-
 export const getChainId = async (signer: HardhatEthersSigner) => {
   const chainId = await signer.provider?.getNetwork().then((network) => network.chainId);
   return chainId;

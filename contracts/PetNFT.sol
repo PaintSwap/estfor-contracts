@@ -82,7 +82,6 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   error SameName();
   error CannotTransferThisPet(uint256 petId);
   error TrainOnCooldown();
-  error PetNameIsReserved(string name);
 
   struct BasePetInput {
     string description;
@@ -133,7 +132,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   BloomFilter.Filter private __unused; // TODO: old filter
   address private _bridge; // TODO: Bridge Can remove later
   BloomFilter.Filter private __unused2; // TODO: old filter 2
-  BloomFilter.Filter private _reservedPetNames; // TODO: remove 90 days after launch
+  BloomFilter.Filter private _reservedPetNames; // TODO: unused
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
@@ -206,8 +205,6 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     _treasury = treasury;
     _randomnessBeacon = randomnessBeacon;
     setEditNameCost(editNameCost);
-    // TODO: Remove after migration is done
-    _reservedPetNames._initialize(4, 100000);
     _bridge = bridge;
   }
 
@@ -577,10 +574,6 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     string memory oldName = EstforLibrary.toLower(PetNFTLibrary._getPetName(petId, _names[petId]));
     nameChanged = keccak256(abi.encodePacked(oldName)) != keccak256(abi.encodePacked(trimmedAndLowercaseName));
     if (nameChanged) {
-      require(
-        !_reservedPetNames._probablyContainsString(trimmedAndLowercaseName),
-        PetNameIsReserved(trimmedAndLowercaseName)
-      );
       require(!_lowercaseNames[trimmedAndLowercaseName], NameAlreadyExists());
       if (bytes(oldName).length != 0) {
         delete _lowercaseNames[oldName];
@@ -820,16 +813,8 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
-  function setReservedNameBits(uint256[] calldata positions) external onlyOwner {
-    _reservedPetNames._addPositions(positions);
-  }
-
   function setBridge(address bridge) external onlyOwner {
     _bridge = bridge;
-  }
-
-  function isPetNameReserved(string calldata petName) public view returns (bool) {
-    return _reservedPetNames._probablyContainsString(EstforLibrary.toLower(petName));
   }
 
   // solhint-disable-next-line no-empty-blocks
