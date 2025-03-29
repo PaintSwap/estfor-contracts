@@ -141,7 +141,7 @@ DecoratorProvider [0xea8c4d188eb8d9704bc36931d89ba4f8e935cee2](https://ftmscan.c
 PetNFTLibrary [0x517792d5cbb33cd337a2ef1bc6290ad964ea434e](https://ftmscan.com/address/0x517792d5cbb33cd337a2ef1bc6290ad964ea434e)  
 PetNFT [0xa6489181b24e966402891225c65f8e2d136ddd2e](https://ftmscan.com/address/0xa6489181b24e966402891225c65f8e2d136ddd2e)  
 PassiveActions [0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6](https://ftmscan.com/address/0x3df5b6cad0d2de6b71f2d5084e0b933dbcd395f6)
-Bridge [0x5790dd9972664edc7975bce7a0485888b20c81e9](https://ftmscan.com/address/0x5790dd9972664edc7975bce7a0485888b20c81e9)
+Bridge [0x93e478f428a070ecf11d79cdd6a60f3dee3a92da](https://ftmscan.com/address/0x93e478f428a070ecf11d79cdd6a60f3dee3a92da)
 
 Oracle [0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7](https://ftmscan.com/address/0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7)  
 VRF [0x58E9fd2Fae18c861B9F564200510A88106C05756](https://ftmscan.com/address/0x58E9fd2Fae18c861B9F564200510A88106C05756)  
