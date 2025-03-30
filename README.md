@@ -92,7 +92,7 @@ Territories [0x5a6d80bb035318d2a24c1fdfd055032a15f11b12](https://sonicscan.org/a
 CombatantsHelper [0xc754d621239b5830264f8c8e302c21ffe48625fc](https://sonicscan.org/address/0xc754d621239b5830264f8c8e302c21ffe48625fc)  
 TerritoryTreasury [0x4b1da5984c89312f852c798154a171a5ddc07d43](https://sonicscan.org/address/0x4b1da5984c89312f852c798154a171a5ddc07d43)  
 BankRegistry [0xf213febd3889c5bf18086356e7eff79e2a9fe391](https://sonicscan.org/address/0xf213febd3889c5bf18086356e7eff79e2a9fe391)  
-BankFactory [0x76af5869f1b902f7a16c128a1daa7734819ec327](https://sonicscan.org/address/0x76af5869f1b902f7a16c128a1daa7734819ec327)
+BankFactory [0x76af5869f1b902f7a16c128a1daa7734819ec327](https://sonicscan.org/address/0x76af5869f1b902f7a16c128a1daa7734819ec327)  
 ActivityPoints [0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2](https://sonicscan.org/address/0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2)
 
 ### Sonic mainnet beta deployed contract addresses:
@@ -141,7 +141,7 @@ Territories [0xa2ca7daad4b86819c455fafc704d727a23c5a513](https://sonicscan.org/a
 CombatantsHelper [0x7fa2b4c19093e0777d72235ea28d302f53227fa0](https://sonicscan.org/address/0x7fa2b4c19093e0777d72235ea28d302f53227fa0)  
 TerritoryTreasury [0x5d1429f842891ea0ed80e856762b48bc117ac2a8](https://sonicscan.org/address/0x5d1429f842891ea0ed80e856762b48bc117ac2a8)  
 BankRegistry [0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6](https://sonicscan.org/address/0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6)  
-BankFactory [0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c](https://sonicscan.org/address/0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c)
+BankFactory [0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c](https://sonicscan.org/address/0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c)  
 ActivityPoints [0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a](https://sonicscan.org/address/0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a)
 
 ### Other addresses:
