@@ -11,13 +11,9 @@ async function main() {
   const instantVRFActions = await ethers.getContractAt("InstantVRFActions", INSTANT_VRF_ACTIONS_ADDRESS);
 
   const actionsToUpdate = new Set([
-    EstforConstants.INSTANT_VRF_ACTION_THIEVING_TRICK_CHEST,
-    EstforConstants.INSTANT_VRF_ACTION_THIEVING_TREAT_CHEST,
-    EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER1,
-    EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER2,
-    EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER3,
-    EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER4,
-    EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER5
+    EstforConstants.INSTANT_VRF_ACTION_FORGING_UNIDENTIFIED_DAGGER,
+    EstforConstants.INSTANT_VRF_ACTION_FORGING_UNIDENTIFIED_BOOK,
+    EstforConstants.INSTANT_VRF_ACTION_FORGING_UNIDENTIFIED_CROSSBOW
   ]);
 
   const actions = allInstantVRFActions.filter((action) => actionsToUpdate.has(action.actionId));

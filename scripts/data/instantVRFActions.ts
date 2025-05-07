@@ -1276,6 +1276,78 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
     questPrerequisiteId: 0
   },
   {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_UNIDENTIFIED_DAGGER,
+    inputTokenIds: [EstforConstants.REWARD_001_DAGGER],
+    inputAmounts: [1],
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.DAGGER_004_ADAMANTINE, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_005_RUNITE, chance: 52428, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_003_MITHRIL, chance: 40632, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_006_TITANIUM, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_002_IRON, chance: 20971, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_001_BRONZE, chance: 12452, amount: 1},
+          {itemTokenId: EstforConstants.DAGGER_007_ORICHALCUM, chance: 5898, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_UNIDENTIFIED_BOOK,
+    inputTokenIds: [EstforConstants.REWARD_002_BOOK],
+    inputAmounts: [1],
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.BOOK_004_ADAMANTINE, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_005_RUNITE, chance: 52428, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_003_MITHRIL, chance: 40632, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_006_TITANIUM, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_002_IRON, chance: 20971, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_001_BRONZE, chance: 12452, amount: 1},
+          {itemTokenId: EstforConstants.BOOK_007_ORICHALCUM, chance: 5898, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_UNIDENTIFIED_CROSSBOW,
+    inputTokenIds: [EstforConstants.REWARD_003_CROSSBOW],
+    inputAmounts: [1],
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.CROSSBOW_004_ADAMANTINE, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_005_RUNITE, chance: 52428, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_003_MITHRIL, chance: 40632, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_006_TITANIUM, chance: 30146, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_002_IRON, chance: 20971, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_001_BRONZE, chance: 12452, amount: 1},
+          {itemTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM, chance: 5898, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
     actionType: InstantVRFActionType.EGG,
     inputTokenIds: [EstforConstants.EGG_TIER1],
     inputAmounts: [1],

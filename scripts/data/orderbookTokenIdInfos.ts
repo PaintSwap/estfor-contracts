@@ -3356,5 +3356,20 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     tokenId: EstforConstants.ACTIVITY_TICKET,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.REWARD_001_DAGGER,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.REWARD_002_BOOK,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.REWARD_003_CROSSBOW,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
   }
 ];
