@@ -4,7 +4,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER1,
     info: {
-      durationDays: 1,
+      durationDays: 3,
       inputTokenIds: [EstforConstants.PAPER, EstforConstants.BONEMEAL, EstforConstants.ASH],
       inputAmounts: [5000, 50000, 50000],
       minSkills: [Skill.ALCHEMY],
@@ -26,7 +26,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER2,
     info: {
-      durationDays: 1,
+      durationDays: 5,
       inputTokenIds: [EstforConstants.EGG_TIER1],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
@@ -48,7 +48,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER3,
     info: {
-      durationDays: 2,
+      durationDays: 8,
       inputTokenIds: [EstforConstants.EGG_TIER2],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
@@ -70,7 +70,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER4,
     info: {
-      durationDays: 3,
+      durationDays: 13,
       inputTokenIds: [EstforConstants.EGG_TIER3],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
@@ -92,7 +92,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_EGG_TIER5,
     info: {
-      durationDays: 5,
+      durationDays: 21,
       inputTokenIds: [EstforConstants.EGG_TIER4],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
@@ -114,7 +114,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER2,
     info: {
-      durationDays: 1,
+      durationDays: 5,
       inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER1],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
@@ -136,7 +136,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER3,
     info: {
-      durationDays: 2,
+      durationDays: 8,
       inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER2],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
@@ -158,7 +158,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER4,
     info: {
-      durationDays: 3,
+      durationDays: 13,
       inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER3],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
@@ -180,7 +180,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER5,
     info: {
-      durationDays: 5,
+      durationDays: 21,
       inputTokenIds: [EstforConstants.SECRET_EGG_1_TIER4],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
@@ -202,7 +202,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER2,
     info: {
-      durationDays: 1,
+      durationDays: 5,
       inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER1],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
@@ -224,7 +224,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER3,
     info: {
-      durationDays: 2,
+      durationDays: 8,
       inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER2],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
@@ -246,7 +246,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER4,
     info: {
-      durationDays: 3,
+      durationDays: 13,
       inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER3],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
@@ -268,7 +268,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_2_TIER5,
     info: {
-      durationDays: 5,
+      durationDays: 21,
       inputTokenIds: [EstforConstants.SECRET_EGG_2_TIER4],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
@@ -290,7 +290,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER2,
     info: {
-      durationDays: 1,
+      durationDays: 5,
       inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER1],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
@@ -312,7 +312,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER3,
     info: {
-      durationDays: 2,
+      durationDays: 8,
       inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER2],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
@@ -334,7 +334,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER4,
     info: {
-      durationDays: 3,
+      durationDays: 13,
       inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER3],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
@@ -356,7 +356,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER5,
     info: {
-      durationDays: 5,
+      durationDays: 21,
       inputTokenIds: [EstforConstants.SECRET_EGG_3_TIER4],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
@@ -378,7 +378,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER2,
     info: {
-      durationDays: 1,
+      durationDays: 5,
       inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER1],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
@@ -400,7 +400,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER3,
     info: {
-      durationDays: 2,
+      durationDays: 8,
       inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER2],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
@@ -422,7 +422,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER4,
     info: {
-      durationDays: 3,
+      durationDays: 13,
       inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER3],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
@@ -444,7 +444,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER5,
     info: {
-      durationDays: 5,
+      durationDays: 21,
       inputTokenIds: [EstforConstants.SECRET_EGG_4_TIER4],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
@@ -466,7 +466,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER2,
     info: {
-      durationDays: 1,
+      durationDays: 5,
       inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER1],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
@@ -488,7 +488,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER3,
     info: {
-      durationDays: 2,
+      durationDays: 8,
       inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER2],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
@@ -510,7 +510,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4,
     info: {
-      durationDays: 3,
+      durationDays: 13,
       inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER3],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
@@ -532,7 +532,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER5,
     info: {
-      durationDays: 5,
+      durationDays: 21,
       inputTokenIds: [EstforConstants.ANNIV1_EGG_TIER4],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
@@ -576,7 +576,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER2,
     info: {
-      durationDays: 1,
+      durationDays: 5,
       inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER1],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FISHING, Skill.COOKING],
@@ -598,7 +598,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER3,
     info: {
-      durationDays: 2,
+      durationDays: 8,
       inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER2],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.MINING, Skill.WOODCUTTING],
@@ -620,7 +620,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER4,
     info: {
-      durationDays: 3,
+      durationDays: 13,
       inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER3],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.SMITHING, Skill.FIREMAKING],
@@ -642,7 +642,7 @@ export const allPassiveActions: PassiveActionInput[] = [
   {
     actionId: EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER5,
     info: {
-      durationDays: 5,
+      durationDays: 21,
       inputTokenIds: [EstforConstants.KRAGSTYR_EGG_TIER4],
       inputAmounts: [1],
       minSkills: [Skill.ALCHEMY, Skill.FLETCHING, Skill.FORGING],
