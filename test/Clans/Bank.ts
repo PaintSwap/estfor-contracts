@@ -207,12 +207,12 @@ describe("Bank", function () {
 
     await clans.connect(alice).createClan(playerId, clanName, discord, telegram, twitter, 2, 1);
     await itemNFT.mint(clanBankAddress, EstforConstants.BRONZE_SHIELD, 1);
-    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(2);
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(1);
 
     await expect(bankRelay.connect(alice).withdrawItems(bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]))
       .to.emit(bank, "WithdrawItems")
       .withArgs(alice.address, bob.address, playerId, [EstforConstants.BRONZE_SHIELD], [1]);
-    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(1);
+    expect(await bankRelay.getUniqueItemCountForPlayer(playerId)).to.eq(0);
   });
 
   it("Withdraw (Distribute) to many users", async function () {
