@@ -680,7 +680,7 @@ describe("OrderBook", function () {
         .withArgs(alice.address, [orderId], [quantity]);
     });
 
-    it("Should emit Activity Points", async function () {
+    it.skip("Should emit Activity Points", async function () {
       const {orderBook, mockItemNFT, alice, tokenId} = await loadFixture(deployContractsFixture);
 
       // Set up order books

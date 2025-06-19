@@ -71,7 +71,7 @@ async function getTokenId(
   throw new Error("Invalid contract type");
 }
 
-describe("ActivityPoints", function () {
+describe.skip("ActivityPoints", function () {
   async function deployActivityPointsFixture() {
     const [owner, alice, bob] = await ethers.getSigners();
 

@@ -102205,6 +102205,423 @@
           ]
         }
       }
+    },
+    "9cbd1e80a0804887da511a06543fc7d70a9f299402ad64b1c84701c1ba36f0a7": {
+      "address": "0x9646d520644CB4F52E21Fa91a8150548E31fC818",
+      "txHash": "0x1d296f4ac04e354ba2c9310c093cb17dc7afa817989239edda788a3c8f0c1b7a",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IItemNFT)72425",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:83"
+          },
+          {
+            "label": "_blueTicketItemId",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_uint16",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:85"
+          },
+          {
+            "label": "_greenTicketItemId",
+            "offset": 22,
+            "slot": "0",
+            "type": "t_uint16",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:86"
+          },
+          {
+            "label": "_calculations",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_enum(ActivityType)17606,t_struct(Calculation)16488_storage)",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:89"
+          },
+          {
+            "label": "_checkpoints",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_address,t_mapping(t_enum(ActivityType)17606,t_struct(DailyCheckpoint)16493_storage))",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:92"
+          },
+          {
+            "label": "_boostedNFTs",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_enum(NFTContractType)16470)",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:95"
+          },
+          {
+            "label": "_nftBoostOwners",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_address))",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:97"
+          },
+          {
+            "label": "_boosts",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_address,t_struct(PointBoost)16500_storage)",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:99"
+          },
+          {
+            "label": "_boostNFTCheckpoints",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_address,t_struct(BoostDailyCheckpoint)16509_storage)",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:103"
+          },
+          {
+            "label": "_boostCheckpoints",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_struct(BoostDailyCheckpoint)16509_storage",
+            "contract": "ActivityPoints",
+            "src": "contracts\\ActivityPoints\\ActivityPoints.sol:104"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)974_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)984_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)974_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)1186_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)1114_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)974_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(IItemNFT)72425": {
+            "label": "contract IItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_enum(ActivityType)17606": {
+            "label": "enum ActivityType",
+            "members": [
+              "NONE",
+              "instantactions_evt_doinstantactions",
+              "instantvrfactions_evt_doinstantvrfactions",
+              "passiveactions_evt_claimpassiveaction",
+              "quests_evt_questcompleted",
+              "shop_evt_buy",
+              "shop_evt_sell",
+              "wishingwell_evt_donate",
+              "wishingwell_evt_donatetoclan",
+              "orderbook_evt_ordersmatched",
+              "orderbook_evt_claimedtokens",
+              "orderbook_evt_claimednfts",
+              "players_evt_actionfinished",
+              "players_evt_addxp",
+              "players_evt_levelup",
+              "players_evt_boostfinished",
+              "players_evt_dailyreward",
+              "players_evt_weeklyreward",
+              "players_evt_claimedxpthresholdrewards",
+              "clans_evt_clancreated",
+              "lockedbankvaults_evt_attackvaults",
+              "territories_evt_attackterritory",
+              "territories_evt_claimunoccupiedterritory",
+              "players_dailyreward",
+              "wishingwell_luckofthedraw",
+              "wishingwell_luckypotion"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_enum(CalculationType)16476": {
+            "label": "enum ActivityPoints.CalculationType",
+            "members": ["NONE", "discrete", "log2", "log10", "linear"],
+            "numberOfBytes": "1"
+          },
+          "t_enum(NFTContractType)16470": {
+            "label": "enum ActivityPoints.NFTContractType",
+            "members": ["NONE", "ERC721", "ERC1155"],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_enum(NFTContractType)16470)": {
+            "label": "mapping(address => enum ActivityPoints.NFTContractType)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_enum(ActivityType)17606,t_struct(DailyCheckpoint)16493_storage))": {
+            "label": "mapping(address => mapping(enum ActivityType => struct ActivityPoints.DailyCheckpoint))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_address))": {
+            "label": "mapping(address => mapping(uint256 => address))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(BoostDailyCheckpoint)16509_storage)": {
+            "label": "mapping(address => struct ActivityPoints.BoostDailyCheckpoint)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(PointBoost)16500_storage)": {
+            "label": "mapping(address => struct ActivityPoints.PointBoost)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(ActivityType)17606,t_struct(Calculation)16488_storage)": {
+            "label": "mapping(enum ActivityType => struct ActivityPoints.Calculation)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(ActivityType)17606,t_struct(DailyCheckpoint)16493_storage)": {
+            "label": "mapping(enum ActivityType => struct ActivityPoints.DailyCheckpoint)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(BoostDailyCheckpoint)16509_storage": {
+            "label": "struct ActivityPoints.BoostDailyCheckpoint",
+            "members": [
+              {
+                "label": "current",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "currentPoints",
+                "type": "t_uint112",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "previous",
+                "type": "t_uint16",
+                "offset": 16,
+                "slot": "0"
+              },
+              {
+                "label": "previousPoints",
+                "type": "t_uint112",
+                "offset": 18,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Calculation)16488_storage": {
+            "label": "struct ActivityPoints.Calculation",
+            "members": [
+              {
+                "label": "use",
+                "type": "t_enum(CalculationType)16476",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "base",
+                "type": "t_uint16",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "multiplier",
+                "type": "t_uint16",
+                "offset": 3,
+                "slot": "0"
+              },
+              {
+                "label": "divider",
+                "type": "t_uint16",
+                "offset": 5,
+                "slot": "0"
+              },
+              {
+                "label": "maxPointsPerDay",
+                "type": "t_uint64",
+                "offset": 7,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(DailyCheckpoint)16493_storage": {
+            "label": "struct ActivityPoints.DailyCheckpoint",
+            "members": [
+              {
+                "label": "current",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint112",
+                "offset": 2,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PointBoost)16500_storage": {
+            "label": "struct ActivityPoints.PointBoost",
+            "members": [
+              {
+                "label": "nft",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "activated",
+                "type": "t_uint40",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "tokenId",
+                "type": "t_uint16",
+                "offset": 25,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint112": {
+            "label": "uint112",
+            "numberOfBytes": "14"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)974_storage)",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }
