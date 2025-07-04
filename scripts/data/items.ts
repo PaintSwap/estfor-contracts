@@ -15847,7 +15847,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DAGGER_007_ORICHALCUM_1.json",
-    name: "Effyd Cledyr Lvl 1",
+    name: "Orcalith Cledyr Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -15872,7 +15872,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DAGGER_007_ORICHALCUM_2.json",
-    name: "Effyd Cledyr Lvl 2",
+    name: "Orcalith Cledyr Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -15897,7 +15897,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DAGGER_007_ORICHALCUM_3.json",
-    name: "Effyd Cledyr Lvl 3",
+    name: "Orcalith Cledyr Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -15922,7 +15922,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DAGGER_007_ORICHALCUM_4.json",
-    name: "Effyd Cledyr Lvl 4",
+    name: "Orcalith Cledyr Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -15947,7 +15947,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "DAGGER_007_ORICHALCUM_5.json",
-    name: "Effyd Cledyr Lvl 5",
+    name: "Orcalith Cledyr Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0
   },
@@ -17663,7 +17663,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.SONIC_GEM_TICKET,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,
@@ -17688,7 +17688,7 @@ export const allItems: ItemInput[] = [
     },
     tokenId: EstforConstants.ACTIVITY_TICKET,
     equipPosition: EquipPosition.NONE,
-    isTransferable: true,
+    isTransferable: false,
     isFullModeOnly: false,
     skill: Skill.NONE,
     minXP: 0,

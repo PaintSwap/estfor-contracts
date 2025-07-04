@@ -3348,16 +3348,6 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     minQuantity: "1"
   },
   {
-    tokenId: EstforConstants.SONIC_GEM_TICKET,
-    tick: ethers.parseEther("0.00001").toString(),
-    minQuantity: "1"
-  },
-  {
-    tokenId: EstforConstants.ACTIVITY_TICKET,
-    tick: ethers.parseEther("0.00001").toString(),
-    minQuantity: "1"
-  },
-  {
     tokenId: EstforConstants.REWARD_001_DAGGER,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
