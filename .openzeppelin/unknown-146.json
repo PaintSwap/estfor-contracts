@@ -102622,6 +102622,457 @@
           ]
         }
       }
+    },
+    "c4b164871f149a2084d19424005264c3a3cb31531cef3f73ac43765aaab5d27a": {
+      "address": "0x2aDF3A0B88d57a46DD0Bc9eB5a1b6F6C77ec07B1",
+      "txHash": "0x80a7c7e2b5c8fb657159e080b62047c147a2c2d0f927eb3cb507b3b7174af235",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_clanId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint40",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:70"
+          },
+          {
+            "label": "_bankRegistry",
+            "offset": 5,
+            "slot": "0",
+            "type": "t_contract(BankRegistry)10314",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:71"
+          },
+          {
+            "label": "_bankRelay",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:72"
+          },
+          {
+            "label": "_playerNFT",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IERC1155)2507",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:73"
+          },
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(ItemNFT)18558",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:74"
+          },
+          {
+            "label": "_uniqueItemCount",
+            "offset": 20,
+            "slot": "3",
+            "type": "t_uint16",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:75"
+          },
+          {
+            "label": "_clans",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_contract(IClans)23625",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:76"
+          },
+          {
+            "label": "_players",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(IPlayers)23906",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:77"
+          },
+          {
+            "label": "_lockedBankVaults",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_address",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:78"
+          },
+          {
+            "label": "_raids",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_address",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:79"
+          },
+          {
+            "label": "notused_allowBreachedCapacity",
+            "offset": 20,
+            "slot": "7",
+            "type": "t_bool",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:80"
+          },
+          {
+            "label": "_initialized",
+            "offset": 21,
+            "slot": "7",
+            "type": "t_bool",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:81"
+          },
+          {
+            "label": "_uniqueItems",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_struct(BitMap)8106_storage",
+            "contract": "Bank",
+            "src": "contracts\\Clans\\Bank.sol:83"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_contract(BankRegistry)10314": {
+            "label": "contract BankRegistry",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IClans)23625": {
+            "label": "contract IClans",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IERC1155)2507": {
+            "label": "contract IERC1155",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlayers)23906": {
+            "label": "contract IPlayers",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ItemNFT)18558": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(BitMap)8106_storage": {
+            "label": "struct BitMaps.BitMap",
+            "members": [
+              {
+                "label": "_data",
+                "type": "t_mapping(t_uint256,t_uint256)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "e6ba91942a67e03761e23de8915cea84da51b1f473e4ea8d5e659de2396463e9": {
+      "address": "0x4827A254B6526442aac42f25BC6C067929Df29d0",
+      "txHash": "0x32a663c48f6b1cf52dbe484b40bad9433be7c614a022ec3151df476a2b41a502",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_clans",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(Clans)14983",
+            "contract": "BankRelay",
+            "src": "contracts\\Clans\\BankRelay.sol:18"
+          },
+          {
+            "label": "_bankFactory",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(BankFactory)10209",
+            "contract": "BankRelay",
+            "src": "contracts\\Clans\\BankRelay.sol:19"
+          },
+          {
+            "label": "_playerNFT",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(PlayerNFT)20555",
+            "contract": "BankRelay",
+            "src": "contracts\\Clans\\BankRelay.sol:20"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(BankFactory)10209": {
+            "label": "contract BankFactory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Clans)14983": {
+            "label": "contract Clans",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PlayerNFT)20555": {
+            "label": "contract PlayerNFT",
+            "numberOfBytes": "20"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "f8a3386b3ee58811f7306d415698cbe883ea521daa5d9bb20c1e8eb6f6d774a0": {
+      "address": "0x742eab0d50bb94f93D0D0057BdaF2488244495Fd",
+      "txHash": "0xa0068ca18ce59e354276eb091e2b4088d847a78713ebc3e2604bfa8968cfd49d",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_clans",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(Clans)15001",
+            "contract": "BankRelay",
+            "src": "contracts\\Clans\\BankRelay.sol:18"
+          },
+          {
+            "label": "_bankFactory",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(BankFactory)10209",
+            "contract": "BankRelay",
+            "src": "contracts\\Clans\\BankRelay.sol:19"
+          },
+          {
+            "label": "_playerNFT",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(PlayerNFT)20573",
+            "contract": "BankRelay",
+            "src": "contracts\\Clans\\BankRelay.sol:20"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)86_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(BankFactory)10209": {
+            "label": "contract BankFactory",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Clans)15001": {
+            "label": "contract Clans",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PlayerNFT)20573": {
+            "label": "contract PlayerNFT",
+            "numberOfBytes": "20"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }
