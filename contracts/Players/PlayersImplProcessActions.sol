@@ -267,6 +267,15 @@ contract PlayersImplProcessActions is PlayersBase {
       // airdrop ticket
       _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from, isEvolved);
 
+      // Mint coins if they are evolved
+      if (isEvolved) {
+        _itemNFT.mint(
+          from,
+          65480, // coin
+          10
+        );
+      }
+
       if (pendingQueuedActionState.dailyRewardItemTokenIds.length == 2) {
         emit WeeklyReward(
           from,

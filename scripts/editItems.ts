@@ -9,15 +9,7 @@ async function main() {
   console.log(`Edit items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  const itemsToEdit = new Set([
-    EstforConstants.SONIC_GEM_TICKET,
-    EstforConstants.ACTIVITY_TICKET,
-    EstforConstants.DAGGER_007_ORICHALCUM_1,
-    EstforConstants.DAGGER_007_ORICHALCUM_2,
-    EstforConstants.DAGGER_007_ORICHALCUM_3,
-    EstforConstants.DAGGER_007_ORICHALCUM_4,
-    EstforConstants.DAGGER_007_ORICHALCUM_5
-  ]);
+  const itemsToEdit = new Set([EstforConstants.SONIC_GEM_TICKET, EstforConstants.ACTIVITY_TICKET]);
 
   const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
   /*

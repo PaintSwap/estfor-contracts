@@ -19,7 +19,9 @@ import {
   BRIDGE_ADDRESS,
   PASSIVE_ACTIONS_ADDRESS,
   BANK_FACTORY_ADDRESS,
-  BANK_ADDRESS
+  BANK_ADDRESS,
+  BANK_REGISTRY_ADDRESS,
+  ACTIVITY_POINTS_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
 import {
@@ -41,7 +43,7 @@ import {
   Shop,
   Territories
 } from "../typechain-types";
-import {LockedBankVault} from "@paintswap/estfor-definitions/types";
+import {defaultAttire, LockedBankVault} from "@paintswap/estfor-definitions/types";
 import {makeSigner} from "../test/Players/utils";
 
 import * as helpers from "@nomicfoundation/hardhat-network-helpers";
@@ -52,15 +54,14 @@ async function main() {
   console.log(`ChainId: ${network.chainId}`);
 
   const owner = await ethers.getImpersonatedSigner("0x316342122A9ae36de41B231260579b92F4C8Be7f");
-
-  const player = await ethers.getImpersonatedSigner("0x6dC225F7f21ACB842761b8df52AE46208705c942");
-  const playerId = 252;
+  const player = await ethers.getImpersonatedSigner("0x316602445edb542798A4ebd470F3F57fb8641e77");
+  const playerId = 204827;
 
   await helpers.mine();
 
   const estforLibrary = await ethers.deployContract("EstforLibrary");
   // Players
-  /*
+
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   const Players = (await ethers.getContractFactory("Players")).connect(owner);
   const players = (await upgrades.upgradeProxy(PLAYERS_ADDRESS, Players, {
@@ -72,14 +73,13 @@ async function main() {
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(await playersLibrary.getAddress());
 
-  const tx = await players.setImpls(
+  await players.setImpls(
     await playersImplQueueActions.getAddress(),
     await playersImplProcessActions.getAddress(),
     await playersImplRewards.getAddress(),
     await playersImplMisc.getAddress(),
     await playersImplMisc1.getAddress()
   );
-  await tx.wait();
 
   // PlayerNFT
   const PlayerNFT = (
@@ -137,28 +137,30 @@ async function main() {
     unsafeAllow: ["external-library-linking"]
   })) as unknown as Clans;
 
-  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary");
+  const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary");
+  const lockedBankVaultsLibrary = (await ethers.deployContract("LockedBankVaultsLibrary")).connect(owner);
 
-  const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
-    libraries: {
-      EstforLibrary: await estforLibrary.getAddress(),
-      LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress()
-    }
-  });
+  const LockedBankVaults = (
+    await ethers.getContractFactory("LockedBankVaults", {
+      libraries: {
+        EstforLibrary: await estforLibrary.getAddress(),
+        LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+        ClanBattleLibrary: await clanBattleLibrary.getAddress()
+      }
+    })
+  ).connect(owner);
   const lockedBankVaults = (await upgrades.upgradeProxy(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   })) as unknown as LockedBankVaults;
-*/
+
+  /*
   const Territories = (await ethers.getContractFactory("Territories")).connect(owner);
   const territories = (await upgrades.upgradeProxy(TERRITORIES_ADDRESS, Territories, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
   })) as unknown as Territories;
 
-  await territories.connect(player).attackTerritory(63, 1, 252);
-
-  /*
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   const PetNFT = (
     await ethers.getContractFactory("PetNFT", {
@@ -201,9 +203,92 @@ async function main() {
   await bankFactory.waitForDeployment();
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 */
-  //  await players.connect(player).modifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, SKIP_XP_THRESHOLD_EFFECTS);
-  //  const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
-  //  console.log(pendingQueuedActionState);
+  //  await players.connect(player).modifyXP("0x6dC225F7f21ACB842761b8df52AE46208705c942", 158, 12, 1109796, SKIP_XP_THRESHOLD_EFFECTS, false);
+
+  // // Add a boost at the end. Make sure it takes into account the current time
+  // await players.connect(player).startActionsAdvanced(
+  //   playerId,
+  //   [
+  //     {
+  //       attire: defaultAttire,
+  //       actionId: 1500,
+  //       regenerateId: 0,
+  //       choiceId: 0,
+  //       rightHandEquipmentTokenId: 3072,
+  //       leftHandEquipmentTokenId: 0,
+  //       timespan: 14400,
+  //       combatStyle: 0,
+  //       petId: 0
+  //     },
+  //     {
+  //       attire: defaultAttire,
+  //       actionId: 1500,
+  //       regenerateId: 0,
+  //       choiceId: 0,
+  //       rightHandEquipmentTokenId: 3072,
+  //       leftHandEquipmentTokenId: 0,
+  //       timespan: 14400,
+  //       combatStyle: 0,
+  //       petId: 0
+  //     }
+  //   ],
+  //   12801,
+  //   0,
+  //   0,
+  //   0,
+  //   2
+  // );
+
+  // console.log(await players.getActiveBoost(playerId));
+
+  // const pendingQueuedActionState = await players.getPendingQueuedActionState(player.address, playerId);
+  // console.log(pendingQueuedActionState);
+
+  /* When trying to fix a transfer issue (like checkpoint)
+  const itemNFT = (await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS)) as ItemNFT;
+  await itemNFT
+    .connect(player)
+    .safeTransferFrom(
+      "0x79939118Ef2af99E20310eCC5CCC0E9697d390FC",
+      "0xd9e947F86E725E6e2AaeCFc3DeCD09F19584ea4F",
+      13953,
+      1,
+      "0x"
+    );
+  console.log("After transfer NFT");
+
+  const pendingQueuedActionState = await players.getPendingQueuedActionState(player, playerId);
+  console.log(pendingQueuedActionState);
+*/
+  //  await players.connect(player).processActions(playerId);
+
+  // await player.sendTransaction({
+  //   to: "0x4f60948bea953693b4dcd7ea414a2198c3646c97",
+  //   data: "0x9502ce9200000000000000000000000000000000000000000000000000000000000003a300000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009ab000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+  // });
+
+  // const sortedClanIdsByMMR = await lockedBankVaults.getSortedClanIdsByMMR();
+  // const sortedMMR = await lockedBankVaults.getSortedMMR();
+  // console.log(sortedClanIdsByMMR, sortedMMR);
+
+  // const Bank = await ethers.getContractFactory("Bank");
+  // const bank = await upgrades.upgradeBeacon(BANK_ADDRESS, Bank, {unsafeAllowRenames: true});
+  // console.log("Upgraded bank beacon", await bank.getAddress());
+  // await bank.waitForDeployment();
+
+  // const bankRegistry = await ethers.getContractAt("BankRegistry", BANK_REGISTRY_ADDRESS);
+  // console.log(await bankRegistry.isForceItemDepositor(ACTIVITY_POINTS_ADDRESS));
+
+  // await lockedBankVaults
+  //   .connect(player)
+  //   .attackVaults(78, 30002, 0, 931, {value: await lockedBankVaults.getAttackCost()});
+
+  // function getSortedClanIdsByMMR() external view returns (uint32[] memory) {
+  //   return LockedBankVaultsLibrary.getSortedClanIdsByMMR(_sortedClansByMMR);
+  // }
+
+  // function getSortedMMR() external view returns (uint16[] memory) {
+
   /*
   // Debugging bridging
   const lzEndpoint = "0x1a44076050125825900e736c501f859c50fE728c";
@@ -231,19 +316,28 @@ async function main() {
     console.error(error);
   }
 */
+  // When trying to fix a VRF issue
+  // const lockedBankVaults = await ethers.getContractAt("LockedBankVaults", LOCKED_BANK_VAULTS_ADDRESS);
+
+  // await clans.connect(player).requestToJoin(399, playerId, 1630);
+
   /*
-  //  When trying to fix a VRF issue
-  const randomnessBeacon = await ethers.getContractAt("RandomnessBeacon", RANDOMNESS_BEACON_ADDRESS);
   const samwitchVRFSigner = await makeSigner(SAMWITCH_VRF_ADDRESS);
-  const tx = await randomnessBeacon
+  await lockedBankVaults
     .connect(samwitchVRFSigner)
     .fulfillRandomWords(
-      ethers.toBeHex("101876967951259145252687976040413305757081568456854986909913200232326320008480", 32),
-      [1323423423423423431111111111111111111n],
-      {gasLimit: 600000}
-    );
-  await tx.wait();
-  */
+      ethers.toBeHex("39712379125533986179720319410558818056106266756514790296443804351605322428855", 32),
+      [
+        70105048076113282008133641085723903737753434253503561668170780746877883130261n,
+        63098108040309138731836084003105174696586083463113227474784717925410598714333n,
+        16556170359773853061513299299388263553065420557188096975375792131641625497573n,
+        11570073977134291425500440924741141211806187564366876620498692390090240940426n,
+        87358145337556411378978300970170140022717365209406896374297951790021232888104n,
+        40416084462117594155105411727693597721034682028067452584646917679508536936017n,
+        69405315483207327306775117602768278650087397838457318791572136248456870617354n
+      ],
+      {gasLimit: 3_000_000}
+    ); */
 }
 
 main().catch((error) => {

@@ -11,6 +11,8 @@ async function main() {
   const passiveActions = await ethers.getContractAt("PassiveActions", PASSIVE_ACTIONS_ADDRESS);
 
   const actionsToReduce = [
+    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER1,
+
     EstforConstants.PASSIVE_ACTION_EGG_TIER1,
     EstforConstants.PASSIVE_ACTION_EGG_TIER2,
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER2,
@@ -45,7 +47,7 @@ async function main() {
     EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER5
   ];
 
-  const values = [0, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const values = [0, 0, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   const map = new Map();
   actionsToReduce.forEach((key, index) => {
     map.set(key, values[index]);

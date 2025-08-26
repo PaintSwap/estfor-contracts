@@ -460,6 +460,10 @@ contract Players is
     return PlayersLibrary._readXP(skill, _playerXP[playerId]);
   }
 
+  function getLastActiveTimestamp(uint256 playerId) external view override returns (uint256) {
+    return _players[playerId].lastActiveTimestamp;
+  }
+
   function getLevel(uint256 playerId, Skill skill) external view override returns (uint256 level) {
     return PlayersLibrary._getLevel(PlayersLibrary._readXP(skill, _playerXP[playerId]));
   }

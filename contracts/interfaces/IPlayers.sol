@@ -38,6 +38,8 @@ interface IPlayers {
 
   function getPlayerXP(uint256 playerId, Skill skill) external view returns (uint256 xp);
 
+  function getLastActiveTimestamp(uint256 playerId) external view returns (uint256 lastActiveTimestamp);
+
   function getLevel(uint256 playerId, Skill skill) external view returns (uint256 level);
 
   function getTotalXP(uint256 playerId) external view returns (uint256 totalXP);

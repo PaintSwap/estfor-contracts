@@ -1008,7 +1008,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.EDIBLES_003_WILD_CARROT, chance: 65535, amount: 40},
-          {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 52428, amount: 20},
+          {itemTokenId: EstforConstants.HERB_013_LINDWYN_BERRIES, chance: 52428, amount: 50},
           {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 39321, amount: 2},
           {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 29491, amount: 2},
           {itemTokenId: EstforConstants.HERB_002_RIPARIS, chance: 19661, amount: 10},
@@ -1031,7 +1031,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
       [
         0,
         [
-          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 65535, amount: 5},
+          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 65535, amount: 40},
           {itemTokenId: EstforConstants.HERB_006_ORNFLOWER, chance: 52428, amount: 2},
           {itemTokenId: EstforConstants.HERB_005_STYRGARM, chance: 42598, amount: 2},
           {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 32768, amount: 5},
@@ -1056,7 +1056,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.HERB_011_LUMELILA, chance: 65535, amount: 10},
-          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 52428, amount: 20},
+          {itemTokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES, chance: 52428, amount: 30},
           {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 39321, amount: 5},
           {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 31457, amount: 5},
           {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 23593, amount: 5},
@@ -1080,7 +1080,7 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         [
           {itemTokenId: EstforConstants.HERB_003_SHIMMERWEED, chance: 65535, amount: 15},
-          {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 52428, amount: 10},
+          {itemTokenId: EstforConstants.HERB_015_EVIGOR_FRUIT, chance: 52428, amount: 20},
           {itemTokenId: EstforConstants.HERB_008_PURPERELLA, chance: 39321, amount: 10},
           {itemTokenId: EstforConstants.HERB_009_LYFBLOOM, chance: 31457, amount: 10},
           {itemTokenId: EstforConstants.HERB_007_BLOMSBRYD, chance: 23593, amount: 10},
@@ -1339,6 +1339,33 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
           {itemTokenId: EstforConstants.CROSSBOW_002_IRON, chance: 20971, amount: 1},
           {itemTokenId: EstforConstants.CROSSBOW_001_BRONZE, chance: 12452, amount: 1},
           {itemTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM, chance: 5898, amount: 1}
+        ]
+      ]
+    ),
+    isFullModeOnly: true,
+    actionType: InstantVRFActionType.FORGING,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_VRF_ACTION_FORGING_ANNIV2_POUCH,
+    inputTokenIds: [EstforConstants.ANNIV2_POUCH],
+    inputAmounts: [1],
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"],
+      [
+        0,
+        [
+          {itemTokenId: EstforConstants.ANNIV2_POUCH, chance: 65535, amount: 1},
+          {itemTokenId: EstforConstants.COIN, chance: 31457, amount: 1},
+          {itemTokenId: EstforConstants.POTION_006_LARGE_MELEE, chance: 18350, amount: 1},
+          {itemTokenId: EstforConstants.POTION_008_LARGE_RANGED, chance: 15728, amount: 1},
+          {itemTokenId: EstforConstants.POTION_010_LARGE_MAGIC, chance: 13107, amount: 1},
+          {itemTokenId: EstforConstants.XP_BOOST, chance: 10486, amount: 1},
+          {itemTokenId: EstforConstants.GATHERING_BOOST, chance: 7864, amount: 2},
+          {itemTokenId: EstforConstants.ANNIV2_AMULET, chance: 5243, amount: 1},
+          {itemTokenId: EstforConstants.ANNIV2_RING, chance: 3277, amount: 1},
+          {itemTokenId: EstforConstants.ANNIV2_EGG_TIER1, chance: 1311, amount: 1}
         ]
       ]
     ),
@@ -1842,6 +1869,71 @@ export const allInstantVRFActions: InstantVRFActionInput[] = [
         0,
         {rewardBasePetIdMin: EstforConstants.KRAGSTYR_MIN_TIER5, rewardBasePetIdMax: EstforConstants.KRAGSTYR_MAX_TIER5}
       ]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.ANNIV2_EGG_TIER1],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER1,
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV2_MIN_TIER1, rewardBasePetIdMax: EstforConstants.ANNIV2_MAX_TIER1}]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.ANNIV2_EGG_TIER2],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER2,
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV2_MIN_TIER2, rewardBasePetIdMax: EstforConstants.ANNIV2_MAX_TIER2}]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.ANNIV2_EGG_TIER3],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER3,
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV2_MIN_TIER3, rewardBasePetIdMax: EstforConstants.ANNIV2_MAX_TIER3}]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.ANNIV2_EGG_TIER4],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER4,
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV2_MIN_TIER4, rewardBasePetIdMax: EstforConstants.ANNIV2_MAX_TIER4}]
+    ),
+    isFullModeOnly: true,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionType: InstantVRFActionType.EGG,
+    inputTokenIds: [EstforConstants.ANNIV2_EGG_TIER5],
+    inputAmounts: [1],
+    actionId: EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER5,
+    data: ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"],
+      [0, {rewardBasePetIdMin: EstforConstants.ANNIV2_MIN_TIER5, rewardBasePetIdMax: EstforConstants.ANNIV2_MAX_TIER5}]
     ),
     isFullModeOnly: true,
     isAvailable: true,

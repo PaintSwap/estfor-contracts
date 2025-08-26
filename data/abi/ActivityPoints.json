@@ -739,6 +739,24 @@
   {
     "inputs": [
       {
+        "internalType": "uint16",
+        "name": "blueTokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "greenTokenId",
+        "type": "uint16"
+      }
+    ],
+    "name": "setBlueAndGreenTicketItemIds",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address[]",
         "name": "nfts",
         "type": "address[]"

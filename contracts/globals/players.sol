@@ -50,11 +50,13 @@ struct Player {
   Skill skillBoosted1; // The first skill that is boosted
   Skill skillBoosted2; // The second skill that is boosted (if applicable)
   uint48 totalXP;
-  uint16 totalLevel; // Doesn't not automatically add new skills to it
+  uint16 totalLevel; // Doesn't automatically add new skills to it
   bytes1 packedData; // Contains worldLocation in first 6 bits (0 is the main starting randomnessBeacon), and full mode unlocked in the upper most bit
   // TODO: Can be up to 7
   QueuedAction[] actionQueue;
   string name; // Raw name
+  // New storage slot
+  uint40 lastActiveTimestamp; // Last time they did something (queued action)
 }
 
 struct Item {

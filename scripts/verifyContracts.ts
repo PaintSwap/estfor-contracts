@@ -91,7 +91,7 @@ async function main() {
     TREASURY_ADDRESS
     //    PVP_BATTLEGROUND_ADDRESS,
     //    RAIDS_ADDRESS,
-  ];
+  ]; /*
   const lzEndpointV2 = "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B";
   try {
     await run("verify:verify", {
@@ -101,7 +101,7 @@ async function main() {
   } catch (e) {
     console.error(`Failed to verify contract at address ${BRIDGE_ADDRESS}`);
   }
-
+*/
   await verifyContracts(addresses);
 }
 
