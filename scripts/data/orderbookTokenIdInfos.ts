@@ -3361,5 +3361,55 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     tokenId: EstforConstants.REWARD_003_CROSSBOW,
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.SONIC_GEM_TICKET2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ACTIVITY_TICKET2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_RING,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_AMULET,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_POUCH,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_EGG_TIER1,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_EGG_TIER2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_EGG_TIER3,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_EGG_TIER4,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
+  },
+  {
+    tokenId: EstforConstants.ANNIV2_EGG_TIER5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1"
   }
 ];

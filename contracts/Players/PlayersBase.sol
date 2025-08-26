@@ -303,6 +303,8 @@ abstract contract PlayersBase {
         _attire[playerId][player.actionQueue[i].queueId] = attire[i];
       }
     }
+
+    player.lastActiveTimestamp = uint40(block.timestamp);
     emit SetActionQueue(from, playerId, queuedActions, attire, startTime);
   }
 

@@ -11,14 +11,10 @@ async function main() {
   const instantActions = await ethers.getContractAt("InstantActions", INSTANT_ACTIONS_ADDRESS);
 
   const actionIds = new Set([
-    EstforConstants.INSTANT_ACTION_FORGING_LIFFYN,
-    EstforConstants.INSTANT_ACTION_FORGING_VANAGLOT,
-    EstforConstants.INSTANT_ACTION_FORGING_FANGENSTORM,
-    EstforConstants.INSTANT_ACTION_FORGING_RING,
-    EstforConstants.INSTANT_ACTION_FORGING_AMULET,
-    EstforConstants.INSTANT_ACTION_FORGING_TRICK_CHEST,
-    EstforConstants.INSTANT_ACTION_FORGING_TREAT_CHEST,
-    EstforConstants.INSTANT_ACTION_FORGING_TRICK_OR_TREAT_KEY
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_POUCH,
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_RING,
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_AMULET,
+    EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_EGG_TIER1
   ]);
 
   const actions = allInstantActions.filter((action) => {

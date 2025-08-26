@@ -3,6 +3,7 @@ import {WORLD_ACTIONS_ADDRESS} from "./contractAddresses";
 import {allActions} from "./data/actions";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {getChainId} from "./utils";
+import {Skill} from "@paintswap/estfor-definitions/types";
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -10,16 +11,25 @@ async function main() {
 
   const worldActions = await ethers.getContractAt("WorldActions", WORLD_ACTIONS_ADDRESS, owner);
 
-  /*
-  const actions = allActions.filter(
-    (action) =>
-      action.info.skill === Skill.COMBAT || action.info.skill === Skill.FISHING || action.info.skill === Skill.MINING
-  );
+  const actions = allActions; /*.filter(
+  //    (action) =>
+  //      action.info.skill === Skill.COMBAT || action.info.skill === Skill.FISHING || action.info.skill === Skill.MINING || action.info.skill === Skill.THIEVING || action.info.skill === Skill.WOODCUTTING
+  //    ||
+  //  );
 
   const tx = await worldActions.editActions(actions);
   await tx.wait();
-  */
+*/
+  const chunkSize = 100;
+  for (let i = 0; i < actions.length; i += chunkSize) {
+    const chunk = actions.slice(i, i + chunkSize);
 
+    const tx = await worldActions.editActions(chunk);
+    await tx.wait();
+    console.log("Edit actions chunk ", i);
+  }
+
+  /*
   const actionIds = new Set([
     EstforConstants.ACTION_WOODCUTTING_TANGLED_PASS,
     EstforConstants.ACTION_WOODCUTTING_CHOKING_HOLLOW,
@@ -50,7 +60,7 @@ async function main() {
   } else {
     const tx = await worldActions.editActions(actions);
     await tx.wait();
-  }
+  } */
 }
 
 main().catch((error) => {

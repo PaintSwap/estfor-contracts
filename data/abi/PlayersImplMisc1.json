@@ -1960,6 +1960,11 @@
             "internalType": "string",
             "name": "name",
             "type": "string"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastActiveTimestamp",
+            "type": "uint40"
           }
         ],
         "internalType": "struct Player",

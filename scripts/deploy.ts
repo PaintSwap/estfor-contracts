@@ -88,7 +88,7 @@ import {
   WFTM_ADDRESS
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
-import {ACTIVITY_TICKET, SONIC_GEM_TICKET, whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
+import {ACTIVITY_TICKET2, SONIC_GEM_TICKET2, whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
 import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
@@ -369,7 +369,7 @@ async function main() {
   const ActivityPoints = await ethers.getContractFactory("ActivityPoints");
   const activityPoints = (await upgrades.deployProxy(
     ActivityPoints,
-    [await itemNFT.getAddress(), ACTIVITY_TICKET, SONIC_GEM_TICKET],
+    [await itemNFT.getAddress(), ACTIVITY_TICKET2, SONIC_GEM_TICKET2],
     {
       kind: "uups"
     }
@@ -1132,10 +1132,6 @@ async function main() {
   tx = await bankRelay.setBankFactory(bankFactory);
   await tx.wait();
   console.log("bankRelay.setBankFactory");
-
-  tx = await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories, pvpBattleground], true);
-  await tx.wait();
-  console.log("vrfRequestInfo.setUpdaters");
 
   // Disable PVP and raids for now
   tx = await pvpBattleground.setPreventAttacks(true);

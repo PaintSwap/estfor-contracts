@@ -11,9 +11,16 @@ async function main() {
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
   const itemIds = new Set([
-    EstforConstants.REWARD_001_DAGGER,
-    EstforConstants.REWARD_002_BOOK,
-    EstforConstants.REWARD_003_CROSSBOW
+    EstforConstants.SONIC_GEM_TICKET2,
+    EstforConstants.ACTIVITY_TICKET2,
+    EstforConstants.ANNIV2_RING,
+    EstforConstants.ANNIV2_AMULET,
+    EstforConstants.ANNIV2_POUCH,
+    EstforConstants.ANNIV2_EGG_TIER1,
+    EstforConstants.ANNIV2_EGG_TIER2,
+    EstforConstants.ANNIV2_EGG_TIER3,
+    EstforConstants.ANNIV2_EGG_TIER4,
+    EstforConstants.ANNIV2_EGG_TIER5
   ]);
 
   const items = allItems.filter((item) => itemIds.has(item.tokenId));

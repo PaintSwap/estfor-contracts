@@ -4862,5 +4862,57 @@ export const allInstantActions: InstantActionInput[] = [
     actionType: InstantActionType.FORGING_COMBINE,
     isAvailable: true,
     questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_POUCH,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [5],
+    outputTokenId: EstforConstants.ANNIV2_POUCH,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_RING,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [30],
+    outputTokenId: EstforConstants.ANNIV2_RING,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_AMULET,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [30],
+    outputTokenId: EstforConstants.ANNIV2_AMULET,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
+  },
+  {
+    actionId: EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_EGG_TIER1,
+    minSkills: [],
+    minXPs: [],
+    inputTokenIds: [EstforConstants.COIN],
+    inputAmounts: [80],
+    outputTokenId: EstforConstants.ANNIV2_EGG_TIER1,
+    outputAmount: 1,
+    isFullModeOnly: true,
+    actionType: InstantActionType.GENERIC,
+    isAvailable: true,
+    questPrerequisiteId: 0
   }
 ];
