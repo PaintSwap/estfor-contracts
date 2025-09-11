@@ -21,6 +21,7 @@ async function main() {
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER2,
     EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER2,
     EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER2,
+    EstforConstants.PASSIVE_ACTION_ANNIV2_EGG_TIER2,
 
     EstforConstants.PASSIVE_ACTION_EGG_TIER3,
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER3,
@@ -29,6 +30,7 @@ async function main() {
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER3,
     EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER3,
     EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER3,
+    EstforConstants.PASSIVE_ACTION_ANNIV2_EGG_TIER3,
 
     EstforConstants.PASSIVE_ACTION_EGG_TIER4,
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER4,
@@ -37,6 +39,7 @@ async function main() {
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER4,
     EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER4,
     EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER4,
+    EstforConstants.PASSIVE_ACTION_ANNIV2_EGG_TIER4,
 
     EstforConstants.PASSIVE_ACTION_EGG_TIER5,
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_1_TIER5,
@@ -44,7 +47,8 @@ async function main() {
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_3_TIER5,
     EstforConstants.PASSIVE_ACTION_SECRET_EGG_4_TIER5,
     EstforConstants.PASSIVE_ACTION_ANNIV1_EGG_TIER5,
-    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER5
+    EstforConstants.PASSIVE_ACTION_KRAGSTYR_EGG_TIER5,
+    EstforConstants.PASSIVE_ACTION_ANNIV2_EGG_TIER5
   ];
 
   const values = [0, 0, 2, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
