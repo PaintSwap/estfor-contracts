@@ -17,11 +17,8 @@ async function main() {
     EstforConstants.INSTANT_ACTION_FORGING_ANNIV2_POUCH
   ];
   await instantActions.removeActions(
-    actionIds.map(() => InstantActionType.FORGING_COMBINE),
-    actionIds,
-    {
-      gasLimit: 5_000_000
-    }
+    actionIds.map(() => InstantActionType.GENERIC),
+    actionIds
   );
 }
 
