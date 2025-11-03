@@ -199,6 +199,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     bool isEvolvedOrNA,
     uint256 value
   ) external override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 points) {
+    /*
     // get the calculation from the type
     Calculation memory calculation = _calculations[activityType];
 
@@ -237,7 +238,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
           IBank(recipient).setAllowBreachedCapacity(false);
         }
       }
-    }
+    } */
   }
 
   function rewardGreenTickets(
@@ -245,6 +246,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
     address recipient,
     bool isEvolved
   ) external override onlyRole(ACTIVITY_POINT_CALLER) returns (uint256 tickets) {
+    /*
     if (isEvolved) {
       if (activityType == ActivityType.players_dailyreward) {
         tickets = 8;
@@ -257,7 +259,7 @@ contract ActivityPoints is IActivityPoints, UUPSUpgradeable, AccessControlUpgrad
         emit ActivityPointsEarned(activityType, 0, recipient, _greenTicketItemId, tickets);
         _itemNFT.mint(recipient, _greenTicketItemId, tickets);
       }
-    }
+    } */
   }
 
   function addPointsCalculation(
