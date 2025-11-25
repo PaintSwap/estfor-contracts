@@ -23,13 +23,19 @@ jobs:
       CHAIN_ID: 31337
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Install packages
         uses: actions/setup-node@v4
         with:
           node-version: "18.x"
-      - run: yarn install
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
         shell: bash
       - name: Deploy
-        run: yarn deploy
+        run: pnpm run deploy
       - name: Tests
-        run: yarn test
+        run: pnpm test
