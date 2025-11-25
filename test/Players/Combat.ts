@@ -775,9 +775,9 @@ describe("Combat Actions", function () {
 
       let player = await (await getPlayersHelper(players)).getPlayer(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
-      expect(player.currentActionProcessedXPGained1).to.eq(1718); // Needs updating once the 1.5x boost is removed
+      expect(player.currentActionProcessedXPGained1).to.eq(1145);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
-      expect(player.currentActionProcessedXPGained2).to.eq(572);
+      expect(player.currentActionProcessedXPGained2).to.eq(381);
       expect(player.currentActionProcessedSkill3).to.eq(Skill.DEFENCE);
       expect(player.currentActionProcessedXPGained3).to.eq(250);
       expect(player.currentActionProcessedFoodConsumed).to.eq(1257);
@@ -941,14 +941,14 @@ describe("Combat Actions", function () {
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.DEFENCE)).to.eq(250n);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MAGIC)).to.eq(START_XP + 250n);
       expect(await players.getPlayerXP(playerId, EstforTypes.Skill.WOODCUTTING)).to.eq(250n);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(1718n + 250n);
-      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(572n + 250n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.MELEE)).to.eq(1145n + 250n);
+      expect(await players.getPlayerXP(playerId, EstforTypes.Skill.HEALTH)).to.eq(381n + 250n);
 
       let player = await (await getPlayersHelper(players)).getPlayer(playerId);
       expect(player.currentActionProcessedSkill1).to.eq(Skill.MELEE);
-      expect(player.currentActionProcessedXPGained1).to.eq(1718 + 250);
+      expect(player.currentActionProcessedXPGained1).to.eq(1145 + 250);
       expect(player.currentActionProcessedSkill2).to.eq(Skill.HEALTH);
-      expect(player.currentActionProcessedXPGained2).to.eq(572 + 250);
+      expect(player.currentActionProcessedXPGained2).to.eq(381 + 250);
       expect(player.currentActionProcessedSkill3).to.eq(Skill.DEFENCE);
       expect(player.currentActionProcessedXPGained3).to.eq(250);
       expect(player.currentActionProcessedFoodConsumed).to.eq(1257);

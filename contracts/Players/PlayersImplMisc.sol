@@ -602,6 +602,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     player.totalLevel = uint16(START_LEVEL + levelsGained);
     player.skillBoosted1 = startSkills[0];
     player.skillBoosted2 = startSkills[1]; // Can be NONE
+    player.lastActiveTimestamp = uint40(block.timestamp);
 
     // Mint starting equipment
     if (!fromBridge) {
