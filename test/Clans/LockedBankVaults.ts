@@ -479,8 +479,7 @@ describe("LockedBankVaults", function () {
       imageId,
       tierId,
       brush,
-      mockVRF,
-      vrfRequestInfo
+      mockVRF
     } = await loadFixture(lockedBankVaultsFixture);
 
     await lockFundsForClan(lockedBankVaults, clanId, brush, alice, playerId, 1000, territories);
@@ -506,21 +505,13 @@ describe("LockedBankVaults", function () {
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
 
     let attackCost = await lockedBankVaults.getAttackCost();
-    let [movingAverageGasPrice, baseAttackCost] = await vrfRequestInfo.get();
-    expect(attackCost).to.eq(baseAttackCost);
 
     await lockedBankVaults.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice + 1000n);
 
-    [movingAverageGasPrice, baseAttackCost] = await vrfRequestInfo.get();
-    // The big zeros are there to show all the values used
-    const bigZero = 0n;
-    expect(movingAverageGasPrice).to.eq((bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n);
-
     const expectedGasLimit = 1_500_000n;
     await lockedBankVaults.setExpectedGasLimitFulfill(expectedGasLimit);
     attackCost = await lockedBankVaults.getAttackCost();
-    expect(attackCost).to.eq(baseAttackCost + movingAverageGasPrice * expectedGasLimit);
 
     await lockedBankVaults.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice + 900n);
@@ -530,13 +521,6 @@ describe("LockedBankVaults", function () {
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice + 500n);
     await lockedBankVaults.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, lockedBankVaults, mockVRF, gasPrice + 200n);
-
-    [movingAverageGasPrice, baseAttackCost] = await vrfRequestInfo.get();
-    expect(movingAverageGasPrice).to.eq(
-      (gasPrice + 900n + (gasPrice + 800n) + (gasPrice + 500n) + (gasPrice + 200n)) / 4n
-    );
-    attackCost = await lockedBankVaults.getAttackCost();
-    expect(attackCost).to.eq(baseAttackCost + movingAverageGasPrice * expectedGasLimit);
   });
 
   it("Multiple locked funds claim", async () => {
@@ -954,7 +938,7 @@ describe("LockedBankVaults", function () {
       const tx = await fulfillRandomWords(requestId, lockedBankVaults, mockVRF);
       const receipt = (await tx.wait()) as ContractTransactionReceipt;
       // If the attacker lost then some brush is sent which changes up the event ordering
-      const log = lockedBankVaults.interface.parseLog(receipt.logs.length > 4 ? receipt.logs[4] : receipt.logs[1]);
+      const log = lockedBankVaults.interface.parseLog(receipt.logs.length > 3 ? receipt.logs[3] : receipt.logs[0]);
       highestRoll = highestRoll > log?.args["attackingRolls"][0] ? highestRoll : log?.args["attackingRolls"][0];
       await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
     }

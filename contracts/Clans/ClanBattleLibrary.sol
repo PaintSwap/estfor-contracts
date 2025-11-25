@@ -115,17 +115,27 @@ library ClanBattleLibrary {
           }
 
           uint256 numRollsA = (levelA / 20) + 1 + extraRollsA;
+          // If the user has not used the character in 2 weeks, they forfeit
+          uint256 lastActiveTimestampA = IPlayers(players).getLastActiveTimestamp(clanMembersA[i]);
+          if (lastActiveTimestampA < block.timestamp - 2 weeks) {
+            numRollsA = 0;
+          }
 
           // Check how many bits are set based on the number of rolls
           for (uint256 j; j < numRollsA; ++j) {
             rollsA[i] += uint16(bytesA >> j) & 1;
           }
-          uint256 numRollsB = (levelB / 20) + 1 + extraRollsB;
 
+          uint256 numRollsB = (levelB / 20) + 1 + extraRollsB;
+          uint256 lastActiveTimestampB = IPlayers(players).getLastActiveTimestamp(clanMembersB[i]);
+          if (lastActiveTimestampB < block.timestamp - 2 weeks) {
+            numRollsB = 0;
+          }
           for (uint256 j; j < numRollsB; ++j) {
             rollsB[i] += uint16(bytesB >> j) & 1;
           }
         }
+
         if (rollsA[i] > rollsB[i]) {
           ++numWinnersA;
           battleResults[i] = uint8(BattleResultEnum.WIN);

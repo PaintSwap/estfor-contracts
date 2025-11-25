@@ -217,13 +217,13 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
       _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from, isEvolved);
 
       // Mint coins if they are evolved
-      if (isEvolved) {
+      /*      if (isEvolved) {
         _itemNFT.mint(
           from,
           65480, // coin
           10
         );
-      }
+      } */
 
       _walletDailyInfo[from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }

@@ -39,6 +39,11 @@ describe("Shop", function () {
       kind: "uups"
     })) as unknown as RandomnessBeacon;
 
+    await owner.sendTransaction({
+      to: await randomnessBeacon.getAddress(),
+      value: ethers.parseEther("1")
+    });
+
     const mockOracleCB = await ethers.deployContract("MockOracleCB");
     await randomnessBeacon.initializeAddresses(mockOracleCB, mockOracleCB);
     await randomnessBeacon.initializeRandomWords();

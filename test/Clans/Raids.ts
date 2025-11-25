@@ -233,7 +233,11 @@ describe("Raids", function () {
       const raidId = 1;
       const regenerateId = 0;
       let requestId = 2;
-      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId))
+      await expect(
+        raids
+          .connect(alice)
+          .requestFightRaid(playerId, clanId, raidId, regenerateId, {value: await raids.getAttackCost()})
+      )
         .to.emit(raids, "RequestFightRaid")
         .withArgs(clanId, playerId, raidId, requestId);
 
@@ -270,7 +274,11 @@ describe("Raids", function () {
       const regenerateId = EstforConstants.COOKED_MINNUS;
       await itemNFT.mint(bankAddress, regenerateId, 100_000);
       let requestId = 2;
-      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId))
+      await expect(
+        raids
+          .connect(alice)
+          .requestFightRaid(playerId, clanId, raidId, regenerateId, {value: await raids.getAttackCost()})
+      )
         .to.emit(raids, "RequestFightRaid")
         .withArgs(clanId, playerId, raidId, requestId);
 
@@ -353,7 +361,11 @@ describe("Raids", function () {
       const regenerateId = EstforConstants.COOKED_MINNUS;
       await itemNFT.mint(bankAddress, regenerateId, 100_000);
       let requestId = 2;
-      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId))
+      await expect(
+        raids
+          .connect(alice)
+          .requestFightRaid(playerId, clanId, raidId, regenerateId, {value: await raids.getAttackCost()})
+      )
         .to.emit(raids, "RequestFightRaid")
         .withArgs(clanId, playerId, raidId, requestId);
 
@@ -376,7 +388,9 @@ describe("Raids", function () {
       await fulfillRandomWords(1, raids, mockVRF);
 
       // No raid passes, underflow revert
-      await expect(raids.connect(alice).requestFightRaid(playerId, clanId, 1, 0)).to.be.revertedWithPanic(0x11);
+      await expect(
+        raids.connect(alice).requestFightRaid(playerId, clanId, 1, 0, {value: await raids.getAttackCost()})
+      ).to.be.revertedWithPanic(0x11);
     });
 
     it("Awards loot based on tier and number of monsters killed", async function () {
@@ -425,7 +439,9 @@ describe("Raids", function () {
       const raidId = 1;
       const regenerateId = EstforConstants.COOKED_MINNUS;
       await itemNFT.mint(bankAddress, regenerateId, 100_000);
-      await raids.connect(alice).requestFightRaid(playerId, clanId, raidId, regenerateId);
+      await raids
+        .connect(alice)
+        .requestFightRaid(playerId, clanId, raidId, regenerateId, {value: await raids.getAttackCost()});
       const tx = await fulfillRandomWords(2, raids, mockVRF);
 
       const log = await getEventLog(tx, raids, "RaidBattleOutcome");

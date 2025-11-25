@@ -1032,6 +1032,11 @@
   dependencies:
     assemblyscript "0.19.10"
 
+"@paintswap/vrf@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@paintswap/vrf/-/vrf-0.0.10.tgz#1503524636ee0b9b20607fd4630d67bfc5a504b0"
+  integrity sha512-vTQURoh52+pCGDyjTceDZrFLy65EXT5qpQ8tX8i0ITJonHgSDfg/cqNQJ/QG72zgSPcsZKElzy2nRxrPY/JfYw==
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
