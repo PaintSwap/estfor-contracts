@@ -328,7 +328,7 @@ contract LockedBankVaults is
     }
 
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
-    LockedBankVaultsLibrary.checkWithinRange(_sortedClansByMMR, clanId, defendingClanId, _clans, _mmrAttackDistance);
+    LockedBankVaultsLibrary.checkWithinRange(_sortedClansByMMR, _clanInfos, clanId, defendingClanId, _clans, _mmrAttackDistance);
 
     VaultClanInfo storage clanInfo = _clanInfos[clanId];
     clanInfo.currentlyAttacking = true;

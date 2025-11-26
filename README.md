@@ -6,44 +6,44 @@
 
 All the smart contract code for the Estfor Kingdom MMORPG game on the Sonic Blockchain.
 
-Make sure `yarn` is installed (or replace with equivalent npm instructions)
+Make sure `pnpm` is installed (or replace with equivalent npm instructions)
 
 These contracts use hardhat and require solidity 0.8.20 at minimum.
 
 Install dependencies:
 
 ```shell
-yarn install
+pnpm install
 ```
 
 To compile:
 
 ```shell
-yarn compile
+pnpm compile
 ```
 
 To run the tests:
 
 ```shell
-yarn test
+pnpm test
 ```
 
 To deploy the contracts:
 
 ```shell
-yarn deploy
+pnpm deploy
 ```
 
 To verify the contracts on ftmscan:
 
 ```shell
-yarn verifyContracts
+pnpm verifyContracts
 ```
 
 To check storage slot packing of the test file:
 
 ```shell
-yarn umlStorage
+pnpm umlStorage
 ```
 
 ### Sonic mainnet deployed contract addresses:

@@ -112,7 +112,7 @@ const config: HardhatUserConfig = {
       gasPrice: 0,
       initialBaseFeePerGas: 0,
       allowUnlimitedContractSize: true,
-      accounts: process.env.USE_PRIVATE_KEY === "true" ? hardhatAccounts : {count: 10}
+      accounts: process.env.USE_PRIVATE_KEY === "true" ? hardhatAccounts : {count: 20}
     },
     sonic: {
       url: process.env.SONIC_RPC,

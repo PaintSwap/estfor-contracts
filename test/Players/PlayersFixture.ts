@@ -44,7 +44,8 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
 
 export const playersFixture = async function () {
-  const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
+  const [owner, alice, bob, charlie, dev, erin, frank, geoff, harry, isla, juliet, kiki, lucy] =
+    await ethers.getSigners();
 
   const brush = await ethers.deployContract("MockBrushToken");
   const mockVRF = await ethers.deployContract("MockVRF");
@@ -732,6 +733,12 @@ export const playersFixture = async function () {
     dev,
     erin,
     frank,
+    geoff,
+    harry,
+    isla,
+    juliet,
+    kiki,
+    lucy,
     origName,
     editNameBrushPrice,
     upgradePlayerBrushPrice,
