@@ -31,7 +31,6 @@ import {
   COMBATANTS_HELPER_ADDRESS,
   ROYALTY_RECEIVER_ADDRESS,
   INSTANT_VRF_ACTIONS_ADDRESS,
-  VRF_REQUEST_INFO_ADDRESS,
   GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
   EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS,
   PET_NFT_ADDRESS,
@@ -307,14 +306,6 @@ async function main() {
   await petNFT.waitForDeployment();
   console.log(`petNFT = "${(await petNFT.getAddress()).toLowerCase()}"`);
 
-  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
-  const vrfRequestInfo = await upgrades.upgradeProxy(VRF_REQUEST_INFO_ADDRESS, VRFRequestInfo, {
-    kind: "uups",
-    timeout
-  });
-  await vrfRequestInfo.waitForDeployment();
-  console.log(`vrfRequestInfo = "${(await vrfRequestInfo.getAddress()).toLowerCase()}"`);
-
   const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
   const pvpBattleground = await upgrades.upgradeProxy(PVP_BATTLEGROUND_ADDRESS, PVPBattleground, {
     kind: "uups",
@@ -447,7 +438,6 @@ async function main() {
     await verifyContracts([await promotions.getAddress()]);
     await verifyContracts([await promotionsLibrary.getAddress()]);
     await verifyContracts([await instantActions.getAddress()]);
-    await verifyContracts([await vrfRequestInfo.getAddress()]);
     await verifyContracts([await instantVRFActions.getAddress()]);
     await verifyContracts([await genericInstantVRFActionStrategy.getAddress()]);
     await verifyContracts([await eggInstantVRFActionStrategy.getAddress()]);

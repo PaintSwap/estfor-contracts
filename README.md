@@ -133,7 +133,7 @@ BankRelay [0xd6cdc1d365e505f0546361782c4336c829c39568](https://sonicscan.org/add
 PVPBattleground [0xe91a6cdac47dfd546578273253bff1fddc350764](https://sonicscan.org/address/0xe91a6cdac47dfd546578273253bff1fddc350764)  
 Raids [0xbfd416e76519cf199dd95b82f6928b3a4b5ac995](https://sonicscan.org/address/0xbfd416e76519cf199dd95b82f6928b3a4b5ac995)  
 ClanBattleLibrary [0xff0fa1996e56b21ecf9e5b132d6bcfdf083f6ec1](https://sonicscan.org/address/0xff0fa1996e56b21ecf9e5b132d6bcfdf083f6ec1)  
-LockedBankVaultsLibrary [0x29b1095ed9e89826704e9e8fe326869d51d7b14e](https://sonicscan.org/address/0x29b1095ed9e89826704e9e8fe326869d51d7b14e)  
+LockedBankVaultsLibrary [0xecd730e2a4c10a9761afc7faa0850655618eceed](https://sonicscan.org/address/0xecd730e2a4c10a9761afc7faa0850655618eceed)  
 LockedBankVaults [0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb](https://sonicscan.org/address/0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb)  
 Territories [0xa2ca7daad4b86819c455fafc704d727a23c5a513](https://sonicscan.org/address/0xa2ca7daad4b86819c455fafc704d727a23c5a513)  
 CombatantsHelper [0x7fa2b4c19093e0777d72235ea28d302f53227fa0](https://sonicscan.org/address/0x7fa2b4c19093e0777d72235ea28d302f53227fa0)  
