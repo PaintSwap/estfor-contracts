@@ -266,25 +266,12 @@ describe("ClanBattleLibrary", function () {
     // Need to be at least level 40
     await players.modifyXP(alice, newPlayerId, skills[0], getXPFromLevel(40), SKIP_XP_THRESHOLD_EFFECTS);
 
-    clanMembersA = [playerId, newPlayerId];
-    res = await clanBattleLibrary.determineBattleOutcome(
-      players,
-      clanMembersA,
-      clanMembersB,
-      skills,
-      [...randomWordAs, ...randomWordBs],
-      extraRollsA,
-      extraRollsB
-    );
-    expect(res.didAWin).to.be.true;
-
-    time.increase(14 * 24 * 60 * 60 + 1); // Move forward 14 days + 1 second
-
-    randomWordAs = [0, 3, 0]; // playerId should win, but since they've been inactive for 2 weeks, they roll zeroes
-    randomWordBs = [0, 1, 0];
+    randomWordAs = [0, 3, 0];
+    randomWordBs = [0, 3, 0];
 
     clanMembersA = [playerId, playerId];
-    clanMembersB = [playerId, newPlayerId];
+    clanMembersB = [newPlayerId, playerId];
+
     res = await clanBattleLibrary.determineBattleOutcome(
       players,
       clanMembersA,
@@ -295,6 +282,29 @@ describe("ClanBattleLibrary", function () {
       extraRollsB
     );
     expect(res.didAWin).to.be.true;
+
+    await time.increase(15 * 24 * 60 * 60); // Move forward 15 days to make players inactive
+
+    const newPlayerId2 = await createPlayer(playerNFT, avatarId, alice, "New name2", true);
+    // Need to be at least level 40
+    await players.modifyXP(alice, newPlayerId2, skills[0], getXPFromLevel(40), SKIP_XP_THRESHOLD_EFFECTS);
+
+    randomWordAs = [0, 3, 0]; // playerId should win, but since they've been inactive for 2 weeks, they roll zeroes
+    randomWordBs = [0, 3, 0];
+
+    clanMembersA = [playerId, playerId];
+    clanMembersB = [newPlayerId2, playerId];
+
+    res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.false;
   });
 
   it("Multiple clan members with different skills", async () => {
