@@ -1,4 +1,4 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {loadFixture, time} from "@nomicfoundation/hardhat-network-helpers";
 import {clanFixture} from "./utils";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
@@ -236,6 +236,65 @@ describe("ClanBattleLibrary", function () {
       extraRollsB
     );
     expect(res.didAWin).to.be.false;
+  });
+
+  it("Rolls zeroes for inactive players", async () => {
+    const {alice, playerNFT, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
+
+    let clanMembersA = [playerId, playerId];
+    let clanMembersB = [playerId, playerId];
+    const skills = Array(clanMembersA.length).fill(Skill.FISHING);
+    let randomWordAs = [0, 3, 0];
+    let randomWordBs = [0, 1, 0];
+    const extraRollsA = 0;
+    const extraRollsB = 0;
+    await players.modifyXP(alice, playerId, skills[0], getXPFromLevel(20), SKIP_XP_THRESHOLD_EFFECTS); // Get 2 rolls each
+
+    let res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.true;
+
+    const avatarId = 1;
+    const newPlayerId = await createPlayer(playerNFT, avatarId, alice, "New name", true);
+    // Need to be at least level 40
+    await players.modifyXP(alice, newPlayerId, skills[0], getXPFromLevel(40), SKIP_XP_THRESHOLD_EFFECTS);
+
+    clanMembersA = [playerId, newPlayerId];
+    res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.true;
+
+    time.increase(14 * 24 * 60 * 60 + 1); // Move forward 14 days + 1 second
+
+    randomWordAs = [0, 3, 0]; // playerId should win, but since they've been inactive for 2 weeks, they roll zeroes
+    randomWordBs = [0, 1, 0];
+
+    clanMembersA = [playerId, playerId];
+    clanMembersB = [playerId, newPlayerId];
+    res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.true;
   });
 
   it("Multiple clan members with different skills", async () => {
