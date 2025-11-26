@@ -623,30 +623,25 @@ library LockedBankVaultsLibrary {
     mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos,
     uint256 attackingClanId,
     uint256 defendingClanId
-  ) private view returns (uint48[] memory) {
+  ) private view returns (uint48[] memory filteredClans) {
     uint256 attackingClanRosterSize = clanInfos[attackingClanId].playerIds.length;
     uint256 minRosterSize = (attackingClanRosterSize / 2) + 1; // 50% + 1 of the attacking clan's roster size
+    uint256 length = sortedClansByMMR.length;
 
-    // Count how many clans meet the roster size requirement
-    uint256 count;
-    for (uint256 i = 0; i < sortedClansByMMR.length; ++i) {
-      uint256 clanId = _getClanId(sortedClansByMMR[i]);
-      if (clanInfos[clanId].playerIds.length >= minRosterSize || clanId == attackingClanId || clanId == defendingClanId) {
-        ++count;
-      }
-    }
+    filteredClans = new uint48[](length);
 
     // Create a new array with only the clans that meet the roster size requirement
-    uint48[] memory filteredClans = new uint48[](count);
     uint256 index;
-    for (uint256 i = 0; i < sortedClansByMMR.length; ++i) {
+    for (uint256 i = 0; i < length; ++i) {
       uint256 clanId = _getClanId(sortedClansByMMR[i]);
       if (clanInfos[clanId].playerIds.length >= minRosterSize || clanId == attackingClanId || clanId == defendingClanId) {
         filteredClans[index++] = sortedClansByMMR[i];
       }
     }
 
-    return filteredClans;
+    assembly ("memory-safe") {
+      mstore(filteredClans, index)
+    }
   }
 
   function _updateMMRArrays(
