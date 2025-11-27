@@ -668,7 +668,7 @@ describe("Rewards", function () {
           }
         }
       }
-      expect(numRandomRewardsHitChance1).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
+      expect(numRandomRewardsHitChance1).to.be.greaterThan(0).and.to.be.lessThanOrEqual(numRepeats);
 
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);

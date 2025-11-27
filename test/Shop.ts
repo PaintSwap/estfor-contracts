@@ -1,4 +1,4 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {loadFixture, time} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {ACTIVITY_TICKET, BRONZE_SHIELD, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
 import {expect} from "chai";
@@ -121,8 +121,6 @@ describe("Shop", function () {
         kind: "uups"
       }
     );
-    // add shop as an AP minter
-    await shop.setActivityPoints(activityPoints);
     await activityPoints.addCallers([await shop.getAddress()]);
     await shop.setItemNFT(itemNFT);
     // allow the activity points contract to mint AP itemNFTs
@@ -262,6 +260,18 @@ describe("Shop", function () {
     ).to.be.revertedWithCustomError(shop, "PriceCannotBeZero");
   });
 
+  it("Set up shop promotion over 99 not allowed", async function () {
+    const {shop} = await loadFixture(deployContracts);
+    await expect(shop.setPromotionDiscountPercentage(100)).to.be.revertedWithCustomError(
+      shop,
+      "PromotionDiscountOver99"
+    );
+    await expect(shop.setPromotionDiscountPercentage(150)).to.be.revertedWithCustomError(
+      shop,
+      "PromotionDiscountOver99"
+    );
+  });
+
   it("Buy", async function () {
     const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
     await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
@@ -270,6 +280,54 @@ describe("Shop", function () {
     // Hasn't approved brush yet
     await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
 
+    await brush.mint(alice, 1000);
+    await brush.connect(alice).approve(shop, 1000);
+    await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought))
+      .to.emit(shop, "Buy")
+      .withArgs(alice, alice, EstforConstants.BRONZE_SHIELD, quantityBought, 500);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
+  });
+
+  it("Buy with promotion", async function () {
+    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
+    await shop.setPromotionDiscountPercentage(20);
+
+    const thirdWeekMod = (Math.floor(Date.now() / 1000) / (7 * 24 * 3600)) % 3; // check which week in the promotion cycle we are
+    if (thirdWeekMod < 2) {
+      // Increase time to the start of the 3rd week of the promotion
+      await time.increaseTo(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600);
+    }
+
+    const quantityBought = 2;
+    // Hasn't approved brush yet
+    await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
+
+    // 20% discount on 500 is 400
+    await brush.mint(alice, 800);
+    await brush.connect(alice).approve(shop, 800);
+    await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought))
+      .to.emit(shop, "Buy")
+      .withArgs(alice, alice, EstforConstants.BRONZE_SHIELD, quantityBought, 400);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_SHIELD)).to.eq(quantityBought);
+  });
+
+  it("Buy on day not running promotion", async function () {
+    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
+    await shop.setPromotionDiscountPercentage(20);
+
+    const thirdWeekMod = (Math.floor(Date.now() / 1000) / (7 * 24 * 3600)) % 3; // check which week in the promotion cycle we are
+    if (thirdWeekMod == 2) {
+      // Increase time to week not running promotion
+      await time.increaseTo(Math.floor(Date.now() / 1000) + 7 * 24 * 3600);
+    }
+
+    const quantityBought = 2;
+    // Hasn't approved brush yet
+    await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought)).to.be.reverted;
+
+    // 20% discount on 500 is 400, but not running promotion so pay full price
     await brush.mint(alice, 1000);
     await brush.connect(alice).approve(shop, 1000);
     await expect(shop.connect(alice).buy(alice, EstforConstants.BRONZE_SHIELD, quantityBought))
@@ -290,6 +348,29 @@ describe("Shop", function () {
     )
       .to.emit(shop, "BuyBatch")
       .withArgs(alice, alice, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2], [500, 200]);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_SHIELD)).to.eq(1);
+    expect(await itemNFT.balanceOf(alice, EstforConstants.SAPPHIRE_AMULET)).to.eq(2);
+  });
+
+  it("Buy batch with promotion", async function () {
+    const {itemNFT, shop, brush, alice} = await loadFixture(deployContracts);
+    await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SHIELD, price: 500}]);
+    await shop.addBuyableItems([{tokenId: EstforConstants.SAPPHIRE_AMULET, price: 200}]);
+    await shop.setPromotionDiscountPercentage(50);
+
+    const thirdWeekMod = (Math.floor(Date.now() / 1000) / (7 * 24 * 3600)) % 3; // check which week in the promotion cycle we are
+    if (thirdWeekMod < 2) {
+      // Increase time to the start of the 3rd week of the promotion
+      await time.increaseTo(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600);
+    }
+
+    await brush.mint(alice, 450);
+    await brush.connect(alice).approve(shop, 450);
+    await expect(
+      shop.connect(alice).buyBatch(alice, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2])
+    )
+      .to.emit(shop, "BuyBatch")
+      .withArgs(alice, alice, [EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET], [1, 2], [250, 100]);
     expect(await itemNFT.balanceOf(alice, EstforConstants.BRONZE_SHIELD)).to.eq(1);
     expect(await itemNFT.balanceOf(alice, EstforConstants.SAPPHIRE_AMULET)).to.eq(2);
   });

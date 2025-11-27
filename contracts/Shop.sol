@@ -29,6 +29,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     uint256 brushDevPercentage
   );
   event SetSellingCutoffDuration(uint256 duration);
+  event SetPromotionDiscountPercentage(uint8 promotionDiscountPercentage);
 
   error LengthMismatch();
   error LengthEmpty();
@@ -46,6 +47,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   error AlreadySellable();
   error ItemNotSellable(uint256 tokenId);
   error PercentNotTotal100();
+  error PromotionDiscountOver99();
 
   struct ShopItem {
     uint16 tokenId;
@@ -73,6 +75,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   uint24 private _sellingCutoffDuration;
   mapping(uint256 itemId => uint256 price) private _shopItems;
   IActivityPoints private _activityPoints;
+  uint8 private _promotionDiscountPercentage;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -118,7 +121,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
 
   // Buy simple items and XP boosts using brush
   function buy(address to, uint16 tokenId, uint256 quantity) external {
-    uint256 price = _shopItems[tokenId];
+    uint256 price = _shopItems[tokenId];      
+    if (_isPromotionRunning()) {
+      price = (price * (100 - _promotionDiscountPercentage)) / 100;
+    }
     require(price != 0, ItemCannotBeBought());
     uint256 tokenCost = price * quantity;
     // Pay
@@ -127,7 +133,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     emit Buy(sender, to, tokenId, quantity, price);
     _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mint(to, tokenId, quantity);
-    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
+    // _activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
   }
 
   function buyBatch(address to, uint256[] calldata tokenIds, uint256[] calldata quantities) external {
@@ -137,6 +143,9 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     uint256[] memory prices = new uint256[](tokenIds.length);
     for (uint256 i = 0; i < tokenIds.length; ++i) {
       uint256 price = _shopItems[uint16(tokenIds[i])];
+      if (_isPromotionRunning()) {
+        price = (price * (100 - _promotionDiscountPercentage)) / 100;
+      }
       require(price != 0, ItemCannotBeBought());
       tokenCost += price * quantities[i];
       prices[i] = price;
@@ -148,7 +157,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     emit BuyBatch(sender, to, tokenIds, quantities, prices);
     _brush.transferFromBulk(sender, accounts, amounts);
     _itemNFT.mintBatch(to, tokenIds, quantities);
-    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
+    // _activityPoints.rewardBlueTickets(ActivityType.shop_evt_buy, sender, true, tokenCost / 1 ether);
   }
 
   function sell(uint16 tokenId, uint256 quantity, uint256 minExpectedBrush) external {
@@ -160,7 +169,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     emit Sell(sender, tokenId, quantity, price);
     _treasury.spend(sender, totalBrush);
     _itemNFT.burn(sender, tokenId, quantity);
-    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
+    // _activityPoints.rewardBlueTickets(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
   }
 
   function sellBatch(uint256[] calldata tokenIds, uint256[] calldata quantities, uint256 minExpectedBrush) external {
@@ -182,7 +191,7 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     emit SellBatch(sender, tokenIds, quantities, prices);
     _treasury.spend(sender, totalBrush);
     _itemNFT.burnBatch(sender, tokenIds, quantities);
-    _activityPoints.rewardBlueTickets(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
+    // _activityPoints.rewardBlueTickets(ActivityType.shop_evt_sell, sender, true, totalBrush / 1 ether);
   }
 
   // Does not burn!
@@ -269,6 +278,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     return (block.timestamp / 1 days) * 1 days >= checkpointTimestamp + 1 days;
   }
 
+  function _isPromotionRunning() private view returns (bool) {
+    return ((block.timestamp / 1 weeks) % 3) == 2 && ((block.timestamp / 1 days) % 7) < 4;
+  }
+
   function tokenInfos(uint16 tokenId) external view returns (TokenInfo memory tokenInfo) {
     return _tokenInfos[tokenId];
   }
@@ -277,11 +290,22 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     return _shopItems[tokenId];
   }
 
+  // Every third week since unix epoch, for 4 days, a promotion is running where items are cheaper (Thursday to Sunday)
+  function isPromotionRunning() external view returns (bool) {
+    return _isPromotionRunning();
+  }
+
   function addBuyableItems(ShopItem[] calldata buyableItems) external onlyOwner {
     for (uint256 i; i < buyableItems.length; ++i) {
       _addBuyableItem(buyableItems[i]);
     }
     emit AddShopItems(buyableItems);
+  }
+
+  function setPromotionDiscountPercentage(uint8 promotionDiscountPercentage) external onlyOwner {
+    require(promotionDiscountPercentage < 100, PromotionDiscountOver99());
+    _promotionDiscountPercentage = promotionDiscountPercentage;
+    emit SetPromotionDiscountPercentage(promotionDiscountPercentage);
   }
 
   function editItems(ShopItem[] calldata itemsToEdit) external onlyOwner {
