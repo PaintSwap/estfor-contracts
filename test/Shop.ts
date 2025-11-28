@@ -296,7 +296,7 @@ describe("Shop", function () {
     const thirdWeekMod = (Math.floor(Date.now() / 1000) / (7 * 24 * 3600)) % 3; // check which week in the promotion cycle we are
     if (thirdWeekMod < 2) {
       // Increase time to the start of the 3rd week of the promotion
-      await time.increaseTo(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600);
+      await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600));
     }
 
     const quantityBought = 2;
@@ -320,7 +320,7 @@ describe("Shop", function () {
     const thirdWeekMod = (Math.floor(Date.now() / 1000) / (7 * 24 * 3600)) % 3; // check which week in the promotion cycle we are
     if (thirdWeekMod == 2) {
       // Increase time to week not running promotion
-      await time.increaseTo(Math.floor(Date.now() / 1000) + 7 * 24 * 3600);
+      await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + 7 * 24 * 3600));
     }
 
     const quantityBought = 2;
@@ -361,7 +361,7 @@ describe("Shop", function () {
     const thirdWeekMod = (Math.floor(Date.now() / 1000) / (7 * 24 * 3600)) % 3; // check which week in the promotion cycle we are
     if (thirdWeekMod < 2) {
       // Increase time to the start of the 3rd week of the promotion
-      await time.increaseTo(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600);
+      await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600));
     }
 
     await brush.mint(alice, 450);
