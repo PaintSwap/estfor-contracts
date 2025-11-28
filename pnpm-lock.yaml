@@ -38,7 +38,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(c16e72a2e8a81f07d65e1c67f0700df8)
       "@nomicfoundation/hardhat-verify":
-        specifier: ^2.0.12
+        specifier: ^2.1.3
         version: 2.1.3(hardhat@2.27.0(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       "@nomicfoundation/ignition-core":
         specifier: ^0.15.7
@@ -6489,7 +6489,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios-debug-log@1.0.0(axios@1.13.2):
+  axios-debug-log@1.0.0(axios@1.13.2(debug@4.4.3)):
     dependencies:
       "@types/debug": 4.1.12
       axios: 1.13.2(debug@4.4.3)
@@ -8660,7 +8660,7 @@ snapshots:
       "@aduh95/viz.js": 3.7.0
       "@solidity-parser/parser": 0.20.2
       axios: 1.13.2(debug@4.4.3)
-      axios-debug-log: 1.0.0(axios@1.13.2)
+      axios-debug-log: 1.0.0(axios@1.13.2(debug@4.4.3))
       cli-color: 2.0.4
       commander: 12.1.0
       convert-svg-to-png: 0.6.4

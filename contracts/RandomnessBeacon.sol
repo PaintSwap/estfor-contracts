@@ -22,7 +22,6 @@ contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCo
 
   error RandomWordsCannotBeUpdatedYet();
   error CanOnlyRequestAfterTheNextCheckpoint(uint256 currentTime, uint256 checkpoint);
-  error RequestAlreadyFulfilled();
   error NoValidRandomWord();
   error LengthMismatch();
   error CallbackGasLimitTooHigh();
@@ -108,7 +107,6 @@ contract RandomnessBeacon is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCo
   }
 
   function _fulfillRandomWordsImpl(uint256 requestId, uint256[] memory randomWords) internal {
-    require(_randomWords[requestId] == 0, RequestAlreadyFulfilled());
     require(randomWords.length == NUM_WORDS, LengthMismatch());
 
     uint256 randomWord = randomWords[0];

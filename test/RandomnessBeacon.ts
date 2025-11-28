@@ -66,8 +66,8 @@ describe("RandomnessBeacon", function () {
       randomWord = await randomnessBeacon.getRandomWords(requestId);
       expect(randomWord).to.not.eq(0);
 
-      // Try fulfill same request should fail
-      await expect(mockVRF.fulfill(requestId, randomnessBeacon)).to.be.reverted;
+      // Try fulfill same request should not fail as it's handled by ps-vrf not our mock
+      await expect(mockVRF.fulfill(requestId, randomnessBeacon)).to.not.be.reverted;
 
       // Requesting new random word too soon
       await expect(randomnessBeacon.requestRandomWords()).to.be.reverted;

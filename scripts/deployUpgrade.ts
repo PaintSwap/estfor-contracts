@@ -15,6 +15,7 @@ import {
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
   QUESTS_ADDRESS,
+  WORLD_ACTIONS_ADDRESS,
   SHOP_ADDRESS,
   CLANS_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
@@ -195,7 +196,7 @@ async function main() {
   console.log(`bankFactory = "${(await bankFactory.getAddress()).toLowerCase()}"`);
 
   const WorldActions = await ethers.getContractFactory("WorldActions");
-  const worldActions = await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, WorldActions, {
+  const worldActions = await upgrades.upgradeProxy(WORLD_ACTIONS_ADDRESS, WorldActions, {
     kind: "uups",
     timeout
   });

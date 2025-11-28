@@ -122675,6 +122675,637 @@
           ]
         }
       }
+    },
+    "a59ca5ec884fa58ad0d86ab081133920c4b84e1bf886ecd2158b16775404a658": {
+      "address": "0x5db6FE8af5129704b9a5513b475E018fC6971952",
+      "txHash": "0xc1b69cf290570dfd47bbb518d9dd597128355c18bb388a4eb77149fd05ad67dc",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_tokenInfos",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_uint256,t_struct(TokenInfo)65463_storage)",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:64"
+          },
+          {
+            "label": "_brush",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IBrushToken)73002",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:66"
+          },
+          {
+            "label": "_treasury",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(Treasury)67229",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:67"
+          },
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(IItemNFT)72269",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:68"
+          },
+          {
+            "label": "_numUnsellableItems",
+            "offset": 20,
+            "slot": "3",
+            "type": "t_uint16",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:69"
+          },
+          {
+            "label": "_minItemQuantityBeforeSellsAllowed",
+            "offset": 22,
+            "slot": "3",
+            "type": "t_uint24",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:70"
+          },
+          {
+            "label": "_dev",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:71"
+          },
+          {
+            "label": "_brushBurntPercentage",
+            "offset": 20,
+            "slot": "4",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:72"
+          },
+          {
+            "label": "_brushTreasuryPercentage",
+            "offset": 21,
+            "slot": "4",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:73"
+          },
+          {
+            "label": "_brushDevPercentage",
+            "offset": 22,
+            "slot": "4",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:74"
+          },
+          {
+            "label": "_sellingCutoffDuration",
+            "offset": 23,
+            "slot": "4",
+            "type": "t_uint24",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:75"
+          },
+          {
+            "label": "_shopItems",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:76"
+          },
+          {
+            "label": "_activityPoints",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_contract(IActivityPoints)18177",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:77"
+          },
+          {
+            "label": "_promotionDiscountPercentage",
+            "offset": 20,
+            "slot": "6",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts/Shop.sol:78"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)1126_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)1066_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(IActivityPoints)18177": {
+            "label": "contract IActivityPoints",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)73002": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IItemNFT)72269": {
+            "label": "contract IItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Treasury)67229": {
+            "label": "contract Treasury",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_struct(TokenInfo)65463_storage)": {
+            "label": "mapping(uint256 => struct Shop.TokenInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(TokenInfo)65463_storage": {
+            "label": "struct Shop.TokenInfo",
+            "members": [
+              {
+                "label": "allocationRemaining",
+                "type": "t_uint80",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint80",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "checkpointTimestamp",
+                "type": "t_uint40",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "unsellable",
+                "type": "t_bool",
+                "offset": 25,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "f01bdef42f688b571afe49286e77a8e51290015ddb3093a437f78065b35dd98e": {
+      "address": "0x2a7dfDF7b0714EAfe3dC37a8f19d144B786B18AD",
+      "txHash": "0xfa48113ce1a4e929d45420ce14ca7225d7f5633cb22fbc341e27709e1c2cb3e4",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_lastRandomWordsUpdatedTime",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint40",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:35"
+          },
+          {
+            "label": "_startTime",
+            "offset": 5,
+            "slot": "0",
+            "type": "t_uint40",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:36"
+          },
+          {
+            "label": "_expectedGasLimitFulfill",
+            "offset": 10,
+            "slot": "0",
+            "type": "t_uint24",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:37"
+          },
+          {
+            "label": "_unused",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:38"
+          },
+          {
+            "label": "_wishingWell",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IOracleCB)39518",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:39"
+          },
+          {
+            "label": "_dailyRewardsScheduler",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(IOracleCB)39518",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:40"
+          },
+          {
+            "label": "_isRandomWordsInitialized",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:41"
+          },
+          {
+            "label": "_requestIds",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:43"
+          },
+          {
+            "label": "_randomWords",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:44"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)73_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)13_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IOracleCB)39518": {
+            "label": "contract IOracleCB",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "13d74cd4557c95aaeb9d702938b7e2bdfca46785372c43138f446b5cade6c663": {
+      "address": "0x7F90aAeed23BDE47970778496956080D9Ef2b547",
+      "txHash": "0x4bb6d76d2c6d66ccb19af4919da8f39f41c08be49b802fa4a29782e723ab4ada",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_lastRandomWordsUpdatedTime",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint40",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:34"
+          },
+          {
+            "label": "_startTime",
+            "offset": 5,
+            "slot": "0",
+            "type": "t_uint40",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:35"
+          },
+          {
+            "label": "_expectedGasLimitFulfill",
+            "offset": 10,
+            "slot": "0",
+            "type": "t_uint24",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:36"
+          },
+          {
+            "label": "_unused",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:37"
+          },
+          {
+            "label": "_wishingWell",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IOracleCB)39506",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:38"
+          },
+          {
+            "label": "_dailyRewardsScheduler",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(IOracleCB)39506",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:39"
+          },
+          {
+            "label": "_isRandomWordsInitialized",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:40"
+          },
+          {
+            "label": "_requestIds",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:42"
+          },
+          {
+            "label": "_randomWords",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "RandomnessBeacon",
+            "src": "contracts/RandomnessBeacon.sol:43"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)73_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)13_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IOracleCB)39506": {
+            "label": "contract IOracleCB",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }

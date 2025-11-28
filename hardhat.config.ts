@@ -145,16 +145,13 @@ const config: HardhatUserConfig = {
     slow: 1
   },
   etherscan: {
-    apiKey: {
-      fantom: process.env.ETHERSCAN_API_KEY as string,
-      sonic: process.env.SONICSCAN_API_KEY as string
-    },
+    apiKey: process.env.ETHERSCAN_API_KEY as string,
     customChains: [
       {
         network: "sonic",
         chainId: 146,
         urls: {
-          apiURL: "https://api.sonicscan.org/api",
+          apiURL: "https://api.etherscan.io/v2/api",
           browserURL: "https://sonicscan.org"
         }
       }
