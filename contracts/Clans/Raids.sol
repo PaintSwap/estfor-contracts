@@ -5,15 +5,15 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
+
 import {ItemNFT} from "../ItemNFT.sol";
-import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {ICombatants} from "../interfaces/ICombatants.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IWorldActions} from "../interfaces/IWorldActions.sol";
 import {RandomnessBeacon} from "../RandomnessBeacon.sol";
-import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
@@ -29,7 +29,7 @@ import "../globals/all.sol";
 // Colonel can decide to fight in raids
 // Spawning needs calling manually (every 8 hours or w.e it is set to)
 // 1-3 Random spawn with different stats, you can pick one to kill. Loot is given based on total rolls of the monster?
-contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberLeftCB {
+contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable, ICombatants, IClanMemberLeftCB {
   using SkillLibrary for uint8;
   using SkillLibrary for Skill;
 
@@ -140,10 +140,10 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
   IPlayers private _players;
   IClans private _clans;
   bool private _preventRaids;
-  VRFRequestInfo _vrfRequestInfo;
-  address private _oracle;
+  address private _unused; // Unused, previously was vrfRequestInfo
+  address private unused1; // Unused, previously was oracle
   ItemNFT private _itemNFT;
-  ISamWitchVRF private _samWitchVRF;
+  address private _unused2; // Unused, previously was samwitchVRF
   uint24 private _expectedGasLimitFulfill;
   uint16 private _maxBaseRaidId;
   address private _combatantsHelper;
@@ -159,7 +159,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
   mapping(uint256 clanId => ClanInfo clanInfo) private _clanInfos;
   mapping(uint256 baseRaidId => BaseRaid baseRaid) private _baseRaids;
   mapping(uint256 raidId => RaidInfo) private _raidInfos;
-  mapping(bytes32 requestId => PendingRaidAttack pendingRaidAttack) private _requestIdToPendingRaidAttack;
+  mapping(uint256 requestId => PendingRaidAttack pendingRaidAttack) private _requestIdToPendingRaidAttack;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -173,12 +173,6 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
 
   modifier onlyCombatantsHelper() {
     require(_msgSender() == _combatantsHelper, OnlyCombatantsHelper());
-    _;
-  }
-
-  /// @dev Reverts if the caller is not the SamWitchVRF contract.
-  modifier onlySamWitchVRF() {
-    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
     _;
   }
 
@@ -196,9 +190,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     IPlayers players,
     ItemNFT itemNFT,
     IClans clans,
-    address oracle,
-    ISamWitchVRF samWitchVRF,
-    VRFRequestInfo vrfRequestInfo,
+    address paintswapVRFConsumer,
     uint24 spawnRaidCooldown,
     IBrushToken brush,
     IWorldActions worldActions,
@@ -209,15 +201,13 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
 
     _players = players;
     _itemNFT = itemNFT;
     _clans = clans;
-    _oracle = oracle;
     _brush = brush;
-    _samWitchVRF = samWitchVRF;
-    _vrfRequestInfo = vrfRequestInfo;
-    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 14 days;
     _worldActions = worldActions;
     _randomnessBeacon = randomnessBeacon;
     _nextRaidId = 1;
@@ -227,14 +217,24 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     setCombatActions(combatActionIds);
   }
 
-  function requestSpawnRaid(uint64 playerId) external isOwnerOfPlayerAndActive(playerId) {
+  function initializeV3(address paintswapVRFConsumer, bool isBeta) external reinitializer(3) {
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
+    _combatantChangeCooldown = isBeta ? 5 minutes : 14 days;
+  }
+
+  function requestSpawnRaid(uint64 playerId) external payable isOwnerOfPlayerAndActive(playerId) {
     // Spawn a random monster
     // Must be after the last raid is finished
     require(_raidSpawnRequestId == 0, PreviousRaidNotSpawnedYet());
     require(_currentRaidExpireTime <= block.timestamp, RaidInProgress());
     require(!_preventRaids, RaidsPrevented());
 
-    _raidSpawnRequestId = uint256(_samWitchVRF.requestRandomWords(NUM_WORDS, CALLBACK_GAS_LIMIT_SPAWN));
+    _raidSpawnRequestId = _requestRandomnessPayInNative(
+      CALLBACK_GAS_LIMIT_SPAWN,
+      NUM_WORDS,
+      msg.sender,
+      _calculateRequestPriceNative(CALLBACK_GAS_LIMIT_SPAWN)
+    );
     _currentRaidExpireTime = uint40(block.timestamp + _spawnRaidCooldown);
 
     emit RequestSpawnRaid(playerId, _raidSpawnRequestId);
@@ -245,7 +245,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     uint40 clanId,
     uint40 raidId,
     uint16 regenerateId
-  ) external isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.COLONEL) {
+  ) external payable isOwnerOfPlayerAndActive(playerId) isMinimumRank(clanId, playerId, ClanRank.COLONEL) {
     require(!_preventRaids, RaidsPrevented());
     uint256 playerLength = _clanInfos[clanId].playerIds.length;
     require(playerLength != 0, NoCombatants());
@@ -261,14 +261,15 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     uint40 currentRaid = _nextRaidId;
     require(raidId < currentRaid && raidId >= currentRaid - NUM_WORDS, RaidDoesNotExist());
 
-    bytes32 requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, _expectedGasLimitFulfill);
+    uint256 requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, msg.value);
+
     _requestIdToPendingRaidAttack[requestId].raidId = raidId;
     _requestIdToPendingRaidAttack[requestId].clanId = clanId;
     _requestIdToPendingRaidAttack[requestId].regenerateId = regenerateId;
-    emit RequestFightRaid(playerId, clanId, raidId, uint256(requestId));
+    emit RequestFightRaid(playerId, clanId, raidId, requestId);
   }
 
-  function _spawnRaid(bytes32 requestId, uint256[] calldata randomWords) private {
+  function _spawnRaid(uint256 requestId, uint256[] calldata randomWords) private {
     uint40 currentRaidId = _nextRaidId;
 
     // Spawn A few raid monsters
@@ -339,10 +340,10 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     _nextRaidId = uint40(currentRaidId + NUM_WORDS);
 
     delete _raidSpawnRequestId;
-    emit NewRaidsSpawned(currentRaidId, raidInfos, uint256(requestId)); // These raids are spawned for everyone
+    emit NewRaidsSpawned(currentRaidId, raidInfos, requestId); // These raids are spawned for everyone
   }
 
-  function _fightRaid(bytes32 requestId, uint256[] calldata randomWords) private {
+  function _fightRaid(uint256 requestId, uint256[] calldata randomWords) private {
     // Actually doing the raid
     uint256 clanId = _requestIdToPendingRaidAttack[requestId].clanId;
     require(clanId != 0, RequestDoesNotExist());
@@ -572,10 +573,10 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
   }
 
   /// @notice Called by the SamWitchVRF contract to fulfill the request
-  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+  function _fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
     require(randomWords.length == NUM_WORDS, LengthMismatch());
 
-    if (_raidSpawnRequestId == uint256(requestId)) {
+    if (_raidSpawnRequestId == requestId) {
       _spawnRaid(requestId, randomWords);
     } else {
       _fightRaid(requestId, randomWords);
@@ -684,6 +685,10 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     return _raidInfos[raidId];
   }
 
+  function getAttackCost() public view returns (uint256) {
+    return _calculateRequestPriceNative(_expectedGasLimitFulfill);
+  }
+
   function setExpectedGasLimitFulfill(uint24 expectedGasLimitFulfill) public onlyOwner {
     _expectedGasLimitFulfill = expectedGasLimitFulfill;
     emit SetExpectedGasLimitFulfill(expectedGasLimitFulfill);
@@ -736,6 +741,8 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, ICombatants, IClanMemberL
     _combatantsHelper = combatantsHelper;
     _bankFactory = bankFactory;
   }
+
+  receive() external payable {}
 
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

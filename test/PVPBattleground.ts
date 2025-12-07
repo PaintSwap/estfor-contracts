@@ -487,13 +487,13 @@ describe("PVPBattleground", function () {
     });
 
     it("Not paying the request cost", async function () {
-      const {playerId, defendingPlayerId, alice, pvpBattleground} = await loadFixture(pvpBattlegroundFixture);
+      const {playerId, defendingPlayerId, alice, pvpBattleground, mockVRF} = await loadFixture(pvpBattlegroundFixture);
 
       await expect(
         pvpBattleground
           .connect(alice)
           .attackPlayer(playerId, defendingPlayerId, {value: (await pvpBattleground.getAttackCost()) - 1n})
-      ).to.be.revertedWithCustomError(pvpBattleground, "InsufficientCost");
+      ).to.be.revertedWithCustomError(mockVRF, "InsufficientGasPayment");
     });
   });
 });

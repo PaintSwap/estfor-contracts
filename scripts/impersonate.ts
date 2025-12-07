@@ -6,13 +6,11 @@ import {
   INSTANT_VRF_ACTIONS_ADDRESS,
   ITEM_NFT_ADDRESS,
   LOCKED_BANK_VAULTS_ADDRESS,
-  ORACLE_ADDRESS,
   PET_NFT_ADDRESS,
   PLAYERS_ADDRESS,
   PLAYER_NFT_ADDRESS,
   PROMOTIONS_ADDRESS,
   QUESTS_ADDRESS,
-  SAMWITCH_VRF_ADDRESS,
   SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
   RANDOMNESS_BEACON_ADDRESS,
@@ -21,7 +19,8 @@ import {
   BANK_FACTORY_ADDRESS,
   BANK_ADDRESS,
   BANK_REGISTRY_ADDRESS,
-  ACTIVITY_POINTS_ADDRESS
+  ACTIVITY_POINTS_ADDRESS,
+  VRF_ADDRESS
 } from "./contractAddresses";
 import {deployPlayerImplementations} from "./utils";
 import {
@@ -40,6 +39,7 @@ import {
   PlayersLibrary,
   Promotions,
   Quests,
+  RandomnessBeacon,
   Shop,
   Territories
 } from "../typechain-types";
@@ -103,11 +103,11 @@ async function main() {
     kind: "uups"
   })) as unknown as Shop;
 
-  const RandomnessBeacon = (await ethers.getContractFactory("RandomnessBeacon")).connect(owner);
-  const randomnessBeacon = await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const randomnessBeacon = (await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
     kind: "uups",
     unsafeAllow: ["external-library-linking"]
-  });
+  })) as unknown as RandomnessBeacon;
 
   // ItemNFT
   const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary");
@@ -321,23 +321,16 @@ async function main() {
 
   // await clans.connect(player).requestToJoin(399, playerId, 1630);
 
-  /*
-  const samwitchVRFSigner = await makeSigner(SAMWITCH_VRF_ADDRESS);
-  await lockedBankVaults
-    .connect(samwitchVRFSigner)
-    .fulfillRandomWords(
-      ethers.toBeHex("39712379125533986179720319410558818056106266756514790296443804351605322428855", 32),
-      [
-        70105048076113282008133641085723903737753434253503561668170780746877883130261n,
-        63098108040309138731836084003105174696586083463113227474784717925410598714333n,
-        16556170359773853061513299299388263553065420557188096975375792131641625497573n,
-        11570073977134291425500440924741141211806187564366876620498692390090240940426n,
-        87358145337556411378978300970170140022717365209406896374297951790021232888104n,
-        40416084462117594155105411727693597721034682028067452584646917679508536936017n,
-        69405315483207327306775117602768278650087397838457318791572136248456870617354n
-      ],
-      {gasLimit: 3_000_000}
-    ); */
+  console.log(await randomnessBeacon.getLastRequestId());
+
+  const vrfSigner = await makeSigner(VRF_ADDRESS);
+  await randomnessBeacon
+    .connect(vrfSigner)
+    .rawFulfillRandomWords(
+      ethers.toBeHex("43434258590458639823976159202374154389517098331641005363191644084619328966090", 32),
+      [101037259411112802197602236726407676602290365580818998057371730549558401820882n],
+      {gasLimit: 600_000}
+    );
 }
 
 main().catch((error) => {

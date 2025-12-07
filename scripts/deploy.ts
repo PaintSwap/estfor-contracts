@@ -18,7 +18,6 @@ import {
   Shop,
   RandomnessBeacon,
   InstantVRFActions,
-  VRFRequestInfo,
   GenericInstantVRFActionStrategy,
   PetNFT,
   EggInstantVRFActionStrategy,
@@ -81,10 +80,9 @@ import {
 import {
   BRUSH_ADDRESS,
   DEV_ADDRESS,
-  ORACLE_ADDRESS,
   PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS,
   ROUTER_ADDRESS,
-  SAMWITCH_VRF_ADDRESS,
+  VRF_ADDRESS,
   WFTM_ADDRESS
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
@@ -112,7 +110,6 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   let brush: MockBrushToken;
   let wftm: WrappedNative;
-  let oracleAddress: string;
   let vrf: MockVRF;
   let router: SolidlyExtendedRouter | MockRouter;
   let paintSwapMarketplaceWhitelist: MockPaintSwapMarketplaceWhitelist;
@@ -127,7 +124,6 @@ async function main() {
       console.log("Minted brush");
       wftm = await ethers.deployContract("WrappedNative");
       console.log("Minted WFTM");
-      oracleAddress = owner.address;
       vrf = await ethers.deployContract("MockVRF");
       console.log("Minted MockVRF");
       router = await ethers.deployContract("MockRouter");
@@ -154,8 +150,7 @@ async function main() {
 
       wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
 
-      oracleAddress = ORACLE_ADDRESS;
-      vrf = await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS);
+      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS);
       console.log("attached wftm and vrf");
       router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS);
       console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
@@ -166,8 +161,7 @@ async function main() {
     } else if (network.chainId == 146n) {
       brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
       wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
-      oracleAddress = ORACLE_ADDRESS;
-      vrf = await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS);
+      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS);
       console.log("attached wftm and vrf");
       router = await ethers.getContractAt("SolidlyExtendedRouter", ROUTER_ADDRESS);
       paintSwapMarketplaceWhitelist = await ethers.getContractAt(
@@ -179,8 +173,7 @@ async function main() {
       // Fantom mainnet
       brush = await ethers.getContractAt("MockBrushToken", "0x85dec8c4B2680793661bCA91a8F129607571863d");
       wftm = await ethers.getContractAt("WrappedNative", "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
-      oracleAddress = ORACLE_ADDRESS;
-      vrf = await ethers.getContractAt("MockVRF", SAMWITCH_VRF_ADDRESS);
+      vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS);
       router = await ethers.getContractAt("MockRouter", "0x2aa07920e4ecb4ea8c801d9dfece63875623b285");
       paintSwapMarketplaceWhitelist = await ethers.getContractAt(
         "MockPaintSwapMarketplaceWhitelist",
@@ -194,8 +187,7 @@ async function main() {
 
   console.log(`brush = "${(await brush.getAddress()).toLowerCase()}"`);
   console.log(`wftm = "${(await wftm.getAddress()).toLowerCase()}"`);
-  console.log(`oracle = "${oracleAddress.toLowerCase()}"`);
-  console.log(`samWitchVRF = "${(await vrf.getAddress()).toLowerCase()}"`);
+  console.log(`vrf = "${(await vrf.getAddress()).toLowerCase()}"`);
   console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
   console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
 
@@ -272,6 +264,13 @@ async function main() {
   await randomnessBeacon.waitForDeployment();
 
   console.log(`randomnessBeacon = "${(await randomnessBeacon.getAddress()).toLowerCase()}"`);
+
+  tx = await owner.sendTransaction({
+    to: await randomnessBeacon.getAddress(),
+    value: ethers.parseEther("10")
+  });
+  await tx.wait();
+  console.log("Sent 10 S to randomness beacon", tx.hash);
 
   const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
   const dailyRewardsScheduler = (await upgrades.deployProxy(
@@ -633,17 +632,6 @@ async function main() {
   await instantActions.waitForDeployment();
   console.log(`instantActions = "${(await instantActions.getAddress()).toLowerCase()}"`);
 
-  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
-  const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
-    kind: "uups",
-    timeout: 50000,
-    txOverrides: {
-      ...(!isDevNetwork(network) ? {gasLimit: 1_500_000} : {}) // gas limit issue needed because of https://github.com/NomicFoundation/hardhat/issues/5855
-    }
-  })) as unknown as VRFRequestInfo;
-  await vrfRequestInfo.waitForDeployment();
-  console.log(`vrfRequestInfo = "${(await vrfRequestInfo.getAddress()).toLowerCase()}"`);
-
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
     InstantVRFActions,
@@ -652,9 +640,7 @@ async function main() {
       await itemNFT.getAddress(),
       await petNFT.getAddress(),
       await quests.getAddress(),
-      oracleAddress,
       await vrf.getAddress(),
-      await vrfRequestInfo.getAddress(),
       maxActionAmount,
       ACTIVITY_POINTS_ADDRESS
     ],
@@ -706,9 +692,7 @@ async function main() {
       await playerNFT.getAddress(),
       await brush.getAddress(),
       await itemNFT.getAddress(),
-      oracleAddress,
       await vrf.getAddress(),
-      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       pvpAttackingCooldown,
       await adminAccess.getAddress(),
@@ -765,9 +749,7 @@ async function main() {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await clans.getAddress(),
-      oracleAddress,
       await vrf.getAddress(),
-      await vrfRequestInfo.getAddress(),
       spawnRaidCooldown,
       await brush.getAddress(),
       await worldActions.getAddress(),
@@ -784,6 +766,13 @@ async function main() {
   )) as unknown as Raids;
   await raids.waitForDeployment();
   console.log(`raids = "${(await raids.getAddress()).toLowerCase()}"`);
+
+  tx = await owner.sendTransaction({
+    to: await raids.getAddress(),
+    value: ethers.parseEther("10")
+  });
+  await tx.wait();
+  console.log("Sent 10 S to raids", tx.hash);
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
   console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
@@ -811,9 +800,7 @@ async function main() {
       await itemNFT.getAddress(),
       await treasury.getAddress(),
       DEV_ADDRESS,
-      oracleAddress,
       await vrf.getAddress(),
-      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
@@ -844,9 +831,7 @@ async function main() {
       await brush.getAddress(),
       await lockedBankVaults.getAddress(),
       await itemNFT.getAddress(),
-      oracleAddress,
       await vrf.getAddress(),
-      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       maxClanCombatantsTerritories,
       attackingCooldownTerritories,
@@ -995,7 +980,6 @@ async function main() {
         await clanBattleLibrary.getAddress(),
         await territoryTreasury.getAddress(),
         await combatantsHelper.getAddress(),
-        await vrfRequestInfo.getAddress(),
         await bank.getAddress(),
         await upgrades.beacon.getImplementationAddress(await bank.getAddress()),
         await bankRegistry.getAddress(),

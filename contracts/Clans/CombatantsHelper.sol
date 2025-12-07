@@ -86,7 +86,11 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     _adminAccess = AdminAccess(adminAccess);
     _isBeta = isBeta;
 
-    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 14 days;
+  }
+
+  function initializeV3() external reinitializer(3) {
+    _combatantChangeCooldown = _isBeta ? 5 minutes : 14 days;
   }
 
   function assignCombatants(

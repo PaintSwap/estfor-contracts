@@ -4,12 +4,10 @@ pragma solidity ^0.8.28;
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 import {IInstantVRFActionStrategy} from "./InstantVRFActionStrategies/interfaces/IInstantVRFActionStrategy.sol";
 import {ItemNFT} from "./ItemNFT.sol";
 import {PetNFT} from "./PetNFT.sol";
 import {Players} from "./Players/Players.sol";
-import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 import {Quests} from "./Quests.sol";
 
 import {Skill, EquipPosition, IS_FULL_MODE_BIT, IS_AVAILABLE_BIT} from "./globals/players.sol";
@@ -18,7 +16,14 @@ import {NONE} from "./globals/items.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
-contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
+import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
+
+contract InstantVRFActions is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  IActivityPointsCaller,
+  PaintswapVRFConsumerUpgradeable
+{
   event AddInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
   event EditInstantVRFActions(InstantVRFActionInput[] instantVRFActionInputs);
   event RemoveInstantVRFActions(uint16[] actionIds);
@@ -54,13 +59,11 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
   error InputItemNoDuplicates();
   error TooManyInputItems();
   error AlreadyProcessing();
-  error CallerNotSamWitchVRF();
   error LengthMismatch();
   error NotOwnerOfPlayerAndActive();
   error PlayerNotUpgraded();
   error TooManyActionAmounts();
   error RequestDoesNotExist();
-  error InsufficientCost();
   error TransferFailed();
   error NotDoingAnyActions();
   error InvalidStrategy();
@@ -95,28 +98,22 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
   ItemNFT private _itemNFT;
   Players private _players;
   Quests private _quests;
-  VRFRequestInfo private _vrfRequestInfo;
+  address private _unused; // Unused, previously was vrfRequestInfo
   uint64 private _gasCostPerUnit;
   uint8 private _maxActionAmount;
 
-  address private _oracle;
-  ISamWitchVRF private _samWitchVRF;
+  address private _unused1; // Unused, previously was oracle
+  address private _unused2; // Unused, previously was samwitchVRF
   PetNFT private _petNFT;
 
   mapping(uint256 playerId => PlayerActionInfo) private _playerActionInfos;
   mapping(uint256 actionId => InstantVRFAction action) private _actions;
-  mapping(bytes32 requestId => Player player) private _requestIdToPlayer;
+  mapping(uint256 requestId => Player player) private _requestIdToPlayer;
   mapping(InstantVRFActionType actionType => IInstantVRFActionStrategy strategy) private _strategies;
   IActivityPoints private _activityPoints;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
-    _;
-  }
-
-  /// @dev Reverts if the caller is not the SamWitchVRF contract.
-  modifier onlySamWitchVRF() {
-    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
     _;
   }
 
@@ -130,22 +127,18 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
     ItemNFT itemNFT,
     PetNFT petNFT,
     Quests quests,
-    address oracle,
-    ISamWitchVRF samWitchVRF,
-    VRFRequestInfo vrfRequestInfo,
+    address paintswapVRFConsumer,
     uint8 maxActionAmount,
     IActivityPoints activityPoints
   ) external initializer {
     __UUPSUpgradeable_init();
     __Ownable_init(_msgSender());
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
 
     _players = players;
     _itemNFT = itemNFT;
     _petNFT = petNFT;
     _quests = quests;
-    _oracle = oracle;
-    _samWitchVRF = samWitchVRF;
-    _vrfRequestInfo = vrfRequestInfo;
     setGasCostPerUnit(15_000);
     setMaxActionAmount(maxActionAmount);
     _activityPoints = activityPoints;
@@ -154,6 +147,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
   // TODO: remove in prod
   function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
+  }
+
+  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
   }
 
   function doInstantVRFActions(
@@ -188,15 +185,10 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
 
     // Mainly to keep response gas within block gas limits
     require(totalAmount <= _maxActionAmount, TooManyActionAmounts());
-    // // Check they are paying enough
-    require(msg.value >= requestCost(totalAmount), InsufficientCost());
-
-    (bool success, ) = _oracle.call{value: msg.value}("");
-    require(success, TransferFailed());
 
     address msgSender = _msgSender();
 
-    bytes32 requestId = _requestRandomWords(numRandomWords, totalAmount);
+    uint256 requestId = _requestRandomWords(numRandomWords, totalAmount);
     _requestIdToPlayer[requestId] = Player({owner: msgSender, playerId: uint64(playerId)});
 
     // Get the tokenIds to burn
@@ -248,7 +240,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
     );
   }
 
-  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+  function _fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
     uint256 playerId = _requestIdToPlayer[requestId].playerId;
     address from = _requestIdToPlayer[requestId].owner; // Might not be actual owner due to async nature so don't rely on that
     require(from != address(0), RequestDoesNotExist());
@@ -257,8 +249,6 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
       playerId,
       randomWords
     );
-
-    _vrfRequestInfo.updateAverageGasPrice();
 
     delete _playerActionInfos[playerId]; // Allows another request to be made
     delete _requestIdToPlayer[requestId];
@@ -282,7 +272,7 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
       }
     }
 
-    emit CompletedInstantVRFActions(from, playerId, uint256(requestId), itemTokenIds, itemAmounts, petTokenIds);
+    emit CompletedInstantVRFActions(from, playerId, requestId, itemTokenIds, itemAmounts, petTokenIds);
   }
 
   function getAction(uint16 actionId) external view returns (InstantVRFAction memory) {
@@ -359,16 +349,23 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
     _strategies[instantVRFActionInput.actionType].setAction(instantVRFActionInput);
   }
 
-  function _requestRandomWords(uint256 numRandomWords, uint256 numActions) private returns (bytes32 requestId) {
-    uint256 callbackGasLimit = CALLBACK_GAS_LIMIT_PER_ACTION * numActions;
+  function _requestRandomWords(uint256 numRandomWords, uint256 numActions) private returns (uint256 requestId) {
+    requestId = _requestRandomnessPayInNative(
+      callbackGasLimitForRequests(numActions),
+      numRandomWords,
+      msg.sender,
+      msg.value
+    );
+  }
+
+  function callbackGasLimitForRequests(uint256 numActions) private pure returns (uint256 callbackGasLimit) {
+    callbackGasLimit = CALLBACK_GAS_LIMIT_PER_ACTION * numActions;
     // Have both a minimum and maximum gas limit
     if (callbackGasLimit < 200_000) {
       callbackGasLimit = 200_000;
     } else if (callbackGasLimit > 6_500_000) {
       callbackGasLimit = 6_500_000;
     }
-
-    requestId = _samWitchVRF.requestRandomWords(numRandomWords, callbackGasLimit);
   }
 
   function _isActionFullMode(uint256 actionId) private view returns (bool) {
@@ -429,9 +426,8 @@ contract InstantVRFActions is UUPSUpgradeable, OwnableUpgradeable, IActivityPoin
     require(address(_strategies[actionInput.actionType]) != address(0), InvalidStrategy());
   }
 
-  function requestCost(uint256 actionAmounts) public view returns (uint256) {
-    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
-    return baseRequestCost + (movingAverageGasPrice * actionAmounts * _gasCostPerUnit);
+  function requestCost(uint256 numActions) public view returns (uint256) {
+    return _calculateRequestPriceNative(callbackGasLimitForRequests(numActions));
   }
 
   function addStrategies(

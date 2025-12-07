@@ -301,7 +301,7 @@ describe("Instant VRF actions", function () {
     });
 
     it("Not paying the request cost", async function () {
-      const {playerId, instantVRFActions, itemNFT, alice} = await loadFixture(forgingFixture);
+      const {playerId, instantVRFActions, itemNFT, alice, mockVRF} = await loadFixture(forgingFixture);
 
       const instantVRFActionInput: InstantVRFActionInput = {
         ...defaultInstantVRFActionInput,
@@ -319,7 +319,7 @@ describe("Instant VRF actions", function () {
           .doInstantVRFActions(playerId, [instantVRFActionInput.actionId], [actionAmount], {
             value: (await instantVRFActions.requestCost(actionAmount)) - 1n
           })
-      ).to.be.revertedWithCustomError(instantVRFActions, "InsufficientCost");
+      ).to.be.revertedWithCustomError(mockVRF, "InsufficientGasPayment");
     });
 
     it("If action is set to full mode only, then it requires an upgraded hero", async function () {

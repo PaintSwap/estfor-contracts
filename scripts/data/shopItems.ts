@@ -9,159 +9,207 @@ export type ShopItem = {
 export const allShopItems: ShopItem[] = [
   {
     tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-    price: parseEther("1")
+    price: parseEther("1") * 2n
   },
   {
     tokenId: EstforConstants.BRONZE_SWORD,
-    price: parseEther("10")
+    price: parseEther("10") * 2n
   },
   {
     tokenId: EstforConstants.BASIC_BOW,
-    price: parseEther("10")
+    price: parseEther("10") * 2n
   },
   {
     tokenId: EstforConstants.TOTEM_STAFF,
-    price: parseEther("10")
+    price: parseEther("10") * 2n
   },
   {
     tokenId: EstforConstants.NET_STICK,
-    price: parseEther("10")
+    price: parseEther("10") * 2n
   },
   {
     tokenId: EstforConstants.BRONZE_PICKAXE,
-    price: parseEther("10")
+    price: parseEther("10") * 2n
   },
   {
     tokenId: EstforConstants.BRONZE_AXE,
-    price: parseEther("10")
+    price: parseEther("10") * 2n
   },
   {
     tokenId: EstforConstants.MEDIUM_NET,
-    price: parseEther("40")
+    price: parseEther("40") * 2n
   },
   {
     tokenId: EstforConstants.WOOD_FISHING_ROD,
-    price: parseEther("80")
+    price: parseEther("80") * 2n
   },
   {
     tokenId: EstforConstants.CAGE,
-    price: parseEther("120")
+    price: parseEther("120") * 2n
   },
   {
     tokenId: EstforConstants.LARGE_NET,
-    price: parseEther("160")
+    price: parseEther("160") * 2n
   },
   {
     tokenId: EstforConstants.TITANIUM_FISHING_ROD,
-    price: parseEther("200")
+    price: parseEther("200") * 2n
   },
   {
     tokenId: EstforConstants.MAGIC_NET,
-    price: parseEther("240")
+    price: parseEther("240") * 2n
   },
   {
     tokenId: EstforConstants.HARPOON,
-    price: parseEther("280")
+    price: parseEther("280") * 2n
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST,
-    price: parseEther("15")
+    price: parseEther("15") * 2n
   },
   {
     tokenId: EstforConstants.XP_BOOST,
-    price: parseEther("8")
-  },
-  {
-    tokenId: EstforConstants.GATHERING_BOOST,
-    price: parseEther("8")
-  },
-  {
-    tokenId: EstforConstants.SKILL_BOOST,
     price: parseEther("15")
   },
   {
+    tokenId: EstforConstants.GATHERING_BOOST,
+    price: parseEther("15")
+  },
+  {
+    tokenId: EstforConstants.SKILL_BOOST,
+    price: parseEther("15") * 2n
+  },
+  {
     tokenId: EstforConstants.FLUX,
-    price: parseEther("10")
+    price: parseEther("10") * 2n
   },
   {
     tokenId: EstforConstants.COOKED_MINNUS,
-    price: parseEther("0.1")
+    price: parseEther("0.1") * 2n
   },
   {
     tokenId: EstforConstants.PROTECTION_SHIELD,
-    price: parseEther("300")
+    price: parseEther("300") * 2n
   },
   {
     tokenId: EstforConstants.DEVILISH_FINGERS,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.MIRROR_SHIELD,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.SHARPENED_CLAW,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_HARVEST_001,
-    price: parseEther("50")
+    price: parseEther("50") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_HARVEST_002,
-    price: parseEther("100")
+    price: parseEther("100") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_HARVEST_003,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_HARVEST_004,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_HARVEST_005,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_HARVEST_006,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_001_V1,
-    price: parseEther("50")
+    price: parseEther("50") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_002_V2,
-    price: parseEther("100")
+    price: parseEther("100") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_003_V3,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_004_V4,
-    price: parseEther("150")
+    price: parseEther("150") * 2n
   },
   {
     tokenId: EstforConstants.POTION_005_SMALL_MELEE,
-    price: parseEther("3")
+    price: parseEther("3") * 2n
   },
   {
     tokenId: EstforConstants.POTION_007_SMALL_RANGED,
-    price: parseEther("3")
+    price: parseEther("3") * 2n
   },
   {
     tokenId: EstforConstants.POTION_009_SMALL_MAGIC,
-    price: parseEther("3")
+    price: parseEther("3") * 2n
   },
   {
     tokenId: EstforConstants.POTION_011_SMALL_DEFENCE,
-    price: parseEther("3")
+    price: parseEther("3") * 2n
   },
   {
     tokenId: EstforConstants.POTION_013_SMALL_HEALTH,
-    price: parseEther("3")
+    price: parseEther("3") * 2n
+  },
+  {
+    tokenId: EstforConstants.XP_BOOST_M,
+    price: parseEther("25")
+  },
+  {
+    tokenId: EstforConstants.XP_BOOST_L,
+    price: parseEther("40")
+  },
+  {
+    tokenId: EstforConstants.XP_BOOST_XL,
+    price: parseEther("65")
+  },
+  {
+    tokenId: EstforConstants.COMBAT_BOOST_M,
+    price: parseEther("45")
+  },
+  {
+    tokenId: EstforConstants.COMBAT_BOOST_L,
+    price: parseEther("75")
+  },
+  {
+    tokenId: EstforConstants.COMBAT_BOOST_XL,
+    price: parseEther("120")
+  },
+  {
+    tokenId: EstforConstants.SKILL_BOOST_M,
+    price: parseEther("45")
+  },
+  {
+    tokenId: EstforConstants.SKILL_BOOST_L,
+    price: parseEther("75")
+  },
+  {
+    tokenId: EstforConstants.SKILL_BOOST_XL,
+    price: parseEther("120")
+  },
+  {
+    tokenId: EstforConstants.GATHERING_BOOST_M,
+    price: parseEther("25")
+  },
+  {
+    tokenId: EstforConstants.GATHERING_BOOST_L,
+    price: parseEther("40")
+  },
+  {
+    tokenId: EstforConstants.GATHERING_BOOST_XL,
+    price: parseEther("65")
   }
 ];
 

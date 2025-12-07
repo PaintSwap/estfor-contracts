@@ -42,11 +42,6 @@
   },
   {
     "inputs": [],
-    "name": "CallerNotSamWitchVRF",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "DependentQuestNotCompleted",
     "type": "error"
   },
@@ -93,11 +88,6 @@
   },
   {
     "inputs": [],
-    "name": "InsufficientCost",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "InvalidInitialization",
     "type": "error"
   },
@@ -129,6 +119,22 @@
   {
     "inputs": [],
     "name": "NotOwnerOfPlayerAndActive",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "coordinator",
+        "type": "address"
+      }
+    ],
+    "name": "OnlyVRFCoordinator",
     "type": "error"
   },
   {
@@ -197,6 +203,11 @@
       }
     ],
     "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
     "type": "error"
   },
   {
@@ -505,6 +516,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "coordinator",
+        "type": "address"
+      }
+    ],
+    "name": "VRFCoordinatorSet",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "UPGRADE_INTERFACE_VERSION",
     "outputs": [
@@ -671,24 +695,6 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "requestId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "randomWords",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "fulfillRandomWords",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint16",
         "name": "actionId",
         "type": "uint16"
@@ -795,17 +801,7 @@
       },
       {
         "internalType": "address",
-        "name": "oracle",
-        "type": "address"
-      },
-      {
-        "internalType": "contract ISamWitchVRF",
-        "name": "samWitchVRF",
-        "type": "address"
-      },
-      {
-        "internalType": "contract VRFRequestInfo",
-        "name": "vrfRequestInfo",
+        "name": "paintswapVRFConsumer",
         "type": "address"
       },
       {
@@ -820,6 +816,19 @@
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "paintswapVRFConsumer",
+        "type": "address"
+      }
+    ],
+    "name": "initializeV3",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -853,6 +862,24 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "randomWords",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "rawFulfillRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint16[]",
         "name": "instantVRFActionIds",
         "type": "uint16[]"
@@ -874,7 +901,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "actionAmounts",
+        "name": "numActions",
         "type": "uint256"
       }
     ],
