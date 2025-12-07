@@ -123306,6 +123306,279 @@
           ]
         }
       }
+    },
+    "2afffb5ed1821e43bf5733fe9324c026bca448fc5d3df78d9e6ccf9935b7a993": {
+      "address": "0xcd005b015b932a479B48E6DD8Ac67b7b594dFfDD",
+      "txHash": "0x0b6b38d44341cfe2eb4a837d5d2a4d21906f9301c802d4271cca9bb76f9097aa",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_tokenInfos",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_uint256,t_struct(TokenInfo)66023_storage)",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:64"
+          },
+          {
+            "label": "_brush",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IBrushToken)73569",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:66"
+          },
+          {
+            "label": "_treasury",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(Treasury)67789",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:67"
+          },
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(IItemNFT)72829",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:68"
+          },
+          {
+            "label": "_numUnsellableItems",
+            "offset": 20,
+            "slot": "3",
+            "type": "t_uint16",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:69"
+          },
+          {
+            "label": "_minItemQuantityBeforeSellsAllowed",
+            "offset": 22,
+            "slot": "3",
+            "type": "t_uint24",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:70"
+          },
+          {
+            "label": "_dev",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:71"
+          },
+          {
+            "label": "_brushBurntPercentage",
+            "offset": 20,
+            "slot": "4",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:72"
+          },
+          {
+            "label": "_brushTreasuryPercentage",
+            "offset": 21,
+            "slot": "4",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:73"
+          },
+          {
+            "label": "_brushDevPercentage",
+            "offset": 22,
+            "slot": "4",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:74"
+          },
+          {
+            "label": "_sellingCutoffDuration",
+            "offset": 23,
+            "slot": "4",
+            "type": "t_uint24",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:75"
+          },
+          {
+            "label": "_shopItems",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:76"
+          },
+          {
+            "label": "_activityPoints",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_contract(IActivityPoints)18177",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:77"
+          },
+          {
+            "label": "_promotionDiscountPercentage",
+            "offset": 20,
+            "slot": "6",
+            "type": "t_uint8",
+            "contract": "Shop",
+            "src": "contracts\\Shop.sol:78"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)1126_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)1066_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(IActivityPoints)18177": {
+            "label": "contract IActivityPoints",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBrushToken)73569": {
+            "label": "contract IBrushToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IItemNFT)72829": {
+            "label": "contract IItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(Treasury)67789": {
+            "label": "contract Treasury",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_struct(TokenInfo)66023_storage)": {
+            "label": "mapping(uint256 => struct Shop.TokenInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(TokenInfo)66023_storage": {
+            "label": "struct Shop.TokenInfo",
+            "members": [
+              {
+                "label": "allocationRemaining",
+                "type": "t_uint80",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint80",
+                "offset": 10,
+                "slot": "0"
+              },
+              {
+                "label": "checkpointTimestamp",
+                "type": "t_uint40",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "unsellable",
+                "type": "t_bool",
+                "offset": 25,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint40": {
+            "label": "uint40",
+            "numberOfBytes": "5"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint80": {
+            "label": "uint80",
+            "numberOfBytes": "10"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }

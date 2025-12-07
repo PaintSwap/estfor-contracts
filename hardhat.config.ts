@@ -1,10 +1,13 @@
 import "dotenv/config";
 
-import {HardhatUserConfig} from "hardhat/config";
+import {HardhatNetworkAccountUserConfig, SolcUserConfig, HardhatUserConfig} from "hardhat/types";
+import "@typechain/hardhat";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomiclabs/hardhat-solhint";
 import "hardhat-deploy";
 import "@openzeppelin/hardhat-upgrades";
+import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-chai-matchers";
 
 import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
@@ -12,7 +15,6 @@ import "hardhat-storage-layout";
 import "hardhat-abi-exporter";
 import "solidity-coverage";
 import {ethers, parseUnits} from "ethers";
-import {HardhatNetworkAccountUserConfig, SolcUserConfig} from "hardhat/types";
 
 const defaultConfig: SolcUserConfig = {
   version: "0.8.28",
@@ -78,6 +80,10 @@ const hardhatAccounts: HardhatNetworkAccountUserConfig[] = [
   {
     privateKey: privateKey1,
     balance: ethers.parseEther("100000").toString()
+  },
+  {
+    privateKey: process.env.PROPOSER_PRIVATE_KEY as string,
+    balance: ethers.parseEther("100000").toString()
   }
 ];
 
@@ -112,11 +118,22 @@ const config: HardhatUserConfig = {
       gasPrice: 0,
       initialBaseFeePerGas: 0,
       allowUnlimitedContractSize: true,
-      accounts: process.env.USE_PRIVATE_KEY === "true" ? hardhatAccounts : {count: 20}
+      accounts: process.env.USE_PRIVATE_KEY === "true" ? hardhatAccounts : {count: 20},
+      forking:
+        process.env.USE_HARDHAT_FORK === "true"
+          ? {
+              url: process.env.SONIC_RPC as string,
+              blockNumber: process.env.FORK_BLOCK_NUMBER ? Number(process.env.FORK_BLOCK_NUMBER) : undefined
+            }
+          : undefined
     },
     sonic: {
       url: process.env.SONIC_RPC,
-      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string]
+      accounts: [
+        process.env.PRIVATE_KEY as string,
+        process.env.PRIVATE_KEY1 as string,
+        process.env.PROPOSER_PRIVATE_KEY as string
+      ]
     },
     "sonic-blaze": {
       url: process.env.SONIC_BLAZE_RPC,

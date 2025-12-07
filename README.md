@@ -145,3 +145,7 @@ ActivityPoints [0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a](https://sonicscan.or
 ### Other addresses:
 
 Brush [0xE51EE9868C1f0d6cd968A8B8C8376Dc2991BFE44](https://sonicscan.org/address/0xE51EE9868C1f0d6cd968A8B8C8376Dc2991BFE44)
+
+### Obtain SAFE Api Key
+
+[https://developer.safe.global/api-keys](https://developer.safe.global/api-keys)
