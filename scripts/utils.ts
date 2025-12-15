@@ -63,10 +63,14 @@ export const sendTransactionSetToSafe = async (
   }
 };
 
-export const getSafeUpgradeTransaction = (proxyAddress: string, implementationAddress: string): MetaTransactionData => {
+export const getSafeUpgradeTransaction = (
+  proxyAddress: string,
+  implementationAddress: string,
+  callData: string = "0x"
+): MetaTransactionData => {
   const data = upgradeToAndCallIface.encodeFunctionData("upgradeToAndCall", [
     ethers.getAddress(implementationAddress),
-    "0x"
+    callData
   ]);
   return {
     to: ethers.getAddress(proxyAddress),

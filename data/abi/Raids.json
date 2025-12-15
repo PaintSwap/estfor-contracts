@@ -1230,11 +1230,6 @@
         "internalType": "address",
         "name": "paintswapVRFConsumer",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "isBeta",
-        "type": "bool"
       }
     ],
     "name": "initializeV3",

@@ -42,7 +42,8 @@ import {
   RAIDS_ADDRESS,
   BRIDGE_ADDRESS,
   WISHING_WELL_ADDRESS,
-  VRF_ADDRESS
+  VRF_ADDRESS,
+  CLAN_BATTLE_LIBRARY_ADDRESS
 } from "./contractAddresses";
 import {verifyContract, verifyContracts} from "./utils";
 
@@ -103,7 +104,12 @@ async function main() {
 */
   // await verifyContracts(["0x9f76DE2260CF0E2c08CDF0628E7f00b03c37b861"] /* addresses */, [[VRF_ADDRESS]]);
 
-  await verifyContract("0x9f76DE2260CF0E2c08CDF0628E7f00b03c37b861", [VRF_ADDRESS]);
+  await verifyContracts([CLAN_BATTLE_LIBRARY_ADDRESS]);
+  await verifyContracts([RAIDS_ADDRESS]);
+  await verifyContracts([LOCKED_BANK_VAULTS_ADDRESS]);
+  await verifyContracts([TERRITORIES_ADDRESS]);
+  await verifyContracts([COMBATANTS_HELPER_ADDRESS]);
+  await verifyContracts([CLANS_ADDRESS]);
 }
 
 main().catch((error) => {

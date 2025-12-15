@@ -48,6 +48,11 @@
   },
   {
     "inputs": [],
+    "name": "NotClans",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -150,6 +155,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "newCooldownTimestampPenalty",
+        "type": "uint256"
+      }
+    ],
+    "name": "EditMemberLeftCombatantCooldownTimestampPenalty",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint64",
         "name": "version",
         "type": "uint64"
@@ -201,6 +219,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "applyPlayerCombatantCooldownPenalty",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -309,7 +340,7 @@
   },
   {
     "inputs": [],
-    "name": "initializeV3",
+    "name": "initializeV4",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -343,6 +374,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24",
+        "name": "cooldownTimestampPenalty",
+        "type": "uint24"
+      }
+    ],
+    "name": "setPlayerLeftCombatantCooldownTimestampPenalty",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

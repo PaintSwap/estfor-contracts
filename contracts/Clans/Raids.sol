@@ -207,7 +207,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     _itemNFT = itemNFT;
     _clans = clans;
     _brush = brush;
-    _combatantChangeCooldown = isBeta ? 5 minutes : 14 days;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
     _worldActions = worldActions;
     _randomnessBeacon = randomnessBeacon;
     _nextRaidId = 1;
@@ -217,9 +217,8 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     setCombatActions(combatActionIds);
   }
 
-  function initializeV3(address paintswapVRFConsumer, bool isBeta) external reinitializer(3) {
+  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
-    _combatantChangeCooldown = isBeta ? 5 minutes : 14 days;
   }
 
   function requestSpawnRaid(uint64 playerId) external payable isOwnerOfPlayerAndActive(playerId) {

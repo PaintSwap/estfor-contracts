@@ -264,7 +264,7 @@ contract Territories is
     _isBeta = isBeta;
 
     _brush.approve(address(_lockedBankVaults), type(uint256).max);
-    _combatantChangeCooldown = isBeta ? 5 minutes : 14 days;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
     setAttackCooldown(attackingCooldown);
     setExpectedGasLimitFulfill(3_000_000);
@@ -280,7 +280,6 @@ contract Territories is
 
   function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
-    _combatantChangeCooldown = _isBeta ? 5 minutes : 14 days;
   }
 
   function assignCombatants(

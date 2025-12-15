@@ -272,7 +272,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       mockVRF,
-      combatantChangeCooldown
+      playerLeaveCombatantCooldown
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -321,7 +321,7 @@ describe("Territories", function () {
     await expect(
       combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], false, [], ownerPlayerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
-    await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
+    await ethers.provider.send("evm_increaseTime", [playerLeaveCombatantCooldown]);
     await ethers.provider.send("evm_mine", []);
     await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
@@ -563,6 +563,36 @@ describe("Territories", function () {
     await expect(clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId))
       .to.emit(territories, "RemoveCombatant")
       .withArgs(ownerPlayerId, clanId);
+  });
+
+  it("Leaving clan sets a penalty as a future combatant so player cannot rejoin roster quickly", async function () {
+    const {clans, clanId, playerId, ownerPlayerId, combatantChangeCooldown, combatantsHelper, alice} =
+      await loadFixture(territoriesVaultsFixture);
+
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
+
+    await combatantsHelper
+      .connect(alice)
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
+
+    clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId); // Leave clan
+
+    // Try re-adding them after clan combatant cooldown
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
+
+    await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
+    await ethers.provider.send("evm_mine", []);
+
+    await expect(
+      combatantsHelper
+        .connect(alice)
+        .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId)
+    ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
+
+    // But we can with just the original player
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
   });
 
   it("Is owner of player when attacking", async () => {

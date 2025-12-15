@@ -587,6 +587,12 @@ export const playersFixture = async function () {
     }
   )) as unknown as CombatantsHelper;
 
+  await upgrades.upgradeProxy(await clans.getAddress(), Clans, {
+    call: {fn: "initializeV2", args: [await combatantsHelper.getAddress()]},
+    unsafeAllow: ["external-library-linking"],
+    kind: "uups"
+  });
+
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,

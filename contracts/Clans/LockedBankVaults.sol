@@ -250,7 +250,7 @@ contract LockedBankVaults is
     _isBeta = isBeta;
     _attackingCooldown = isBeta ? 1 minutes + 30 seconds : 4 hours;
     _reattackingCooldown = isBeta ? 6 minutes : 1 days;
-    _combatantChangeCooldown = isBeta ? 5 minutes : 14 days;
+    _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
     _activityPoints = activityPoints;
 
@@ -270,7 +270,6 @@ contract LockedBankVaults is
 
   function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
     __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
-    _combatantChangeCooldown = _isBeta ? 5 minutes : 14 days;
   }
 
   function assignCombatants(
