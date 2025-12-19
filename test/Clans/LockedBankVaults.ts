@@ -1779,13 +1779,13 @@ describe("LockedBankVaults", function () {
           SKIP_XP_THRESHOLD_EFFECTS
         );
       }
-      await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
+      await lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, EstforConstants.NONE, bobPlayerId, {
         value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
 
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
-      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
 
       // Win
       await combatantsHelper.clearCooldowns([bobPlayerId]);
@@ -1820,16 +1820,18 @@ describe("LockedBankVaults", function () {
           bobPlayerId
         );
 
-      await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
+      await lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, EstforConstants.NONE, bobPlayerId, {
         value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
-      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
 
       // Lose
+      await combatantsHelper.clearCooldowns([bobPlayerId, charliePlayerId, frankPlayerId]);
       await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
-      await lockedBankVaults.connect(alice).attackVaults(clanId, bobClanId, EstforConstants.NONE, playerId, {
+      await lockedBankVaults.clearCooldowns(bobClanId, []);
+      await lockedBankVaults.connect(bob).attackVaults(bobClanId, clanId, EstforConstants.NONE, bobPlayerId, {
         value: await lockedBankVaults.getAttackCost()
       });
       await fulfillRandomWords(requestId++, lockedBankVaults, mockVRF);
@@ -2448,7 +2450,7 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, frankClanId, bobClanId, erinClanId]);
     });
 
-    it("Attacking & defending hits the same MMR, check ordering", async () => {
+    it("Attacking large clan with small clan doesn't move MMR of large clan", async () => {
       const {
         clans,
         lockedBankVaults,
@@ -2459,6 +2461,10 @@ describe("LockedBankVaults", function () {
         bobPlayerId,
         alice,
         bob,
+        charlie,
+        charliePlayerId,
+        frank,
+        frankPlayerId,
         clanName,
         discord,
         telegram,
@@ -2476,13 +2482,39 @@ describe("LockedBankVaults", function () {
       // Create a new clan to attack/defend between each other
       await clans.connect(bob).createClan(bobPlayerId, clanName + 1, discord, telegram, twitter, imageId, tierId);
       const bobClanId = clanId + 1;
+      await clans.connect(charlie).requestToJoin(bobClanId, charliePlayerId, 0);
+      await clans.connect(frank).requestToJoin(bobClanId, frankPlayerId, 0);
+      await clans.connect(bob).acceptJoinRequests(bobClanId, [charliePlayerId, frankPlayerId], bobPlayerId);
       await combatantsHelper
         .connect(bob)
-        .assignCombatants(bobClanId, false, [], true, [bobPlayerId], false, [], bobPlayerId);
+        .assignCombatants(
+          bobClanId,
+          false,
+          [],
+          true,
+          [bobPlayerId, charliePlayerId, frankPlayerId],
+          false,
+          [],
+          bobPlayerId
+        );
 
       // Increase odds of winning by maxing out their stats
       for (let i = 0; i < allBattleSkills.length; ++i) {
         await players.modifyXP(bob, bobPlayerId, allBattleSkills[i], getXPFromLevel(100), SKIP_XP_THRESHOLD_EFFECTS);
+        await players.modifyXP(
+          charlie,
+          charliePlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
+        await players.modifyXP(
+          frank,
+          frankPlayerId,
+          allBattleSkills[i],
+          getXPFromLevel(100),
+          SKIP_XP_THRESHOLD_EFFECTS
+        );
       }
 
       // Attacker wins (most likely)
@@ -2494,19 +2526,14 @@ describe("LockedBankVaults", function () {
       expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
       expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
 
-      // Now loses, as bob had a MMR he should have higher rank?
-      // Remove combatants
-      await combatantsHelper.clearCooldowns([bobPlayerId]);
-      await lockedBankVaults.clearCooldowns(bobClanId, []);
-      await combatantsHelper.connect(bob).assignCombatants(bobClanId, false, [], true, [], false, [], bobPlayerId);
-
       await lockedBankVaults
         .connect(alice)
         .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(2, lockedBankVaults, mockVRF);
 
-      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
-      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
+      // Should not move as bobClanId is a larger clan
+      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([498, 501]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
 
       // Attacker loses (most likely)
       // Well first win so that MMRs are different
@@ -2516,23 +2543,8 @@ describe("LockedBankVaults", function () {
         .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
       await fulfillRandomWords(3, lockedBankVaults, mockVRF);
 
-      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([499, 501]);
-      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]);
-
-      // Now lose (most likely)
-      await combatantsHelper.clearCooldowns([bobPlayerId]);
-      await lockedBankVaults.clearCooldowns(bobClanId, []);
-      await combatantsHelper
-        .connect(bob)
-        .assignCombatants(bobClanId, false, [], true, [bobPlayerId], false, [], bobPlayerId);
-      await lockedBankVaults.clearCooldowns(clanId, [bobClanId]);
-      await lockedBankVaults
-        .connect(alice)
-        .attackVaults(clanId, bobClanId, 0, playerId, {value: await lockedBankVaults.getAttackCost()});
-      await fulfillRandomWords(4, lockedBankVaults, mockVRF);
-
-      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([500, 500]);
-      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([bobClanId, clanId]); // Attacker is higher rank even if losing
+      expect(await lockedBankVaults.getSortedMMR()).to.deep.eq([497, 501]);
+      expect(await lockedBankVaults.getSortedClanIdsByMMR()).to.deep.eq([clanId, bobClanId]);
     });
 
     it("Force updating MMR should correctly cleanse any initialized clans which do not have any locked vaults", async () => {

@@ -151,8 +151,8 @@ if (!isBeta) {
   bankRelay = "0xd6cdc1d365e505f0546361782c4336c829c39568";
   pvpBattleground = "0xe91a6cdac47dfd546578273253bff1fddc350764";
   raids = "0xbfd416e76519cf199dd95b82f6928b3a4b5ac995";
-  clanBattleLibrary = "0xff0fa1996e56b21ecf9e5b132d6bcfdf083f6ec1";
-  lockedBankVaultsLibrary = "0xecd730e2a4c10a9761afc7faa0850655618eceed";
+  clanBattleLibrary = "0x58e99f6ed3bfb9e9311d9297e48310c3c8aea178";
+  lockedBankVaultsLibrary = "0x080ca5bb70759b993676a4dc88c2e36125d83661";
   lockedBankVaults = "0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb";
   territories = "0xa2ca7daad4b86819c455fafc704d727a23c5a513";
   combatantsHelper = "0x7fa2b4c19093e0777d72235ea28d302f53227fa0";

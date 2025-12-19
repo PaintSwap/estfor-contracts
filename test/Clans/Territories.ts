@@ -566,8 +566,16 @@ describe("Territories", function () {
   });
 
   it("Leaving clan sets a penalty as a future combatant so player cannot rejoin roster quickly", async function () {
-    const {clans, clanId, playerId, ownerPlayerId, combatantChangeCooldown, combatantsHelper, alice} =
-      await loadFixture(territoriesVaultsFixture);
+    const {
+      clans,
+      clanId,
+      playerId,
+      ownerPlayerId,
+      combatantChangeCooldown,
+      playerLeaveCombatantCooldown,
+      combatantsHelper,
+      alice
+    } = await loadFixture(territoriesVaultsFixture);
 
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
     await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
@@ -575,6 +583,8 @@ describe("Territories", function () {
     await combatantsHelper
       .connect(alice)
       .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
+
+    await combatantsHelper.setPlayerLeftCombatantCooldownTimestampPenalty(playerLeaveCombatantCooldown);
 
     clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId); // Leave clan
 

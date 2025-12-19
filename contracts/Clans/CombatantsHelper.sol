@@ -233,6 +233,9 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHel
     uint256 playerId
   ) external onlyClans {
     PlayerInfo storage playerInfo = _playerInfos[playerId];
+    if (_playerLeftCombatantCooldownTimestampPenalty == 0) {
+      return;
+    }
     playerInfo.combatantCooldownTimestamp = uint40(block.timestamp + _playerLeftCombatantCooldownTimestampPenalty);
   }
 

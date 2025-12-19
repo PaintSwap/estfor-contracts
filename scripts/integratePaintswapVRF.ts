@@ -101,10 +101,7 @@ async function main() {
   );
 
   // LockedBankVaults
-  const lockedBankVaultsLibrary = await ethers.getContractAt(
-    "LockedBankVaultsLibrary",
-    LOCKED_BANK_VAULTS_LIBRARY_ADDRESS
-  );
+  const lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary", proposer);
   console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
 
   const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {

@@ -61,6 +61,8 @@ async function main() {
   if (useSafe) {
     console.log(`Using Safe for deployments with the proposer: ${proposer.address} on chain ${network.chainId}`);
 
+    const upgradeTransactionSet = [];
+
     // const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver", proposer);
     // const royaltyReceiver = await upgrades.prepareUpgrade(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
     //   kind: "uups",
@@ -69,17 +71,92 @@ async function main() {
     // }) as string;
     // console.log(`RoyaltyReceiver new implementation = "${royaltyReceiver}"`);
 
-    const Shop = await ethers.getContractFactory("Shop", proposer);
-    const shop = (await upgrades.prepareUpgrade(SHOP_ADDRESS, Shop, {
+    // const Shop = await ethers.getContractFactory("Shop", proposer);
+    // const shop = (await upgrades.prepareUpgrade(SHOP_ADDRESS, Shop, {
+    //   kind: "uups",
+    //   unsafeAllow: ["external-library-linking"],
+    //   timeout
+    // })) as string;
+    // console.log(`Shop new implementation = "${shop}"`);
+
+    console.log("------ Deploying libraries ------");
+
+    // EstforLibrary
+    const newEstforLibrary = false;
+    let estforLibrary: EstforLibrary;
+    if (newEstforLibrary) {
+      estforLibrary = await ethers.deployContract("EstforLibrary", proposer);
+    } else {
+      estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
+    }
+    console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
+
+    // ClanBattleLibrary
+    const newClanBattleLibrary = true;
+    let clanBattleLibrary: ClanBattleLibrary;
+    if (newClanBattleLibrary) {
+      clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", proposer);
+    } else {
+      clanBattleLibrary = await ethers.getContractAt("ClanBattleLibrary", CLAN_BATTLE_LIBRARY_ADDRESS);
+    }
+    console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
+
+    // LockedBankVaults
+    const newLockedBankVaultsLibrary = true;
+    let lockedBankVaultsLibrary: LockedBankVaultsLibrary;
+    if (newLockedBankVaultsLibrary) {
+      lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary", proposer);
+    } else {
+      lockedBankVaultsLibrary = await ethers.getContractAt(
+        "LockedBankVaultsLibrary",
+        LOCKED_BANK_VAULTS_LIBRARY_ADDRESS
+      );
+    }
+    console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
+
+    console.log("--^^-- UPDATE LIBRARY ADDRESSES IN README AND DEPLOYMENT SCRIPTS --^^--");
+    console.log("------ Preparing upgrades ------");
+
+    const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
+      libraries: {
+        EstforLibrary: await estforLibrary.getAddress(),
+        LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+        ClanBattleLibrary: await clanBattleLibrary.getAddress()
+      },
+      signer: proposer
+    });
+    const lockedBankVaults = (await upgrades.prepareUpgrade(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
       kind: "uups",
       unsafeAllow: ["external-library-linking"],
       timeout
     })) as string;
-    console.log(`Shop new implementation = "${shop}"`);
+    console.log(`lockedBankVaults = ${lockedBankVaults}`);
+
+    const Territories = await ethers.getContractFactory("Territories", {
+      signer: proposer
+    });
+    const territories = (await upgrades.prepareUpgrade(TERRITORIES_ADDRESS, Territories, {
+      kind: "uups",
+      timeout
+    })) as string;
+    console.log(`territories = "${territories.toLowerCase()}"`);
+
+    const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
+      signer: proposer
+    });
+    const combatantsHelper = (await upgrades.prepareUpgrade(COMBATANTS_HELPER_ADDRESS, CombatantsHelper, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout
+    })) as string;
+    console.log(`combatantsHelper = ${combatantsHelper}`);
 
     // Propose the upgrade to new implementation (no initialize) transaction to the Safe
-    const upgradeTransactionSet = [];
-    upgradeTransactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
+    // upgradeTransactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(LOCKED_BANK_VAULTS_ADDRESS, lockedBankVaults));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(TERRITORIES_ADDRESS, territories));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(COMBATANTS_HELPER_ADDRESS, combatantsHelper));
 
     await sendTransactionSetToSafe(network, protocolKit, apiKit, upgradeTransactionSet, proposer);
   } else {

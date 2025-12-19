@@ -398,6 +398,12 @@ library LockedBankVaultsLibrary {
       didAttackersWin
     );
 
+    // Prevent 1 man clan boosting large clan by attacking and losing to them repeatedly
+    bool defenderMMRShouldChange = clanInfos[attackingClanId].playerIds.length >= (clanInfos[defendingClanId].playerIds.length / 2) + 1 || clanInfos[defendingClanId].playerIds.length == 0;
+    if (!defenderMMRShouldChange) {
+      newDefendingMMR = defendingMMR;
+    }
+
     attackingMMRDiff = int256(newAttackingMMR) - int256(attackingMMR);
     defendingMMRDiff = int256(newDefendingMMR) - int256(defendingMMR);
 
