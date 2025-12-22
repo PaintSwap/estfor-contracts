@@ -36,45 +36,54 @@ async function main() {
   const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
   console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
 
-  // const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
-  // const randomnessBeacon = await upgrades.upgradeProxy(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
-  //   kind: "uups",
-  //   timeout,
-  //   unsafeSkipStorageCheck: true,
-  //   call: {
-  //     fn: "initializeV3",
-  //     args: [VRF_ADDRESS]
-  //   }
-  // });
-  // await randomnessBeacon.waitForDeployment();
-  // console.log(`randomnessBeacon = "${(await randomnessBeacon.getAddress()).toLowerCase()}"`);
+  const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
+  const randomnessBeacon = (await upgrades.prepareUpgrade(RANDOMNESS_BEACON_ADDRESS, RandomnessBeacon, {
+    kind: "uups",
+    timeout,
+    unsafeSkipStorageCheck: true
+  })) as string;
+  console.log(`randomnessBeacon = "${randomnessBeacon}"`);
+
+  upgradeTransactionSet.push(
+    getSafeUpgradeTransaction(
+      RANDOMNESS_BEACON_ADDRESS,
+      randomnessBeacon,
+      genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
+    )
+  );
 
   // // Instant VRF actions
-  // const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
-  // const instantVRFActions = await upgrades.upgradeProxy(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
-  //   kind: "uups",
-  //   timeout,
-  //   unsafeSkipStorageCheck: true,
-  //   call: {
-  //     fn: "initializeV3",
-  //     args: [VRF_ADDRESS]
-  //   }
-  // });
-  // await instantVRFActions.waitForDeployment();
-  // console.log(`instantVRFActions = "${(await instantVRFActions.getAddress()).toLowerCase()}"`);
+  const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
+  const instantVRFActions = (await upgrades.prepareUpgrade(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
+    kind: "uups",
+    timeout,
+    unsafeSkipStorageCheck: true
+  })) as string;
+  console.log(`instantVRFActions = "${instantVRFActions}"`);
 
-  // const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
-  // const pvpBattleground = await upgrades.upgradeProxy(PVP_BATTLEGROUND_ADDRESS, PVPBattleground, {
-  //   kind: "uups",
-  //   timeout,
-  //   unsafeSkipStorageCheck: true,
-  //   call: {
-  //     fn: "initializeV3",
-  //     args: [VRF_ADDRESS]
-  //   }
-  // });
-  // await pvpBattleground.waitForDeployment();
-  // console.log(`pvpBattleground = "${(await pvpBattleground.getAddress()).toLowerCase()}"`);
+  upgradeTransactionSet.push(
+    getSafeUpgradeTransaction(
+      INSTANT_VRF_ACTIONS_ADDRESS,
+      instantVRFActions,
+      genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
+    )
+  );
+
+  const PVPBattleground = await ethers.getContractFactory("PVPBattleground");
+  const pvpBattleground = (await upgrades.prepareUpgrade(PVP_BATTLEGROUND_ADDRESS, PVPBattleground, {
+    kind: "uups",
+    timeout,
+    unsafeSkipStorageCheck: true
+  })) as string;
+  console.log(`pvpBattleground = "${pvpBattleground}"`);
+
+  upgradeTransactionSet.push(
+    getSafeUpgradeTransaction(
+      PVP_BATTLEGROUND_ADDRESS,
+      pvpBattleground,
+      genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
+    )
+  );
 
   // ClanBattleLibrary
   const clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", proposer);
@@ -123,7 +132,8 @@ async function main() {
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
       LOCKED_BANK_VAULTS_ADDRESS,
-      lockedBankVaults // , genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS] -- ADD TO LIVE ---
+      lockedBankVaults,
+      genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
   );
 
@@ -138,7 +148,8 @@ async function main() {
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
       TERRITORIES_ADDRESS,
-      territories // , genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS] -- ADD TO LIVE ---
+      territories,
+      genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
   );
 
@@ -179,7 +190,8 @@ async function main() {
   upgradeTransactionSet.push(
     getSafeUpgradeTransaction(
       RAIDS_ADDRESS,
-      raids // , genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS] -- ADD TO LIVE ---
+      raids,
+      genericUpgradeInterface.encodeFunctionData("initializeV3", [VRF_ADDRESS])
     )
   );
 
