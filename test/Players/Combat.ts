@@ -1159,7 +1159,8 @@ describe("Combat Actions", function () {
 
       for (let i = 0; i < numLoops; ++i) {
         // Increase by random time
-        const randomTimespan = Math.floor(Math.random() * 240);
+        const randomNum = Math.random() * 0.8; // must be between 0 and 0.8 otherwise we'll go too far
+        const randomTimespan = Math.floor(randomNum * 240);
         await timeTravel(randomTimespan);
         await players.connect(alice).processActions(playerId);
       }
