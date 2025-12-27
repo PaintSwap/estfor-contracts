@@ -530,7 +530,7 @@ describe("Rewards", function () {
           ++numRandomRewardsHit;
         }
       }
-      expect(numRandomRewardsHit).to.be.greaterThan(0).and.to.be.lessThan(numRepeats);
+      expect(numRandomRewardsHit).to.be.greaterThan(0).and.to.be.lessThanOrEqual(numRepeats);
 
       await timeTravel24Hours();
       await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);

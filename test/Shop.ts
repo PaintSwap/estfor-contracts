@@ -318,7 +318,7 @@ describe("Shop", function () {
     await shop.setPromotionDiscountPercentage(20);
 
     const thirdWeekMod = (Math.floor(Date.now() / 1000) / (7 * 24 * 3600)) % 3; // check which week in the promotion cycle we are
-    if (thirdWeekMod == 2) {
+    if (Math.floor(thirdWeekMod) == 2) {
       // Increase time to week not running promotion
       await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + 7 * 24 * 3600));
     }
