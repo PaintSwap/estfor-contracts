@@ -871,6 +871,12 @@ async function main() {
   await combatantsHelper.waitForDeployment();
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
 
+  await upgrades.upgradeProxy(await clans.getAddress(), Clans, {
+    call: {fn: "initializeV2", args: [await combatantsHelper.getAddress()]},
+    unsafeAllow: ["external-library-linking"],
+    kind: "uups"
+  });
+
   const minHarvestInterval = isBeta ? 600n : BigInt(3.75 * 3600); // 10 mins on beta & 3 hours 45 minutes on prod
   const TerritoryTreasury = await ethers.getContractFactory("TerritoryTreasury");
   const territoryTreasury = await upgrades.deployProxy(TerritoryTreasury, [
