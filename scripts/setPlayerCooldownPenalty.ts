@@ -18,7 +18,7 @@ async function main() {
     transactionSet.push({
       to: ethers.getAddress(COMBATANTS_HELPER_ADDRESS),
       value: "0",
-      data: iface.encodeFunctionData("setPlayerLeftCombatantCooldownTimestampPenalty", [60 * 60]), // 60 minutes
+      data: iface.encodeFunctionData("setPlayerLeftCombatantCooldownTimestampPenalty", [60 * 60 * 24 * 14]), // 14 days
       operation: OperationType.Call
     });
     await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);

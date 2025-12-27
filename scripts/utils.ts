@@ -194,28 +194,37 @@ interface IPlayerImpls {
   playersImplMisc1: PlayersImplMisc1;
 }
 
-export const deployPlayerImplementations = async (playersLibraryAddress: string): Promise<IPlayerImpls> => {
+export const deployPlayerImplementations = async (
+  playersLibraryAddress: string,
+  signer: SignerWithAddress | undefined = undefined
+): Promise<IPlayerImpls> => {
   const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplQueueActions = "${(await playersImplQueueActions.getAddress()).toLowerCase()}"`);
 
   const playersImplProcessActions = await ethers.deployContract("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplProcessActions = "${(await playersImplProcessActions.getAddress()).toLowerCase()}"`);
 
   const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplMisc = "${(await playersImplMisc.getAddress()).toLowerCase()}"`);
 
-  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1");
+  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1", {
+    signer: signer
+  });
   console.log(`playersImplMisc1 = "${(await playersImplMisc1.getAddress()).toLowerCase()}"`);
 
   return {

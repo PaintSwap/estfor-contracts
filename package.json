@@ -59,7 +59,7 @@
     "console": "npx hardhat console",
     "lint": "npx solhint ./contracts/*",
     "compile": "npx hardhat compile",
-    "test": "npx hardhat test --network hardhat --no-compile",
+    "test": "npx hardhat test --network hardhat",
     "clean": "npx hardhat clean",
     "verifyContracts": "npx hardhat run scripts/verifyContracts.ts",
     "umlStorage": "sol2uml storage ./contracts/debug/DebugStorageSlots.sol -c DebugStorageSlots",

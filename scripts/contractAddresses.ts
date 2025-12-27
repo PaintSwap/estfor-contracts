@@ -89,11 +89,11 @@ if (!isBeta) {
   petNFTLibrary = "0xa117b910a35e922a51b2a07ab24d2c4b493a5489";
   petNFT = "0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed";
   playersLibrary = "0x99e7d54c349173c61b536876c6fd47106e47ebf6";
-  playersImplQueueActions = "0x5e638cec36bdff41a46b1727720fd4f98bb4a39d";
-  playersImplProcessActions = "0x5fd93e183427e4df76a0211e03e27b4b410d01cc";
-  playersImplRewards = "0x82404558911f710876b791ebd3122ae2c7aabc36";
-  playersImplMisc = "0x7c3d8c6215c0c8d20c9942d4c2b2a3f93ed36943";
-  playersImplMisc1 = "0x91c130d6864e118f11905e1d8c268f50588c6e97";
+  playersImplQueueActions = "0xe6f5bdea67a1ae50a4276a7663b18bdbb17e337e";
+  playersImplProcessActions = "0x6d2d580c12c9062afc2021884673ba7ed1caf734";
+  playersImplRewards = "0x81ade2641fd181278b22af998e69e816c80d320f";
+  playersImplMisc = "0xa0e0a773a8ce1a6192cc16ab4b2e57f8fc15cda7";
+  playersImplMisc1 = "0x2f892c41e4452ad40ca8b268dd0bd35392d674a4";
   players = "0xefa670aad6d5921236e9655f346ca13a5c56481b";
   promotionsLibrary = "0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9";
   promotions = "0xaf48a8a12f29e30b3831392aa2ee6344d07d188b";
@@ -105,8 +105,8 @@ if (!isBeta) {
   bankRelay = "0x0df55b940e993f8d3b06a64212962c3d0fef8cba";
   pvpBattleground = "0x679193f35e696651e125b2851ee7c4e44bf40a18";
   raids = "0xec57b7988ee3344bcf4ce64e5d11f495df7cd951";
-  clanBattleLibrary = "0x6545f99f0753acbc4276a1ff317159690eef9111";
-  lockedBankVaultsLibrary = "0x10de14eafea8f841689b01fa682c63e52255b148";
+  clanBattleLibrary = "0x97be54a51ca91ca34377563d865e4e21a5637472";
+  lockedBankVaultsLibrary = "0x55b7fd81638b81806d1c89f7930383030621b2e5";
   lockedBankVaults = "0xfaa31b6ddb7e07cae5ff15475b3966d78d660240";
   territories = "0x5a6d80bb035318d2a24c1fdfd055032a15f11b12";
   combatantsHelper = "0xc754d621239b5830264f8c8e302c21ffe48625fc";
