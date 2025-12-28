@@ -13,7 +13,20 @@ async function main() {
 
   const shop = await ethers.getContractAt("Shop", SHOP_ADDRESS);
   const _allShopItems = isBeta ? allShopItemsBeta : allShopItems;
-  const items = new Set([..._allShopItems.map((item) => item.tokenId)]);
+  const items = new Set([
+    EstforConstants.XP_BOOST_M,
+    EstforConstants.COMBAT_BOOST_M,
+    EstforConstants.SKILL_BOOST_M,
+    EstforConstants.GATHERING_BOOST_M,
+    EstforConstants.XP_BOOST_L,
+    EstforConstants.COMBAT_BOOST_L,
+    EstforConstants.SKILL_BOOST_L,
+    EstforConstants.GATHERING_BOOST_L,
+    EstforConstants.XP_BOOST_XL,
+    EstforConstants.COMBAT_BOOST_XL,
+    EstforConstants.SKILL_BOOST_XL,
+    EstforConstants.GATHERING_BOOST_XL
+  ]);
   const shopItems = _allShopItems.filter((shopItem) => items.has(shopItem.tokenId));
 
   if (shopItems.length !== items.size) {

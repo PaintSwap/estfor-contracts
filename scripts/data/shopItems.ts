@@ -165,15 +165,15 @@ export const allShopItems: ShopItem[] = [
   },
   {
     tokenId: EstforConstants.XP_BOOST_M,
-    price: parseEther("25")
-  },
-  {
-    tokenId: EstforConstants.XP_BOOST_L,
     price: parseEther("40")
   },
   {
+    tokenId: EstforConstants.XP_BOOST_L,
+    price: parseEther("55")
+  },
+  {
     tokenId: EstforConstants.XP_BOOST_XL,
-    price: parseEther("65")
+    price: parseEther("95")
   },
   {
     tokenId: EstforConstants.COMBAT_BOOST_M,
