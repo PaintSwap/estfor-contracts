@@ -452,6 +452,7 @@ abstract contract PlayersBase {
     player.currentActionProcessedXPGained3 = currentActionProcessed.xpGained3;
     player.currentActionProcessedFoodConsumed = currentActionProcessed.foodConsumed;
     player.currentActionProcessedBaseInputItemsConsumedNum = currentActionProcessed.baseInputItemsConsumedNum;
+    player.lastActiveTimestamp = uint40(block.timestamp);
   }
 
   function _processClaimableRewards(
