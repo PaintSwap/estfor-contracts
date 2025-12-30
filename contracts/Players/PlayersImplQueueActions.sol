@@ -632,6 +632,7 @@ contract PlayersImplQueueActions is PlayersBase {
     player.currentActionProcessedXPGained3 = 0;
     player.currentActionProcessedFoodConsumed = 0;
     player.currentActionProcessedBaseInputItemsConsumedNum = 0;
+    player.lastActiveTimestamp = uint40(block.timestamp);
   }
 
   // Consumes all the actions in the queue up to this time.

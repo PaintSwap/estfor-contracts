@@ -41,10 +41,11 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
     _disableInitializers();
   }
 
+  /// @custom:oz-upgrades-unsafe-allow missing-initializer-call
   function initialize(uint32 srcEid) public initializer {
     __Ownable_init(_msgSender());
-    __UUPSUpgradeable_init();
     __OApp_init(_msgSender());
+    __UUPSUpgradeable_init();
     _srcEid = srcEid;
   }
 

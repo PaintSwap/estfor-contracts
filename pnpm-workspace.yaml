@@ -1,0 +1,3 @@
+packages:
+  - "lib/openzeppelin-contracts/contracts"
+  - "lib/openzeppelin-contracts-upgradeable/contracts"

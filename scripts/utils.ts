@@ -1,5 +1,5 @@
 import {Contract, Network} from "ethers";
-import {ethers, run} from "hardhat";
+import {ethers, run, network} from "hardhat";
 import {
   MockPaintSwapMarketplaceWhitelist,
   PlayerNFT,
@@ -16,6 +16,111 @@ import {getEventLog} from "../test/utils";
 import {HardhatEthersSigner, SignerWithAddress} from "@nomicfoundation/hardhat-ethers/signers";
 import {Worker} from "worker_threads";
 import path from "path";
+import SafeApiKit from "@safe-global/api-kit";
+import Safe from "@safe-global/protocol-kit";
+import {MetaTransactionData, OperationType} from "@safe-global/types-kit";
+
+const upgradeToAndCallIface = new ethers.Interface([
+  "function upgradeToAndCall(address newImplementation, bytes data) payable"
+]);
+const SAFE_START_BLOCK = 56943741;
+
+export interface SafeInstance {
+  useSafe: boolean;
+  apiKit: SafeApiKit;
+  protocolKit: Safe;
+}
+
+export const sendTransactionSetToSafe = async (
+  network: Network,
+  protocolKit: Safe,
+  apiKit: SafeApiKit,
+  transactionSet: MetaTransactionData[],
+  proposer: SignerWithAddress
+) => {
+  // Create Safe transaction (add all transactions if multiple upgrades)
+  const safeTransaction = await protocolKit.createTransaction({
+    transactions: transactionSet,
+    options: {
+      nonce: Number(await apiKit.getNextNonce(process.env.SAFE_ADDRESS as string))
+    }
+  });
+
+  const safeTxHash = await protocolKit.getTransactionHash(safeTransaction);
+  const signature = await protocolKit.signHash(safeTxHash);
+
+  if (network.chainId !== 146n) {
+    console.log("Upgrade set successful, you can proceed to deploying on mainnet to execute against the real Safe");
+  } else {
+    console.log("Proposed upgrade transaction to Safe, check Safe UI to confirm and execute");
+    await apiKit.proposeTransaction({
+      safeAddress: process.env.SAFE_ADDRESS as string,
+      safeTransactionData: safeTransaction.data,
+      safeTxHash,
+      senderAddress: proposer.address,
+      senderSignature: signature.data
+    });
+  }
+};
+
+export const getSafeUpgradeTransaction = (
+  proxyAddress: string,
+  implementationAddress: string,
+  callData: string = "0x"
+): MetaTransactionData => {
+  const data = upgradeToAndCallIface.encodeFunctionData("upgradeToAndCall", [
+    ethers.getAddress(implementationAddress),
+    callData
+  ]);
+  return {
+    to: ethers.getAddress(proxyAddress),
+    value: "0", // wei
+    data,
+    operation: OperationType.Call
+  };
+};
+
+export const initialiseSafe = async (nw: Network): Promise<SafeInstance> => {
+  let isSafeFork = false;
+  if (nw.chainId !== 146n) {
+    const metadata = (await network.provider.request({
+      method: "hardhat_metadata",
+      params: []
+    })) as any;
+    // check if fork and after Safe was made
+    isSafeFork =
+      metadata?.forkedNetwork?.chainId === 146 && metadata?.forkedNetwork?.forkBlockNumber! >= SAFE_START_BLOCK;
+  }
+
+  if (nw.chainId !== 146n && !isSafeFork) {
+    return {useSafe: false, apiKit: null as unknown as SafeApiKit, protocolKit: null as unknown as Safe};
+  }
+
+  if (!process.env.SAFE_ADDRESS) {
+    throw new Error("SAFE_ADDRESS not set in environment variables");
+  }
+
+  if (!process.env.SAFE_API_KEY) {
+    throw new Error("SAFE_API_KEY not set in environment variables");
+  }
+
+  if (!process.env.PROPOSER_PRIVATE_KEY) {
+    throw new Error("PROPOSER_PRIVATE_KEY not set in environment variables");
+  }
+
+  const apiKit = new SafeApiKit({
+    chainId: 146n,
+    apiKey: process.env.SAFE_API_KEY
+  });
+
+  const protocolKit = await Safe.init({
+    provider: process.env.SONIC_RPC as string,
+    signer: process.env.PROPOSER_PRIVATE_KEY,
+    safeAddress: process.env.SAFE_ADDRESS as string
+  });
+
+  return {useSafe: true, apiKit, protocolKit};
+};
 
 export const createPlayer = async (
   playerNFT: PlayerNFT,
@@ -40,11 +145,12 @@ export type AvatarInfo = {
 };
 
 // If there's an error with build-info not matching then delete cache/artifacts folder and try again
-export const verifyContracts = async (addresses: string[]) => {
+export const verifyContracts = async (addresses: string[], constructorArguments: any[][] = []) => {
   for (const address of addresses) {
     try {
       await run("verify:verify", {
-        address
+        address,
+        constructorArguments
       });
     } catch (e) {
       console.error(`Failed to verify contract at address ${address}`);
@@ -88,28 +194,37 @@ interface IPlayerImpls {
   playersImplMisc1: PlayersImplMisc1;
 }
 
-export const deployPlayerImplementations = async (playersLibraryAddress: string): Promise<IPlayerImpls> => {
+export const deployPlayerImplementations = async (
+  playersLibraryAddress: string,
+  signer: SignerWithAddress | undefined = undefined
+): Promise<IPlayerImpls> => {
   const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplQueueActions = "${(await playersImplQueueActions.getAddress()).toLowerCase()}"`);
 
   const playersImplProcessActions = await ethers.deployContract("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplProcessActions = "${(await playersImplProcessActions.getAddress()).toLowerCase()}"`);
 
   const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
-    libraries: {PlayersLibrary: playersLibraryAddress}
+    libraries: {PlayersLibrary: playersLibraryAddress},
+    signer: signer
   });
   console.log(`playersImplMisc = "${(await playersImplMisc.getAddress()).toLowerCase()}"`);
 
-  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1");
+  const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1", {
+    signer: signer
+  });
   console.log(`playersImplMisc1 = "${(await playersImplMisc1.getAddress()).toLowerCase()}"`);
 
   return {

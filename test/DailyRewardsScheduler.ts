@@ -27,6 +27,11 @@ describe("DailyRewardsScheduler", function () {
       kind: "uups"
     })) as unknown as RandomnessBeacon;
 
+    await owner.sendTransaction({
+      to: await randomnessBeacon.getAddress(),
+      value: ethers.parseEther("1")
+    });
+
     // Create the daily rewards scheduler
     const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
     const dailyRewardsScheduler = (await upgrades.deployProxy(

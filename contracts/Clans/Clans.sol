@@ -14,6 +14,7 @@ import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IBank} from "../interfaces/IBank.sol";
 import {IMarketplaceWhitelist} from "../interfaces/external/IMarketplaceWhitelist.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
+import {ICombatantsHelper} from "../interfaces/ICombatantsHelper.sol";
 import {EstforLibrary} from "../EstforLibrary.sol";
 
 import {BloomFilter} from "../libraries/BloomFilter.sol";
@@ -179,6 +180,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   BloomFilter.Filter private _reservedClanNames; // TODO: unused
   address private _bridge; // TODO: Bridge Can remove later if no longer need the bridge
   IActivityPoints private _activityPoints;
+  ICombatantsHelper private _combatantsHelper;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(_playerNFT.balanceOf(_msgSender(), playerId) != 0, NotOwnerOfPlayer());
@@ -252,6 +254,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
   // TODO: remove in prod
   function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
+  }
+
+  function initializeV2(ICombatantsHelper combatantsHelper) external reinitializer(2) {
+    _combatantsHelper = combatantsHelper;
   }
 
   function createClan(
@@ -748,6 +754,7 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     _territories.clanMemberLeft(clanId, playerId);
     _lockedBankVaults.clanMemberLeft(clanId, playerId);
     _raids.clanMemberLeft(clanId, playerId);
+    _combatantsHelper.applyPlayerCombatantCooldownPenalty(playerId);
   }
 
   function _claimOwnership(uint256 clanId, uint256 playerId) private {
@@ -1011,6 +1018,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
+  function setDevAddress(address dev) external onlyOwner {
+    _dev = dev;
+  }
+  
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

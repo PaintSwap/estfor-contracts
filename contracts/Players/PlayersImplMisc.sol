@@ -217,13 +217,13 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
       _activityPoints.rewardGreenTickets(ActivityType.players_dailyreward, from, isEvolved);
 
       // Mint coins if they are evolved
-      if (isEvolved) {
+      /*      if (isEvolved) {
         _itemNFT.mint(
           from,
           65480, // coin
           10
         );
-      }
+      } */
 
       _walletDailyInfo[from].lastDailyRewardClaimedTimestamp = uint40(block.timestamp);
     }
@@ -602,6 +602,7 @@ contract PlayersImplMisc is PlayersBase, IPlayersMiscDelegate, IPlayersMiscDeleg
     player.totalLevel = uint16(START_LEVEL + levelsGained);
     player.skillBoosted1 = startSkills[0];
     player.skillBoosted2 = startSkills[1]; // Can be NONE
+    player.lastActiveTimestamp = uint40(block.timestamp);
 
     // Mint starting equipment
     if (!fromBridge) {

@@ -1350,6 +1350,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "dev",
+        "type": "address"
+      }
+    ],
+    "name": "setDevAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint72",
         "name": "editNameCost",
         "type": "uint72"

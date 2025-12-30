@@ -5,13 +5,7 @@ import {expect} from "chai";
 import {Block} from "ethers";
 import {ethers} from "hardhat";
 import {Tier} from "../../scripts/data/clans";
-import {
-  clanNamesBitCount,
-  clanNamesHashCount,
-  createPlayer,
-  exportClanNamesFilePath,
-  generateUniqueBitPositions
-} from "../../scripts/utils";
+import {createPlayer, generateUniqueBitPositions} from "../../scripts/utils";
 import {clanFixture} from "./utils";
 
 describe("Clans", function () {

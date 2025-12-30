@@ -77,6 +77,7 @@ export async function clanFixture() {
   const attackingCooldown = isBeta ? 1.5 * 60 : 4 * 3600;
   const reattackingCooldown = isBeta ? 3 * 60 : 24 * 3600;
   const combatantChangeCooldown = isBeta ? 5 * 60 : 3 * 86400;
+  const playerLeaveCombatantCooldown = isBeta ? 15 * 60 : 14 * 86400;
   const editNameCost = await clans.getEditNameCost();
   return {
     ...fixture,
@@ -94,6 +95,7 @@ export async function clanFixture() {
     LockedBankVaultsLibrary,
     attackingCooldown,
     reattackingCooldown,
-    combatantChangeCooldown
+    combatantChangeCooldown,
+    playerLeaveCombatantCooldown
   };
 }

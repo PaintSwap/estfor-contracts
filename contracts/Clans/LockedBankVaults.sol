@@ -13,11 +13,10 @@ import {ITerritories} from "../interfaces/ITerritories.sol";
 import {ILockedBankVaults} from "../interfaces/ILockedBankVaults.sol";
 import {IBankFactory} from "../interfaces/IBankFactory.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
-import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
+import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
 
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
-import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
 import {BattleResultEnum, ClanRank, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, VaultClanInfo, Vault, ClanBattleInfo, XP_EMITTED_ELSEWHERE} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
@@ -34,6 +33,7 @@ import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityP
 contract LockedBankVaults is
   UUPSUpgradeable,
   OwnableUpgradeable,
+  PaintswapVRFConsumerUpgradeable,
   ILockedBankVaults,
   IClanMemberLeftCB,
   IActivityPointsCaller
@@ -115,7 +115,6 @@ contract LockedBankVaults is
   error TransferFailed();
   error CannotChangeCombatantsDuringAttack();
   error NotAdminAndBeta();
-  error InsufficientCost();
   error RequestIdNotKnown();
   error CallerNotSamWitchVRF();
   error AttacksPrevented();
@@ -138,7 +137,7 @@ contract LockedBankVaults is
   bool private _preventAttacks;
   mapping(uint256 clanId => VaultClanInfo clanInfo) private _clanInfos;
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
-  mapping(bytes32 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
+  mapping(uint256 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
   mapping(uint256 clanId => mapping(uint256 otherClanId => ClanBattleInfo battleInfo)) private _lastClanBattles; // Always ordered from lowest clanId to highest
   IClans private _clans;
   IPlayers private _players;
@@ -158,14 +157,14 @@ contract LockedBankVaults is
   uint8 private _brushTreasuryPercentage;
   uint8 private _brushDevPercentage;
 
-  VRFRequestInfo _vrfRequestInfo;
-  address private _oracle;
+  address private _unused; // Unused, previously was vrfRequestInfo
+  address private _unused1; // Unused, previously was oracle
   uint16 private _mmrAttackDistance;
   uint24 private _expectedGasLimitFulfill;
   uint24 private _attackingCooldown;
   uint24 private _reattackingCooldown;
   uint8 private _maxLockedVaults;
-  ISamWitchVRF private _samWitchVRF;
+  address private _unused2; // Unused, previously was samwitchVRF
   uint8 private _kA; // attacker K-factor
   uint8 private _kD; // defender K-factor
   uint24 private _lockFundsPeriod;
@@ -212,12 +211,6 @@ contract LockedBankVaults is
     _;
   }
 
-  /// @dev Reverts if the caller is not the SamWitchVRF contract.
-  modifier onlySamWitchVRF() {
-    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
-    _;
-  }
-
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -231,9 +224,7 @@ contract LockedBankVaults is
     ItemNFT itemNFT,
     address treasury,
     address dev,
-    address oracle,
-    ISamWitchVRF samWitchVRF,
-    VRFRequestInfo vrfRequestInfo,
+    address paintswapVRFConsumer,
     Skill[] calldata comparableSkills,
     uint16 mmrAttackDistance,
     uint24 lockFundsPeriod,
@@ -245,6 +236,7 @@ contract LockedBankVaults is
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
 
     _players = players;
     _clans = clans;
@@ -253,14 +245,11 @@ contract LockedBankVaults is
     _itemNFT = itemNFT;
     _treasury = treasury;
     _dev = dev;
-    _oracle = oracle;
-    _samWitchVRF = samWitchVRF;
     _lockFundsPeriod = lockFundsPeriod;
     _adminAccess = adminAccess;
     _isBeta = isBeta;
     _attackingCooldown = isBeta ? 1 minutes + 30 seconds : 4 hours;
     _reattackingCooldown = isBeta ? 6 minutes : 1 days;
-    _vrfRequestInfo = vrfRequestInfo;
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
 
     _activityPoints = activityPoints;
@@ -277,6 +266,10 @@ contract LockedBankVaults is
   // TODO: remove in prod
   function setActivityPoints(address activityPoints) external override onlyOwner {
     _activityPoints = IActivityPoints(activityPoints);
+  }
+
+  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
   }
 
   function assignCombatants(
@@ -317,11 +310,6 @@ contract LockedBankVaults is
     uint256 leaderPlayerId
   ) external payable isOwnerOfPlayerAndActive(leaderPlayerId) isMinimumRank(clanId, leaderPlayerId, ClanRank.COLONEL) {
     require(!_preventAttacks, AttacksPrevented());
-    // Check they are paying enough
-    require(msg.value >= getAttackCost(), InsufficientCost());
-
-    (bool success, ) = _oracle.call{value: msg.value}("");
-    require(success, TransferFailed());
 
     (bool isReattacking, bool isUsingSuperAttack, uint256 superAttackCooldownTimestamp) = LockedBankVaultsLibrary
       .checkCanAttackVaults(
@@ -339,7 +327,7 @@ contract LockedBankVaults is
     }
 
     // Check MMRs are within the list, X ranks above and below. However at the extremes add it to the other end
-    LockedBankVaultsLibrary.checkWithinRange(_sortedClansByMMR, clanId, defendingClanId, _clans, _mmrAttackDistance);
+    LockedBankVaultsLibrary.checkWithinRange(_sortedClansByMMR, _clanInfos, clanId, defendingClanId, _clans, _mmrAttackDistance);
 
     VaultClanInfo storage clanInfo = _clanInfos[clanId];
     clanInfo.currentlyAttacking = true;
@@ -382,7 +370,7 @@ contract LockedBankVaults is
       extraRollsAttacker: isUsingSuperAttack ? 1 : 0,
       extraRollsDefender: 0
     });
-    bytes32 requestId = _requestRandomWords();
+    uint256 requestId = _requestRandomWords();
     _requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
     emit AttackVaults(
@@ -410,8 +398,8 @@ contract LockedBankVaults is
     }
   }
 
-  /// @notice Called by the SamWitchVRF oracle contract to fulfill the request
-  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+  /// @notice Called by the PaintswapVRF oracle contract to fulfill the request
+  function _fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
     require(randomWords.length == NUM_WORDS, LengthMismatch());
 
     PendingAttack storage pendingAttack = _pendingAttacks[_requestToPendingAttackIds[requestId]];
@@ -462,8 +450,6 @@ contract LockedBankVaults is
       Vault storage losersVault = _clanInfos[losingClanId].defendingVaults[i];
       totalWon += _stealFromVault(losersVault, losingClanId, percentageToTake);
     }
-
-    _vrfRequestInfo.updateAverageGasPrice();
 
     (int256 attackingMMRDiff, int256 defendingMMRDiff) = LockedBankVaultsLibrary.fulfillUpdateMMR(
       _kA,
@@ -614,13 +600,13 @@ contract LockedBankVaults is
     emit LockFunds(clanId, from, playerId, amount, lockingTimestamp);
   }
 
-  function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, _expectedGasLimitFulfill);
+  function _requestRandomWords() private returns (uint256 requestId) {
+    uint256 gasPayment = _calculateRequestPriceNative(_expectedGasLimitFulfill);
+    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, gasPayment);
   }
 
   function getAttackCost() public view returns (uint256) {
-    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
-    return baseRequestCost + (movingAverageGasPrice * _expectedGasLimitFulfill);
+    return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
   function getClanInfo(uint256 clanId) external view returns (VaultClanInfo memory) {
@@ -692,6 +678,10 @@ contract LockedBankVaults is
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
+  function setDevAddress(address dev) external onlyOwner {
+    _dev = dev;
+  }
+  
   function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
     _maxClanCombatants = maxClanCombatants;
     emit SetMaxClanCombatants(maxClanCombatants);
@@ -729,7 +719,7 @@ contract LockedBankVaults is
 
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
-    _pendingAttacks[_requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
+    _pendingAttacks[_requestToPendingAttackIds[requestId]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks

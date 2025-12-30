@@ -2057,6 +2057,19 @@
   {
     "inputs": [
       {
+        "internalType": "contract ICombatantsHelper",
+        "name": "combatantsHelper",
+        "type": "address"
+      }
+    ],
+    "name": "initializeV2",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "clanId",
         "type": "uint256"
@@ -2333,6 +2346,19 @@
       }
     ],
     "name": "setBrushDistributionPercentages",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "dev",
+        "type": "address"
+      }
+    ],
+    "name": "setDevAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

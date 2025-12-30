@@ -272,7 +272,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       mockVRF,
-      combatantChangeCooldown
+      playerLeaveCombatantCooldown
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -321,7 +321,7 @@ describe("Territories", function () {
     await expect(
       combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], false, [], ownerPlayerId)
     ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
-    await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
+    await ethers.provider.send("evm_increaseTime", [playerLeaveCombatantCooldown]);
     await ethers.provider.send("evm_mine", []);
     await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
@@ -565,6 +565,46 @@ describe("Territories", function () {
       .withArgs(ownerPlayerId, clanId);
   });
 
+  it("Leaving clan sets a penalty as a future combatant so player cannot rejoin roster quickly", async function () {
+    const {
+      clans,
+      clanId,
+      playerId,
+      ownerPlayerId,
+      combatantChangeCooldown,
+      playerLeaveCombatantCooldown,
+      combatantsHelper,
+      alice
+    } = await loadFixture(territoriesVaultsFixture);
+
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
+
+    await combatantsHelper
+      .connect(alice)
+      .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId);
+
+    await combatantsHelper.setPlayerLeftCombatantCooldownTimestampPenalty(playerLeaveCombatantCooldown);
+
+    clans.changeRank(clanId, ownerPlayerId, ClanRank.NONE, ownerPlayerId); // Leave clan
+
+    // Try re-adding them after clan combatant cooldown
+    await clans.requestToJoin(clanId, ownerPlayerId, 0);
+    await clans.connect(alice).acceptJoinRequests(clanId, [ownerPlayerId], playerId);
+
+    await ethers.provider.send("evm_increaseTime", [combatantChangeCooldown]);
+    await ethers.provider.send("evm_mine", []);
+
+    await expect(
+      combatantsHelper
+        .connect(alice)
+        .assignCombatants(clanId, true, [playerId, ownerPlayerId], false, [], false, [], playerId)
+    ).to.be.revertedWithCustomError(combatantsHelper, "PlayerCombatantCooldownTimestamp");
+
+    // But we can with just the original player
+    await combatantsHelper.connect(alice).assignCombatants(clanId, true, [playerId], false, [], false, [], playerId);
+  });
+
   it("Is owner of player when attacking", async () => {
     const {clanId, playerId, territories} = await loadFixture(territoriesVaultsFixture);
 
@@ -783,8 +823,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF,
-      vrfRequestInfo
+      mockVRF
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -816,23 +855,14 @@ describe("Territories", function () {
     // Useful to re-run a battle for testing
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF);
-    expect(await vrfRequestInfo.getMovingAverageGasPrice()).to.eq(0);
 
     let attackCost = await territories.getAttackCost();
-    const baseAttackCost = await vrfRequestInfo.getBaseRequestCost();
-    expect(attackCost).to.eq(baseAttackCost);
 
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 1000n);
-    const bigZero = 0n;
-    // The big zeros are there to show all the values used
-    expect(await vrfRequestInfo.getMovingAverageGasPrice()).to.eq(
-      (bigZero + bigZero + bigZero + (gasPrice + 1000n)) / 4n
-    );
 
     attackCost = await territories.getAttackCost();
     const expectedGasLimit = await territories.getExpectedGasLimitFulfill();
-    expect(attackCost).to.eq(baseAttackCost + (await vrfRequestInfo.getMovingAverageGasPrice()) * expectedGasLimit);
 
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 900n);
@@ -842,12 +872,6 @@ describe("Territories", function () {
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 500n);
     await territories.setAttackInProgress(requestId);
     await fulfillRandomWords(requestId, territories, mockVRF, gasPrice + 200n);
-
-    expect(await vrfRequestInfo.getMovingAverageGasPrice()).to.eq(
-      (gasPrice + 900n + gasPrice + 800n + gasPrice + 500n + gasPrice + 200n) / 4n
-    );
-    attackCost = await territories.getAttackCost();
-    expect(attackCost).to.eq(baseAttackCost + (await vrfRequestInfo.getMovingAverageGasPrice()) * expectedGasLimit);
   });
 
   it("Assigning new combatants is allowed while holding a territory", async () => {

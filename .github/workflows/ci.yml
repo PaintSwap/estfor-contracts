@@ -18,18 +18,26 @@ jobs:
       FANTOM_RPC: NA
       PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
       PRIVATE_KEY1: "0xa0610ad18a7a793b0d2c12d28d74ccc8d90a422514db2e4cea3a9eaec7215ad3"
+      PROPOSER_PRIVATE_KEY: "0xa0610ad18a7a793b0d2c12d28d74ccc8d90a422514db2e4cea3a9eaec7215ad4"
       IS_BETA: true
-      HARDHAT_USE_PRIVATE_KEY: false
+      USE_PRIVATE_KEY: false
+      USE_HARDHAT_FORK: false
       CHAIN_ID: 31337
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Install packages
         uses: actions/setup-node@v4
         with:
-          node-version: "18.x"
-      - run: yarn install
+          node-version: "22.x"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
         shell: bash
       - name: Deploy
-        run: yarn deploy
+        run: pnpm run deploy
       - name: Tests
-        run: yarn test
+        run: pnpm test
