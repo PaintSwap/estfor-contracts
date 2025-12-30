@@ -1,4 +1,4 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {loadFixture, time} from "@nomicfoundation/hardhat-network-helpers";
 import {clanFixture} from "./utils";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
@@ -143,6 +143,51 @@ describe("ClanBattleLibrary", function () {
     expect(res.battleResults[0]).to.eq(BattleResult.LOSE);
   });
 
+  it("Mismatch in player counts is an automatic win for those that are not missing except when there's inactive players", async () => {
+    const {alice, bob, playerNFT, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
+
+    let clanMembersA = [playerId];
+    let clanMembersB: bigint[] = [];
+    const skills = [Skill.FISHING];
+    const randomWordAs = [0, 1, 0];
+    const randomWordBs = [0, 3, 0];
+    const extraRollsA = 0;
+    const extraRollsB = 0;
+    await players.modifyXP(alice, playerId, skills[0], 1000, SKIP_XP_THRESHOLD_EFFECTS);
+    let res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+
+    expect(res.didAWin).to.be.true;
+    expect(res.battleResults[0]).to.eq(BattleResult.WIN);
+
+    await time.increase(15 * 24 * 60 * 60); // Move forward 15 days to make players inactive
+
+    const newPlayerId2 = await createPlayer(playerNFT, 1, bob, "New name2", true); // use bob to avoid same owner effects
+
+    clanMembersA = [newPlayerId2];
+    clanMembersB = [playerId, playerId];
+    res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+
+      extraRollsA,
+      extraRollsB
+    );
+
+    expect(res.didAWin).to.be.true;
+    expect(res.battleResults[0]).to.eq(BattleResult.WIN);
+  });
+
   it("Player ids of 0 is an automatic win for the other side", async () => {
     const {alice, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
 
@@ -226,6 +271,75 @@ describe("ClanBattleLibrary", function () {
 
     clanMembersA = [playerId, playerId];
     clanMembersB = [playerId, newPlayerId];
+    res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.false;
+  });
+
+  it("Rolls zeroes for inactive players", async () => {
+    const {alice, bob, playerNFT, players, playerId, clanBattleLibrary} = await loadFixture(clanFixture);
+
+    let clanMembersA = [playerId, playerId];
+    let clanMembersB = [playerId, playerId];
+    const skills = Array(clanMembersA.length).fill(Skill.FISHING);
+    let randomWordAs = [0, 3, 0];
+    let randomWordBs = [0, 1, 0];
+    const extraRollsA = 0;
+    const extraRollsB = 0;
+    await players.modifyXP(alice, playerId, skills[0], getXPFromLevel(20), SKIP_XP_THRESHOLD_EFFECTS); // Get 2 rolls each
+
+    let res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.true;
+
+    const avatarId = 1;
+    const newPlayerId = await createPlayer(playerNFT, avatarId, bob, "New name", true);
+    // Need to be at least level 40
+    await players.modifyXP(bob, newPlayerId, skills[0], getXPFromLevel(40), SKIP_XP_THRESHOLD_EFFECTS);
+
+    randomWordAs = [0, 3, 0];
+    randomWordBs = [0, 3, 0];
+
+    clanMembersA = [playerId, playerId];
+    clanMembersB = [newPlayerId, playerId];
+
+    res = await clanBattleLibrary.determineBattleOutcome(
+      players,
+      clanMembersA,
+      clanMembersB,
+      skills,
+      [...randomWordAs, ...randomWordBs],
+      extraRollsA,
+      extraRollsB
+    );
+    expect(res.didAWin).to.be.true;
+
+    await time.increase(15 * 24 * 60 * 60); // Move forward 15 days to make players inactive
+
+    const newPlayerId2 = await createPlayer(playerNFT, avatarId, bob, "New name2", true);
+    // Need to be at least level 40
+    await players.modifyXP(bob, newPlayerId2, skills[0], getXPFromLevel(40), SKIP_XP_THRESHOLD_EFFECTS);
+
+    randomWordAs = [0, 3, 0]; // playerId should win, but since they've been inactive for 2 weeks, they roll zeroes
+    randomWordBs = [0, 3, 0];
+
+    clanMembersA = [playerId, playerId];
+    clanMembersB = [newPlayerId2, playerId];
+
     res = await clanBattleLibrary.determineBattleOutcome(
       players,
       clanMembersA,

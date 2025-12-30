@@ -162,24 +162,30 @@ library LockedBankVaultsLibrary {
 
   function checkWithinRange(
     uint48[] storage sortedClansByMMR,
+    mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos,
     uint256 clanId,
     uint256 defendingClanId,
     IClans clans,
     uint256 mmrAttackDistance
   ) external view {
-    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndices(sortedClansByMMR, clanId, defendingClanId);
-    uint48[] memory modifiedSortedClansByMMR;
+    // Remove clans that have fewer than 50% + 1 of the combatants of the attacking clan
+    uint48[] memory modifiedSortedClansByMMR = _removeLowRosterClans(
+      sortedClansByMMR,
+      clanInfos,
+      clanId,
+      defendingClanId
+    );
+
+    (uint256 clanIndex, uint256 defendingClanIndex) = _getClanIndicesMemory(modifiedSortedClansByMMR, clanId, defendingClanId);
     if (clanIndex == type(uint256).max) {
       (modifiedSortedClansByMMR, clanIndex) = _insertMMRArrayInMemory(
-        sortedClansByMMR,
+        modifiedSortedClansByMMR,
         clans.getMMR(clanId),
         uint32(clanId)
       );
       if (clanIndex <= defendingClanIndex) {
         ++defendingClanIndex;
       }
-    } else {
-      modifiedSortedClansByMMR = sortedClansByMMR;
     }
 
     require(
@@ -273,6 +279,10 @@ library LockedBankVaultsLibrary {
   // So with this array [400, 500, 500, 500, 600] with a range of 1, any attacker at 500 can attack the defender at 400 and 600
   // If there are any duplicates at the edge of the range, then the attacker can attack any with that MMR
   // So with the above array the 400 MMR clan can attack any 500 MMR clans with a range of 1
+  //
+  // Additionally, if the defender will auto-lose (roster size <50% + 1 of the attacker), then range is ignored
+  // So with this array [400, 450, 500, 550, 600] with a range of 1, the 400 MMR clan can attack the 600 MMR clan if the clans inbetween have small enough rosters
+  // This is handled before calling this function
   function _isWithinRange(
     uint48[] memory sortedClansByMMR,
     uint256 clanIdIndex,
@@ -387,6 +397,12 @@ library LockedBankVaultsLibrary {
       uint16(defendingMMR),
       didAttackersWin
     );
+
+    // Prevent 1 man clan boosting large clan by attacking and losing to them repeatedly
+    bool defenderMMRShouldChange = clanInfos[attackingClanId].playerIds.length >= (clanInfos[defendingClanId].playerIds.length / 2) + 1 || clanInfos[defendingClanId].playerIds.length == 0;
+    if (!defenderMMRShouldChange) {
+      newDefendingMMR = defendingMMR;
+    }
 
     attackingMMRDiff = int256(newAttackingMMR) - int256(attackingMMR);
     defendingMMRDiff = int256(newDefendingMMR) - int256(defendingMMR);
@@ -556,7 +572,7 @@ library LockedBankVaultsLibrary {
     }
   }
 
-  function _lowerBound(uint48[] storage sortedClansByMMR, uint256 targetMMR) internal view returns (uint256) {
+  function _lowerBound(uint48[] memory sortedClansByMMR, uint256 targetMMR) internal view returns (uint256) {
     if (sortedClansByMMR.length == 0) {
       return 0;
     }
@@ -605,6 +621,32 @@ library LockedBankVaultsLibrary {
       uint256 lowerClanId = clanId < otherClanIds[i] ? clanId : otherClanIds[i];
       uint256 higherClanId = clanId < otherClanIds[i] ? otherClanIds[i] : clanId;
       delete lastClanBattles[lowerClanId][higherClanId];
+    }
+  }
+
+  function _removeLowRosterClans(
+    uint48[] storage sortedClansByMMR,
+    mapping(uint256 clanId => VaultClanInfo clanInfo) storage clanInfos,
+    uint256 attackingClanId,
+    uint256 defendingClanId
+  ) private view returns (uint48[] memory filteredClans) {
+    uint256 attackingClanRosterSize = clanInfos[attackingClanId].playerIds.length;
+    uint256 minRosterSize = (attackingClanRosterSize / 2) + 1; // 50% + 1 of the attacking clan's roster size
+    uint256 length = sortedClansByMMR.length;
+
+    filteredClans = new uint48[](length);
+
+    // Create a new array with only the clans that meet the roster size requirement
+    uint256 index;
+    for (uint256 i = 0; i < length; ++i) {
+      uint256 clanId = _getClanId(sortedClansByMMR[i]);
+      if (clanInfos[clanId].playerIds.length >= minRosterSize || clanId == attackingClanId || clanId == defendingClanId) {
+        filteredClans[index++] = sortedClansByMMR[i];
+      }
+    }
+
+    assembly ("memory-safe") {
+      mstore(filteredClans, index)
     }
   }
 
@@ -694,7 +736,7 @@ library LockedBankVaultsLibrary {
   }
 
   function _insertMMRArrayInMemory(
-    uint48[] storage sortedClansByMMR,
+    uint48[] memory sortedClansByMMR,
     uint16 mmr,
     uint32 clanId
   ) private view returns (uint48[] memory newSortedClansByMMR, uint256 index) {

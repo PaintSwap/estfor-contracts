@@ -813,6 +813,10 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
+  function setDevAddress(address dev) external onlyOwner {
+    _dev = dev;
+  }
+  
   function setBridge(address bridge) external onlyOwner {
     _bridge = bridge;
   }

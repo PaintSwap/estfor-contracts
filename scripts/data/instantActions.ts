@@ -4873,7 +4873,7 @@ export const allInstantActions: InstantActionInput[] = [
     outputAmount: 1,
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
-    isAvailable: true,
+    isAvailable: false,
     questPrerequisiteId: 0
   },
   {
@@ -4886,7 +4886,7 @@ export const allInstantActions: InstantActionInput[] = [
     outputAmount: 1,
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
-    isAvailable: true,
+    isAvailable: false,
     questPrerequisiteId: 0
   },
   {
@@ -4899,7 +4899,7 @@ export const allInstantActions: InstantActionInput[] = [
     outputAmount: 1,
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
-    isAvailable: true,
+    isAvailable: false,
     questPrerequisiteId: 0
   },
   {
@@ -4912,7 +4912,7 @@ export const allInstantActions: InstantActionInput[] = [
     outputAmount: 1,
     isFullModeOnly: true,
     actionType: InstantActionType.GENERIC,
-    isAvailable: true,
+    isAvailable: false,
     questPrerequisiteId: 0
   }
 ];

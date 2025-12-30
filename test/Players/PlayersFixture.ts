@@ -26,7 +26,6 @@ import {
   RoyaltyReceiver,
   Shop,
   Territories,
-  VRFRequestInfo,
   WishingWell,
   RandomnessBeacon,
   Treasury,
@@ -45,7 +44,8 @@ import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
 
 export const playersFixture = async function () {
-  const [owner, alice, bob, charlie, dev, erin, frank] = await ethers.getSigners();
+  const [owner, alice, bob, charlie, dev, erin, frank, geoff, harry, isla, juliet, kiki, lucy] =
+    await ethers.getSigners();
 
   const brush = await ethers.deployContract("MockBrushToken");
   const mockVRF = await ethers.deployContract("MockVRF");
@@ -81,6 +81,11 @@ export const playersFixture = async function () {
   const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
     kind: "uups"
   })) as unknown as RandomnessBeacon;
+
+  await owner.sendTransaction({
+    to: await randomnessBeacon.getAddress(),
+    value: ethers.parseEther("1")
+  });
 
   const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
   const dailyRewardsScheduler = (await upgrades.deployProxy(
@@ -368,12 +373,6 @@ export const playersFixture = async function () {
 
   const oracleAddress = await dev.getAddress();
 
-  const VRFRequestInfo = await ethers.getContractFactory("VRFRequestInfo");
-  const vrfRequestInfo = (await upgrades.deployProxy(VRFRequestInfo, [], {
-    kind: "uups"
-  })) as unknown as VRFRequestInfo;
-  // await activityPoints.addCallers([await vrfRequestInfo.getAddress()]);
-
   const maxInstantVRFActionAmount = 64n;
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
@@ -383,9 +382,7 @@ export const playersFixture = async function () {
       await itemNFT.getAddress(),
       await petNFT.getAddress(),
       await quests.getAddress(),
-      oracleAddress,
       await mockVRF.getAddress(),
-      await vrfRequestInfo.getAddress(),
       maxInstantVRFActionAmount,
       await activityPoints.getAddress()
     ],
@@ -426,9 +423,7 @@ export const playersFixture = async function () {
       await playerNFT.getAddress(),
       await brush.getAddress(),
       await itemNFT.getAddress(),
-      oracleAddress,
       await mockVRF.getAddress(),
-      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       pvpAttackingCooldown,
       await adminAccess.getAddress(),
@@ -482,9 +477,7 @@ export const playersFixture = async function () {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await clans.getAddress(),
-      oracleAddress,
       await mockVRF.getAddress(),
-      await vrfRequestInfo.getAddress(),
       spawnRaidCooldown,
       await brush.getAddress(),
       await worldActions.getAddress(),
@@ -498,6 +491,11 @@ export const playersFixture = async function () {
       unsafeAllow: ["external-library-linking"]
     }
   )) as unknown as Raids;
+
+  await owner.sendTransaction({
+    to: await raids.getAddress(),
+    value: ethers.parseEther("10")
+  });
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
 
@@ -523,9 +521,7 @@ export const playersFixture = async function () {
       await itemNFT.getAddress(),
       await treasury.getAddress(),
       await dev.getAddress(),
-      oracleAddress,
       await mockVRF.getAddress(),
-      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       mmrAttackDistance,
       lockedFundsPeriod,
@@ -557,9 +553,7 @@ export const playersFixture = async function () {
       await brush.getAddress(),
       await lockedBankVaults.getAddress(),
       await itemNFT.getAddress(),
-      oracleAddress,
       await mockVRF.getAddress(),
-      await vrfRequestInfo.getAddress(),
       allBattleSkills,
       maxClanCombatantsTerritories,
       attackingCooldownTerritories,
@@ -592,6 +586,12 @@ export const playersFixture = async function () {
       unsafeAllow: ["external-library-linking"]
     }
   )) as unknown as CombatantsHelper;
+
+  await upgrades.upgradeProxy(await clans.getAddress(), Clans, {
+    call: {fn: "initializeV2", args: [await combatantsHelper.getAddress()]},
+    unsafeAllow: ["external-library-linking"],
+    kind: "uups"
+  });
 
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
@@ -684,7 +684,6 @@ export const playersFixture = async function () {
   await territories.setCombatantsHelper(combatantsHelper);
   await raids.initializeAddresses(combatantsHelper, bankFactory);
   await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
-  await vrfRequestInfo.setUpdaters([instantVRFActions, lockedBankVaults, territories, pvpBattleground], true);
   await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
   await players.setAlphaCombatParams(1, 1, 0); // Alpha combat healing was introduced later, so to not mess up existing tests set this to 0
 
@@ -740,6 +739,12 @@ export const playersFixture = async function () {
     dev,
     erin,
     frank,
+    geoff,
+    harry,
+    isla,
+    juliet,
+    kiki,
+    lucy,
     origName,
     editNameBrushPrice,
     upgradePlayerBrushPrice,
@@ -777,7 +782,6 @@ export const playersFixture = async function () {
     lockedBankVaults,
     territories,
     combatantsHelper,
-    vrfRequestInfo,
     instantVRFActions,
     genericInstantVRFActionStrategy,
     eggInstantVRFActionStrategy,

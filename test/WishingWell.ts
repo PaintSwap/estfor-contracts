@@ -7,7 +7,6 @@ import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {createPlayer} from "../scripts/utils";
 import {BOOST_START_NOW, getPlayersHelper, setupBasicWoodcutting} from "./Players/utils";
 import {parseEther} from "ethers";
-import {activityPoints} from "../typechain-types/contracts";
 
 describe("WishingWell", function () {
   async function deployContracts() {

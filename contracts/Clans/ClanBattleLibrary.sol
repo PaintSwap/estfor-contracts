@@ -70,22 +70,30 @@ library ClanBattleLibrary {
     EstforLibrary._shuffleArray(clanMembersA, randomWords[0]);
     EstforLibrary._shuffleArray(clanMembersB, randomWords[3]);
 
-    uint256 baseClanMembersCount = clanMembersA.length > clanMembersB.length
-      ? clanMembersB.length
-      : clanMembersA.length;
+    uint256 baseClanMembersCount = Math.max(clanMembersA.length, clanMembersB.length);
 
-    battleResults = new uint8[](Math.max(clanMembersA.length, clanMembersB.length));
-    rollsA = new uint256[](Math.max(clanMembersA.length, clanMembersB.length));
-    rollsB = new uint256[](Math.max(clanMembersA.length, clanMembersB.length));
+    battleResults = new uint8[](baseClanMembersCount);
+    rollsA = new uint256[](baseClanMembersCount);
+    rollsB = new uint256[](baseClanMembersCount);
 
     uint256 numWinnersA;
     uint256 numWinnersB;
     {
       for (uint256 i; i < baseClanMembersCount; ++i) {
-        // It's possible that there are empty entries if they left the clan
-        if (clanMembersA[i] == 0 || clanMembersB[i] == 0) {
-          rollsA[i] = clanMembersA[i] == 0 ? 0 : 1;
-          rollsB[i] = clanMembersB[i] == 0 ? 0 : 1;
+        // If there's empty slots, they automatically lose
+        if (clanMembersA.length <= i || clanMembersA[i] == 0 || clanMembersB.length <= i || clanMembersB[i] == 0) {
+          if (clanMembersA.length > i) {
+            uint256 lastActiveTimestampA = IPlayers(players).getLastActiveTimestamp(clanMembersA[i]);
+            rollsA[i] = clanMembersA[i] == 0 || (lastActiveTimestampA < block.timestamp - 2 weeks) ? 0 : 1;
+          } else {
+            rollsA[i] = 0;
+          }
+          if (clanMembersB.length > i) {
+            uint256 lastActiveTimestampB = IPlayers(players).getLastActiveTimestamp(clanMembersB[i]);
+            rollsB[i] = clanMembersB[i] == 0 || (lastActiveTimestampB < block.timestamp - 2 weeks) ? 0 : 1;
+          } else {
+            rollsB[i] = 0;
+          }
         } else {
           uint256 levelA = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersA[i], Skill(skills[i])));
           uint256 levelB = PlayersLibrary._getLevel(IPlayers(players).getPlayerXP(clanMembersB[i], Skill(skills[i])));
@@ -115,17 +123,27 @@ library ClanBattleLibrary {
           }
 
           uint256 numRollsA = (levelA / 20) + 1 + extraRollsA;
+          // If the user has not used the character in 2 weeks, they forfeit
+          uint256 lastActiveTimestampA = IPlayers(players).getLastActiveTimestamp(clanMembersA[i]);
+          if (lastActiveTimestampA < (block.timestamp - 2 weeks)) {
+            numRollsA = 0;
+          }
 
           // Check how many bits are set based on the number of rolls
           for (uint256 j; j < numRollsA; ++j) {
             rollsA[i] += uint16(bytesA >> j) & 1;
           }
-          uint256 numRollsB = (levelB / 20) + 1 + extraRollsB;
 
+          uint256 numRollsB = (levelB / 20) + 1 + extraRollsB;
+          uint256 lastActiveTimestampB = IPlayers(players).getLastActiveTimestamp(clanMembersB[i]);
+          if (lastActiveTimestampB < (block.timestamp - 2 weeks)) {
+            numRollsB = 0;
+          }
           for (uint256 j; j < numRollsB; ++j) {
             rollsB[i] += uint16(bytesB >> j) & 1;
           }
         }
+
         if (rollsA[i] > rollsB[i]) {
           ++numWinnersA;
           battleResults[i] = uint8(BattleResultEnum.WIN);
@@ -135,18 +153,6 @@ library ClanBattleLibrary {
         } else {
           battleResults[i] = uint8(BattleResultEnum.DRAW);
         }
-      }
-    }
-
-    if (clanMembersB.length > clanMembersA.length) {
-      numWinnersB += clanMembersB.length - clanMembersA.length;
-      for (uint256 i = baseClanMembersCount; i < clanMembersB.length; ++i) {
-        battleResults[i] = uint8(BattleResultEnum.LOSE);
-      }
-    } else if (clanMembersA.length > clanMembersB.length) {
-      numWinnersA += clanMembersA.length - clanMembersB.length;
-      for (uint256 i = baseClanMembersCount; i < clanMembersA.length; ++i) {
-        battleResults[i] = uint8(BattleResultEnum.WIN);
       }
     }
 

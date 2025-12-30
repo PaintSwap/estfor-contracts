@@ -2,8 +2,7 @@ import {isBeta} from "./utils";
 
 let brush;
 let wftm;
-let oracle;
-let samWitchVRF;
+let vrf;
 let router;
 let paintSwapMarketplaceWhitelist;
 let worldActions;
@@ -35,7 +34,6 @@ let playersImplMisc1;
 let players;
 let instantActions;
 let instantVRFActions;
-let vrfRequestInfo;
 let genericInstantVRFActionStrategy;
 let eggInstantVRFActionStrategy;
 let clanBattleLibrary;
@@ -58,21 +56,14 @@ const chainId = process.env.CHAIN_ID;
 if (chainId == "146") {
   brush = "0xE51EE9868C1f0d6cd968A8B8C8376Dc2991BFE44";
   wftm = "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38";
-  if (!isBeta) {
-    oracle = "0x28ade840602d0363a2ab675479f1b590b23b0490";
-    samWitchVRF = "0xE8eE3F1F75Df6807C78adDd1eB3edd010aBEe127";
-  } else {
-    oracle = "0x6f7911cbbd4b5a1d2bdaa817a76056e510d728e7";
-    samWitchVRF = "0x1BFf1DC67974577CF62A76463580CA5BBcC5f68e";
-  }
+  vrf = "0x6E3efcB244e74Cb898A7961061fAA43C3cf79691";
   router = "0xcC6169aA1E879d3a4227536671F85afdb2d23fAD";
   paintSwapMarketplaceWhitelist = "0xc1dd8640b3acbc34a228f632ef9bea39dcc7b0ce";
 } else {
   router = "0x";
   brush = "0x";
   wftm = "0x";
-  oracle = "0x";
-  samWitchVRF = "0x";
+  vrf = "0x";
   router = "0x";
   paintSwapMarketplaceWhitelist = "0x";
 }
@@ -98,25 +89,24 @@ if (!isBeta) {
   petNFTLibrary = "0xa117b910a35e922a51b2a07ab24d2c4b493a5489";
   petNFT = "0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed";
   playersLibrary = "0x99e7d54c349173c61b536876c6fd47106e47ebf6";
-  playersImplQueueActions = "0x307abdb334a4fec3706e7502f872113628bb3ae3";
-  playersImplProcessActions = "0xe5afd8be1cf224fc5e0239f90289d3500fc8982b";
-  playersImplRewards = "0xa7dcf35aff492a8272d14cf31d8b8404e84b4aa9";
-  playersImplMisc = "0x7051382399d8ae212f1c30ab618445f849be9dfa";
-  playersImplMisc1 = "0x499f4a8be509470e707596f87e85fb9f7c173d28";
+  playersImplQueueActions = "0xb86d44c29f203066a05540bfdbe3b8589c569c19";
+  playersImplProcessActions = "0x538489edef63a204a0f0080c812adba9dcda9e76";
+  playersImplRewards = "0x61f16afa0c3785f0b60cee72c4999581064f968a";
+  playersImplMisc = "0xb8c6ef74a49a28f71517ba6aff34df40336dd91d";
+  playersImplMisc1 = "0x03ffd5436e9159bf997440d61012ffed54539928";
   players = "0xefa670aad6d5921236e9655f346ca13a5c56481b";
   promotionsLibrary = "0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9";
   promotions = "0xaf48a8a12f29e30b3831392aa2ee6344d07d188b";
   passiveActions = "0x72bb8faee4094d5a701faa26f9f442d32dfe53b6";
   instantActions = "0x765f7068c3cd210b52374498f3ce01617667aed0";
-  vrfRequestInfo = "0x4875572c5d0910fdc19a193e38c3eb1113e28218";
   instantVRFActions = "0x1ea4b1fa7f069b89eb8cceee30bfb24945e4d638";
   genericInstantVRFActionStrategy = "0x05cd907e6ad6cad21ab2a39e49c68b110be7189a";
   eggInstantVRFActionStrategy = "0x231363f40693698df92354275e2bcc4cbe48aa56";
   bankRelay = "0x0df55b940e993f8d3b06a64212962c3d0fef8cba";
   pvpBattleground = "0x679193f35e696651e125b2851ee7c4e44bf40a18";
   raids = "0xec57b7988ee3344bcf4ce64e5d11f495df7cd951";
-  clanBattleLibrary = "0x6545f99f0753acbc4276a1ff317159690eef9111";
-  lockedBankVaultsLibrary = "0x10de14eafea8f841689b01fa682c63e52255b148";
+  clanBattleLibrary = "0x97be54a51ca91ca34377563d865e4e21a5637472";
+  lockedBankVaultsLibrary = "0x55b7fd81638b81806d1c89f7930383030621b2e5";
   lockedBankVaults = "0xfaa31b6ddb7e07cae5ff15475b3966d78d660240";
   territories = "0x5a6d80bb035318d2a24c1fdfd055032a15f11b12";
   combatantsHelper = "0xc754d621239b5830264f8c8e302c21ffe48625fc";
@@ -145,25 +135,24 @@ if (!isBeta) {
   petNFTLibrary = "0xc782815771443b1007a1ee92483ee9ff907dad0d";
   petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
   playersLibrary = "0xc9ceda474642e39f05c3e8fed75b3f45ed4ae210";
-  playersImplQueueActions = "0xc5db46ea6231278af465b6895886773c105a5690";
-  playersImplProcessActions = "0xe8f47f8a672aaf57309106cf17123b7255ce6b37";
-  playersImplRewards = "0x6c2425a649364d3d4a85637ee4088f0baedbeb1a";
-  playersImplMisc = "0x9a770064e486393443b090cead46442f5af4a2ac";
-  playersImplMisc1 = "0xdc1d7e70c251db260a0525ab57aea635a50403b4";
+  playersImplQueueActions = "0x1a37b0d9e4cd39fa4023c0cda09e0a9430290c20";
+  playersImplProcessActions = "0xf01c2d718e6a26dcbdf9130594ebf8de6794f120";
+  playersImplRewards = "0x26fb9ac5f3db89ab552ec381602fc4c4d5336b1d";
+  playersImplMisc = "0x98b407d605ec06ededac1a192441835018f66662";
+  playersImplMisc1 = "0x57fed52dd759459c27e9a7f767a4f0b831ad96ab";
   players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
   promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
   promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";
   passiveActions = "0x0b577a40b8e69614bd2f6687349ba69c0d1f7113";
   instantActions = "0x76928633cfbf043bca1f6b8ffe634f4c63dbd90d";
-  vrfRequestInfo = "0x3631ba58d96d6089b9f55bc91e726199c3ec6ec2";
   instantVRFActions = "0x007247ab8fbae2b07f5adf3e70a141459c89264e";
   genericInstantVRFActionStrategy = "0x2e66bf22e21aee0986602dd2c7265a5470ec9962";
   eggInstantVRFActionStrategy = "0xd9deebc6ca8b75f8e4de7b4e96a4d8b7e2b3607e";
   bankRelay = "0xd6cdc1d365e505f0546361782c4336c829c39568";
   pvpBattleground = "0xe91a6cdac47dfd546578273253bff1fddc350764";
   raids = "0xbfd416e76519cf199dd95b82f6928b3a4b5ac995";
-  clanBattleLibrary = "0xfdeccc0c52864998d37121989944519be47c5a6a";
-  lockedBankVaultsLibrary = "0x29b1095ed9e89826704e9e8fe326869d51d7b14e";
+  clanBattleLibrary = "0x58e99f6ed3bfb9e9311d9297e48310c3c8aea178";
+  lockedBankVaultsLibrary = "0x080ca5bb70759b993676a4dc88c2e36125d83661";
   lockedBankVaults = "0x9451943d38ac8cde8a2a8026adb8b28ac089b2cb";
   territories = "0xa2ca7daad4b86819c455fafc704d727a23c5a513";
   combatantsHelper = "0x7fa2b4c19093e0777d72235ea28d302f53227fa0";
@@ -206,7 +195,6 @@ export const PLAYERS_ADDRESS = players;
 
 export const INSTANT_ACTIONS_ADDRESS = instantActions;
 export const INSTANT_VRF_ACTIONS_ADDRESS = instantVRFActions;
-export const VRF_REQUEST_INFO_ADDRESS = vrfRequestInfo;
 export const GENERIC_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = genericInstantVRFActionStrategy;
 export const EGG_INSTANT_VRF_ACTION_STRATEGY_ADDRESS = eggInstantVRFActionStrategy;
 
@@ -231,7 +219,6 @@ export const ROUTER_ADDRESS = router;
 export const PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS = paintSwapMarketplaceWhitelist;
 
 // VRF
-export const ORACLE_ADDRESS = oracle;
-export const SAMWITCH_VRF_ADDRESS = samWitchVRF;
+export const VRF_ADDRESS = vrf;
 
-export const DEV_ADDRESS = "0x045eF160107eD663D10c5a31c7D2EC5527eea1D0";
+export const DEV_ADDRESS = "0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9";

@@ -6,13 +6,13 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
+
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
-import {ISamWitchVRF} from "./interfaces/ISamWitchVRF.sol";
 
 import {AdminAccess} from "./AdminAccess.sol";
 import {ItemNFT} from "./ItemNFT.sol";
-import {VRFRequestInfo} from "./VRFRequestInfo.sol";
 import {PlayerNFT} from "./PlayerNFT.sol";
 
 import {Item, EquipPosition} from "./globals/players.sol";
@@ -23,7 +23,7 @@ import {EstforLibrary} from "./EstforLibrary.sol";
 import {PlayersLibrary} from "./Players/PlayersLibrary.sol";
 
 // For battling a single player vs player
-contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
+contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgradeable {
   using SafeCast for uint256;
 
   event AttackPlayer(
@@ -59,11 +59,9 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   error NotAdminAndBeta();
   error CannotAttackWhileStillAttacking();
   error AmountTooLow();
-  error InsufficientCost();
   error RequestIdNotKnown();
   error BlockAttacksCooldown();
   error CannotAttackSelf();
-  error CallerNotSamWitchVRF();
   error NotEnoughRandomWords();
   error DefendingPlayerDoesntExist();
   error TooManySkillsToCompare();
@@ -98,16 +96,16 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
 
   IBrushToken private _brush;
 
-  address private _oracle;
-  VRFRequestInfo private _vrfRequestInfo;
-  ISamWitchVRF private _samWitchVRF;
+  address private _unused; // Unused, previously was oracle
+  address private _unused1; // Unused, previously was vrfRequestInfo
+  address private _unused2; // Unused, previously was samwitchVRF
   uint24 private _expectedGasLimitFulfill;
   uint8 private _numSkillsToCompare;
 
   Skill[] private _comparableSkills;
   mapping(uint256 playerId => PlayerInfo playerInfo) private _playerInfos;
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
-  mapping(bytes32 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
+  mapping(uint256 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
@@ -116,12 +114,6 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
 
   modifier isAdminAndBeta() {
     require(_adminAccess.isAdmin(_msgSender()) && _isBeta, NotAdminAndBeta());
-    _;
-  }
-
-  /// @dev Reverts if the caller is not the SamWitchVRF contract.
-  modifier onlySamWitchVRF() {
-    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
     _;
   }
 
@@ -135,9 +127,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
     PlayerNFT playerNFT,
     IBrushToken brush,
     ItemNFT itemNFT,
-    address oracle,
-    ISamWitchVRF samWitchVRF,
-    VRFRequestInfo vrfRequestInfo,
+    address paintswapVRFConsumer,
     Skill[] calldata comparableSkills,
     uint24 pvpAttackingCooldown,
     AdminAccess adminAccess,
@@ -145,14 +135,12 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
 
     _players = players;
     _playerNFT = playerNFT;
     _brush = brush;
     _itemNFT = itemNFT;
-    _oracle = oracle;
-    _samWitchVRF = samWitchVRF;
-    _vrfRequestInfo = vrfRequestInfo;
 
     _nextPendingAttackId = 1;
     _adminAccess = adminAccess;
@@ -163,6 +151,10 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
     setComparableSkills(comparableSkills, 8);
   }
 
+  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
+  }
+
   // This needs to call the oracle VRF on-demand and calls the callback
   function attackPlayer(
     uint256 playerId,
@@ -170,12 +162,6 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   ) external payable isOwnerOfPlayerAndActive(playerId) {
     require(!_preventAttacks, AttacksPrevented());
     _checkCanAttackPlayer(playerId, defendingPlayerId);
-
-    // Check they are paying enough
-    require(msg.value >= getAttackCost(), InsufficientCost());
-
-    (bool success, ) = _oracle.call{value: msg.value}("");
-    require(success, TransferFailed());
 
     uint64 nextPendingAttackId = _nextPendingAttackId++;
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + _attackingCooldown);
@@ -188,7 +174,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
       defendingPlayerId: defendingPlayerId.toUint48(),
       attackInProgress: true
     });
-    bytes32 requestId = _requestRandomWords();
+    uint256 requestId = _requestRandomWords();
     _requestToPendingAttackIds[requestId] = nextPendingAttackId;
     emit AttackPlayer(
       _msgSender(),
@@ -201,7 +187,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   /// @notice Called by the SamWitchVRF contract to fulfill the request
-  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+  function _fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
     require(randomWords.length == NUM_WORDS, LengthMismatch());
 
     PendingAttack storage pendingAttack = _pendingAttacks[_requestToPendingAttackIds[requestId]];
@@ -210,7 +196,6 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
     uint64 attackingPlayerId = pendingAttack.playerId;
     uint64 defendingPlayerId = pendingAttack.defendingPlayerId;
 
-    _vrfRequestInfo.updateAverageGasPrice();
     _playerInfos[attackingPlayerId].currentlyAttacking = false;
     pendingAttack.defendingPlayerId = 0; // Used as a sentinel
 
@@ -288,8 +273,8 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
     require(_playerNFT.exists(defendingPlayerId), DefendingPlayerDoesntExist());
   }
 
-  function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, _expectedGasLimitFulfill);
+  function _requestRandomWords() private returns (uint256 requestId) {
+    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, msg.value);
   }
 
   function determineBattleOutcome(
@@ -357,8 +342,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
   }
 
   function getAttackCost() public view returns (uint256) {
-    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
-    return baseRequestCost + (movingAverageGasPrice * _expectedGasLimitFulfill);
+    return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
   function getPendingAttack(uint256 pendingAttackId) external view returns (PendingAttack memory pendingAttack) {
@@ -403,7 +387,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable {
 
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
-    _pendingAttacks[_requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
+    _pendingAttacks[_requestToPendingAttackIds[requestId]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks

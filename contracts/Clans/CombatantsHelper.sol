@@ -6,6 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import {IClans} from "../interfaces/IClans.sol";
+import {ICombatantsHelper} from "../interfaces/ICombatantsHelper.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {ICombatants} from "../interfaces/ICombatants.sol";
 
@@ -18,7 +19,9 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 // This contract allows setting both territory and locked vault combatants in a single transaction
 // And more efficiently checking if they are already combatants in either territory or locked vaults
 // as the same player cannot be in both
-contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
+contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable, ICombatantsHelper {
+  event EditMemberLeftCombatantCooldownTimestampPenalty(uint256 newCooldownTimestampPenalty);
+
   error NotOwnerOfPlayerAndActive();
   error RankNotHighEnough();
   error PlayerCannotBeInAssignedMoreThanOnce();
@@ -30,6 +33,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   error PlayerIdsNotSortedOrDuplicates();
   error NotMemberOfClan();
   error PlayerNotUpgraded(uint256 playerId);
+  error NotClans();
 
   struct PlayerInfo {
     uint40 combatantCooldownTimestamp;
@@ -44,9 +48,15 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
   uint24 private _combatantChangeCooldown;
   ICombatants private _lockedVaults;
   ICombatants private _raids;
+  uint24 internal _playerLeftCombatantCooldownTimestampPenalty;
 
   modifier isOwnerOfPlayerAndActive(uint256 playerId) {
     require(_players.isOwnerOfPlayerAndActive(_msgSender(), playerId), NotOwnerOfPlayerAndActive());
+    _;
+  }
+
+  modifier onlyClans() {
+    require(msg.sender == address(_clans), NotClans());
     _;
   }
 
@@ -87,6 +97,11 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     _isBeta = isBeta;
 
     _combatantChangeCooldown = isBeta ? 5 minutes : 3 days;
+    _playerLeftCombatantCooldownTimestampPenalty = 0 days;
+  }
+
+  function initializeV4() external reinitializer(4) {
+    _playerLeftCombatantCooldownTimestampPenalty = 0 days; // needs to be zero for subgraph tracking
   }
 
   function assignCombatants(
@@ -165,7 +180,7 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
           if (otherPlayerIds.length != 0) {
             uint256 searchIndex = EstforLibrary.binarySearchMemory(otherPlayerIds, playerId);
             require(searchIndex == type(uint256).max, PlayerCannotBeInAssignedMoreThanOnce());
-          }
+          } 
         } else {
           require(!otherCombatants.isCombatant(clanId, playerId), PlayerAlreadyExistingCombatant());
         }
@@ -205,6 +220,23 @@ contract CombatantsHelper is UUPSUpgradeable, OwnableUpgradeable {
     for (uint256 i; i < playerIds.length; ++i) {
       _playerInfos[playerIds[i]].combatantCooldownTimestamp = 0;
     }
+  }
+  
+  function setPlayerLeftCombatantCooldownTimestampPenalty(
+    uint24 cooldownTimestampPenalty
+  ) external onlyOwner {
+    _playerLeftCombatantCooldownTimestampPenalty = cooldownTimestampPenalty;
+    emit EditMemberLeftCombatantCooldownTimestampPenalty(cooldownTimestampPenalty);
+  }
+
+  function applyPlayerCombatantCooldownPenalty(
+    uint256 playerId
+  ) external onlyClans {
+    PlayerInfo storage playerInfo = _playerInfos[playerId];
+    if (_playerLeftCombatantCooldownTimestampPenalty == 0) {
+      return;
+    }
+    playerInfo.combatantCooldownTimestamp = uint40(block.timestamp + _playerLeftCombatantCooldownTimestampPenalty);
   }
 
   // solhint-disable-next-line no-empty-blocks

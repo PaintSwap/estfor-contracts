@@ -6,18 +6,18 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
+import {PaintswapVRFConsumerUpgradeable} from "@paintswap/vrf/contracts/PaintswapVRFConsumerUpgradeable.sol";
+
 import {IBrushToken} from "../interfaces/external/IBrushToken.sol";
 import {IClans} from "../interfaces/IClans.sol";
 import {ITerritories} from "../interfaces/ITerritories.sol";
 import {IClanMemberLeftCB} from "../interfaces/IClanMemberLeftCB.sol";
 import {IPlayers} from "../interfaces/IPlayers.sol";
 import {IBank} from "../interfaces/IBank.sol";
-import {ISamWitchVRF} from "../interfaces/ISamWitchVRF.sol";
 
 import {LockedBankVaults} from "./LockedBankVaults.sol";
 import {AdminAccess} from "../AdminAccess.sol";
 import {ItemNFT} from "../ItemNFT.sol";
-import {VRFRequestInfo} from "../VRFRequestInfo.sol";
 
 import {ClanRank, MAX_CLAN_COMBATANTS, CLAN_WARS_GAS_PRICE_WINDOW_SIZE, XP_EMITTED_ELSEWHERE} from "../globals/clans.sol";
 import {Item, EquipPosition} from "../globals/players.sol";
@@ -29,7 +29,14 @@ import {EstforLibrary} from "../EstforLibrary.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "../ActivityPoints/interfaces/IActivityPoints.sol";
 
-contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClanMemberLeftCB, IActivityPointsCaller {
+contract Territories is
+  UUPSUpgradeable,
+  OwnableUpgradeable,
+  PaintswapVRFConsumerUpgradeable,
+  ITerritories,
+  IClanMemberLeftCB,
+  IActivityPointsCaller
+{
   using SafeCast for uint256;
 
   event AddTerritories(TerritoryInput[] territories);
@@ -112,7 +119,6 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   error CannotAttackWhileStillAttacking();
   error AmountTooLow();
   error ClanCombatantsChangeCooldown();
-  error InsufficientCost();
   error RequestIdNotKnown();
   error ClanIsBlockingAttacks();
   error NotATerritoryDefenceItem();
@@ -161,7 +167,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   uint40 private constant CLAN_XP_GAINED_ON_TERRITORY_WIN = 10;
 
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
-  mapping(bytes32 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
+  mapping(uint256 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
   mapping(uint256 territoryId => Territory territory) private _territories;
   address private _players;
   uint16 private _nextTerritoryId;
@@ -182,10 +188,10 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   address private _combatantsHelper;
   uint8 private _maxClanCombatants;
 
-  address private _oracle;
-  VRFRequestInfo private _vrfRequestInfo;
+  address private _unused; // Unused, previously was oracle
+  address private _unused1; // Unused, previously was vrfRequestInfo
   uint24 private _combatantChangeCooldown;
-  ISamWitchVRF private _samWitchVRF;
+  address private _unused2; // Unused, previously was samwitchVRF
   uint24 private _expectedGasLimitFulfill;
 
   IActivityPoints private _activityPoints;
@@ -220,12 +226,6 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _;
   }
 
-  /// @dev Reverts if the caller is not the SamWitchVRF contract.
-  modifier onlySamWitchVRF() {
-    require(_msgSender() == address(_samWitchVRF), CallerNotSamWitchVRF());
-    _;
-  }
-
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
@@ -238,9 +238,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     IBrushToken brush,
     LockedBankVaults lockedBankVaults,
     ItemNFT itemNFT,
-    address oracle,
-    ISamWitchVRF samWitchVRF,
-    VRFRequestInfo vrfRequestInfo,
+    address paintswapVRFConsumer,
     Skill[] calldata comparableSkills,
     uint8 maxClanCombatants,
     uint24 attackingCooldown,
@@ -250,15 +248,13 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   ) external initializer {
     __Ownable_init(_msgSender());
     __UUPSUpgradeable_init();
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
 
     _players = players;
     _clans = clans;
     _brush = brush;
     _lockedBankVaults = lockedBankVaults;
     _itemNFT = itemNFT;
-    _oracle = oracle;
-    _samWitchVRF = samWitchVRF;
-    _vrfRequestInfo = vrfRequestInfo;
 
     _activityPoints = activityPoints;
 
@@ -282,6 +278,10 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     _activityPoints = IActivityPoints(activityPoints);
   }
 
+  function initializeV3(address paintswapVRFConsumer) external reinitializer(3) {
+    __PaintswapVRFConsumerUpgradeable_init(paintswapVRFConsumer);
+  }
+
   function assignCombatants(
     uint256 clanId,
     uint64[] calldata playerIds,
@@ -295,7 +295,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     emit AssignCombatants(clanId, playerIds, _msgSender(), leaderPlayerId, combatantCooldownTimestamp);
   }
 
-  // This needs to call the oracle VRF on-demand and calls the callback
+  // This calls the VRF to get the result
   function attackTerritory(
     uint256 clanId,
     uint256 territoryId,
@@ -304,12 +304,6 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint256 clanIdOccupier = _territories[territoryId].clanIdOccupier;
 
     _checkCanAttackTerritory(clanId, clanIdOccupier, territoryId);
-
-    // Check they are paying enough
-    require(msg.value >= getAttackCost(), InsufficientCost());
-
-    (bool success, ) = _oracle.call{value: msg.value}("");
-    require(success, TransferFailed());
 
     uint56 nextPendingAttackId = _nextPendingAttackId++;
     uint40 attackingCooldownTimestamp = uint40(block.timestamp + _attackingCooldown);
@@ -326,7 +320,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
       leaderPlayerId: uint40(leaderPlayerId),
       from: msgSender
     });
-    bytes32 requestId = _requestRandomWords();
+    uint256 requestId = _requestRandomWords();
     _requestToPendingAttackIds[requestId] = nextPendingAttackId;
 
     emit AttackTerritory(
@@ -347,8 +341,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     );
   }
 
-  /// @notice Called by the SamWitchVRF contract to fulfill the request
-  function fulfillRandomWords(bytes32 requestId, uint256[] calldata randomWords) external onlySamWitchVRF {
+  /// @notice Called by the PaintswapVRF contract to fulfill the request
+  function _fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
     require(randomWords.length == NUM_WORDS, LengthMismatch());
 
     PendingAttack storage pendingAttack = _pendingAttacks[_requestToPendingAttackIds[requestId]];
@@ -358,7 +352,6 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     uint16 territoryId = pendingAttack.territoryId;
     uint256 defendingClanId = _territories[territoryId].clanIdOccupier;
 
-    _vrfRequestInfo.updateAverageGasPrice();
     _clanInfos[attackingClanId].currentlyAttacking = false;
     pendingAttack.attackInProgress = false;
 
@@ -541,8 +534,8 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
     require(clanInfo.playerIds.length != 0, CannotChangeCombatantsDuringAttack());
   }
 
-  function _requestRandomWords() private returns (bytes32 requestId) {
-    requestId = _samWitchVRF.requestRandomWords(NUM_WORDS, _expectedGasLimitFulfill);
+  function _requestRandomWords() private returns (uint256 requestId) {
+    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, msg.value);
   }
 
   function _claimTerritory(uint256 territoryId, uint256 attackingClanId) private {
@@ -561,8 +554,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
   }
 
   function getAttackCost() public view returns (uint256) {
-    (uint64 movingAverageGasPrice, uint88 baseRequestCost) = _vrfRequestInfo.get();
-    return baseRequestCost + (movingAverageGasPrice * _expectedGasLimitFulfill);
+    return _calculateRequestPriceNative(_expectedGasLimitFulfill);
   }
 
   function getTerrorities() external view returns (Territory[] memory) {
@@ -702,7 +694,7 @@ contract Territories is UUPSUpgradeable, OwnableUpgradeable, ITerritories, IClan
 
   // Useful to re-run a battle for testing
   function setAttackInProgress(uint256 requestId) external isAdminAndBeta {
-    _pendingAttacks[_requestToPendingAttackIds[bytes32(requestId)]].attackInProgress = true;
+    _pendingAttacks[_requestToPendingAttackIds[requestId]].attackInProgress = true;
   }
 
   // solhint-disable-next-line no-empty-blocks

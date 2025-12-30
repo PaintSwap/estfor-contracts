@@ -185,6 +185,11 @@
   },
   {
     "inputs": [],
+    "name": "PromotionDiscountOver99",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "SellingTooQuicklyAfterItemIntroduction",
     "type": "error"
   },
@@ -533,6 +538,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "uint8",
+        "name": "promotionDiscountPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "SetPromotionDiscountPercentage",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "duration",
         "type": "uint256"
@@ -723,6 +741,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "isPromotionRunning",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint16",
@@ -904,6 +935,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "dev",
+        "type": "address"
+      }
+    ],
+    "name": "setDevAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "contract IItemNFT",
         "name": "itemNFT",
         "type": "address"
@@ -923,6 +967,19 @@
       }
     ],
     "name": "setMinItemQuantityBeforeSellsAllowed",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "promotionDiscountPercentage",
+        "type": "uint8"
+      }
+    ],
+    "name": "setPromotionDiscountPercentage",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

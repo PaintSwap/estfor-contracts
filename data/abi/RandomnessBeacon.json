@@ -21,11 +21,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "CallerNotSamWitchVRF",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -86,6 +81,22 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "coordinator",
+        "type": "address"
+      }
+    ],
+    "name": "OnlyVRFCoordinator",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "owner",
         "type": "address"
       }
@@ -116,11 +127,6 @@
   },
   {
     "inputs": [],
-    "name": "RequestAlreadyFulfilled",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "UUPSUnauthorizedCallContext",
     "type": "error"
   },
@@ -133,6 +139,11 @@
       }
     ],
     "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
     "type": "error"
   },
   {
@@ -225,6 +236,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "coordinator",
+        "type": "address"
+      }
+    ],
+    "name": "VRFCoordinatorSet",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "MIN_RANDOM_WORDS_UPDATE_TIME",
     "outputs": [
@@ -264,21 +288,16 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "getLastRequestId",
+    "outputs": [
       {
-        "internalType": "bytes32",
-        "name": "requestId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "words",
-        "type": "uint256[]"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "name": "fulfillRandomWords",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -354,6 +373,38 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRandomWords",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRequestCost",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getStartTime",
     "outputs": [
@@ -389,7 +440,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "vrf",
+        "name": "paintswapVRFConsumer",
         "type": "address"
       }
     ],
@@ -419,6 +470,19 @@
   {
     "inputs": [],
     "name": "initializeRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "paintswapVRFConsumer",
+        "type": "address"
+      }
+    ],
+    "name": "initializeV3",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -468,17 +532,16 @@
         "internalType": "uint256",
         "name": "requestId",
         "type": "uint256"
-      }
-    ],
-    "name": "randomWords",
-    "outputs": [
+      },
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "randomWords",
+        "type": "uint256[]"
       }
     ],
-    "stateMutability": "view",
+    "name": "rawFulfillRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -563,5 +626,9 @@
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

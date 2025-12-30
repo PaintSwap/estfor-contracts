@@ -25,6 +25,11 @@ describe("RandomnessBeacon", function () {
       kind: "uups"
     })) as unknown as RandomnessBeacon;
 
+    await owner.sendTransaction({
+      to: await randomnessBeacon.getAddress(),
+      value: ethers.parseEther("1")
+    });
+
     const minRandomWordsUpdateTime = await randomnessBeacon.MIN_RANDOM_WORDS_UPDATE_TIME();
     const numDaysRandomWordsInitialized = await randomnessBeacon.NUM_DAYS_RANDOM_WORDS_INITIALIZED();
 
@@ -53,16 +58,16 @@ describe("RandomnessBeacon", function () {
       let requestId = await randomnessBeacon.requestIds(startOffset);
       expect(requestId).to.be.greaterThanOrEqual(1);
 
-      let randomWord = await randomnessBeacon.randomWords(requestId);
+      let randomWord = await randomnessBeacon.getRandomWords(requestId);
       expect(randomWord).to.eq(0);
 
       // Retrieve the random number
       await mockVRF.fulfill(requestId, randomnessBeacon);
-      randomWord = await randomnessBeacon.randomWords(requestId);
+      randomWord = await randomnessBeacon.getRandomWords(requestId);
       expect(randomWord).to.not.eq(0);
 
-      // Try fulfill same request should fail
-      await expect(mockVRF.fulfill(requestId, randomnessBeacon)).to.be.reverted;
+      // Try fulfill same request should not fail as it's handled by ps-vrf not our mock
+      await expect(mockVRF.fulfill(requestId, randomnessBeacon)).to.not.be.reverted;
 
       // Requesting new random word too soon
       await expect(randomnessBeacon.requestRandomWords()).to.be.reverted;
