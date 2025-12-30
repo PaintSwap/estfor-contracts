@@ -469,6 +469,10 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     }
   }
 
+  function setDevAddress(address dev) external onlyOwner {
+    _dev = dev;
+  }
+  
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

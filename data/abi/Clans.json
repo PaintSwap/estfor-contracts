@@ -2353,6 +2353,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "dev",
+        "type": "address"
+      }
+    ],
+    "name": "setDevAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint80",
         "name": "editNameCost",
         "type": "uint80"

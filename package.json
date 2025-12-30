@@ -126,6 +126,7 @@
     "setTerritoryMinimumMMRs": "npx hardhat run scripts/setTerritoryMinimumMMRs.ts",
     "addInstantVRFActionStrategies": "npx hardhat run scripts/addInstantVRFActionStrategies.ts",
     "setMMRAttackDistance": "npx hardhat run scripts/setMMRAttackDistance.ts",
+    "setDevAddress": "npx hardhat run scripts/setDevAddress.ts",
     "initializeMMR": "npx hardhat run scripts/initializeMMR.ts",
     "setFundAllocationPercentages": "npx hardhat run scripts/setFundAllocationPercentages.ts",
     "addItemNFTApprover": "npx hardhat run scripts/addItemNFTApprover.ts",

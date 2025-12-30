@@ -379,6 +379,10 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     emit SetSellingCutoffDuration(duration);
   }
 
+  function setDevAddress(address dev) external onlyOwner {
+    _dev = dev;
+  }
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

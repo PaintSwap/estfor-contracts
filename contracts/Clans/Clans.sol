@@ -1018,6 +1018,10 @@ contract Clans is UUPSUpgradeable, OwnableUpgradeable, IClans, IActivityPointsCa
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
+  function setDevAddress(address dev) external onlyOwner {
+    _dev = dev;
+  }
+  
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

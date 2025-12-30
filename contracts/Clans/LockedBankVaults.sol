@@ -678,6 +678,10 @@ contract LockedBankVaults is
     emit SetBrushDistributionPercentages(brushBurntPercentage, brushTreasuryPercentage, brushDevPercentage);
   }
 
+  function setDevAddress(address dev) external onlyOwner {
+    _dev = dev;
+  }
+  
   function setMaxClanCombatants(uint8 maxClanCombatants) public onlyOwner {
     _maxClanCombatants = maxClanCombatants;
     emit SetMaxClanCombatants(maxClanCombatants);

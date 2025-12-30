@@ -65,49 +65,67 @@ async function main() {
 
     console.log("------ Deploying libraries ------");
 
+    const newPetNFTLibrary = false;
+    let petNFTLibrary: PetNFTLibrary;
+    if (newPetNFTLibrary) {
+      petNFTLibrary = await ethers.deployContract("PetNFTLibrary", proposer);
+    } else {
+      petNFTLibrary = await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS);
+    }
+    console.log(`petNFTLibrary = "${(await petNFTLibrary.getAddress()).toLowerCase()}"`);
+
     // EstforLibrary
-    // const newEstforLibrary = false;
-    // let estforLibrary: EstforLibrary;
-    // if (newEstforLibrary) {
-    //   estforLibrary = await ethers.deployContract("EstforLibrary", proposer);
-    // } else {
-    //   estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
-    // }
-    // console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
+    const newEstforLibrary = false;
+    let estforLibrary: EstforLibrary;
+    if (newEstforLibrary) {
+      estforLibrary = await ethers.deployContract("EstforLibrary", proposer);
+    } else {
+      estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
+    }
+    console.log(`estforLibrary = "${(await estforLibrary.getAddress()).toLowerCase()}"`);
 
     // // ClanBattleLibrary
-    // const newClanBattleLibrary = true;
-    // let clanBattleLibrary: ClanBattleLibrary;
-    // if (newClanBattleLibrary) {
-    //   clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", proposer);
-    // } else {
-    //   clanBattleLibrary = await ethers.getContractAt("ClanBattleLibrary", CLAN_BATTLE_LIBRARY_ADDRESS);
-    // }
-    // console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
+    const newClanBattleLibrary = false;
+    let clanBattleLibrary: ClanBattleLibrary;
+    if (newClanBattleLibrary) {
+      clanBattleLibrary = await ethers.deployContract("ClanBattleLibrary", proposer);
+    } else {
+      clanBattleLibrary = await ethers.getContractAt("ClanBattleLibrary", CLAN_BATTLE_LIBRARY_ADDRESS);
+    }
+    console.log(`clanBattleLibrary = "${(await clanBattleLibrary.getAddress()).toLowerCase()}"`);
 
     // // LockedBankVaults
-    // const newLockedBankVaultsLibrary = true;
-    // let lockedBankVaultsLibrary: LockedBankVaultsLibrary;
-    // if (newLockedBankVaultsLibrary) {
-    //   lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary", proposer);
-    // } else {
-    //   lockedBankVaultsLibrary = await ethers.getContractAt(
-    //     "LockedBankVaultsLibrary",
-    //     LOCKED_BANK_VAULTS_LIBRARY_ADDRESS
-    //   );
-    // }
-    // console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
+    const newLockedBankVaultsLibrary = false;
+    let lockedBankVaultsLibrary: LockedBankVaultsLibrary;
+    if (newLockedBankVaultsLibrary) {
+      lockedBankVaultsLibrary = await ethers.deployContract("LockedBankVaultsLibrary", proposer);
+    } else {
+      lockedBankVaultsLibrary = await ethers.getContractAt(
+        "LockedBankVaultsLibrary",
+        LOCKED_BANK_VAULTS_LIBRARY_ADDRESS
+      );
+    }
+    console.log(`lockedBankVaultsLibrary = "${(await lockedBankVaultsLibrary.getAddress()).toLowerCase()}"`);
+
+    const newPromotionsLibrary = false;
+    let promotionsLibrary: PromotionsLibrary;
+    if (newPromotionsLibrary) {
+      promotionsLibrary = await ethers.deployContract("PromotionsLibrary", proposer);
+    } else {
+      promotionsLibrary = await ethers.getContractAt("PromotionsLibrary", PROMOTIONS_LIBRARY_ADDRESS);
+    }
+    console.log(`promotionsLibrary = "${(await promotionsLibrary.getAddress()).toLowerCase()}"`);
 
     console.log("--^^-- UPDATE LIBRARY ADDRESSES IN README AND DEPLOYMENT SCRIPTS --^^--");
     console.log("------ Preparing upgrades ------");
 
-    // const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver", proposer);
-    // const royaltyReceiver = await upgrades.prepareUpgrade(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
-    //   kind: "uups",
-    //   unsafeAllow: ["external-library-linking"],
-    //   timeout
-    // }) as string;
-    // console.log(`RoyaltyReceiver new implementation = "${royaltyReceiver}"`);
+    const RoyaltyReceiver = await ethers.getContractFactory("RoyaltyReceiver", proposer);
+    const royaltyReceiver = (await upgrades.prepareUpgrade(ROYALTY_RECEIVER_ADDRESS, RoyaltyReceiver, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout
+    })) as string;
+    console.log(`RoyaltyReceiver new implementation = "${royaltyReceiver}"`);
 
     const Shop = await ethers.getContractFactory("Shop", proposer);
     const shop = (await upgrades.prepareUpgrade(SHOP_ADDRESS, Shop, {
@@ -117,20 +135,66 @@ async function main() {
     })) as string;
     console.log(`Shop new implementation = "${shop}"`);
 
-    // const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
-    //   libraries: {
-    //     EstforLibrary: await estforLibrary.getAddress(),
-    //     LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
-    //     ClanBattleLibrary: await clanBattleLibrary.getAddress()
-    //   },
-    //   signer: proposer
-    // });
-    // const lockedBankVaults = (await upgrades.prepareUpgrade(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
-    //   kind: "uups",
-    //   unsafeAllow: ["external-library-linking"],
-    //   timeout
-    // })) as string;
-    // console.log(`lockedBankVaults = ${lockedBankVaults}`);
+    const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
+      libraries: {
+        EstforLibrary: await estforLibrary.getAddress(),
+        LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+        ClanBattleLibrary: await clanBattleLibrary.getAddress()
+      },
+      signer: proposer
+    });
+    const lockedBankVaults = (await upgrades.prepareUpgrade(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout
+    })) as string;
+    console.log(`lockedBankVaults = ${lockedBankVaults}`);
+
+    const PetNFT = await ethers.getContractFactory("PetNFT", {
+      libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
+      signer: proposer
+    });
+    const petNFT = (await upgrades.prepareUpgrade(PET_NFT_ADDRESS, PetNFT, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout
+    })) as string;
+    console.log(`petNFT = "${petNFT.toLowerCase()}"`);
+
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
+      signer: proposer
+    });
+    const playerNFT = (await upgrades.prepareUpgrade(PLAYER_NFT_ADDRESS, PlayerNFT, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout
+    })) as string;
+    console.log(`playerNFT = "${playerNFT.toLowerCase()}"`);
+
+    // Clan
+    const Clans = await ethers.getContractFactory("Clans", {
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
+      signer: proposer
+    });
+    const clans = (await upgrades.prepareUpgrade(CLANS_ADDRESS, Clans, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout
+    })) as string;
+    console.log(`clans = "${clans.toLowerCase()}"`);
+
+    // Promotions
+    const Promotions = await ethers.getContractFactory("Promotions", {
+      libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()},
+      signer: proposer
+    });
+    const promotions = (await upgrades.prepareUpgrade(PROMOTIONS_ADDRESS, Promotions, {
+      kind: "uups",
+      timeout,
+      unsafeAllow: ["external-library-linking"]
+    })) as string;
+    console.log(`promotions = "${promotions.toLowerCase()}"`);
 
     // const Territories = await ethers.getContractFactory("Territories", {
     //   signer: proposer
@@ -154,10 +218,15 @@ async function main() {
 
     // Propose the upgrade to new implementation (no initialize) transaction to the Safe
     // upgradeTransactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
-    // upgradeTransactionSet.push(getSafeUpgradeTransaction(LOCKED_BANK_VAULTS_ADDRESS, lockedBankVaults));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(LOCKED_BANK_VAULTS_ADDRESS, lockedBankVaults));
     // upgradeTransactionSet.push(getSafeUpgradeTransaction(TERRITORIES_ADDRESS, territories));
     // upgradeTransactionSet.push(getSafeUpgradeTransaction(COMBATANTS_HELPER_ADDRESS, combatantsHelper));
     upgradeTransactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(PROMOTIONS_ADDRESS, promotions));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(PLAYER_NFT_ADDRESS, playerNFT));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(PET_NFT_ADDRESS, petNFT));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(ROYALTY_RECEIVER_ADDRESS, royaltyReceiver));
+    upgradeTransactionSet.push(getSafeUpgradeTransaction(CLANS_ADDRESS, clans));
 
     await sendTransactionSetToSafe(network, protocolKit, apiKit, upgradeTransactionSet, proposer);
   } else {
