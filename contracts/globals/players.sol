@@ -354,10 +354,15 @@ struct ActivePlayerInfo {
 }
 
 struct PlayerInfo {
+  /* SLOT 0 */
   uint24 avatarId;
   uint24 originalAvatarId; // The base avatar id that you were born with
   uint40 mintedTimestamp;
   uint40 upgradedTimestamp; // What time you upgraded your avatar
+  uint24 appliedAvatarId; // The avatar id that is currently applied through special means
+  // uint104 padding; // unused, feel free to use later
+
+  /* SLOT 1 */
 }
 
 uint8 constant START_LEVEL = 17; // Needs updating when there is a new skill. Only useful for new heroes.

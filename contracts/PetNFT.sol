@@ -12,6 +12,8 @@ import {AdminAccess} from "./AdminAccess.sol";
 import {RandomnessBeacon} from "./RandomnessBeacon.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
+import {IMarketplaceNFT} from "./interfaces/IMarketplaceNFT.sol";
+import {IMarketplace} from "./interfaces/IMarketplace.sol";
 
 import {SkillLibrary} from "./libraries/SkillLibrary.sol";
 
@@ -28,7 +30,7 @@ import {Pet, PetSkin, PetEnhancementType, BasePetMetadata} from "./globals/pets.
 // It does not use the standard OZ _balances for tracking, instead it packs the owner
 // into the pet struct and avoid updating multiple to/from balances using
 // SamWitchERC1155UpgradeableSinglePerToken is a custom OZ ERC1155 implementation that optimizes for token ids with singular amounts
-contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IERC2981 {
+contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, OwnableUpgradeable, IMarketplaceNFT {
   using SkillLibrary for Skill;
   using BloomFilter for BloomFilter.Filter;
 
@@ -133,6 +135,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   address private _bridge; // TODO: Bridge Can remove later
   BloomFilter.Filter private __unused2; // TODO: old filter 2
   BloomFilter.Filter private _reservedPetNames; // TODO: unused
+  address private _marketplaceAddress;
 
   string private constant PET_NAME_LOWERCASE_PREFIX = "pet ";
 
@@ -293,97 +296,97 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
     emit NewPets(startPetId, pets, names, to);
   }
 
-  function mintBridge(
-    address petOwner,
-    uint256[] calldata petIds,
-    uint24[] calldata basePetIds,
-    string[] memory petNames,
-    Skill[] calldata skillEnhancement1s,
-    uint8[] calldata skillFixedEnhancement1s,
-    uint8[] calldata skillPercentageEnhancement1,
-    Skill[] calldata skillEnhancement2s,
-    uint8[] calldata skillFixedEnhancement2s,
-    uint8[] calldata skillPercentageEnhancement2s
-  ) external onlyBridge {
-    uint256 length = petIds.length;
-    require(
-      length == basePetIds.length &&
-        length == skillEnhancement1s.length &&
-        length == skillFixedEnhancement1s.length &&
-        length == skillPercentageEnhancement1.length &&
-        length == skillEnhancement2s.length &&
-        length == skillFixedEnhancement2s.length &&
-        length == skillPercentageEnhancement2s.length,
-      LengthMismatch()
-    );
+  // function mintBridge(
+  //   address petOwner,
+  //   uint256[] calldata petIds,
+  //   uint24[] calldata basePetIds,
+  //   string[] memory petNames,
+  //   Skill[] calldata skillEnhancement1s,
+  //   uint8[] calldata skillFixedEnhancement1s,
+  //   uint8[] calldata skillPercentageEnhancement1,
+  //   Skill[] calldata skillEnhancement2s,
+  //   uint8[] calldata skillFixedEnhancement2s,
+  //   uint8[] calldata skillPercentageEnhancement2s
+  // ) external onlyBridge {
+  //   uint256 length = petIds.length;
+  //   require(
+  //     length == basePetIds.length &&
+  //       length == skillEnhancement1s.length &&
+  //       length == skillFixedEnhancement1s.length &&
+  //       length == skillPercentageEnhancement1.length &&
+  //       length == skillEnhancement2s.length &&
+  //       length == skillFixedEnhancement2s.length &&
+  //       length == skillPercentageEnhancement2s.length,
+  //     LengthMismatch()
+  //   );
 
-    Pet[] memory pets = new Pet[](length);
-    uint256[] memory amounts = new uint256[](length);
+  //   Pet[] memory pets = new Pet[](length);
+  //   uint256[] memory amounts = new uint256[](length);
 
-    // Use the randomness beacon with the first day to assign some random pet enhancements
-    uint256 id = 1; // Doesn't really matter
+  //   // Use the randomness beacon with the first day to assign some random pet enhancements
+  //   uint256 id = 1; // Doesn't really matter
 
-    uint256 startTimeWorld = _randomnessBeacon.getStartTime();
-    bytes memory randomBytes = _randomnessBeacon.getRandomBytes(length, startTimeWorld, startTimeWorld + 1 days, id);
+  //   uint256 startTimeWorld = _randomnessBeacon.getStartTime();
+  //   bytes memory randomBytes = _randomnessBeacon.getRandomBytes(length, startTimeWorld, startTimeWorld + 1 days, id);
 
-    for (uint256 i = 0; i < length; ++i) {
-      // Take 2 byte portions of all the bytes for each pet
-      uint16 randomness = EstforLibrary._get16bitSlice(randomBytes, i);
-      uint24 basePetId = basePetIds[i];
+  //   for (uint256 i = 0; i < length; ++i) {
+  //     // Take 2 byte portions of all the bytes for each pet
+  //     uint16 randomness = EstforLibrary._get16bitSlice(randomBytes, i);
+  //     uint24 basePetId = basePetIds[i];
 
-      // Calculate maximum enhancements using randomness
-      // For fixed enhancements: bound between current value and max from metadata
-      uint8 fixedMax1 = EstforLibrary._getRandomInRange8(
-        uint8(skillFixedEnhancement1s[i]),
-        _basePetMetadatas[basePetId].skillFixedMax1,
-        uint8(randomness) // Use first 8 bits
-      );
+  //     // Calculate maximum enhancements using randomness
+  //     // For fixed enhancements: bound between current value and max from metadata
+  //     uint8 fixedMax1 = EstforLibrary._getRandomInRange8(
+  //       uint8(skillFixedEnhancement1s[i]),
+  //       _basePetMetadatas[basePetId].skillFixedMax1,
+  //       uint8(randomness) // Use first 8 bits
+  //     );
 
-      uint8 fixedMax2 = EstforLibrary._getRandomInRange8(
-        uint8(skillFixedEnhancement2s[i]),
-        _basePetMetadatas[basePetId].skillFixedMax2,
-        uint8(randomness >> 8) // Use second 8 bits
-      );
+  //     uint8 fixedMax2 = EstforLibrary._getRandomInRange8(
+  //       uint8(skillFixedEnhancement2s[i]),
+  //       _basePetMetadatas[basePetId].skillFixedMax2,
+  //       uint8(randomness >> 8) // Use second 8 bits
+  //     );
 
-      // For percentage enhancements: bound between current value and max from metadata
-      uint8 percentageMax1 = EstforLibrary._getRandomInRange8(
-        uint8(skillPercentageEnhancement1[i]),
-        _basePetMetadatas[basePetId].skillPercentageMax1,
-        uint8((uint256(randomness) * 7919) >> 8) // Use scrambled bits for more randomness
-      );
+  //     // For percentage enhancements: bound between current value and max from metadata
+  //     uint8 percentageMax1 = EstforLibrary._getRandomInRange8(
+  //       uint8(skillPercentageEnhancement1[i]),
+  //       _basePetMetadatas[basePetId].skillPercentageMax1,
+  //       uint8((uint256(randomness) * 7919) >> 8) // Use scrambled bits for more randomness
+  //     );
 
-      uint8 percentageMax2 = EstforLibrary._getRandomInRange8(
-        uint8(skillPercentageEnhancement2s[i]),
-        _basePetMetadatas[basePetId].skillPercentageMax2,
-        uint8((uint256(randomness) * 6271) >> 8) // Use different scrambled bits
-      );
-      pets[i] = _createPet(
-        petIds[i],
-        skillEnhancement1s[i],
-        skillFixedEnhancement1s[i],
-        skillPercentageEnhancement1[i],
-        skillEnhancement2s[i],
-        skillFixedEnhancement2s[i],
-        skillPercentageEnhancement2s[i],
-        basePetIds[i],
-        fixedMax1,
-        fixedMax2,
-        percentageMax1,
-        percentageMax2
-      );
-      amounts[i] = 1;
-      bool isDefaultPetName = bytes(petNames[i]).length == 0;
-      if (!isDefaultPetName) {
-        _names[petIds[i]] = petNames[i];
-        string memory lowercaseName = EstforLibrary.toLower(petNames[i]);
-        _lowercaseNames[lowercaseName] = true;
-      } else {
-        petNames[i] = PetNFTLibrary._defaultPetName(petIds[i]);
-      }
-    }
-    _mintBatch(petOwner, petIds, amounts, "");
-    emit BridgePets(petIds, pets, petNames, petOwner);
-  }
+  //     uint8 percentageMax2 = EstforLibrary._getRandomInRange8(
+  //       uint8(skillPercentageEnhancement2s[i]),
+  //       _basePetMetadatas[basePetId].skillPercentageMax2,
+  //       uint8((uint256(randomness) * 6271) >> 8) // Use different scrambled bits
+  //     );
+  //     pets[i] = _createPet(
+  //       petIds[i],
+  //       skillEnhancement1s[i],
+  //       skillFixedEnhancement1s[i],
+  //       skillPercentageEnhancement1[i],
+  //       skillEnhancement2s[i],
+  //       skillFixedEnhancement2s[i],
+  //       skillPercentageEnhancement2s[i],
+  //       basePetIds[i],
+  //       fixedMax1,
+  //       fixedMax2,
+  //       percentageMax1,
+  //       percentageMax2
+  //     );
+  //     amounts[i] = 1;
+  //     bool isDefaultPetName = bytes(petNames[i]).length == 0;
+  //     if (!isDefaultPetName) {
+  //       _names[petIds[i]] = petNames[i];
+  //       string memory lowercaseName = EstforLibrary.toLower(petNames[i]);
+  //       _lowercaseNames[lowercaseName] = true;
+  //     } else {
+  //       petNames[i] = PetNFTLibrary._defaultPetName(petIds[i]);
+  //     }
+  //   }
+  //   _mintBatch(petOwner, petIds, amounts, "");
+  //   emit BridgePets(petIds, pets, petNames, petOwner);
+  // }
 
   function burnBatch(address from, uint256[] calldata tokenIds) external onlyBurners(from) {
     _burnBatch(from, tokenIds);
@@ -612,6 +615,9 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
       require(from == address(0) || _pets[id].isTransferable, CannotTransferThisPet(id));
       _pets[id].owner = to;
       _pets[id].lastAssignmentTimestamp = uint40(block.timestamp);
+      if (_marketplaceAddress != address(0)) {
+        IMarketplace(_marketplaceAddress).safeCancel(from, address(this), id); // prevents ghost listings
+      }
     }
   }
 
@@ -819,6 +825,10 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
   
   function setBridge(address bridge) external onlyOwner {
     _bridge = bridge;
+  }
+
+  function setMarketplaceAddress(address marketplaceAddress) external onlyOwner {
+    _marketplaceAddress = marketplaceAddress;
   }
 
   // solhint-disable-next-line no-empty-blocks

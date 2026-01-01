@@ -9,6 +9,8 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IMarketplaceNFT} from "./interfaces/IMarketplaceNFT.sol";
+import {IMarketplace} from "./interfaces/IMarketplace.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
 import {BloomFilter} from "./libraries/BloomFilter.sol";
@@ -17,7 +19,7 @@ import {BloomFilter} from "./libraries/BloomFilter.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IERC2981 {
+contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT {
   using BloomFilter for BloomFilter.Filter;
 
   event NewPlayer(
@@ -97,6 +99,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   mapping(string name => bool exists) private _lowercaseNames;
   BloomFilter.Filter private _reservedHeroNames; // TODO: unused
   address private _bridge; // TODO: Bridge Can remove later
+  address private _marketplaceAddress;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -177,50 +180,50 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     }
   }
 
-  function mintBridge(
-    address from,
-    uint256 playerId,
-    uint256 avatarId,
-    string calldata heroName,
-    string calldata discord,
-    string calldata twitter,
-    string calldata telegram,
-    bool isUpgrade
-  ) external onlyBridge {
-    _lowercaseNames[EstforLibrary.toLower(heroName)] = true;
-    _names[playerId] = heroName;
-    emit NewPlayer(playerId, avatarId, heroName, from, discord, twitter, telegram, isUpgrade);
+  // function mintBridge(
+  //   address from,
+  //   uint256 playerId,
+  //   uint256 avatarId,
+  //   string calldata heroName,
+  //   string calldata discord,
+  //   string calldata twitter,
+  //   string calldata telegram,
+  //   bool isUpgrade
+  // ) external onlyBridge {
+  //   _lowercaseNames[EstforLibrary.toLower(heroName)] = true;
+  //   _names[playerId] = heroName;
+  //   emit NewPlayer(playerId, avatarId, heroName, from, discord, twitter, telegram, isUpgrade);
 
-    PlayerInfo storage playerInfo = _playerInfos[playerId];
-    playerInfo.originalAvatarId = uint24(avatarId);
-    playerInfo.mintedTimestamp = uint40(block.timestamp);
-    _mint(from, playerId, 1, "");
-    uint256[] memory startingItemTokenIds;
-    uint256[] memory startingAmounts;
+  //   PlayerInfo storage playerInfo = _playerInfos[playerId];
+  //   playerInfo.originalAvatarId = uint24(avatarId);
+  //   playerInfo.mintedTimestamp = uint40(block.timestamp);
+  //   _mint(from, playerId, 1, "");
+  //   uint256[] memory startingItemTokenIds;
+  //   uint256[] memory startingAmounts;
 
-    // Only make active if the account has no active player
-    bool makeActive = _players.getActivePlayer(from) == 0;
-    _players.mintedPlayer(
-      from,
-      playerId,
-      _avatars[avatarId].startSkills,
-      makeActive,
-      startingItemTokenIds,
-      startingAmounts
-    );
-    if (isUpgrade) {
-      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
-      // _upgradePlayer equivalent
-      playerInfo.avatarId = evolvedAvatarId;
-      playerInfo.upgradedTimestamp = uint40(block.timestamp);
-      _players.upgradePlayer(playerId);
-      uint256 tokenCost = 0; // Free when bridging
-      emit UpgradePlayerAvatar(playerId, evolvedAvatarId, tokenCost);
-      // end _upgradePlayer equivalent
-    } else {
-      _playerInfos[playerId].avatarId = uint24(avatarId);
-    }
-  }
+  //   // Only make active if the account has no active player
+  //   bool makeActive = _players.getActivePlayer(from) == 0;
+  //   _players.mintedPlayer(
+  //     from,
+  //     playerId,
+  //     _avatars[avatarId].startSkills,
+  //     makeActive,
+  //     startingItemTokenIds,
+  //     startingAmounts
+  //   );
+  //   if (isUpgrade) {
+  //     uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
+  //     // _upgradePlayer equivalent
+  //     playerInfo.avatarId = evolvedAvatarId;
+  //     playerInfo.upgradedTimestamp = uint40(block.timestamp);
+  //     _players.upgradePlayer(playerId);
+  //     uint256 tokenCost = 0; // Free when bridging
+  //     emit UpgradePlayerAvatar(playerId, evolvedAvatarId, tokenCost);
+  //     // end _upgradePlayer equivalent
+  //   } else {
+  //     _playerInfos[playerId].avatarId = uint24(avatarId);
+  //   }
+  // }
 
   function burn(address from, uint256 playerId) external {
     require(from == _msgSender() || isApprovedForAll(from, _msgSender()), ERC1155BurnForbidden());
@@ -337,7 +340,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
       IPlayers players = _players;
       for (uint256 i = 0; i < ids.length; ++i) {
         uint256 playerId = ids[i];
-        players.clearEverythingBeforeTokenTransfer(from, playerId);
+        players.clearEverythingBeforeTokenTransfer(from, playerId);        
         if (to == address(0)) {
           // Burning
           string memory oldName = EstforLibrary.toLower(_names[playerId]);
@@ -345,6 +348,9 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
           ++burned;
         } else if (from != address(0)) {
           // Not minting
+          if (_marketplaceAddress != address(0)) {
+            IMarketplace(_marketplaceAddress).safeCancel(from, address(this), playerId); // prevents ghost listings
+          }
           players.beforeTokenTransferTo(to, playerId);
         }
       }
@@ -472,7 +478,11 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   function setDevAddress(address dev) external onlyOwner {
     _dev = dev;
   }
-  
+
+  function setMarketplaceAddress(address marketplaceAddress) external onlyOwner {
+    _marketplaceAddress = marketplaceAddress;
+  }
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

@@ -904,6 +904,11 @@
             "internalType": "uint40",
             "name": "upgradedTimestamp",
             "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "appliedAvatarId",
+            "type": "uint24"
           }
         ],
         "internalType": "struct PlayerInfo",
@@ -1054,54 +1059,6 @@
       }
     ],
     "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "avatarId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "heroName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "discord",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "twitter",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "telegram",
-        "type": "string"
-      },
-      {
-        "internalType": "bool",
-        "name": "isUpgrade",
-        "type": "bool"
-      }
-    ],
-    "name": "mintBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1382,6 +1339,19 @@
       }
     ],
     "name": "setImageBaseUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "marketplaceAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setMarketplaceAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
