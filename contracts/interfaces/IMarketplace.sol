@@ -24,7 +24,7 @@ interface IMarketplace {
   event Cancelled(uint256 indexed listingId);
 
   function list(address nftContract, uint256 tokenId, uint96 price, uint96 amount) external returns (uint256);
-  function buy(uint256 listingId, address to) external;
+  function buy(uint256 listingId, uint96 expectedPrice, address to) external;
   function cancel(uint256 listingId) external;
-  function safeCancel(address seller, address nftContract, uint256 tokenId) external;
+  function contractCancel(address seller, address nftContract, uint256 tokenId) external;
 }

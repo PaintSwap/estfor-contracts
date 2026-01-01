@@ -40,12 +40,8 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
   ) external returns (uint256 listingId) {
     // 1. Basic Validation
     if (price == 0) revert InvalidPrice();
-    if (!IMarketplaceNFT(nftContract).supportsInterface(type(IERC1155).interfaceId)) {
-      revert InvalidNFTContract();
-    }
-    if (amount == 0 || IMarketplaceNFT(nftContract).balanceOf(msg.sender, tokenId) < amount) {
-      revert InvalidAmount();
-    }
+    require(IMarketplaceNFT(nftContract).supportsInterface(type(IERC1155).interfaceId), InvalidNFTContract());
+    require(amount != 0 && IMarketplaceNFT(nftContract).balanceOf(msg.sender, tokenId) >= amount, InvalidAmount());
 
     // 2. Generate Deterministic ID
     // We use abi.encodePacked because the types are fixed-length (saves gas over abi.encode)
@@ -65,7 +61,7 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
     emit Listed(listingId, msg.sender, nftContract, tokenId, price, amount);
   }
 
-  function buy(uint256 listingId, address to) external {
+  function buy(uint256 listingId, uint96 expectedPrice, address to) external {
     // 1. Load listing data
     IMarketplace.Listing storage listing = _listings[listingId];
 
@@ -77,7 +73,8 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
     address nftContract = address(listing.nftContract);
 
     // 3. Validation
-    if (actualSeller == address(0)) revert ListingDoesNotExist();
+    require(actualSeller != address(0), ListingDoesNotExist());
+    require(price == expectedPrice, InvalidPrice());
     
     // 4. CEI Pattern: Delete the listing BEFORE transferring funds/NFT
     // This provides the gas refund and prevents re-entrancy issues
@@ -112,19 +109,19 @@ contract Marketplace is UUPSUpgradeable, OwnableUpgradeable, IMarketplace {
 
   function cancel(uint256 listingId) external {
     IMarketplace.Listing storage listing = _listings[listingId];
-    if (listing.seller == address(0)) revert ListingDoesNotExist(); // Prevents double deletes
-    if (listing.seller != msg.sender) revert NotSeller();
+    require(listing.seller != address(0), ListingDoesNotExist()); // Prevents double deletes
+    require(listing.seller == msg.sender, NotSeller());
     delete _listings[listingId];
     emit Cancelled(listingId);
   }
 
-  function safeCancel(address seller, address nftContract, uint256 tokenId) external {
+  function contractCancel(address seller, address nftContract, uint256 tokenId) external {
     uint256 listingId = uint256(
       keccak256(abi.encodePacked(seller, nftContract, tokenId))
     );
     IMarketplace.Listing storage listing = _listings[listingId];
     if (listing.seller == address(0)) return; // Prevents double deletes (no error)
-    if (listing.nftContract != msg.sender) revert NotNFTContract();
+    require(listing.nftContract == msg.sender, NotNFTContract());
     delete _listings[listingId];
     emit Cancelled(listingId);
   }

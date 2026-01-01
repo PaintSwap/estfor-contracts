@@ -616,7 +616,7 @@ contract PetNFT is SamWitchERC1155UpgradeableSinglePerToken, UUPSUpgradeable, Ow
       _pets[id].owner = to;
       _pets[id].lastAssignmentTimestamp = uint40(block.timestamp);
       if (_marketplaceAddress != address(0)) {
-        IMarketplace(_marketplaceAddress).safeCancel(from, address(this), id); // prevents ghost listings
+        IMarketplace(_marketplaceAddress).contractCancel(from, address(this), id); // prevents ghost listings
       }
     }
   }

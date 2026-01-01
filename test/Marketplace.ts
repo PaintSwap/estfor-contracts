@@ -69,7 +69,7 @@ describe("Marketplace", function () {
   it("should revert on buying a non-existent listing", async () => {
     const {marketplace, players, playerNFT, bob} = await loadFixture(deployContracts);
 
-    await expect(marketplace.connect(bob).buy(1, bob.address)).to.revertedWithCustomError(
+    await expect(marketplace.connect(bob).buy(1, parseEther("1"), bob.address)).to.revertedWithCustomError(
       marketplace,
       "ListingDoesNotExist"
     );
@@ -90,7 +90,7 @@ describe("Marketplace", function () {
     await marketplace.connect(bob).list(await playerNFT.getAddress(), newPlayerId, listingPrice, 1);
 
     await expect(
-      marketplace.connect(bob).safeCancel(bob.address, await playerNFT.getAddress(), newPlayerId)
+      marketplace.connect(bob).contractCancel(bob.address, await playerNFT.getAddress(), newPlayerId)
     ).to.revertedWithCustomError(marketplace, "NotNFTContract");
   });
 
@@ -140,7 +140,7 @@ describe("Marketplace", function () {
     await marketplace.connect(bob).list(await playerNFT.getAddress(), newPlayerId, listingPrice, 1);
 
     const nftSigner = await makeSigner(playerNFT);
-    await expect(marketplace.connect(nftSigner).safeCancel(bob.address, await playerNFT.getAddress(), newPlayerId))
+    await expect(marketplace.connect(nftSigner).contractCancel(bob.address, await playerNFT.getAddress(), newPlayerId))
       .to.emit(marketplace, "Cancelled")
       .withArgs(listingId);
   });
@@ -149,7 +149,7 @@ describe("Marketplace", function () {
     const {marketplace, players, playerNFT, bob} = await loadFixture(deployContracts);
 
     const nftSigner = await makeSigner(playerNFT);
-    await expect(marketplace.connect(nftSigner).safeCancel(bob.address, await playerNFT.getAddress(), 1)).to.not.be
+    await expect(marketplace.connect(nftSigner).contractCancel(bob.address, await playerNFT.getAddress(), 1)).to.not.be
       .reverted;
   });
 
@@ -177,7 +177,7 @@ describe("Marketplace", function () {
     const previousBrushBalanceAlice = await brush.balanceOf(alice.address);
     const previousBrushBalanceRoyalty = await brush.balanceOf(royaltyReceiver);
 
-    await expect(marketplace.connect(alice).buy(listingId, alice.address))
+    await expect(marketplace.connect(alice).buy(listingId, listingPrice, alice.address))
       .to.emit(marketplace, "Sold")
       .withArgs(listingId, alice.address, bob.address, listingPrice, 1);
 
@@ -190,6 +190,31 @@ describe("Marketplace", function () {
     expect(finalBrushBalanceRoyalty).to.be.equal(previousBrushBalanceRoyalty + (listingPrice * 3n) / 100n); // 3% royalty
     expect(finalBrushBalanceBob).to.be.equal(previousBrushBalanceBob + (listingPrice * 97n) / 100n);
     expect(finalBrushBalanceAlice).to.be.equal(previousBrushBalanceAlice - listingPrice);
+  });
+
+  it("should revert on price frontrun", async () => {
+    const {marketplace, players, playerNFT, alice, bob, brush, royaltyReceiver} = await loadFixture(deployContracts);
+
+    const newPlayerId = await createPlayer(playerNFT, 1, bob, "New name", true);
+    const listingPrice = parseEther("1");
+
+    // listing id is keccak256 of (sellerAddress, nftAddress, tokenId)
+    const listingId = keccak256(
+      solidityPacked(["address", "address", "uint256"], [bob.address, await playerNFT.getAddress(), newPlayerId])
+    );
+
+    await marketplace.connect(bob).list(await playerNFT.getAddress(), newPlayerId, listingPrice, 1);
+    await playerNFT.connect(bob).setApprovalForAll(marketplace, true);
+
+    // check owner of nft is bob
+    expect(await playerNFT.ownerOf(newPlayerId)).to.equal(bob.address);
+
+    // approve brush to spend alice's funds
+    await brush.connect(alice).approve(marketplace.getAddress(), listingPrice);
+
+    await expect(
+      marketplace.connect(alice).buy(listingId, parseEther("0.5"), alice.address)
+    ).to.revertedWithCustomError(marketplace, "InvalidPrice");
   });
 
   it("should extract brush from sender not receiver", async () => {
@@ -215,7 +240,7 @@ describe("Marketplace", function () {
     const previousBrushBalanceBob = await brush.balanceOf(bob.address);
     const previousBrushBalanceAlice = await brush.balanceOf(alice.address);
 
-    await expect(marketplace.connect(alice).buy(listingId, charlie.address))
+    await expect(marketplace.connect(alice).buy(listingId, listingPrice, charlie.address))
       .to.emit(marketplace, "Sold")
       .withArgs(listingId, alice.address, bob.address, listingPrice, 1);
 
@@ -255,7 +280,9 @@ describe("Marketplace", function () {
 
     // Route the buy through the malicious proxy (fallback) so reentrancy runs inside onERC1155Received
     await expect(
-      maliciousReentrancy.connect(maliciousReentrancySigner).buy(listingId, maliciousReentrancySigner.address)
+      maliciousReentrancy
+        .connect(maliciousReentrancySigner)
+        .buy(listingId, listingPrice, maliciousReentrancySigner.address)
     ).to.revertedWithCustomError(marketplace, "ListingDoesNotExist");
   });
 

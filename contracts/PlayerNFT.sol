@@ -349,7 +349,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
         } else if (from != address(0)) {
           // Not minting
           if (_marketplaceAddress != address(0)) {
-            IMarketplace(_marketplaceAddress).safeCancel(from, address(this), playerId); // prevents ghost listings
+            IMarketplace(_marketplaceAddress).contractCancel(from, address(this), playerId); // prevents ghost listings
           }
           players.beforeTokenTransferTo(to, playerId);
         }
