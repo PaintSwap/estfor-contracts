@@ -141,6 +141,7 @@ TerritoryTreasury [0x5d1429f842891ea0ed80e856762b48bc117ac2a8](https://sonicscan
 BankRegistry [0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6](https://sonicscan.org/address/0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6)  
 BankFactory [0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c](https://sonicscan.org/address/0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c)  
 ActivityPoints [0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a](https://sonicscan.org/address/0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a)
+Marketplace [0x3935866043766b86f30593bd17a787cc0105f7e0](https://sonicscan.org/address/0x3935866043766b86f30593bd17a787cc0105f7e0)
 
 ### Other addresses:
 

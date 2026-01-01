@@ -6,8 +6,7 @@ import {
   PET_NFT_LIBRARY_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
 } from "./contractAddresses";
-import {EstforConstants} from "@paintswap/estfor-definitions";
-import {initialiseSafe, sendTransactionSetToSafe, getSafeUpgradeTransaction} from "./utils";
+import {initialiseSafe, sendTransactionSetToSafe, getSafeUpgradeTransaction, verifyContracts} from "./utils";
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
 import {Marketplace} from "../typechain-types";
 
@@ -16,19 +15,24 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
   console.log(
-    `Edit player cooldown penalty using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`
+    `Deploy marketplace using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`
   );
 
   const timeout = 300 * 1000; // 5 minutes
 
   if (useSafe) {
-    const Marketplace = await ethers.getContractFactory("Marketplace");
+    const Marketplace = await ethers.getContractFactory("Marketplace", proposer);
     const marketplace = (await upgrades.deployProxy(Marketplace, [
       BRUSH_ADDRESS,
       process.env.SAFE_ADDRESS,
     ])) as unknown as Marketplace;
     await marketplace.waitForDeployment();
     console.log(`marketplace = "${(await marketplace.getAddress()).toLowerCase()}"`);
+
+    // can verify this immediately
+    if (network.chainId == 146n) {
+      await verifyContracts([await marketplace.getAddress()]);
+    }
 
     const petNFTLibrary = await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS);
     const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
