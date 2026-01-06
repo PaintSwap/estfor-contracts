@@ -8,6 +8,7 @@ import {
   Marketplace,
   MockVRF,
   MockBrushToken,
+  MockUSDCToken,
   MockPaintSwapMarketplaceWhitelist,
   MockRouter,
   WrappedNative,
@@ -40,6 +41,7 @@ import {
   DailyRewardsScheduler,
   Bridge,
   ActivityPoints,
+  Cosmetics,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -85,6 +87,7 @@ import {
   ROUTER_ADDRESS,
   VRF_ADDRESS,
   WFTM_ADDRESS,
+  USDC_ADDRESS,
 } from "./contractAddresses";
 import {addTestData} from "./addTestData";
 import {ACTIVITY_TICKET2, SONIC_GEM_TICKET2, whitelistedAdmins} from "@paintswap/estfor-definitions/constants";
@@ -92,6 +95,7 @@ import {allShopItems, allShopItemsBeta} from "./data/shopItems";
 import {allFullAttireBonuses} from "./data/fullAttireBonuses";
 import {allXPThresholdRewards} from "./data/xpThresholdRewards";
 import {avatarIds, avatarInfos} from "./data/avatars";
+import {cosmeticTokenIds, cosmeticInfos} from "./data/cosmetics";
 import {allQuestsMinRequirements, allQuests} from "./data/quests";
 import {allClanTiers, allClanTiersBeta} from "./data/clans";
 import {allInstantActions} from "./data/instantActions";
@@ -110,6 +114,7 @@ async function main() {
 
   const network = await ethers.provider.getNetwork();
   let brush: MockBrushToken;
+  let usdc: MockUSDCToken;
   let wftm: WrappedNative;
   let vrf: MockVRF;
   let router: SolidlyExtendedRouter | MockRouter;
@@ -130,6 +135,9 @@ async function main() {
       router = await ethers.deployContract("MockRouter");
       console.log("Minted SolidlyExtendedRouter");
       ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
+      usdc = await ethers.deployContract("MockUSDCToken");
+      console.log("Minted MockUSDCToken");
+      await usdc.mint(owner, parseEther("10000000"));
 
       const EndpointV2MockArtifact = await deployments.getArtifact("EndpointV2Mock");
       const EndpointV2Mock = new ContractFactory(EndpointV2MockArtifact.abi, EndpointV2MockArtifact.bytecode, owner);
@@ -159,6 +167,10 @@ async function main() {
       lzEndpoint = "0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff";
       buyBrush = false;
       ({paintSwapMarketplaceWhitelist} = await deployMockPaintSwapContracts());
+
+      usdc = await ethers.deployContract("MockUSDCToken");
+      console.log("Minted MockUSDCToken");
+      await usdc.mint(owner, parseEther("10000000"));
     } else if (network.chainId == 146n) {
       brush = await ethers.getContractAt("MockBrushToken", BRUSH_ADDRESS);
       wftm = await ethers.getContractAt("WrappedNative", WFTM_ADDRESS);
@@ -170,9 +182,11 @@ async function main() {
         PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS
       );
       lzEndpoint = "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B";
+      usdc = await ethers.getContractAt("MockUSDCToken", USDC_ADDRESS);
     } else if (network.chainId == 250n) {
       // Fantom mainnet
       brush = await ethers.getContractAt("MockBrushToken", "0x85dec8c4B2680793661bCA91a8F129607571863d");
+      usdc = await ethers.deployContract("MockUSDCToken");
       wftm = await ethers.getContractAt("WrappedNative", "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
       vrf = await ethers.getContractAt("MockVRF", VRF_ADDRESS);
       router = await ethers.getContractAt("MockRouter", "0x2aa07920e4ecb4ea8c801d9dfece63875623b285");
@@ -191,6 +205,7 @@ async function main() {
   console.log(`vrf = "${(await vrf.getAddress()).toLowerCase()}"`);
   console.log(`router = "${(await router.getAddress()).toLowerCase()}"`);
   console.log(`paintSwapMarketplaceWhitelist = "${(await paintSwapMarketplaceWhitelist.getAddress()).toLowerCase()}"`);
+  console.log(`usdc = "${(await usdc.getAddress()).toLowerCase()}"`);
 
   const timeout = 600 * 1000; // 10 minutes
 
@@ -437,6 +452,15 @@ async function main() {
   )) as unknown as PlayerNFT;
   await playerNFT.waitForDeployment();
   console.log(`playerNFT = "${(await playerNFT.getAddress()).toLowerCase()}"`);
+
+  const Cosmetics = await ethers.getContractFactory("Cosmetics");
+  const cosmetics = (await upgrades.deployProxy(Cosmetics, [
+    owner.address,
+    await itemNFT.getAddress(),
+    await playerNFT.getAddress(),
+  ])) as unknown as Cosmetics;
+  await cosmetics.waitForDeployment();
+  console.log(`cosmetics = "${(await cosmetics.getAddress()).toLowerCase()}"`);
 
   const buyPath: [string, string] = [await wftm.getAddress(), await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
@@ -1000,6 +1024,7 @@ async function main() {
         await bankRegistry.getAddress(),
         await bankFactory.getAddress(),
         await bankRelay.getAddress(),
+        await cosmetics.getAddress(),
       ];
       console.log("Verifying contracts...");
       await verifyContracts(addresses);
@@ -1079,6 +1104,10 @@ async function main() {
   await tx.wait();
   console.log("itemNFT.initializeAddresses");
 
+  tx = await playerNFT.setCosmeticsAddress(cosmetics);
+  await tx.wait();
+  console.log("playerNFT.setCosmeticsAddress");
+
   tx = await playerNFT.setMarketplaceAddress(marketplace);
   await tx.wait();
   console.log("playerNFT.setMarketplaceAddress");
@@ -1108,6 +1137,7 @@ async function main() {
       passiveActions,
       raids,
       bridge,
+      cosmetics,
     ],
     true
   );
@@ -1175,6 +1205,14 @@ async function main() {
   tx = await playerNFT.setAvatars(avatarIds, avatarInfos);
   await tx.wait();
   console.log("Add avatars");
+
+  tx = await cosmetics.setCosmetics(cosmeticTokenIds, cosmeticInfos);
+  await tx.wait();
+  console.log("Add cosmetics");
+
+  tx = await shop.setSupporterPackToken(usdc);
+  await tx.wait();
+  console.log("Set supporter pack token");
 
   tx = await players.addXPThresholdRewards(allXPThresholdRewards);
   await tx.wait();

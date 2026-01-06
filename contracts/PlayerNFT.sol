@@ -9,6 +9,7 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IPlayerNFT} from "./interfaces/IPlayerNFT.sol";
 import {IMarketplaceNFT} from "./interfaces/IMarketplaceNFT.sol";
 import {IMarketplace} from "./interfaces/IMarketplace.sol";
 import {AdminAccess} from "./AdminAccess.sol";
@@ -19,7 +20,7 @@ import {BloomFilter} from "./libraries/BloomFilter.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT {
+contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT, IPlayerNFT {
   using BloomFilter for BloomFilter.Filter;
 
   event NewPlayer(
@@ -51,6 +52,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
+  event EditAvatar(uint256 playerId, uint256 newAvatarId);
 
   error NotOwnerOfPlayer();
   error NotPlayers();
@@ -72,6 +74,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   error LengthMismatch();
   error PercentNotTotal100();
   error NotBridge();
+  error NotCosmetics();
 
   uint256 private constant EVOLVED_OFFSET = 10000;
   uint256 public constant NUM_BASE_AVATARS = 8;
@@ -100,6 +103,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   BloomFilter.Filter private _reservedHeroNames; // TODO: unused
   address private _bridge; // TODO: Bridge Can remove later
   address private _marketplaceAddress;
+  address private _cosmeticsAddress;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -113,6 +117,11 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
 
   modifier onlyBridge() {
     require(_msgSender() == address(_bridge), NotBridge());
+    _;
+  }
+
+  modifier onlyCosmetics() {
+    require(_msgSender() == address(_cosmeticsAddress), NotCosmetics());
     _;
   }
 
@@ -230,6 +239,30 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     _burn(from, playerId, 1);
   }
 
+  // Special handling for avatar cosmetics as the skills need to be applied to the player
+  function applyAvatarToPlayer(uint256 playerId, uint24 newAvatarId) external onlyCosmetics {
+    // If evolved, must apply evolved avatar
+    if (_playerInfos[playerId].upgradedTimestamp > 0) {
+      newAvatarId += uint24(EVOLVED_OFFSET);
+    }
+    _players.applyAvatarToPlayer(
+      playerId,
+      _avatars[newAvatarId].startSkills
+    );
+    emit EditAvatar(playerId, newAvatarId);
+  }
+
+  // Unequip avatar cosmetic and reapply original avatar skills. Should require a payment to stop skill swap abuse
+  function unapplyAvatarFromPlayer(address owner, uint256 playerId) external onlyCosmetics {
+    uint24 avatarId = _playerInfos[playerId].avatarId;
+    _players.applyAvatarToPlayer(
+      playerId,
+      _avatars[avatarId].startSkills
+    );
+    _paySender(owner, _editNameCost); // Charge the edit cost for unequipping
+    emit EditAvatar(playerId, avatarId);
+  }
+
   function _upgradePlayer(uint256 playerId, uint24 newAvatarId) private {
     PlayerInfo storage playerInfo = _playerInfos[playerId];
     playerInfo.avatarId = newAvatarId;
@@ -269,6 +302,10 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
 
   function _pay(uint256 tokenCost) private {
     address sender = _msgSender();
+    _paySender(sender, tokenCost);
+  }
+
+  function _paySender(address sender, uint256 tokenCost) private {
     _brush.transferFrom(sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
     _brush.transferFrom(sender, _dev, (tokenCost * _brushDevPercentage) / 100);
     _brush.burnFrom(sender, (tokenCost * _brushBurntPercentage) / 100);
@@ -481,6 +518,10 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
 
   function setMarketplaceAddress(address marketplaceAddress) external onlyOwner {
     _marketplaceAddress = marketplaceAddress;
+  }
+
+  function setCosmeticsAddress(address cosmeticsAddress) external onlyOwner {
+    _cosmeticsAddress = cosmeticsAddress;
   }
 
   // solhint-disable-next-line no-empty-blocks

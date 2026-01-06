@@ -189,6 +189,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "SellingTooQuicklyAfterItemIntroduction",
     "type": "error"
@@ -201,6 +212,58 @@
   {
     "inputs": [],
     "name": "ShopItemDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SupporterPackAmountZero",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "requested",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "remaining",
+        "type": "uint16"
+      }
+    ],
+    "name": "SupporterPackInsufficientRemaining",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "startTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentTimestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "SupporterPackNotStarted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SupporterPackRecipientZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SupporterPackSoldOut",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SupporterPackTokenNotSet",
     "type": "error"
   },
   {
@@ -329,6 +392,43 @@
       }
     ],
     "name": "BuyBatch",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint24",
+        "name": "packId",
+        "type": "uint24"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalPrice",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "amount",
+        "type": "uint16"
+      }
+    ],
+    "name": "BuySupporterPack",
     "type": "event"
   },
   {
@@ -563,6 +663,57 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint24[]",
+        "name": "packIds",
+        "type": "uint24[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "itemTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "itemQuantities",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "amountRemaining",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "startTimestamp",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint96",
+            "name": "brushToGive",
+            "type": "uint96"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Shop.SupporterPack[]",
+        "name": "packs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "SetSupporterPacks",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "implementation",
@@ -665,6 +816,29 @@
       }
     ],
     "name": "buyBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24",
+        "name": "packId",
+        "type": "uint24"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "amount",
+        "type": "uint16"
+      }
+    ],
+    "name": "buySupporterPack",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -993,6 +1167,69 @@
       }
     ],
     "name": "setSellingCutoffDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "supporterPackToken",
+        "type": "address"
+      }
+    ],
+    "name": "setSupporterPackToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint24[]",
+        "name": "packIds",
+        "type": "uint24[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint80",
+            "name": "price",
+            "type": "uint80"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "itemTokenIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "itemQuantities",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "amountRemaining",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "startTimestamp",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint96",
+            "name": "brushToGive",
+            "type": "uint96"
+          }
+        ],
+        "internalType": "struct Shop.SupporterPack[]",
+        "name": "packs",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setSupporterPacks",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

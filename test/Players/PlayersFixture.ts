@@ -1,6 +1,6 @@
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {EquipPosition, Skill} from "@paintswap/estfor-definitions/types";
 import {deployments, ethers, upgrades} from "hardhat";
-import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
+import {AvatarInfo, CosmeticInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {
   AdminAccess,
   Bank,
@@ -8,6 +8,7 @@ import {
   BankRegistry,
   ClanBattleLibrary,
   Clans,
+  Cosmetics,
   CombatantsHelper,
   EstforLibrary,
   EggInstantVRFActionStrategy,
@@ -43,6 +44,7 @@ import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ContractFactory, parseEther} from "ethers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
+import {cosmeticTokenIds} from "../../scripts/data/cosmetics";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank, geoff, harry, isla, juliet, kiki, lucy] =
@@ -646,6 +648,13 @@ export const playersFixture = async function () {
     }
   )) as unknown as BankFactory;
 
+  const Cosmetics = await ethers.getContractFactory("Cosmetics");
+  const cosmetics = (await upgrades.deployProxy(Cosmetics, [
+    owner.address,
+    await itemNFT.getAddress(),
+    await playerNFT.getAddress(),
+  ])) as unknown as Cosmetics;
+
   await randomnessBeacon.initializeAddresses(wishingWell, dailyRewardsScheduler);
   await randomnessBeacon.initializeRandomWords();
 
@@ -683,6 +692,7 @@ export const playersFixture = async function () {
       instantVRFActions,
       passiveActions,
       raids,
+      cosmetics,
     ],
     true
   );
@@ -697,6 +707,7 @@ export const playersFixture = async function () {
   await petNFT.setMarketplaceAddress(marketplace);
   await playerNFT.setApprovalForAll(marketplace, true);
   await petNFT.setApprovalForAll(marketplace, true);
+  await playerNFT.setCosmeticsAddress(cosmetics);
 
   // Set activity points on all contracts
   const contracts = [
@@ -726,7 +737,20 @@ export const playersFixture = async function () {
     imageURI: "1234.png",
     startSkills: [Skill.MAGIC, Skill.NONE],
   };
-  await playerNFT.setAvatars([avatarId], [avatarInfo]);
+  const cosmeticAvatarInfo: AvatarInfo = {
+    name: "Cosmetic Avatar",
+    description: "Hi I'm a cosmetic avatar",
+    imageURI: "5678.png",
+    startSkills: [Skill.ALCHEMY, Skill.FORGING],
+  };
+  const cosmeticId = EstforConstants.COSMETIC_001_AVATAR;
+  const cosmeticInfo: CosmeticInfo = {
+    itemTokenId: cosmeticId,
+    cosmeticPosition: EquipPosition.AVATAR,
+    avatarId: 9, // must be above NUM_BASE_AVATARS (to stop minting cosmetic avatars)
+  };
+  await playerNFT.setAvatars([avatarId, 9], [avatarInfo, cosmeticAvatarInfo]);
+  await cosmetics.setCosmetics([cosmeticId], [cosmeticInfo]);
 
   const origName = "0xSamWitch";
   const makeActive = true;
@@ -816,5 +840,8 @@ export const playersFixture = async function () {
     bridge,
     activityPoints,
     marketplace,
+    cosmetics,
+    cosmeticId,
+    cosmeticInfo,
   };
 };

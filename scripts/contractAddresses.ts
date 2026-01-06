@@ -51,6 +51,8 @@ let raids;
 let bridge;
 let activityPoints;
 let marketplace;
+let cosmetics;
+let usdc;
 
 // Third party stuff chain specific addresses
 const chainId = process.env.CHAIN_ID;
@@ -60,6 +62,7 @@ if (chainId == "146") {
   vrf = "0x6E3efcB244e74Cb898A7961061fAA43C3cf79691";
   router = "0xcC6169aA1E879d3a4227536671F85afdb2d23fAD";
   paintSwapMarketplaceWhitelist = "0xc1dd8640b3acbc34a228f632ef9bea39dcc7b0ce";
+  usdc = "0x29219dd400f2Bf60E5a23d13Be72B486D4038894";
 } else {
   router = "0x";
   brush = "0x";
@@ -67,6 +70,7 @@ if (chainId == "146") {
   vrf = "0x";
   router = "0x";
   paintSwapMarketplaceWhitelist = "0x";
+  usdc = "0x";
 }
 
 if (!isBeta) {
@@ -116,6 +120,7 @@ if (!isBeta) {
   bankFactory = "0x76af5869f1b902f7a16c128a1daa7734819ec327";
   activityPoints = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
   marketplace = "";
+  cosmetics = "";
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -163,6 +168,7 @@ if (!isBeta) {
   bankFactory = "0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c";
   activityPoints = "0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a";
   marketplace = "0x3935866043766b86f30593bd17a787cc0105f7e0";
+  cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
 }
 
 export const BRIDGE_ADDRESS = bridge;
@@ -221,6 +227,8 @@ export const BRUSH_ADDRESS = brush;
 export const ROUTER_ADDRESS = router;
 export const PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS = paintSwapMarketplaceWhitelist;
 export const MARKETPLACE_ADDRESS = marketplace;
+export const COSMETICS_ADDRESS = cosmetics;
+export const USDC_ADDRESS = usdc;
 
 // VRF
 export const VRF_ADDRESS = vrf;

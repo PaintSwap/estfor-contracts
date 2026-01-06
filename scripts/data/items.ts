@@ -9,7 +9,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: -2,
       rangedDefence: 1,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.BRONZE_HELMET,
     equipPosition: EquipPosition.HEAD,
@@ -24,7 +24,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_HELMET.json",
     name: "Bronze Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -34,7 +34,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: -4,
       rangedDefence: 2,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.IRON_HELMET,
     equipPosition: EquipPosition.HEAD,
@@ -49,7 +49,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_HELMET.json",
     name: "Iron Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -59,7 +59,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: -8,
       rangedDefence: 4,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.MITHRIL_HELMET,
     equipPosition: EquipPosition.HEAD,
@@ -74,7 +74,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_HELMET.json",
     name: "Mithril Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -84,7 +84,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: -8,
       rangedDefence: 8,
-      health: 5
+      health: 5,
     },
     tokenId: EstforConstants.ADAMANTINE_HELMET,
     equipPosition: EquipPosition.HEAD,
@@ -99,7 +99,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_HELMET.json",
     name: "Adamantine Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -109,7 +109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: -16,
       rangedDefence: 12,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.RUNITE_HELMET,
     equipPosition: EquipPosition.HEAD,
@@ -124,7 +124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_HELMET.json",
     name: "Runite Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -134,7 +134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 16,
       magicDefence: -18,
       rangedDefence: 16,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.TITANIUM_HELMET,
     equipPosition: EquipPosition.HEAD,
@@ -149,7 +149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_HELMET.json",
     name: "Titanium Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -159,7 +159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -26,
       rangedDefence: 22,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.ORICHALCUM_HELMET,
     equipPosition: EquipPosition.HEAD,
@@ -174,7 +174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_HELMET.json",
     name: "Orichalcum Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -184,7 +184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: -2,
       rangedDefence: 1,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.BRONZE_ARMOR,
     equipPosition: EquipPosition.BODY,
@@ -199,7 +199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_ARMOR.json",
     name: "Bronze Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -209,7 +209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: -4,
       rangedDefence: 2,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.IRON_ARMOR,
     equipPosition: EquipPosition.BODY,
@@ -224,7 +224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_ARMOR.json",
     name: "Iron Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -234,7 +234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: -8,
       rangedDefence: 4,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.MITHRIL_ARMOR,
     equipPosition: EquipPosition.BODY,
@@ -249,7 +249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_ARMOR.json",
     name: "Mithril Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -259,7 +259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: -8,
       rangedDefence: 8,
-      health: 5
+      health: 5,
     },
     tokenId: EstforConstants.ADAMANTINE_ARMOR,
     equipPosition: EquipPosition.BODY,
@@ -274,7 +274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_ARMOR.json",
     name: "Adamantine Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -284,7 +284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: -16,
       rangedDefence: 12,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.RUNITE_ARMOR,
     equipPosition: EquipPosition.BODY,
@@ -299,7 +299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_ARMOR.json",
     name: "Runite Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -309,7 +309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 16,
       magicDefence: -18,
       rangedDefence: 16,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.TITANIUM_ARMOR,
     equipPosition: EquipPosition.BODY,
@@ -324,7 +324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_ARMOR.json",
     name: "Titanium Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -334,7 +334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -26,
       rangedDefence: 22,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.ORICHALCUM_ARMOR,
     equipPosition: EquipPosition.BODY,
@@ -349,7 +349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARMOR.json",
     name: "Orichalcum Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -359,7 +359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: -4,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.BRONZE_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -374,7 +374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_TASSETS.json",
     name: "Bronze Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -384,7 +384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: -8,
       rangedDefence: 1,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.IRON_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -399,7 +399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_TASSETS.json",
     name: "Iron Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -409,7 +409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: -12,
       rangedDefence: 8,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.MITHRIL_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -424,7 +424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_TASSETS.json",
     name: "Mithril Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -434,7 +434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: -16,
       rangedDefence: 10,
-      health: 5
+      health: 5,
     },
     tokenId: EstforConstants.ADAMANTINE_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -449,7 +449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_TASSETS.json",
     name: "Adamantine Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -459,7 +459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 16,
       magicDefence: -24,
       rangedDefence: 16,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.RUNITE_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -474,7 +474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_TASSETS.json",
     name: "Runite Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -484,7 +484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 20,
       magicDefence: -22,
       rangedDefence: 20,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.TITANIUM_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -499,7 +499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_TASSETS.json",
     name: "Titanium Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -509,7 +509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 26,
       magicDefence: -28,
       rangedDefence: 26,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.ORICHALCUM_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -524,7 +524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_TASSETS.json",
     name: "Orichalcum Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -534,7 +534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: -2,
       rangedDefence: 1,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.BRONZE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -549,7 +549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_GAUNTLETS.json",
     name: "Bronze Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -559,7 +559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: -4,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.IRON_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -574,7 +574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_GAUNTLETS.json",
     name: "Iron Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -584,7 +584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: -8,
       rangedDefence: 4,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.MITHRIL_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -599,7 +599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_GAUNTLETS.json",
     name: "Mithril Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -609,7 +609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: -8,
       rangedDefence: 8,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.ADAMANTINE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -624,7 +624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_GAUNTLETS.json",
     name: "Adamantine Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -634,7 +634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: -24,
       rangedDefence: 16,
-      health: 5
+      health: 5,
     },
     tokenId: EstforConstants.RUNITE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -649,7 +649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_GAUNTLETS.json",
     name: "Runite Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -659,7 +659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 16,
       magicDefence: -18,
       rangedDefence: 16,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.TITANIUM_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -674,7 +674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_GAUNTLETS.json",
     name: "Titanium Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -684,7 +684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -26,
       rangedDefence: 22,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -699,7 +699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_GAUNTLETS.json",
     name: "Orichalcum Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -709,7 +709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: -1,
       rangedDefence: 1,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.BRONZE_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -724,7 +724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_BOOTS.json",
     name: "Bronze Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -734,7 +734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: -4,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.IRON_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -749,7 +749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_BOOTS.json",
     name: "Iron Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -759,7 +759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: -8,
       rangedDefence: 4,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.MITHRIL_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -774,7 +774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_BOOTS.json",
     name: "Mithril Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -784,7 +784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: -8,
       rangedDefence: 8,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.ADAMANTINE_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -799,7 +799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_BOOTS.json",
     name: "Adamantine Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -809,7 +809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: -16,
       rangedDefence: 12,
-      health: 5
+      health: 5,
     },
     tokenId: EstforConstants.RUNITE_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -824,7 +824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_BOOTS.json",
     name: "Runite Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -834,7 +834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 16,
       magicDefence: -18,
       rangedDefence: 16,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.TITANIUM_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -849,7 +849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_BOOTS.json",
     name: "Titanium Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -859,7 +859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -26,
       rangedDefence: 22,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.ORICHALCUM_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -874,7 +874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_BOOTS.json",
     name: "Orichalcum Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -884,7 +884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 3,
       magicDefence: -6,
       rangedDefence: 3,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.BRONZE_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -899,7 +899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_SHIELD.json",
     name: "Bronze Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -909,7 +909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 6,
       magicDefence: -12,
       rangedDefence: 6,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.IRON_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -924,7 +924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_SHIELD.json",
     name: "Iron Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -934,7 +934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: -18,
       rangedDefence: 12,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.MITHRIL_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -949,7 +949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_SHIELD.json",
     name: "Mithril Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -959,7 +959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: -20,
       rangedDefence: 12,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.ADAMANTINE_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -974,7 +974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_SHIELD.json",
     name: "Adamantine Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -984,7 +984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: -22,
       rangedDefence: 18,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.RUNITE_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -999,7 +999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_SHIELD.json",
     name: "Runite Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1009,7 +1009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 24,
       magicDefence: -28,
       rangedDefence: 24,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.TITANIUM_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -1024,7 +1024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_SHIELD.json",
     name: "Titanium Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1034,7 +1034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: -30,
       rangedDefence: 28,
-      health: 14
+      health: 14,
     },
     tokenId: EstforConstants.ORICHALCUM_SHIELD,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -1049,7 +1049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SHIELD.json",
     name: "Orichalcum Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1059,7 +1059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: 1,
       rangedDefence: 1,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SAPPHIRE_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -1074,7 +1074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SAPPHIRE_AMULET.json",
     name: "Sapphire Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1084,7 +1084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 3,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 5
+      health: 5,
     },
     tokenId: EstforConstants.EMERALD_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -1099,7 +1099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EMERALD_AMULET.json",
     name: "Emerald Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1109,7 +1109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 4,
       rangedDefence: 0,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.RUBY_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -1124,7 +1124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUBY_AMULET.json",
     name: "Ruby Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1134,7 +1134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 6,
-      health: 18
+      health: 18,
     },
     tokenId: EstforConstants.AMETHYST_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -1149,7 +1149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AMETHYST_AMULET.json",
     name: "Amethyst Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1159,7 +1159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 3,
       magicDefence: 3,
       rangedDefence: 3,
-      health: 26
+      health: 26,
     },
     tokenId: EstforConstants.DIAMOND_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -1174,7 +1174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DIAMOND_AMULET.json",
     name: "Diamond Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1184,7 +1184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 10,
       rangedDefence: 10,
-      health: 40
+      health: 40,
     },
     tokenId: EstforConstants.DRAGONSTONE_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -1199,7 +1199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_AMULET.json",
     name: "Dragonstone Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1209,7 +1209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: 1,
       rangedDefence: -2,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.APPRENTICE_HAT,
     equipPosition: EquipPosition.HEAD,
@@ -1224,7 +1224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "APPRENTICE_HAT.json",
     name: "Apprentice Hat",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1234,7 +1234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 3,
       rangedDefence: -6,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.MAGE_HOOD,
     equipPosition: EquipPosition.HEAD,
@@ -1249,7 +1249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGE_HOOD.json",
     name: "Mage Hood",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1259,7 +1259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 2,
       rangedDefence: -4,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.SORCERER_HAT,
     equipPosition: EquipPosition.HEAD,
@@ -1274,7 +1274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SORCERER_HAT.json",
     name: "Sorcerer Hat",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1284,7 +1284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 3,
       magicDefence: 4,
       rangedDefence: -8,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.SEERS_HOOD,
     equipPosition: EquipPosition.HEAD,
@@ -1299,7 +1299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEERS_HOOD.json",
     name: "Seer's Hood",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1309,7 +1309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: 10,
       rangedDefence: -18,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.SHAMAN_HOOD,
     equipPosition: EquipPosition.HEAD,
@@ -1324,7 +1324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHAMAN_HOOD.json",
     name: "Shaman Hood",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1334,7 +1334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 12,
       rangedDefence: -18,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.MASTER_HAT,
     equipPosition: EquipPosition.HEAD,
@@ -1349,7 +1349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_HAT.json",
     name: "Master Hat",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1359,7 +1359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: 1,
       rangedDefence: -2,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.APPRENTICE_BODY,
     equipPosition: EquipPosition.BODY,
@@ -1374,7 +1374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "APPRENTICE_BODY.json",
     name: "Apprentice Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1384,7 +1384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 2,
       rangedDefence: -4,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.MAGE_BODY,
     equipPosition: EquipPosition.BODY,
@@ -1399,7 +1399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGE_BODY.json",
     name: "Mage Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1409,7 +1409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: 6,
       rangedDefence: -8,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.SORCERER_BODY,
     equipPosition: EquipPosition.BODY,
@@ -1424,7 +1424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SORCERER_BODY.json",
     name: "Sorcerer Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1434,7 +1434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: 8,
       rangedDefence: -8,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.SEERS_BODY,
     equipPosition: EquipPosition.BODY,
@@ -1449,7 +1449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEERS_BODY.json",
     name: "Seers Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1459,7 +1459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: 12,
       rangedDefence: -16,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.SHAMAN_BODY,
     equipPosition: EquipPosition.BODY,
@@ -1474,7 +1474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHAMAN_BODY.json",
     name: "Shaman Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1484,7 +1484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -20,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.MASTER_BODY,
     equipPosition: EquipPosition.BODY,
@@ -1499,7 +1499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BODY.json",
     name: "Master Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1509,7 +1509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 2,
       rangedDefence: -4,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.APPRENTICE_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -1524,7 +1524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "APPRENTICE_TROUSERS.json",
     name: "Apprentice Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1534,7 +1534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 4,
       rangedDefence: -4,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.MAGE_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -1549,7 +1549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGE_TROUSERS.json",
     name: "Mage Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1559,7 +1559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: 8,
       rangedDefence: -8,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.SORCERER_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -1574,7 +1574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SORCERER_TROUSERS.json",
     name: "Sorcerer Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1584,7 +1584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 12,
       rangedDefence: -16,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.SEERS_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -1599,7 +1599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEERS_TROUSERS.json",
     name: "Seers Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1609,7 +1609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: 16,
       rangedDefence: -18,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.SHAMAN_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -1624,7 +1624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHAMAN_TROUSERS.json",
     name: "Shaman Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1634,7 +1634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 14,
       magicDefence: 20,
       rangedDefence: -20,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.MASTER_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -1649,7 +1649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_TROUSERS.json",
     name: "Master Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1659,7 +1659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: 1,
       rangedDefence: -2,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.APPRENTICE_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -1674,7 +1674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "APPRENTICE_GAUNTLETS.json",
     name: "Apprentice Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1684,7 +1684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 4,
       rangedDefence: -8,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.MAGE_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -1699,7 +1699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGE_BRACERS.json",
     name: "Mage Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1709,7 +1709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: 8,
       rangedDefence: -8,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.SORCERER_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -1724,7 +1724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SORCERER_GAUNTLETS.json",
     name: "Sorcerer Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1734,7 +1734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 6,
       magicDefence: 10,
       rangedDefence: -12,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.SEERS_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -1749,7 +1749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEERS_BRACERS.json",
     name: "Seers Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1759,7 +1759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: 12,
       rangedDefence: -20,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.SHAMAN_GAUNTLETS,
     equipPosition: EquipPosition.ARMS,
@@ -1774,7 +1774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHAMAN_GAUNTLETS.json",
     name: "Shaman Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1784,7 +1784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -18,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.MASTER_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -1799,7 +1799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BRACERS.json",
     name: "Master Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1809,7 +1809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 1,
       magicDefence: 1,
       rangedDefence: -2,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.APPRENTICE_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -1824,7 +1824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "APPRENTICE_BOOTS.json",
     name: "Apprentice Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1834,7 +1834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 2,
       rangedDefence: -4,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.MAGE_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -1849,7 +1849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGE_BOOTS.json",
     name: "Mage Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1859,7 +1859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: 8,
       rangedDefence: -12,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.SORCERER_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -1874,7 +1874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SORCERER_BOOTS.json",
     name: "Sorcerer Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1884,7 +1884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: 10,
       rangedDefence: -12,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.SEERS_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -1899,7 +1899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEERS_BOOTS.json",
     name: "Seers Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1909,7 +1909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: 12,
       rangedDefence: -20,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.SHAMAN_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -1924,7 +1924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHAMAN_BOOTS.json",
     name: "Shaman Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1934,7 +1934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: -22,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.MASTER_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -1949,7 +1949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BOOTS.json",
     name: "Master Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1959,7 +1959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BRONZE_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -1974,7 +1974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_SWORD.json",
     name: "Bronze Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -1984,7 +1984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.IRON_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -1999,7 +1999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_SWORD.json",
     name: "Iron Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2009,7 +2009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MITHRIL_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2024,7 +2024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_SWORD.json",
     name: "Mithril Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2034,7 +2034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2049,7 +2049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_SWORD.json",
     name: "Adamantine Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2059,7 +2059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUNITE_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2074,7 +2074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_SWORD.json",
     name: "Runite Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2084,7 +2084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2099,7 +2099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_SWORD.json",
     name: "Titanium Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2109,7 +2109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_SWORD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2124,7 +2124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SWORD.json",
     name: "Orichalcum Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2134,7 +2134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TOTEM_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -2149,7 +2149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TOTEM_STAFF.json",
     name: "Totem Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2159,7 +2159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SAPPHIRE_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -2174,7 +2174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SAPPHIRE_STAFF.json",
     name: "Sapphire Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2184,7 +2184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EMERALD_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -2199,7 +2199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EMERALD_STAFF.json",
     name: "Emerald Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2209,7 +2209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUBY_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -2224,7 +2224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUBY_STAFF.json",
     name: "Ruby Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2234,7 +2234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.AMETHYST_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -2249,7 +2249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AMETHYST_STAFF.json",
     name: "Amethyst Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2259,7 +2259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DIAMOND_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -2274,7 +2274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DIAMOND_STAFF.json",
     name: "Diamond Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2284,7 +2284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE_STAFF,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -2299,7 +2299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_STAFF.json",
     name: "Dragonstone Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2309,7 +2309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COPPER_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2324,7 +2324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COPPER_ORE.json",
     name: "Copper Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2334,7 +2334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TIN_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2349,7 +2349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TIN_ORE.json",
     name: "Tin Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2359,7 +2359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.IRON_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2374,7 +2374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_ORE.json",
     name: "Iron Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2384,7 +2384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SAPPHIRE,
     equipPosition: EquipPosition.NONE,
@@ -2399,7 +2399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SAPPHIRE.json",
     name: "Sapphire",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2409,7 +2409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COAL_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2424,7 +2424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COAL_ORE.json",
     name: "Coal Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2434,7 +2434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EMERALD,
     equipPosition: EquipPosition.NONE,
@@ -2449,7 +2449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EMERALD.json",
     name: "Emerald",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2459,7 +2459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MITHRIL_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2474,7 +2474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_ORE.json",
     name: "Mithril Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2484,7 +2484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUBY,
     equipPosition: EquipPosition.NONE,
@@ -2499,7 +2499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUBY.json",
     name: "Ruby",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2509,7 +2509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2524,7 +2524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_ORE.json",
     name: "Adamantine Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2534,7 +2534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.AMETHYST,
     equipPosition: EquipPosition.NONE,
@@ -2549,7 +2549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AMETHYST.json",
     name: "Amethyst",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2559,7 +2559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DIAMOND,
     equipPosition: EquipPosition.NONE,
@@ -2574,7 +2574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DIAMOND.json",
     name: "Diamond",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2584,7 +2584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUNITE_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2599,7 +2599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_ORE.json",
     name: "Runite Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2609,7 +2609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE,
     equipPosition: EquipPosition.NONE,
@@ -2624,7 +2624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE.json",
     name: "Dragonstone",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2634,7 +2634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2649,7 +2649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_ORE.json",
     name: "Titanium Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2659,7 +2659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_ORE,
     equipPosition: EquipPosition.NONE,
@@ -2674,7 +2674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ORE.json",
     name: "Orichalcum Ore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2684,7 +2684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BRONZE_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2699,7 +2699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_PICKAXE.json",
     name: "Bronze Pickaxe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2709,7 +2709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.IRON_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2724,7 +2724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_PICKAXE.json",
     name: "Iron Pickaxe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2734,7 +2734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MITHRIL_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2749,7 +2749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_PICKAXE.json",
     name: "Mithril Pickaxe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2759,7 +2759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2774,7 +2774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_PICKAXE.json",
     name: "Adamantine Pickaxe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2784,7 +2784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUNITE_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2799,7 +2799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_PICKAXE.json",
     name: "Runite Pickaxe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2809,7 +2809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2824,7 +2824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_PICKAXE.json",
     name: "Titanium Pickaxe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2834,7 +2834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_PICKAXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -2849,7 +2849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_PICKAXE.json",
     name: "Orichalcum Pickaxe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2859,7 +2859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BRONZE_BAR,
     equipPosition: EquipPosition.NONE,
@@ -2874,7 +2874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_BAR.json",
     name: "Bronze Bar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2884,7 +2884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.IRON_BAR,
     equipPosition: EquipPosition.NONE,
@@ -2899,7 +2899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_BAR.json",
     name: "Iron Bar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2909,7 +2909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MITHRIL_BAR,
     equipPosition: EquipPosition.NONE,
@@ -2924,7 +2924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_BAR.json",
     name: "Mithril Bar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2934,7 +2934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_BAR,
     equipPosition: EquipPosition.NONE,
@@ -2949,7 +2949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_BAR.json",
     name: "Adamantine Bar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2959,7 +2959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUNITE_BAR,
     equipPosition: EquipPosition.NONE,
@@ -2974,7 +2974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_BAR.json",
     name: "Runite Bar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -2984,7 +2984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_BAR,
     equipPosition: EquipPosition.NONE,
@@ -2999,7 +2999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_BAR.json",
     name: "Titanium Bar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3009,7 +3009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_BAR,
     equipPosition: EquipPosition.NONE,
@@ -3024,7 +3024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_BAR.json",
     name: "Orichalcum Bar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3034,7 +3034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATUOW_HOOD,
     equipPosition: EquipPosition.HEAD,
@@ -3049,7 +3049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATUOW_HOOD.json",
     name: "Natuow Hood",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3059,7 +3059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATUOW_BODY,
     equipPosition: EquipPosition.BODY,
@@ -3074,7 +3074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATUOW_BODY.json",
     name: "Natuow Vestments",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3084,7 +3084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATUOW_TASSETS,
     equipPosition: EquipPosition.LEGS,
@@ -3099,7 +3099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATUOW_TASSETS.json",
     name: "Natuow Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3109,7 +3109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATUOW_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -3124,7 +3124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATUOW_BOOTS.json",
     name: "Natuow Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3134,7 +3134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATUOW_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -3149,7 +3149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATUOW_BRACERS.json",
     name: "Natuow Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3159,7 +3159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BAT_WING_HAT,
     equipPosition: EquipPosition.HEAD,
@@ -3174,7 +3174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BAT_WING_HAT.json",
     name: "Bat Wing Hat",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3184,7 +3184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BAT_WING_BODY,
     equipPosition: EquipPosition.BODY,
@@ -3199,7 +3199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BAT_WING_BODY.json",
     name: "Bat Wing Vestments",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3209,7 +3209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BAT_WING_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -3224,7 +3224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BAT_WING_TROUSERS.json",
     name: "Bat Wing Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3234,7 +3234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BAT_WING_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -3249,7 +3249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BAT_WING_BOOTS.json",
     name: "Bat Wing Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3259,7 +3259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BAT_WING_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -3274,7 +3274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BAT_WING_BRACERS.json",
     name: "Bat Wing Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3284,7 +3284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATURE_MASK,
     equipPosition: EquipPosition.HEAD,
@@ -3299,7 +3299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATURE_MASK.json",
     name: "Nature Mask",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3309,7 +3309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATURE_BODY,
     equipPosition: EquipPosition.BODY,
@@ -3324,7 +3324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATURE_BODY.json",
     name: "Nature Vestments",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3334,7 +3334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATURE_TROUSERS,
     equipPosition: EquipPosition.LEGS,
@@ -3349,7 +3349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATURE_TROUSERS.json",
     name: "Nature Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3359,7 +3359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATURE_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -3374,7 +3374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATURE_BOOTS.json",
     name: "Nature Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3384,7 +3384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATURE_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -3399,7 +3399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATURE_BRACERS.json",
     name: "Nature Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3409,7 +3409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LEAF_FRAGMENTS,
     equipPosition: EquipPosition.NONE,
@@ -3424,7 +3424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LEAF_FRAGMENTS.json",
     name: "Leaf Fragments",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3434,7 +3434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.VENOM_POUCH,
     equipPosition: EquipPosition.NONE,
@@ -3449,7 +3449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "VENOM_POUCH.json",
     name: "Venom Pouch",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3459,7 +3459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BAT_WING,
     equipPosition: EquipPosition.NONE,
@@ -3474,7 +3474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BAT_WING.json",
     name: "Bat Wing",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3484,7 +3484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BAT_WING_PATCH,
     equipPosition: EquipPosition.NONE,
@@ -3499,7 +3499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BAT_WING_PATCH.json",
     name: "Bat Wing Patch",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3509,7 +3509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.THREAD_NEEDLE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3524,7 +3524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "THREAD_NEEDLE.json",
     name: "Thread & Needle",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3534,7 +3534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LOSSUTH_TEETH,
     equipPosition: EquipPosition.NONE,
@@ -3549,7 +3549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LOSSUTH_TEETH.json",
     name: "Lossuth Teeth",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3559,7 +3559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LOSSUTH_SCALE,
     equipPosition: EquipPosition.NONE,
@@ -3574,7 +3574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LOSSUTH_SCALE.json",
     name: "Lossuth Scale",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3584,7 +3584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.QUARTZ_INFUSED_FEATHER,
     equipPosition: EquipPosition.NONE,
@@ -3599,7 +3599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "QUARTZ_INFUSED_FEATHER.json",
     name: "Quartz Infused Feather",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3609,7 +3609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FEATHER,
     equipPosition: EquipPosition.NONE,
@@ -3624,7 +3624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FEATHER.json",
     name: "Feather",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3634,7 +3634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BARK_CHUNK,
     equipPosition: EquipPosition.NONE,
@@ -3649,7 +3649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BARK_CHUNK.json",
     name: "Bark Chunk",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3659,7 +3659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUECANAR,
     equipPosition: EquipPosition.NONE,
@@ -3674,7 +3674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUECANAR.json",
     name: "Bluecanar",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3684,7 +3684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANURGAT,
     equipPosition: EquipPosition.NONE,
@@ -3699,7 +3699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANURGAT.json",
     name: "Anurgat",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3709,7 +3709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUFARUM,
     equipPosition: EquipPosition.NONE,
@@ -3724,7 +3724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUFARUM.json",
     name: "Rufarum",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3734,7 +3734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WHITE_DEATH_SPORE,
     equipPosition: EquipPosition.NONE,
@@ -3749,7 +3749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WHITE_DEATH_SPORE.json",
     name: "White Death Spore",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3759,7 +3759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MAGIC_FIRE_STARTER,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3774,7 +3774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGIC_FIRE_STARTER.json",
     name: "Magic Fire Starter",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3784,7 +3784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NET_STICK,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3799,7 +3799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NET_STICK.json",
     name: "Net (with stick)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3809,7 +3809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MEDIUM_NET,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3824,7 +3824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MEDIUM_NET.json",
     name: "Medium net",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3834,7 +3834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LARGE_NET,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3849,7 +3849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LARGE_NET.json",
     name: "Large net",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3859,7 +3859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MAGIC_NET,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3874,7 +3874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGIC_NET.json",
     name: "Magic net",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3884,7 +3884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WOOD_FISHING_ROD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3899,7 +3899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WOOD_FISHING_ROD.json",
     name: "Wood Fishing Rod",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3909,7 +3909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_FISHING_ROD,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3924,7 +3924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_FISHING_ROD.json",
     name: "Titanium Fishing Rod",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3934,7 +3934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HARPOON,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3949,7 +3949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HARPOON.json",
     name: "Harpoon",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3959,7 +3959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CAGE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -3974,7 +3974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CAGE.json",
     name: "Cage",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -3984,7 +3984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LOG,
     equipPosition: EquipPosition.NONE,
@@ -3999,7 +3999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LOG.json",
     name: "Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4009,7 +4009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.OAK_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4024,7 +4024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "OAK_LOG.json",
     name: "Oak Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4034,7 +4034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WILLOW_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4049,7 +4049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WILLOW_LOG.json",
     name: "Willow Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4059,7 +4059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MAPLE_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4074,7 +4074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAPLE_LOG.json",
     name: "Maple Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4084,7 +4084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.REDWOOD_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4099,7 +4099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REDWOOD_LOG.json",
     name: "Redwood Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4109,7 +4109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MAGICAL_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4124,7 +4124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MAGICAL_LOG.json",
     name: "Magical Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4134,7 +4134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ASH_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4149,7 +4149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ASH_LOG.json",
     name: "Ash Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4159,7 +4159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ENCHANTED_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4174,7 +4174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ENCHANTED_LOG.json",
     name: "Enchanted Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4184,7 +4184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LIVING_LOG,
     equipPosition: EquipPosition.NONE,
@@ -4199,7 +4199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LIVING_LOG.json",
     name: "Living Log",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4209,7 +4209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BRONZE_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -4224,7 +4224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_AXE.json",
     name: "Bronze Axe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4234,7 +4234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.IRON_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -4249,7 +4249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_AXE.json",
     name: "Iron Axe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4259,7 +4259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MITHRIL_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -4274,7 +4274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_AXE.json",
     name: "Mithril Axe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4284,7 +4284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -4299,7 +4299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_AXE.json",
     name: "Adamantine Axe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4309,7 +4309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUNITE_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -4324,7 +4324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_AXE.json",
     name: "Runite Axe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4334,7 +4334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -4349,7 +4349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_AXE.json",
     name: "Titanium Axe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4359,7 +4359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_AXE,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -4374,7 +4374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_AXE.json",
     name: "Orichalcum Axe",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4384,7 +4384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_MINNUS,
     equipPosition: EquipPosition.NONE,
@@ -4399,7 +4399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_MINNUS.json",
     name: "Raw Minnus",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4409,7 +4409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_BLEKK,
     equipPosition: EquipPosition.NONE,
@@ -4424,7 +4424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_BLEKK.json",
     name: "Raw Blekk",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4434,7 +4434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_SKRIMP,
     equipPosition: EquipPosition.NONE,
@@ -4449,7 +4449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_SKRIMP.json",
     name: "Raw Skrimp",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4459,7 +4459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_FEOLA,
     equipPosition: EquipPosition.NONE,
@@ -4474,7 +4474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_FEOLA.json",
     name: "Raw Feola",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4484,7 +4484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_ANCHO,
     equipPosition: EquipPosition.NONE,
@@ -4499,7 +4499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_ANCHO.json",
     name: "Raw Ancho",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4509,7 +4509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_TROUT,
     equipPosition: EquipPosition.NONE,
@@ -4524,7 +4524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_TROUT.json",
     name: "Raw Trout",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4534,7 +4534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_ROJJA,
     equipPosition: EquipPosition.NONE,
@@ -4549,7 +4549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_ROJJA.json",
     name: "Raw Rojja",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4559,7 +4559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_BOWFISH,
     equipPosition: EquipPosition.NONE,
@@ -4574,7 +4574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_BOWFISH.json",
     name: "Raw Bowfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4584,7 +4584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_GOLDFISH,
     equipPosition: EquipPosition.NONE,
@@ -4599,7 +4599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_GOLDFISH.json",
     name: "Raw Goldfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4609,7 +4609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_MYSTY_BLUE,
     equipPosition: EquipPosition.NONE,
@@ -4624,7 +4624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_MYSTY_BLUE.json",
     name: "Raw Mysty Blue",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4634,7 +4634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_FLITFISH,
     equipPosition: EquipPosition.NONE,
@@ -4649,7 +4649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_FLITFISH.json",
     name: "Raw Flitfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4659,7 +4659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_RAZORFISH,
     equipPosition: EquipPosition.NONE,
@@ -4674,7 +4674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_RAZORFISH.json",
     name: "Raw Razorfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4684,7 +4684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_QUAFFER,
     equipPosition: EquipPosition.NONE,
@@ -4699,7 +4699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_QUAFFER.json",
     name: "Raw Quaffer",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4709,7 +4709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_ROXA,
     equipPosition: EquipPosition.NONE,
@@ -4724,7 +4724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_ROXA.json",
     name: "Raw Roxa",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4734,7 +4734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_AZACUDDA,
     equipPosition: EquipPosition.NONE,
@@ -4749,7 +4749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_AZACUDDA.json",
     name: "Raw Azacudda",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4759,7 +4759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_STONECLAW,
     equipPosition: EquipPosition.NONE,
@@ -4774,7 +4774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_STONECLAW.json",
     name: "Raw Stoneclaw",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4784,7 +4784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_CRUSKAN,
     equipPosition: EquipPosition.NONE,
@@ -4799,7 +4799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_CRUSKAN.json",
     name: "Raw Cruskan",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4809,7 +4809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_CHODFISH,
     equipPosition: EquipPosition.NONE,
@@ -4824,7 +4824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_CHODFISH.json",
     name: "Raw Chodfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4834,7 +4834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_DOUBTFISH,
     equipPosition: EquipPosition.NONE,
@@ -4849,7 +4849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_DOUBTFISH.json",
     name: "Raw Doubtfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4859,7 +4859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_ROSEFIN,
     equipPosition: EquipPosition.NONE,
@@ -4874,7 +4874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_ROSEFIN.json",
     name: "Raw Rosefin",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4884,7 +4884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_SPHINX_FISH,
     equipPosition: EquipPosition.NONE,
@@ -4899,7 +4899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_SPHINX_FISH.json",
     name: "Raw Sphinx Fish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4909,7 +4909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_SHAW,
     equipPosition: EquipPosition.NONE,
@@ -4924,7 +4924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_SHAW.json",
     name: "Raw Shaw",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4934,7 +4934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_VANISHING_PERCH,
     equipPosition: EquipPosition.NONE,
@@ -4949,7 +4949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_VANISHING_PERCH.json",
     name: "Raw Vanishing Perch",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4959,7 +4959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_VIPER_BASS,
     equipPosition: EquipPosition.NONE,
@@ -4974,7 +4974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_VIPER_BASS.json",
     name: "Raw Viper Bass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -4984,7 +4984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_WATER_SERPENT,
     equipPosition: EquipPosition.NONE,
@@ -4999,7 +4999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_WATER_SERPENT.json",
     name: "Raw Water Serpent",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5009,7 +5009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_WHISKFIN,
     equipPosition: EquipPosition.NONE,
@@ -5024,7 +5024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_WHISKFIN.json",
     name: "Raw Whiskfin",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5034,7 +5034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_MHARA,
     equipPosition: EquipPosition.NONE,
@@ -5049,7 +5049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_MHARA.json",
     name: "Raw Mhara",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5059,7 +5059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_GRAN_SQUIN,
     equipPosition: EquipPosition.NONE,
@@ -5074,7 +5074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_GRAN_SQUIN.json",
     name: "Raw Gran Squin",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5084,7 +5084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_LANCER,
     equipPosition: EquipPosition.NONE,
@@ -5099,7 +5099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_LANCER.json",
     name: "Raw Lancer",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5109,7 +5109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_OCTACLE,
     equipPosition: EquipPosition.NONE,
@@ -5124,7 +5124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_OCTACLE.json",
     name: "Raw Octacle",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5134,7 +5134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_DRAGONFISH,
     equipPosition: EquipPosition.NONE,
@@ -5149,7 +5149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_DRAGONFISH.json",
     name: "Raw Dragonfish",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5159,7 +5159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RAW_YERESPATUM,
     equipPosition: EquipPosition.NONE,
@@ -5174,7 +5174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RAW_YERESPATUM.json",
     name: "Raw Yerespatum",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5184,7 +5184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_MINNUS,
     equipPosition: EquipPosition.FOOD,
@@ -5199,7 +5199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_MINNUS.json",
     name: "Cooked Minnus",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5209,7 +5209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_BLEKK,
     equipPosition: EquipPosition.FOOD,
@@ -5224,7 +5224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_BLEKK.json",
     name: "Cooked Blekk",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5234,7 +5234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_SKRIMP,
     equipPosition: EquipPosition.FOOD,
@@ -5249,7 +5249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_SKRIMP.json",
     name: "Cooked Skrimp",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5259,7 +5259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_FEOLA,
     equipPosition: EquipPosition.FOOD,
@@ -5274,7 +5274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_FEOLA.json",
     name: "Cooked Feola",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5284,7 +5284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_ANCHO,
     equipPosition: EquipPosition.FOOD,
@@ -5299,7 +5299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_ANCHO.json",
     name: "Cooked Ancho",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5309,7 +5309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_TROUT,
     equipPosition: EquipPosition.FOOD,
@@ -5324,7 +5324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_TROUT.json",
     name: "Cooked Trout",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5334,7 +5334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_ROJJA,
     equipPosition: EquipPosition.FOOD,
@@ -5349,7 +5349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_ROJJA.json",
     name: "Cooked Rojja",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5359,7 +5359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_BOWFISH,
     equipPosition: EquipPosition.FOOD,
@@ -5374,7 +5374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_BOWFISH.json",
     name: "Cooked Bowfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5384,7 +5384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_GOLDFISH,
     equipPosition: EquipPosition.FOOD,
@@ -5399,7 +5399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_GOLDFISH.json",
     name: "Cooked Goldfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5409,7 +5409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_MYSTY_BLUE,
     equipPosition: EquipPosition.FOOD,
@@ -5424,7 +5424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_MYSTY_BLUE.json",
     name: "Cooked Mysty Blue",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5434,7 +5434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_FLITFISH,
     equipPosition: EquipPosition.FOOD,
@@ -5449,7 +5449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_FLITFISH.json",
     name: "Cooked Flitfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5459,7 +5459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_RAZORFISH,
     equipPosition: EquipPosition.FOOD,
@@ -5474,7 +5474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_RAZORFISH.json",
     name: "Cooked Razorfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5484,7 +5484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_QUAFFER,
     equipPosition: EquipPosition.FOOD,
@@ -5499,7 +5499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_QUAFFER.json",
     name: "Cooked Quaffer",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5509,7 +5509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_ROXA,
     equipPosition: EquipPosition.FOOD,
@@ -5524,7 +5524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_ROXA.json",
     name: "Cooked Roxa",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5534,7 +5534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_AZACUDDA,
     equipPosition: EquipPosition.FOOD,
@@ -5549,7 +5549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_AZACUDDA.json",
     name: "Cooked Azacudda",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5559,7 +5559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_STONECLAW,
     equipPosition: EquipPosition.FOOD,
@@ -5574,7 +5574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_STONECLAW.json",
     name: "Cooked Stoneclaw",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5584,7 +5584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_CRUSKAN,
     equipPosition: EquipPosition.FOOD,
@@ -5599,7 +5599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_CRUSKAN.json",
     name: "Cooked Cruskan",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5609,7 +5609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_CHODFISH,
     equipPosition: EquipPosition.FOOD,
@@ -5624,7 +5624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_CHODFISH.json",
     name: "Cooked Chodfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5634,7 +5634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_DOUBTFISH,
     equipPosition: EquipPosition.FOOD,
@@ -5649,7 +5649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_DOUBTFISH.json",
     name: "Cooked Doubtfish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5659,7 +5659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_ROSEFIN,
     equipPosition: EquipPosition.FOOD,
@@ -5674,7 +5674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_ROSEFIN.json",
     name: "Cooked Rosefin",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5684,7 +5684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_SPHINX_FISH,
     equipPosition: EquipPosition.FOOD,
@@ -5699,7 +5699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_SPHINX_FISH.json",
     name: "Cooked Sphinx Fish",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5709,7 +5709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_SHAW,
     equipPosition: EquipPosition.FOOD,
@@ -5724,7 +5724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_SHAW.json",
     name: "Cooked Shaw",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5734,7 +5734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_VANISHING_PERCH,
     equipPosition: EquipPosition.FOOD,
@@ -5749,7 +5749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_VANISHING_PERCH.json",
     name: "Cooked Vanishing Perch",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5759,7 +5759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_VIPER_BASS,
     equipPosition: EquipPosition.FOOD,
@@ -5774,7 +5774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_VIPER_BASS.json",
     name: "Cooked Viper Bass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5784,7 +5784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_WATER_SERPENT,
     equipPosition: EquipPosition.FOOD,
@@ -5799,7 +5799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_WATER_SERPENT.json",
     name: "Cooked Water Serpent",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5809,7 +5809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_WHISKFIN,
     equipPosition: EquipPosition.FOOD,
@@ -5824,7 +5824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_WHISKFIN.json",
     name: "Cooked Whiskfin",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5834,7 +5834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_MHARA,
     equipPosition: EquipPosition.FOOD,
@@ -5849,7 +5849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_MHARA.json",
     name: "Cooked Mhara",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5859,7 +5859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_GRAN_SQUIN,
     equipPosition: EquipPosition.FOOD,
@@ -5874,7 +5874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_GRAN_SQUIN.json",
     name: "Cooked Gran Squin",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5884,7 +5884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_LANCER,
     equipPosition: EquipPosition.FOOD,
@@ -5899,7 +5899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_LANCER.json",
     name: "Cooked Lancer",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5909,7 +5909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_OCTACLE,
     equipPosition: EquipPosition.FOOD,
@@ -5924,7 +5924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_OCTACLE.json",
     name: "Cooked Octacle",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5934,7 +5934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_DRAGONFISH,
     equipPosition: EquipPosition.FOOD,
@@ -5949,7 +5949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_DRAGONFISH.json",
     name: "Cooked Dragonfish",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5959,7 +5959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COOKED_YERESPATUM,
     equipPosition: EquipPosition.FOOD,
@@ -5974,7 +5974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COOKED_YERESPATUM.json",
     name: "Cooked Yerespatum",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -5984,7 +5984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGON_KEY,
     equipPosition: EquipPosition.NONE,
@@ -5999,7 +5999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGON_KEY.json",
     name: "Dragon Key",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6009,7 +6009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BONE_KEY,
     equipPosition: EquipPosition.NONE,
@@ -6024,7 +6024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BONE_KEY.json",
     name: "Bone Key",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6034,7 +6034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATURE_KEY,
     equipPosition: EquipPosition.NONE,
@@ -6049,7 +6049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATURE_KEY.json",
     name: "Nature Key",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6059,7 +6059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.AQUA_KEY,
     equipPosition: EquipPosition.NONE,
@@ -6074,7 +6074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AQUA_KEY.json",
     name: "Aqua Key",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6084,7 +6084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV1_KEY,
     equipPosition: EquipPosition.NONE,
@@ -6099,7 +6099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_KEY.json",
     name: "1st Anniversary Key",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6109,7 +6109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATUOW_HIDE,
     equipPosition: EquipPosition.NONE,
@@ -6124,7 +6124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATUOW_HIDE.json",
     name: "Natuow Hide",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6134,7 +6134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATUOW_LEATHER,
     equipPosition: EquipPosition.NONE,
@@ -6149,7 +6149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATUOW_LEATHER.json",
     name: "Natuow Leather",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6159,7 +6159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SMALL_BONE,
     equipPosition: EquipPosition.NONE,
@@ -6174,7 +6174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SMALL_BONE.json",
     name: "Small Bone",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6184,7 +6184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MEDIUM_BONE,
     equipPosition: EquipPosition.NONE,
@@ -6199,7 +6199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MEDIUM_BONE.json",
     name: "Medium Bone",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6209,7 +6209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LARGE_BONE,
     equipPosition: EquipPosition.NONE,
@@ -6224,7 +6224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LARGE_BONE.json",
     name: "Large Bone",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6234,7 +6234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGON_BONE,
     equipPosition: EquipPosition.NONE,
@@ -6249,7 +6249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGON_BONE.json",
     name: "Dragon Bone",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6259,7 +6259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGON_TEETH,
     equipPosition: EquipPosition.NONE,
@@ -6274,7 +6274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGON_TEETH.json",
     name: "Dragon Teeth",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6284,7 +6284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGON_SCALE,
     equipPosition: EquipPosition.NONE,
@@ -6299,7 +6299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGON_SCALE.json",
     name: "Dragon Scale",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6309,7 +6309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POISON,
     equipPosition: EquipPosition.NONE,
@@ -6324,7 +6324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POISON.json",
     name: "Poison",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6334,7 +6334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.STRING,
     equipPosition: EquipPosition.NONE,
@@ -6349,7 +6349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "STRING.json",
     name: "String",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6359,7 +6359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ROPE,
     equipPosition: EquipPosition.NONE,
@@ -6374,7 +6374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ROPE.json",
     name: "Rope",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6384,7 +6384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHADOW_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6399,7 +6399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHADOW_SCROLL.json",
     name: "Shadow Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6409,7 +6409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NATURE_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6424,7 +6424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NATURE_SCROLL.json",
     name: "Nature Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6434,7 +6434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.AQUA_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6449,7 +6449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AQUA_SCROLL.json",
     name: "Aqua Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6459,7 +6459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HELL_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6474,7 +6474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HELL_SCROLL.json",
     name: "Hell Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6484,7 +6484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.AIR_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6499,7 +6499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AIR_SCROLL.json",
     name: "Air Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6509,7 +6509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BARRAGE_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6524,7 +6524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BARRAGE_SCROLL.json",
     name: "Barrage Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6534,7 +6534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FREEZE_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6549,7 +6549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FREEZE_SCROLL.json",
     name: "Freeze Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6559,7 +6559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANCIENT_SCROLL,
     equipPosition: EquipPosition.MAGIC_BAG,
@@ -6574,7 +6574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANCIENT_SCROLL.json",
     name: "Ancient Scroll",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6584,7 +6584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BONEMEAL,
     equipPosition: EquipPosition.NONE,
@@ -6599,7 +6599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BONEMEAL.json",
     name: "Bonemeal",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6609,7 +6609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ENCHANTED_ACORN,
     equipPosition: EquipPosition.NONE,
@@ -6624,7 +6624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ENCHANTED_ACORN.json",
     name: "Enchanted Acorn",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6634,7 +6634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ACORN_PATCH,
     equipPosition: EquipPosition.NONE,
@@ -6649,7 +6649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ACORN_PATCH.json",
     name: "Acorn Patch",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6659,7 +6659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COMBAT_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -6674,7 +6674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COMBAT_BOOST.json",
     name: "Combat Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6684,7 +6684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.XP_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -6699,7 +6699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "XP_BOOST.json",
     name: "XP Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6709,7 +6709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GATHERING_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -6724,7 +6724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GATHERING_BOOST.json",
     name: "Gathering Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6734,7 +6734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SKILL_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -6749,7 +6749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SKILL_BOOST.json",
     name: "Skill Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6759,7 +6759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ABSENCE_BOOST,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -6774,7 +6774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ABSENCE_BOOST.json",
     name: "Absence Boost",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6784,7 +6784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EGG_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -6799,7 +6799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EGG_TIER1.json",
     name: "Genesis Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6809,7 +6809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EGG_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -6824,7 +6824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EGG_TIER2.json",
     name: "Genesis Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6834,7 +6834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EGG_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -6849,7 +6849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EGG_TIER3.json",
     name: "Genesis Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6859,7 +6859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EGG_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -6874,7 +6874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EGG_TIER4.json",
     name: "Genesis Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6884,7 +6884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EGG_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -6899,7 +6899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EGG_TIER5.json",
     name: "Genesis Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6909,7 +6909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_1_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -6924,7 +6924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_1_TIER1.json",
     name: "OG Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6934,7 +6934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_1_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -6949,7 +6949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_1_TIER2.json",
     name: "OG Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6959,7 +6959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_1_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -6974,7 +6974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_1_TIER3.json",
     name: "OG Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -6984,7 +6984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_1_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -6999,7 +6999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_1_TIER4.json",
     name: "OG Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7009,7 +7009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_1_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -7024,7 +7024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_1_TIER5.json",
     name: "OG Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7034,7 +7034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_2_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -7049,7 +7049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_2_TIER1.json",
     name: "1Kin Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7059,7 +7059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_2_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -7074,7 +7074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_2_TIER2.json",
     name: "1Kin Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7084,7 +7084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_2_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -7099,7 +7099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_2_TIER3.json",
     name: "1Kin Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7109,7 +7109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_2_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -7124,7 +7124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_2_TIER4.json",
     name: "1Kin Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7134,7 +7134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_2_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -7149,7 +7149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_2_TIER5.json",
     name: "1Kin Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7159,7 +7159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_3_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -7174,7 +7174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_3_TIER1.json",
     name: "Frost Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7184,7 +7184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_3_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -7199,7 +7199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_3_TIER2.json",
     name: "Frost Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7209,7 +7209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_3_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -7224,7 +7224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_3_TIER3.json",
     name: "Frost Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7234,7 +7234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_3_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -7249,7 +7249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_3_TIER4.json",
     name: "Frost Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7259,7 +7259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_3_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -7274,7 +7274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_3_TIER5.json",
     name: "Frost Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7284,7 +7284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_4_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -7299,7 +7299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_4_TIER1.json",
     name: "Crystal Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7309,7 +7309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_4_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -7324,7 +7324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_4_TIER2.json",
     name: "Crystal Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7334,7 +7334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_4_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -7349,7 +7349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_4_TIER3.json",
     name: "Crystal Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7359,7 +7359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_4_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -7374,7 +7374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_4_TIER4.json",
     name: "Crystal Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7384,7 +7384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SECRET_EGG_4_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -7399,7 +7399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SECRET_EGG_4_TIER5.json",
     name: "Crystal Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7409,7 +7409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -7424,7 +7424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_EGG_TIER1.json",
     name: "1st Anniversary Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7434,7 +7434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -7449,7 +7449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_EGG_TIER2.json",
     name: "1st Anniversary Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7459,7 +7459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -7474,7 +7474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_EGG_TIER3.json",
     name: "1st Anniversary Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7484,7 +7484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -7499,7 +7499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_EGG_TIER4.json",
     name: "1st Anniversary Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7509,7 +7509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV1_EGG_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -7524,7 +7524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_EGG_TIER5.json",
     name: "1st Anniversary Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7534,7 +7534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PAPER,
     equipPosition: EquipPosition.NONE,
@@ -7549,7 +7549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PAPER.json",
     name: "Paper",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7559,7 +7559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ASH,
     equipPosition: EquipPosition.NONE,
@@ -7574,7 +7574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ASH.json",
     name: "Ash",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7584,7 +7584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BRONZE_ARROW,
     equipPosition: EquipPosition.QUIVER,
@@ -7599,7 +7599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_ARROW.json",
     name: "Bronze Arrow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7609,7 +7609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.IRON_ARROW,
     equipPosition: EquipPosition.QUIVER,
@@ -7624,7 +7624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_ARROW.json",
     name: "Iron Arrow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7634,7 +7634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MITHRIL_ARROW,
     equipPosition: EquipPosition.QUIVER,
@@ -7649,7 +7649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_ARROW.json",
     name: "Mithril Arrow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7659,7 +7659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_ARROW,
     equipPosition: EquipPosition.QUIVER,
@@ -7674,7 +7674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_ARROW.json",
     name: "Adamantine Arrow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7684,7 +7684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUNITE_ARROW,
     equipPosition: EquipPosition.QUIVER,
@@ -7699,7 +7699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_ARROW.json",
     name: "Runite Arrow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7709,7 +7709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_ARROW,
     equipPosition: EquipPosition.QUIVER,
@@ -7724,7 +7724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_ARROW.json",
     name: "Titanium Arrow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7734,7 +7734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_ARROW,
     equipPosition: EquipPosition.QUIVER,
@@ -7749,7 +7749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARROW.json",
     name: "Orichalcum Arrow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7759,7 +7759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BASIC_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -7774,7 +7774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BASIC_BOW.json",
     name: "Basic Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7784,7 +7784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BONE_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -7799,7 +7799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BONE_BOW.json",
     name: "Bone Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7809,7 +7809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EXPERT_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -7824,7 +7824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EXPERT_BOW.json",
     name: "Expert Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7834,7 +7834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SPECTRAL_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -7849,7 +7849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SPECTRAL_BOW.json",
     name: "Spectral Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7859,7 +7859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ICY_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -7874,7 +7874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ICY_BOW.json",
     name: "Icy Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7884,7 +7884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GLITTERING_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -7899,7 +7899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GLITTERING_BOW.json",
     name: "Glittering Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7909,7 +7909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GODLY_BOW,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -7924,7 +7924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GODLY_BOW.json",
     name: "Godly Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7934,7 +7934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -2,
       magicDefence: 1,
       rangedDefence: 1,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.AZAMITE_COWL,
     equipPosition: EquipPosition.HEAD,
@@ -7949,7 +7949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AZAMITE_COWL.json",
     name: "Azamite Cowl",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7959,7 +7959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -2,
       magicDefence: 1,
       rangedDefence: 1,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.AZAMITE_BODY,
     equipPosition: EquipPosition.BODY,
@@ -7974,7 +7974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AZAMITE_BODY.json",
     name: "Azamite Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -7984,7 +7984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.AZAMITE_CHAPS,
     equipPosition: EquipPosition.LEGS,
@@ -7999,7 +7999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AZAMITE_CHAPS.json",
     name: "Azamite Chaps",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8009,7 +8009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -2,
       magicDefence: 1,
       rangedDefence: 1,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.AZAMITE_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -8024,7 +8024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AZAMITE_BRACERS.json",
     name: "Azamite Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8034,7 +8034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -6,
       magicDefence: 3,
       rangedDefence: 2,
-      health: 1
+      health: 1,
     },
     tokenId: EstforConstants.AZAMITE_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -8049,7 +8049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "AZAMITE_BOOTS.json",
     name: "Azamite Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8059,7 +8059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.HAUBERK_COWL,
     equipPosition: EquipPosition.HEAD,
@@ -8074,7 +8074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HAUBERK_COWL.json",
     name: "Hauberk Cowl",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8084,7 +8084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -4,
       magicDefence: 4,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.HAUBERK_BODY,
     equipPosition: EquipPosition.BODY,
@@ -8099,7 +8099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HAUBERK_BODY.json",
     name: "Hauberk Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8109,7 +8109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 4,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.HAUBERK_CHAPS,
     equipPosition: EquipPosition.LEGS,
@@ -8124,7 +8124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HAUBERK_CHAPS.json",
     name: "Hauberk Chaps",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8134,7 +8134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.HAUBERK_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -8149,7 +8149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HAUBERK_BRACERS.json",
     name: "Hauberk Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8159,7 +8159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
-      health: 2
+      health: 2,
     },
     tokenId: EstforConstants.HAUBERK_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -8174,7 +8174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HAUBERK_BOOTS.json",
     name: "Hauberk Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8184,7 +8184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -4,
       magicDefence: 2,
       rangedDefence: 2,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.GARAGOS_COWL,
     equipPosition: EquipPosition.HEAD,
@@ -8199,7 +8199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GARAGOS_COWL.json",
     name: "Garagos Cowl",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8209,7 +8209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 6,
       rangedDefence: 4,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.GARAGOS_BODY,
     equipPosition: EquipPosition.BODY,
@@ -8224,7 +8224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GARAGOS_BODY.json",
     name: "Garagos Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8234,7 +8234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 8,
       rangedDefence: 4,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.GARAGOS_CHAPS,
     equipPosition: EquipPosition.LEGS,
@@ -8249,7 +8249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GARAGOS_CHAPS.json",
     name: "Garagos Chaps",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8259,7 +8259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 8,
       rangedDefence: 4,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.GARAGOS_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -8274,7 +8274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GARAGOS_BRACERS.json",
     name: "Garagos Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8284,7 +8284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 8,
       rangedDefence: 8,
-      health: 3
+      health: 3,
     },
     tokenId: EstforConstants.GARAGOS_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -8299,7 +8299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GARAGOS_BOOTS.json",
     name: "Garagos Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8309,7 +8309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 4,
       rangedDefence: 3,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.ETERNAL_COWL,
     equipPosition: EquipPosition.HEAD,
@@ -8324,7 +8324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ETERNAL_COWL.json",
     name: "Eternal Cowl",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8334,7 +8334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 8,
       rangedDefence: 4,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.ETERNAL_BODY,
     equipPosition: EquipPosition.BODY,
@@ -8349,7 +8349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ETERNAL_BODY.json",
     name: "Eternal Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8359,7 +8359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -16,
       magicDefence: 12,
       rangedDefence: 10,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.ETERNAL_CHAPS,
     equipPosition: EquipPosition.LEGS,
@@ -8374,7 +8374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ETERNAL_CHAPS.json",
     name: "Eternal Chaps",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8384,7 +8384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 10,
       rangedDefence: 6,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.ETERNAL_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -8399,7 +8399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ETERNAL_BRACERS.json",
     name: "Eternal Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8409,7 +8409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 10,
       rangedDefence: 8,
-      health: 4
+      health: 4,
     },
     tokenId: EstforConstants.ETERNAL_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -8424,7 +8424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ETERNAL_BOOTS.json",
     name: "Eternal Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8434,7 +8434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -18,
       magicDefence: 10,
       rangedDefence: 8,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.REAVER_COWL,
     equipPosition: EquipPosition.HEAD,
@@ -8449,7 +8449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REAVER_COWL.json",
     name: "Reaver Cowl",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8459,7 +8459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -16,
       magicDefence: 12,
       rangedDefence: 8,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.REAVER_BODY,
     equipPosition: EquipPosition.BODY,
@@ -8474,7 +8474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REAVER_BODY.json",
     name: "Reaver Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8484,7 +8484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -18,
       magicDefence: 16,
       rangedDefence: 12,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.REAVER_CHAPS,
     equipPosition: EquipPosition.LEGS,
@@ -8499,7 +8499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REAVER_CHAPS.json",
     name: "Reaver Chaps",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8509,7 +8509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -20,
       magicDefence: 12,
       rangedDefence: 8,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.REAVER_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -8524,7 +8524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REAVER_BRACERS.json",
     name: "Reaver Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8534,7 +8534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -20,
       magicDefence: 12,
       rangedDefence: 12,
-      health: 6
+      health: 6,
     },
     tokenId: EstforConstants.REAVER_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -8549,7 +8549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REAVER_BOOTS.json",
     name: "Reaver Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8559,7 +8559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -18,
       magicDefence: 12,
       rangedDefence: 10,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.SCORCHING_COWL,
     equipPosition: EquipPosition.HEAD,
@@ -8574,7 +8574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_COWL.json",
     name: "Scorching Cowl",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8584,7 +8584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -20,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.SCORCHING_BODY,
     equipPosition: EquipPosition.BODY,
@@ -8599,7 +8599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BODY.json",
     name: "Scorching Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8609,7 +8609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -20,
       magicDefence: 20,
       rangedDefence: 14,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.SCORCHING_CHAPS,
     equipPosition: EquipPosition.LEGS,
@@ -8624,7 +8624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_CHAPS.json",
     name: "Scorching Chaps",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8634,7 +8634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -18,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.SCORCHING_BRACERS,
     equipPosition: EquipPosition.ARMS,
@@ -8649,7 +8649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BRACERS.json",
     name: "Scorching Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8659,7 +8659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -22,
       magicDefence: 18,
       rangedDefence: 18,
-      health: 7
+      health: 7,
     },
     tokenId: EstforConstants.SCORCHING_BOOTS,
     equipPosition: EquipPosition.FEET,
@@ -8674,7 +8674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BOOTS.json",
     name: "Scorching Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8684,7 +8684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ARROW_SHAFT,
     equipPosition: EquipPosition.NONE,
@@ -8699,7 +8699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ARROW_SHAFT.json",
     name: "Arrow Shaft",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8709,7 +8709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BRONZE_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
@@ -8724,7 +8724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRONZE_ARROW_HEAD.json",
     name: "Bronze Arrow Head",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8734,7 +8734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.IRON_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
@@ -8749,7 +8749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "IRON_ARROW_HEAD.json",
     name: "Iron Arrow Head",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8759,7 +8759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MITHRIL_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
@@ -8774,7 +8774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MITHRIL_ARROW_HEAD.json",
     name: "Mithril Arrow Head",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8784,7 +8784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ADAMANTINE_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
@@ -8799,7 +8799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ADAMANTINE_ARROW_HEAD.json",
     name: "Adamantine Arrow Head",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8809,7 +8809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RUNITE_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
@@ -8824,7 +8824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RUNITE_ARROW_HEAD.json",
     name: "Runite Arrow Head",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8834,7 +8834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TITANIUM_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
@@ -8849,7 +8849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TITANIUM_ARROW_HEAD.json",
     name: "Titanium Arrow Head",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8859,7 +8859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_ARROW_HEAD,
     equipPosition: EquipPosition.NONE,
@@ -8874,7 +8874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARROW_HEAD.json",
     name: "Orichalcum Arrow Head",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8884,7 +8884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FLIXORA,
     equipPosition: EquipPosition.NONE,
@@ -8899,7 +8899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FLIXORA.json",
     name: "Flixora",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8909,7 +8909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BECARA_GRASS,
     equipPosition: EquipPosition.NONE,
@@ -8924,7 +8924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BECARA_GRASS.json",
     name: "Becara Grass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8934,7 +8934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HURA_ROOT,
     equipPosition: EquipPosition.NONE,
@@ -8949,7 +8949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HURA_ROOT.json",
     name: "Hura Root",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8959,7 +8959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.RIGOB_CLOTH,
     equipPosition: EquipPosition.NONE,
@@ -8974,7 +8974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RIGOB_CLOTH.json",
     name: "Rigob Cloth",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -8984,7 +8984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.QUAVA_SILK,
     equipPosition: EquipPosition.NONE,
@@ -8999,7 +8999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "QUAVA_SILK.json",
     name: "Quava Silk",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9009,7 +9009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LUCKY_POTION,
     equipPosition: EquipPosition.EXTRA_BOOST_VIAL,
@@ -9024,7 +9024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LUCKY_POTION.json",
     name: "Lucky Potion",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9034,7 +9034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LUCK_OF_THE_DRAW,
     equipPosition: EquipPosition.EXTRA_BOOST_VIAL,
@@ -9049,7 +9049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LUCK_OF_THE_DRAW.json",
     name: "Luck Of The Draw",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9059,7 +9059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PRAY_TO_THE_BEARDIE,
     equipPosition: EquipPosition.GLOBAL_BOOST_VIAL,
@@ -9074,7 +9074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PRAY_TO_THE_BEARDIE.json",
     name: "Pray to the Beardie",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9084,7 +9084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PRAY_TO_THE_BEARDIE_2,
     equipPosition: EquipPosition.GLOBAL_BOOST_VIAL,
@@ -9099,7 +9099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PRAY_TO_THE_BEARDIE_2.json",
     name: "Pray to the Beardie 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9109,7 +9109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PRAY_TO_THE_BEARDIE_3,
     equipPosition: EquipPosition.GLOBAL_BOOST_VIAL,
@@ -9124,7 +9124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PRAY_TO_THE_BEARDIE_3.json",
     name: "Pray to the Beardie 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9134,7 +9134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CLAN_BOOSTER,
     equipPosition: EquipPosition.CLAN_BOOST_VIAL,
@@ -9149,7 +9149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CLAN_BOOSTER.json",
     name: "Clan Booster",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9159,7 +9159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CLAN_BOOSTER_2,
     equipPosition: EquipPosition.CLAN_BOOST_VIAL,
@@ -9174,7 +9174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CLAN_BOOSTER_2.json",
     name: "Clan Booster 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9184,7 +9184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CLAN_BOOSTER_3,
     equipPosition: EquipPosition.CLAN_BOOST_VIAL,
@@ -9199,7 +9199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CLAN_BOOSTER_3.json",
     name: "Clan Booster 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9209,7 +9209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PASSIVE_SKIP_CHANCE,
     equipPosition: EquipPosition.PASSIVE_BOOST_VIAL,
@@ -9224,7 +9224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PASSIVE_SKIP_CHANCE.json",
     name: "Passive Skip Boost",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9234,7 +9234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TINY_ELIXIUM,
     equipPosition: EquipPosition.NONE,
@@ -9249,7 +9249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TINY_ELIXIUM.json",
     name: "Tiny Elixium",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9259,7 +9259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SMALL_ELIXIUM,
     equipPosition: EquipPosition.NONE,
@@ -9274,7 +9274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SMALL_ELIXIUM.json",
     name: "Small Elixium",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9284,7 +9284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MEDIUM_ELIXIUM,
     equipPosition: EquipPosition.NONE,
@@ -9299,7 +9299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MEDIUM_ELIXIUM.json",
     name: "Medium Elixium",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9309,7 +9309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LARGE_ELIXIUM,
     equipPosition: EquipPosition.NONE,
@@ -9324,7 +9324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LARGE_ELIXIUM.json",
     name: "Large Elixium",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9334,7 +9334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EXTRA_LARGE_ELIXIUM,
     equipPosition: EquipPosition.NONE,
@@ -9349,7 +9349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EXTRA_LARGE_ELIXIUM.json",
     name: "Extra Large Elixium",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9359,7 +9359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FLUX,
     equipPosition: EquipPosition.NONE,
@@ -9374,7 +9374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FLUX.json",
     name: "Flux",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9384,7 +9384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HALLOWEEN_BONUS_1,
     equipPosition: EquipPosition.HEAD,
@@ -9399,7 +9399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HALLOWEEN_BONUS_1.json",
     name: "Craven Countenance",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9409,7 +9409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HALLOWEEN_BONUS_2,
     equipPosition: EquipPosition.HEAD,
@@ -9424,7 +9424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HALLOWEEN_BONUS_2.json",
     name: "Infernal Gaze",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9434,7 +9434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HALLOWEEN_BONUS_3,
     equipPosition: EquipPosition.HEAD,
@@ -9449,7 +9449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HALLOWEEN_BONUS_3.json",
     name: "Masque of Ironjaw",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9459,7 +9459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PROTECTION_SHIELD,
     equipPosition: EquipPosition.LOCKED_VAULT,
@@ -9474,7 +9474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PROTECTION_SHIELD.json",
     name: "Protection Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9484,7 +9484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DEVILISH_FINGERS,
     equipPosition: EquipPosition.LOCKED_VAULT,
@@ -9499,7 +9499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DEVILISH_FINGERS.json",
     name: "Devilish Fingers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9509,7 +9509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MIRROR_SHIELD,
     equipPosition: EquipPosition.TERRITORY,
@@ -9524,7 +9524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MIRROR_SHIELD.json",
     name: "Mirror Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9534,7 +9534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHARPENED_CLAW,
     equipPosition: EquipPosition.LOCKED_VAULT,
@@ -9549,7 +9549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHARPENED_CLAW.json",
     name: "Sharpened Claw",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9559,7 +9559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -23,
       rangedDefence: 22,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.ORICHALCUM_HELMET_1,
     equipPosition: EquipPosition.HEAD,
@@ -9574,7 +9574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_HELMET_1.json",
     name: "Orichalcum Helmet Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9584,7 +9584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -23,
       rangedDefence: 22,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.ORICHALCUM_ARMOR_1,
     equipPosition: EquipPosition.BODY,
@@ -9599,7 +9599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARMOR_1.json",
     name: "Orichalcum Armor Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9609,7 +9609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 26,
       magicDefence: -25,
       rangedDefence: 26,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.ORICHALCUM_TASSETS_1,
     equipPosition: EquipPosition.LEGS,
@@ -9624,7 +9624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_TASSETS_1.json",
     name: "Orichalcum Tassets Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9634,7 +9634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -23,
       rangedDefence: 22,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_1,
     equipPosition: EquipPosition.ARMS,
@@ -9649,7 +9649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_GAUNTLETS_1.json",
     name: "Orichalcum Gauntlets Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9659,7 +9659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -23,
       rangedDefence: 22,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.ORICHALCUM_BOOTS_1,
     equipPosition: EquipPosition.FEET,
@@ -9674,7 +9674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_BOOTS_1.json",
     name: "Orichalcum Boots Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9684,7 +9684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: -27,
       rangedDefence: 28,
-      health: 15
+      health: 15,
     },
     tokenId: EstforConstants.ORICHALCUM_SHIELD_1,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -9699,7 +9699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SHIELD_1.json",
     name: "Orichalcum Shield Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9709,7 +9709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: 12,
       rangedDefence: 12,
-      health: 42
+      health: 42,
     },
     tokenId: EstforConstants.DRAGONSTONE_AMULET_1,
     equipPosition: EquipPosition.NECK,
@@ -9724,7 +9724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_AMULET_1.json",
     name: "Dragonstone Amulet Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9734,7 +9734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 12,
       rangedDefence: -16,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.MASTER_HAT_1,
     equipPosition: EquipPosition.HEAD,
@@ -9749,7 +9749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_HAT_1.json",
     name: "Master Hat Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9759,7 +9759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -18,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.MASTER_BODY_1,
     equipPosition: EquipPosition.BODY,
@@ -9774,7 +9774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BODY_1.json",
     name: "Master Body Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9784,7 +9784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 14,
       magicDefence: 20,
       rangedDefence: -18,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.MASTER_TROUSERS_1,
     equipPosition: EquipPosition.LEGS,
@@ -9799,7 +9799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_TROUSERS_1.json",
     name: "Master Trousers Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9809,7 +9809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -16,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.MASTER_BRACERS_1,
     equipPosition: EquipPosition.ARMS,
@@ -9824,7 +9824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BRACERS_1.json",
     name: "Master Bracers Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9834,7 +9834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: -20,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.MASTER_BOOTS_1,
     equipPosition: EquipPosition.FEET,
@@ -9849,7 +9849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BOOTS_1.json",
     name: "Master Boots Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9859,7 +9859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_SWORD_1,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -9874,7 +9874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SWORD_1.json",
     name: "Orichalcum Sword Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9884,7 +9884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE_STAFF_1,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -9899,7 +9899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_STAFF_1.json",
     name: "Dragonstone Staff Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9909,7 +9909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GODLY_BOW_1,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -9924,7 +9924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GODLY_BOW_1.json",
     name: "Godly Bow Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9934,7 +9934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -16,
       magicDefence: 12,
       rangedDefence: 10,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.SCORCHING_COWL_1,
     equipPosition: EquipPosition.HEAD,
@@ -9949,7 +9949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_COWL_1.json",
     name: "Scorching Cowl Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9959,7 +9959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -18,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.SCORCHING_BODY_1,
     equipPosition: EquipPosition.BODY,
@@ -9974,7 +9974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BODY_1.json",
     name: "Scorching Body Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -9984,7 +9984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -18,
       magicDefence: 20,
       rangedDefence: 14,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.SCORCHING_CHAPS_1,
     equipPosition: EquipPosition.LEGS,
@@ -9999,7 +9999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_CHAPS_1.json",
     name: "Scorching Chaps Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10009,7 +10009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -16,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.SCORCHING_BRACERS_1,
     equipPosition: EquipPosition.ARMS,
@@ -10024,7 +10024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BRACERS_1.json",
     name: "Scorching Bracers Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10034,7 +10034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -20,
       magicDefence: 18,
       rangedDefence: 18,
-      health: 8
+      health: 8,
     },
     tokenId: EstforConstants.SCORCHING_BOOTS_1,
     equipPosition: EquipPosition.FEET,
@@ -10049,7 +10049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BOOTS_1.json",
     name: "Scorching Boots Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10059,7 +10059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -20,
       rangedDefence: 22,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.ORICHALCUM_HELMET_2,
     equipPosition: EquipPosition.HEAD,
@@ -10074,7 +10074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_HELMET_2.json",
     name: "Orichalcum Helmet Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10084,7 +10084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -20,
       rangedDefence: 22,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.ORICHALCUM_ARMOR_2,
     equipPosition: EquipPosition.BODY,
@@ -10099,7 +10099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARMOR_2.json",
     name: "Orichalcum Armor Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10109,7 +10109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 26,
       magicDefence: -22,
       rangedDefence: 26,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.ORICHALCUM_TASSETS_2,
     equipPosition: EquipPosition.LEGS,
@@ -10124,7 +10124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_TASSETS_2.json",
     name: "Orichalcum Tassets Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10134,7 +10134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -20,
       rangedDefence: 22,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_2,
     equipPosition: EquipPosition.ARMS,
@@ -10149,7 +10149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_GAUNTLETS_2.json",
     name: "Orichalcum Gauntlets Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10159,7 +10159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -20,
       rangedDefence: 22,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.ORICHALCUM_BOOTS_2,
     equipPosition: EquipPosition.FEET,
@@ -10174,7 +10174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_BOOTS_2.json",
     name: "Orichalcum Boots Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10184,7 +10184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: -24,
       rangedDefence: 28,
-      health: 16
+      health: 16,
     },
     tokenId: EstforConstants.ORICHALCUM_SHIELD_2,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -10199,7 +10199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SHIELD_2.json",
     name: "Orichalcum Shield Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10209,7 +10209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 14,
       magicDefence: 14,
       rangedDefence: 14,
-      health: 44
+      health: 44,
     },
     tokenId: EstforConstants.DRAGONSTONE_AMULET_2,
     equipPosition: EquipPosition.NECK,
@@ -10224,7 +10224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_AMULET_2.json",
     name: "Dragonstone Amulet Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10234,7 +10234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 12,
       rangedDefence: -14,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.MASTER_HAT_2,
     equipPosition: EquipPosition.HEAD,
@@ -10249,7 +10249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_HAT_2.json",
     name: "Master Hat Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10259,7 +10259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -16,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.MASTER_BODY_2,
     equipPosition: EquipPosition.BODY,
@@ -10274,7 +10274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BODY_2.json",
     name: "Master Body Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10284,7 +10284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 14,
       magicDefence: 20,
       rangedDefence: -16,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.MASTER_TROUSERS_2,
     equipPosition: EquipPosition.LEGS,
@@ -10299,7 +10299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_TROUSERS_2.json",
     name: "Master Trousers Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10309,7 +10309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -14,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.MASTER_BRACERS_2,
     equipPosition: EquipPosition.ARMS,
@@ -10324,7 +10324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BRACERS_2.json",
     name: "Master Bracers Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10334,7 +10334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: -18,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.MASTER_BOOTS_2,
     equipPosition: EquipPosition.FEET,
@@ -10349,7 +10349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BOOTS_2.json",
     name: "Master Boots Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10359,7 +10359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_SWORD_2,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -10374,7 +10374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SWORD_2.json",
     name: "Orichalcum Sword Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10384,7 +10384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE_STAFF_2,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -10399,7 +10399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_STAFF_2.json",
     name: "Dragonstone Staff Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10409,7 +10409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GODLY_BOW_2,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -10424,7 +10424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GODLY_BOW_2.json",
     name: "Godly Bow Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10434,7 +10434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -14,
       magicDefence: 12,
       rangedDefence: 10,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.SCORCHING_COWL_2,
     equipPosition: EquipPosition.HEAD,
@@ -10449,7 +10449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_COWL_2.json",
     name: "Scorching Cowl Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10459,7 +10459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -16,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.SCORCHING_BODY_2,
     equipPosition: EquipPosition.BODY,
@@ -10474,7 +10474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BODY_2.json",
     name: "Scorching Body Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10484,7 +10484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -16,
       magicDefence: 20,
       rangedDefence: 14,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.SCORCHING_CHAPS_2,
     equipPosition: EquipPosition.LEGS,
@@ -10499,7 +10499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_CHAPS_2.json",
     name: "Scorching Chaps Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10509,7 +10509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -14,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.SCORCHING_BRACERS_2,
     equipPosition: EquipPosition.ARMS,
@@ -10524,7 +10524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BRACERS_2.json",
     name: "Scorching Bracers Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10534,7 +10534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -18,
       magicDefence: 18,
       rangedDefence: 18,
-      health: 9
+      health: 9,
     },
     tokenId: EstforConstants.SCORCHING_BOOTS_2,
     equipPosition: EquipPosition.FEET,
@@ -10549,7 +10549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BOOTS_2.json",
     name: "Scorching Boots Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10559,7 +10559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -17,
       rangedDefence: 22,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.ORICHALCUM_HELMET_3,
     equipPosition: EquipPosition.HEAD,
@@ -10574,7 +10574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_HELMET_3.json",
     name: "Orichalcum Helmet Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10584,7 +10584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -17,
       rangedDefence: 22,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.ORICHALCUM_ARMOR_3,
     equipPosition: EquipPosition.BODY,
@@ -10599,7 +10599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARMOR_3.json",
     name: "Orichalcum Armor Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10609,7 +10609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 26,
       magicDefence: -19,
       rangedDefence: 26,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.ORICHALCUM_TASSETS_3,
     equipPosition: EquipPosition.LEGS,
@@ -10624,7 +10624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_TASSETS_3.json",
     name: "Orichalcum Tassets Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10634,7 +10634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -17,
       rangedDefence: 22,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_3,
     equipPosition: EquipPosition.ARMS,
@@ -10649,7 +10649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_GAUNTLETS_3.json",
     name: "Orichalcum Gauntlets Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10659,7 +10659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -17,
       rangedDefence: 22,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.ORICHALCUM_BOOTS_3,
     equipPosition: EquipPosition.FEET,
@@ -10674,7 +10674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_BOOTS_3.json",
     name: "Orichalcum Boots Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10684,7 +10684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: -21,
       rangedDefence: 28,
-      health: 17
+      health: 17,
     },
     tokenId: EstforConstants.ORICHALCUM_SHIELD_3,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -10699,7 +10699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SHIELD_3.json",
     name: "Orichalcum Shield Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10709,7 +10709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 16,
       magicDefence: 16,
       rangedDefence: 16,
-      health: 46
+      health: 46,
     },
     tokenId: EstforConstants.DRAGONSTONE_AMULET_3,
     equipPosition: EquipPosition.NECK,
@@ -10724,7 +10724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_AMULET_3.json",
     name: "Dragonstone Amulet Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10734,7 +10734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 12,
       rangedDefence: -12,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.MASTER_HAT_3,
     equipPosition: EquipPosition.HEAD,
@@ -10749,7 +10749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_HAT_3.json",
     name: "Master Hat Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10759,7 +10759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -14,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.MASTER_BODY_3,
     equipPosition: EquipPosition.BODY,
@@ -10774,7 +10774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BODY_3.json",
     name: "Master Body Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10784,7 +10784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 14,
       magicDefence: 20,
       rangedDefence: -14,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.MASTER_TROUSERS_3,
     equipPosition: EquipPosition.LEGS,
@@ -10799,7 +10799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_TROUSERS_3.json",
     name: "Master Trousers Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10809,7 +10809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -12,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.MASTER_BRACERS_3,
     equipPosition: EquipPosition.ARMS,
@@ -10824,7 +10824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BRACERS_3.json",
     name: "Master Bracers Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10834,7 +10834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: -16,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.MASTER_BOOTS_3,
     equipPosition: EquipPosition.FEET,
@@ -10849,7 +10849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BOOTS_3.json",
     name: "Master Boots Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10859,7 +10859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_SWORD_3,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -10874,7 +10874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SWORD_3.json",
     name: "Orichalcum Sword Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10884,7 +10884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE_STAFF_3,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -10899,7 +10899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_STAFF_3.json",
     name: "Dragonstone Staff Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10909,7 +10909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GODLY_BOW_3,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -10924,7 +10924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GODLY_BOW_3.json",
     name: "Godly Bow Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10934,7 +10934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 12,
       rangedDefence: 10,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.SCORCHING_COWL_3,
     equipPosition: EquipPosition.HEAD,
@@ -10949,7 +10949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_COWL_3.json",
     name: "Scorching Cowl Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10959,7 +10959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -14,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.SCORCHING_BODY_3,
     equipPosition: EquipPosition.BODY,
@@ -10974,7 +10974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BODY_3.json",
     name: "Scorching Body Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -10984,7 +10984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -14,
       magicDefence: 20,
       rangedDefence: 14,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.SCORCHING_CHAPS_3,
     equipPosition: EquipPosition.LEGS,
@@ -10999,7 +10999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_CHAPS_3.json",
     name: "Scorching Chaps Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11009,7 +11009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.SCORCHING_BRACERS_3,
     equipPosition: EquipPosition.ARMS,
@@ -11024,7 +11024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BRACERS_3.json",
     name: "Scorching Bracers Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11034,7 +11034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -16,
       magicDefence: 18,
       rangedDefence: 18,
-      health: 10
+      health: 10,
     },
     tokenId: EstforConstants.SCORCHING_BOOTS_3,
     equipPosition: EquipPosition.FEET,
@@ -11049,7 +11049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BOOTS_3.json",
     name: "Scorching Boots Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11059,7 +11059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -14,
       rangedDefence: 22,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.ORICHALCUM_HELMET_4,
     equipPosition: EquipPosition.HEAD,
@@ -11074,7 +11074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_HELMET_4.json",
     name: "Orichalcum Helmet Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11084,7 +11084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -14,
       rangedDefence: 22,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.ORICHALCUM_ARMOR_4,
     equipPosition: EquipPosition.BODY,
@@ -11099,7 +11099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARMOR_4.json",
     name: "Orichalcum Armor Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11109,7 +11109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 26,
       magicDefence: -16,
       rangedDefence: 26,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.ORICHALCUM_TASSETS_4,
     equipPosition: EquipPosition.LEGS,
@@ -11124,7 +11124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_TASSETS_4.json",
     name: "Orichalcum Tassets Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11134,7 +11134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -14,
       rangedDefence: 22,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_4,
     equipPosition: EquipPosition.ARMS,
@@ -11149,7 +11149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_GAUNTLETS_4.json",
     name: "Orichalcum Gauntlets Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11159,7 +11159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -14,
       rangedDefence: 22,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.ORICHALCUM_BOOTS_4,
     equipPosition: EquipPosition.FEET,
@@ -11174,7 +11174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_BOOTS_4.json",
     name: "Orichalcum Boots Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11184,7 +11184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: -18,
       rangedDefence: 28,
-      health: 18
+      health: 18,
     },
     tokenId: EstforConstants.ORICHALCUM_SHIELD_4,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -11199,7 +11199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SHIELD_4.json",
     name: "Orichalcum Shield Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11209,7 +11209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: 18,
-      health: 48
+      health: 48,
     },
     tokenId: EstforConstants.DRAGONSTONE_AMULET_4,
     equipPosition: EquipPosition.NECK,
@@ -11224,7 +11224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_AMULET_4.json",
     name: "Dragonstone Amulet Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11234,7 +11234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 12,
       rangedDefence: -10,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.MASTER_HAT_4,
     equipPosition: EquipPosition.HEAD,
@@ -11249,7 +11249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_HAT_4.json",
     name: "Master Hat Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11259,7 +11259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -12,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.MASTER_BODY_4,
     equipPosition: EquipPosition.BODY,
@@ -11274,7 +11274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BODY_4.json",
     name: "Master Body Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11284,7 +11284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 14,
       magicDefence: 20,
       rangedDefence: -12,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.MASTER_TROUSERS_4,
     equipPosition: EquipPosition.LEGS,
@@ -11299,7 +11299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_TROUSERS_4.json",
     name: "Master Trousers Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11309,7 +11309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -10,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.MASTER_BRACERS_4,
     equipPosition: EquipPosition.ARMS,
@@ -11324,7 +11324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BRACERS_4.json",
     name: "Master Bracers Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11334,7 +11334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: -14,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.MASTER_BOOTS_4,
     equipPosition: EquipPosition.FEET,
@@ -11349,7 +11349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BOOTS_4.json",
     name: "Master Boots Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11359,7 +11359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_SWORD_4,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -11374,7 +11374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SWORD_4.json",
     name: "Orichalcum Sword Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11384,7 +11384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE_STAFF_4,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -11399,7 +11399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_STAFF_4.json",
     name: "Dragonstone Staff Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11409,7 +11409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GODLY_BOW_4,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -11424,7 +11424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GODLY_BOW_4.json",
     name: "Godly Bow Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11434,7 +11434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -10,
       magicDefence: 12,
       rangedDefence: 10,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.SCORCHING_COWL_4,
     equipPosition: EquipPosition.HEAD,
@@ -11449,7 +11449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_COWL_4.json",
     name: "Scorching Cowl Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11459,7 +11459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.SCORCHING_BODY_4,
     equipPosition: EquipPosition.BODY,
@@ -11474,7 +11474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BODY_4.json",
     name: "Scorching Body Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11484,7 +11484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 20,
       rangedDefence: 14,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.SCORCHING_CHAPS_4,
     equipPosition: EquipPosition.LEGS,
@@ -11499,7 +11499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_CHAPS_4.json",
     name: "Scorching Chaps Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11509,7 +11509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -10,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.SCORCHING_BRACERS_4,
     equipPosition: EquipPosition.ARMS,
@@ -11524,7 +11524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BRACERS_4.json",
     name: "Scorching Bracers Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11534,7 +11534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -14,
       magicDefence: 18,
       rangedDefence: 18,
-      health: 11
+      health: 11,
     },
     tokenId: EstforConstants.SCORCHING_BOOTS_4,
     equipPosition: EquipPosition.FEET,
@@ -11549,7 +11549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BOOTS_4.json",
     name: "Scorching Boots Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11559,7 +11559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -11,
       rangedDefence: 22,
-      health: 13
+      health: 13,
     },
     tokenId: EstforConstants.ORICHALCUM_HELMET_5,
     equipPosition: EquipPosition.HEAD,
@@ -11574,7 +11574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_HELMET_5.json",
     name: "Orichalcum Helmet Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11584,7 +11584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -11,
       rangedDefence: 22,
-      health: 13
+      health: 13,
     },
     tokenId: EstforConstants.ORICHALCUM_ARMOR_5,
     equipPosition: EquipPosition.BODY,
@@ -11599,7 +11599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_ARMOR_5.json",
     name: "Orichalcum Armor Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11609,7 +11609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 26,
       magicDefence: -13,
       rangedDefence: 26,
-      health: 13
+      health: 13,
     },
     tokenId: EstforConstants.ORICHALCUM_TASSETS_5,
     equipPosition: EquipPosition.LEGS,
@@ -11624,7 +11624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_TASSETS_5.json",
     name: "Orichalcum Tassets Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11634,7 +11634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -11,
       rangedDefence: 22,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.ORICHALCUM_GAUNTLETS_5,
     equipPosition: EquipPosition.ARMS,
@@ -11649,7 +11649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_GAUNTLETS_5.json",
     name: "Orichalcum Gauntlets Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11659,7 +11659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 22,
       magicDefence: -11,
       rangedDefence: 22,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.ORICHALCUM_BOOTS_5,
     equipPosition: EquipPosition.FEET,
@@ -11674,7 +11674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_BOOTS_5.json",
     name: "Orichalcum Boots Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11684,7 +11684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: -15,
       rangedDefence: 28,
-      health: 19
+      health: 19,
     },
     tokenId: EstforConstants.ORICHALCUM_SHIELD_5,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -11699,7 +11699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SHIELD_5.json",
     name: "Orichalcum Shield Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11709,7 +11709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 20,
       magicDefence: 20,
       rangedDefence: 20,
-      health: 50
+      health: 50,
     },
     tokenId: EstforConstants.DRAGONSTONE_AMULET_5,
     equipPosition: EquipPosition.NECK,
@@ -11724,7 +11724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_AMULET_5.json",
     name: "Dragonstone Amulet Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11734,7 +11734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 12,
       rangedDefence: -8,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.MASTER_HAT_5,
     equipPosition: EquipPosition.HEAD,
@@ -11749,7 +11749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_HAT_5.json",
     name: "Master Hat Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11759,7 +11759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -10,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.MASTER_BODY_5,
     equipPosition: EquipPosition.BODY,
@@ -11774,7 +11774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BODY_5.json",
     name: "Master Body Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11784,7 +11784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 14,
       magicDefence: 20,
       rangedDefence: -10,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.MASTER_TROUSERS_5,
     equipPosition: EquipPosition.LEGS,
@@ -11799,7 +11799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_TROUSERS_5.json",
     name: "Master Trousers Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11809,7 +11809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 16,
       rangedDefence: -8,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.MASTER_BRACERS_5,
     equipPosition: EquipPosition.ARMS,
@@ -11824,7 +11824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BRACERS_5.json",
     name: "Master Bracers Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11834,7 +11834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: -12,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.MASTER_BOOTS_5,
     equipPosition: EquipPosition.FEET,
@@ -11849,7 +11849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MASTER_BOOTS_5.json",
     name: "Master Boots Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11859,7 +11859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ORICHALCUM_SWORD_5,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -11874,7 +11874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ORICHALCUM_SWORD_5.json",
     name: "Orichalcum Sword Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11884,7 +11884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE_STAFF_5,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -11899,7 +11899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_STAFF_5.json",
     name: "Dragonstone Staff Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11909,7 +11909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GODLY_BOW_5,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -11924,7 +11924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GODLY_BOW_5.json",
     name: "Godly Bow Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11934,7 +11934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 12,
       rangedDefence: 10,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.SCORCHING_COWL_5,
     equipPosition: EquipPosition.HEAD,
@@ -11949,7 +11949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_COWL_5.json",
     name: "Scorching Cowl Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11959,7 +11959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -10,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.SCORCHING_BODY_5,
     equipPosition: EquipPosition.BODY,
@@ -11974,7 +11974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BODY_5.json",
     name: "Scorching Body Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -11984,7 +11984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -10,
       magicDefence: 20,
       rangedDefence: 14,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.SCORCHING_CHAPS_5,
     equipPosition: EquipPosition.LEGS,
@@ -11999,7 +11999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_CHAPS_5.json",
     name: "Scorching Chaps Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12009,7 +12009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -8,
       magicDefence: 16,
       rangedDefence: 10,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.SCORCHING_BRACERS_5,
     equipPosition: EquipPosition.ARMS,
@@ -12024,7 +12024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BRACERS_5.json",
     name: "Scorching Bracers Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12034,7 +12034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: 18,
       rangedDefence: 18,
-      health: 12
+      health: 12,
     },
     tokenId: EstforConstants.SCORCHING_BOOTS_5,
     equipPosition: EquipPosition.FEET,
@@ -12049,7 +12049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SCORCHING_BOOTS_5.json",
     name: "Scorching Boots Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12059,7 +12059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET,
     equipPosition: EquipPosition.NONE,
@@ -12074,7 +12074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_HELMET.json",
     name: "Infused Orichalcum Helmet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12084,7 +12084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR,
     equipPosition: EquipPosition.NONE,
@@ -12099,7 +12099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_ARMOR.json",
     name: "Infused Orichalcum Armor",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12109,7 +12109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS,
     equipPosition: EquipPosition.NONE,
@@ -12124,7 +12124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_TASSETS.json",
     name: "Infused Orichalcum Tassets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12134,7 +12134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS,
     equipPosition: EquipPosition.NONE,
@@ -12149,7 +12149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_GAUNTLETS.json",
     name: "Infused Orichalcum Gauntlets",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12159,7 +12159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS,
     equipPosition: EquipPosition.NONE,
@@ -12174,7 +12174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_BOOTS.json",
     name: "Infused Orichalcum Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12184,7 +12184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD,
     equipPosition: EquipPosition.NONE,
@@ -12199,7 +12199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_SHIELD.json",
     name: "Infused Orichalcum Shield",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12209,7 +12209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET,
     equipPosition: EquipPosition.NONE,
@@ -12224,7 +12224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_DRAGONSTONE_AMULET.json",
     name: "Infused Dragonstone Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12234,7 +12234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_HAT,
     equipPosition: EquipPosition.NONE,
@@ -12249,7 +12249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_HAT.json",
     name: "Infused Master Hat",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12259,7 +12259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_BODY,
     equipPosition: EquipPosition.NONE,
@@ -12274,7 +12274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_BODY.json",
     name: "Infused Master Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12284,7 +12284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_TROUSERS,
     equipPosition: EquipPosition.NONE,
@@ -12299,7 +12299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_TROUSERS.json",
     name: "Infused Master Trousers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12309,7 +12309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_BRACERS,
     equipPosition: EquipPosition.NONE,
@@ -12324,7 +12324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_BRACERS.json",
     name: "Infused Master Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12334,7 +12334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_BOOTS,
     equipPosition: EquipPosition.NONE,
@@ -12349,7 +12349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_BOOTS.json",
     name: "Infused Master Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12359,7 +12359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD,
     equipPosition: EquipPosition.NONE,
@@ -12374,7 +12374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_SWORD.json",
     name: "Infused Orichalcum Sword",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12384,7 +12384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_DRAGONSTONE_STAFF,
     equipPosition: EquipPosition.NONE,
@@ -12399,7 +12399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_DRAGONSTONE_STAFF.json",
     name: "Infused Dragonstone Staff",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12409,7 +12409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_GODLY_BOW,
     equipPosition: EquipPosition.NONE,
@@ -12424,7 +12424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_GODLY_BOW.json",
     name: "Infused Godly Bow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12434,7 +12434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_COWL,
     equipPosition: EquipPosition.NONE,
@@ -12449,7 +12449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_COWL.json",
     name: "Infused Scorching Cowl",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12459,7 +12459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_BODY,
     equipPosition: EquipPosition.NONE,
@@ -12474,7 +12474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_BODY.json",
     name: "Infused Scorching Body",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12484,7 +12484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_CHAPS,
     equipPosition: EquipPosition.NONE,
@@ -12499,7 +12499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_CHAPS.json",
     name: "Infused Scorching Chaps",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12509,7 +12509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_BRACERS,
     equipPosition: EquipPosition.NONE,
@@ -12524,7 +12524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_BRACERS.json",
     name: "Infused Scorching Bracers",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12534,7 +12534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_BOOTS,
     equipPosition: EquipPosition.NONE,
@@ -12549,7 +12549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_BOOTS.json",
     name: "Infused Scorching Boots",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12559,7 +12559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PANGSTEN_RING,
     equipPosition: EquipPosition.RING,
@@ -12574,7 +12574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PANGSTEN_RING.json",
     name: "Pangsten Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12584,7 +12584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 2,
       rangedDefence: 2,
-      health: 30
+      health: 30,
     },
     tokenId: EstforConstants.CANVITE_RING,
     equipPosition: EquipPosition.RING,
@@ -12599,7 +12599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CANVITE_RING.json",
     name: "Canvite Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12609,7 +12609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 12,
       rangedDefence: 2,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ETCHED_RING,
     equipPosition: EquipPosition.RING,
@@ -12624,7 +12624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ETCHED_RING.json",
     name: "Etched Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12634,7 +12634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 2,
       magicDefence: 2,
       rangedDefence: 10,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PRIMDIAT_RING,
     equipPosition: EquipPosition.RING,
@@ -12649,7 +12649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PRIMDIAT_RING.json",
     name: "Primdiat Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12659,7 +12659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 8,
       magicDefence: 2,
       rangedDefence: 2,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.OCULITE_RING,
     equipPosition: EquipPosition.RING,
@@ -12674,7 +12674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "OCULITE_RING.json",
     name: "Oculite Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12684,7 +12684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 10,
       rangedDefence: 10,
-      health: 60
+      health: 60,
     },
     tokenId: EstforConstants.NOVIAN_RING,
     equipPosition: EquipPosition.RING,
@@ -12699,7 +12699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NOVIAN_RING.json",
     name: "Novian Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12709,7 +12709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 5,
       magicDefence: 5,
       rangedDefence: 5,
-      health: 30
+      health: 30,
     },
     tokenId: EstforConstants.ANNIV1_RING,
     equipPosition: EquipPosition.RING,
@@ -12724,7 +12724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_RING.json",
     name: "1st Anniversary Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12734,7 +12734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_HELMET_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12749,7 +12749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_HELMET_FRAGMENT.json",
     name: "Infused Orichalcum Helmet Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12759,7 +12759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_ARMOR_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12774,7 +12774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_ARMOR_FRAGMENT.json",
     name: "Infused Orichalcum Armor Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12784,7 +12784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_TASSETS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12799,7 +12799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_TASSETS_FRAGMENT.json",
     name: "Infused Orichalcum Tassets Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12809,7 +12809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_GAUNTLETS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12824,7 +12824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_GAUNTLETS_FRAGMENT.json",
     name: "Infused Orichalcum Gauntlets Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12834,7 +12834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_BOOTS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12849,7 +12849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_BOOTS_FRAGMENT.json",
     name: "Infused Orichalcum Boots Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12859,7 +12859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SHIELD_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12874,7 +12874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_SHIELD_FRAGMENT.json",
     name: "Infused Orichalcum Shield Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12884,7 +12884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_DRAGONSTONE_AMULET_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12899,7 +12899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_DRAGONSTONE_AMULET_FRAGMENT.json",
     name: "Infused Dragonstone Amulet Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12909,7 +12909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_HAT_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12924,7 +12924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_HAT_FRAGMENT.json",
     name: "Infused Master Hat Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12934,7 +12934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_BODY_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12949,7 +12949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_BODY_FRAGMENT.json",
     name: "Infused Master Body Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12959,7 +12959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_BRACERS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12974,7 +12974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_BRACERS_FRAGMENT.json",
     name: "Infused Master Bracers Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -12984,7 +12984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_TROUSERS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -12999,7 +12999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_TROUSERS_FRAGMENT.json",
     name: "Infused Master Trousers Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13009,7 +13009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_MASTER_BOOTS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13024,7 +13024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_MASTER_BOOTS_FRAGMENT.json",
     name: "Infused Master Boots Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13034,7 +13034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_ORICHALCUM_SWORD_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13049,7 +13049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_ORICHALCUM_SWORD_FRAGMENT.json",
     name: "Infused Orichalcum Sword Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13059,7 +13059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGONSTONE_STAFF_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13074,7 +13074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGONSTONE_STAFF_FRAGMENT.json",
     name: "Dragonstone Staff Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13084,7 +13084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GODLY_BOW_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13099,7 +13099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GODLY_BOW_FRAGMENT.json",
     name: "Godly Bow Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13109,7 +13109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_COWL_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13124,7 +13124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_COWL_FRAGMENT.json",
     name: "Infused Scorching Cowl Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13134,7 +13134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_BODY_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13149,7 +13149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_BODY_FRAGMENT.json",
     name: "Infused Scorching Body Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13159,7 +13159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_BRACERS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13174,7 +13174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_BRACERS_FRAGMENT.json",
     name: "Infused Scorching Bracers Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13184,7 +13184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_CHAPS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13199,7 +13199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_CHAPS_FRAGMENT.json",
     name: "Infused Scorching Chaps Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13209,7 +13209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.INFUSED_SCORCHING_BOOTS_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -13224,7 +13224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "INFUSED_SCORCHING_BOOTS_FRAGMENT.json",
     name: "Infused Scorching Boots Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13234,7 +13234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FISHING_CHEST_1,
     equipPosition: EquipPosition.NONE,
@@ -13249,7 +13249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FISHING_CHEST_1.json",
     name: "Fishing Chest Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13259,7 +13259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FISHING_CHEST_2,
     equipPosition: EquipPosition.NONE,
@@ -13274,7 +13274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FISHING_CHEST_2.json",
     name: "Fishing Chest Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13284,7 +13284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FISHING_CHEST_3,
     equipPosition: EquipPosition.NONE,
@@ -13299,7 +13299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FISHING_CHEST_3.json",
     name: "Fishing Chest Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13309,7 +13309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FISHING_CHEST_4,
     equipPosition: EquipPosition.NONE,
@@ -13324,7 +13324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FISHING_CHEST_4.json",
     name: "Fishing Chest Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13334,7 +13334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FISHING_CHEST_5,
     equipPosition: EquipPosition.NONE,
@@ -13349,7 +13349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FISHING_CHEST_5.json",
     name: "Fishing Chest Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13359,7 +13359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WOODCUTTING_CHEST_1,
     equipPosition: EquipPosition.NONE,
@@ -13374,7 +13374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WOODCUTTING_CHEST_1.json",
     name: "Woodcutting Chest Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13384,7 +13384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WOODCUTTING_CHEST_2,
     equipPosition: EquipPosition.NONE,
@@ -13399,7 +13399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WOODCUTTING_CHEST_2.json",
     name: "Woodcutting Chest Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13409,7 +13409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WOODCUTTING_CHEST_3,
     equipPosition: EquipPosition.NONE,
@@ -13424,7 +13424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WOODCUTTING_CHEST_3.json",
     name: "Woodcutting Chest Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13434,7 +13434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WOODCUTTING_CHEST_4,
     equipPosition: EquipPosition.NONE,
@@ -13449,7 +13449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WOODCUTTING_CHEST_4.json",
     name: "Woodcutting Chest Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13459,7 +13459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.WOODCUTTING_CHEST_5,
     equipPosition: EquipPosition.NONE,
@@ -13474,7 +13474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "WOODCUTTING_CHEST_5.json",
     name: "Woodcutting Chest Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13484,7 +13484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MINING_CHEST_1,
     equipPosition: EquipPosition.NONE,
@@ -13499,7 +13499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MINING_CHEST_1.json",
     name: "Mining Chest Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13509,7 +13509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MINING_CHEST_2,
     equipPosition: EquipPosition.NONE,
@@ -13524,7 +13524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MINING_CHEST_2.json",
     name: "Mining Chest Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13534,7 +13534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MINING_CHEST_3,
     equipPosition: EquipPosition.NONE,
@@ -13549,7 +13549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MINING_CHEST_3.json",
     name: "Mining Chest Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13559,7 +13559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MINING_CHEST_4,
     equipPosition: EquipPosition.NONE,
@@ -13574,7 +13574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MINING_CHEST_4.json",
     name: "Mining Chest Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13584,7 +13584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.MINING_CHEST_5,
     equipPosition: EquipPosition.NONE,
@@ -13599,7 +13599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "MINING_CHEST_5.json",
     name: "Mining Chest Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13609,7 +13609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DRAGON_CHEST,
     equipPosition: EquipPosition.NONE,
@@ -13624,7 +13624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DRAGON_CHEST.json",
     name: "Dragon Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13634,7 +13634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BONE_CHEST,
     equipPosition: EquipPosition.NONE,
@@ -13649,7 +13649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BONE_CHEST.json",
     name: "Bone Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13659,7 +13659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV1_CHEST,
     equipPosition: EquipPosition.NONE,
@@ -13674,7 +13674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV1_CHEST.json",
     name: "1st Anniversary Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13684,7 +13684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BRIMSTONE,
     equipPosition: EquipPosition.NONE,
@@ -13699,7 +13699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BRIMSTONE.json",
     name: "Brimstone",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13709,7 +13709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COIN,
     equipPosition: EquipPosition.NONE,
@@ -13724,7 +13724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COIN.json",
     name: "Coin",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13734,7 +13734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.KRAGSTYR_EGG_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -13749,7 +13749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "KRAGSTYR_EGG_TIER1.json",
     name: "Kragstyr Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13759,7 +13759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.KRAGSTYR_EGG_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -13774,7 +13774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "KRAGSTYR_EGG_TIER2.json",
     name: "Kragstyr Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13784,7 +13784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.KRAGSTYR_EGG_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -13799,7 +13799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "KRAGSTYR_EGG_TIER3.json",
     name: "Kragstyr Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13809,7 +13809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.KRAGSTYR_EGG_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -13824,7 +13824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "KRAGSTYR_EGG_TIER4.json",
     name: "Kragstyr Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13834,7 +13834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.KRAGSTYR_EGG_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -13849,7 +13849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "KRAGSTYR_EGG_TIER5.json",
     name: "Kragstyr Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13859,7 +13859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TRICK_CHEST2024,
     equipPosition: EquipPosition.NONE,
@@ -13874,7 +13874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TRICK_CHEST2024.json",
     name: "Trick Chest 2024",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13884,7 +13884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TREAT_CHEST2024,
     equipPosition: EquipPosition.NONE,
@@ -13899,7 +13899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TREAT_CHEST2024.json",
     name: "Treat Chest 2024",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13909,7 +13909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.TRICK_OR_TREAT_KEY,
     equipPosition: EquipPosition.NONE,
@@ -13924,7 +13924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "TRICK_OR_TREAT_KEY.json",
     name: "Trick or Treat Key",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13934,7 +13934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: -12,
       magicDefence: -12,
       rangedDefence: -12,
-      health: -30
+      health: -30,
     },
     tokenId: EstforConstants.RING_OF_TUR,
     equipPosition: EquipPosition.RING,
@@ -13949,7 +13949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "RING_OF_TUR.json",
     name: "Ring of Tur",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13959,7 +13959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 5,
       magicDefence: 5,
       rangedDefence: 5,
-      health: -30
+      health: -30,
     },
     tokenId: EstforConstants.KEPHRI_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -13974,7 +13974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "KEPHRI_AMULET.json",
     name: "Kephri Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -13984,7 +13984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LIFFYN,
     equipPosition: EquipPosition.NONE,
@@ -13999,7 +13999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LIFFYN.json",
     name: "Liffyn",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14009,7 +14009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.VANAGLOT,
     equipPosition: EquipPosition.NONE,
@@ -14024,7 +14024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "VANAGLOT.json",
     name: "Vanaglot",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14034,7 +14034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FANGENSTORM,
     equipPosition: EquipPosition.NONE,
@@ -14049,7 +14049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FANGENSTORM.json",
     name: "Fangenstorm",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14059,7 +14059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_001_V1,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14074,7 +14074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_ALCHEMY_001_V1.json",
     name: "Alchemist's Compendium Vol I",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14084,7 +14084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_002_V2,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14099,7 +14099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_ALCHEMY_002_V2.json",
     name: "Alchemist's Compendium Vol II",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14109,7 +14109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_003_V3,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14124,7 +14124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_ALCHEMY_003_V3.json",
     name: "Alchemist's Compendium Vol III",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14134,7 +14134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_004_V4,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14149,7 +14149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_ALCHEMY_004_V4.json",
     name: "Alchemist's Compendium Vol IV",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14159,7 +14159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_ALCHEMY_005_V5,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14174,7 +14174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_ALCHEMY_005_V5.json",
     name: "Alchemist's Compendium Vol V",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14184,7 +14184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_001,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14199,7 +14199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_HARVEST_001.json",
     name: "Initiate Gatherer's Pass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14209,7 +14209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_002,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14224,7 +14224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_HARVEST_002.json",
     name: "Adept Gatherer's Pass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14234,7 +14234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_003,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14249,7 +14249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_HARVEST_003.json",
     name: "Experienced Gatherer's Pass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14259,7 +14259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_004,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14274,7 +14274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_HARVEST_004.json",
     name: "Veteran Gatherer's Pass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14284,7 +14284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_005,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14299,7 +14299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_HARVEST_005.json",
     name: "Explorer's Pass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14309,7 +14309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_006,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14324,7 +14324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_HARVEST_006.json",
     name: "Pathfinder's Pass",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14334,7 +14334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BLUEPRINT_HARVEST_007,
     equipPosition: EquipPosition.RIGHT_HAND,
@@ -14349,7 +14349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BLUEPRINT_HARVEST_007.json",
     name: "Seeker's Pass",
     isAvailable: false,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14359,7 +14359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 3,
       magicDefence: 3,
       rangedDefence: -6,
-      health: -25
+      health: -25,
     },
     tokenId: EstforConstants.BOOK_001_BRONZE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14374,7 +14374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_001_BRONZE.json",
     name: "Gynder's Yefir",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14384,7 +14384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_001_BRONZE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -14399,7 +14399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_001_BRONZE_FRAGMENT.json",
     name: "Gynder's Yefir Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14409,7 +14409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 6,
       magicDefence: 6,
       rangedDefence: -12,
-      health: -52
+      health: -52,
     },
     tokenId: EstforConstants.BOOK_002_IRON,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14424,7 +14424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_002_IRON.json",
     name: "Risgolron's Yefir",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14434,7 +14434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_002_IRON_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -14449,7 +14449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_002_IRON_FRAGMENT.json",
     name: "Risgolron's Yefir Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14459,7 +14459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: 12,
       rangedDefence: -18,
-      health: -80
+      health: -80,
     },
     tokenId: EstforConstants.BOOK_003_MITHRIL,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14474,7 +14474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_003_MITHRIL.json",
     name: "Erudi's Yfrol",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14484,7 +14484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_003_MITHRIL_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -14499,7 +14499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_003_MITHRIL_FRAGMENT.json",
     name: "Erudi's Yfrol Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14509,7 +14509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 12,
       magicDefence: 12,
       rangedDefence: -20,
-      health: -110
+      health: -110,
     },
     tokenId: EstforConstants.BOOK_004_ADAMANTINE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14524,7 +14524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_004_ADAMANTINE.json",
     name: "Stregarion's Yfrol",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14534,7 +14534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_004_ADAMANTINE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -14549,7 +14549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_004_ADAMANTINE_FRAGMENT.json",
     name: "Stregarion's Yfrol Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14559,7 +14559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 18,
       magicDefence: 18,
       rangedDefence: -22,
-      health: -140
+      health: -140,
     },
     tokenId: EstforConstants.BOOK_005_RUNITE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14574,7 +14574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_005_RUNITE.json",
     name: "Sinlorion's Wysgrif",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14584,7 +14584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_005_RUNITE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -14599,7 +14599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_005_RUNITE_FRAGMENT.json",
     name: "Sinlorion's Wysgrif Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14609,7 +14609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 24,
       magicDefence: 24,
       rangedDefence: -28,
-      health: -170
+      health: -170,
     },
     tokenId: EstforConstants.BOOK_006_TITANIUM,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14624,7 +14624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_006_TITANIUM.json",
     name: "Hudolwyr's Wysgrif",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14634,7 +14634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_006_TITANIUM_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -14649,7 +14649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_006_TITANIUM_FRAGMENT.json",
     name: "Hudolwyr's Wysgrif Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14659,7 +14659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: 28,
       rangedDefence: -30,
-      health: -220
+      health: -220,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14674,7 +14674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM.json",
     name: "Odlarion's Wysgrif",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14684,7 +14684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: 28,
       rangedDefence: -27,
-      health: -220
+      health: -220,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_1,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14699,7 +14699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM_1.json",
     name: "Odlarion's Wysgrif Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14709,7 +14709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: 28,
       rangedDefence: -24,
-      health: -220
+      health: -220,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_2,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14724,7 +14724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM_2.json",
     name: "Odlarion's Wysgrif Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14734,7 +14734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: 28,
       rangedDefence: -21,
-      health: -220
+      health: -220,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_3,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14749,7 +14749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM_3.json",
     name: "Odlarion's Wysgrif Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14759,7 +14759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: 28,
       rangedDefence: -18,
-      health: -220
+      health: -220,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_4,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14774,7 +14774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM_4.json",
     name: "Odlarion's Wysgrif Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14784,7 +14784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 28,
       magicDefence: 28,
       rangedDefence: -15,
-      health: -220
+      health: -220,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_5,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -14799,7 +14799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM_5.json",
     name: "Odlarion's Wysgrif Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14809,7 +14809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -14824,7 +14824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM_FRAGMENT.json",
     name: "Odlarion's Wysgrif Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14834,7 +14834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
     equipPosition: EquipPosition.NONE,
@@ -14849,7 +14849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "BOOK_007_ORICHALCUM_INFUSED.json",
     name: "Infused Odlarion's Wysgrif",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14859,7 +14859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CHARCOAL,
     equipPosition: EquipPosition.NONE,
@@ -14874,7 +14874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CHARCOAL.json",
     name: "Charcoal",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14884,7 +14884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CHEST_001_PRIMORDIAL,
     equipPosition: EquipPosition.NONE,
@@ -14899,7 +14899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CHEST_001_PRIMORDIAL.json",
     name: "Primordial Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14909,7 +14909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CHEST_002_AETHER,
     equipPosition: EquipPosition.NONE,
@@ -14924,7 +14924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CHEST_002_AETHER.json",
     name: "Aether Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14934,7 +14934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CHEST_003_ARCANE,
     equipPosition: EquipPosition.NONE,
@@ -14949,7 +14949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CHEST_003_ARCANE.json",
     name: "Arcane Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14959,7 +14959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CHEST_004_ASTRAL,
     equipPosition: EquipPosition.NONE,
@@ -14974,7 +14974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CHEST_004_ASTRAL.json",
     name: "Astral Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -14984,7 +14984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CHEST_005_VOID,
     equipPosition: EquipPosition.NONE,
@@ -14999,7 +14999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CHEST_005_VOID.json",
     name: "Void Chest",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15009,7 +15009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_001_BRONZE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15024,7 +15024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_001_BRONZE.json",
     name: "Effyd Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15034,7 +15034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_001_BRONZE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15049,7 +15049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_001_BRONZE_FRAGMENT.json",
     name: "Effyd Kiel Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15059,7 +15059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_002_IRON,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15074,7 +15074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_002_IRON.json",
     name: "Haearn Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15084,7 +15084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_002_IRON_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15099,7 +15099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_002_IRON_FRAGMENT.json",
     name: "Haearn Kiel Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15109,7 +15109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_003_MITHRIL,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15124,7 +15124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_003_MITHRIL.json",
     name: "Ithrith Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15134,7 +15134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_003_MITHRIL_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15149,7 +15149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_003_MITHRIL_FRAGMENT.json",
     name: "Ithrith Kiel Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15159,7 +15159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_004_ADAMANTINE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15174,7 +15174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_004_ADAMANTINE.json",
     name: "Adama Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15184,7 +15184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_004_ADAMANTINE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15199,7 +15199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_004_ADAMANTINE_FRAGMENT.json",
     name: "Adama Kiel Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15209,7 +15209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_005_RUNITE,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15224,7 +15224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_005_RUNITE.json",
     name: "Rhun Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15234,7 +15234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_005_RUNITE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15249,7 +15249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_005_RUNITE_FRAGMENT.json",
     name: "Rhun Kiel Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15259,7 +15259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_006_TITANIUM,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15274,7 +15274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_006_TITANIUM.json",
     name: "Vinget Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15284,7 +15284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_006_TITANIUM_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15299,7 +15299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_006_TITANIUM_FRAGMENT.json",
     name: "Vinget Kiel Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15309,7 +15309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15324,7 +15324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM.json",
     name: "Deuion Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15334,7 +15334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_1,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15349,7 +15349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM_1.json",
     name: "Deuion Kiel Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15359,7 +15359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_2,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15374,7 +15374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM_2.json",
     name: "Deuion Kiel Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15384,7 +15384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_3,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15399,7 +15399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM_3.json",
     name: "Deuion Kiel Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15409,7 +15409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_4,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15424,7 +15424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM_4.json",
     name: "Deuion Kiel Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15434,7 +15434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_5,
     equipPosition: EquipPosition.BOTH_HANDS,
@@ -15449,7 +15449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM_5.json",
     name: "Deuion Kiel Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15459,7 +15459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15474,7 +15474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM_FRAGMENT.json",
     name: "Deuion Kiel Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15484,7 +15484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
     equipPosition: EquipPosition.NONE,
@@ -15499,7 +15499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "CROSSBOW_007_ORICHALCUM_INFUSED.json",
     name: "Infused Deuion Kiel",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15509,7 +15509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -6,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_001_BRONZE,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15524,7 +15524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_001_BRONZE.json",
     name: "Effyd Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15534,7 +15534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_001_BRONZE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15549,7 +15549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_001_BRONZE_FRAGMENT.json",
     name: "Effyd Cledyr Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15559,7 +15559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -12,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_002_IRON,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15574,7 +15574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_002_IRON.json",
     name: "Haearn Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15584,7 +15584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_002_IRON_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15599,7 +15599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_002_IRON_FRAGMENT.json",
     name: "Haearn Cledyr Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15609,7 +15609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -18,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_003_MITHRIL,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15624,7 +15624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_003_MITHRIL.json",
     name: "Ithrith Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15634,7 +15634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_003_MITHRIL_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15649,7 +15649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_003_MITHRIL_FRAGMENT.json",
     name: "Ithrith Cledyr Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15659,7 +15659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -20,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_004_ADAMANTINE,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15674,7 +15674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_004_ADAMANTINE.json",
     name: "Adama Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15684,7 +15684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_004_ADAMANTINE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15699,7 +15699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_004_ADAMANTINE_FRAGMENT.json",
     name: "Adama Cledyr Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15709,7 +15709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -22,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_005_RUNITE,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15724,7 +15724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_005_RUNITE.json",
     name: "Rhun Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15734,7 +15734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_005_RUNITE_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15749,7 +15749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_005_RUNITE_FRAGMENT.json",
     name: "Rhun Cledyr Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15759,7 +15759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -28,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_006_TITANIUM,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15774,7 +15774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_006_TITANIUM.json",
     name: "Itanus Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15784,7 +15784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_006_TITANIUM_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15799,7 +15799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_006_TITANIUM_FRAGMENT.json",
     name: "Itanus Cledyr Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15809,7 +15809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -30,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15824,7 +15824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM.json",
     name: "Orcalith Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15834,7 +15834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -28,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM_1,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15849,7 +15849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM_1.json",
     name: "Orcalith Cledyr Lvl 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15859,7 +15859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -26,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM_2,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15874,7 +15874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM_2.json",
     name: "Orcalith Cledyr Lvl 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15884,7 +15884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -24,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM_3,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15899,7 +15899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM_3.json",
     name: "Orcalith Cledyr Lvl 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15909,7 +15909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -22,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM_4,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15924,7 +15924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM_4.json",
     name: "Orcalith Cledyr Lvl 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15934,7 +15934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: -20,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM_5,
     equipPosition: EquipPosition.LEFT_HAND,
@@ -15949,7 +15949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM_5.json",
     name: "Orcalith Cledyr Lvl 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15959,7 +15959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM_FRAGMENT,
     equipPosition: EquipPosition.NONE,
@@ -15974,7 +15974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM_FRAGMENT.json",
     name: "Orcalith Cledyr Fragment",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -15984,7 +15984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.DAGGER_007_ORICHALCUM_INFUSED,
     equipPosition: EquipPosition.NONE,
@@ -15999,7 +15999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "DAGGER_007_ORICHALCUM_INFUSED.json",
     name: "Infused Orcalith Cledyr",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16009,7 +16009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EDIBLES_001_WILD_STRAWBERRY,
     equipPosition: EquipPosition.FOOD,
@@ -16024,7 +16024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EDIBLES_001_WILD_STRAWBERRY.json",
     name: "Wild Strawberry",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16034,7 +16034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EDIBLES_002_WILD_CHERRY,
     equipPosition: EquipPosition.FOOD,
@@ -16049,7 +16049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EDIBLES_002_WILD_CHERRY.json",
     name: "Wild Cherries",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16059,7 +16059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EDIBLES_003_WILD_CARROT,
     equipPosition: EquipPosition.FOOD,
@@ -16074,7 +16074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EDIBLES_003_WILD_CARROT.json",
     name: "Wild Carrot",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16084,7 +16084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EDIBLES_004_RED_APPLE,
     equipPosition: EquipPosition.FOOD,
@@ -16099,7 +16099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EDIBLES_004_RED_APPLE.json",
     name: "Red Apple",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16109,7 +16109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EDIBLES_005_PEACH,
     equipPosition: EquipPosition.FOOD,
@@ -16124,7 +16124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EDIBLES_005_PEACH.json",
     name: "Peach",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16134,7 +16134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EDIBLES_006_ELDER_BERRIES,
     equipPosition: EquipPosition.FOOD,
@@ -16149,7 +16149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EDIBLES_006_ELDER_BERRIES.json",
     name: "Elder Berries",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16159,7 +16159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.EDIBLES_007_HONEY,
     equipPosition: EquipPosition.FOOD,
@@ -16174,7 +16174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "EDIBLES_007_HONEY.json",
     name: "Honey",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16184,7 +16184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FERTILE_SOIL,
     equipPosition: EquipPosition.NONE,
@@ -16199,7 +16199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FERTILE_SOIL.json",
     name: "Fertile Soil",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16209,7 +16209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.FOOLS_BERRY_EXTRACT,
     equipPosition: EquipPosition.NONE,
@@ -16224,7 +16224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "FOOLS_BERRY_EXTRACT.json",
     name: "Fools Berry Extract",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16234,7 +16234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GOLDEN_SCARAB,
     equipPosition: EquipPosition.NONE,
@@ -16249,7 +16249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GOLDEN_SCARAB.json",
     name: "Golden Scarab",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16259,7 +16259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_001_GLIMMER_LEAF,
     equipPosition: EquipPosition.NONE,
@@ -16274,7 +16274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_001_GLIMMER_LEAF.json",
     name: "Glimmer Leaf",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16284,7 +16284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_002_RIPARIS,
     equipPosition: EquipPosition.NONE,
@@ -16299,7 +16299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_002_RIPARIS.json",
     name: "Riparis",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16309,7 +16309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_003_SHIMMERWEED,
     equipPosition: EquipPosition.NONE,
@@ -16324,7 +16324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_003_SHIMMERWEED.json",
     name: "Shimmerweed",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16334,7 +16334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_004_FROST_BLOSSOM,
     equipPosition: EquipPosition.NONE,
@@ -16349,7 +16349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_004_FROST_BLOSSOM.json",
     name: "Frost Blossom",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16359,7 +16359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_005_STYRGARM,
     equipPosition: EquipPosition.NONE,
@@ -16374,7 +16374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_005_STYRGARM.json",
     name: "Styrgarm",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16384,7 +16384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_006_ORNFLOWER,
     equipPosition: EquipPosition.NONE,
@@ -16399,7 +16399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_006_ORNFLOWER.json",
     name: "Ornflower",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16409,7 +16409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_007_BLOMSBRYD,
     equipPosition: EquipPosition.NONE,
@@ -16424,7 +16424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_007_BLOMSBRYD.json",
     name: "Blomsbryd",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16434,7 +16434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_008_PURPERELLA,
     equipPosition: EquipPosition.NONE,
@@ -16449,7 +16449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_008_PURPERELLA.json",
     name: "Purperella",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16459,7 +16459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_009_LYFBLOOM,
     equipPosition: EquipPosition.NONE,
@@ -16474,7 +16474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_009_LYFBLOOM.json",
     name: "Lyfbloom",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16484,7 +16484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_010_FOOLS_BERRY,
     equipPosition: EquipPosition.NONE,
@@ -16499,7 +16499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_010_FOOLS_BERRY.json",
     name: "Fool's Berry",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16509,7 +16509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_011_LUMELILA,
     equipPosition: EquipPosition.NONE,
@@ -16524,7 +16524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_011_LUMELILA.json",
     name: "Lumelila",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16534,7 +16534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_012_WIDOWS_CHERRIES,
     equipPosition: EquipPosition.NONE,
@@ -16549,7 +16549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_012_WIDOWS_CHERRIES.json",
     name: "Widow's Cherries",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16559,7 +16559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_013_LINDWYN_BERRIES,
     equipPosition: EquipPosition.NONE,
@@ -16574,7 +16574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_013_LINDWYN_BERRIES.json",
     name: "Lindwyn Berries",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16584,7 +16584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_014_ALDERSKORN_BERRIES,
     equipPosition: EquipPosition.NONE,
@@ -16599,7 +16599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_014_ALDERSKORN_BERRIES.json",
     name: "Alderskorn Berries",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16609,7 +16609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.HERB_015_EVIGOR_FRUIT,
     equipPosition: EquipPosition.NONE,
@@ -16624,7 +16624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "HERB_015_EVIGOR_FRUIT.json",
     name: "Evigor Fruit",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16634,7 +16634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.KEY_001_OMNI,
     equipPosition: EquipPosition.NONE,
@@ -16649,7 +16649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "KEY_001_OMNI.json",
     name: "Omni Key",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16659,7 +16659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.LUMELILA_TOXIN,
     equipPosition: EquipPosition.NONE,
@@ -16674,7 +16674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "LUMELILA_TOXIN.json",
     name: "Lumelila Toxin",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16684,7 +16684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NAIL_001_MITHRIL,
     equipPosition: EquipPosition.NONE,
@@ -16699,7 +16699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NAIL_001_MITHRIL.json",
     name: "Mithril Nail",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16709,7 +16709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NAIL_002_RUNITE,
     equipPosition: EquipPosition.NONE,
@@ -16724,7 +16724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NAIL_002_RUNITE.json",
     name: "Runite Nail",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16734,7 +16734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.NAIL_003_ORICHALCUM,
     equipPosition: EquipPosition.NONE,
@@ -16749,7 +16749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "NAIL_003_ORICHALCUM.json",
     name: "Orichalcum Nail",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16759,7 +16759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PLANK_001_SMALL,
     equipPosition: EquipPosition.NONE,
@@ -16774,7 +16774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PLANK_001_SMALL.json",
     name: "Small Plank",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16784,7 +16784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PLANK_002_MEDIUM,
     equipPosition: EquipPosition.NONE,
@@ -16799,7 +16799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PLANK_002_MEDIUM.json",
     name: "Medium Plank",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16809,7 +16809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PLANK_003_LARGE,
     equipPosition: EquipPosition.NONE,
@@ -16824,7 +16824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PLANK_003_LARGE.json",
     name: "Large Plank",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16834,7 +16834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PLOT_001_SMALL,
     equipPosition: EquipPosition.NONE,
@@ -16849,7 +16849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PLOT_001_SMALL.json",
     name: "Small Plot",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16859,7 +16859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PLOT_002_MEDIUM,
     equipPosition: EquipPosition.NONE,
@@ -16874,7 +16874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PLOT_002_MEDIUM.json",
     name: "Medium Plot",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16884,7 +16884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.PLOT_003_LARGE,
     equipPosition: EquipPosition.NONE,
@@ -16899,7 +16899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "PLOT_003_LARGE.json",
     name: "Large Plot",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16909,7 +16909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_001_SMALL_HEALING,
     equipPosition: EquipPosition.FOOD,
@@ -16924,7 +16924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_001_SMALL_HEALING.json",
     name: "Widow's Elixir",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16934,7 +16934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_002_MEDIUM_HEALING,
     equipPosition: EquipPosition.FOOD,
@@ -16949,7 +16949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_002_MEDIUM_HEALING.json",
     name: "Lyndwyn Elixir",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16959,7 +16959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_003_LARGE_HEALING,
     equipPosition: EquipPosition.FOOD,
@@ -16974,7 +16974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_003_LARGE_HEALING.json",
     name: "Alderskorn Elixir",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -16984,7 +16984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_004_EXTRA_LARGE_HEALING,
     equipPosition: EquipPosition.FOOD,
@@ -16999,7 +16999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_004_EXTRA_LARGE_HEALING.json",
     name: "Evigor Elixir",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17009,7 +17009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_005_SMALL_MELEE,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17024,7 +17024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_005_SMALL_MELEE.json",
     name: "Melee Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17034,7 +17034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_006_LARGE_MELEE,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17049,7 +17049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_006_LARGE_MELEE.json",
     name: "Melee Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17059,7 +17059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_007_SMALL_RANGED,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17074,7 +17074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_007_SMALL_RANGED.json",
     name: "Ranged Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17084,7 +17084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_008_LARGE_RANGED,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17099,7 +17099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_008_LARGE_RANGED.json",
     name: "Ranged Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17109,7 +17109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_009_SMALL_MAGIC,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17124,7 +17124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_009_SMALL_MAGIC.json",
     name: "Magic Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17134,7 +17134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_010_LARGE_MAGIC,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17149,7 +17149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_010_LARGE_MAGIC.json",
     name: "Magic Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17159,7 +17159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 10,
       magicDefence: 10,
       rangedDefence: 10,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_011_SMALL_DEFENCE,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17174,7 +17174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_011_SMALL_DEFENCE.json",
     name: "Defence Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17184,7 +17184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 30,
       magicDefence: 30,
       rangedDefence: 30,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.POTION_012_LARGE_DEFENCE,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17199,7 +17199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_012_LARGE_DEFENCE.json",
     name: "Defence Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17209,7 +17209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 65
+      health: 65,
     },
     tokenId: EstforConstants.POTION_013_SMALL_HEALTH,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17224,7 +17224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_013_SMALL_HEALTH.json",
     name: "Health Boost (S)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17234,7 +17234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 220
+      health: 220,
     },
     tokenId: EstforConstants.POTION_014_LARGE_HEALTH,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -17249,7 +17249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "POTION_014_LARGE_HEALTH.json",
     name: "Health Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17259,7 +17259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_001_WILD,
     equipPosition: EquipPosition.NONE,
@@ -17274,7 +17274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_001_WILD.json",
     name: "Wild Seed",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17284,7 +17284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_001_WILD_HARVESTABLE,
     equipPosition: EquipPosition.NONE,
@@ -17299,7 +17299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_001_WILD_HARVESTABLE.json",
     name: "Wild Sprout",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17309,7 +17309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_002_UNKNOWN,
     equipPosition: EquipPosition.NONE,
@@ -17324,7 +17324,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_002_UNKNOWN.json",
     name: "Unknown Seed",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17334,7 +17334,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_002_UNKNOWN_HARVESTABLE,
     equipPosition: EquipPosition.NONE,
@@ -17349,7 +17349,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_002_UNKNOWN_HARVESTABLE.json",
     name: "Unknown Sprout",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17359,7 +17359,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_003_MYSTERIOUS,
     equipPosition: EquipPosition.NONE,
@@ -17374,7 +17374,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_003_MYSTERIOUS.json",
     name: "Mysterious Seed",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17384,7 +17384,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_003_MYSTERIOUS_HARVESTABLE,
     equipPosition: EquipPosition.NONE,
@@ -17399,7 +17399,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_003_MYSTERIOUS_HARVESTABLE.json",
     name: "Mysterious Sprout",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17409,7 +17409,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_004_OBSCURE,
     equipPosition: EquipPosition.NONE,
@@ -17424,7 +17424,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_004_OBSCURE.json",
     name: "Obscure Seed",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17434,7 +17434,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_004_OBSCURE_HARVESTABLE,
     equipPosition: EquipPosition.NONE,
@@ -17449,7 +17449,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_004_OBSCURE_HARVESTABLE.json",
     name: "Obscure Sprout",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17459,7 +17459,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_005_ANCIENT,
     equipPosition: EquipPosition.NONE,
@@ -17474,7 +17474,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_005_ANCIENT.json",
     name: "Ancient Seed",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17484,7 +17484,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SEED_005_ANCIENT_HARVESTABLE,
     equipPosition: EquipPosition.NONE,
@@ -17499,7 +17499,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SEED_005_ANCIENT_HARVESTABLE.json",
     name: "Ancient Sprout",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17509,7 +17509,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHARD_001_PRIMORDIAL,
     equipPosition: EquipPosition.NONE,
@@ -17524,7 +17524,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHARD_001_PRIMORDIAL.json",
     name: "Primordial Shard",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17534,7 +17534,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHARD_002_AETHER,
     equipPosition: EquipPosition.NONE,
@@ -17549,7 +17549,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHARD_002_AETHER.json",
     name: "Aether Shard",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17559,7 +17559,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHARD_003_ARCANE,
     equipPosition: EquipPosition.NONE,
@@ -17574,7 +17574,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHARD_003_ARCANE.json",
     name: "Arcane Shard",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17584,7 +17584,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHARD_004_ASTRAL,
     equipPosition: EquipPosition.NONE,
@@ -17599,7 +17599,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHARD_004_ASTRAL.json",
     name: "Astral Shard",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17609,7 +17609,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHARD_005_VOID,
     equipPosition: EquipPosition.NONE,
@@ -17624,7 +17624,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHARD_005_VOID.json",
     name: "Void Shard",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17634,7 +17634,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SHARD_006_OMNI,
     equipPosition: EquipPosition.NONE,
@@ -17649,7 +17649,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SHARD_006_OMNI.json",
     name: "Omni Shard",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17659,7 +17659,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SONIC_GEM_TICKET,
     equipPosition: EquipPosition.NONE,
@@ -17674,7 +17674,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SONIC_GEM_TICKET.json",
     name: "Green Ticket",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17684,7 +17684,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ACTIVITY_TICKET,
     equipPosition: EquipPosition.NONE,
@@ -17699,7 +17699,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ACTIVITY_TICKET.json",
     name: "Blue Ticket",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17709,7 +17709,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.REWARD_001_DAGGER,
     equipPosition: EquipPosition.NONE,
@@ -17724,7 +17724,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REWARD_001_DAGGER.json",
     name: "Unidentified Dagger",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17734,7 +17734,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.REWARD_002_BOOK,
     equipPosition: EquipPosition.NONE,
@@ -17749,7 +17749,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REWARD_002_BOOK.json",
     name: "Unidentified Book",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17759,7 +17759,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.REWARD_003_CROSSBOW,
     equipPosition: EquipPosition.NONE,
@@ -17774,7 +17774,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "REWARD_003_CROSSBOW.json",
     name: "Unidentified Crossbow",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17784,7 +17784,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SONIC_GEM_TICKET2,
     equipPosition: EquipPosition.NONE,
@@ -17799,7 +17799,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SONIC_GEM_TICKET2.json",
     name: "Yellow Ticket",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17809,7 +17809,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ACTIVITY_TICKET2,
     equipPosition: EquipPosition.NONE,
@@ -17824,7 +17824,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ACTIVITY_TICKET2.json",
     name: "Red Ticket",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17834,7 +17834,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 6,
       magicDefence: 6,
       rangedDefence: 6,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_RING,
     equipPosition: EquipPosition.RING,
@@ -17849,7 +17849,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_RING.json",
     name: "2nd Anniversary Ring",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17859,7 +17859,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 4,
       magicDefence: 4,
       rangedDefence: 4,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_AMULET,
     equipPosition: EquipPosition.NECK,
@@ -17874,7 +17874,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_AMULET.json",
     name: "2nd Anniversary Amulet",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17884,7 +17884,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_POUCH,
     equipPosition: EquipPosition.NONE,
@@ -17899,7 +17899,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_POUCH.json",
     name: "2nd Anniversary Pouch",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17909,7 +17909,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_EGG_TIER1,
     equipPosition: EquipPosition.NONE,
@@ -17924,7 +17924,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_EGG_TIER1.json",
     name: "2nd Anniversary Egg Tier 1",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17934,7 +17934,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_EGG_TIER2,
     equipPosition: EquipPosition.NONE,
@@ -17949,7 +17949,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_EGG_TIER2.json",
     name: "2nd Anniversary Egg Tier 2",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17959,7 +17959,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_EGG_TIER3,
     equipPosition: EquipPosition.NONE,
@@ -17974,7 +17974,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_EGG_TIER3.json",
     name: "2nd Anniversary Egg Tier 3",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -17984,7 +17984,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_EGG_TIER4,
     equipPosition: EquipPosition.NONE,
@@ -17999,7 +17999,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_EGG_TIER4.json",
     name: "2nd Anniversary Egg Tier 4",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18009,7 +18009,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.ANNIV2_EGG_TIER5,
     equipPosition: EquipPosition.NONE,
@@ -18024,7 +18024,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "ANNIV2_EGG_TIER5.json",
     name: "2nd Anniversary Egg Tier 5",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18034,7 +18034,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COMBAT_BOOST_M,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18049,7 +18049,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COMBAT_BOOST_M.json",
     name: "Combat Boost (M)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18059,7 +18059,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COMBAT_BOOST_L,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18074,7 +18074,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COMBAT_BOOST_L.json",
     name: "Combat Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18084,7 +18084,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.COMBAT_BOOST_XL,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18099,7 +18099,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "COMBAT_BOOST_XL.json",
     name: "Combat Boost (XL)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18109,7 +18109,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.XP_BOOST_M,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18124,7 +18124,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "XP_BOOST_M.json",
     name: "XP Boost (M)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18134,7 +18134,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.XP_BOOST_L,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18149,7 +18149,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "XP_BOOST_L.json",
     name: "XP Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18159,7 +18159,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.XP_BOOST_XL,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18174,7 +18174,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "XP_BOOST_XL.json",
     name: "XP Boost (XL)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18184,7 +18184,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GATHERING_BOOST_M,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18199,7 +18199,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GATHERING_BOOST_M.json",
     name: "Gathering Boost (M)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18209,7 +18209,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GATHERING_BOOST_L,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18224,7 +18224,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GATHERING_BOOST_L.json",
     name: "Gathering Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18234,7 +18234,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.GATHERING_BOOST_XL,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18249,7 +18249,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "GATHERING_BOOST_XL.json",
     name: "Gathering Boost (XL)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18259,7 +18259,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SKILL_BOOST_M,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18274,7 +18274,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SKILL_BOOST_M.json",
     name: "Skill Boost (M)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18284,7 +18284,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SKILL_BOOST_L,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18299,7 +18299,7 @@ export const allItems: ItemInput[] = [
     metadataURI: "SKILL_BOOST_L.json",
     name: "Skill Boost (L)",
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     combatStats: {
@@ -18309,7 +18309,7 @@ export const allItems: ItemInput[] = [
       meleeDefence: 0,
       magicDefence: 0,
       rangedDefence: 0,
-      health: 0
+      health: 0,
     },
     tokenId: EstforConstants.SKILL_BOOST_XL,
     equipPosition: EquipPosition.BOOST_VIAL,
@@ -18324,6 +18324,56 @@ export const allItems: ItemInput[] = [
     metadataURI: "SKILL_BOOST_XL.json",
     name: "Skill Boost (XL)",
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.COSMETIC_001_AVATAR,
+    equipPosition: EquipPosition.AVATAR,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COSMETIC_001_AVATAR.json",
+    name: "Cosmetic 001 Avatar",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.COSMETIC_002_AVATAR_BORDER,
+    equipPosition: EquipPosition.AVATAR_BORDER,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "COSMETIC_002_AVATAR_BORDER.json",
+    name: "Cosmetic 002 Avatar Border",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+  },
 ];

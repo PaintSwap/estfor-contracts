@@ -1,4 +1,4 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {loadFixture, time} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants, EstforTypes} from "@paintswap/estfor-definitions";
 import {Skill, defaultActionChoice} from "@paintswap/estfor-definitions/types";
 import {expect} from "chai";
@@ -8,7 +8,7 @@ import {
   getActionId,
   NO_DONATION_AMOUNT,
   requestAndFulfillRandomWords,
-  requestAndFulfillRandomWordsSeeded
+  requestAndFulfillRandomWordsSeeded,
 } from "../utils";
 import {playersFixture} from "./PlayersFixture";
 import {
@@ -21,7 +21,7 @@ import {
   setupBasicFletching,
   setupBasicForging,
   setupBasicFarming,
-  BOOST_START_NOW
+  BOOST_START_NOW,
 } from "./utils";
 import {timeTravelToNextCheckpoint, timeTravel, timeTravel24Hours} from "../utils";
 import {Block} from "ethers";
@@ -65,32 +65,34 @@ describe("Non-Combat Actions", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_MASK,
-          equipPosition: EstforTypes.EquipPosition.HEAD
+          equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_BODY,
-          equipPosition: EstforTypes.EquipPosition.BODY
+          equipPosition: EstforTypes.EquipPosition.BODY,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_BRACERS,
-          equipPosition: EstforTypes.EquipPosition.ARMS
+          equipPosition: EstforTypes.EquipPosition.ARMS,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_TROUSERS,
-          equipPosition: EstforTypes.EquipPosition.LEGS
+          equipPosition: EstforTypes.EquipPosition.LEGS,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATURE_BOOTS,
-          equipPosition: EstforTypes.EquipPosition.FEET
-        }
+          equipPosition: EstforTypes.EquipPosition.FEET,
+        },
       ]);
 
       await players.addFullAttireBonuses([
-        allFullAttireBonuses.find((attireBonus) => attireBonus.skill == Skill.WOODCUTTING) as FullAttireBonusInputStruct
+        allFullAttireBonuses.find(
+          (attireBonus) => attireBonus.skill == Skill.WOODCUTTING
+        ) as FullAttireBonusInputStruct,
       ]);
 
       const queuedAction = {
@@ -103,8 +105,8 @@ describe("Non-Combat Actions", function () {
           legs: EstforConstants.NATURE_TROUSERS,
           feet: EstforConstants.NATURE_BOOTS,
           ring: EstforConstants.NONE, // Always NONE for now
-          reserved1: EstforConstants.NONE // Always NONE for now
-        }
+          reserved1: EstforConstants.NONE, // Always NONE for now
+        },
       };
 
       await itemNFT.mintBatch(
@@ -114,7 +116,7 @@ describe("Non-Combat Actions", function () {
           EstforConstants.NATURE_BODY,
           EstforConstants.NATURE_BRACERS,
           EstforConstants.NATURE_TROUSERS,
-          EstforConstants.NATURE_BOOTS
+          EstforConstants.NATURE_BOOTS,
         ],
         [1, 1, 1, 1, 1]
       );
@@ -151,15 +153,15 @@ describe("Non-Combat Actions", function () {
           isAvailable: actionIsAvailable,
           questPrerequisiteId: 0,
           actionChoiceRequired: false,
-          successPercent: 100
+          successPercent: 100,
         },
         guaranteedRewards: [
           {itemTokenId: EstforConstants.LOG, rate},
-          {itemTokenId: EstforConstants.OAK_LOG, rate: rate * 2}
+          {itemTokenId: EstforConstants.OAK_LOG, rate: rate * 2},
         ],
         randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats
-      }
+        combatStats: EstforTypes.emptyCombatStats,
+      },
     ]);
     const actionId = await getActionId(tx, worldActions);
 
@@ -173,15 +175,15 @@ describe("Non-Combat Actions", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      petId: EstforConstants.NONE
+      petId: EstforConstants.NONE,
     };
 
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-      }
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
     ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
@@ -212,12 +214,12 @@ describe("Non-Combat Actions", function () {
           isAvailable: actionIsAvailable,
           questPrerequisiteId: 0,
           actionChoiceRequired: true,
-          successPercent: 100
+          successPercent: 100,
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats
-      }
+        combatStats: EstforTypes.emptyCombatStats,
+      },
     ]);
     const actionId = await getActionId(tx, worldActions);
 
@@ -233,8 +235,8 @@ describe("Non-Combat Actions", function () {
           xpPerHour: 3600,
           rate,
           inputTokenIds: [EstforConstants.LOG],
-          inputAmounts: [1]
-        }
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx, worldActions);
@@ -249,20 +251,20 @@ describe("Non-Combat Actions", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      petId: EstforConstants.NONE
+      petId: EstforConstants.NONE,
     };
 
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       },
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.LOG,
-        equipPosition: EstforTypes.EquipPosition.AUX
-      }
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
     ]);
 
     const mintAmount = 5;
@@ -301,20 +303,20 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent: 100
+            successPercent: 100,
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
       const actionId = await getActionId(tx, worldActions);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
-          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-        }
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
       ]);
       const timespan = 7200 + 10;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -326,7 +328,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       queuedActions.push(queuedAction);
@@ -347,12 +349,12 @@ describe("Non-Combat Actions", function () {
           isAvailable: actionIsAvailable,
           questPrerequisiteId: 0,
           actionChoiceRequired: true,
-          successPercent: 100
+          successPercent: 100,
         },
         guaranteedRewards: [],
         randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats
-      }
+        combatStats: EstforTypes.emptyCombatStats,
+      },
     ]);
     const actionId = await getActionId(tx, worldActions);
 
@@ -369,8 +371,8 @@ describe("Non-Combat Actions", function () {
           xpPerHour: 3600,
           rate: firemakingRate,
           inputTokenIds: [EstforConstants.LOG],
-          inputAmounts: [1]
-        }
+          inputAmounts: [1],
+        },
       ]
     );
     const choiceId = await getActionChoiceId(tx, worldActions);
@@ -380,8 +382,8 @@ describe("Non-Combat Actions", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-      }
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
     ]);
     const timespan = 3600;
 
@@ -394,7 +396,7 @@ describe("Non-Combat Actions", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      petId: EstforConstants.NONE
+      petId: EstforConstants.NONE,
     };
 
     queuedActions.push(queuedAction);
@@ -403,8 +405,8 @@ describe("Non-Combat Actions", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.LOG,
-        equipPosition: EstforTypes.EquipPosition.AUX
-      }
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
     ]);
 
     await players.connect(alice).startActions(playerId, [queuedActions[0]], EstforTypes.ActionQueueStrategy.OVERWRITE);
@@ -416,6 +418,7 @@ describe("Non-Combat Actions", function () {
     expect(pendingQueuedActionState.actionMetadatas.length).is.eq(1);
     expect(pendingQueuedActionState.actionMetadatas[0].xpGained).is.eq(9);
 
+    await time.setNextBlockTimestamp((await time.latest()) + 1); // need to be careful as random block times can cause issues
     await players
       .connect(alice)
       .startActions(playerId, [queuedActions[1]], EstforTypes.ActionQueueStrategy.KEEP_LAST_IN_PROGRESS);
@@ -444,7 +447,7 @@ describe("Non-Combat Actions", function () {
     expect(Number(await itemNFT.balanceOf(alice, EstforConstants.LOG))).to.be.oneOf([
       Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) - firemakingRate / RATE_MUL - 1,
       Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) - firemakingRate / RATE_MUL,
-      Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) - firemakingRate / RATE_MUL + 1
+      Math.floor((queuedActions[0].timespan * rate) / (3600 * GUAR_MUL)) - firemakingRate / RATE_MUL + 1,
     ]);
     // Action queue should be empty
     expect((await players.getActionQueue(playerId)).length).to.eq(0);
@@ -470,20 +473,20 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent: 100
+            successPercent: 100,
           },
           guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
       const actionId = await getActionId(tx, worldActions);
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_AXE,
-          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-        }
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
       ]);
       const timespan = 7200;
       const queuedAction: EstforTypes.QueuedActionInput = {
@@ -495,7 +498,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       queuedActions.push(queuedAction);
@@ -516,12 +519,12 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: true,
-            successPercent: 100
+            successPercent: 100,
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
       const actionId = await getActionId(tx, worldActions);
 
@@ -537,8 +540,8 @@ describe("Non-Combat Actions", function () {
             xpPerHour: 3600,
             rate,
             inputTokenIds: [EstforConstants.LOG],
-            inputAmounts: [1]
-          }
+            inputAmounts: [1],
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx, worldActions);
@@ -548,8 +551,8 @@ describe("Non-Combat Actions", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.MAGIC_FIRE_STARTER,
-          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-        }
+          equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+        },
       ]);
       const timespan = 3600;
 
@@ -562,7 +565,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.MAGIC_FIRE_STARTER,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       queuedActions.push(queuedAction);
@@ -572,8 +575,8 @@ describe("Non-Combat Actions", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.LOG,
-        equipPosition: EstforTypes.EquipPosition.AUX
-      }
+        equipPosition: EstforTypes.EquipPosition.AUX,
+      },
     ]);
 
     // This should fail because they don't have any logs. (Maybe later this detects from previous actions)
@@ -618,12 +621,12 @@ describe("Non-Combat Actions", function () {
           isAvailable: actionIsAvailable,
           questPrerequisiteId: 0,
           actionChoiceRequired: false,
-          successPercent: 100
+          successPercent: 100,
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.COPPER_ORE, rate: 10}], // 1.0
         randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats
-      }
+        combatStats: EstforTypes.emptyCombatStats,
+      },
     ]);
 
     const actionId = await getActionId(tx, worldActions);
@@ -638,15 +641,15 @@ describe("Non-Combat Actions", function () {
       timespan: 100,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_PICKAXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      petId: EstforConstants.NONE
+      petId: EstforConstants.NONE,
     };
 
     await itemNFT.addItems([
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_PICKAXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-      }
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
     ]);
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
@@ -683,12 +686,12 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: true,
-            successPercent: 100
+            successPercent: 100,
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
       const actionId = await getActionId(tx, worldActions);
 
@@ -706,8 +709,8 @@ describe("Non-Combat Actions", function () {
             inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
             inputAmounts: [1, 2],
             outputTokenId: EstforConstants.MITHRIL_BAR,
-            outputAmount: 1
-          }
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx, worldActions);
@@ -723,20 +726,20 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.COAL_ORE,
-          equipPosition: EstforTypes.EquipPosition.AUX
+          equipPosition: EstforTypes.EquipPosition.AUX,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.MITHRIL_ORE,
-          equipPosition: EstforTypes.EquipPosition.AUX
-        }
+          equipPosition: EstforTypes.EquipPosition.AUX,
+        },
       ]);
 
       await itemNFT.mint(alice, EstforConstants.COAL_ORE, 255);
@@ -779,12 +782,12 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: true,
-            successPercent: 100
+            successPercent: 100,
           },
           guaranteedRewards: [],
           randomRewards: [],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
       const actionId = await getActionId(tx, worldActions);
 
@@ -802,8 +805,8 @@ describe("Non-Combat Actions", function () {
             inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
             inputAmounts: [1, 2],
             outputTokenId: EstforConstants.MITHRIL_BAR,
-            outputAmount: 1
-          }
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId = await getActionChoiceId(tx, worldActions);
@@ -819,8 +822,8 @@ describe("Non-Combat Actions", function () {
             inputTokenIds: [EstforConstants.MITHRIL_ORE, EstforConstants.COAL_ORE],
             inputAmounts: [1, 2],
             outputTokenId: EstforConstants.MITHRIL_BAR,
-            outputAmount: 1
-          }
+            outputAmount: 1,
+          },
         ]
       );
       const choiceId1 = await getActionChoiceId(tx, worldActions);
@@ -834,20 +837,20 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.COAL_ORE,
-          equipPosition: EstforTypes.EquipPosition.AUX
+          equipPosition: EstforTypes.EquipPosition.AUX,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.MITHRIL_ORE,
-          equipPosition: EstforTypes.EquipPosition.AUX
-        }
+          equipPosition: EstforTypes.EquipPosition.AUX,
+        },
       ]);
 
       await itemNFT.mintBatch(alice, [EstforConstants.COAL_ORE, EstforConstants.MITHRIL_ORE], [1000, 1000]);
@@ -1022,15 +1025,15 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent: 100
+            successPercent: 100,
           },
           guaranteedRewards: [],
           randomRewards: [
             {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1},
-            {itemTokenId: EstforConstants.BRONZE_HELMET, chance: randomChance, amount: 1}
+            {itemTokenId: EstforConstants.BRONZE_HELMET, chance: randomChance, amount: 1},
           ],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
 
       const actionId = await getActionId(tx, worldActions);
@@ -1046,19 +1049,19 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       await itemNFT.addItems([
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_HELMET,
-          equipPosition: EstforTypes.EquipPosition.HEAD
+          equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.BRONZE_ARROW,
-          equipPosition: EstforTypes.EquipPosition.QUIVER
+          equipPosition: EstforTypes.EquipPosition.QUIVER,
         },
         {
           ...EstforTypes.defaultItemInput,
@@ -1068,8 +1071,8 @@ describe("Non-Combat Actions", function () {
           boostType: EstforTypes.BoostType.GATHERING,
           boostValue: 10,
           boostDuration: 3600 * 24,
-          isTransferable: false
-        }
+          isTransferable: false,
+        },
       ]);
 
       await ethers.provider.send("evm_increaseTime", [24 * 3600]);
@@ -1125,12 +1128,12 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent
+            successPercent,
           },
           guaranteedRewards: [],
           randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
 
       const actionId = await getActionId(tx, worldActions);
@@ -1156,7 +1159,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
@@ -1171,7 +1174,7 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].queueId).to.eq(1);
       expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.be.oneOf([
         BigInt(queuedAction.timespan / 2 + 2),
-        BigInt(queuedAction.timespan / 2 + 3)
+        BigInt(queuedAction.timespan / 2 + 3),
       ]);
 
       await players.connect(alice).processActions(playerId);
@@ -1219,12 +1222,12 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent: 100
+            successPercent: 100,
           },
           guaranteedRewards: [],
           randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
 
       const actionId = await getActionId(tx, worldActions);
@@ -1252,7 +1255,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       const numRepeats = 25;
@@ -1308,12 +1311,12 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent
+            successPercent,
           },
           guaranteedRewards: [],
           randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
 
       const actionId = await getActionId(tx, worldActions);
@@ -1341,7 +1344,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       const numRepeats = 25;
@@ -1397,12 +1400,12 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent: 0
+            successPercent: 0,
           },
           guaranteedRewards: [],
           randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
 
       const actionId = await getActionId(tx, worldActions);
@@ -1430,7 +1433,7 @@ describe("Non-Combat Actions", function () {
           legs: EstforConstants.NATUOW_TASSETS,
           feet: EstforConstants.NATUOW_BOOTS,
           ring: EstforConstants.NONE,
-          reserved1: EstforConstants.NONE
+          reserved1: EstforConstants.NONE,
         },
         actionId,
         combatStyle: EstforTypes.CombatStyle.NONE,
@@ -1439,7 +1442,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       await itemNFT.mintBatch(
@@ -1449,7 +1452,7 @@ describe("Non-Combat Actions", function () {
           EstforConstants.NATUOW_BODY,
           EstforConstants.NATUOW_BRACERS,
           EstforConstants.NATUOW_TASSETS,
-          EstforConstants.NATUOW_BOOTS
+          EstforConstants.NATUOW_BOOTS,
         ],
         [1, 1, 1, 1, 1]
       );
@@ -1457,28 +1460,28 @@ describe("Non-Combat Actions", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_HOOD,
-          equipPosition: EstforTypes.EquipPosition.HEAD
+          equipPosition: EstforTypes.EquipPosition.HEAD,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_BODY,
-          equipPosition: EstforTypes.EquipPosition.BODY
+          equipPosition: EstforTypes.EquipPosition.BODY,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_BRACERS,
-          equipPosition: EstforTypes.EquipPosition.ARMS
+          equipPosition: EstforTypes.EquipPosition.ARMS,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_TASSETS,
-          equipPosition: EstforTypes.EquipPosition.LEGS
+          equipPosition: EstforTypes.EquipPosition.LEGS,
         },
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.NATUOW_BOOTS,
-          equipPosition: EstforTypes.EquipPosition.FEET
-        }
+          equipPosition: EstforTypes.EquipPosition.FEET,
+        },
       ]);
 
       await players.addFullAttireBonuses([
@@ -1489,11 +1492,11 @@ describe("Non-Combat Actions", function () {
             EstforConstants.NATUOW_BODY,
             EstforConstants.NATUOW_BRACERS,
             EstforConstants.NATUOW_TASSETS,
-            EstforConstants.NATUOW_BOOTS
+            EstforConstants.NATUOW_BOOTS,
           ],
           bonusXPPercent: 3,
-          bonusRewardsPercent: 100
-        }
+          bonusRewardsPercent: 100,
+        },
       ]);
 
       const numRepeats = 10; // Should get it at least once
@@ -1546,15 +1549,15 @@ describe("Non-Combat Actions", function () {
             isAvailable: actionIsAvailable,
             questPrerequisiteId: 0,
             actionChoiceRequired: false,
-            successPercent
+            successPercent,
           },
           guaranteedRewards: [],
           randomRewards: [
             {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1},
-            {itemTokenId: EstforConstants.BRONZE_HELMET, chance: randomChance, amount: 1}
+            {itemTokenId: EstforConstants.BRONZE_HELMET, chance: randomChance, amount: 1},
           ],
-          combatStats: EstforTypes.emptyCombatStats
-        }
+          combatStats: EstforTypes.emptyCombatStats,
+        },
       ]);
 
       const actionId = await getActionId(tx, worldActions);
@@ -1570,7 +1573,7 @@ describe("Non-Combat Actions", function () {
         timespan,
         rightHandEquipmentTokenId: EstforConstants.NONE,
         leftHandEquipmentTokenId: EstforConstants.NONE,
-        petId: EstforConstants.NONE
+        petId: EstforConstants.NONE,
       };
 
       // Make sure it passes the next checkpoint so there are no issues running
@@ -1647,7 +1650,7 @@ describe("Non-Combat Actions", function () {
       let pendingQueuedActionState = await players.getPendingQueuedActionState(alice, playerId);
       checkPendingQueuedActionState(pendingQueuedActionState, [], [], 0, [
         BigInt(queuedAction.timespan - 3),
-        BigInt(queuedAction.timespan - 2)
+        BigInt(queuedAction.timespan - 2),
       ]);
 
       await players.connect(alice).processActions(playerId);
@@ -1666,7 +1669,7 @@ describe("Non-Combat Actions", function () {
         pendingQueuedActionState,
         [
           {itemTokenId: EstforConstants.ROPE, amount: 1},
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20}
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         3600,
@@ -1711,7 +1714,7 @@ describe("Non-Combat Actions", function () {
         pendingQueuedActionState,
         [
           {itemTokenId: EstforConstants.ROPE, amount: 1 * numMade},
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20 * numMade}
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20 * numMade},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1 * numMade}],
         xpGained,
@@ -1750,7 +1753,7 @@ describe("Non-Combat Actions", function () {
         pendingQueuedActionState,
         [
           {itemTokenId: EstforConstants.ROPE, amount: 1},
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20}
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         xpGained,
@@ -1784,7 +1787,7 @@ describe("Non-Combat Actions", function () {
         pendingQueuedActionState,
         [
           {itemTokenId: EstforConstants.ROPE, amount: 1},
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20}
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         xpGained,
@@ -1818,7 +1821,7 @@ describe("Non-Combat Actions", function () {
         pendingQueuedActionState,
         [
           {itemTokenId: EstforConstants.ROPE, amount: 1},
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20}
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         xpGained,
@@ -1917,7 +1920,7 @@ describe("Non-Combat Actions", function () {
         pendingQueuedActionState,
         [
           {itemTokenId: EstforConstants.ROPE, amount: 1},
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20}
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 20},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: 1}],
         xpGained,
@@ -2012,7 +2015,7 @@ describe("Non-Combat Actions", function () {
       expect(pendingQueuedActionState.actionMetadatas[0].elapsedTime).to.be.oneOf([
         BigInt(Math.floor(Number(queuedAction.timespan) * 0.5)),
         BigInt(Math.floor(Number(queuedAction.timespan) * 0.5 - 1)),
-        BigInt(Math.floor(Number(queuedAction.timespan) * 0.5 - 2))
+        BigInt(Math.floor(Number(queuedAction.timespan) * 0.5 - 2)),
       ]);
 
       await players.connect(alice).processActions(playerId);
@@ -2044,7 +2047,7 @@ describe("Non-Combat Actions", function () {
         pendingQueuedActionState,
         [
           {itemTokenId: EstforConstants.ROPE, amount: 2},
-          {itemTokenId: EstforConstants.SAPPHIRE, amount: 40}
+          {itemTokenId: EstforConstants.SAPPHIRE, amount: 40},
         ],
         [{itemTokenId: EstforConstants.SAPPHIRE_AMULET, amount: outputAmount * 2}],
         xpGained,
@@ -2299,8 +2302,8 @@ describe("Non-Combat Actions", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_AXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-      }
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
     ]);
 
     const rate = 0.1 * GUAR_MUL; // 0.1 per hour
@@ -2319,12 +2322,12 @@ describe("Non-Combat Actions", function () {
           isAvailable: actionIsAvailable,
           questPrerequisiteId: 0,
           actionChoiceRequired: false,
-          successPercent: 100
+          successPercent: 100,
         },
         guaranteedRewards: [{itemTokenId: EstforConstants.LOG, rate}],
         randomRewards: [],
-        combatStats: EstforTypes.emptyCombatStats
-      }
+        combatStats: EstforTypes.emptyCombatStats,
+      },
     ]);
 
     const actionId = await getActionId(tx, worldActions);
@@ -2338,7 +2341,7 @@ describe("Non-Combat Actions", function () {
       timespan,
       rightHandEquipmentTokenId: EstforConstants.BRONZE_AXE,
       leftHandEquipmentTokenId: EstforConstants.NONE,
-      petId: EstforConstants.NONE
+      petId: EstforConstants.NONE,
     };
 
     await players.connect(alice).startActions(playerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
@@ -2359,8 +2362,8 @@ describe("Non-Combat Actions", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_PICKAXE,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
-      }
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
+      },
     ]);
 
     await expect(

@@ -13,20 +13,7 @@ async function main() {
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
-  const itemIds = new Set([
-    EstforConstants.XP_BOOST_M,
-    EstforConstants.COMBAT_BOOST_M,
-    EstforConstants.SKILL_BOOST_M,
-    EstforConstants.GATHERING_BOOST_M,
-    EstforConstants.XP_BOOST_L,
-    EstforConstants.COMBAT_BOOST_L,
-    EstforConstants.SKILL_BOOST_L,
-    EstforConstants.GATHERING_BOOST_L,
-    EstforConstants.XP_BOOST_XL,
-    EstforConstants.COMBAT_BOOST_XL,
-    EstforConstants.SKILL_BOOST_XL,
-    EstforConstants.GATHERING_BOOST_XL
-  ]);
+  const itemIds = new Set([EstforConstants.COSMETIC_001_AVATAR, EstforConstants.COSMETIC_002_AVATAR_BORDER]);
 
   const items = allItems.filter((item) => itemIds.has(item.tokenId));
   if (items.length !== itemIds.size) {
@@ -35,13 +22,13 @@ async function main() {
     if (useSafe) {
       const transactionSet: MetaTransactionData[] = [];
       const iface = new ethers.Interface([
-        "function addItems(((int16 meleeAttack,int16 magicAttack,int16 rangedAttack,int16 health, int16 meleeDefence, int16 magicDefence, int16 rangedDefence) combatStats, uint16 tokenId, uint8 equipPosition, bool isTransferable, bool isFullModeOnly, bool isAvailable, uint16 questPrerequisiteId, uint8 skill, uint32 minXP, uint16 healthRestored, uint8 boostType, uint16 boostValue, uint24 boostDuration, string metadataURI, string name)[])"
+        "function addItems(((int16 meleeAttack,int16 magicAttack,int16 rangedAttack,int16 health, int16 meleeDefence, int16 magicDefence, int16 rangedDefence) combatStats, uint16 tokenId, uint8 equipPosition, bool isTransferable, bool isFullModeOnly, bool isAvailable, uint16 questPrerequisiteId, uint8 skill, uint32 minXP, uint16 healthRestored, uint8 boostType, uint16 boostValue, uint24 boostDuration, string metadataURI, string name)[])",
       ]);
       transactionSet.push({
         to: ethers.getAddress(ITEM_NFT_ADDRESS),
         value: "0",
         data: iface.encodeFunctionData("addItems", [items]),
-        operation: OperationType.Call
+        operation: OperationType.Call,
       });
       await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
     } else {

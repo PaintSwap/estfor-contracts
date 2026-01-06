@@ -227,6 +227,12 @@ contract Players is
     _players[playerId].packedData = _players[playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
   }
 
+  // Callback after applying a avatar to a player
+  function applyAvatarToPlayer(uint256 playerId, Skill[2] calldata skills) external override onlyPlayerNFT {
+    _players[playerId].skillBoosted1 = skills[0];
+    _players[playerId].skillBoosted2 = skills[1];
+  }
+
   // This is a special type of quest.
   function buyBrushQuest(
     address to,

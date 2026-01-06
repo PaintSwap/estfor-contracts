@@ -23,6 +23,8 @@ describe("Shop", function () {
 
     const brush = await ethers.deployContract("MockBrushToken");
     const mockVRF = await ethers.deployContract("MockVRF");
+    const usdc = await ethers.deployContract("MockUSDCToken");
+    await usdc.mint(bob, 10_000_000n); // Mint some USDC to bob for testing (10 USDC with 6 decimals)
 
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
@@ -162,6 +164,11 @@ describe("Shop", function () {
       .to.emit(shop, "SetBrushDistributionPercentages")
       .withArgs(25, 50, 25);
 
+    // Approve shop to spend brush from dev address
+    await shop.setSupporterPackToken(usdc);
+    await brush.connect(dev).approve(await shop.getAddress(), ethers.MaxUint256);
+    await brush.mint(dev, parseEther("1000"));
+
     return {
       itemNFT,
       shop,
@@ -170,6 +177,8 @@ describe("Shop", function () {
       owner,
       alice,
       bob,
+      dev,
+      usdc,
       sellingCutoffDuration,
       minItemQuantityBeforeSellsAllowed,
     };
@@ -860,5 +869,189 @@ describe("Shop", function () {
         .to.emit(shop, "NewAllocation")
         .withArgs(EstforConstants.BRONZE_SHIELD, totalBrush / numItems);
     });
+  });
+
+  it("reverts when non-owner sets the supporter pack token", async () => {
+    const {shop, bob, usdc} = await loadFixture(deployContracts);
+    await expect(shop.connect(bob).setSupporterPackToken(usdc)).to.be.revertedWithCustomError(
+      shop,
+      "OwnableUnauthorizedAccount"
+    );
+  });
+
+  it("reverts when non-owner sets supporter packs", async () => {
+    const {shop, bob} = await loadFixture(deployContracts);
+    await expect(
+      shop.connect(bob).setSupporterPacks(
+        [1],
+        [
+          {
+            price: 100,
+            itemTokenIds: [1],
+            itemQuantities: [1],
+            amountRemaining: 10,
+            startTimestamp: Math.floor(new Date().valueOf() / 1000),
+            brushToGive: parseEther("1"),
+          },
+        ]
+      )
+    ).to.be.revertedWithCustomError(shop, "OwnableUnauthorizedAccount");
+  });
+
+  it("reverts when owner sets length mismatched supporter packs", async () => {
+    const {shop, owner} = await loadFixture(deployContracts);
+    await expect(
+      shop.connect(owner).setSupporterPacks(
+        [1, 2],
+        [
+          {
+            price: 100,
+            itemTokenIds: [1],
+            itemQuantities: [1],
+            amountRemaining: 10,
+            startTimestamp: Math.floor(new Date().valueOf() / 1000),
+            brushToGive: parseEther("1"),
+          },
+        ]
+      )
+    ).to.be.revertedWithCustomError(shop, "LengthMismatch");
+  });
+
+  it("allows owner to set supporter packs", async () => {
+    const {shop, owner} = await loadFixture(deployContracts);
+    await expect(
+      shop.connect(owner).setSupporterPacks(
+        [1],
+        [
+          {
+            price: 100,
+            itemTokenIds: [1],
+            itemQuantities: [1],
+            amountRemaining: 10,
+            startTimestamp: Math.floor(new Date().valueOf() / 1000),
+            brushToGive: parseEther("1"),
+          },
+        ]
+      )
+    )
+      .to.emit(shop, "SetSupporterPacks")
+      .withArgs([1], [[100n, [1n], [1n], 10n, BigInt(Math.floor(new Date().valueOf() / 1000)), parseEther("1")]]);
+  });
+
+  it("can buy supporter pack", async () => {
+    const {shop, owner, bob, brush, usdc, itemNFT, dev} = await loadFixture(deployContracts);
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 10,
+          startTimestamp: Math.floor(new Date().valueOf() / 1000),
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.emit(shop, "BuySupporterPack").withArgs(
+      bob.address,
+      bob.address,
+      1, // pack id
+      3, // total usdc price
+      1 // quantity
+    );
+
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SHIELD)).to.eq(1);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SWORD)).to.eq(2);
+    expect(await brush.balanceOf(bob.address)).to.eq(parseEther("2"));
+    expect(await usdc.balanceOf(dev.getAddress())).to.eq(3);
+  });
+
+  it("can buy multiple supporter packs", async () => {
+    const {shop, owner, bob, brush, usdc, itemNFT, dev} = await loadFixture(deployContracts);
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 10,
+          startTimestamp: Math.floor(new Date().valueOf() / 1000),
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 3)).to.emit(shop, "BuySupporterPack").withArgs(
+      bob.address,
+      bob.address,
+      1, // pack id
+      9, // total usdc price
+      3 // quantity
+    );
+
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SHIELD)).to.eq(3);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SWORD)).to.eq(6);
+    expect(await brush.balanceOf(bob.address)).to.eq(parseEther("6"));
+    expect(await usdc.balanceOf(dev.getAddress())).to.eq(9);
+  });
+
+  it("should revert when no packs remaining", async () => {
+    const {shop, owner, bob, usdc} = await loadFixture(deployContracts);
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 1,
+          startTimestamp: Math.floor(new Date().valueOf() / 1000),
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.emit(shop, "BuySupporterPack").withArgs(
+      bob.address,
+      bob.address,
+      1, // pack id
+      3, // total usdc price
+      1 // quantity
+    );
+
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.be.revertedWithCustomError(
+      shop,
+      "SupporterPackInsufficientRemaining"
+    );
+  });
+
+  it("should revert when no pack currently running", async () => {
+    const {shop, owner, bob, usdc} = await loadFixture(deployContracts);
+
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 1,
+          startTimestamp: Math.floor((await time.latest()) + 86400), // start tomorrow
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.be.revertedWithCustomError(
+      shop,
+      "SupporterPackNotStarted"
+    );
   });
 });

@@ -210,6 +210,11 @@
   },
   {
     "inputs": [],
+    "name": "NotCosmetics",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInWhitelist",
     "type": "error"
   },
@@ -314,6 +319,25 @@
       }
     ],
     "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAvatarId",
+        "type": "uint256"
+      }
+    ],
+    "name": "EditAvatar",
     "type": "event"
   },
   {
@@ -705,6 +729,24 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint24",
+        "name": "newAvatarId",
+        "type": "uint24"
+      }
+    ],
+    "name": "applyAvatarToPlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1308,6 +1350,19 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "cosmeticsAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setCosmeticsAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "dev",
         "type": "address"
       }
@@ -1478,6 +1533,24 @@
       }
     ],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "unapplyAvatarFromPlayer",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

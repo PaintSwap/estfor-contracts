@@ -8,7 +8,7 @@ import {
   PlayersImplProcessActions,
   PlayersImplQueueActions,
   PlayersImplRewards,
-  DailyRewardsScheduler
+  DailyRewardsScheduler,
 } from "../typechain-types";
 import {Skill} from "@paintswap/estfor-definitions/types";
 import {allDailyRewards, allWeeklyRewards} from "./data/dailyRewards";
@@ -21,7 +21,7 @@ import Safe from "@safe-global/protocol-kit";
 import {MetaTransactionData, OperationType} from "@safe-global/types-kit";
 
 const upgradeToAndCallIface = new ethers.Interface([
-  "function upgradeToAndCall(address newImplementation, bytes data) payable"
+  "function upgradeToAndCall(address newImplementation, bytes data) payable",
 ]);
 const SAFE_START_BLOCK = 56943741;
 
@@ -42,8 +42,8 @@ export const sendTransactionSetToSafe = async (
   const safeTransaction = await protocolKit.createTransaction({
     transactions: transactionSet,
     options: {
-      nonce: Number(await apiKit.getNextNonce(process.env.SAFE_ADDRESS as string))
-    }
+      nonce: Number(await apiKit.getNextNonce(process.env.SAFE_ADDRESS as string)),
+    },
   });
 
   const safeTxHash = await protocolKit.getTransactionHash(safeTransaction);
@@ -58,7 +58,7 @@ export const sendTransactionSetToSafe = async (
       safeTransactionData: safeTransaction.data,
       safeTxHash,
       senderAddress: proposer.address,
-      senderSignature: signature.data
+      senderSignature: signature.data,
     });
   }
 };
@@ -70,13 +70,13 @@ export const getSafeUpgradeTransaction = (
 ): MetaTransactionData => {
   const data = upgradeToAndCallIface.encodeFunctionData("upgradeToAndCall", [
     ethers.getAddress(implementationAddress),
-    callData
+    callData,
   ]);
   return {
     to: ethers.getAddress(proxyAddress),
     value: "0", // wei
     data,
-    operation: OperationType.Call
+    operation: OperationType.Call,
   };
 };
 
@@ -85,7 +85,7 @@ export const initialiseSafe = async (nw: Network): Promise<SafeInstance> => {
   if (nw.chainId !== 146n) {
     const metadata = (await network.provider.request({
       method: "hardhat_metadata",
-      params: []
+      params: [],
     })) as any;
     // check if fork and after Safe was made
     isSafeFork =
@@ -110,13 +110,13 @@ export const initialiseSafe = async (nw: Network): Promise<SafeInstance> => {
 
   const apiKit = new SafeApiKit({
     chainId: 146n,
-    apiKey: process.env.SAFE_API_KEY
+    apiKey: process.env.SAFE_API_KEY,
   });
 
   const protocolKit = await Safe.init({
     provider: process.env.SONIC_RPC as string,
     signer: process.env.PROPOSER_PRIVATE_KEY,
-    safeAddress: process.env.SAFE_ADDRESS as string
+    safeAddress: process.env.SAFE_ADDRESS as string,
   });
 
   return {useSafe: true, apiKit, protocolKit};
@@ -143,6 +143,11 @@ export type AvatarInfo = {
   imageURI: string;
   startSkills: [Skill, Skill];
 };
+export type CosmeticInfo = {
+  itemTokenId: number;
+  cosmeticPosition: number;
+  avatarId: number; // 0 if not an avatar cosmetic
+};
 
 // If there's an error with build-info not matching then delete cache/artifacts folder and try again
 export const verifyContracts = async (addresses: string[], constructorArguments: any[][] = []) => {
@@ -150,7 +155,7 @@ export const verifyContracts = async (addresses: string[], constructorArguments:
     try {
       await run("verify:verify", {
         address,
-        constructorArguments
+        constructorArguments,
       });
     } catch (e) {
       console.error(`Failed to verify contract at address ${address}`);
@@ -162,7 +167,7 @@ export const verifyContracts = async (addresses: string[], constructorArguments:
 export const verifyContract = async (address: string, constructorArguments: any[]) => {
   return run("verify:verify", {
     address,
-    constructorArguments
+    constructorArguments,
   });
 };
 
@@ -200,30 +205,30 @@ export const deployPlayerImplementations = async (
 ): Promise<IPlayerImpls> => {
   const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-    signer: signer
+    signer: signer,
   });
   console.log(`playersImplQueueActions = "${(await playersImplQueueActions.getAddress()).toLowerCase()}"`);
 
   const playersImplProcessActions = await ethers.deployContract("PlayersImplProcessActions", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-    signer: signer
+    signer: signer,
   });
   console.log(`playersImplProcessActions = "${(await playersImplProcessActions.getAddress()).toLowerCase()}"`);
 
   const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-    signer: signer
+    signer: signer,
   });
   console.log(`playersImplRewards = "${(await playersImplRewards.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
     libraries: {PlayersLibrary: playersLibraryAddress},
-    signer: signer
+    signer: signer,
   });
   console.log(`playersImplMisc = "${(await playersImplMisc.getAddress()).toLowerCase()}"`);
 
   const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1", {
-    signer: signer
+    signer: signer,
   });
   console.log(`playersImplMisc1 = "${(await playersImplMisc1.getAddress()).toLowerCase()}"`);
 
@@ -232,7 +237,7 @@ export const deployPlayerImplementations = async (
     playersImplProcessActions,
     playersImplRewards,
     playersImplMisc,
-    playersImplMisc1
+    playersImplMisc1,
   };
 };
 
@@ -321,7 +326,7 @@ export const getChainId = async (signer: HardhatEthersSigner) => {
 export const estimateGas = async (signer: SignerWithAddress, contract: Contract, args: any[]) => {
   const gasLimit = await signer.estimateGas({
     to: await contract.getAddress(),
-    data: contract.interface.encodeFunctionData("startActions", args)
+    data: contract.interface.encodeFunctionData("startActions", args),
   });
   return gasLimit;
 };

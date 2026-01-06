@@ -93,6 +93,8 @@ TerritoryTreasury [0x4b1da5984c89312f852c798154a171a5ddc07d43](https://sonicscan
 BankRegistry [0xf213febd3889c5bf18086356e7eff79e2a9fe391](https://sonicscan.org/address/0xf213febd3889c5bf18086356e7eff79e2a9fe391)  
 BankFactory [0x76af5869f1b902f7a16c128a1daa7734819ec327](https://sonicscan.org/address/0x76af5869f1b902f7a16c128a1daa7734819ec327)  
 ActivityPoints [0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2](https://sonicscan.org/address/0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2)
+Marketplace [](https://sonicscan.org/address/)
+Cosmetics [](https://sonicscan.org/address/)
 
 ### Sonic mainnet beta deployed contract addresses:
 
@@ -142,6 +144,7 @@ BankRegistry [0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6](https://sonicscan.org/
 BankFactory [0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c](https://sonicscan.org/address/0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c)  
 ActivityPoints [0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a](https://sonicscan.org/address/0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a)
 Marketplace [0x3935866043766b86f30593bd17a787cc0105f7e0](https://sonicscan.org/address/0x3935866043766b86f30593bd17a787cc0105f7e0)
+Cosmetics [0x9ac94b923333406d1c8b390ab606f90d6526c187](https://sonicscan.org/address/0x9ac94b923333406d1c8b390ab606f90d6526c187)
 
 ### Other addresses:
 

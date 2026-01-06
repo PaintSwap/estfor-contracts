@@ -7,11 +7,15 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {Treasury} from "./Treasury.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IItemNFT} from "./interfaces/IItemNFT.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import {IActivityPoints, IActivityPointsCaller, ActivityType} from "./ActivityPoints/interfaces/IActivityPoints.sol";
 
 // The contract allows items to be bought/sold
 contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
+  using SafeERC20 for IERC20;
+
   event AddShopItems(ShopItem[] shopItems);
   event EditShopItems(ShopItem[] shopItems);
   event RemoveShopItems(uint16[] tokenIds);
@@ -30,6 +34,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   );
   event SetSellingCutoffDuration(uint256 duration);
   event SetPromotionDiscountPercentage(uint8 promotionDiscountPercentage);
+  event BuySupporterPack(address buyer, address to, uint24 packId, uint256 totalPrice, uint16 amount);
+  event SetSupporterPacks(uint24[] packIds, SupporterPack[] packs);
 
   error LengthMismatch();
   error LengthEmpty();
@@ -48,6 +54,12 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   error ItemNotSellable(uint256 tokenId);
   error PercentNotTotal100();
   error PromotionDiscountOver99();
+  error SupporterPackSoldOut();
+  error SupporterPackNotStarted(uint256 startTimestamp, uint256 currentTimestamp);
+  error SupporterPackInsufficientRemaining(uint16 requested, uint16 remaining);
+  error SupporterPackTokenNotSet();
+  error SupporterPackAmountZero();
+  error SupporterPackRecipientZero();
 
   struct ShopItem {
     uint16 tokenId;
@@ -59,6 +71,15 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
     uint80 price;
     uint40 checkpointTimestamp; // 00:00 UTC
     bool unsellable;
+  }
+
+  struct SupporterPack {
+    uint80 price; // remember this is USDC with 6 decimals
+    uint16[] itemTokenIds;
+    uint16[] itemQuantities;
+    uint16 amountRemaining;
+    uint32 startTimestamp;
+    uint96 brushToGive;
   }
 
   mapping(uint256 tokenId => TokenInfo tokenInfo) private _tokenInfos;
@@ -76,6 +97,8 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
   mapping(uint256 itemId => uint256 price) private _shopItems;
   IActivityPoints private _activityPoints;
   uint8 private _promotionDiscountPercentage;
+  mapping(uint24 packId => SupporterPack pack) private _packPrices;
+  address private _supporterPackToken; // usdc
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -116,6 +139,43 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
       for (uint256 i; i < length; ++i) {
         prices[i] = _liquidatePrice(tokenIds[i], totalBrushForItem);
       }
+    }
+  }
+
+  // Buy supporter packs using USDC (remember to approve first)
+  function buySupporterPack(uint24 packId, address to, uint16 amount) external {
+    require(amount != 0, SupporterPackAmountZero());
+    require(to != address(0), SupporterPackRecipientZero());
+    require(_supporterPackToken != address(0), SupporterPackTokenNotSet());
+
+    SupporterPack storage pack = _packPrices[packId];
+    require(pack.price != 0, ShopItemDoesNotExist());
+    require(pack.amountRemaining >= amount, SupporterPackInsufficientRemaining(amount, pack.amountRemaining));
+    require(
+      block.timestamp >= pack.startTimestamp,
+      SupporterPackNotStarted(pack.startTimestamp, block.timestamp)
+    );
+
+    // Update pack remaining
+    pack.amountRemaining -= amount;
+
+    address sender = _msgSender();
+    // Pay in _supporterPackToken (USDC)
+    IERC20(_supporterPackToken).safeTransferFrom(sender, address(_dev), uint256(pack.price) * amount);
+    emit BuySupporterPack(sender, to, packId, pack.price * amount, amount);
+
+    // Deliver items
+    uint256[] memory itemQuantities = new uint256[](pack.itemQuantities.length);
+    uint256[] memory itemTokenIds = new uint256[](pack.itemTokenIds.length);
+    for (uint16 i = 0; i < pack.itemQuantities.length; ++i) {
+      itemQuantities[i] = pack.itemQuantities[i] * amount;
+      itemTokenIds[i] = pack.itemTokenIds[i];
+    } 
+    _itemNFT.mintBatch(to, itemTokenIds, itemQuantities);
+
+    // Deliver brush
+    if (pack.brushToGive > 0) {
+      _brush.transferFrom(_dev, to, pack.brushToGive * amount); // dev holds the brush for supporter packs (ensure Shop approved)
     }
   }
 
@@ -381,6 +441,21 @@ contract Shop is UUPSUpgradeable, OwnableUpgradeable, IActivityPointsCaller {
 
   function setDevAddress(address dev) external onlyOwner {
     _dev = dev;
+  }
+
+  function setSupporterPackToken(address supporterPackToken) external onlyOwner {
+    _supporterPackToken = supporterPackToken;
+  }
+
+  function setSupporterPacks(
+    uint24[] calldata packIds,
+    SupporterPack[] calldata packs
+  ) external onlyOwner {
+    require(packIds.length == packs.length, LengthMismatch());
+    for (uint256 i; i < packIds.length; ++i) {
+      _packPrices[packIds[i]] = packs[i];
+    }
+    emit SetSupporterPacks(packIds, packs);
   }
 
   // solhint-disable-next-line no-empty-blocks
