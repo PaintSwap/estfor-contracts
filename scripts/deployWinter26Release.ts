@@ -44,6 +44,8 @@ async function main() {
 
     const petNFTLibrary = await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS);
     const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
+    const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary", proposer);
+    await itemNFTLibrary.waitForDeployment();
 
     // const PetNFT = await ethers.getContractFactory("PetNFT", {
     //   libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
@@ -95,6 +97,17 @@ async function main() {
     })) as string;
     console.log(`Shop new implementation = "${shop}"`);
 
+    // ItemNFT
+    const ItemNFT = await ethers.getContractFactory("ItemNFT", {
+      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+      signer: proposer,
+    });
+    const itemnft = (await upgrades.prepareUpgrade(ITEM_NFT_ADDRESS, ItemNFT, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+    })) as string;
+    console.log(`itemnft = "${itemnft.toLowerCase()}"`);
+
     // can verify this immediately
     if (network.chainId == 146n) {
       await verifyContracts([await cosmetics.getAddress()]);
@@ -118,6 +131,7 @@ async function main() {
     // transactionSet.push(getSafeUpgradeTransaction(PET_NFT_ADDRESS, petNFT));
     transactionSet.push(getSafeUpgradeTransaction(PLAYERS_ADDRESS, players));
     transactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
+    transactionSet.push(getSafeUpgradeTransaction(ITEM_NFT_ADDRESS, itemnft));
 
     // Set addresses and approvals
     transactionSet.push({

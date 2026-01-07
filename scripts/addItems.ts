@@ -1,9 +1,10 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers} from "hardhat";
-import {ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ethers, upgrades} from "hardhat";
+import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses";
 import {allItems} from "./data/items";
-import {initialiseSafe, sendTransactionSetToSafe} from "./utils";
+import {getSafeUpgradeTransaction, initialiseSafe, sendTransactionSetToSafe} from "./utils";
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
+import {ItemNFT__factory} from "../typechain-types";
 
 async function main() {
   const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
@@ -21,9 +22,8 @@ async function main() {
   } else {
     if (useSafe) {
       const transactionSet: MetaTransactionData[] = [];
-      const iface = new ethers.Interface([
-        "function addItems(((int16 meleeAttack,int16 magicAttack,int16 rangedAttack,int16 health, int16 meleeDefence, int16 magicDefence, int16 rangedDefence) combatStats, uint16 tokenId, uint8 equipPosition, bool isTransferable, bool isFullModeOnly, bool isAvailable, uint16 questPrerequisiteId, uint8 skill, uint32 minXP, uint16 healthRestored, uint8 boostType, uint16 boostValue, uint24 boostDuration, string metadataURI, string name)[])",
-      ]);
+      const iface = ItemNFT__factory.createInterface();
+
       transactionSet.push({
         to: ethers.getAddress(ITEM_NFT_ADDRESS),
         value: "0",
