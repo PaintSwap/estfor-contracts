@@ -193,6 +193,19 @@
         "internalType": "uint16[]",
         "name": "itemTokenIds",
         "type": "uint16[]"
+      }
+    ],
+    "name": "RemoveCosmetics",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "itemTokenIds",
+        "type": "uint16[]"
       },
       {
         "components": [
@@ -328,6 +341,19 @@
       }
     ],
     "name": "removeCosmetic",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "itemTokenIds",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "removeCosmeticItems",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

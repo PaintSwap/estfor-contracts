@@ -14,7 +14,7 @@ async function main() {
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
-  const itemIds = new Set([EstforConstants.COSMETIC_001_AVATAR, EstforConstants.COSMETIC_002_AVATAR_BORDER]);
+  const itemIds = new Set([EstforConstants.BORDER_001_ARCANE_PORTAL]);
 
   const items = allItems.filter((item) => itemIds.has(item.tokenId));
   if (items.length !== itemIds.size) {

@@ -8,7 +8,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 import {setupBasicWoodcutting} from "./Players/utils";
 import {ZeroAddress, parseEther} from "ethers";
 
-describe("Cosmetics", function () {
+describe.only("Cosmetics", function () {
   async function deployContracts() {
     const baseFixture = await loadFixture(playersFixture);
     const {brush, alice, royaltyReceiver} = baseFixture;
@@ -59,13 +59,76 @@ describe("Cosmetics", function () {
       .withArgs([1], [[BigInt(EstforTypes.EquipPosition.AVATAR), 1n, 9n]]);
   });
 
+  it("should overwrite existing cosmetics", async () => {
+    const {cosmetics, owner} = await loadFixture(deployContracts);
+
+    await expect(
+      cosmetics
+        .connect(owner)
+        .setCosmetics([1], [{itemTokenId: 1, cosmeticPosition: EstforTypes.EquipPosition.AVATAR, avatarId: 9}])
+    )
+      .to.emit(cosmetics, "SetCosmetics")
+      .withArgs([1], [[BigInt(EstforTypes.EquipPosition.AVATAR), 1n, 9n]]);
+
+    await expect(
+      cosmetics
+        .connect(owner)
+        .setCosmetics([1], [{itemTokenId: 1, cosmeticPosition: EstforTypes.EquipPosition.AVATAR, avatarId: 9}])
+    )
+      .to.emit(cosmetics, "SetCosmetics")
+      .withArgs([1], [[BigInt(EstforTypes.EquipPosition.AVATAR), 1n, 9n]]);
+  });
+
+  it("should not let non-owners from removing cosmetics", async () => {
+    const {cosmetics, owner, bob} = await loadFixture(deployContracts);
+
+    // First set cosmetics so we can remove them
+    await cosmetics.connect(owner).setCosmetics(
+      [1, 2],
+      [
+        {itemTokenId: 1, cosmeticPosition: EstforTypes.EquipPosition.AVATAR, avatarId: 9},
+        {itemTokenId: 2, cosmeticPosition: EstforTypes.EquipPosition.AVATAR_BORDER, avatarId: 0},
+      ]
+    );
+
+    await expect(cosmetics.connect(bob).removeCosmeticItems([1])).to.be.revertedWithCustomError(
+      cosmetics,
+      "OwnableUnauthorizedAccount"
+    );
+  });
+
+  it("should remove cosmetic items and emit event", async () => {
+    const {cosmetics, owner, itemNFT, bob, playerNFT} = await loadFixture(deployContracts);
+
+    // First set cosmetics so we can remove them
+    await cosmetics.connect(owner).setCosmetics(
+      [1, 2],
+      [
+        {itemTokenId: 1, cosmeticPosition: EstforTypes.EquipPosition.AVATAR, avatarId: 9},
+        {itemTokenId: 2, cosmeticPosition: EstforTypes.EquipPosition.AVATAR_BORDER, avatarId: 0},
+      ]
+    );
+
+    await expect(cosmetics.connect(owner).removeCosmeticItems([1, 2]))
+      .to.emit(cosmetics, "RemoveCosmetics")
+      .withArgs([1, 2]);
+
+    const newPlayerId = await createPlayer(playerNFT, 1, bob, "New name", true);
+
+    await itemNFT.mint(bob, 1, 1);
+    await expect(cosmetics.connect(bob).applyCosmetic(newPlayerId, 1)).to.be.revertedWithCustomError(
+      cosmetics,
+      "NotEquippableCosmetic"
+    );
+  });
+
   it("should revert when trying to apply cosmetic when not owner of player", async () => {
     const {cosmetics, playerNFT, charlie, bob} = await loadFixture(deployContracts);
 
     const newPlayerId = await createPlayer(playerNFT, 1, bob, "New name", true);
 
     await expect(
-      cosmetics.connect(charlie).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR)
+      cosmetics.connect(charlie).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP)
     ).to.be.revertedWithCustomError(cosmetics, "NotOwnerOfPlayer");
   });
 
@@ -85,12 +148,12 @@ describe("Cosmetics", function () {
 
     const newPlayerId = await createPlayer(playerNFT, 1, bob, "New name", true);
 
-    await itemNFT.mint(bob, EstforConstants.COSMETIC_001_AVATAR, 1);
-    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR);
+    await itemNFT.mint(bob, EstforConstants.AVATAR_001_CHIMP, 1);
+    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP);
 
     // second time should revert
     await expect(
-      cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR)
+      cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP)
     ).to.be.revertedWithCustomError(cosmetics, "CosmeticSlotOccupied");
   });
 
@@ -99,7 +162,7 @@ describe("Cosmetics", function () {
 
     const newPlayerId = await createPlayer(playerNFT, 1, bob, "New name", true);
 
-    await expect(cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR)).to.be.reverted;
+    await expect(cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP)).to.be.reverted;
   });
 
   it("should successfully burn item and emit events when applying cosmetic item", async () => {
@@ -107,16 +170,16 @@ describe("Cosmetics", function () {
 
     const newPlayerId = await createPlayer(playerNFT, 1, bob, "New name", true);
 
-    await itemNFT.mint(bob, EstforConstants.COSMETIC_001_AVATAR, 1);
-    await expect(cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR))
+    await itemNFT.mint(bob, EstforConstants.AVATAR_001_CHIMP, 1);
+    await expect(cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP))
       .to.emit(cosmetics, "CosmeticApplied")
-      .withArgs(newPlayerId, EstforConstants.COSMETIC_001_AVATAR, BigInt(EstforTypes.EquipPosition.AVATAR))
+      .withArgs(newPlayerId, EstforConstants.AVATAR_001_CHIMP, BigInt(EstforTypes.EquipPosition.AVATAR))
       .and.to.emit(itemNFT, "TransferSingle")
-      .withArgs(cosmetics, bob.address, ZeroAddress, EstforConstants.COSMETIC_001_AVATAR, 1)
+      .withArgs(cosmetics, bob.address, ZeroAddress, EstforConstants.AVATAR_001_CHIMP, 1)
       .and.to.emit(playerNFT, "EditAvatar")
       .withArgs(newPlayerId, 9n);
 
-    expect(await itemNFT.balanceOf(bob.address, EstforConstants.COSMETIC_001_AVATAR)).to.equal(0);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.AVATAR_001_CHIMP)).to.equal(0);
   });
 
   it("should successfully get item back when removing cosmetic item", async () => {
@@ -128,17 +191,17 @@ describe("Cosmetics", function () {
     await brush.mint(bob, brushAmount);
     await brush.connect(bob).approve(playerNFT, brushAmount);
 
-    await itemNFT.mint(bob, EstforConstants.COSMETIC_001_AVATAR, 1);
-    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR);
+    await itemNFT.mint(bob, EstforConstants.AVATAR_001_CHIMP, 1);
+    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP);
     await expect(cosmetics.connect(bob).removeCosmetic(newPlayerId, EstforTypes.EquipPosition.AVATAR))
       .to.emit(cosmetics, "CosmeticRemoved")
       .withArgs(newPlayerId, BigInt(EstforTypes.EquipPosition.AVATAR))
       .and.to.emit(itemNFT, "TransferSingle")
-      .withArgs(cosmetics, ZeroAddress, bob.address, EstforConstants.COSMETIC_001_AVATAR, 1)
+      .withArgs(cosmetics, ZeroAddress, bob.address, EstforConstants.AVATAR_001_CHIMP, 1)
       .and.to.emit(playerNFT, "EditAvatar")
       .withArgs(newPlayerId, 1n); // revert stats back to base avatar
 
-    expect(await itemNFT.balanceOf(bob.address, EstforConstants.COSMETIC_001_AVATAR)).to.equal(1);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.AVATAR_001_CHIMP)).to.equal(1);
     expect(await brush.balanceOf(bob.address)).to.be.lessThan(brushAmount); // brush used for unequipping avatar cosmetic specifically
   });
 
@@ -150,8 +213,8 @@ describe("Cosmetics", function () {
     const brushAmount = parseEther("100");
     await brush.connect(bob).approve(playerNFT, brushAmount);
 
-    await itemNFT.mint(bob, EstforConstants.COSMETIC_001_AVATAR, 1);
-    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR);
+    await itemNFT.mint(bob, EstforConstants.AVATAR_001_CHIMP, 1);
+    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP);
     await expect(
       cosmetics.connect(bob).removeCosmetic(newPlayerId, EstforTypes.EquipPosition.AVATAR)
     ).to.be.revertedWithCustomError(brush, "ERC20InsufficientBalance");
@@ -166,8 +229,8 @@ describe("Cosmetics", function () {
     await brush.mint(bob, brushAmount);
     await brush.connect(bob).approve(playerNFT, brushAmount);
 
-    await itemNFT.mint(bob, EstforConstants.COSMETIC_001_AVATAR, 1);
-    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.COSMETIC_001_AVATAR);
+    await itemNFT.mint(bob, EstforConstants.AVATAR_001_CHIMP, 1);
+    await cosmetics.connect(bob).applyCosmetic(newPlayerId, EstforConstants.AVATAR_001_CHIMP);
 
     await expect(
       cosmetics.connect(charlie).removeCosmetic(newPlayerId, EstforTypes.EquipPosition.AVATAR)

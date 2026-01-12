@@ -13,20 +13,7 @@ async function main() {
   console.log(`Edit items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  const itemsToEdit = new Set([
-    EstforConstants.XP_BOOST_M,
-    EstforConstants.COMBAT_BOOST_M,
-    EstforConstants.SKILL_BOOST_M,
-    EstforConstants.GATHERING_BOOST_M,
-    EstforConstants.XP_BOOST_L,
-    EstforConstants.COMBAT_BOOST_L,
-    EstforConstants.SKILL_BOOST_L,
-    EstforConstants.GATHERING_BOOST_L,
-    EstforConstants.XP_BOOST_XL,
-    EstforConstants.COMBAT_BOOST_XL,
-    EstforConstants.SKILL_BOOST_XL,
-    EstforConstants.GATHERING_BOOST_XL
-  ]);
+  const itemsToEdit = new Set([EstforConstants.AVATAR_001_CHIMP]);
 
   const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
   /*
@@ -51,7 +38,7 @@ async function main() {
         to: ethers.getAddress(ITEM_NFT_ADDRESS),
         value: "0",
         data: iface.encodeFunctionData("editItems", [items]),
-        operation: OperationType.Call
+        operation: OperationType.Call,
       });
       await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
     } else {

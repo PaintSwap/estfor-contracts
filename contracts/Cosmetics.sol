@@ -19,6 +19,7 @@ contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
   event SetCosmetics(uint16[] itemTokenIds, CosmeticInfo[] cosmeticInfos);
   event CosmeticApplied(uint256 indexed playerId, uint16 indexed itemTokenId, EquipPosition slot);
   event CosmeticRemoved(uint256 indexed playerId, EquipPosition slot);
+  event RemoveCosmetics(uint16[] itemTokenIds);
 
   IItemNFT private _itemNFT;
   IPlayerNFT private _playerNFT;
@@ -84,6 +85,13 @@ contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
       _cosmetics[itemTokenIds[i]] = cosmeticInfos[i];
     }
     emit SetCosmetics(itemTokenIds, cosmeticInfos);
+  }
+
+  function removeCosmeticItems(uint16[] calldata itemTokenIds) external onlyOwner {
+    for (uint16 i; i < itemTokenIds.length; ++i) {
+      delete _cosmetics[itemTokenIds[i]];
+    }
+    emit RemoveCosmetics(itemTokenIds);
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

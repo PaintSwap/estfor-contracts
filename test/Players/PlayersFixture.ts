@@ -751,7 +751,7 @@ export const playersFixture = async function () {
     imageURI: "5678.png",
     startSkills: [Skill.ALCHEMY, Skill.FORGING],
   };
-  const cosmeticId = EstforConstants.COSMETIC_001_AVATAR;
+  const cosmeticId = EstforConstants.AVATAR_001_CHIMP;
   const cosmeticInfo: CosmeticInfo = {
     itemTokenId: cosmeticId,
     cosmeticPosition: EquipPosition.AVATAR,
