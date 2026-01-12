@@ -38,13 +38,13 @@ import {
   DailyRewardsScheduler,
   Bridge,
   ActivityPoints,
+  GlobalEvents,
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
 import {ContractFactory, parseEther} from "ethers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {ACTIVITY_TICKET, SONIC_GEM_TICKET} from "@paintswap/estfor-definitions/constants";
-import {cosmeticTokenIds} from "../../scripts/data/cosmetics";
 
 export const playersFixture = async function () {
   const [owner, alice, bob, charlie, dev, erin, frank, geoff, harry, isla, juliet, kiki, lucy] =
@@ -655,6 +655,13 @@ export const playersFixture = async function () {
     await playerNFT.getAddress(),
   ])) as unknown as Cosmetics;
 
+  const GlobalEvents = await ethers.getContractFactory("GlobalEvents");
+  const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
+    owner.address,
+    await players.getAddress(),
+    await itemNFT.getAddress(),
+  ])) as unknown as GlobalEvents;
+
   await randomnessBeacon.initializeAddresses(wishingWell, dailyRewardsScheduler);
   await randomnessBeacon.initializeRandomWords();
 
@@ -693,6 +700,7 @@ export const playersFixture = async function () {
       passiveActions,
       raids,
       cosmetics,
+      globalEvents,
     ],
     true
   );
@@ -843,5 +851,6 @@ export const playersFixture = async function () {
     cosmetics,
     cosmeticId,
     cosmeticInfo,
+    globalEvents,
   };
 };

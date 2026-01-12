@@ -42,6 +42,7 @@ import {
   Bridge,
   ActivityPoints,
   Cosmetics,
+  GlobalEvents,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -635,6 +636,15 @@ async function main() {
   await promotions.waitForDeployment();
   console.log(`promotions = "${(await promotions.getAddress()).toLowerCase()}"`);
 
+  const GlobalEvents = await ethers.getContractFactory("GlobalEvents");
+  const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
+    owner.address,
+    await players.getAddress(),
+    await itemNFT.getAddress(),
+  ])) as unknown as GlobalEvents;
+  await globalEvents.waitForDeployment();
+  console.log(`globalEvents = "${(await globalEvents.getAddress()).toLowerCase()}"`);
+
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
   const passiveActions = (await upgrades.deployProxy(
     PassiveActions,
@@ -1138,6 +1148,7 @@ async function main() {
       raids,
       bridge,
       cosmetics,
+      globalEvents,
     ],
     true
   );

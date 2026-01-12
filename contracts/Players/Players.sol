@@ -455,7 +455,7 @@ contract Players is
   }
 
   function getActivePlayer(address playerOwner) external view override returns (uint256 playerId) {
-    return _activePlayerInfos[playerOwner].playerId; // TODO: Can use activePlayerInfo?
+    return _activePlayerInfos[playerOwner].playerId;
   }
 
   function getActivePlayerInfo(address playerOwner) external view returns (ActivePlayerInfo memory) {

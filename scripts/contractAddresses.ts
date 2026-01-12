@@ -53,6 +53,7 @@ let activityPoints;
 let marketplace;
 let cosmetics;
 let usdc;
+let globalEvent;
 
 // Third party stuff chain specific addresses
 const chainId = process.env.CHAIN_ID;
@@ -121,6 +122,7 @@ if (!isBeta) {
   activityPoints = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
   marketplace = "";
   cosmetics = "";
+  globalEvent = "";
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -169,6 +171,7 @@ if (!isBeta) {
   activityPoints = "0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a";
   marketplace = "0x3935866043766b86f30593bd17a787cc0105f7e0";
   cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
+  globalEvent = "0x8d61f3135a9f39b685b9765976e6a0f0572aeca5";
 }
 
 export const BRIDGE_ADDRESS = bridge;
@@ -229,6 +232,7 @@ export const PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS = paintSwapMarketplaceWhite
 export const MARKETPLACE_ADDRESS = marketplace;
 export const COSMETICS_ADDRESS = cosmetics;
 export const USDC_ADDRESS = usdc;
+export const GLOBAL_EVENT_ADDRESS = globalEvent;
 
 // VRF
 export const VRF_ADDRESS = vrf;
