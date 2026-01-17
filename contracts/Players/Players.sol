@@ -229,6 +229,9 @@ contract Players is
 
   // Callback after applying a avatar to a player
   function applyAvatarToPlayer(uint256 playerId, Skill[2] calldata skills) external override onlyPlayerNFT {
+    if (_players[playerId].actionQueue.length != 0) {
+      _processActionsAndSetState(playerId);
+    }
     _players[playerId].skillBoosted1 = skills[0];
     _players[playerId].skillBoosted2 = skills[1];
   }

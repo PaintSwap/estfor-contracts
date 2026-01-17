@@ -132,7 +132,7 @@ if (!isBeta) {
   shop = "0xb3778f2c24d94e3c7cfe608388bd35bba9401caa";
   royaltyReceiver = "0x5fce65360e0acdfcec0153bda8c412a7631d47a2";
   adminAccess = "0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57";
-  itemNFTLibrary = "0x8ef4472a1792ae0c326d50c82145d0e0716aed0f";
+  itemNFTLibrary = "0x593f115a4d07b86cf507C01678220b9136fAfa13";
   itemNFT = "0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5";
   bazaar = "0xae4bd229721ff40c07162c1720e060a2a5c89ff6";
   estforLibrary = "0x96977118842d6f209f9442e76d7de04d393480d8";

@@ -56,8 +56,8 @@ importers:
         specifier: ^3.9.1
         version: 3.9.1(@nomicfoundation/hardhat-ethers@3.1.2(ethers@6.15.0)(hardhat@2.27.1(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3)))(@nomicfoundation/hardhat-verify@2.1.3(hardhat@2.27.1(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3)))(ethers@6.15.0)(hardhat@2.27.1(ts-node@10.9.2(@types/node@22.19.1)(typescript@5.9.3))(typescript@5.9.3))
       "@paintswap/estfor-definitions":
-        specifier: 2.0.92
-        version: 2.0.92
+        specifier: 2.0.96
+        version: 2.0.96
       "@paintswap/vrf":
         specifier: ^0.0.10
         version: 0.0.10
@@ -979,9 +979,9 @@ packages:
       {integrity: sha512-m6iorjyhPK9ow5/trNs7qsBC/SOzJCO51pvvAF2W9nOiZ1t0RtCd+rlRmRmlWTv4M33V0wzIUeamJ2BPbzgUXA==}
     hasBin: true
 
-  "@paintswap/estfor-definitions@2.0.92":
+  "@paintswap/estfor-definitions@2.0.96":
     resolution:
-      {integrity: sha512-MagzOtN//XGcuR8BMEyVyx0TLh2RWHKo9OP7RRfQqmeqF068yTWPc7LsIrkU9kB4oFrzCOP0kbf+IzmIsXFosA==}
+      {integrity: sha512-HLPtM0XClpH0QxNY9giqSg3J5xxhe/m5uZ0k+vQ6+u/7+z8K2s5WLIWtJLPLcZ24RqIZER2rdrV7RJ6mZ1XaCw==}
 
   "@paintswap/vrf@0.0.10":
     resolution:
@@ -5858,7 +5858,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  "@paintswap/estfor-definitions@2.0.92":
+  "@paintswap/estfor-definitions@2.0.96":
     dependencies:
       assemblyscript: 0.19.10
 

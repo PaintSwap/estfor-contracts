@@ -8,6 +8,7 @@ import {
   ESTFOR_LIBRARY_ADDRESS,
   SHOP_ADDRESS,
   USDC_ADDRESS,
+  GLOBAL_EVENT_ADDRESS,
   ITEM_NFT_ADDRESS,
 } from "./contractAddresses";
 import {initialiseSafe, sendTransactionSetToSafe, getSafeUpgradeTransaction, verifyContracts} from "./utils";
@@ -44,8 +45,9 @@ async function main() {
 
     const petNFTLibrary = await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS);
     const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
-    // const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary", proposer);
-    // await itemNFTLibrary.waitForDeployment();
+    const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary", proposer);
+    await itemNFTLibrary.waitForDeployment();
+    console.log(`itemNFTLibrary = "${await itemNFTLibrary.getAddress()}"`);
 
     // const PetNFT = await ethers.getContractFactory("PetNFT", {
     //   libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
@@ -71,13 +73,13 @@ async function main() {
     // })) as string;
     // console.log(`playerNFT = "${playerNFT.toLowerCase()}"`);
 
-    // const Players = await ethers.getContractFactory("Players", proposer);
-    // const players = (await upgrades.prepareUpgrade(PLAYERS_ADDRESS, Players, {
-    //   kind: "uups",
-    //   unsafeAllow: ["delegatecall"],
-    //   timeout,
-    // })) as string;
-    // console.log(`players = "${players.toLowerCase()}"`);
+    const Players = await ethers.getContractFactory("Players", proposer);
+    const players = (await upgrades.prepareUpgrade(PLAYERS_ADDRESS, Players, {
+      kind: "uups",
+      unsafeAllow: ["delegatecall"],
+      timeout,
+    })) as string;
+    console.log(`players = "${players.toLowerCase()}"`);
 
     // const Cosmetics = await ethers.getContractFactory("Cosmetics", proposer);
     // const cosmetics = (await upgrades.deployProxy(Cosmetics, [
@@ -98,15 +100,15 @@ async function main() {
     // console.log(`Shop new implementation = "${shop}"`);
 
     // ItemNFT
-    // const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-    //   libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
-    //   signer: proposer,
-    // });
-    // const itemnft = (await upgrades.prepareUpgrade(ITEM_NFT_ADDRESS, ItemNFT, {
-    //   kind: "uups",
-    //   unsafeAllow: ["external-library-linking"],
-    // })) as string;
-    // console.log(`itemnft = "${itemnft.toLowerCase()}"`);
+    const ItemNFT = await ethers.getContractFactory("ItemNFT", {
+      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
+      signer: proposer,
+    });
+    const itemnft = (await upgrades.prepareUpgrade(ITEM_NFT_ADDRESS, ItemNFT, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+    })) as string;
+    console.log(`itemnft = "${itemnft.toLowerCase()}"`);
 
     // can verify this immediately
     // if (network.chainId == 146n) {
@@ -115,19 +117,19 @@ async function main() {
     /* Cosmetic Release */
 
     /* Global Events Release */
-    const GlobalEvents = await ethers.getContractFactory("GlobalEvents", proposer);
-    const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
-      process.env.SAFE_ADDRESS,
-      PLAYERS_ADDRESS,
-      ITEM_NFT_ADDRESS,
-    ])) as unknown as GlobalEvents;
-    await globalEvents.waitForDeployment();
-    console.log(`globalEvents = "${(await globalEvents.getAddress()).toLowerCase()}"`);
+    // const GlobalEvents = await ethers.getContractFactory("GlobalEvents", proposer);
+    // const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
+    //   process.env.SAFE_ADDRESS,
+    //   PLAYERS_ADDRESS,
+    //   ITEM_NFT_ADDRESS,
+    // ])) as unknown as GlobalEvents;
+    // await globalEvents.waitForDeployment();
+    // console.log(`globalEvents = "${(await globalEvents.getAddress()).toLowerCase()}"`);
 
-    // can verify this immediately
-    if (network.chainId == 146n) {
-      await verifyContracts([await globalEvents.getAddress()]);
-    }
+    // // can verify this immediately
+    // if (network.chainId == 146n) {
+    //   await verifyContracts([await globalEvents.getAddress()]);
+    // }
 
     const transactionSet: MetaTransactionData[] = [];
     const iface = new ethers.Interface([
@@ -144,9 +146,9 @@ async function main() {
 
     // transactionSet.push(getSafeUpgradeTransaction(PLAYER_NFT_ADDRESS, playerNFT));
     // transactionSet.push(getSafeUpgradeTransaction(PET_NFT_ADDRESS, petNFT));
-    // transactionSet.push(getSafeUpgradeTransaction(PLAYERS_ADDRESS, players));
+    transactionSet.push(getSafeUpgradeTransaction(PLAYERS_ADDRESS, players));
     // transactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
-    // transactionSet.push(getSafeUpgradeTransaction(ITEM_NFT_ADDRESS, itemnft));
+    transactionSet.push(getSafeUpgradeTransaction(ITEM_NFT_ADDRESS, itemnft));
 
     // Set addresses and approvals
     // transactionSet.push({
@@ -155,12 +157,12 @@ async function main() {
     //   data: iface.encodeFunctionData("setApproved", [[await cosmetics.getAddress()], true]),
     //   operation: OperationType.Call,
     // });
-    transactionSet.push({
-      to: ethers.getAddress(ITEM_NFT_ADDRESS),
-      value: "0",
-      data: iface.encodeFunctionData("setApproved", [[await globalEvents.getAddress()], true]),
-      operation: OperationType.Call,
-    });
+    // transactionSet.push({
+    //   to: ethers.getAddress(ITEM_NFT_ADDRESS),
+    //   value: "0",
+    //   data: iface.encodeFunctionData("setApproved", [[await globalEvents.getAddress()], true]),
+    //   operation: OperationType.Call,
+    // });
     // transactionSet.push({
     //   to: ethers.getAddress(PLAYER_NFT_ADDRESS),
     //   value: "0",
@@ -219,43 +221,41 @@ async function main() {
     //   operation: OperationType.Call,
     // });
     // transactionSet.push({
-    //   to: ethers.getAddress(await cosmetics.getAddress()),
+    //   to: await cosmetics.getAddress(),
     //   value: "0",
-    //   data: iface.encodeFunctionData("setCosmetics", [
+    //   data: Cosmetics.interface.encodeFunctionData("setCosmetics", [
     //     cosmeticInfos.map((c) => c.itemTokenId),
     //     cosmeticInfos.map((c) => [c.cosmeticPosition, c.itemTokenId, c.avatarId]),
     //   ]),
     //   operation: OperationType.Call,
     // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(SHOP_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setSupporterPacks", [
-    //     [1],
-    //     [
-    //       [
-    //         1,
-    //         [
-    //           EstforConstants.BRONZE_ARMOR,
-    //           EstforConstants.BRONZE_BOOTS,
-    //           EstforConstants.BRONZE_HELMET,
-    //           EstforConstants.BRONZE_GAUNTLETS,
-    //           EstforConstants.COSMETIC_001_AVATAR,
-    //           EstforConstants.COSMETIC_002_AVATAR_BORDER
-    //         ],
-    //         [1, 1, 1, 1, 1, 1],
-    //         100,
-    //         Math.floor(Date.now() / 1000),
-    //         1,
-    //       ],
-    //     ],
-    //   ]),
-    //   operation: OperationType.Call,
-    // });
+    transactionSet.push({
+      to: ethers.getAddress(SHOP_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setSupporterPacks", [
+        [1],
+        [
+          [
+            1,
+            [
+              EstforConstants.AVATAR_001_CHIMP,
+              EstforConstants.BORDER_001_ARCANE_PORTAL,
+              EstforConstants.SUPPORT_001_TROPHY,
+            ],
+            [1, 1, 1],
+            100, // brush received
+            Math.floor(Date.now() / 1000),
+            1, // usdc price (6 decimals)
+          ],
+        ],
+      ]),
+      operation: OperationType.Call,
+    });
 
     const globalEventsIface = GlobalEvents__factory.createInterface();
     transactionSet.push({
-      to: ethers.getAddress(await globalEvents.getAddress()),
+      // to: ethers.getAddress(await globalEvents.getAddress()),
+      to: ethers.getAddress(GLOBAL_EVENT_ADDRESS),
       value: "0",
       data: globalEventsIface.encodeFunctionData("addGlobalEvents", [
         [1],
@@ -263,9 +263,9 @@ async function main() {
           {
             startTime: Math.floor(Date.now() / 1000),
             endTime: 0,
-            rewardItemTokenId: EstforConstants.BRONZE_ARROW,
-            rewardItemAmountPerInput: 2,
-            inputItemTokenId: EstforConstants.LOG,
+            rewardItemTokenId: EstforConstants.RIFT_COIN,
+            rewardItemAmountPerInput: 1,
+            inputItemTokenId: EstforConstants.RIFT_CRYSTAL,
             inputItemMaxAmount: 1000,
             totalInputAmount: 0,
           },

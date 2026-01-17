@@ -107,7 +107,7 @@ Treasury [0xdd744b66bb24a01a4ec62287f3d0d91fee37f8b1](https://sonicscan.org/addr
 Shop [0xb3778f2c24d94e3c7cfe608388bd35bba9401caa](https://sonicscan.org/address/0xb3778f2c24d94e3c7cfe608388bd35bba9401caa)  
 RoyaltyReceiver [0x5fce65360e0acdfcec0153bda8c412a7631d47a2](https://sonicscan.org/address/0x5fce65360e0acdfcec0153bda8c412a7631d47a2)  
 AdminAccess [0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57](https://sonicscan.org/address/0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57)  
-ItemNFTLibrary [0x8ef4472a1792ae0c326d50c82145d0e0716aed0f](https://sonicscan.org/address/0x8ef4472a1792ae0c326d50c82145d0e0716aed0f)  
+ItemNFTLibrary [0x593f115a4d07b86cf507C01678220b9136fAfa13](https://sonicscan.org/address/0x593f115a4d07b86cf507C01678220b9136fAfa13)  
 ItemNFT [0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5](https://sonicscan.org/address/0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5)  
 Bazaar [0xae4bd229721ff40c07162c1720e060a2a5c89ff6](https://sonicscan.org/address/0xae4bd229721ff40c07162c1720e060a2a5c89ff6)  
 EstforLibrary [0x96977118842d6f209f9442e76d7de04d393480d8](https://sonicscan.org/address/0x96977118842d6f209f9442e76d7de04d393480d8)  

@@ -18,7 +18,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -36,7 +36,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -54,7 +54,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -72,7 +72,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -90,7 +90,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -108,7 +108,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -126,7 +126,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -144,7 +144,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -162,7 +162,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -180,7 +180,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -198,7 +198,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -216,7 +216,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -234,7 +234,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -252,7 +252,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -270,7 +270,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [1109796],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -288,7 +288,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [2219452],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -306,7 +306,7 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [4438448],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FIREMAKING,
@@ -324,8 +324,8 @@ export const allActionChoicesFiremaking: ActionChoiceInput[] = [
     skills: [Skill.FIREMAKING],
     skillMinXPs: [8876091],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesSmithing: ActionChoiceInput[] = [
   {
@@ -344,7 +344,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -362,7 +362,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -380,7 +380,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -398,7 +398,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -416,7 +416,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -434,7 +434,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [97582],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -452,7 +452,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [195864],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -470,7 +470,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -488,7 +488,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -506,7 +506,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -524,7 +524,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -542,7 +542,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -560,7 +560,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -578,7 +578,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -596,7 +596,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -614,7 +614,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -632,7 +632,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -650,7 +650,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -668,7 +668,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -686,7 +686,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -704,7 +704,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -722,7 +722,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -740,7 +740,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -758,7 +758,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -776,7 +776,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -794,7 +794,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -812,7 +812,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -830,7 +830,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -848,7 +848,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -866,7 +866,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -884,7 +884,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -902,7 +902,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -920,7 +920,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -938,7 +938,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -956,7 +956,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -974,7 +974,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -992,7 +992,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1010,7 +1010,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1028,7 +1028,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1046,7 +1046,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1064,7 +1064,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1082,7 +1082,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1100,7 +1100,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1118,7 +1118,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1136,7 +1136,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1154,7 +1154,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1172,7 +1172,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1190,7 +1190,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1208,7 +1208,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1226,7 +1226,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1244,7 +1244,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1262,7 +1262,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1280,7 +1280,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1298,7 +1298,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1316,7 +1316,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1334,7 +1334,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1352,7 +1352,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1370,7 +1370,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1388,7 +1388,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1406,7 +1406,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1424,7 +1424,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1442,7 +1442,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1460,7 +1460,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1478,7 +1478,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1496,7 +1496,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1514,7 +1514,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1527,7 +1527,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.DAGGER_001_BRONZE_FRAGMENT,
@@ -1536,7 +1536,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1554,7 +1554,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1567,7 +1567,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_005_VOID,
     ],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.DAGGER_003_MITHRIL_FRAGMENT,
@@ -1576,7 +1576,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [195864],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1589,7 +1589,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.DAGGER_004_ADAMANTINE_FRAGMENT,
@@ -1598,7 +1598,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1616,7 +1616,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [1109796],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1629,7 +1629,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.DAGGER_006_TITANIUM_FRAGMENT,
@@ -1638,7 +1638,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [2219452],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.SMITHING,
@@ -1651,7 +1651,7 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_006_OMNI,
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [1, 4, 4],
     outputTokenId: EstforConstants.DAGGER_007_ORICHALCUM_FRAGMENT,
@@ -1660,8 +1660,8 @@ export const allActionChoicesSmithing: ActionChoiceInput[] = [
     skills: [Skill.SMITHING],
     skillMinXPs: [4438448],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesCooking: ActionChoiceInput[] = [
   {
@@ -1680,7 +1680,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1698,7 +1698,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1716,7 +1716,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1734,7 +1734,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1752,7 +1752,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1770,7 +1770,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1788,7 +1788,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1806,7 +1806,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1824,7 +1824,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1842,7 +1842,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1860,7 +1860,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1878,7 +1878,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [97582],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1896,7 +1896,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1914,7 +1914,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [170430],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1932,7 +1932,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [241267],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1950,7 +1950,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1968,7 +1968,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -1986,7 +1986,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [637364],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2004,7 +2004,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2022,7 +2022,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [1035476],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2040,7 +2040,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [1569456],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2058,7 +2058,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [2219452],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2076,7 +2076,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [3138618],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2094,7 +2094,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [4438448],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2112,7 +2112,7 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [6276611],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.COOKING,
@@ -2130,8 +2130,8 @@ export const allActionChoicesCooking: ActionChoiceInput[] = [
     skills: [Skill.COOKING],
     skillMinXPs: [8876091],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesMelee: ActionChoiceInput[] = [
   {
@@ -2150,8 +2150,8 @@ export const allActionChoicesMelee: ActionChoiceInput[] = [
     skills: [],
     skillMinXPs: [],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesMagic: ActionChoiceInput[] = [
   {
@@ -2170,7 +2170,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2188,7 +2188,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2206,7 +2206,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2224,7 +2224,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [6510],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2242,7 +2242,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2260,7 +2260,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [39102],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2278,7 +2278,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [112206],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2296,7 +2296,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2314,7 +2314,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2332,7 +2332,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2350,7 +2350,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [1035476],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2368,7 +2368,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [1802804],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2386,7 +2386,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [2928465],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2404,7 +2404,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [4438448],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2422,7 +2422,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [8876091],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2440,7 +2440,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2458,7 +2458,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2476,7 +2476,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2494,7 +2494,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2512,7 +2512,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2530,7 +2530,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2548,7 +2548,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2566,7 +2566,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2584,7 +2584,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2602,7 +2602,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [1109796],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2620,7 +2620,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [1802804],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2638,7 +2638,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [3138618],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2656,7 +2656,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [4438448],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2674,7 +2674,7 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [6276611],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.MAGIC,
@@ -2692,8 +2692,8 @@ export const allActionChoicesMagic: ActionChoiceInput[] = [
     skills: [Skill.MAGIC],
     skillMinXPs: [8876091],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesCrafting: ActionChoiceInput[] = [
   {
@@ -2712,7 +2712,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2730,7 +2730,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2748,7 +2748,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2766,7 +2766,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2784,7 +2784,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2802,7 +2802,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2820,7 +2820,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2838,7 +2838,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2856,7 +2856,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2874,7 +2874,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2892,7 +2892,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2910,7 +2910,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2928,7 +2928,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2946,7 +2946,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2964,7 +2964,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -2982,7 +2982,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3000,7 +3000,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3018,7 +3018,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3036,7 +3036,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3054,7 +3054,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3072,7 +3072,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3090,7 +3090,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3108,7 +3108,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3126,7 +3126,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3144,7 +3144,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3162,7 +3162,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3180,7 +3180,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3198,7 +3198,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3216,7 +3216,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3234,7 +3234,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3252,7 +3252,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3270,7 +3270,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3288,7 +3288,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3306,7 +3306,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3324,7 +3324,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3342,7 +3342,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3360,7 +3360,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3378,7 +3378,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3396,7 +3396,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3414,7 +3414,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3432,7 +3432,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3450,7 +3450,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3468,7 +3468,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3486,7 +3486,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3504,7 +3504,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3522,7 +3522,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3540,7 +3540,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3558,7 +3558,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3576,7 +3576,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3594,7 +3594,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3612,7 +3612,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3630,7 +3630,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3648,7 +3648,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3666,7 +3666,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3684,7 +3684,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3702,7 +3702,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3720,7 +3720,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3738,7 +3738,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3756,7 +3756,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3774,7 +3774,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3792,7 +3792,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3810,7 +3810,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3828,7 +3828,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3846,7 +3846,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3864,7 +3864,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3882,7 +3882,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3900,7 +3900,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3918,7 +3918,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3936,7 +3936,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3954,7 +3954,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3972,7 +3972,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -3990,7 +3990,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4008,7 +4008,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4026,7 +4026,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4044,7 +4044,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4062,7 +4062,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4080,7 +4080,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4098,7 +4098,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4116,7 +4116,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4134,7 +4134,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4152,7 +4152,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4170,7 +4170,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4188,7 +4188,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4206,7 +4206,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4224,7 +4224,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4242,7 +4242,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4260,7 +4260,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4278,7 +4278,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4296,7 +4296,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4314,7 +4314,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4332,7 +4332,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4350,7 +4350,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4368,7 +4368,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4386,7 +4386,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4404,7 +4404,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4422,7 +4422,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4440,7 +4440,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4458,7 +4458,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4476,7 +4476,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4494,7 +4494,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4512,7 +4512,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4530,7 +4530,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4548,7 +4548,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4566,7 +4566,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4584,7 +4584,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4602,7 +4602,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4615,7 +4615,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.BOOK_002_IRON_FRAGMENT,
@@ -4624,7 +4624,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4642,7 +4642,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [195864],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4655,7 +4655,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_005_VOID,
     ],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.BOOK_004_ADAMANTINE_FRAGMENT,
@@ -4664,7 +4664,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4677,7 +4677,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.BOOK_005_RUNITE_FRAGMENT,
@@ -4686,7 +4686,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [1109796],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4704,7 +4704,7 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [2219452],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.CRAFTING,
@@ -4722,8 +4722,8 @@ export const allActionChoicesCrafting: ActionChoiceInput[] = [
     skills: [Skill.CRAFTING],
     skillMinXPs: [4438448],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesAlchemy: ActionChoiceInput[] = [
   {
@@ -4742,7 +4742,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4760,7 +4760,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4778,7 +4778,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4796,7 +4796,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4814,7 +4814,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4832,7 +4832,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4850,7 +4850,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4868,7 +4868,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4886,7 +4886,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4904,7 +4904,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4922,7 +4922,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4940,7 +4940,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4958,7 +4958,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4976,7 +4976,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -4994,7 +4994,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5012,7 +5012,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5030,7 +5030,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5048,7 +5048,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5066,7 +5066,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [1938, 374],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5084,7 +5084,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [3236, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5102,7 +5102,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [5067, 3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5120,7 +5120,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [7650, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5138,7 +5138,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [16432, 16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5156,7 +5156,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [33913, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5174,7 +5174,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [68761, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5192,7 +5192,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [138307, 138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5210,7 +5210,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [277219, 277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5228,7 +5228,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [392228, 341403],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5246,7 +5246,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [450605, 392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5264,7 +5264,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [554828, 554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5282,7 +5282,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [637364, 784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5300,7 +5300,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.MINING],
     skillMinXPs: [784726, 1109796],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5318,7 +5318,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.HEALTH],
     skillMinXPs: [1021, 16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5336,7 +5336,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5354,7 +5354,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [1938, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5372,7 +5372,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [3236, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5390,7 +5390,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [5067, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5408,7 +5408,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [7650, 48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5426,7 +5426,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [16432, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5444,7 +5444,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [33913, 138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5462,7 +5462,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [68761, 392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5480,7 +5480,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY, Skill.WOODCUTTING],
     skillMinXPs: [138307, 784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5498,7 +5498,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5516,7 +5516,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5534,7 +5534,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5552,7 +5552,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5570,7 +5570,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [2219452],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5588,7 +5588,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5606,7 +5606,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5624,7 +5624,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5642,7 +5642,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5660,7 +5660,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5678,7 +5678,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5696,7 +5696,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5714,7 +5714,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5732,7 +5732,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5750,7 +5750,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5768,7 +5768,7 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.ALCHEMY,
@@ -5786,8 +5786,26 @@ export const allActionChoicesAlchemy: ActionChoiceInput[] = [
     skills: [Skill.ALCHEMY],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
+  {
+    skill: Skill.ALCHEMY,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: false,
+    skillDiffs: [],
+    rate: 1 * 1000,
+    xpPerHour: 300,
+    inputTokenIds: [EstforConstants.RIFT_SPORES],
+    inputAmounts: [50],
+    outputTokenId: EstforConstants.RIFT_FUEL,
+    outputAmount: 1,
+    successPercent: 100,
+    skills: [],
+    skillMinXPs: [],
+    isAvailable: true,
+    questPrerequisiteId: EstforConstants.QUEST_WORLD_I_I,
+  },
 ];
 export const allActionChoicesFletching: ActionChoiceInput[] = [
   {
@@ -5806,7 +5824,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5824,7 +5842,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5842,7 +5860,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5860,7 +5878,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5878,7 +5896,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5896,7 +5914,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5914,7 +5932,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5932,7 +5950,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5950,7 +5968,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5968,7 +5986,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -5986,7 +6004,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6004,7 +6022,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6022,7 +6040,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6040,7 +6058,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6058,7 +6076,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6076,7 +6094,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6094,7 +6112,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6112,7 +6130,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6130,7 +6148,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6148,7 +6166,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [11294],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6166,7 +6184,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [48359],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6184,7 +6202,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6197,7 +6215,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_005_VOID,
     ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.CROSSBOW_001_BRONZE_FRAGMENT,
@@ -6206,7 +6224,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6219,7 +6237,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_002_AETHER,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [1, 1, 1],
     outputTokenId: EstforConstants.CROSSBOW_002_IRON_FRAGMENT,
@@ -6228,7 +6246,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6246,7 +6264,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [195864],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6259,7 +6277,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_004_ASTRAL
+      EstforConstants.SHARD_004_ASTRAL,
     ],
     inputAmounts: [2, 2, 2],
     outputTokenId: EstforConstants.CROSSBOW_004_ADAMANTINE_FRAGMENT,
@@ -6268,7 +6286,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6286,7 +6304,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [1109796],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6299,7 +6317,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_001_PRIMORDIAL,
       EstforConstants.SHARD_003_ARCANE,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_005_VOID,
     ],
     inputAmounts: [3, 3, 3],
     outputTokenId: EstforConstants.CROSSBOW_006_TITANIUM_FRAGMENT,
@@ -6308,7 +6326,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [2219452],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FLETCHING,
@@ -6321,7 +6339,7 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.SHARD_006_OMNI,
       EstforConstants.SHARD_001_PRIMORDIAL,
-      EstforConstants.SHARD_005_VOID
+      EstforConstants.SHARD_005_VOID,
     ],
     inputAmounts: [1, 4, 4],
     outputTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_FRAGMENT,
@@ -6330,8 +6348,8 @@ export const allActionChoicesFletching: ActionChoiceInput[] = [
     skills: [Skill.FLETCHING],
     skillMinXPs: [4438448],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesRanged: ActionChoiceInput[] = [
   {
@@ -6350,7 +6368,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6368,7 +6386,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6386,7 +6404,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6404,7 +6422,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6422,7 +6440,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6440,7 +6458,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6458,7 +6476,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [554828],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6476,7 +6494,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [0, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6494,7 +6512,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [0, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6512,7 +6530,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1021, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6530,7 +6548,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1021, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6548,7 +6566,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [3236, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6566,7 +6584,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [3236, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6584,7 +6602,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [16432, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6602,7 +6620,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [16432, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6620,7 +6638,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [68761, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6638,7 +6656,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [68761, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6656,7 +6674,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [277219, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6674,7 +6692,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [277219, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6692,7 +6710,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [554828, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6710,7 +6728,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [554828, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6728,7 +6746,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6746,7 +6764,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1938, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6764,7 +6782,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1938, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6782,7 +6800,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1938, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6800,7 +6818,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1938, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6818,7 +6836,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6836,7 +6854,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [5067, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6854,7 +6872,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [5067, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6872,7 +6890,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [5067, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6890,7 +6908,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [5067, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6908,7 +6926,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6926,7 +6944,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [23681, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6944,7 +6962,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [23681, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6962,7 +6980,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [23681, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6980,7 +6998,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [23681, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -6998,7 +7016,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [97582],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7016,7 +7034,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [97582, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7034,7 +7052,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [97582, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7052,7 +7070,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [97582, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7070,7 +7088,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [97582, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7088,7 +7106,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7106,7 +7124,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [392228, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7124,7 +7142,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [392228, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7142,7 +7160,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [392228, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7160,7 +7178,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [392228, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7178,7 +7196,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [784726],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7196,7 +7214,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [784726, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7214,7 +7232,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [784726, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7232,7 +7250,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [784726, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7250,7 +7268,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [784726, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7268,7 +7286,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED],
     skillMinXPs: [1569456],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7286,7 +7304,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1569456, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7304,7 +7322,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1569456, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7322,7 +7340,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1569456, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7340,7 +7358,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1569456, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7358,7 +7376,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1021, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7376,7 +7394,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1021, 1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7394,7 +7412,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1938, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7412,7 +7430,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [1938, 1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7430,7 +7448,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [5067, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7448,7 +7466,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [5067, 5067],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7466,7 +7484,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [7650, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7484,7 +7502,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [7650, 7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7502,7 +7520,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [23681, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7520,7 +7538,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [23681, 23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7538,7 +7556,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [33913, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7556,7 +7574,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [33913, 33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7574,7 +7592,7 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [68761, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.RANGED,
@@ -7592,8 +7610,8 @@ export const allActionChoicesRanged: ActionChoiceInput[] = [
     skills: [Skill.RANGED, Skill.FLETCHING],
     skillMinXPs: [68761, 68761],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];
 export const allActionChoicesForging: ActionChoiceInput[] = [
   {
@@ -7612,7 +7630,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [0],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7630,7 +7648,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7648,7 +7666,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7666,7 +7684,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7684,7 +7702,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7702,7 +7720,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7720,7 +7738,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7738,7 +7756,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7756,7 +7774,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7774,7 +7792,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7792,7 +7810,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7810,7 +7828,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7828,7 +7846,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7841,7 +7859,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.MASTER_TROUSERS,
       EstforConstants.MEDIUM_ELIXIUM,
-      EstforConstants.QUARTZ_INFUSED_FEATHER
+      EstforConstants.QUARTZ_INFUSED_FEATHER,
     ],
     inputAmounts: [1, 15, 300],
     outputTokenId: EstforConstants.INFUSED_MASTER_TROUSERS,
@@ -7850,7 +7868,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7868,7 +7886,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7886,7 +7904,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7904,7 +7922,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7917,7 +7935,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.DRAGONSTONE_STAFF,
       EstforConstants.EXTRA_LARGE_ELIXIUM,
-      EstforConstants.BARRAGE_SCROLL
+      EstforConstants.BARRAGE_SCROLL,
     ],
     inputAmounts: [1, 5, 20000],
     outputTokenId: EstforConstants.INFUSED_DRAGONSTONE_STAFF,
@@ -7926,7 +7944,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7944,7 +7962,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [277219],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7962,7 +7980,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7980,7 +7998,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1938],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -7998,7 +8016,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8016,7 +8034,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8034,7 +8052,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [23681],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8052,7 +8070,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8070,7 +8088,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8088,7 +8106,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8106,7 +8124,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8124,7 +8142,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8137,7 +8155,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.DAGGER_007_ORICHALCUM,
       EstforConstants.EXTRA_LARGE_ELIXIUM,
-      EstforConstants.POTION_006_LARGE_MELEE
+      EstforConstants.POTION_006_LARGE_MELEE,
     ],
     inputAmounts: [1, 20, 50],
     outputTokenId: EstforConstants.DAGGER_007_ORICHALCUM_INFUSED,
@@ -8146,7 +8164,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8159,7 +8177,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.BOOK_007_ORICHALCUM,
       EstforConstants.EXTRA_LARGE_ELIXIUM,
-      EstforConstants.POTION_010_LARGE_MAGIC
+      EstforConstants.POTION_010_LARGE_MAGIC,
     ],
     inputAmounts: [1, 20, 50],
     outputTokenId: EstforConstants.BOOK_007_ORICHALCUM_INFUSED,
@@ -8168,7 +8186,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [392228],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FORGING,
@@ -8181,7 +8199,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     inputTokenIds: [
       EstforConstants.CROSSBOW_007_ORICHALCUM,
       EstforConstants.EXTRA_LARGE_ELIXIUM,
-      EstforConstants.POTION_008_LARGE_RANGED
+      EstforConstants.POTION_008_LARGE_RANGED,
     ],
     inputAmounts: [1, 20, 50],
     outputTokenId: EstforConstants.CROSSBOW_007_ORICHALCUM_INFUSED,
@@ -8190,8 +8208,26 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     skills: [Skill.FORGING],
     skillMinXPs: [392228],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
+  {
+    skill: Skill.FORGING,
+    handItemTokenIdRangeMin: EstforConstants.NONE,
+    handItemTokenIdRangeMax: EstforConstants.NONE,
+    isFullModeOnly: true,
+    skillDiffs: [],
+    rate: 0.1 * 1000,
+    xpPerHour: 300,
+    inputTokenIds: [EstforConstants.BLIGHT_VEIN_ORE, EstforConstants.RIFT_FUEL],
+    inputAmounts: [10, 10],
+    outputTokenId: EstforConstants.RIFT_CRYSTAL,
+    outputAmount: 1,
+    successPercent: 100,
+    skills: [],
+    skillMinXPs: [],
+    isAvailable: true,
+    questPrerequisiteId: EstforConstants.QUEST_WORLD_I_I,
+  },
 ];
 export const allActionChoicesFarming: ActionChoiceInput[] = [
   {
@@ -8210,7 +8246,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [1021],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8228,7 +8264,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8246,7 +8282,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8264,7 +8300,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [3236],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8282,7 +8318,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8300,7 +8336,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8318,7 +8354,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [16432],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8336,7 +8372,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [7650],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8354,7 +8390,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8372,7 +8408,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [138307],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8390,7 +8426,7 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [68761],
     isAvailable: true,
-    questPrerequisiteId: 0
+    questPrerequisiteId: 0,
   },
   {
     skill: Skill.FARMING,
@@ -8408,6 +8444,6 @@ export const allActionChoicesFarming: ActionChoiceInput[] = [
     skills: [Skill.FARMING],
     skillMinXPs: [33913],
     isAvailable: true,
-    questPrerequisiteId: 0
-  }
+    questPrerequisiteId: 0,
+  },
 ];

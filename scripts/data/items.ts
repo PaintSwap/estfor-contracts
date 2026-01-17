@@ -25,6 +25,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -50,6 +52,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -75,6 +79,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -100,6 +106,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -125,6 +133,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -150,6 +160,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -175,6 +187,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -200,6 +214,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -225,6 +241,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -250,6 +268,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -275,6 +295,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -300,6 +322,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -325,6 +349,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -350,6 +376,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -375,6 +403,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -400,6 +430,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -425,6 +457,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -450,6 +484,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -475,6 +511,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -500,6 +538,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -525,6 +565,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -550,6 +592,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -575,6 +619,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -600,6 +646,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -625,6 +673,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -650,6 +700,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -675,6 +727,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -700,6 +754,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -725,6 +781,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -750,6 +808,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -775,6 +835,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -800,6 +862,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -825,6 +889,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -850,6 +916,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -875,6 +943,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -900,6 +970,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -925,6 +997,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -950,6 +1024,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -975,6 +1051,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1000,6 +1078,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1025,6 +1105,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1050,6 +1132,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1075,6 +1159,8 @@ export const allItems: ItemInput[] = [
     name: "Sapphire Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1100,6 +1186,8 @@ export const allItems: ItemInput[] = [
     name: "Emerald Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1125,6 +1213,8 @@ export const allItems: ItemInput[] = [
     name: "Ruby Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1150,6 +1240,8 @@ export const allItems: ItemInput[] = [
     name: "Amethyst Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1175,6 +1267,8 @@ export const allItems: ItemInput[] = [
     name: "Diamond Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1200,6 +1294,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1225,6 +1321,8 @@ export const allItems: ItemInput[] = [
     name: "Apprentice Hat",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1250,6 +1348,8 @@ export const allItems: ItemInput[] = [
     name: "Mage Hood",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1275,6 +1375,8 @@ export const allItems: ItemInput[] = [
     name: "Sorcerer Hat",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1300,6 +1402,8 @@ export const allItems: ItemInput[] = [
     name: "Seer's Hood",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1325,6 +1429,8 @@ export const allItems: ItemInput[] = [
     name: "Shaman Hood",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1350,6 +1456,8 @@ export const allItems: ItemInput[] = [
     name: "Master Hat",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1375,6 +1483,8 @@ export const allItems: ItemInput[] = [
     name: "Apprentice Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1400,6 +1510,8 @@ export const allItems: ItemInput[] = [
     name: "Mage Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1425,6 +1537,8 @@ export const allItems: ItemInput[] = [
     name: "Sorcerer Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1450,6 +1564,8 @@ export const allItems: ItemInput[] = [
     name: "Seers Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1475,6 +1591,8 @@ export const allItems: ItemInput[] = [
     name: "Shaman Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1500,6 +1618,8 @@ export const allItems: ItemInput[] = [
     name: "Master Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1525,6 +1645,8 @@ export const allItems: ItemInput[] = [
     name: "Apprentice Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1550,6 +1672,8 @@ export const allItems: ItemInput[] = [
     name: "Mage Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1575,6 +1699,8 @@ export const allItems: ItemInput[] = [
     name: "Sorcerer Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1600,6 +1726,8 @@ export const allItems: ItemInput[] = [
     name: "Seers Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1625,6 +1753,8 @@ export const allItems: ItemInput[] = [
     name: "Shaman Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1650,6 +1780,8 @@ export const allItems: ItemInput[] = [
     name: "Master Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1675,6 +1807,8 @@ export const allItems: ItemInput[] = [
     name: "Apprentice Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1700,6 +1834,8 @@ export const allItems: ItemInput[] = [
     name: "Mage Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1725,6 +1861,8 @@ export const allItems: ItemInput[] = [
     name: "Sorcerer Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1750,6 +1888,8 @@ export const allItems: ItemInput[] = [
     name: "Seers Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1775,6 +1915,8 @@ export const allItems: ItemInput[] = [
     name: "Shaman Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1800,6 +1942,8 @@ export const allItems: ItemInput[] = [
     name: "Master Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1825,6 +1969,8 @@ export const allItems: ItemInput[] = [
     name: "Apprentice Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1850,6 +1996,8 @@ export const allItems: ItemInput[] = [
     name: "Mage Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1875,6 +2023,8 @@ export const allItems: ItemInput[] = [
     name: "Sorcerer Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1900,6 +2050,8 @@ export const allItems: ItemInput[] = [
     name: "Seers Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1925,6 +2077,8 @@ export const allItems: ItemInput[] = [
     name: "Shaman Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1950,6 +2104,8 @@ export const allItems: ItemInput[] = [
     name: "Master Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -1975,6 +2131,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2000,6 +2158,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2025,6 +2185,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2050,6 +2212,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2075,6 +2239,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2100,6 +2266,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2125,6 +2293,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2150,6 +2320,8 @@ export const allItems: ItemInput[] = [
     name: "Totem Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2175,6 +2347,8 @@ export const allItems: ItemInput[] = [
     name: "Sapphire Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2200,6 +2374,8 @@ export const allItems: ItemInput[] = [
     name: "Emerald Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2225,6 +2401,8 @@ export const allItems: ItemInput[] = [
     name: "Ruby Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2250,6 +2428,8 @@ export const allItems: ItemInput[] = [
     name: "Amethyst Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2275,6 +2455,8 @@ export const allItems: ItemInput[] = [
     name: "Diamond Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2300,6 +2482,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2325,6 +2509,8 @@ export const allItems: ItemInput[] = [
     name: "Copper Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2350,6 +2536,8 @@ export const allItems: ItemInput[] = [
     name: "Tin Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2375,6 +2563,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2400,6 +2590,8 @@ export const allItems: ItemInput[] = [
     name: "Sapphire",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2425,6 +2617,8 @@ export const allItems: ItemInput[] = [
     name: "Coal Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2450,6 +2644,8 @@ export const allItems: ItemInput[] = [
     name: "Emerald",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2475,6 +2671,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2500,6 +2698,8 @@ export const allItems: ItemInput[] = [
     name: "Ruby",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2525,6 +2725,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2550,6 +2752,8 @@ export const allItems: ItemInput[] = [
     name: "Amethyst",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2575,6 +2779,8 @@ export const allItems: ItemInput[] = [
     name: "Diamond",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2600,6 +2806,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2625,6 +2833,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2650,6 +2860,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2675,6 +2887,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Ore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2700,6 +2914,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Pickaxe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2725,6 +2941,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Pickaxe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2750,6 +2968,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Pickaxe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2775,6 +2995,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Pickaxe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2800,6 +3022,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Pickaxe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2825,6 +3049,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Pickaxe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2850,6 +3076,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Pickaxe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2875,6 +3103,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Bar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2900,6 +3130,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Bar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2925,6 +3157,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Bar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2950,6 +3184,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Bar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -2975,6 +3211,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Bar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3000,6 +3238,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Bar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3025,6 +3265,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Bar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3050,6 +3292,8 @@ export const allItems: ItemInput[] = [
     name: "Natuow Hood",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3075,6 +3319,8 @@ export const allItems: ItemInput[] = [
     name: "Natuow Vestments",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3100,6 +3346,8 @@ export const allItems: ItemInput[] = [
     name: "Natuow Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3125,6 +3373,8 @@ export const allItems: ItemInput[] = [
     name: "Natuow Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3150,6 +3400,8 @@ export const allItems: ItemInput[] = [
     name: "Natuow Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3175,6 +3427,8 @@ export const allItems: ItemInput[] = [
     name: "Bat Wing Hat",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3200,6 +3454,8 @@ export const allItems: ItemInput[] = [
     name: "Bat Wing Vestments",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3225,6 +3481,8 @@ export const allItems: ItemInput[] = [
     name: "Bat Wing Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3250,6 +3508,8 @@ export const allItems: ItemInput[] = [
     name: "Bat Wing Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3275,6 +3535,8 @@ export const allItems: ItemInput[] = [
     name: "Bat Wing Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3300,6 +3562,8 @@ export const allItems: ItemInput[] = [
     name: "Nature Mask",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3325,6 +3589,8 @@ export const allItems: ItemInput[] = [
     name: "Nature Vestments",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3350,6 +3616,8 @@ export const allItems: ItemInput[] = [
     name: "Nature Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3375,6 +3643,8 @@ export const allItems: ItemInput[] = [
     name: "Nature Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3400,6 +3670,8 @@ export const allItems: ItemInput[] = [
     name: "Nature Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3425,6 +3697,8 @@ export const allItems: ItemInput[] = [
     name: "Leaf Fragments",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3450,6 +3724,8 @@ export const allItems: ItemInput[] = [
     name: "Venom Pouch",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3475,6 +3751,8 @@ export const allItems: ItemInput[] = [
     name: "Bat Wing",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3500,6 +3778,8 @@ export const allItems: ItemInput[] = [
     name: "Bat Wing Patch",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3525,6 +3805,8 @@ export const allItems: ItemInput[] = [
     name: "Thread & Needle",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3550,6 +3832,8 @@ export const allItems: ItemInput[] = [
     name: "Lossuth Teeth",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3575,6 +3859,8 @@ export const allItems: ItemInput[] = [
     name: "Lossuth Scale",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3600,6 +3886,8 @@ export const allItems: ItemInput[] = [
     name: "Quartz Infused Feather",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3625,6 +3913,8 @@ export const allItems: ItemInput[] = [
     name: "Feather",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3650,6 +3940,8 @@ export const allItems: ItemInput[] = [
     name: "Bark Chunk",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3675,6 +3967,8 @@ export const allItems: ItemInput[] = [
     name: "Bluecanar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3700,6 +3994,8 @@ export const allItems: ItemInput[] = [
     name: "Anurgat",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3725,6 +4021,8 @@ export const allItems: ItemInput[] = [
     name: "Rufarum",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3750,6 +4048,8 @@ export const allItems: ItemInput[] = [
     name: "White Death Spore",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3775,6 +4075,8 @@ export const allItems: ItemInput[] = [
     name: "Magic Fire Starter",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3800,6 +4102,8 @@ export const allItems: ItemInput[] = [
     name: "Net (with stick)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3825,6 +4129,8 @@ export const allItems: ItemInput[] = [
     name: "Medium net",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3850,6 +4156,8 @@ export const allItems: ItemInput[] = [
     name: "Large net",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3875,6 +4183,8 @@ export const allItems: ItemInput[] = [
     name: "Magic net",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3900,6 +4210,8 @@ export const allItems: ItemInput[] = [
     name: "Wood Fishing Rod",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3925,6 +4237,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Fishing Rod",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3950,6 +4264,8 @@ export const allItems: ItemInput[] = [
     name: "Harpoon",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -3975,6 +4291,8 @@ export const allItems: ItemInput[] = [
     name: "Cage",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4000,6 +4318,8 @@ export const allItems: ItemInput[] = [
     name: "Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4025,6 +4345,8 @@ export const allItems: ItemInput[] = [
     name: "Oak Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4050,6 +4372,8 @@ export const allItems: ItemInput[] = [
     name: "Willow Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4075,6 +4399,8 @@ export const allItems: ItemInput[] = [
     name: "Maple Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4100,6 +4426,8 @@ export const allItems: ItemInput[] = [
     name: "Redwood Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4125,6 +4453,8 @@ export const allItems: ItemInput[] = [
     name: "Magical Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4150,6 +4480,8 @@ export const allItems: ItemInput[] = [
     name: "Ash Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4175,6 +4507,8 @@ export const allItems: ItemInput[] = [
     name: "Enchanted Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4200,6 +4534,8 @@ export const allItems: ItemInput[] = [
     name: "Living Log",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4225,6 +4561,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Axe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4250,6 +4588,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Axe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4275,6 +4615,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Axe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4300,6 +4642,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Axe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4325,6 +4669,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Axe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4350,6 +4696,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Axe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4375,6 +4723,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Axe",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4400,6 +4750,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Minnus",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4425,6 +4777,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Blekk",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4450,6 +4804,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Skrimp",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4475,6 +4831,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Feola",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4500,6 +4858,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Ancho",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4525,6 +4885,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Trout",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4550,6 +4912,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Rojja",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4575,6 +4939,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Bowfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4600,6 +4966,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Goldfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4625,6 +4993,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Mysty Blue",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4650,6 +5020,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Flitfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4675,6 +5047,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Razorfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4700,6 +5074,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Quaffer",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4725,6 +5101,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Roxa",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4750,6 +5128,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Azacudda",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4775,6 +5155,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Stoneclaw",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4800,6 +5182,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Cruskan",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4825,6 +5209,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Chodfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4850,6 +5236,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Doubtfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4875,6 +5263,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Rosefin",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4900,6 +5290,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Sphinx Fish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4925,6 +5317,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Shaw",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4950,6 +5344,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Vanishing Perch",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -4975,6 +5371,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Viper Bass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5000,6 +5398,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Water Serpent",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5025,6 +5425,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Whiskfin",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5050,6 +5452,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Mhara",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5075,6 +5479,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Gran Squin",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5100,6 +5506,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Lancer",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5125,6 +5533,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Octacle",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5150,6 +5560,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Dragonfish",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5175,6 +5587,8 @@ export const allItems: ItemInput[] = [
     name: "Raw Yerespatum",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5200,6 +5614,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Minnus",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5225,6 +5641,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Blekk",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5250,6 +5668,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Skrimp",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5275,6 +5695,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Feola",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5300,6 +5722,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Ancho",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5325,6 +5749,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Trout",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5350,6 +5776,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Rojja",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5375,6 +5803,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Bowfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5400,6 +5830,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Goldfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5425,6 +5857,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Mysty Blue",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5450,6 +5884,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Flitfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5475,6 +5911,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Razorfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5500,6 +5938,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Quaffer",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5525,6 +5965,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Roxa",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5550,6 +5992,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Azacudda",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5575,6 +6019,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Stoneclaw",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5600,6 +6046,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Cruskan",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5625,6 +6073,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Chodfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5650,6 +6100,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Doubtfish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5675,6 +6127,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Rosefin",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5700,6 +6154,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Sphinx Fish",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5725,6 +6181,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Shaw",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5750,6 +6208,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Vanishing Perch",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5775,6 +6235,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Viper Bass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5800,6 +6262,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Water Serpent",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5825,6 +6289,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Whiskfin",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5850,6 +6316,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Mhara",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5875,6 +6343,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Gran Squin",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5900,6 +6370,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Lancer",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5925,6 +6397,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Octacle",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5950,6 +6424,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Dragonfish",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -5975,6 +6451,8 @@ export const allItems: ItemInput[] = [
     name: "Cooked Yerespatum",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6000,6 +6478,8 @@ export const allItems: ItemInput[] = [
     name: "Dragon Key",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6025,6 +6505,8 @@ export const allItems: ItemInput[] = [
     name: "Bone Key",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6050,6 +6532,8 @@ export const allItems: ItemInput[] = [
     name: "Nature Key",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6075,6 +6559,8 @@ export const allItems: ItemInput[] = [
     name: "Aqua Key",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6100,6 +6586,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Key",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6125,6 +6613,8 @@ export const allItems: ItemInput[] = [
     name: "Natuow Hide",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6150,6 +6640,8 @@ export const allItems: ItemInput[] = [
     name: "Natuow Leather",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6175,6 +6667,8 @@ export const allItems: ItemInput[] = [
     name: "Small Bone",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6200,6 +6694,8 @@ export const allItems: ItemInput[] = [
     name: "Medium Bone",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6225,6 +6721,8 @@ export const allItems: ItemInput[] = [
     name: "Large Bone",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6250,6 +6748,8 @@ export const allItems: ItemInput[] = [
     name: "Dragon Bone",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6275,6 +6775,8 @@ export const allItems: ItemInput[] = [
     name: "Dragon Teeth",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6300,6 +6802,8 @@ export const allItems: ItemInput[] = [
     name: "Dragon Scale",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6325,6 +6829,8 @@ export const allItems: ItemInput[] = [
     name: "Poison",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6350,6 +6856,8 @@ export const allItems: ItemInput[] = [
     name: "String",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6375,6 +6883,8 @@ export const allItems: ItemInput[] = [
     name: "Rope",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6400,6 +6910,8 @@ export const allItems: ItemInput[] = [
     name: "Shadow Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6425,6 +6937,8 @@ export const allItems: ItemInput[] = [
     name: "Nature Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6450,6 +6964,8 @@ export const allItems: ItemInput[] = [
     name: "Aqua Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6475,6 +6991,8 @@ export const allItems: ItemInput[] = [
     name: "Hell Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6500,6 +7018,8 @@ export const allItems: ItemInput[] = [
     name: "Air Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6525,6 +7045,8 @@ export const allItems: ItemInput[] = [
     name: "Barrage Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6550,6 +7072,8 @@ export const allItems: ItemInput[] = [
     name: "Freeze Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6575,6 +7099,8 @@ export const allItems: ItemInput[] = [
     name: "Ancient Scroll",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6600,6 +7126,8 @@ export const allItems: ItemInput[] = [
     name: "Bonemeal",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6625,6 +7153,8 @@ export const allItems: ItemInput[] = [
     name: "Enchanted Acorn",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6650,6 +7180,8 @@ export const allItems: ItemInput[] = [
     name: "Acorn Patch",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6675,6 +7207,8 @@ export const allItems: ItemInput[] = [
     name: "Combat Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6700,6 +7234,8 @@ export const allItems: ItemInput[] = [
     name: "XP Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6725,6 +7261,8 @@ export const allItems: ItemInput[] = [
     name: "Gathering Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6750,6 +7288,8 @@ export const allItems: ItemInput[] = [
     name: "Skill Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6775,6 +7315,8 @@ export const allItems: ItemInput[] = [
     name: "Absence Boost",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6800,6 +7342,8 @@ export const allItems: ItemInput[] = [
     name: "Genesis Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6825,6 +7369,8 @@ export const allItems: ItemInput[] = [
     name: "Genesis Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6850,6 +7396,8 @@ export const allItems: ItemInput[] = [
     name: "Genesis Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6875,6 +7423,8 @@ export const allItems: ItemInput[] = [
     name: "Genesis Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6900,6 +7450,8 @@ export const allItems: ItemInput[] = [
     name: "Genesis Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6925,6 +7477,8 @@ export const allItems: ItemInput[] = [
     name: "OG Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6950,6 +7504,8 @@ export const allItems: ItemInput[] = [
     name: "OG Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -6975,6 +7531,8 @@ export const allItems: ItemInput[] = [
     name: "OG Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7000,6 +7558,8 @@ export const allItems: ItemInput[] = [
     name: "OG Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7025,6 +7585,8 @@ export const allItems: ItemInput[] = [
     name: "OG Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7050,6 +7612,8 @@ export const allItems: ItemInput[] = [
     name: "1Kin Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7075,6 +7639,8 @@ export const allItems: ItemInput[] = [
     name: "1Kin Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7100,6 +7666,8 @@ export const allItems: ItemInput[] = [
     name: "1Kin Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7125,6 +7693,8 @@ export const allItems: ItemInput[] = [
     name: "1Kin Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7150,6 +7720,8 @@ export const allItems: ItemInput[] = [
     name: "1Kin Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7175,6 +7747,8 @@ export const allItems: ItemInput[] = [
     name: "Frost Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7200,6 +7774,8 @@ export const allItems: ItemInput[] = [
     name: "Frost Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7225,6 +7801,8 @@ export const allItems: ItemInput[] = [
     name: "Frost Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7250,6 +7828,8 @@ export const allItems: ItemInput[] = [
     name: "Frost Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7275,6 +7855,8 @@ export const allItems: ItemInput[] = [
     name: "Frost Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7300,6 +7882,8 @@ export const allItems: ItemInput[] = [
     name: "Crystal Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7325,6 +7909,8 @@ export const allItems: ItemInput[] = [
     name: "Crystal Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7350,6 +7936,8 @@ export const allItems: ItemInput[] = [
     name: "Crystal Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7375,6 +7963,8 @@ export const allItems: ItemInput[] = [
     name: "Crystal Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7400,6 +7990,8 @@ export const allItems: ItemInput[] = [
     name: "Crystal Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7425,6 +8017,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7450,6 +8044,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7475,6 +8071,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7500,6 +8098,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7525,6 +8125,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7550,6 +8152,8 @@ export const allItems: ItemInput[] = [
     name: "Paper",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7575,6 +8179,8 @@ export const allItems: ItemInput[] = [
     name: "Ash",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7600,6 +8206,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Arrow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7625,6 +8233,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Arrow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7650,6 +8260,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Arrow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7675,6 +8287,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Arrow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7700,6 +8314,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Arrow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7725,6 +8341,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Arrow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7750,6 +8368,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Arrow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7775,6 +8395,8 @@ export const allItems: ItemInput[] = [
     name: "Basic Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7800,6 +8422,8 @@ export const allItems: ItemInput[] = [
     name: "Bone Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7825,6 +8449,8 @@ export const allItems: ItemInput[] = [
     name: "Expert Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7850,6 +8476,8 @@ export const allItems: ItemInput[] = [
     name: "Spectral Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7875,6 +8503,8 @@ export const allItems: ItemInput[] = [
     name: "Icy Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7900,6 +8530,8 @@ export const allItems: ItemInput[] = [
     name: "Glittering Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7925,6 +8557,8 @@ export const allItems: ItemInput[] = [
     name: "Godly Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7950,6 +8584,8 @@ export const allItems: ItemInput[] = [
     name: "Azamite Cowl",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -7975,6 +8611,8 @@ export const allItems: ItemInput[] = [
     name: "Azamite Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8000,6 +8638,8 @@ export const allItems: ItemInput[] = [
     name: "Azamite Chaps",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8025,6 +8665,8 @@ export const allItems: ItemInput[] = [
     name: "Azamite Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8050,6 +8692,8 @@ export const allItems: ItemInput[] = [
     name: "Azamite Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8075,6 +8719,8 @@ export const allItems: ItemInput[] = [
     name: "Hauberk Cowl",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8100,6 +8746,8 @@ export const allItems: ItemInput[] = [
     name: "Hauberk Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8125,6 +8773,8 @@ export const allItems: ItemInput[] = [
     name: "Hauberk Chaps",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8150,6 +8800,8 @@ export const allItems: ItemInput[] = [
     name: "Hauberk Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8175,6 +8827,8 @@ export const allItems: ItemInput[] = [
     name: "Hauberk Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8200,6 +8854,8 @@ export const allItems: ItemInput[] = [
     name: "Garagos Cowl",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8225,6 +8881,8 @@ export const allItems: ItemInput[] = [
     name: "Garagos Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8250,6 +8908,8 @@ export const allItems: ItemInput[] = [
     name: "Garagos Chaps",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8275,6 +8935,8 @@ export const allItems: ItemInput[] = [
     name: "Garagos Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8300,6 +8962,8 @@ export const allItems: ItemInput[] = [
     name: "Garagos Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8325,6 +8989,8 @@ export const allItems: ItemInput[] = [
     name: "Eternal Cowl",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8350,6 +9016,8 @@ export const allItems: ItemInput[] = [
     name: "Eternal Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8375,6 +9043,8 @@ export const allItems: ItemInput[] = [
     name: "Eternal Chaps",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8400,6 +9070,8 @@ export const allItems: ItemInput[] = [
     name: "Eternal Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8425,6 +9097,8 @@ export const allItems: ItemInput[] = [
     name: "Eternal Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8450,6 +9124,8 @@ export const allItems: ItemInput[] = [
     name: "Reaver Cowl",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8475,6 +9151,8 @@ export const allItems: ItemInput[] = [
     name: "Reaver Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8500,6 +9178,8 @@ export const allItems: ItemInput[] = [
     name: "Reaver Chaps",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8525,6 +9205,8 @@ export const allItems: ItemInput[] = [
     name: "Reaver Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8550,6 +9232,8 @@ export const allItems: ItemInput[] = [
     name: "Reaver Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8575,6 +9259,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Cowl",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8600,6 +9286,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8625,6 +9313,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Chaps",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8650,6 +9340,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8675,6 +9367,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8700,6 +9394,8 @@ export const allItems: ItemInput[] = [
     name: "Arrow Shaft",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8725,6 +9421,8 @@ export const allItems: ItemInput[] = [
     name: "Bronze Arrow Head",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8750,6 +9448,8 @@ export const allItems: ItemInput[] = [
     name: "Iron Arrow Head",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8775,6 +9475,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Arrow Head",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8800,6 +9502,8 @@ export const allItems: ItemInput[] = [
     name: "Adamantine Arrow Head",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8825,6 +9529,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Arrow Head",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8850,6 +9556,8 @@ export const allItems: ItemInput[] = [
     name: "Titanium Arrow Head",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8875,6 +9583,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Arrow Head",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8900,6 +9610,8 @@ export const allItems: ItemInput[] = [
     name: "Flixora",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8925,6 +9637,8 @@ export const allItems: ItemInput[] = [
     name: "Becara Grass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8950,6 +9664,8 @@ export const allItems: ItemInput[] = [
     name: "Hura Root",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -8975,6 +9691,8 @@ export const allItems: ItemInput[] = [
     name: "Rigob Cloth",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9000,6 +9718,8 @@ export const allItems: ItemInput[] = [
     name: "Quava Silk",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9025,6 +9745,8 @@ export const allItems: ItemInput[] = [
     name: "Lucky Potion",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9050,6 +9772,8 @@ export const allItems: ItemInput[] = [
     name: "Luck Of The Draw",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9075,6 +9799,8 @@ export const allItems: ItemInput[] = [
     name: "Pray to the Beardie",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9100,6 +9826,8 @@ export const allItems: ItemInput[] = [
     name: "Pray to the Beardie 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9125,6 +9853,8 @@ export const allItems: ItemInput[] = [
     name: "Pray to the Beardie 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9150,6 +9880,8 @@ export const allItems: ItemInput[] = [
     name: "Clan Booster",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9175,6 +9907,8 @@ export const allItems: ItemInput[] = [
     name: "Clan Booster 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9200,6 +9934,8 @@ export const allItems: ItemInput[] = [
     name: "Clan Booster 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9225,6 +9961,8 @@ export const allItems: ItemInput[] = [
     name: "Passive Skip Boost",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9250,6 +9988,8 @@ export const allItems: ItemInput[] = [
     name: "Tiny Elixium",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9275,6 +10015,8 @@ export const allItems: ItemInput[] = [
     name: "Small Elixium",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9300,6 +10042,8 @@ export const allItems: ItemInput[] = [
     name: "Medium Elixium",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9325,6 +10069,8 @@ export const allItems: ItemInput[] = [
     name: "Large Elixium",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9350,6 +10096,8 @@ export const allItems: ItemInput[] = [
     name: "Extra Large Elixium",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9375,6 +10123,8 @@ export const allItems: ItemInput[] = [
     name: "Flux",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9400,6 +10150,8 @@ export const allItems: ItemInput[] = [
     name: "Craven Countenance",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9425,6 +10177,8 @@ export const allItems: ItemInput[] = [
     name: "Infernal Gaze",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9450,6 +10204,8 @@ export const allItems: ItemInput[] = [
     name: "Masque of Ironjaw",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9475,6 +10231,8 @@ export const allItems: ItemInput[] = [
     name: "Protection Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9500,6 +10258,8 @@ export const allItems: ItemInput[] = [
     name: "Devilish Fingers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9525,6 +10285,8 @@ export const allItems: ItemInput[] = [
     name: "Mirror Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9550,6 +10312,8 @@ export const allItems: ItemInput[] = [
     name: "Sharpened Claw",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9575,6 +10339,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Helmet Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9600,6 +10366,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Armor Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9625,6 +10393,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Tassets Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9650,6 +10420,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Gauntlets Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9675,6 +10447,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Boots Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9700,6 +10474,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Shield Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9725,6 +10501,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Amulet Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9750,6 +10528,8 @@ export const allItems: ItemInput[] = [
     name: "Master Hat Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9775,6 +10555,8 @@ export const allItems: ItemInput[] = [
     name: "Master Body Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9800,6 +10582,8 @@ export const allItems: ItemInput[] = [
     name: "Master Trousers Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9825,6 +10609,8 @@ export const allItems: ItemInput[] = [
     name: "Master Bracers Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9850,6 +10636,8 @@ export const allItems: ItemInput[] = [
     name: "Master Boots Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9875,6 +10663,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Sword Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9900,6 +10690,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Staff Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9925,6 +10717,8 @@ export const allItems: ItemInput[] = [
     name: "Godly Bow Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9950,6 +10744,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Cowl Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -9975,6 +10771,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Body Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10000,6 +10798,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Chaps Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10025,6 +10825,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Bracers Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10050,6 +10852,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Boots Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10075,6 +10879,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Helmet Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10100,6 +10906,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Armor Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10125,6 +10933,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Tassets Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10150,6 +10960,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Gauntlets Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10175,6 +10987,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Boots Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10200,6 +11014,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Shield Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10225,6 +11041,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Amulet Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10250,6 +11068,8 @@ export const allItems: ItemInput[] = [
     name: "Master Hat Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10275,6 +11095,8 @@ export const allItems: ItemInput[] = [
     name: "Master Body Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10300,6 +11122,8 @@ export const allItems: ItemInput[] = [
     name: "Master Trousers Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10325,6 +11149,8 @@ export const allItems: ItemInput[] = [
     name: "Master Bracers Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10350,6 +11176,8 @@ export const allItems: ItemInput[] = [
     name: "Master Boots Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10375,6 +11203,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Sword Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10400,6 +11230,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Staff Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10425,6 +11257,8 @@ export const allItems: ItemInput[] = [
     name: "Godly Bow Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10450,6 +11284,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Cowl Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10475,6 +11311,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Body Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10500,6 +11338,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Chaps Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10525,6 +11365,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Bracers Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10550,6 +11392,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Boots Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10575,6 +11419,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Helmet Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10600,6 +11446,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Armor Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10625,6 +11473,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Tassets Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10650,6 +11500,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Gauntlets Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10675,6 +11527,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Boots Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10700,6 +11554,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Shield Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10725,6 +11581,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Amulet Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10750,6 +11608,8 @@ export const allItems: ItemInput[] = [
     name: "Master Hat Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10775,6 +11635,8 @@ export const allItems: ItemInput[] = [
     name: "Master Body Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10800,6 +11662,8 @@ export const allItems: ItemInput[] = [
     name: "Master Trousers Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10825,6 +11689,8 @@ export const allItems: ItemInput[] = [
     name: "Master Bracers Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10850,6 +11716,8 @@ export const allItems: ItemInput[] = [
     name: "Master Boots Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10875,6 +11743,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Sword Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10900,6 +11770,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Staff Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10925,6 +11797,8 @@ export const allItems: ItemInput[] = [
     name: "Godly Bow Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10950,6 +11824,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Cowl Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -10975,6 +11851,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Body Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11000,6 +11878,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Chaps Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11025,6 +11905,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Bracers Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11050,6 +11932,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Boots Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11075,6 +11959,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Helmet Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11100,6 +11986,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Armor Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11125,6 +12013,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Tassets Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11150,6 +12040,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Gauntlets Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11175,6 +12067,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Boots Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11200,6 +12094,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Shield Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11225,6 +12121,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Amulet Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11250,6 +12148,8 @@ export const allItems: ItemInput[] = [
     name: "Master Hat Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11275,6 +12175,8 @@ export const allItems: ItemInput[] = [
     name: "Master Body Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11300,6 +12202,8 @@ export const allItems: ItemInput[] = [
     name: "Master Trousers Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11325,6 +12229,8 @@ export const allItems: ItemInput[] = [
     name: "Master Bracers Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11350,6 +12256,8 @@ export const allItems: ItemInput[] = [
     name: "Master Boots Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11375,6 +12283,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Sword Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11400,6 +12310,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Staff Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11425,6 +12337,8 @@ export const allItems: ItemInput[] = [
     name: "Godly Bow Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11450,6 +12364,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Cowl Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11475,6 +12391,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Body Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11500,6 +12418,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Chaps Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11525,6 +12445,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Bracers Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11550,6 +12472,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Boots Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11575,6 +12499,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Helmet Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11600,6 +12526,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Armor Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11625,6 +12553,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Tassets Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11650,6 +12580,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Gauntlets Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11675,6 +12607,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Boots Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11700,6 +12634,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Shield Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11725,6 +12661,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Amulet Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11750,6 +12688,8 @@ export const allItems: ItemInput[] = [
     name: "Master Hat Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11775,6 +12715,8 @@ export const allItems: ItemInput[] = [
     name: "Master Body Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11800,6 +12742,8 @@ export const allItems: ItemInput[] = [
     name: "Master Trousers Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11825,6 +12769,8 @@ export const allItems: ItemInput[] = [
     name: "Master Bracers Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11850,6 +12796,8 @@ export const allItems: ItemInput[] = [
     name: "Master Boots Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11875,6 +12823,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Sword Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11900,6 +12850,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Staff Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11925,6 +12877,8 @@ export const allItems: ItemInput[] = [
     name: "Godly Bow Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11950,6 +12904,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Cowl Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -11975,6 +12931,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Body Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12000,6 +12958,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Chaps Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12025,6 +12985,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Bracers Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12050,6 +13012,8 @@ export const allItems: ItemInput[] = [
     name: "Scorching Boots Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12075,6 +13039,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Helmet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12100,6 +13066,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Armor",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12125,6 +13093,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Tassets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12150,6 +13120,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Gauntlets",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12175,6 +13147,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12200,6 +13174,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Shield",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12225,6 +13201,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Dragonstone Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12250,6 +13228,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Hat",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12275,6 +13255,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12300,6 +13282,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Trousers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12325,6 +13309,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12350,6 +13336,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12375,6 +13363,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Sword",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12400,6 +13390,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Dragonstone Staff",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12425,6 +13417,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Godly Bow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12450,6 +13444,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Cowl",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12475,6 +13471,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Body",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12500,6 +13498,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Chaps",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12525,6 +13525,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Bracers",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12550,6 +13552,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Boots",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12575,6 +13579,8 @@ export const allItems: ItemInput[] = [
     name: "Pangsten Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12600,6 +13606,8 @@ export const allItems: ItemInput[] = [
     name: "Canvite Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12625,6 +13633,8 @@ export const allItems: ItemInput[] = [
     name: "Etched Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12650,6 +13660,8 @@ export const allItems: ItemInput[] = [
     name: "Primdiat Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12675,6 +13687,8 @@ export const allItems: ItemInput[] = [
     name: "Oculite Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12700,6 +13714,8 @@ export const allItems: ItemInput[] = [
     name: "Novian Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12725,6 +13741,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12750,6 +13768,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Helmet Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12775,6 +13795,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Armor Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12800,6 +13822,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Tassets Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12825,6 +13849,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Gauntlets Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12850,6 +13876,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Boots Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12875,6 +13903,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Shield Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12900,6 +13930,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Dragonstone Amulet Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12925,6 +13957,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Hat Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12950,6 +13984,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Body Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -12975,6 +14011,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Bracers Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13000,6 +14038,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Trousers Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13025,6 +14065,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Master Boots Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13050,6 +14092,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orichalcum Sword Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13075,6 +14119,8 @@ export const allItems: ItemInput[] = [
     name: "Dragonstone Staff Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13100,6 +14146,8 @@ export const allItems: ItemInput[] = [
     name: "Godly Bow Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13125,6 +14173,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Cowl Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13150,6 +14200,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Body Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13175,6 +14227,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Bracers Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13200,6 +14254,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Chaps Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13225,6 +14281,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Scorching Boots Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13250,6 +14308,8 @@ export const allItems: ItemInput[] = [
     name: "Fishing Chest Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13275,6 +14335,8 @@ export const allItems: ItemInput[] = [
     name: "Fishing Chest Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13300,6 +14362,8 @@ export const allItems: ItemInput[] = [
     name: "Fishing Chest Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13325,6 +14389,8 @@ export const allItems: ItemInput[] = [
     name: "Fishing Chest Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13350,6 +14416,8 @@ export const allItems: ItemInput[] = [
     name: "Fishing Chest Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13375,6 +14443,8 @@ export const allItems: ItemInput[] = [
     name: "Woodcutting Chest Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13400,6 +14470,8 @@ export const allItems: ItemInput[] = [
     name: "Woodcutting Chest Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13425,6 +14497,8 @@ export const allItems: ItemInput[] = [
     name: "Woodcutting Chest Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13450,6 +14524,8 @@ export const allItems: ItemInput[] = [
     name: "Woodcutting Chest Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13475,6 +14551,8 @@ export const allItems: ItemInput[] = [
     name: "Woodcutting Chest Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13500,6 +14578,8 @@ export const allItems: ItemInput[] = [
     name: "Mining Chest Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13525,6 +14605,8 @@ export const allItems: ItemInput[] = [
     name: "Mining Chest Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13550,6 +14632,8 @@ export const allItems: ItemInput[] = [
     name: "Mining Chest Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13575,6 +14659,8 @@ export const allItems: ItemInput[] = [
     name: "Mining Chest Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13600,6 +14686,8 @@ export const allItems: ItemInput[] = [
     name: "Mining Chest Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13625,6 +14713,8 @@ export const allItems: ItemInput[] = [
     name: "Dragon Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13650,6 +14740,8 @@ export const allItems: ItemInput[] = [
     name: "Bone Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13675,6 +14767,8 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13700,6 +14794,8 @@ export const allItems: ItemInput[] = [
     name: "Brimstone",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13725,6 +14821,8 @@ export const allItems: ItemInput[] = [
     name: "Coin",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13750,6 +14848,8 @@ export const allItems: ItemInput[] = [
     name: "Kragstyr Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13775,6 +14875,8 @@ export const allItems: ItemInput[] = [
     name: "Kragstyr Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13800,6 +14902,8 @@ export const allItems: ItemInput[] = [
     name: "Kragstyr Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13825,6 +14929,8 @@ export const allItems: ItemInput[] = [
     name: "Kragstyr Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13850,6 +14956,8 @@ export const allItems: ItemInput[] = [
     name: "Kragstyr Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13875,6 +14983,8 @@ export const allItems: ItemInput[] = [
     name: "Trick Chest 2024",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13900,6 +15010,8 @@ export const allItems: ItemInput[] = [
     name: "Treat Chest 2024",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13925,6 +15037,8 @@ export const allItems: ItemInput[] = [
     name: "Trick or Treat Key",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13950,6 +15064,8 @@ export const allItems: ItemInput[] = [
     name: "Ring of Tur",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -13975,6 +15091,8 @@ export const allItems: ItemInput[] = [
     name: "Kephri Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14000,6 +15118,8 @@ export const allItems: ItemInput[] = [
     name: "Liffyn",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14025,6 +15145,8 @@ export const allItems: ItemInput[] = [
     name: "Vanaglot",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14050,6 +15172,8 @@ export const allItems: ItemInput[] = [
     name: "Fangenstorm",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14075,6 +15199,8 @@ export const allItems: ItemInput[] = [
     name: "Alchemist's Compendium Vol I",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14100,6 +15226,8 @@ export const allItems: ItemInput[] = [
     name: "Alchemist's Compendium Vol II",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14125,6 +15253,8 @@ export const allItems: ItemInput[] = [
     name: "Alchemist's Compendium Vol III",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14150,6 +15280,8 @@ export const allItems: ItemInput[] = [
     name: "Alchemist's Compendium Vol IV",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14175,6 +15307,8 @@ export const allItems: ItemInput[] = [
     name: "Alchemist's Compendium Vol V",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14200,6 +15334,8 @@ export const allItems: ItemInput[] = [
     name: "Initiate Gatherer's Pass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14225,6 +15361,8 @@ export const allItems: ItemInput[] = [
     name: "Adept Gatherer's Pass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14250,6 +15388,8 @@ export const allItems: ItemInput[] = [
     name: "Experienced Gatherer's Pass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14275,6 +15415,8 @@ export const allItems: ItemInput[] = [
     name: "Veteran Gatherer's Pass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14300,6 +15442,8 @@ export const allItems: ItemInput[] = [
     name: "Explorer's Pass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14325,6 +15469,8 @@ export const allItems: ItemInput[] = [
     name: "Pathfinder's Pass",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14350,6 +15496,8 @@ export const allItems: ItemInput[] = [
     name: "Seeker's Pass",
     isAvailable: false,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14375,6 +15523,8 @@ export const allItems: ItemInput[] = [
     name: "Gynder's Yefir",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14400,6 +15550,8 @@ export const allItems: ItemInput[] = [
     name: "Gynder's Yefir Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14425,6 +15577,8 @@ export const allItems: ItemInput[] = [
     name: "Risgolron's Yefir",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14450,6 +15604,8 @@ export const allItems: ItemInput[] = [
     name: "Risgolron's Yefir Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14475,6 +15631,8 @@ export const allItems: ItemInput[] = [
     name: "Erudi's Yfrol",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14500,6 +15658,8 @@ export const allItems: ItemInput[] = [
     name: "Erudi's Yfrol Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14525,6 +15685,8 @@ export const allItems: ItemInput[] = [
     name: "Stregarion's Yfrol",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14550,6 +15712,8 @@ export const allItems: ItemInput[] = [
     name: "Stregarion's Yfrol Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14575,6 +15739,8 @@ export const allItems: ItemInput[] = [
     name: "Sinlorion's Wysgrif",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14600,6 +15766,8 @@ export const allItems: ItemInput[] = [
     name: "Sinlorion's Wysgrif Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14625,6 +15793,8 @@ export const allItems: ItemInput[] = [
     name: "Hudolwyr's Wysgrif",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14650,6 +15820,8 @@ export const allItems: ItemInput[] = [
     name: "Hudolwyr's Wysgrif Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14675,6 +15847,8 @@ export const allItems: ItemInput[] = [
     name: "Odlarion's Wysgrif",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14700,6 +15874,8 @@ export const allItems: ItemInput[] = [
     name: "Odlarion's Wysgrif Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14725,6 +15901,8 @@ export const allItems: ItemInput[] = [
     name: "Odlarion's Wysgrif Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14750,6 +15928,8 @@ export const allItems: ItemInput[] = [
     name: "Odlarion's Wysgrif Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14775,6 +15955,8 @@ export const allItems: ItemInput[] = [
     name: "Odlarion's Wysgrif Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14800,6 +15982,8 @@ export const allItems: ItemInput[] = [
     name: "Odlarion's Wysgrif Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14825,6 +16009,8 @@ export const allItems: ItemInput[] = [
     name: "Odlarion's Wysgrif Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14850,6 +16036,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Odlarion's Wysgrif",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14875,6 +16063,8 @@ export const allItems: ItemInput[] = [
     name: "Charcoal",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14900,6 +16090,8 @@ export const allItems: ItemInput[] = [
     name: "Primordial Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14925,6 +16117,8 @@ export const allItems: ItemInput[] = [
     name: "Aether Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14950,6 +16144,8 @@ export const allItems: ItemInput[] = [
     name: "Arcane Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -14975,6 +16171,8 @@ export const allItems: ItemInput[] = [
     name: "Astral Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15000,6 +16198,8 @@ export const allItems: ItemInput[] = [
     name: "Void Chest",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15025,6 +16225,8 @@ export const allItems: ItemInput[] = [
     name: "Effyd Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15050,6 +16252,8 @@ export const allItems: ItemInput[] = [
     name: "Effyd Kiel Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15075,6 +16279,8 @@ export const allItems: ItemInput[] = [
     name: "Haearn Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15100,6 +16306,8 @@ export const allItems: ItemInput[] = [
     name: "Haearn Kiel Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15125,6 +16333,8 @@ export const allItems: ItemInput[] = [
     name: "Ithrith Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15150,6 +16360,8 @@ export const allItems: ItemInput[] = [
     name: "Ithrith Kiel Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15175,6 +16387,8 @@ export const allItems: ItemInput[] = [
     name: "Adama Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15200,6 +16414,8 @@ export const allItems: ItemInput[] = [
     name: "Adama Kiel Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15225,6 +16441,8 @@ export const allItems: ItemInput[] = [
     name: "Rhun Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15250,6 +16468,8 @@ export const allItems: ItemInput[] = [
     name: "Rhun Kiel Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15275,6 +16495,8 @@ export const allItems: ItemInput[] = [
     name: "Vinget Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15300,6 +16522,8 @@ export const allItems: ItemInput[] = [
     name: "Vinget Kiel Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15325,6 +16549,8 @@ export const allItems: ItemInput[] = [
     name: "Deuion Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15350,6 +16576,8 @@ export const allItems: ItemInput[] = [
     name: "Deuion Kiel Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15375,6 +16603,8 @@ export const allItems: ItemInput[] = [
     name: "Deuion Kiel Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15400,6 +16630,8 @@ export const allItems: ItemInput[] = [
     name: "Deuion Kiel Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15425,6 +16657,8 @@ export const allItems: ItemInput[] = [
     name: "Deuion Kiel Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15450,6 +16684,8 @@ export const allItems: ItemInput[] = [
     name: "Deuion Kiel Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15475,6 +16711,8 @@ export const allItems: ItemInput[] = [
     name: "Deuion Kiel Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15500,6 +16738,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Deuion Kiel",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15525,6 +16765,8 @@ export const allItems: ItemInput[] = [
     name: "Effyd Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15550,6 +16792,8 @@ export const allItems: ItemInput[] = [
     name: "Effyd Cledyr Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15575,6 +16819,8 @@ export const allItems: ItemInput[] = [
     name: "Haearn Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15600,6 +16846,8 @@ export const allItems: ItemInput[] = [
     name: "Haearn Cledyr Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15625,6 +16873,8 @@ export const allItems: ItemInput[] = [
     name: "Ithrith Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15650,6 +16900,8 @@ export const allItems: ItemInput[] = [
     name: "Ithrith Cledyr Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15675,6 +16927,8 @@ export const allItems: ItemInput[] = [
     name: "Adama Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15700,6 +16954,8 @@ export const allItems: ItemInput[] = [
     name: "Adama Cledyr Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15725,6 +16981,8 @@ export const allItems: ItemInput[] = [
     name: "Rhun Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15750,6 +17008,8 @@ export const allItems: ItemInput[] = [
     name: "Rhun Cledyr Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15775,6 +17035,8 @@ export const allItems: ItemInput[] = [
     name: "Itanus Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15800,6 +17062,8 @@ export const allItems: ItemInput[] = [
     name: "Itanus Cledyr Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15825,6 +17089,8 @@ export const allItems: ItemInput[] = [
     name: "Orcalith Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15850,6 +17116,8 @@ export const allItems: ItemInput[] = [
     name: "Orcalith Cledyr Lvl 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15875,6 +17143,8 @@ export const allItems: ItemInput[] = [
     name: "Orcalith Cledyr Lvl 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15900,6 +17170,8 @@ export const allItems: ItemInput[] = [
     name: "Orcalith Cledyr Lvl 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15925,6 +17197,8 @@ export const allItems: ItemInput[] = [
     name: "Orcalith Cledyr Lvl 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15950,6 +17224,8 @@ export const allItems: ItemInput[] = [
     name: "Orcalith Cledyr Lvl 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -15975,6 +17251,8 @@ export const allItems: ItemInput[] = [
     name: "Orcalith Cledyr Fragment",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16000,6 +17278,8 @@ export const allItems: ItemInput[] = [
     name: "Infused Orcalith Cledyr",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16025,6 +17305,8 @@ export const allItems: ItemInput[] = [
     name: "Wild Strawberry",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16050,6 +17332,8 @@ export const allItems: ItemInput[] = [
     name: "Wild Cherries",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16075,6 +17359,8 @@ export const allItems: ItemInput[] = [
     name: "Wild Carrot",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16100,6 +17386,8 @@ export const allItems: ItemInput[] = [
     name: "Red Apple",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16125,6 +17413,8 @@ export const allItems: ItemInput[] = [
     name: "Peach",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16150,6 +17440,8 @@ export const allItems: ItemInput[] = [
     name: "Elder Berries",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16175,6 +17467,8 @@ export const allItems: ItemInput[] = [
     name: "Honey",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16200,6 +17494,8 @@ export const allItems: ItemInput[] = [
     name: "Fertile Soil",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16225,6 +17521,8 @@ export const allItems: ItemInput[] = [
     name: "Fools Berry Extract",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16250,6 +17548,8 @@ export const allItems: ItemInput[] = [
     name: "Golden Scarab",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16275,6 +17575,8 @@ export const allItems: ItemInput[] = [
     name: "Glimmer Leaf",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16300,6 +17602,8 @@ export const allItems: ItemInput[] = [
     name: "Riparis",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16325,6 +17629,8 @@ export const allItems: ItemInput[] = [
     name: "Shimmerweed",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16350,6 +17656,8 @@ export const allItems: ItemInput[] = [
     name: "Frost Blossom",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16375,6 +17683,8 @@ export const allItems: ItemInput[] = [
     name: "Styrgarm",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16400,6 +17710,8 @@ export const allItems: ItemInput[] = [
     name: "Ornflower",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16425,6 +17737,8 @@ export const allItems: ItemInput[] = [
     name: "Blomsbryd",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16450,6 +17764,8 @@ export const allItems: ItemInput[] = [
     name: "Purperella",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16475,6 +17791,8 @@ export const allItems: ItemInput[] = [
     name: "Lyfbloom",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16500,6 +17818,8 @@ export const allItems: ItemInput[] = [
     name: "Fool's Berry",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16525,6 +17845,8 @@ export const allItems: ItemInput[] = [
     name: "Lumelila",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16550,6 +17872,8 @@ export const allItems: ItemInput[] = [
     name: "Widow's Cherries",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16575,6 +17899,8 @@ export const allItems: ItemInput[] = [
     name: "Lindwyn Berries",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16600,6 +17926,8 @@ export const allItems: ItemInput[] = [
     name: "Alderskorn Berries",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16625,6 +17953,8 @@ export const allItems: ItemInput[] = [
     name: "Evigor Fruit",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16650,6 +17980,8 @@ export const allItems: ItemInput[] = [
     name: "Omni Key",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16675,6 +18007,8 @@ export const allItems: ItemInput[] = [
     name: "Lumelila Toxin",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16700,6 +18034,8 @@ export const allItems: ItemInput[] = [
     name: "Mithril Nail",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16725,6 +18061,8 @@ export const allItems: ItemInput[] = [
     name: "Runite Nail",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16750,6 +18088,8 @@ export const allItems: ItemInput[] = [
     name: "Orichalcum Nail",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16775,6 +18115,8 @@ export const allItems: ItemInput[] = [
     name: "Small Plank",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16800,6 +18142,8 @@ export const allItems: ItemInput[] = [
     name: "Medium Plank",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16825,6 +18169,8 @@ export const allItems: ItemInput[] = [
     name: "Large Plank",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16850,6 +18196,8 @@ export const allItems: ItemInput[] = [
     name: "Small Plot",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16875,6 +18223,8 @@ export const allItems: ItemInput[] = [
     name: "Medium Plot",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16900,6 +18250,8 @@ export const allItems: ItemInput[] = [
     name: "Large Plot",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16925,6 +18277,8 @@ export const allItems: ItemInput[] = [
     name: "Widow's Elixir",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16950,6 +18304,8 @@ export const allItems: ItemInput[] = [
     name: "Lyndwyn Elixir",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -16975,6 +18331,8 @@ export const allItems: ItemInput[] = [
     name: "Alderskorn Elixir",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17000,6 +18358,8 @@ export const allItems: ItemInput[] = [
     name: "Evigor Elixir",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17025,6 +18385,8 @@ export const allItems: ItemInput[] = [
     name: "Melee Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17050,6 +18412,8 @@ export const allItems: ItemInput[] = [
     name: "Melee Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17075,6 +18439,8 @@ export const allItems: ItemInput[] = [
     name: "Ranged Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17100,6 +18466,8 @@ export const allItems: ItemInput[] = [
     name: "Ranged Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17125,6 +18493,8 @@ export const allItems: ItemInput[] = [
     name: "Magic Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17150,6 +18520,8 @@ export const allItems: ItemInput[] = [
     name: "Magic Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17175,6 +18547,8 @@ export const allItems: ItemInput[] = [
     name: "Defence Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17200,6 +18574,8 @@ export const allItems: ItemInput[] = [
     name: "Defence Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17225,6 +18601,8 @@ export const allItems: ItemInput[] = [
     name: "Health Boost (S)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17250,6 +18628,8 @@ export const allItems: ItemInput[] = [
     name: "Health Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17275,6 +18655,8 @@ export const allItems: ItemInput[] = [
     name: "Wild Seed",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17300,6 +18682,8 @@ export const allItems: ItemInput[] = [
     name: "Wild Sprout",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17325,6 +18709,8 @@ export const allItems: ItemInput[] = [
     name: "Unknown Seed",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17350,6 +18736,8 @@ export const allItems: ItemInput[] = [
     name: "Unknown Sprout",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17375,6 +18763,8 @@ export const allItems: ItemInput[] = [
     name: "Mysterious Seed",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17400,6 +18790,8 @@ export const allItems: ItemInput[] = [
     name: "Mysterious Sprout",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17425,6 +18817,8 @@ export const allItems: ItemInput[] = [
     name: "Obscure Seed",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17450,6 +18844,8 @@ export const allItems: ItemInput[] = [
     name: "Obscure Sprout",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17475,6 +18871,8 @@ export const allItems: ItemInput[] = [
     name: "Ancient Seed",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17500,6 +18898,8 @@ export const allItems: ItemInput[] = [
     name: "Ancient Sprout",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17525,6 +18925,8 @@ export const allItems: ItemInput[] = [
     name: "Primordial Shard",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17550,6 +18952,8 @@ export const allItems: ItemInput[] = [
     name: "Aether Shard",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17575,6 +18979,8 @@ export const allItems: ItemInput[] = [
     name: "Arcane Shard",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17600,6 +19006,8 @@ export const allItems: ItemInput[] = [
     name: "Astral Shard",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17625,6 +19033,8 @@ export const allItems: ItemInput[] = [
     name: "Void Shard",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17650,6 +19060,8 @@ export const allItems: ItemInput[] = [
     name: "Omni Shard",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: true,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17675,6 +19087,8 @@ export const allItems: ItemInput[] = [
     name: "Green Ticket",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17700,6 +19114,8 @@ export const allItems: ItemInput[] = [
     name: "Blue Ticket",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17725,6 +19141,8 @@ export const allItems: ItemInput[] = [
     name: "Unidentified Dagger",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17750,6 +19168,8 @@ export const allItems: ItemInput[] = [
     name: "Unidentified Book",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17775,6 +19195,8 @@ export const allItems: ItemInput[] = [
     name: "Unidentified Crossbow",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17800,6 +19222,8 @@ export const allItems: ItemInput[] = [
     name: "Yellow Ticket",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17825,6 +19249,8 @@ export const allItems: ItemInput[] = [
     name: "Red Ticket",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17850,6 +19276,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17875,6 +19303,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Amulet",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17900,6 +19330,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Pouch",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17925,6 +19357,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Egg Tier 1",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17950,6 +19384,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Egg Tier 2",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -17975,6 +19411,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Egg Tier 3",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18000,6 +19438,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Egg Tier 4",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18025,6 +19465,8 @@ export const allItems: ItemInput[] = [
     name: "2nd Anniversary Egg Tier 5",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18050,6 +19492,8 @@ export const allItems: ItemInput[] = [
     name: "Combat Boost (M)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18075,6 +19519,8 @@ export const allItems: ItemInput[] = [
     name: "Combat Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18100,6 +19546,8 @@ export const allItems: ItemInput[] = [
     name: "Combat Boost (XL)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18125,6 +19573,8 @@ export const allItems: ItemInput[] = [
     name: "XP Boost (M)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18150,6 +19600,8 @@ export const allItems: ItemInput[] = [
     name: "XP Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18175,6 +19627,8 @@ export const allItems: ItemInput[] = [
     name: "XP Boost (XL)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18200,6 +19654,8 @@ export const allItems: ItemInput[] = [
     name: "Gathering Boost (M)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18225,6 +19681,8 @@ export const allItems: ItemInput[] = [
     name: "Gathering Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18250,6 +19708,8 @@ export const allItems: ItemInput[] = [
     name: "Gathering Boost (XL)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18275,6 +19735,8 @@ export const allItems: ItemInput[] = [
     name: "Skill Boost (M)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18300,6 +19762,8 @@ export const allItems: ItemInput[] = [
     name: "Skill Boost (L)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18325,6 +19789,116 @@ export const allItems: ItemInput[] = [
     name: "Skill Boost (XL)",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.BLIGHT_VEIN_ORE,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: false,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "BLIGHT_VEIN_ORE.json",
+    name: "Blight-Vein Ore",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.RIFT_SPORES,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: false,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RIFT_SPORES.json",
+    name: "Rift Spores",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.RIFT_FUEL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: false,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RIFT_FUEL.json",
+    name: "Rift-Charged Flux",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.RIFT_CRYSTAL,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: false,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RIFT_CRYSTAL.json",
+    name: "Phase-Crystal",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18350,6 +19924,8 @@ export const allItems: ItemInput[] = [
     name: "Chimpy Avatar",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
   {
     combatStats: {
@@ -18372,8 +19948,199 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BORDER_001_ARCANE_PORTAL.json",
-    name: "Arcane Portal Border",
+    name: "Arcane Portal",
     isAvailable: true,
     questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.SUPPORT_001_TROPHY,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "SUPPORT_001_TROPHY.json",
+    name: "First Supporter Pack Trophy",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.WQ1_LORE_PAGE_1,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "WQ1_LORE_PAGE_1.json",
+    name: "About the Rift-Sown Almanac Page 1",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: true,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.WQ1_LORE_PAGE_2,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "WQ1_LORE_PAGE_2.json",
+    name: "About the Rift-Sown Almanac Page 2",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: true,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.WQ1_LORE_PAGE_3,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "WQ1_LORE_PAGE_3.json",
+    name: "About the Rift-Sown Almanac Page 3",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: true,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.WQ1_LORE_PAGE_4,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "WQ1_LORE_PAGE_4.json",
+    name: "About the Rift-Sown Almanac Page 4",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: true,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.WQ1_LORE_PAGE_5,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: true,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "WQ1_LORE_PAGE_5.json",
+    name: "About the Rift-Sown Almanac - Supplementary Material",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: true,
+  },
+  {
+    combatStats: {
+      meleeAttack: 0,
+      magicAttack: 0,
+      rangedAttack: 0,
+      meleeDefence: 0,
+      magicDefence: 0,
+      rangedDefence: 0,
+      health: 0,
+    },
+    tokenId: EstforConstants.RIFT_COIN,
+    equipPosition: EquipPosition.NONE,
+    isTransferable: false,
+    isFullModeOnly: false,
+    skill: Skill.NONE,
+    minXP: 0,
+    healthRestored: 0,
+    boostType: BoostType.NONE,
+    boostValue: 0,
+    boostDuration: 0,
+    metadataURI: "RIFT_COIN.json",
+    name: "National Renewal Initiative Coin",
+    isAvailable: true,
+    questPrerequisiteId: 0,
+    isCollectionItem: false,
+    isQuestItem: false,
   },
 ];

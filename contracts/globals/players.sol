@@ -344,6 +344,9 @@ struct ItemInput {
   // uri
   string metadataURI;
   string name;
+  // Item classification
+  bool isCollectionItem;
+  bool isQuestItem;
 }
 
 /* Order head, neck, body, arms, legs, feet, ring, reserved1,

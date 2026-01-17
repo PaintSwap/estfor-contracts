@@ -119,14 +119,16 @@ export const avatarInfos: AvatarInfo[] = [
     startSkills: [Skill.MELEE, Skill.MAGIC],
   },
   {
-    name: "COSMETIC_001",
-    description: "",
+    name: "Chimp",
+    description:
+      "Chimpy is curious and quick-witted with a natural sensitivity to magic. Playful by nature but alert to danger, Chimpy thrives near sources of magic, where his latent power quietly grows.",
     imageURI: "9.jpg",
     startSkills: [Skill.ALCHEMY, Skill.FORGING],
   },
   {
-    name: "COSMETIC_001_EVOLVED",
-    description: "",
+    name: "Primordius",
+    description:
+      "The magic that once stirred quietly now moves with intention. Primordius wields primal power with balance and control.",
     imageURI: "10009.jpg",
     startSkills: [Skill.ALCHEMY, Skill.FORGING],
   },

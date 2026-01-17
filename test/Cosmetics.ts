@@ -8,7 +8,7 @@ import {playersFixture} from "./Players/PlayersFixture";
 import {setupBasicWoodcutting} from "./Players/utils";
 import {ZeroAddress, parseEther} from "ethers";
 
-describe.only("Cosmetics", function () {
+describe("Cosmetics", function () {
   async function deployContracts() {
     const baseFixture = await loadFixture(playersFixture);
     const {brush, alice, royaltyReceiver} = baseFixture;

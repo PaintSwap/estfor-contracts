@@ -10,11 +10,23 @@ async function main() {
   const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
   const network = await ethers.provider.getNetwork();
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
-  console.log(`Add shop items using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);
+  console.log(`Add items using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
-  const itemIds = new Set([EstforConstants.BORDER_001_ARCANE_PORTAL]);
+  const itemIds = new Set([
+    EstforConstants.BLIGHT_VEIN_ORE,
+    EstforConstants.RIFT_SPORES,
+    EstforConstants.RIFT_FUEL,
+    EstforConstants.RIFT_CRYSTAL,
+    EstforConstants.SUPPORT_001_TROPHY,
+    EstforConstants.WQ1_LORE_PAGE_1,
+    EstforConstants.WQ1_LORE_PAGE_2,
+    EstforConstants.WQ1_LORE_PAGE_3,
+    EstforConstants.WQ1_LORE_PAGE_4,
+    EstforConstants.WQ1_LORE_PAGE_5,
+    EstforConstants.RIFT_COIN,
+  ]);
 
   const items = allItems.filter((item) => itemIds.has(item.tokenId));
   if (items.length !== itemIds.size) {
