@@ -79,7 +79,12 @@ contract GlobalEvents is UUPSUpgradeable, OwnableUpgradeable {
       EndTimeBeforeStartTime()
     );
 
-    _globalEvents[eventId] = globalEventInfo;
+    _globalEvents[eventId].startTime = globalEventInfo.startTime;
+    _globalEvents[eventId].endTime = globalEventInfo.endTime;
+    _globalEvents[eventId].inputItemTokenId = globalEventInfo.inputItemTokenId;
+    _globalEvents[eventId].inputItemMaxAmount = globalEventInfo.inputItemMaxAmount;
+    _globalEvents[eventId].rewardItemTokenId = globalEventInfo.rewardItemTokenId;
+    _globalEvents[eventId].rewardItemAmountPerInput = globalEventInfo.rewardItemAmountPerInput;
     emit AddGlobalEvent(eventId, globalEventInfo);
   }
 
