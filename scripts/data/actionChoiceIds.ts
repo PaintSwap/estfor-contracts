@@ -329,7 +329,7 @@ export const allActionChoiceIdsAlchemy: number[] = [
   EstforConstants.ACTIONCHOICE_ALCHEMY_HEALTH_BOOST_POTION_L,
   EstforConstants.ACTIONCHOICE_ALCHEMY_FOOLS_BERRY_EXTRACT,
   EstforConstants.ACTIONCHOICE_ALCHEMY_LUMELILA_TOXIN,
-  EstforConstants.ACTIONCHOICE_ALCHEMY_WQ_I_II,
+  EstforConstants.ACTIONCHOICE_ALCHEMY_WQ_I_III,
 ];
 export const allActionChoiceIdsFletching: number[] = [
   EstforConstants.ACTIONCHOICE_FLETCHING_ARROW_SHAFT_FROM_LOG,

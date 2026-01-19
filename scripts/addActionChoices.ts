@@ -12,23 +12,25 @@ async function main() {
   const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
   const network = await ethers.provider.getNetwork();
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
-  console.log(`Add action choices using account: ${owner.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);
+  console.log(
+    `Add action choices using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`
+  );
   const worldActions = await ethers.getContractAt("WorldActions", WORLD_ACTIONS_ADDRESS);
 
   const newActionChoiceIds = new Set([
-    EstforConstants.ACTIONCHOICE_ALCHEMY_WQ_I_II,
-    // EstforConstants.ACTIONCHOICE_FORGING_WQ_I_V,
+    // EstforConstants.ACTIONCHOICE_ALCHEMY_WQ_I_III,
+    EstforConstants.ACTIONCHOICE_FORGING_WQ_I_V,
   ]);
 
-  const actionChoiceIndices = allActionChoiceIdsAlchemy.reduce((indices: number[], actionChoiceId, index) => {
+  const actionChoiceIndices = allActionChoiceIdsForging.reduce((indices: number[], actionChoiceId, index) => {
     if (newActionChoiceIds.has(actionChoiceId)) {
       indices.push(index);
     }
     return indices;
   }, []);
 
-  const actionChoices = actionChoiceIndices.map((index) => allActionChoicesAlchemy[index]);
-  const actionChoiceIds = actionChoiceIndices.map((index) => allActionChoiceIdsAlchemy[index]);
+  const actionChoices = actionChoiceIndices.map((index) => allActionChoicesForging[index]);
+  const actionChoiceIds = actionChoiceIndices.map((index) => allActionChoiceIdsForging[index]);
 
   if (actionChoices.length !== newActionChoiceIds.size || actionChoiceIds.length !== newActionChoiceIds.size) {
     console.error("ActionChoiceIds not found");
@@ -41,7 +43,7 @@ async function main() {
         to: ethers.getAddress(WORLD_ACTIONS_ADDRESS),
         value: "0",
         data: iface.encodeFunctionData("addBulkActionChoices", [
-          [EstforConstants.NONE],
+          [EstforConstants.ACTION_FORGING_BASE],
           [actionChoiceIds],
           [actionChoices],
         ]),
@@ -49,7 +51,11 @@ async function main() {
       });
       await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
     } else {
-      const tx = await worldActions.addBulkActionChoices([EstforConstants.NONE], [actionChoiceIds], [actionChoices]);
+      const tx = await worldActions.addBulkActionChoices(
+        [EstforConstants.ACTION_FORGING_BASE],
+        [actionChoiceIds],
+        [actionChoices]
+      );
       await tx.wait();
     }
   }
