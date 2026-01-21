@@ -1746,6 +1746,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "playerId",
         "type": "uint256"

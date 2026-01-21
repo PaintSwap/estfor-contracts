@@ -240,12 +240,13 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   }
 
   // Special handling for avatar cosmetics as the skills need to be applied to the player
-  function applyAvatarToPlayer(uint256 playerId, uint24 newAvatarId) external onlyCosmetics {
+  function applyAvatarToPlayer(address owner, uint256 playerId, uint24 newAvatarId) external onlyCosmetics {
     // If evolved, must apply evolved avatar
     if (_playerInfos[playerId].upgradedTimestamp > 0) {
       newAvatarId += uint24(EVOLVED_OFFSET);
     }
     _players.applyAvatarToPlayer(
+      owner,
       playerId,
       _avatars[newAvatarId].startSkills
     );
@@ -256,6 +257,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   function unapplyAvatarFromPlayer(address owner, uint256 playerId) external onlyCosmetics {
     uint24 avatarId = _playerInfos[playerId].avatarId;
     _players.applyAvatarToPlayer(
+      owner,
       playerId,
       _avatars[avatarId].startSkills
     );
