@@ -70,8 +70,6 @@ describe("UsageBasedSessionModule", function () {
         {name: "data", type: "bytes"},
         {name: "nonce", type: "uint256"},
         {name: "sessionDeadline", type: "uint48"},
-        {name: "module", type: "address"},
-        {name: "chainId", type: "uint256"},
       ],
     };
     const message = {
@@ -80,8 +78,6 @@ describe("UsageBasedSessionModule", function () {
       data,
       nonce,
       sessionDeadline,
-      module: moduleAddress,
-      chainId: network.chainId,
     };
 
     return sessionKey.signTypedData(domain, types, message);

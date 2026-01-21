@@ -29,7 +29,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
 
   uint48 public constant MAX_SESSION_DURATION = 30 days;
   bytes32 private constant SESSION_TYPEHASH = keccak256(
-    "UsageBasedSession(address safe,address target,bytes data,uint256 nonce,uint48 sessionDeadline,address module,uint256 chainId)"
+    "UsageBasedSession(address safe,address target,bytes data,uint256 nonce,uint48 sessionDeadline)"
   );
 
   struct GroupUsage {
@@ -117,9 +117,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
           target,
           keccak256(data),
           currentNonce,
-          session.deadline,
-          address(this),
-          block.chainid
+          session.deadline
         )
       )
     );
