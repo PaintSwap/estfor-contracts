@@ -53,7 +53,7 @@ contract Cosmetics is UUPSUpgradeable, OwnableUpgradeable {
     // Special handling for avatar cosmetics as the skills need to be applied to the player
     _equippedCosmetics[playerId][cosmeticInfo.cosmeticPosition] = itemTokenId;
     if (cosmeticInfo.cosmeticPosition == EquipPosition.AVATAR) {
-      _playerNFT.applyAvatarToPlayer(playerId, cosmeticInfo.avatarId);
+      _playerNFT.applyAvatarToPlayer(_msgSender(), playerId, cosmeticInfo.avatarId);
     }
 
     _itemNFT.burn(_msgSender(), itemTokenId, 1);

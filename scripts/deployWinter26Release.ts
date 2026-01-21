@@ -10,10 +10,18 @@ import {
   USDC_ADDRESS,
   GLOBAL_EVENT_ADDRESS,
   ITEM_NFT_ADDRESS,
+  COSMETICS_ADDRESS,
+  PLAYERS_LIBRARY_ADDRESS,
 } from "./contractAddresses";
-import {initialiseSafe, sendTransactionSetToSafe, getSafeUpgradeTransaction, verifyContracts} from "./utils";
+import {
+  initialiseSafe,
+  sendTransactionSetToSafe,
+  getSafeUpgradeTransaction,
+  verifyContracts,
+  deployPlayerImplementations,
+} from "./utils";
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
-import {Marketplace, Cosmetics, GlobalEvents, GlobalEvents__factory} from "../typechain-types";
+import {Marketplace, Cosmetics, GlobalEvents, GlobalEvents__factory, Players__factory} from "../typechain-types";
 import {cosmeticInfos} from "./data/cosmetics";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
@@ -28,50 +36,54 @@ async function main() {
 
   const timeout = 300 * 1000; // 5 minutes
 
+  const playersIface = Players__factory.createInterface();
+  const globalEventsIface = GlobalEvents__factory.createInterface();
+
   if (useSafe) {
     /* Marketplace Release */
-    // const Marketplace = await ethers.getContractFactory("Marketplace", proposer);
-    // const marketplace = (await upgrades.deployProxy(Marketplace, [
-    //   BRUSH_ADDRESS,
-    //   process.env.SAFE_ADDRESS,
-    // ])) as unknown as Marketplace;
-    // await marketplace.waitForDeployment();
-    // console.log(`marketplace = "${(await marketplace.getAddress()).toLowerCase()}"`);
+    const Marketplace = await ethers.getContractFactory("Marketplace", proposer);
+    const marketplace = (await upgrades.deployProxy(Marketplace, [
+      BRUSH_ADDRESS,
+      process.env.SAFE_ADDRESS,
+    ])) as unknown as Marketplace;
+    await marketplace.waitForDeployment();
+    console.log(`marketplace = "${(await marketplace.getAddress()).toLowerCase()}"`);
 
-    // // can verify this immediately
-    // if (network.chainId == 146n) {
-    //   await verifyContracts([await marketplace.getAddress()]);
-    // }
+    // can verify this immediately
+    if (network.chainId == 146n) {
+      await verifyContracts([await marketplace.getAddress()]);
+    }
 
     const petNFTLibrary = await ethers.getContractAt("PetNFTLibrary", PET_NFT_LIBRARY_ADDRESS);
     const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
+    const playersLibrary = await ethers.getContractAt("PlayersLibrary", PLAYERS_LIBRARY_ADDRESS);
     const itemNFTLibrary = await ethers.deployContract("ItemNFTLibrary", proposer);
     await itemNFTLibrary.waitForDeployment();
     console.log(`itemNFTLibrary = "${await itemNFTLibrary.getAddress()}"`);
 
-    // const PetNFT = await ethers.getContractFactory("PetNFT", {
-    //   libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
-    //   signer: proposer,
-    // });
-    // const petNFT = (await upgrades.prepareUpgrade(PET_NFT_ADDRESS, PetNFT, {
-    //   kind: "uups",
-    //   unsafeAllow: ["external-library-linking"],
-    //   timeout,
-    // })) as string;
-    // console.log(`petNFT = "${petNFT.toLowerCase()}"`);
+    const PetNFT = await ethers.getContractFactory("PetNFT", {
+      libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
+      signer: proposer,
+    });
+    const petNFT = (await upgrades.prepareUpgrade(PET_NFT_ADDRESS, PetNFT, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    })) as string;
+    console.log(`petNFT = "${petNFT.toLowerCase()}"`);
     /* Marketplace Release */
 
     /* Cosmetic Release */
-    // const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    //   libraries: {EstforLibrary: await estforLibrary.getAddress()},
-    //   signer: proposer,
-    // });
-    // const playerNFT = (await upgrades.prepareUpgrade(PLAYER_NFT_ADDRESS, PlayerNFT, {
-    //   kind: "uups",
-    //   unsafeAllow: ["external-library-linking"],
-    //   timeout,
-    // })) as string;
-    // console.log(`playerNFT = "${playerNFT.toLowerCase()}"`);
+    const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
+      signer: proposer,
+    });
+    const playerNFT = (await upgrades.prepareUpgrade(PLAYER_NFT_ADDRESS, PlayerNFT, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    })) as string;
+    console.log(`playerNFT = "${playerNFT.toLowerCase()}"`);
 
     const Players = await ethers.getContractFactory("Players", proposer);
     const players = (await upgrades.prepareUpgrade(PLAYERS_ADDRESS, Players, {
@@ -81,23 +93,32 @@ async function main() {
     })) as string;
     console.log(`players = "${players.toLowerCase()}"`);
 
-    // const Cosmetics = await ethers.getContractFactory("Cosmetics", proposer);
-    // const cosmetics = (await upgrades.deployProxy(Cosmetics, [
-    //   process.env.SAFE_ADDRESS,
-    //   ITEM_NFT_ADDRESS,
-    //   PLAYER_NFT_ADDRESS,
-    // ])) as unknown as Cosmetics;
-    // await cosmetics.waitForDeployment();
-    // console.log(`cosmetics = "${(await cosmetics.getAddress()).toLowerCase()}"`);
+    const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
+      await deployPlayerImplementations(await playersLibrary.getAddress(), proposer);
 
-    // Shop
-    // const Shop = await ethers.getContractFactory("Shop", proposer);
-    // const shop = (await upgrades.prepareUpgrade(SHOP_ADDRESS, Shop, {
+    const Cosmetics = await ethers.getContractFactory("Cosmetics", proposer);
+    const cosmetics = (await upgrades.deployProxy(Cosmetics, [
+      process.env.SAFE_ADDRESS,
+      ITEM_NFT_ADDRESS,
+      PLAYER_NFT_ADDRESS,
+    ])) as unknown as Cosmetics;
+    await cosmetics.waitForDeployment();
+    console.log(`cosmetics = "${(await cosmetics.getAddress()).toLowerCase()}"`);
+    // const cosmetics = (await upgrades.prepareUpgrade(COSMETICS_ADDRESS, Cosmetics, {
     //   kind: "uups",
-    //   unsafeAllow: ["external-library-linking"],
+    //   unsafeAllow: ["delegatecall"],
     //   timeout,
     // })) as string;
-    // console.log(`Shop new implementation = "${shop}"`);
+    // console.log(`cosmetics = "${cosmetics.toLowerCase()}"`);
+
+    // Shop
+    const Shop = await ethers.getContractFactory("Shop", proposer);
+    const shop = (await upgrades.prepareUpgrade(SHOP_ADDRESS, Shop, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    })) as string;
+    console.log(`Shop new implementation = "${shop}"`);
 
     // ItemNFT
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {
@@ -111,25 +132,25 @@ async function main() {
     console.log(`itemnft = "${itemnft.toLowerCase()}"`);
 
     // can verify this immediately
-    // if (network.chainId == 146n) {
-    //   await verifyContracts([await cosmetics.getAddress()]);
-    // }
+    if (network.chainId == 146n) {
+      await verifyContracts([await cosmetics.getAddress()]);
+    }
     /* Cosmetic Release */
 
     /* Global Events Release */
-    // const GlobalEvents = await ethers.getContractFactory("GlobalEvents", proposer);
-    // const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
-    //   process.env.SAFE_ADDRESS,
-    //   PLAYERS_ADDRESS,
-    //   ITEM_NFT_ADDRESS,
-    // ])) as unknown as GlobalEvents;
-    // await globalEvents.waitForDeployment();
-    // console.log(`globalEvents = "${(await globalEvents.getAddress()).toLowerCase()}"`);
+    const GlobalEvents = await ethers.getContractFactory("GlobalEvents", proposer);
+    const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
+      process.env.SAFE_ADDRESS,
+      PLAYERS_ADDRESS,
+      ITEM_NFT_ADDRESS,
+    ])) as unknown as GlobalEvents;
+    await globalEvents.waitForDeployment();
+    console.log(`globalEvents = "${(await globalEvents.getAddress()).toLowerCase()}"`);
 
-    // // can verify this immediately
-    // if (network.chainId == 146n) {
-    //   await verifyContracts([await globalEvents.getAddress()]);
-    // }
+    // can verify this immediately
+    if (network.chainId == 146n) {
+      await verifyContracts([await globalEvents.getAddress()]);
+    }
 
     const transactionSet: MetaTransactionData[] = [];
     const iface = new ethers.Interface([
@@ -144,91 +165,115 @@ async function main() {
       "function approve(address spender, uint256 amount)",
     ]);
 
-    // transactionSet.push(getSafeUpgradeTransaction(PLAYER_NFT_ADDRESS, playerNFT));
-    // transactionSet.push(getSafeUpgradeTransaction(PET_NFT_ADDRESS, petNFT));
+    // transactionSet.push(getSafeUpgradeTransaction(COSMETICS_ADDRESS, cosmetics));
+    transactionSet.push(getSafeUpgradeTransaction(PLAYER_NFT_ADDRESS, playerNFT));
+    transactionSet.push(getSafeUpgradeTransaction(PET_NFT_ADDRESS, petNFT));
     transactionSet.push(getSafeUpgradeTransaction(PLAYERS_ADDRESS, players));
-    // transactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
+    transactionSet.push(getSafeUpgradeTransaction(SHOP_ADDRESS, shop));
     transactionSet.push(getSafeUpgradeTransaction(ITEM_NFT_ADDRESS, itemnft));
 
-    // Set addresses and approvals
-    // transactionSet.push({
-    //   to: ethers.getAddress(ITEM_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setApproved", [[await cosmetics.getAddress()], true]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(ITEM_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setApproved", [[await globalEvents.getAddress()], true]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(PLAYER_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setMarketplaceAddress", [await marketplace.getAddress()]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(PLAYER_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setCosmeticsAddress", [await cosmetics.getAddress()]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(PLAYER_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setApprovalForAll", [await marketplace.getAddress(), true]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(PET_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setMarketplaceAddress", [await marketplace.getAddress()]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(PET_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setApprovalForAll", [await marketplace.getAddress(), true]),
-    //   operation: OperationType.Call,
-    // });
+    transactionSet.push({
+      to: ethers.getAddress(PLAYERS_ADDRESS),
+      value: "0",
+      data: playersIface.encodeFunctionData("setImpls", [
+        await playersImplQueueActions.getAddress(),
+        await playersImplProcessActions.getAddress(),
+        await playersImplRewards.getAddress(),
+        await playersImplMisc.getAddress(),
+        await playersImplMisc1.getAddress(),
+      ]),
+      operation: OperationType.Call,
+    });
 
-    // transactionSet.push({
-    //   to: ethers.getAddress(SHOP_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setSupporterPackToken", [USDC_ADDRESS]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: ethers.getAddress(BRUSH_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("approve", [SHOP_ADDRESS, ethers.MaxUint256]),
-    //   operation: OperationType.Call,
-    // });
+    // Set addresses and approvals
+    transactionSet.push({
+      to: ethers.getAddress(ITEM_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setApproved", [[await cosmetics.getAddress()], true]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(ITEM_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setApproved", [[await globalEvents.getAddress()], true]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(PLAYER_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setMarketplaceAddress", [await marketplace.getAddress()]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(PLAYER_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setCosmeticsAddress", [await cosmetics.getAddress()]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(PLAYER_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setApprovalForAll", [await marketplace.getAddress(), true]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(PET_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setMarketplaceAddress", [await marketplace.getAddress()]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(PET_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setApprovalForAll", [await marketplace.getAddress(), true]),
+      operation: OperationType.Call,
+    });
+
+    transactionSet.push({
+      to: ethers.getAddress(SHOP_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setSupporterPackToken", [USDC_ADDRESS]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(BRUSH_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("approve", [SHOP_ADDRESS, ethers.MaxUint256]),
+      operation: OperationType.Call,
+    });
 
     // Change for live release
-    // transactionSet.push({
-    //   to: ethers.getAddress(PLAYER_NFT_ADDRESS),
-    //   value: "0",
-    //   data: iface.encodeFunctionData("setAvatars", [
-    //     [9, 10009],
-    //     [
-    //       ["COSMETIC_001", "", "9.jpg", [Skill.ALCHEMY, Skill.FORGING]],
-    //       ["COSMETIC_001_EVOLVED", "", "10009.jpg", [Skill.ALCHEMY, Skill.FORGING]],
-    //     ],
-    //   ]),
-    //   operation: OperationType.Call,
-    // });
-    // transactionSet.push({
-    //   to: await cosmetics.getAddress(),
-    //   value: "0",
-    //   data: Cosmetics.interface.encodeFunctionData("setCosmetics", [
-    //     cosmeticInfos.map((c) => c.itemTokenId),
-    //     cosmeticInfos.map((c) => [c.cosmeticPosition, c.itemTokenId, c.avatarId]),
-    //   ]),
-    //   operation: OperationType.Call,
-    // });
+    transactionSet.push({
+      to: ethers.getAddress(PLAYER_NFT_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("setAvatars", [
+        [9, 10009],
+        [
+          [
+            "Chimp",
+            "Chimpy is curious and quick-witted with a natural sensitivity to magic. Playful by nature but alert to danger, Chimpy thrives near sources of magic, where his latent power quietly grows.",
+            "9.jpg",
+            [Skill.ALCHEMY, Skill.FORGING],
+          ],
+          [
+            "Primordius",
+            "The magic that once stirred quietly now moves with intention. Primordius wields primal power with balance and control.",
+            "10009.jpg",
+            [Skill.ALCHEMY, Skill.FORGING],
+          ],
+        ],
+      ]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: await cosmetics.getAddress(),
+      value: "0",
+      data: Cosmetics.interface.encodeFunctionData("setCosmetics", [
+        cosmeticInfos.map((c) => c.itemTokenId),
+        cosmeticInfos.map((c) => [c.cosmeticPosition, c.itemTokenId, c.avatarId]),
+      ]),
+      operation: OperationType.Call,
+    });
     transactionSet.push({
       to: ethers.getAddress(SHOP_ADDRESS),
       value: "0",
@@ -252,10 +297,9 @@ async function main() {
       operation: OperationType.Call,
     });
 
-    const globalEventsIface = GlobalEvents__factory.createInterface();
     transactionSet.push({
-      // to: ethers.getAddress(await globalEvents.getAddress()),
-      to: ethers.getAddress(GLOBAL_EVENT_ADDRESS),
+      to: ethers.getAddress(await globalEvents.getAddress()),
+      // to: ethers.getAddress(GLOBAL_EVENT_ADDRESS),
       value: "0",
       data: globalEventsIface.encodeFunctionData("addGlobalEvents", [
         [1],

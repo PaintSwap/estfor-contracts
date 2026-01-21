@@ -17,11 +17,11 @@ contract PlayersImplProcessActions is PlayersBase {
   using CombatStyleLibrary for CombatStyle;
 
   function processActionsAndSetState(
+    address from,
     uint256 playerId
   ) external returns (QueuedAction[] memory remainingQueuedActions, Attire[] memory remainingAttire) {
     PendingQueuedActionData memory currentActionProcessed;
-    (remainingQueuedActions, currentActionProcessed) = processActions(msg.sender, playerId);
-
+    (remainingQueuedActions, currentActionProcessed) = processActions(from, playerId);
     Player storage player = _players[playerId];
     if (remainingQueuedActions.length != 0) {
       player.currentActionStartTimestamp = uint40(block.timestamp);
@@ -34,7 +34,7 @@ contract PlayersImplProcessActions is PlayersBase {
     for (uint256 i = 0; i < remainingQueuedActions.length; ++i) {
       remainingAttire[i] = _attire[playerId][remainingQueuedActions[i].queueId];
     }
-    _setActionQueue(msg.sender, playerId, remainingQueuedActions, remainingAttire, block.timestamp);
+    _setActionQueue(from, playerId, remainingQueuedActions, remainingAttire, block.timestamp);
   }
 
   function processActions(

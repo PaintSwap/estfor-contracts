@@ -373,4 +373,40 @@ describe("Cosmetics", function () {
       );
     }
   });
+
+  it("should process actions when applying new cosmetic", async () => {
+    const {brush, cosmetics, itemNFT, players, playerNFT, worldActions, bob} = await loadFixture(deployContracts);
+
+    const newPlayerId = await createPlayer(playerNFT, 1, bob, "New name", true);
+    const woodcuttingAvatarId = 10;
+    await playerNFT.setAvatars(
+      [woodcuttingAvatarId],
+      [
+        {
+          name: "Woodcutting champ",
+          description: "",
+          imageURI: "10010.jpg",
+          startSkills: [Skill.WOODCUTTING, Skill.NONE],
+        },
+      ]
+    );
+    await cosmetics.setCosmetics(
+      [2],
+      [{itemTokenId: 2, cosmeticPosition: EstforTypes.EquipPosition.AVATAR, avatarId: woodcuttingAvatarId}]
+    );
+
+    await itemNFT.mint(bob, 2, 1);
+
+    const {queuedAction} = await setupBasicWoodcutting(itemNFT, worldActions);
+    await players.connect(bob).startActions(newPlayerId, [queuedAction], EstforTypes.ActionQueueStrategy.OVERWRITE);
+    await time.increase(queuedAction.timespan);
+
+    const pendingQueuedActionState = await players.getPendingQueuedActionState(bob, newPlayerId);
+    expect(pendingQueuedActionState.actionMetadatas[0].xpGained).to.eq(Math.floor(queuedAction.timespan));
+
+    await cosmetics.connect(bob).applyCosmetic(newPlayerId, 2);
+
+    const xp = await players.getPlayerXP(newPlayerId, EstforTypes.Skill.WOODCUTTING);
+    expect(xp).to.eq(BigInt(Math.floor(queuedAction.timespan)));
+  });
 });
