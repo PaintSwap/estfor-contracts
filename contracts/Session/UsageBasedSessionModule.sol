@@ -25,6 +25,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
 
   event SessionEnabled(address indexed safe, address indexed sessionKey, uint48 deadline);
   event SessionRevoked(address indexed safe);
+  event SessionNonceIncremented(address indexed safe, uint256 newNonce);
 
   uint48 public constant MAX_SESSION_DURATION = 30 days;
   bytes32 private constant SESSION_TYPEHASH = keccak256(
@@ -131,6 +132,8 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     // 4. Verify Signature & Execute via Safe
     bool success = ISafe(safe).execTransactionFromModule(target, 0, data, Enum.Operation.Call);
     require(success, ModuleCallFailed());
+
+    emit SessionNonceIncremented(safe, user.nonce);
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
