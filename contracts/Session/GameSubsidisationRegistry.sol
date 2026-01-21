@@ -3,9 +3,9 @@ pragma solidity ^0.8.28;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {IGameRegistry} from "../interfaces/IGameRegistry.sol";
+import {IGameSubsidisationRegistry} from "../interfaces/IGameSubsidisationRegistry.sol";
 
-contract GameRegistry is UUPSUpgradeable, OwnableUpgradeable, IGameRegistry {
+contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGameSubsidisationRegistry {
   // Group 0 = Disabled, Group 1 = Basic, Group 2 = Combat, etc.
   mapping(address => mapping(bytes4 => uint256)) private _functionToLimitGroup;
   mapping(uint256 => uint256) private _groupDailyLimits;

@@ -39,6 +39,8 @@ import {
   Bridge,
   ActivityPoints,
   GlobalEvents,
+  GameSubsidisationRegistry,
+  UsageBasedSessionModule,
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -441,6 +443,19 @@ export const playersFixture = async function () {
       kind: "uups",
     }
   )) as unknown as PVPBattleground;
+
+  const GameSubsidisationRegistry = await ethers.getContractFactory("GameSubsidisationRegistry");
+  const gameSubsidisationRegistry = (await upgrades.deployProxy(GameSubsidisationRegistry, [owner.address], {
+    kind: "uups",
+  })) as unknown as GameSubsidisationRegistry;
+  const UsageBasedSessionModule = await ethers.getContractFactory("UsageBasedSessionModule");
+  const usageBasedSessionModule = (await upgrades.deployProxy(
+    UsageBasedSessionModule,
+    [owner.address, await gameSubsidisationRegistry.getAddress()],
+    {
+      kind: "uups",
+    }
+  )) as unknown as UsageBasedSessionModule;
 
   const spawnRaidCooldown = 8 * 3600; // 8 hours
   const maxRaidCombatants = 20;
@@ -852,5 +867,7 @@ export const playersFixture = async function () {
     cosmeticId,
     cosmeticInfo,
     globalEvents,
+    gameSubsidisationRegistry,
+    usageBasedSessionModule,
   };
 };

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-interface IGameRegistry {
+interface IGameSubsidisationRegistry {
 
   function functionToLimitGroup(address _contract, bytes4 _selector) external view returns (uint256);
   function groupDailyLimits(uint256 _groupId) external view returns (uint256);

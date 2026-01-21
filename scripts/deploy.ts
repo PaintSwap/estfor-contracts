@@ -43,6 +43,8 @@ import {
   ActivityPoints,
   Cosmetics,
   GlobalEvents,
+  GameSubsidisationRegistry,
+  UsageBasedSessionModule,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -913,6 +915,27 @@ async function main() {
   )) as unknown as CombatantsHelper;
   await combatantsHelper.waitForDeployment();
   console.log(`combatantsHelper = "${(await combatantsHelper.getAddress()).toLowerCase()}"`);
+
+  // add Safe session module
+  const GameSubsidisationRegistry = await ethers.getContractFactory("GameSubsidisationRegistry");
+  const gameSubsidisationRegistry = (await upgrades.deployProxy(GameSubsidisationRegistry, [owner.address], {
+    kind: "uups",
+    timeout,
+  })) as unknown as GameSubsidisationRegistry;
+  await gameSubsidisationRegistry.waitForDeployment();
+  console.log(`gameSubsidisationRegistry = "${(await gameSubsidisationRegistry.getAddress()).toLowerCase()}"`);
+
+  const UsageBasedSessionModule = await ethers.getContractFactory("UsageBasedSessionModule");
+  const usageBasedSessionModule = (await upgrades.deployProxy(
+    UsageBasedSessionModule,
+    [owner.address, await gameSubsidisationRegistry.getAddress()],
+    {
+      kind: "uups",
+      timeout,
+    }
+  )) as unknown as UsageBasedSessionModule;
+  await usageBasedSessionModule.waitForDeployment();
+  console.log(`usageBasedSessionModule = "${(await usageBasedSessionModule.getAddress()).toLowerCase()}"`);
 
   await upgrades.upgradeProxy(await clans.getAddress(), Clans, {
     call: {fn: "initializeV2", args: [await combatantsHelper.getAddress()]},
