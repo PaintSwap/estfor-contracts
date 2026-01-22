@@ -13741,7 +13741,7 @@ export const allItems: ItemInput[] = [
     name: "1st Anniversary Ring",
     isAvailable: true,
     questPrerequisiteId: 0,
-    isCollectionItem: true,
+    isCollectionItem: false,
     isQuestItem: false,
   },
   {
