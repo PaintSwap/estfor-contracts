@@ -1,4 +1,4 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {loadFixture, setNextBlockBaseFeePerGas} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {GameSubsidisationRegistry, UsageBasedSessionModule, PlayerNFT} from "../../typechain-types";
@@ -31,6 +31,9 @@ describe("UsageBasedSessionModule", function () {
     await gameSubsidisationRegistry.setFunctionGroup(await target.getAddress(), selector, 1);
     await gameSubsidisationRegistry.setGroupLimit(1, groupLimit);
     const sessionKey = ethers.Wallet.createRandom();
+
+    await usageBasedSessionModule.setWhitelistedSigner([owner.address], true);
+    await owner.sendTransaction({to: await usageBasedSessionModule.getAddress(), value: ethers.parseEther("1")});
 
     await safe.callEnableSession(usageBasedSessionModule, sessionKey.address, 3600);
     const session = await usageBasedSessionModule.getSession(await safe.getAddress());
@@ -315,6 +318,68 @@ describe("UsageBasedSessionModule", function () {
         module.execute(await safe.getAddress(), await target.getAddress(), data, sig2)
       ).to.be.revertedWithCustomError(module, "GroupLimitReached");
     });
+
+    it("fails if signer is not whitelisted", async () => {
+      const {sessionKey, safe, target, module, sessionDeadline} = await setupSession(2);
+      const [, other] = await ethers.getSigners();
+
+      const data = target.interface.encodeFunctionData("doAction");
+      const signature = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
+
+      // Attempt to execute with 'other' (not whitelisted)
+      await expect(
+        module.connect(other).execute(await safe.getAddress(), await target.getAddress(), data, signature)
+      ).to.be.revertedWithCustomError(module, "UnauthorizedSigner");
+    });
+
+    it("refunds gas to the whitelisted signer", async () => {
+      const {sessionKey, safe, target, module, sessionDeadline} = await setupSession(2);
+      const [, otherWhitelisted] = await ethers.getSigners();
+
+      await module.setWhitelistedSigner([otherWhitelisted.address], true);
+
+      const data = target.interface.encodeFunctionData("doAction");
+      const signature = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
+
+      const gasPrice = ethers.parseUnits("20", "gwei");
+      // set network gas price
+      await setNextBlockBaseFeePerGas(gasPrice);
+
+      const balanceBefore = await ethers.provider.getBalance(otherWhitelisted.address);
+      const tx = await module
+        .connect(otherWhitelisted)
+        .execute(await safe.getAddress(), await target.getAddress(), data, signature, {gasPrice});
+      const receipt = await tx.wait();
+      const balanceAfter = await ethers.provider.getBalance(otherWhitelisted.address);
+
+      // balanceAfter = balanceBefore - gasUsedInTx + refund
+      // There's still a tiny cost because gasUsedInTx > gasUsedInModule (some overhead not covered)
+      // but it should be very close.
+
+      expect(balanceAfter).to.be.closeTo(balanceBefore, ethers.parseEther("0.001"));
+      expect(balanceAfter).to.be.gte(balanceBefore - receipt!.gasUsed * receipt!.gasPrice);
+    });
+  });
+
+  describe("Whitelisting", function () {
+    it("allows owner to whitelist signers", async () => {
+      const {module} = await setupSession(2);
+      const [, other] = await ethers.getSigners();
+
+      await expect(module.setWhitelistedSigner([other.address], true))
+        .to.emit(module, "WhitelistedSignersUpdated")
+        .withArgs([other.address], true);
+    });
+
+    it("prevents non-owner from whitelisting signers", async () => {
+      const {module} = await setupSession(2);
+      const [, other] = await ethers.getSigners();
+
+      await expect(module.connect(other).setWhitelistedSigner([other.address], true)).to.be.revertedWithCustomError(
+        module,
+        "OwnableUnauthorizedAccount"
+      );
+    });
   });
 
   describe("PlayerNFT integration", function () {
@@ -340,6 +405,9 @@ describe("UsageBasedSessionModule", function () {
       await gameSubsidisationRegistry.setFunctionGroup(await playerNFT.getAddress(), selector, 1);
       await gameSubsidisationRegistry.setGroupLimit(1, groupLimit);
       const sessionKey = ethers.Wallet.createRandom();
+
+      await usageBasedSessionModule.setWhitelistedSigner([owner.address], true);
+      await owner.sendTransaction({to: await usageBasedSessionModule.getAddress(), value: ethers.parseEther("1")});
 
       await safe.callEnableSession(usageBasedSessionModule, sessionKey.address, 3600);
       const session = await usageBasedSessionModule.getSession(await safe.getAddress());

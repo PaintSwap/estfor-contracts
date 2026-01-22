@@ -22,12 +22,16 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   error ZeroSessionKey();
   error InvalidCallData();
   error ModuleCallFailed();
+  error UnauthorizedSigner();
+  error RefundFailed();
 
   event SessionEnabled(address indexed safe, address indexed sessionKey, uint48 deadline);
   event SessionRevoked(address indexed safe);
   event SessionNonceIncremented(address indexed safe, uint256 newNonce);
+  event WhitelistedSignersUpdated(address[] signers, bool whitelisted);
 
   uint48 public constant MAX_SESSION_DURATION = 30 days;
+  uint256 public constant GAS_OVERHEAD = 30000; // 21000 base tx + 9k transfer
   bytes32 private constant SESSION_TYPEHASH = keccak256(
     "UsageBasedSession(address safe,address target,bytes data,uint256 nonce,uint48 sessionDeadline)"
   );
@@ -50,6 +54,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   IGameSubsidisationRegistry private _registry;
   mapping(address => Session) private _sessions; // Safe => Session
   mapping(address => UserUsage) private _usage; // Safe => Usage
+  mapping(address => bool) private _whitelistedSigners;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -84,6 +89,8 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   }
 
   function execute(address safe, address target, bytes calldata data, bytes calldata signature) external {
+    uint256 startGas = gasleft();
+    require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
     require(data.length >= 4, InvalidCallData());
 
     // 1. Basic Session Check
@@ -132,11 +139,28 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     require(success, ModuleCallFailed());
 
     emit SessionNonceIncremented(safe, user.nonce);
+
+    uint256 gasUsed = startGas - gasleft() + GAS_OVERHEAD + (data.length * 16) + (signature.length * 16);
+    uint256 refundAmount = gasUsed * tx.gasprice;
+    if (refundAmount > 0) {
+      (bool refundSuccess, ) = msg.sender.call{value: refundAmount}(""); // Refund the relayer directly
+      require(refundSuccess, RefundFailed());
+    }
+  }
+
+  function setWhitelistedSigner(address[] calldata signers, bool whitelisted) external onlyOwner {
+    for (uint256 i = 0; i < signers.length; i++) {
+      _whitelistedSigners[signers[i]] = whitelisted;
+    }
+    emit WhitelistedSignersUpdated(signers, whitelisted);
   }
 
   function getSession(address safe) external view returns (Session memory) {
     return _sessions[safe];
   }
+
+  receive() external payable {}
+  fallback() external payable {}
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
