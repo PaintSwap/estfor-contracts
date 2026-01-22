@@ -210,6 +210,11 @@
   },
   {
     "inputs": [],
+    "name": "NotCosmetics",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInWhitelist",
     "type": "error"
   },
@@ -314,6 +319,25 @@
       }
     ],
     "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAvatarId",
+        "type": "uint256"
+      }
+    ],
+    "name": "EditAvatar",
     "type": "event"
   },
   {
@@ -711,6 +735,29 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint24",
+        "name": "newAvatarId",
+        "type": "uint24"
+      }
+    ],
+    "name": "applyAvatarToPlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "account",
         "type": "address"
       },
@@ -904,6 +951,11 @@
             "internalType": "uint40",
             "name": "upgradedTimestamp",
             "type": "uint40"
+          },
+          {
+            "internalType": "uint24",
+            "name": "appliedAvatarId",
+            "type": "uint24"
           }
         ],
         "internalType": "struct PlayerInfo",
@@ -1054,54 +1106,6 @@
       }
     ],
     "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "playerId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "avatarId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "heroName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "discord",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "twitter",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "telegram",
-        "type": "string"
-      },
-      {
-        "internalType": "bool",
-        "name": "isUpgrade",
-        "type": "bool"
-      }
-    ],
-    "name": "mintBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1351,6 +1355,19 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "cosmeticsAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setCosmeticsAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "dev",
         "type": "address"
       }
@@ -1382,6 +1399,19 @@
       }
     ],
     "name": "setImageBaseUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "marketplaceAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setMarketplaceAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1508,6 +1538,24 @@
       }
     ],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "unapplyAvatarFromPlayer",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -50,6 +50,10 @@ let pvpBattleground;
 let raids;
 let bridge;
 let activityPoints;
+let marketplace;
+let cosmetics;
+let usdc;
+let globalEvent;
 
 // Third party stuff chain specific addresses
 const chainId = process.env.CHAIN_ID;
@@ -59,6 +63,7 @@ if (chainId == "146") {
   vrf = "0x6E3efcB244e74Cb898A7961061fAA43C3cf79691";
   router = "0xcC6169aA1E879d3a4227536671F85afdb2d23fAD";
   paintSwapMarketplaceWhitelist = "0xc1dd8640b3acbc34a228f632ef9bea39dcc7b0ce";
+  usdc = "0x29219dd400f2Bf60E5a23d13Be72B486D4038894";
 } else {
   router = "0x";
   brush = "0x";
@@ -66,6 +71,7 @@ if (chainId == "146") {
   vrf = "0x";
   router = "0x";
   paintSwapMarketplaceWhitelist = "0x";
+  usdc = "0x";
 }
 
 if (!isBeta) {
@@ -114,6 +120,9 @@ if (!isBeta) {
   bankRegistry = "0xf213febd3889c5bf18086356e7eff79e2a9fe391";
   bankFactory = "0x76af5869f1b902f7a16c128a1daa7734819ec327";
   activityPoints = "0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2";
+  marketplace = "";
+  cosmetics = "";
+  globalEvent = "";
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -123,7 +132,7 @@ if (!isBeta) {
   shop = "0xb3778f2c24d94e3c7cfe608388bd35bba9401caa";
   royaltyReceiver = "0x5fce65360e0acdfcec0153bda8c412a7631d47a2";
   adminAccess = "0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57";
-  itemNFTLibrary = "0x8ef4472a1792ae0c326d50c82145d0e0716aed0f";
+  itemNFTLibrary = "0x593f115a4d07b86cf507C01678220b9136fAfa13";
   itemNFT = "0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5";
   bazaar = "0xae4bd229721ff40c07162c1720e060a2a5c89ff6";
   estforLibrary = "0x96977118842d6f209f9442e76d7de04d393480d8";
@@ -135,11 +144,11 @@ if (!isBeta) {
   petNFTLibrary = "0xc782815771443b1007a1ee92483ee9ff907dad0d";
   petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
   playersLibrary = "0xc9ceda474642e39f05c3e8fed75b3f45ed4ae210";
-  playersImplQueueActions = "0x1a37b0d9e4cd39fa4023c0cda09e0a9430290c20";
-  playersImplProcessActions = "0xf01c2d718e6a26dcbdf9130594ebf8de6794f120";
-  playersImplRewards = "0x26fb9ac5f3db89ab552ec381602fc4c4d5336b1d";
-  playersImplMisc = "0x98b407d605ec06ededac1a192441835018f66662";
-  playersImplMisc1 = "0x57fed52dd759459c27e9a7f767a4f0b831ad96ab";
+  playersImplQueueActions = "0x9669c88141d7902e00db0b09d9f3de2d0dea39f3";
+  playersImplProcessActions = "0xa1915897aeac20dd40dc9712bdda672585299763";
+  playersImplRewards = "0x8d25433bb482fa6df6a4bc79752bbad0fb74b5a9";
+  playersImplMisc = "0xe078e54a3df10764bf51b3009205cd547e1a68f6";
+  playersImplMisc1 = "0x8be5a4253b3f43758ae748ef21e1cc86a046af1a";
   players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
   promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
   promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";
@@ -160,6 +169,9 @@ if (!isBeta) {
   bankRegistry = "0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6";
   bankFactory = "0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c";
   activityPoints = "0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a";
+  marketplace = "0x3935866043766b86f30593bd17a787cc0105f7e0";
+  cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
+  globalEvent = "0x8d61f3135a9f39b685b9765976e6a0f0572aeca5";
 }
 
 export const BRIDGE_ADDRESS = bridge;
@@ -217,6 +229,10 @@ export const WFTM_ADDRESS = wftm;
 export const BRUSH_ADDRESS = brush;
 export const ROUTER_ADDRESS = router;
 export const PAINTSWAP_MARKETPLACE_WHITELIST_ADDRESS = paintSwapMarketplaceWhitelist;
+export const MARKETPLACE_ADDRESS = marketplace;
+export const COSMETICS_ADDRESS = cosmetics;
+export const USDC_ADDRESS = usdc;
+export const GLOBAL_EVENT_ADDRESS = globalEvent;
 
 // VRF
 export const VRF_ADDRESS = vrf;

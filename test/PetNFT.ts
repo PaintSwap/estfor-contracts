@@ -8,13 +8,7 @@ import {PetNFT} from "../typechain-types";
 import {getXPFromLevel, makeSigner} from "./Players/utils";
 import {parseEther} from "ethers";
 import {EstforTypes} from "@paintswap/estfor-definitions";
-import {
-  exportPetNamesFilePath,
-  generateUniqueBitPositions,
-  petNamesBitCount,
-  petNamesHashCount,
-  SKIP_XP_THRESHOLD_EFFECTS
-} from "../scripts/utils";
+import {SKIP_XP_THRESHOLD_EFFECTS} from "../scripts/utils";
 
 describe("PetNFT", function () {
   async function deployContracts() {
@@ -43,7 +37,7 @@ describe("PetNFT", function () {
     skillMinLevels: [1, 0],
     fixedStarThreshold: 1,
     percentageStarThreshold: 1,
-    isTransferable: true
+    isTransferable: true,
   };
 
   it("Must be a minter to mint", async function () {
@@ -164,11 +158,11 @@ describe("PetNFT", function () {
         startPetId,
         await bridge.getAddress(),
         await adminAccess.getAddress(),
-        isBeta
+        isBeta,
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"]
+        unsafeAllow: ["external-library-linking"],
       }
     )) as unknown as PetNFT;
 
@@ -231,11 +225,11 @@ describe("PetNFT", function () {
         startPetId,
         await bridge.getAddress(),
         await adminAccess.getAddress(),
-        isBeta
+        isBeta,
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"]
+        unsafeAllow: ["external-library-linking"],
       }
     )) as unknown as PetNFT;
 

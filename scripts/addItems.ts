@@ -1,31 +1,31 @@
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {ethers} from "hardhat";
-import {ITEM_NFT_ADDRESS} from "./contractAddresses";
+import {ethers, upgrades} from "hardhat";
+import {ITEM_NFT_ADDRESS, ITEM_NFT_LIBRARY_ADDRESS} from "./contractAddresses";
 import {allItems} from "./data/items";
-import {initialiseSafe, sendTransactionSetToSafe} from "./utils";
+import {getSafeUpgradeTransaction, initialiseSafe, sendTransactionSetToSafe} from "./utils";
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
+import {ItemNFT__factory} from "../typechain-types";
 
 async function main() {
   const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
   const network = await ethers.provider.getNetwork();
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
-  console.log(`Add shop items using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);
+  console.log(`Add items using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
 
   const itemIds = new Set([
-    EstforConstants.XP_BOOST_M,
-    EstforConstants.COMBAT_BOOST_M,
-    EstforConstants.SKILL_BOOST_M,
-    EstforConstants.GATHERING_BOOST_M,
-    EstforConstants.XP_BOOST_L,
-    EstforConstants.COMBAT_BOOST_L,
-    EstforConstants.SKILL_BOOST_L,
-    EstforConstants.GATHERING_BOOST_L,
-    EstforConstants.XP_BOOST_XL,
-    EstforConstants.COMBAT_BOOST_XL,
-    EstforConstants.SKILL_BOOST_XL,
-    EstforConstants.GATHERING_BOOST_XL
+    EstforConstants.BLIGHT_VEIN_ORE,
+    EstforConstants.RIFT_SPORES,
+    EstforConstants.RIFT_FUEL,
+    EstforConstants.RIFT_CRYSTAL,
+    EstforConstants.SUPPORT_001_TROPHY,
+    EstforConstants.WQ1_LORE_PAGE_1,
+    EstforConstants.WQ1_LORE_PAGE_2,
+    EstforConstants.WQ1_LORE_PAGE_3,
+    EstforConstants.WQ1_LORE_PAGE_4,
+    EstforConstants.WQ1_LORE_PAGE_5,
+    EstforConstants.RIFT_COIN,
   ]);
 
   const items = allItems.filter((item) => itemIds.has(item.tokenId));
@@ -34,14 +34,13 @@ async function main() {
   } else {
     if (useSafe) {
       const transactionSet: MetaTransactionData[] = [];
-      const iface = new ethers.Interface([
-        "function addItems(((int16 meleeAttack,int16 magicAttack,int16 rangedAttack,int16 health, int16 meleeDefence, int16 magicDefence, int16 rangedDefence) combatStats, uint16 tokenId, uint8 equipPosition, bool isTransferable, bool isFullModeOnly, bool isAvailable, uint16 questPrerequisiteId, uint8 skill, uint32 minXP, uint16 healthRestored, uint8 boostType, uint16 boostValue, uint24 boostDuration, string metadataURI, string name)[])"
-      ]);
+      const iface = ItemNFT__factory.createInterface();
+
       transactionSet.push({
         to: ethers.getAddress(ITEM_NFT_ADDRESS),
         value: "0",
         data: iface.encodeFunctionData("addItems", [items]),
-        operation: OperationType.Call
+        operation: OperationType.Call,
       });
       await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
     } else {

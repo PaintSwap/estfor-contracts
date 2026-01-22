@@ -1,4 +1,3 @@
-import * as fs from "fs/promises";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {expect} from "chai";
@@ -21,13 +20,13 @@ describe("PlayerNFT", function () {
     const {brush, shop, dev, royaltyReceiver, estforLibrary, bridge} = await loadFixture(deployContracts);
 
     const playerNFT = await ethers.deployContract("PlayerNFT", {
-      libraries: {EstforLibrary: await estforLibrary.getAddress()}
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     });
 
     await ethers.provider.send("hardhat_setStorageAt", [
       await playerNFT.getAddress(),
       initializerSlot,
-      ethers.ZeroHash
+      ethers.ZeroHash,
     ]);
 
     const startPlayerId = 1;
@@ -248,7 +247,7 @@ describe("PlayerNFT", function () {
       dev,
       treasury,
       brush,
-      upgradePlayerBrushPrice
+      upgradePlayerBrushPrice,
     } = await loadFixture(deployContracts);
     const discord = "";
     const twitter = "1231231";
@@ -374,14 +373,14 @@ describe("PlayerNFT", function () {
       petNFT,
       estforLibrary,
       bridge,
-      activityPoints
+      activityPoints,
     } = await loadFixture(deployContracts);
 
     // Confirm that external_url points to main estfor site
     const startPlayerId = 1;
     const isBeta = false;
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: await estforLibrary.getAddress()}
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     });
     const editNameBrushPrice = parseEther("1");
     const upgradePlayerBrushPrice = parseEther("2");
@@ -398,11 +397,11 @@ describe("PlayerNFT", function () {
         imageBaseUri,
         startPlayerId,
         isBeta,
-        await bridge.getAddress()
+        await bridge.getAddress(),
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"]
+        unsafeAllow: ["external-library-linking"],
       }
     )) as unknown as PlayerNFT;
 
@@ -426,11 +425,11 @@ describe("PlayerNFT", function () {
         await playersImplMisc1.getAddress(),
         await bridge.getAddress(),
         await activityPoints.getAddress(),
-        isBeta
+        isBeta,
       ],
       {
         kind: "uups",
-        unsafeAllow: ["delegatecall"]
+        unsafeAllow: ["delegatecall"],
       }
     );
 
@@ -483,7 +482,7 @@ describe("PlayerNFT", function () {
     const isBeta = false;
     // Create NFT contract which contains all the players
     const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-      libraries: {EstforLibrary: await estforLibrary.getAddress()}
+      libraries: {EstforLibrary: await estforLibrary.getAddress()},
     });
     const editNameBrushPrice = parseEther("1");
     const upgradePlayerBrushPrice = parseEther("2");
@@ -501,11 +500,11 @@ describe("PlayerNFT", function () {
         imageBaseUri,
         startPlayerId,
         isBeta,
-        await bridge.getAddress()
+        await bridge.getAddress(),
       ],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"]
+        unsafeAllow: ["external-library-linking"],
       }
     )) as unknown as PlayerNFT;
 
@@ -523,7 +522,7 @@ describe("PlayerNFT", function () {
       EstforConstants.NET_STICK,
       EstforConstants.BRONZE_PICKAXE,
       EstforConstants.TOTEM_STAFF,
-      EstforConstants.BASIC_BOW
+      EstforConstants.BASIC_BOW,
     ]);
     expect(balances).to.eql(balances.map(() => 1n));
   });

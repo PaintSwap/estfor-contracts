@@ -93,6 +93,9 @@ TerritoryTreasury [0x4b1da5984c89312f852c798154a171a5ddc07d43](https://sonicscan
 BankRegistry [0xf213febd3889c5bf18086356e7eff79e2a9fe391](https://sonicscan.org/address/0xf213febd3889c5bf18086356e7eff79e2a9fe391)  
 BankFactory [0x76af5869f1b902f7a16c128a1daa7734819ec327](https://sonicscan.org/address/0x76af5869f1b902f7a16c128a1daa7734819ec327)  
 ActivityPoints [0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2](https://sonicscan.org/address/0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2)
+Marketplace [](https://sonicscan.org/address/)
+Cosmetics [](https://sonicscan.org/address/)
+Global Events [](https://sonicscan.org/address/)
 
 ### Sonic mainnet beta deployed contract addresses:
 
@@ -104,7 +107,7 @@ Treasury [0xdd744b66bb24a01a4ec62287f3d0d91fee37f8b1](https://sonicscan.org/addr
 Shop [0xb3778f2c24d94e3c7cfe608388bd35bba9401caa](https://sonicscan.org/address/0xb3778f2c24d94e3c7cfe608388bd35bba9401caa)  
 RoyaltyReceiver [0x5fce65360e0acdfcec0153bda8c412a7631d47a2](https://sonicscan.org/address/0x5fce65360e0acdfcec0153bda8c412a7631d47a2)  
 AdminAccess [0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57](https://sonicscan.org/address/0xc06b7bb82b6312c1c2c2de3e375f04d97e80de57)  
-ItemNFTLibrary [0x8ef4472a1792ae0c326d50c82145d0e0716aed0f](https://sonicscan.org/address/0x8ef4472a1792ae0c326d50c82145d0e0716aed0f)  
+ItemNFTLibrary [0x593f115a4d07b86cf507C01678220b9136fAfa13](https://sonicscan.org/address/0x593f115a4d07b86cf507C01678220b9136fAfa13)  
 ItemNFT [0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5](https://sonicscan.org/address/0x8ee7d355f76fb5621ee89bca431ba0cd39fe14c5)  
 Bazaar [0xae4bd229721ff40c07162c1720e060a2a5c89ff6](https://sonicscan.org/address/0xae4bd229721ff40c07162c1720e060a2a5c89ff6)  
 EstforLibrary [0x96977118842d6f209f9442e76d7de04d393480d8](https://sonicscan.org/address/0x96977118842d6f209f9442e76d7de04d393480d8)  
@@ -116,11 +119,11 @@ Bank [0x72598e7d7a6652ebb29026f83512bce1455999f6](https://sonicscan.org/address/
 PetNFTLibrary [0xc782815771443b1007a1ee92483ee9ff907dad0d](https://sonicscan.org/address/0xc782815771443b1007a1ee92483ee9ff907dad0d)  
 PetNFT [0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082](https://sonicscan.org/address/0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082)  
 PlayersLibrary [0xc9ceda474642e39f05c3e8fed75b3f45ed4ae210](https://sonicscan.org/address/0xc9ceda474642e39f05c3e8fed75b3f45ed4ae210)  
-PlayersImplQueueActions [0x1a37b0d9e4cd39fa4023c0cda09e0a9430290c20](https://sonicscan.org/address/0x1a37b0d9e4cd39fa4023c0cda09e0a9430290c20)  
-PlayersImplProcessActions [0xf01c2d718e6a26dcbdf9130594ebf8de6794f120](https://sonicscan.org/address/0xf01c2d718e6a26dcbdf9130594ebf8de6794f120)  
-PlayersImplRewards [0x26fb9ac5f3db89ab552ec381602fc4c4d5336b1d](https://sonicscan.org/address/0x26fb9ac5f3db89ab552ec381602fc4c4d5336b1d)  
-PlayersImplMisc [0x98b407d605ec06ededac1a192441835018f66662](https://sonicscan.org/address/0x98b407d605ec06ededac1a192441835018f66662)  
-PlayersImplMisc1 [0x57fed52dd759459c27e9a7f767a4f0b831ad96ab](https://sonicscan.org/address/0x57fed52dd759459c27e9a7f767a4f0b831ad96ab)  
+PlayersImplQueueActions [0x9669c88141d7902e00db0b09d9f3de2d0dea39f3](https://sonicscan.org/address/0x9669c88141d7902e00db0b09d9f3de2d0dea39f3)  
+PlayersImplProcessActions [0xa1915897aeac20dd40dc9712bdda672585299763](https://sonicscan.org/address/0xa1915897aeac20dd40dc9712bdda672585299763)  
+PlayersImplRewards [0x8d25433bb482fa6df6a4bc79752bbad0fb74b5a9](https://sonicscan.org/address/0x8d25433bb482fa6df6a4bc79752bbad0fb74b5a9)  
+PlayersImplMisc [0xe078e54a3df10764bf51b3009205cd547e1a68f6](https://sonicscan.org/address/0xe078e54a3df10764bf51b3009205cd547e1a68f6)  
+PlayersImplMisc1 [0x8be5a4253b3f43758ae748ef21e1cc86a046af1a](https://sonicscan.org/address/0x8be5a4253b3f43758ae748ef21e1cc86a046af1a)  
 Players [0x4f60948bea953693b4dcd7ea414a2198c3646c97](https://sonicscan.org/address/0x4f60948bea953693b4dcd7ea414a2198c3646c97)  
 PromotionsLibrary [0xaf79ca769a02381daca6f7736c51e3ad01ac571c](https://sonicscan.org/address/0xaf79ca769a02381daca6f7736c51e3ad01ac571c)  
 Promotions [0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab](https://sonicscan.org/address/0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab)  
@@ -141,6 +144,9 @@ TerritoryTreasury [0x5d1429f842891ea0ed80e856762b48bc117ac2a8](https://sonicscan
 BankRegistry [0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6](https://sonicscan.org/address/0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6)  
 BankFactory [0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c](https://sonicscan.org/address/0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c)  
 ActivityPoints [0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a](https://sonicscan.org/address/0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a)
+Marketplace [0x3935866043766b86f30593bd17a787cc0105f7e0](https://sonicscan.org/address/0x3935866043766b86f30593bd17a787cc0105f7e0)
+Cosmetics [0x9ac94b923333406d1c8b390ab606f90d6526c187](https://sonicscan.org/address/0x9ac94b923333406d1c8b390ab606f90d6526c187)
+Global Events [0x8d61f3135a9f39b685b9765976e6a0f0572aeca5](https://sonicscan.org/address/0x8d61f3135a9f39b685b9765976e6a0f0572aeca5)
 
 ### Other addresses:
 
