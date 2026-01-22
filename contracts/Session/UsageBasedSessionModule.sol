@@ -47,19 +47,19 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     uint48 deadline;
   }
 
-  IGameSubsidisationRegistry public registry;
-  mapping(address => Session) public sessions; // Safe => Session
-  mapping(address => UserUsage) private usage; // Safe => Usage
+  IGameSubsidisationRegistry private _registry;
+  mapping(address => Session) private _sessions; // Safe => Session
+  mapping(address => UserUsage) private _usage; // Safe => Usage
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
     _disableInitializers();
   }
 
-  function initialize(address owner, IGameSubsidisationRegistry _registry) public initializer {
+  function initialize(address owner, IGameSubsidisationRegistry registry) public initializer {
     __Ownable_init(owner);
     __EIP712_init("UsageBasedSessionModule", "1");
-    registry = _registry;
+    _registry = registry;
   }
 
   /**
@@ -68,18 +68,18 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   function enableSession(address _sessionKey, uint48 _duration) external {
     require(_sessionKey != address(0), ZeroSessionKey());
     require(_duration > 0 && _duration <= MAX_SESSION_DURATION, InvalidSessionDuration());
-    require(sessions[msg.sender].deadline < block.timestamp, ExistingSessionActive());
+    require(_sessions[msg.sender].deadline < block.timestamp, ExistingSessionActive());
 
-    sessions[msg.sender] = Session({sessionKey: _sessionKey, deadline: uint48(block.timestamp) + _duration});
+    _sessions[msg.sender] = Session({sessionKey: _sessionKey, deadline: uint48(block.timestamp) + _duration});
 
-    emit SessionEnabled(msg.sender, _sessionKey, sessions[msg.sender].deadline);
+    emit SessionEnabled(msg.sender, _sessionKey, _sessions[msg.sender].deadline);
   }
 
   /**
    * @notice Explicitly revoke the current session early. Must be called BY THE SAFE
    */
   function revokeSession() external {
-    delete sessions[msg.sender];
+    delete _sessions[msg.sender];
     emit SessionRevoked(msg.sender);
   }
 
@@ -87,17 +87,17 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     require(data.length >= 4, InvalidCallData());
 
     // 1. Basic Session Check
-    Session memory session = sessions[safe];
+    Session memory session = _sessions[safe];
     require(session.sessionKey != address(0), NoSessionKey());
     require(session.deadline >= block.timestamp, SessionExpired());
 
     // 2. Identify the action (extract selector from data)
     bytes4 selector = bytes4(data[0:4]);
-    uint256 groupId = registry.functionToLimitGroup(target, selector);
+    uint256 groupId = _registry.functionToLimitGroup(target, selector);
     require(groupId > 0, ActionNotPermitted());
 
     uint256 currentDay = block.timestamp / 1 days;
-    UserUsage storage user = usage[safe];
+    UserUsage storage user = _usage[safe];
     GroupUsage storage group = user.groupUsage[groupId];
     if (group.day != uint40(currentDay)) {
       group.day = uint40(currentDay);
@@ -105,7 +105,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     }
     uint256 currentUsage = group.count;
 
-    uint256 limit = registry.groupDailyLimits(groupId);
+    uint256 limit = _registry.groupDailyLimits(groupId);
     require(currentUsage < limit, GroupLimitReached());
 
     uint256 currentNonce = user.nonce;
@@ -132,6 +132,10 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     require(success, ModuleCallFailed());
 
     emit SessionNonceIncremented(safe, user.nonce);
+  }
+
+  function getSession(address safe) external view returns (Session memory) {
+    return _sessions[safe];
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

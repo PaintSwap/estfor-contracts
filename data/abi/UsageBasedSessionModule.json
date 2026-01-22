@@ -388,12 +388,43 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "safe",
+        "type": "address"
+      }
+    ],
+    "name": "getSession",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "sessionKey",
+            "type": "address"
+          },
+          {
+            "internalType": "uint48",
+            "name": "deadline",
+            "type": "uint48"
+          }
+        ],
+        "internalType": "struct UsageBasedSessionModule.Session",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "owner",
         "type": "address"
       },
       {
         "internalType": "contract IGameSubsidisationRegistry",
-        "name": "_registry",
+        "name": "registry",
         "type": "address"
       }
     ],
@@ -430,19 +461,6 @@
   },
   {
     "inputs": [],
-    "name": "registry",
-    "outputs": [
-      {
-        "internalType": "contract IGameSubsidisationRegistry",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -453,30 +471,6 @@
     "name": "revokeSession",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "sessions",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "sessionKey",
-        "type": "address"
-      },
-      {
-        "internalType": "uint48",
-        "name": "deadline",
-        "type": "uint48"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

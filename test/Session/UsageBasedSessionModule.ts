@@ -33,7 +33,7 @@ describe("UsageBasedSessionModule", function () {
     const sessionKey = ethers.Wallet.createRandom();
 
     await safe.callEnableSession(usageBasedSessionModule, sessionKey.address, 3600);
-    const session = await usageBasedSessionModule.sessions(await safe.getAddress());
+    const session = await usageBasedSessionModule.getSession(await safe.getAddress());
 
     return {
       sessionKey,
@@ -154,7 +154,7 @@ describe("UsageBasedSessionModule", function () {
         "SessionRevoked"
       );
 
-      const session = await module.sessions(await safe.getAddress());
+      const session = await module.getSession(await safe.getAddress());
       expect(session.sessionKey).to.eq(ethers.ZeroAddress);
     });
   });
@@ -342,7 +342,7 @@ describe("UsageBasedSessionModule", function () {
       const sessionKey = ethers.Wallet.createRandom();
 
       await safe.callEnableSession(usageBasedSessionModule, sessionKey.address, 3600);
-      const session = await usageBasedSessionModule.sessions(await safe.getAddress());
+      const session = await usageBasedSessionModule.getSession(await safe.getAddress());
 
       return {
         sessionKey,
