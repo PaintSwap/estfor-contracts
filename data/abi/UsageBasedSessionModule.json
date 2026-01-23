@@ -105,12 +105,22 @@
   },
   {
     "inputs": [],
+    "name": "NoBatchItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NoSessionKey",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyInternal",
     "type": "error"
   },
   {
@@ -170,6 +180,31 @@
     "inputs": [],
     "name": "ZeroSessionKey",
     "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "safe",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes4",
+        "name": "selector",
+        "type": "bytes4"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "errorData",
+        "type": "bytes"
+      }
+    ],
+    "name": "BatchItemFailed",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -405,27 +440,69 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "safe",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "target",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "signature",
-        "type": "bytes"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "safe",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct UsageBasedSessionModule.ExecuteParams[]",
+        "name": "params",
+        "type": "tuple[]"
       }
     ],
-    "name": "execute",
+    "name": "executeBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "safe",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct UsageBasedSessionModule.ExecuteParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "executeSingle",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -24,11 +24,14 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   error ModuleCallFailed();
   error UnauthorizedSigner();
   error RefundFailed();
+  error OnlyInternal();
+  error NoBatchItems();
 
   event SessionEnabled(address indexed safe, address indexed sessionKey, uint48 deadline);
   event SessionRevoked(address indexed safe);
   event SessionNonceIncremented(address indexed safe, uint256 newNonce);
   event WhitelistedSignersUpdated(address[] signers, bool whitelisted);
+  event BatchItemFailed(address indexed safe, bytes4 selector, bytes errorData);
 
   uint48 public constant MAX_SESSION_DURATION = 30 days;
   uint256 public constant GAS_OVERHEAD = 30000; // 21000 base tx + 9k transfer
@@ -49,6 +52,13 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   struct Session {
     address sessionKey;
     uint48 deadline;
+  }
+
+  struct ExecuteParams {
+    address safe;
+    address target;
+    bytes data;
+    bytes signature;
   }
 
   IGameSubsidisationRegistry private _registry;
@@ -88,9 +98,37 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     emit SessionRevoked(msg.sender);
   }
 
-  function execute(address safe, address target, bytes calldata data, bytes calldata signature) external {
-    uint256 startGas = gasleft();
+  function executeBatch(ExecuteParams[] calldata params) external {
     require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
+    require(params.length > 0, NoBatchItems());
+    uint256 startGas = gasleft();
+
+    for (uint256 i = 0; i < params.length; i++) {
+      try this.executeSingle(params[i]) {
+        // Success
+      } catch (bytes memory reason) {
+        bytes4 selector = params[i].data.length >= 4 ? bytes4(params[i].data[0:4]) : bytes4(0);
+        emit BatchItemFailed(params[i].safe, selector, reason);
+      }
+    }
+
+    uint256 gasUsed = startGas - gasleft() + GAS_OVERHEAD + msg.data.length * 16;
+    uint256 refundAmount = gasUsed * tx.gasprice;
+    if (refundAmount > 0) {
+      (bool refundSuccess, ) = msg.sender.call{value: refundAmount}(""); // Refund the relayer directly
+      require(refundSuccess, RefundFailed());
+    }
+  }
+
+  /**
+   * @notice Helper to allow try/catch within executeBatch via an external call
+  */
+  function executeSingle(ExecuteParams calldata params) external {
+    require(msg.sender == address(this), OnlyInternal());
+    _execute(params.safe, params.target, params.data, params.signature);
+  }
+
+  function _execute(address safe, address target, bytes calldata data, bytes calldata signature) internal {    
     require(data.length >= 4, InvalidCallData());
 
     // 1. Basic Session Check
@@ -139,13 +177,6 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     require(success, ModuleCallFailed());
 
     emit SessionNonceIncremented(safe, user.nonce);
-
-    uint256 gasUsed = startGas - gasleft() + GAS_OVERHEAD + (data.length * 16) + (signature.length * 16);
-    uint256 refundAmount = gasUsed * tx.gasprice;
-    if (refundAmount > 0) {
-      (bool refundSuccess, ) = msg.sender.call{value: refundAmount}(""); // Refund the relayer directly
-      require(refundSuccess, RefundFailed());
-    }
   }
 
   function setWhitelistedSigner(address[] calldata signers, bool whitelisted) external onlyOwner {
