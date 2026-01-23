@@ -34,7 +34,9 @@ enum EquipPosition {
   CLAN_BOOST_VIAL,
   PASSIVE_BOOST_VIAL,
   LOCKED_VAULT,
-  TERRITORY
+  TERRITORY,
+  AVATAR,
+  AVATAR_BORDER
 }
 
 struct Player {
@@ -60,6 +62,7 @@ struct Player {
 }
 
 struct Item {
+  /* SLOT 0 */
   EquipPosition equipPosition;
   bytes1 packedData; // 0x1 exists, upper most bit is full mode
   uint16 questPrerequisiteId;
@@ -223,6 +226,12 @@ struct AvatarInfo {
   Skill[2] startSkills; // Can be NONE
 }
 
+struct CosmeticInfo {
+  EquipPosition cosmeticPosition;
+  uint16 itemTokenId; // The item token id that represents this cosmetic (>0 means it is equippable)
+  uint24 avatarId; // The avatar id that this cosmetic is for (0 means not applicable)
+}
+
 struct PastRandomRewardInfo {
   uint16 itemTokenId;
   uint24 amount;
@@ -335,6 +344,9 @@ struct ItemInput {
   // uri
   string metadataURI;
   string name;
+  // Item classification
+  bool isCollectionItem;
+  bool isQuestItem;
 }
 
 /* Order head, neck, body, arms, legs, feet, ring, reserved1,
@@ -354,10 +366,15 @@ struct ActivePlayerInfo {
 }
 
 struct PlayerInfo {
+  /* SLOT 0 */
   uint24 avatarId;
   uint24 originalAvatarId; // The base avatar id that you were born with
   uint40 mintedTimestamp;
   uint40 upgradedTimestamp; // What time you upgraded your avatar
+  uint24 appliedAvatarId; // unused, feel free to use later
+  // uint104 padding; // unused, feel free to use later
+
+  /* SLOT 1 */
 }
 
 uint8 constant START_LEVEL = 17; // Needs updating when there is a new skill. Only useful for new heroes.

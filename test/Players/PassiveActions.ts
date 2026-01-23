@@ -4,7 +4,7 @@ import {playersFixture} from "./PlayersFixture";
 import {
   Skill,
   PassiveActionInput,
-  defaultPassiveActionInput as _defaultPassiveActionInput
+  defaultPassiveActionInput as _defaultPassiveActionInput,
 } from "@paintswap/estfor-definitions/types";
 import {ethers} from "hardhat";
 import {expect} from "chai";
@@ -20,8 +20,8 @@ describe("Passive actions", function () {
     info: {
       ..._defaultPassiveActionInput.info,
       inputTokenIds: [EstforConstants.POISON],
-      inputAmounts: [1]
-    }
+      inputAmounts: [1],
+    },
   };
 
   it("Simple", async function () {
@@ -31,8 +31,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        skipSuccessPercent: 1 // Just so that oracleCalled can be tested easier
-      }
+        skipSuccessPercent: 1, // Just so that oracleCalled can be tested easier
+      },
     };
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 1);
@@ -72,8 +72,8 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         inputTokenIds: [1, 2, 3],
-        inputAmounts: [1, 2, 3]
-      }
+        inputAmounts: [1, 2, 3],
+      },
     };
 
     passiveActionInput.info.inputAmounts[0] = 4;
@@ -108,8 +108,8 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         inputTokenIds: [EstforConstants.OAK_LOG],
-        inputAmounts: [100]
-      }
+        inputAmounts: [100],
+      },
     };
 
     await passiveActions.addActions([passiveActionInput]);
@@ -138,8 +138,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        durationDays: 65
-      }
+        durationDays: 65,
+      },
     };
     await expect(passiveActions.addActions([passiveActionInput])).to.be.revertedWithCustomError(
       passiveActions,
@@ -229,8 +229,8 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         minSkills: [Skill.WOODCUTTING, Skill.FIREMAKING, Skill.ALCHEMY],
-        minLevels: [2, 2, 2]
-      }
+        minLevels: [2, 2, 2],
+      },
     };
 
     await passiveActions.addActions([passiveActionInput]);
@@ -259,8 +259,8 @@ describe("Passive actions", function () {
         ...defaultPassiveActionInput.info,
         durationDays: 10,
         minSkills: [Skill.WOODCUTTING],
-        minLevels: [getXPFromLevel(2)]
-      }
+        minLevels: [getXPFromLevel(2)],
+      },
     };
 
     const passiveActionInput1: PassiveActionInput = {
@@ -269,8 +269,8 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         minSkills: [Skill.FIREMAKING],
-        minLevels: [getXPFromLevel(3)]
-      }
+        minLevels: [getXPFromLevel(3)],
+      },
     };
 
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
@@ -291,13 +291,13 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        durationDays: 2
+        durationDays: 2,
       },
       guaranteedRewards: [
         {itemTokenId: EstforConstants.OAK_LOG, rate: 2},
         {itemTokenId: EstforConstants.WILLOW_LOG, rate: 5},
-        {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}
-      ]
+        {itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10},
+      ],
     };
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 3);
@@ -344,15 +344,15 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 2,
-        skipSuccessPercent: 1
+        skipSuccessPercent: 1,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 10}],
       randomRewards: [
         {itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1},
         {itemTokenId: EstforConstants.IRON_ARROW, chance: randomChance, amount: 3},
         {itemTokenId: EstforConstants.ADAMANTINE_ARROW, chance: randomChance, amount: 2},
-        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 2}
-      ]
+        {itemTokenId: EstforConstants.RUNITE_ARROW, chance: 1, amount: 2},
+      ],
     };
     await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
     await passiveActions.addActions([passiveActionInput]);
@@ -371,7 +371,7 @@ describe("Passive actions", function () {
     expect(await itemNFT.balanceOf(alice, EstforConstants.OAK_LOG)).to.eq(0);
 
     await passiveActions.connect(alice).startAction(playerId, passiveActionInput.actionId, 0);
-    await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60]);
+    await ethers.provider.send("evm_increaseTime", [passiveActionInput.info.durationDays * 24 * 60 * 60 + 1]);
     await ethers.provider.send("evm_mine", []);
     await requestAndFulfillRandomWordsSeeded(randomnessBeacon, mockVRF, 100_000_000_000_000n);
     finishedInfo = await passiveActions.finishedInfo(playerId);
@@ -408,16 +408,16 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        durationDays: 2
+        durationDays: 2,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 10}],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}]
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
     };
     const passiveActionInput1: PassiveActionInput = {
       ...defaultPassiveActionInput,
       actionId: 2,
       guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}]
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}],
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
     await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
@@ -469,20 +469,20 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 2,
-        skipSuccessPercent: 1
+        skipSuccessPercent: 1,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 10}],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}]
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
     };
     const passiveActionInput1: PassiveActionInput = {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        skipSuccessPercent: 1
+        skipSuccessPercent: 1,
       },
       actionId: 2,
       guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}]
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}],
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
     await requestAndFulfillRandomWords(randomnessBeacon, mockVRF);
@@ -565,16 +565,16 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 2,
-        skipSuccessPercent: 1
+        skipSuccessPercent: 1,
       },
       guaranteedRewards: [{itemTokenId: EstforConstants.OAK_LOG, rate: 10}],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}]
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
     };
     const passiveActionInput1: PassiveActionInput = {
       ...defaultPassiveActionInput,
       actionId: 2,
       guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}],
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}]
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 2}],
     };
     await passiveActions.addActions([passiveActionInput, passiveActionInput1]);
     await itemNFT.mint(alice, EstforConstants.POISON, 3);
@@ -611,9 +611,9 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        durationDays: 2
+        durationDays: 2,
       },
-      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}]
+      randomRewards: [{itemTokenId: EstforConstants.BRONZE_ARROW, chance: randomChance, amount: 1}],
     };
 
     await passiveActions.addActions([passiveActionInput]);
@@ -640,8 +640,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        durationDays: 1
-      }
+        durationDays: 1,
+      },
     };
 
     await passiveActions.addActions([passiveActionInput]);
@@ -664,8 +664,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        isFullModeOnly: true
-      }
+        isFullModeOnly: true,
+      },
     };
     await passiveActions.addActions([passiveActionInput]);
     expect((await passiveActions.getAction(passiveActionInput.actionId)).packedData == "0x80");
@@ -679,8 +679,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        isFullModeOnly: true
-      }
+        isFullModeOnly: true,
+      },
     };
     await passiveActions.addActions([passiveActionInput]);
     expect((await passiveActions.getAction(passiveActionInput.actionId)).packedData == "0x80");
@@ -735,8 +735,8 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 10,
-        skipSuccessPercent: 100
-      }
+        skipSuccessPercent: 100,
+      },
     };
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 1);
@@ -780,8 +780,8 @@ describe("Passive actions", function () {
         inputTokenIds: [BRONZE_ARROW, IRON_ARROW],
         inputAmounts: [2, 3],
         durationDays: 10,
-        skipSuccessPercent: 100
-      }
+        skipSuccessPercent: 100,
+      },
     };
     await passiveActions.addActions([passiveActionInput]);
 
@@ -796,8 +796,8 @@ describe("Passive actions", function () {
         boostType: EstforTypes.BoostType.PASSIVE_SKIP_CHANCE,
         boostValue,
         boostDuration: 0, // Ignored for passive boost skip chance
-        isTransferable: false
-      }
+        isTransferable: false,
+      },
     ]);
 
     await itemNFT.mintBatch(alice, [boostId, BRONZE_ARROW, IRON_ARROW], [1, 2, 3]);
@@ -834,8 +834,8 @@ describe("Passive actions", function () {
       info: {
         ...defaultPassiveActionInput.info,
         durationDays: 10,
-        skipSuccessPercent: 100
-      }
+        skipSuccessPercent: 100,
+      },
     };
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 1);
@@ -877,8 +877,8 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        durationDays: 0
-      }
+        durationDays: 0,
+      },
     };
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 1);
@@ -892,9 +892,9 @@ describe("Passive actions", function () {
       ...defaultPassiveActionInput,
       info: {
         ...defaultPassiveActionInput.info,
-        durationDays: 1
+        durationDays: 1,
       },
-      guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}]
+      guaranteedRewards: [{itemTokenId: EstforConstants.MAGICAL_LOG, rate: 10}],
     };
     await passiveActions.addActions([passiveActionInput]);
     await itemNFT.mint(alice, EstforConstants.POISON, 1);

@@ -179,7 +179,7 @@ contract Players is
 
   /// @notice Process actions for a player up to the current block timestamp
   function processActions(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
-    _processActionsAndSetState(playerId);
+    _processActionsAndSetState(_msgSender(), playerId);
   }
 
   // Callback after minting a player
@@ -227,6 +227,15 @@ contract Players is
     _players[playerId].packedData = _players[playerId].packedData | (bytes1(uint8(0x1)) << IS_FULL_MODE_BIT);
   }
 
+  // Callback after applying a avatar to a player
+  function applyAvatarToPlayer(address from, uint256 playerId, Skill[2] calldata skills) external override onlyPlayerNFT {
+    if (_players[playerId].actionQueue.length != 0) {
+      _processActionsAndSetState(from, playerId);
+    }
+    _players[playerId].skillBoosted1 = skills[0];
+    _players[playerId].skillBoosted2 = skills[1];
+  }
+
   // This is a special type of quest.
   function buyBrushQuest(
     address to,
@@ -245,14 +254,14 @@ contract Players is
     uint256 questId
   ) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     if (_players[playerId].actionQueue.length != 0) {
-      _processActionsAndSetState(playerId);
+      _processActionsAndSetState(_msgSender(), playerId);
     }
     _quests.activateQuest(_msgSender(), playerId, questId);
   }
 
   function deactivateQuest(uint256 playerId) external isOwnerOfPlayerAndActiveMod(playerId) nonReentrant gameNotPaused {
     if (_players[playerId].actionQueue.length != 0) {
-      _processActionsAndSetState(playerId);
+      _processActionsAndSetState(_msgSender(), playerId);
     }
     // Quest may hve been completed as a result of this so don't bother trying to deactivate it
     if (_quests.getActiveQuestId(playerId) != 0) {
@@ -332,14 +341,14 @@ contract Players is
     );
   }
 
-  function _processActionsAndSetState(uint256 playerId) private {
+  function _processActionsAndSetState(address from, uint256 playerId) private {
     // Read current actions which are completed
     Player storage player = _players[playerId];
     uint256 previousActionQueueLength = player.actionQueue.length;
 
     bytes memory data = _delegatecall(
       _implProcessActions,
-      abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActionsAndSetState.selector, playerId)
+      abi.encodeWithSelector(IPlayersProcessActionsDelegate.processActionsAndSetState.selector, from, playerId)
     );
     (QueuedAction[] memory remainingQueuedActions, Attire[] memory remainingAttire) = abi.decode(
       data,
@@ -351,7 +360,7 @@ contract Players is
       : 0;
 
     // Put here due to stack too deep error if doing it inside processActionsAndSetState
-    _setInitialCheckpoints(msg.sender, playerId, numActionsFinished, remainingQueuedActions, remainingAttire);
+    _setInitialCheckpoints(from, playerId, numActionsFinished, remainingQueuedActions, remainingAttire);
   }
 
   function _setActivePlayer(address from, uint256 playerId) private {
@@ -449,7 +458,7 @@ contract Players is
   }
 
   function getActivePlayer(address playerOwner) external view override returns (uint256 playerId) {
-    return _activePlayerInfos[playerOwner].playerId; // TODO: Can use activePlayerInfo?
+    return _activePlayerInfos[playerOwner].playerId;
   }
 
   function getActivePlayerInfo(address playerOwner) external view returns (ActivePlayerInfo memory) {

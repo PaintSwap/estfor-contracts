@@ -1751,6 +1751,29 @@
         "type": "address"
       },
       {
+        "internalType": "uint256",
+        "name": "playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum Skill[2]",
+        "name": "skills",
+        "type": "uint8[2]"
+      }
+    ],
+    "name": "applyAvatarToPlayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "to",
         "type": "address"

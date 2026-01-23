@@ -60,6 +60,7 @@ interface IPlayersProcessActionsDelegate {
   function processActions(address from, uint256 playerId) external;
 
   function processActionsAndSetState(
+    address from,
     uint256 playerId
   ) external returns (QueuedAction[] memory remainingQueuedActions, Attire[] memory remainingAttire);
 

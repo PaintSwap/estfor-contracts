@@ -359,6 +359,16 @@
             "internalType": "string",
             "name": "name",
             "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCollectionItem",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isQuestItem",
+            "type": "bool"
           }
         ],
         "indexed": false,
@@ -511,6 +521,16 @@
             "internalType": "string",
             "name": "name",
             "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCollectionItem",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isQuestItem",
+            "type": "bool"
           }
         ],
         "indexed": false,
@@ -801,6 +821,16 @@
             "internalType": "string",
             "name": "name",
             "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCollectionItem",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isQuestItem",
+            "type": "bool"
           }
         ],
         "internalType": "struct ItemInput[]",
@@ -1093,6 +1123,16 @@
             "internalType": "string",
             "name": "name",
             "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCollectionItem",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isQuestItem",
+            "type": "bool"
           }
         ],
         "internalType": "struct ItemInput[]",

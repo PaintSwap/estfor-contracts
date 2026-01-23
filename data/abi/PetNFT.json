@@ -1756,64 +1756,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "petOwner",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "petIds",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint24[]",
-        "name": "basePetIds",
-        "type": "uint24[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "petNames",
-        "type": "string[]"
-      },
-      {
-        "internalType": "enum Skill[]",
-        "name": "skillEnhancement1s",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "uint8[]",
-        "name": "skillFixedEnhancement1s",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "uint8[]",
-        "name": "skillPercentageEnhancement1",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "enum Skill[]",
-        "name": "skillEnhancement2s",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "uint8[]",
-        "name": "skillFixedEnhancement2s",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "uint8[]",
-        "name": "skillPercentageEnhancement2s",
-        "type": "uint8[]"
-      }
-    ],
-    "name": "mintBridge",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "name",
     "outputs": [
@@ -2062,6 +2004,19 @@
       }
     ],
     "name": "setImageBaseUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "marketplaceAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setMarketplaceAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

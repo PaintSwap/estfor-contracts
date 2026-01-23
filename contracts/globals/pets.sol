@@ -28,6 +28,7 @@ enum PetEnhancementType {
 }
 
 struct Pet {
+  /* SLOT 0 */
   Skill skillEnhancement1;
   uint8 skillFixedEnhancement1;
   uint8 skillPercentageEnhancement1;
@@ -37,7 +38,8 @@ struct Pet {
   uint40 lastAssignmentTimestamp;
   address owner; // Will be used as an optimization to avoid having to look up the owner of the pet in another storage slot
   bool isTransferable;
-  // New storage slot
+
+  /* SLOT 1 */
   uint24 baseId;
   // These are used when training a pet
   uint40 lastTrainedTimestamp;
@@ -46,6 +48,9 @@ struct Pet {
   uint8 skillPercentageEnhancementMax1;
   uint8 skillPercentageEnhancementMax2;
   uint64 xp;
+  // uint96 padding;
+  
+  /* SLOT 2 */
 }
 
 struct BasePetMetadata {

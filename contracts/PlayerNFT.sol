@@ -9,6 +9,9 @@ import {IERC2981, IERC165} from "@openzeppelin/contracts/interfaces/IERC2981.sol
 import {EstforLibrary} from "./EstforLibrary.sol";
 import {IBrushToken} from "./interfaces/external/IBrushToken.sol";
 import {IPlayers} from "./interfaces/IPlayers.sol";
+import {IPlayerNFT} from "./interfaces/IPlayerNFT.sol";
+import {IMarketplaceNFT} from "./interfaces/IMarketplaceNFT.sol";
+import {IMarketplace} from "./interfaces/IMarketplace.sol";
 import {AdminAccess} from "./AdminAccess.sol";
 
 import {BloomFilter} from "./libraries/BloomFilter.sol";
@@ -17,7 +20,7 @@ import {BloomFilter} from "./libraries/BloomFilter.sol";
 import "./globals/all.sol";
 
 // Each NFT represents a player. This contract deals with the NFTs, and the Players contract deals with the player data
-contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IERC2981 {
+contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155UpgradeableSinglePerToken, IMarketplaceNFT, IPlayerNFT {
   using BloomFilter for BloomFilter.Filter;
 
   event NewPlayer(
@@ -49,6 +52,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     uint256 brushTreasuryPercentage,
     uint256 brushDevPercentage
   );
+  event EditAvatar(uint256 playerId, uint256 newAvatarId);
 
   error NotOwnerOfPlayer();
   error NotPlayers();
@@ -70,6 +74,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   error LengthMismatch();
   error PercentNotTotal100();
   error NotBridge();
+  error NotCosmetics();
 
   uint256 private constant EVOLVED_OFFSET = 10000;
   uint256 public constant NUM_BASE_AVATARS = 8;
@@ -97,6 +102,8 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   mapping(string name => bool exists) private _lowercaseNames;
   BloomFilter.Filter private _reservedHeroNames; // TODO: unused
   address private _bridge; // TODO: Bridge Can remove later
+  address private _marketplaceAddress;
+  address private _cosmeticsAddress;
 
   modifier isOwnerOfPlayer(uint256 playerId) {
     require(balanceOf(_msgSender(), playerId) == 1, NotOwnerOfPlayer());
@@ -110,6 +117,11 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
 
   modifier onlyBridge() {
     require(_msgSender() == address(_bridge), NotBridge());
+    _;
+  }
+
+  modifier onlyCosmetics() {
+    require(_msgSender() == address(_cosmeticsAddress), NotCosmetics());
     _;
   }
 
@@ -177,54 +189,80 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
     }
   }
 
-  function mintBridge(
-    address from,
-    uint256 playerId,
-    uint256 avatarId,
-    string calldata heroName,
-    string calldata discord,
-    string calldata twitter,
-    string calldata telegram,
-    bool isUpgrade
-  ) external onlyBridge {
-    _lowercaseNames[EstforLibrary.toLower(heroName)] = true;
-    _names[playerId] = heroName;
-    emit NewPlayer(playerId, avatarId, heroName, from, discord, twitter, telegram, isUpgrade);
+  // function mintBridge(
+  //   address from,
+  //   uint256 playerId,
+  //   uint256 avatarId,
+  //   string calldata heroName,
+  //   string calldata discord,
+  //   string calldata twitter,
+  //   string calldata telegram,
+  //   bool isUpgrade
+  // ) external onlyBridge {
+  //   _lowercaseNames[EstforLibrary.toLower(heroName)] = true;
+  //   _names[playerId] = heroName;
+  //   emit NewPlayer(playerId, avatarId, heroName, from, discord, twitter, telegram, isUpgrade);
 
-    PlayerInfo storage playerInfo = _playerInfos[playerId];
-    playerInfo.originalAvatarId = uint24(avatarId);
-    playerInfo.mintedTimestamp = uint40(block.timestamp);
-    _mint(from, playerId, 1, "");
-    uint256[] memory startingItemTokenIds;
-    uint256[] memory startingAmounts;
+  //   PlayerInfo storage playerInfo = _playerInfos[playerId];
+  //   playerInfo.originalAvatarId = uint24(avatarId);
+  //   playerInfo.mintedTimestamp = uint40(block.timestamp);
+  //   _mint(from, playerId, 1, "");
+  //   uint256[] memory startingItemTokenIds;
+  //   uint256[] memory startingAmounts;
 
-    // Only make active if the account has no active player
-    bool makeActive = _players.getActivePlayer(from) == 0;
-    _players.mintedPlayer(
-      from,
-      playerId,
-      _avatars[avatarId].startSkills,
-      makeActive,
-      startingItemTokenIds,
-      startingAmounts
-    );
-    if (isUpgrade) {
-      uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
-      // _upgradePlayer equivalent
-      playerInfo.avatarId = evolvedAvatarId;
-      playerInfo.upgradedTimestamp = uint40(block.timestamp);
-      _players.upgradePlayer(playerId);
-      uint256 tokenCost = 0; // Free when bridging
-      emit UpgradePlayerAvatar(playerId, evolvedAvatarId, tokenCost);
-      // end _upgradePlayer equivalent
-    } else {
-      _playerInfos[playerId].avatarId = uint24(avatarId);
-    }
-  }
+  //   // Only make active if the account has no active player
+  //   bool makeActive = _players.getActivePlayer(from) == 0;
+  //   _players.mintedPlayer(
+  //     from,
+  //     playerId,
+  //     _avatars[avatarId].startSkills,
+  //     makeActive,
+  //     startingItemTokenIds,
+  //     startingAmounts
+  //   );
+  //   if (isUpgrade) {
+  //     uint24 evolvedAvatarId = uint24(EVOLVED_OFFSET + avatarId);
+  //     // _upgradePlayer equivalent
+  //     playerInfo.avatarId = evolvedAvatarId;
+  //     playerInfo.upgradedTimestamp = uint40(block.timestamp);
+  //     _players.upgradePlayer(playerId);
+  //     uint256 tokenCost = 0; // Free when bridging
+  //     emit UpgradePlayerAvatar(playerId, evolvedAvatarId, tokenCost);
+  //     // end _upgradePlayer equivalent
+  //   } else {
+  //     _playerInfos[playerId].avatarId = uint24(avatarId);
+  //   }
+  // }
 
   function burn(address from, uint256 playerId) external {
     require(from == _msgSender() || isApprovedForAll(from, _msgSender()), ERC1155BurnForbidden());
     _burn(from, playerId, 1);
+  }
+
+  // Special handling for avatar cosmetics as the skills need to be applied to the player
+  function applyAvatarToPlayer(address owner, uint256 playerId, uint24 newAvatarId) external onlyCosmetics {
+    // If evolved, must apply evolved avatar
+    if (_playerInfos[playerId].upgradedTimestamp > 0) {
+      newAvatarId += uint24(EVOLVED_OFFSET);
+    }
+    _players.applyAvatarToPlayer(
+      owner,
+      playerId,
+      _avatars[newAvatarId].startSkills
+    );
+    emit EditAvatar(playerId, newAvatarId);
+  }
+
+  // Unequip avatar cosmetic and reapply original avatar skills. Should require a payment to stop skill swap abuse
+  function unapplyAvatarFromPlayer(address owner, uint256 playerId) external onlyCosmetics {
+    uint24 avatarId = _playerInfos[playerId].avatarId;
+    _players.applyAvatarToPlayer(
+      owner,
+      playerId,
+      _avatars[avatarId].startSkills
+    );
+    _paySender(owner, _editNameCost); // Charge the edit cost for unequipping
+    emit EditAvatar(playerId, avatarId);
   }
 
   function _upgradePlayer(uint256 playerId, uint24 newAvatarId) private {
@@ -266,6 +304,10 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
 
   function _pay(uint256 tokenCost) private {
     address sender = _msgSender();
+    _paySender(sender, tokenCost);
+  }
+
+  function _paySender(address sender, uint256 tokenCost) private {
     _brush.transferFrom(sender, _treasury, (tokenCost * _brushTreasuryPercentage) / 100);
     _brush.transferFrom(sender, _dev, (tokenCost * _brushDevPercentage) / 100);
     _brush.burnFrom(sender, (tokenCost * _brushBurntPercentage) / 100);
@@ -337,7 +379,7 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
       IPlayers players = _players;
       for (uint256 i = 0; i < ids.length; ++i) {
         uint256 playerId = ids[i];
-        players.clearEverythingBeforeTokenTransfer(from, playerId);
+        players.clearEverythingBeforeTokenTransfer(from, playerId);        
         if (to == address(0)) {
           // Burning
           string memory oldName = EstforLibrary.toLower(_names[playerId]);
@@ -345,6 +387,9 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
           ++burned;
         } else if (from != address(0)) {
           // Not minting
+          if (_marketplaceAddress != address(0)) {
+            IMarketplace(_marketplaceAddress).contractCancel(from, address(this), playerId); // prevents ghost listings
+          }
           players.beforeTokenTransferTo(to, playerId);
         }
       }
@@ -472,7 +517,15 @@ contract PlayerNFT is UUPSUpgradeable, OwnableUpgradeable, SamWitchERC1155Upgrad
   function setDevAddress(address dev) external onlyOwner {
     _dev = dev;
   }
-  
+
+  function setMarketplaceAddress(address marketplaceAddress) external onlyOwner {
+    _marketplaceAddress = marketplaceAddress;
+  }
+
+  function setCosmeticsAddress(address cosmeticsAddress) external onlyOwner {
+    _cosmeticsAddress = cosmeticsAddress;
+  }
+
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

@@ -76,48 +76,48 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
     uint8 messageType = abi.decode(payload, (uint8));
 
     if (messageType == 1) {
-      _handlePetMessage(payload);
+      // _handlePetMessage(payload);
     } else if (messageType == 2) {
       _handleItemMessage(payload);
     } else if (messageType == 3) {
-      _handlePlayerMessage(payload);
+      // _handlePlayerMessage(payload);
     } else {
       revert UnknownMessageType();
     }
   }
 
-  function _handlePetMessage(bytes calldata payload) private {
-    (
-      uint256 messageType,
-      address from,
-      uint256[] memory petIds,
-      uint24[] memory basePetIds,
-      string[] memory petNames,
-      Skill[] memory skillEnhancement1s,
-      uint8[] memory skillFixedEnhancement1s,
-      uint8[] memory skillPercentageEnhancement1,
-      Skill[] memory skillEnhancement2s,
-      uint8[] memory skillFixedEnhancement2s,
-      uint8[] memory skillPercentageEnhancement2s
-    ) = abi.decode(
-        payload,
-        (uint256, address, uint256[], uint24[], string[], Skill[], uint8[], uint8[], Skill[], uint8[], uint8[])
-      );
+  // function _handlePetMessage(bytes calldata payload) private {
+  //   (
+  //     uint256 messageType,
+  //     address from,
+  //     uint256[] memory petIds,
+  //     uint24[] memory basePetIds,
+  //     string[] memory petNames,
+  //     Skill[] memory skillEnhancement1s,
+  //     uint8[] memory skillFixedEnhancement1s,
+  //     uint8[] memory skillPercentageEnhancement1,
+  //     Skill[] memory skillEnhancement2s,
+  //     uint8[] memory skillFixedEnhancement2s,
+  //     uint8[] memory skillPercentageEnhancement2s
+  //   ) = abi.decode(
+  //       payload,
+  //       (uint256, address, uint256[], uint24[], string[], Skill[], uint8[], uint8[], Skill[], uint8[], uint8[])
+  //     );
 
-    // Mint the pet
-    _petNFT.mintBridge(
-      from,
-      petIds,
-      basePetIds,
-      petNames,
-      skillEnhancement1s,
-      skillFixedEnhancement1s,
-      skillPercentageEnhancement1,
-      skillEnhancement2s,
-      skillFixedEnhancement2s,
-      skillPercentageEnhancement2s
-    );
-  }
+  //   // Mint the pet
+  //   _petNFT.mintBridge(
+  //     from,
+  //     petIds,
+  //     basePetIds,
+  //     petNames,
+  //     skillEnhancement1s,
+  //     skillFixedEnhancement1s,
+  //     skillPercentageEnhancement1,
+  //     skillEnhancement2s,
+  //     skillFixedEnhancement2s,
+  //     skillPercentageEnhancement2s
+  //   );
+  // }
 
   function _handleItemMessage(bytes calldata payload) private {
     (uint256 messageType, address to, uint256[] memory ids, uint256[] memory amounts) = abi.decode(
@@ -127,126 +127,126 @@ contract Bridge is UUPSUpgradeable, OAppUpgradeable {
     _itemNFT.mintBatch(to, ids, amounts);
   }
 
-  function _handlePlayerMessage(bytes calldata payload) private {
-    (
-      uint256 messageType,
-      address from,
-      uint256 playerId,
-      uint256 avatarId,
-      string memory heroName,
-      string memory discord,
-      string memory twitter,
-      string memory telegram,
-      bool isUpgraded,
-      Skill[] memory skills,
-      uint256[] memory xps,
-      uint256 clanId,
-      string memory clanName,
-      string memory clanDiscord,
-      string memory clanTelegram,
-      string memory clanTwitter,
-      uint256 clanImageId,
-      uint256 clanCreatedTimestamp,
-      uint256 clanTierId,
-      uint256 clanMMR,
-      bool clanDisableJoinRequests,
-      uint256[] memory questsCompleted,
-      uint256[] memory questIds,
-      uint256[] memory questActionCompletedNum1s,
-      uint256[] memory questActionCompletedNum2s,
-      uint256[] memory questActionChoiceCompletedNums,
-      uint256[] memory questBurnCompletedAmounts,
-      uint256 passiveActionId,
-      uint256 passiveActionStartTime
-    ) = abi.decode(
-        payload,
-        (
-          uint256,
-          address,
-          uint256,
-          uint256,
-          string,
-          string,
-          string,
-          string,
-          bool,
-          Skill[],
-          uint256[],
-          uint256,
-          string,
-          string,
-          string,
-          string,
-          uint256,
-          uint256,
-          uint256,
-          uint256,
-          bool,
-          uint256[],
-          uint256[],
-          uint256[],
-          uint256[],
-          uint256[],
-          uint256[],
-          uint256,
-          uint256
-        )
-      );
+  // function _handlePlayerMessage(bytes calldata payload) private {
+  //   (
+  //     uint256 messageType,
+  //     address from,
+  //     uint256 playerId,
+  //     uint256 avatarId,
+  //     string memory heroName,
+  //     string memory discord,
+  //     string memory twitter,
+  //     string memory telegram,
+  //     bool isUpgraded,
+  //     Skill[] memory skills,
+  //     uint256[] memory xps,
+  //     uint256 clanId,
+  //     string memory clanName,
+  //     string memory clanDiscord,
+  //     string memory clanTelegram,
+  //     string memory clanTwitter,
+  //     uint256 clanImageId,
+  //     uint256 clanCreatedTimestamp,
+  //     uint256 clanTierId,
+  //     uint256 clanMMR,
+  //     bool clanDisableJoinRequests,
+  //     uint256[] memory questsCompleted,
+  //     uint256[] memory questIds,
+  //     uint256[] memory questActionCompletedNum1s,
+  //     uint256[] memory questActionCompletedNum2s,
+  //     uint256[] memory questActionChoiceCompletedNums,
+  //     uint256[] memory questBurnCompletedAmounts,
+  //     uint256 passiveActionId,
+  //     uint256 passiveActionStartTime
+  //   ) = abi.decode(
+  //       payload,
+  //       (
+  //         uint256,
+  //         address,
+  //         uint256,
+  //         uint256,
+  //         string,
+  //         string,
+  //         string,
+  //         string,
+  //         bool,
+  //         Skill[],
+  //         uint256[],
+  //         uint256,
+  //         string,
+  //         string,
+  //         string,
+  //         string,
+  //         uint256,
+  //         uint256,
+  //         uint256,
+  //         uint256,
+  //         bool,
+  //         uint256[],
+  //         uint256[],
+  //         uint256[],
+  //         uint256[],
+  //         uint256[],
+  //         uint256[],
+  //         uint256,
+  //         uint256
+  //       )
+  //     );
 
-    // Check player does not exist
-    require(!_playerNFT.exists(playerId), PlayerAlreadyExists());
+  //   // Check player does not exist
+  //   require(!_playerNFT.exists(playerId), PlayerAlreadyExists());
 
-    // Mint the player
-    _playerNFT.mintBridge(from, playerId, avatarId, heroName, discord, twitter, telegram, isUpgraded);
+  //   // Mint the player
+  //   _playerNFT.mintBridge(from, playerId, avatarId, heroName, discord, twitter, telegram, isUpgraded);
 
-    // Update all xps for the skills
-    uint256 totalXP;
-    uint256 totalLevel;
-    bool skipEffects = true;
-    for (uint256 i = 0; i < skills.length; ++i) {
-      uint56 skillXP = uint56(xps[i]);
-      if (skillXP > 0) {
-        _players.modifyXP(from, playerId, skills[i], skillXP, skipEffects);
-      }
-      totalXP += skillXP;
-      totalLevel += PlayersLibrary._getLevel(skillXP);
-    }
-    // Need to add Level 1 for farming as it didn't exist on Fantom
-    totalLevel += 1;
-    _players.bridgePlayer(playerId, totalXP, totalLevel);
+  //   // Update all xps for the skills
+  //   uint256 totalXP;
+  //   uint256 totalLevel;
+  //   bool skipEffects = true;
+  //   for (uint256 i = 0; i < skills.length; ++i) {
+  //     uint56 skillXP = uint56(xps[i]);
+  //     if (skillXP > 0) {
+  //       _players.modifyXP(from, playerId, skills[i], skillXP, skipEffects);
+  //     }
+  //     totalXP += skillXP;
+  //     totalLevel += PlayersLibrary._getLevel(skillXP);
+  //   }
+  //   // Need to add Level 1 for farming as it didn't exist on Fantom
+  //   totalLevel += 1;
+  //   _players.bridgePlayer(playerId, totalXP, totalLevel);
 
-    // Create clan. Not worrying about the clan items, only clan itself
-    if (clanId != 0) {
-      _clans.createClanBridge(
-        from,
-        playerId,
-        clanId,
-        clanName,
-        clanDiscord,
-        clanTelegram,
-        clanTwitter,
-        clanImageId,
-        clanCreatedTimestamp,
-        clanTierId,
-        clanMMR,
-        clanDisableJoinRequests
-      );
-    }
+  //   // Create clan. Not worrying about the clan items, only clan itself
+  //   if (clanId != 0) {
+  //     _clans.createClanBridge(
+  //       from,
+  //       playerId,
+  //       clanId,
+  //       clanName,
+  //       clanDiscord,
+  //       clanTelegram,
+  //       clanTwitter,
+  //       clanImageId,
+  //       clanCreatedTimestamp,
+  //       clanTierId,
+  //       clanMMR,
+  //       clanDisableJoinRequests
+  //     );
+  //   }
 
-    // Update quests
-    _quests.processQuestsBridge(
-      from,
-      playerId,
-      questsCompleted,
-      questIds,
-      questActionCompletedNum1s,
-      questActionCompletedNum2s,
-      questActionChoiceCompletedNums,
-      questBurnCompletedAmounts
-    );
+  //   // Update quests
+  //   _quests.processQuestsBridge(
+  //     from,
+  //     playerId,
+  //     questsCompleted,
+  //     questIds,
+  //     questActionCompletedNum1s,
+  //     questActionCompletedNum2s,
+  //     questActionChoiceCompletedNums,
+  //     questBurnCompletedAmounts
+  //   );
 
-    _passiveActions.addPassiveActionBridge(playerId, passiveActionId, passiveActionStartTime);
-  }
+  //   _passiveActions.addPassiveActionBridge(playerId, passiveActionId, passiveActionStartTime);
+  // }
 
   function initializeAddresses(
     PetNFT petNFT,

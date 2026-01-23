@@ -1,6 +1,6 @@
-import {Skill} from "@paintswap/estfor-definitions/types";
+import {EquipPosition, Skill} from "@paintswap/estfor-definitions/types";
 import {deployments, ethers, upgrades} from "hardhat";
-import {AvatarInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
+import {AvatarInfo, CosmeticInfo, createPlayer, setDailyAndWeeklyRewards} from "../../scripts/utils";
 import {
   AdminAccess,
   Bank,
@@ -8,6 +8,7 @@ import {
   BankRegistry,
   ClanBattleLibrary,
   Clans,
+  Cosmetics,
   CombatantsHelper,
   EstforLibrary,
   EggInstantVRFActionStrategy,
@@ -16,6 +17,7 @@ import {
   InstantVRFActions,
   ItemNFT,
   LockedBankVaults,
+  Marketplace,
   MockRouter,
   PassiveActions,
   PetNFT,
@@ -35,7 +37,8 @@ import {
   WorldActions,
   DailyRewardsScheduler,
   Bridge,
-  ActivityPoints
+  ActivityPoints,
+  GlobalEvents,
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -60,12 +63,12 @@ export const playersFixture = async function () {
   const bridge = (await upgrades.deployProxy(Bridge, [srcEid], {
     kind: "uups",
     constructorArgs: [await lzEndpoint.getAddress()],
-    unsafeAllow: ["delegatecall", "constructor", "state-variable-immutable"]
+    unsafeAllow: ["delegatecall", "constructor", "state-variable-immutable"],
   })) as unknown as Bridge;
 
   const WorldActions = await ethers.getContractFactory("WorldActions");
   const worldActions = (await upgrades.deployProxy(WorldActions, [], {
-    kind: "uups"
+    kind: "uups",
   })) as unknown as WorldActions;
 
   // Add some dummy blocks so that the randomness beacon can access previous blocks for random numbers
@@ -73,18 +76,23 @@ export const playersFixture = async function () {
     await owner.sendTransaction({
       to: owner.address,
       value: 1,
-      maxFeePerGas: 1
+      maxFeePerGas: 1,
     });
   }
 
+  const Marketplace = await ethers.getContractFactory("Marketplace");
+  const marketplace = (await upgrades.deployProxy(Marketplace, [await brush.getAddress(), owner.address], {
+    kind: "uups",
+  })) as unknown as Marketplace;
+
   const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
   const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
-    kind: "uups"
+    kind: "uups",
   })) as unknown as RandomnessBeacon;
 
   await owner.sendTransaction({
     to: await randomnessBeacon.getAddress(),
-    value: ethers.parseEther("1")
+    value: ethers.parseEther("1"),
   });
 
   const DailyRewardsScheduler = await ethers.getContractFactory("DailyRewardsScheduler");
@@ -92,7 +100,7 @@ export const playersFixture = async function () {
     DailyRewardsScheduler,
     [await randomnessBeacon.getAddress()],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as DailyRewardsScheduler;
 
@@ -100,7 +108,7 @@ export const playersFixture = async function () {
 
   const Treasury = await ethers.getContractFactory("Treasury");
   const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
-    kind: "uups"
+    kind: "uups",
   })) as unknown as Treasury;
 
   const router = (await ethers.deployContract("MockRouter")) as MockRouter;
@@ -112,17 +120,17 @@ export const playersFixture = async function () {
       await treasury.getAddress(),
       await dev.getAddress(),
       await brush.getAddress(),
-      alice.address
+      alice.address,
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as RoyaltyReceiver;
 
   const admins = [owner.address, alice.address];
   const AdminAccess = await ethers.getContractFactory("AdminAccess");
   const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, admins], {
-    kind: "uups"
+    kind: "uups",
   })) as unknown as AdminAccess;
 
   const isBeta = true;
@@ -130,7 +138,7 @@ export const playersFixture = async function () {
   const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
   const itemNFTLibrary = await ItemNFTLibrary.deploy();
   const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
+    libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
   });
   const itemsUri = "ipfs://";
   const itemNFT = (await upgrades.deployProxy(
@@ -138,7 +146,7 @@ export const playersFixture = async function () {
     [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as ItemNFT;
 
@@ -147,7 +155,7 @@ export const playersFixture = async function () {
     ActivityPoints,
     [await itemNFT.getAddress(), ACTIVITY_TICKET, SONIC_GEM_TICKET],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as ActivityPoints;
   await itemNFT.setApproved([activityPoints], true);
@@ -162,10 +170,10 @@ export const playersFixture = async function () {
       await treasury.getAddress(),
       await dev.getAddress(),
       minItemQuantityBeforeSellsAllowed,
-      sellingCutoffDuration
+      sellingCutoffDuration,
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as Shop;
 
@@ -175,7 +183,7 @@ export const playersFixture = async function () {
   // Create NFT contract which contains all the players
   const estforLibrary = (await ethers.deployContract("EstforLibrary")) as EstforLibrary;
   const PlayerNFT = await ethers.getContractFactory("PlayerNFT", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()}
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
   });
   const editNameBrushPrice = parseEther("1");
   const upgradePlayerBrushPrice = parseEther("1");
@@ -192,11 +200,11 @@ export const playersFixture = async function () {
       imageBaseUri,
       startPlayerId,
       isBeta,
-      await bridge.getAddress()
+      await bridge.getAddress(),
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as PlayerNFT;
 
@@ -209,10 +217,10 @@ export const playersFixture = async function () {
       await bridge.getAddress(),
       await router.getAddress(),
       buyPath,
-      await activityPoints.getAddress()
+      await activityPoints.getAddress(),
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as Quests;
 
@@ -220,7 +228,7 @@ export const playersFixture = async function () {
   const initialMMR = 500;
   const startClanId = 1;
   const Clans = await ethers.getContractFactory("Clans", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()}
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
   });
   const clans = (await upgrades.deployProxy(
     Clans,
@@ -234,11 +242,11 @@ export const playersFixture = async function () {
       initialMMR,
       startClanId,
       await bridge.getAddress(),
-      await activityPoints.getAddress()
+      await activityPoints.getAddress(),
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as Clans;
 
@@ -254,17 +262,17 @@ export const playersFixture = async function () {
       parseEther("5"),
       parseEther("1000"),
       parseEther("250"),
-      await activityPoints.getAddress()
+      await activityPoints.getAddress(),
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as WishingWell;
 
   const startPetId = 1;
   const petNFTLibrary = await ethers.deployContract("PetNFTLibrary");
   const PetNFT = await ethers.getContractFactory("PetNFT", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()}
+    libraries: {EstforLibrary: await estforLibrary.getAddress(), PetNFTLibrary: await petNFTLibrary.getAddress()},
   });
   const petNFT = (await upgrades.deployProxy(
     PetNFT,
@@ -279,27 +287,27 @@ export const playersFixture = async function () {
       startPetId,
       await bridge.getAddress(),
       await adminAccess.getAddress(),
-      isBeta
+      isBeta,
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as PetNFT;
 
   // This contains all the player data
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   const playersImplQueueActions = await ethers.deployContract("PlayersImplQueueActions", {
-    libraries: {PlayersLibrary: await playersLibrary.getAddress()}
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplProcessActions = await ethers.deployContract("PlayersImplProcessActions", {
-    libraries: {PlayersLibrary: await playersLibrary.getAddress()}
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplRewards = await ethers.deployContract("PlayersImplRewards", {
-    libraries: {PlayersLibrary: await playersLibrary.getAddress()}
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplMisc = await ethers.deployContract("PlayersImplMisc", {
-    libraries: {PlayersLibrary: await playersLibrary.getAddress()}
+    libraries: {PlayersLibrary: await playersLibrary.getAddress()},
   });
   const playersImplMisc1 = await ethers.deployContract("PlayersImplMisc1");
 
@@ -324,17 +332,17 @@ export const playersFixture = async function () {
       await playersImplMisc1.getAddress(),
       await bridge.getAddress(),
       await activityPoints.getAddress(),
-      isBeta
+      isBeta,
     ],
     {
       kind: "uups",
-      unsafeAllow: ["delegatecall"]
+      unsafeAllow: ["delegatecall"],
     }
   )) as unknown as Players;
 
   const promotionsLibrary = await ethers.deployContract("PromotionsLibrary");
   const Promotions = await ethers.getContractFactory("Promotions", {
-    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()}
+    libraries: {PromotionsLibrary: await promotionsLibrary.getAddress()},
   });
   const promotions = (await upgrades.deployProxy(
     Promotions,
@@ -349,11 +357,11 @@ export const playersFixture = async function () {
       await treasury.getAddress(),
       await dev.getAddress(),
       await adminAccess.getAddress(),
-      isBeta
+      isBeta,
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as Promotions;
 
@@ -364,10 +372,10 @@ export const playersFixture = async function () {
       await players.getAddress(),
       await itemNFT.getAddress(),
       await quests.getAddress(),
-      await activityPoints.getAddress()
+      await activityPoints.getAddress(),
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as InstantActions;
 
@@ -384,10 +392,10 @@ export const playersFixture = async function () {
       await quests.getAddress(),
       await mockVRF.getAddress(),
       maxInstantVRFActionAmount,
-      await activityPoints.getAddress()
+      await activityPoints.getAddress(),
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as InstantVRFActions;
 
@@ -396,7 +404,7 @@ export const playersFixture = async function () {
     GenericInstantVRFActionStrategy,
     [await instantVRFActions.getAddress()],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as GenericInstantVRFActionStrategy;
 
@@ -405,13 +413,13 @@ export const playersFixture = async function () {
     EggInstantVRFActionStrategy,
     [await instantVRFActions.getAddress()],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as EggInstantVRFActionStrategy;
 
   const BankRelay = await ethers.getContractFactory("BankRelay");
   const bankRelay = (await upgrades.deployProxy(BankRelay, [await clans.getAddress()], {
-    kind: "uups"
+    kind: "uups",
   })) as unknown as BankRelay;
 
   const pvpAttackingCooldown = 3600; // 1 hour
@@ -427,10 +435,10 @@ export const playersFixture = async function () {
       allBattleSkills,
       pvpAttackingCooldown,
       await adminAccess.getAddress(),
-      isBeta
+      isBeta,
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as PVPBattleground;
 
@@ -464,12 +472,12 @@ export const playersFixture = async function () {
     EstforConstants.ACTION_COMBAT_ICE_TROLL,
     EstforConstants.ACTION_COMBAT_BLAZING_MONTANITE,
     EstforConstants.ACTION_COMBAT_MONTANITE_ICE_TITAN,
-    EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN
+    EstforConstants.ACTION_COMBAT_MONTANITE_FIRE_TITAN,
   ];
   const Raids = await ethers.getContractFactory("Raids", {
     libraries: {
-      PlayersLibrary: await playersLibrary.getAddress()
-    }
+      PlayersLibrary: await playersLibrary.getAddress(),
+    },
   });
   const raids = (await upgrades.deployProxy(
     Raids,
@@ -484,17 +492,17 @@ export const playersFixture = async function () {
       await randomnessBeacon.getAddress(),
       maxRaidCombatants,
       raidCombatActionIds,
-      isBeta
+      isBeta,
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as Raids;
 
   await owner.sendTransaction({
     to: await raids.getAddress(),
-    value: ethers.parseEther("10")
+    value: ethers.parseEther("10"),
   });
 
   const clanBattleLibrary = (await ethers.deployContract("ClanBattleLibrary")) as ClanBattleLibrary;
@@ -508,8 +516,8 @@ export const playersFixture = async function () {
     libraries: {
       EstforLibrary: await estforLibrary.getAddress(),
       LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
-      ClanBattleLibrary: await clanBattleLibrary.getAddress()
-    }
+      ClanBattleLibrary: await clanBattleLibrary.getAddress(),
+    },
   });
   const lockedBankVaults = (await upgrades.deployProxy(
     LockedBankVaults,
@@ -529,11 +537,11 @@ export const playersFixture = async function () {
       maxLockedVaults,
       await adminAccess.getAddress(),
       await activityPoints.getAddress(),
-      isBeta
+      isBeta,
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as LockedBankVaults;
 
@@ -559,16 +567,16 @@ export const playersFixture = async function () {
       attackingCooldownTerritories,
       await adminAccess.getAddress(),
       await activityPoints.getAddress(),
-      isBeta
+      isBeta,
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as Territories;
 
   const CombatantsHelper = await ethers.getContractFactory("CombatantsHelper", {
-    libraries: {EstforLibrary: await estforLibrary.getAddress()}
+    libraries: {EstforLibrary: await estforLibrary.getAddress()},
   });
   const combatantsHelper = (await upgrades.deployProxy(
     CombatantsHelper,
@@ -579,18 +587,18 @@ export const playersFixture = async function () {
       await lockedBankVaults.getAddress(),
       await raids.getAddress(),
       await adminAccess.getAddress(),
-      isBeta
+      isBeta,
     ],
     {
       kind: "uups",
-      unsafeAllow: ["external-library-linking"]
+      unsafeAllow: ["external-library-linking"],
     }
   )) as unknown as CombatantsHelper;
 
   await upgrades.upgradeProxy(await clans.getAddress(), Clans, {
     call: {fn: "initializeV2", args: [await combatantsHelper.getAddress()]},
     unsafeAllow: ["external-library-linking"],
-    kind: "uups"
+    kind: "uups",
   });
 
   const PassiveActions = await ethers.getContractFactory("PassiveActions");
@@ -601,10 +609,10 @@ export const playersFixture = async function () {
       await itemNFT.getAddress(),
       await randomnessBeacon.getAddress(),
       await bridge.getAddress(),
-      await activityPoints.getAddress()
+      await activityPoints.getAddress(),
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as PassiveActions;
 
@@ -613,7 +621,7 @@ export const playersFixture = async function () {
 
   const BankRegistry = await ethers.getContractFactory("BankRegistry");
   const bankRegistry = (await upgrades.deployProxy(BankRegistry, [], {
-    kind: "uups"
+    kind: "uups",
   })) as unknown as BankRegistry;
 
   await bankRegistry.setForceItemDepositors(
@@ -633,12 +641,26 @@ export const playersFixture = async function () {
       await clans.getAddress(),
       await players.getAddress(),
       await lockedBankVaults.getAddress(),
-      await raids.getAddress()
+      await raids.getAddress(),
     ],
     {
-      kind: "uups"
+      kind: "uups",
     }
   )) as unknown as BankFactory;
+
+  const Cosmetics = await ethers.getContractFactory("Cosmetics");
+  const cosmetics = (await upgrades.deployProxy(Cosmetics, [
+    owner.address,
+    await itemNFT.getAddress(),
+    await playerNFT.getAddress(),
+  ])) as unknown as Cosmetics;
+
+  const GlobalEvents = await ethers.getContractFactory("GlobalEvents");
+  const globalEvents = (await upgrades.deployProxy(GlobalEvents, [
+    owner.address,
+    await players.getAddress(),
+    await itemNFT.getAddress(),
+  ])) as unknown as GlobalEvents;
 
   await randomnessBeacon.initializeAddresses(wishingWell, dailyRewardsScheduler);
   await randomnessBeacon.initializeRandomWords();
@@ -676,7 +698,9 @@ export const playersFixture = async function () {
       lockedBankVaults,
       instantVRFActions,
       passiveActions,
-      raids
+      raids,
+      cosmetics,
+      globalEvents,
     ],
     true
   );
@@ -686,6 +710,12 @@ export const playersFixture = async function () {
   await lockedBankVaults.initializeAddresses(territories, combatantsHelper, bankFactory);
   await clans.setXPModifiers([lockedBankVaults, territories, wishingWell], true);
   await players.setAlphaCombatParams(1, 1, 0); // Alpha combat healing was introduced later, so to not mess up existing tests set this to 0
+
+  await playerNFT.setMarketplaceAddress(marketplace);
+  await petNFT.setMarketplaceAddress(marketplace);
+  await playerNFT.setApprovalForAll(marketplace, true);
+  await petNFT.setApprovalForAll(marketplace, true);
+  await playerNFT.setCosmeticsAddress(cosmetics);
 
   // Set activity points on all contracts
   const contracts = [
@@ -698,7 +728,7 @@ export const playersFixture = async function () {
     clans,
     quests,
     shop,
-    passiveActions
+    passiveActions,
   ];
 
   await activityPoints.addCallers(contracts);
@@ -713,9 +743,22 @@ export const playersFixture = async function () {
     name: "Name goes here",
     description: "Hi I'm a description",
     imageURI: "1234.png",
-    startSkills: [Skill.MAGIC, Skill.NONE]
+    startSkills: [Skill.MAGIC, Skill.NONE],
   };
-  await playerNFT.setAvatars([avatarId], [avatarInfo]);
+  const cosmeticAvatarInfo: AvatarInfo = {
+    name: "Cosmetic Avatar",
+    description: "Hi I'm a cosmetic avatar",
+    imageURI: "5678.png",
+    startSkills: [Skill.ALCHEMY, Skill.FORGING],
+  };
+  const cosmeticId = EstforConstants.AVATAR_001_CHIMP;
+  const cosmeticInfo: CosmeticInfo = {
+    itemTokenId: cosmeticId,
+    cosmeticPosition: EquipPosition.AVATAR,
+    avatarId: 9, // must be above NUM_BASE_AVATARS (to stop minting cosmetic avatars)
+  };
+  await playerNFT.setAvatars([avatarId, 9], [avatarInfo, cosmeticAvatarInfo]);
+  await cosmetics.setCosmetics([cosmeticId], [cosmeticInfo]);
 
   const origName = "0xSamWitch";
   const makeActive = true;
@@ -803,6 +846,11 @@ export const playersFixture = async function () {
     maxRaidCombatants,
     startPetId,
     bridge,
-    activityPoints
+    activityPoints,
+    marketplace,
+    cosmetics,
+    cosmeticId,
+    cosmeticInfo,
+    globalEvents,
   };
 };

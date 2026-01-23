@@ -10,7 +10,7 @@ import {
   RandomnessBeacon,
   RoyaltyReceiver,
   Shop,
-  Treasury
+  Treasury,
 } from "../typechain-types";
 import {setDailyAndWeeklyRewards} from "../scripts/utils";
 import {Block, parseEther, ZeroAddress} from "ethers";
@@ -23,25 +23,27 @@ describe("Shop", function () {
 
     const brush = await ethers.deployContract("MockBrushToken");
     const mockVRF = await ethers.deployContract("MockVRF");
+    const usdc = await ethers.deployContract("MockUSDCToken");
+    await usdc.mint(bob, 10_000_000n); // Mint some USDC to bob for testing (10 USDC with 6 decimals)
 
     // Add some dummy blocks so that world can access previous blocks for random numbers
     for (let i = 0; i < 5; ++i) {
       await owner.sendTransaction({
         to: owner.address,
         value: 1,
-        maxFeePerGas: 1
+        maxFeePerGas: 1,
       });
     }
 
     // Create the world
     const RandomnessBeacon = await ethers.getContractFactory("RandomnessBeacon");
     const randomnessBeacon = (await upgrades.deployProxy(RandomnessBeacon, [await mockVRF.getAddress()], {
-      kind: "uups"
+      kind: "uups",
     })) as unknown as RandomnessBeacon;
 
     await owner.sendTransaction({
       to: await randomnessBeacon.getAddress(),
-      value: ethers.parseEther("1")
+      value: ethers.parseEther("1"),
     });
 
     const mockOracleCB = await ethers.deployContract("MockOracleCB");
@@ -53,7 +55,7 @@ describe("Shop", function () {
       DailyRewardsScheduler,
       [await randomnessBeacon.getAddress()],
       {
-        kind: "uups"
+        kind: "uups",
       }
     )) as unknown as DailyRewardsScheduler;
 
@@ -61,7 +63,7 @@ describe("Shop", function () {
 
     const Treasury = await ethers.getContractFactory("Treasury");
     const treasury = (await upgrades.deployProxy(Treasury, [await brush.getAddress()], {
-      kind: "uups"
+      kind: "uups",
     })) as unknown as Treasury;
 
     const minItemQuantityBeforeSellsAllowed = 500n;
@@ -74,10 +76,10 @@ describe("Shop", function () {
         await treasury.getAddress(),
         dev.address,
         minItemQuantityBeforeSellsAllowed,
-        sellingCutoffDuration
+        sellingCutoffDuration,
       ],
       {
-        kind: "uups"
+        kind: "uups",
       }
     )) as unknown as Shop;
 
@@ -87,21 +89,21 @@ describe("Shop", function () {
       RoyaltyReceiver,
       [await router.getAddress(), await shop.getAddress(), dev.address, await brush.getAddress(), alice.address],
       {
-        kind: "uups"
+        kind: "uups",
       }
     )) as unknown as RoyaltyReceiver;
 
     const admins = [owner.address, alice.address];
     const AdminAccess = await ethers.getContractFactory("AdminAccess");
     const adminAccess = (await upgrades.deployProxy(AdminAccess, [admins, admins], {
-      kind: "uups"
+      kind: "uups",
     })) as unknown as AdminAccess;
 
     const isBeta = true;
     const ItemNFTLibrary = await ethers.getContractFactory("ItemNFTLibrary");
     const itemNFTLibrary = await ItemNFTLibrary.deploy();
     const ItemNFT = await ethers.getContractFactory("ItemNFT", {
-      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()}
+      libraries: {ItemNFTLibrary: await itemNFTLibrary.getAddress()},
     });
     const itemsUri = "ipfs://";
     const itemNFT = (await upgrades.deployProxy(
@@ -109,7 +111,7 @@ describe("Shop", function () {
       [await royaltyReceiver.getAddress(), itemsUri, await adminAccess.getAddress(), isBeta],
       {
         kind: "uups",
-        unsafeAllow: ["external-library-linking"]
+        unsafeAllow: ["external-library-linking"],
       }
     )) as unknown as ItemNFT;
 
@@ -118,7 +120,7 @@ describe("Shop", function () {
       ActivityPoints,
       [await itemNFT.getAddress(), ACTIVITY_TICKET, SONIC_GEM_TICKET],
       {
-        kind: "uups"
+        kind: "uups",
       }
     );
     await activityPoints.addCallers([await shop.getAddress()]);
@@ -134,23 +136,23 @@ describe("Shop", function () {
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_SHIELD,
-        equipPosition: EstforTypes.EquipPosition.LEFT_HAND
+        equipPosition: EstforTypes.EquipPosition.LEFT_HAND,
       },
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.BRONZE_SWORD,
-        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND
+        equipPosition: EstforTypes.EquipPosition.RIGHT_HAND,
       },
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.RAW_MINNUS,
-        equipPosition: EstforTypes.EquipPosition.FOOD
+        equipPosition: EstforTypes.EquipPosition.FOOD,
       },
       {
         ...EstforTypes.defaultItemInput,
         tokenId: EstforConstants.SAPPHIRE_AMULET,
-        equipPosition: EstforTypes.EquipPosition.NECK
-      }
+        equipPosition: EstforTypes.EquipPosition.NECK,
+      },
     ]);
 
     await treasury.setSpenders([shop], true);
@@ -162,6 +164,11 @@ describe("Shop", function () {
       .to.emit(shop, "SetBrushDistributionPercentages")
       .withArgs(25, 50, 25);
 
+    // Approve shop to spend brush from dev address
+    await shop.setSupporterPackToken(usdc);
+    await brush.connect(dev).approve(await shop.getAddress(), ethers.MaxUint256);
+    await brush.mint(dev, parseEther("1000"));
+
     return {
       itemNFT,
       shop,
@@ -170,8 +177,10 @@ describe("Shop", function () {
       owner,
       alice,
       bob,
+      dev,
+      usdc,
       sellingCutoffDuration,
-      minItemQuantityBeforeSellsAllowed
+      minItemQuantityBeforeSellsAllowed,
     };
   };
 
@@ -193,7 +202,7 @@ describe("Shop", function () {
       shop.addBuyableItems([
         {tokenId: EstforConstants.BRONZE_SHIELD, price: 200},
         {tokenId: EstforConstants.RAW_MINNUS, price: 400},
-        {tokenId: EstforConstants.BRONZE_SWORD, price: 10}
+        {tokenId: EstforConstants.BRONZE_SWORD, price: 10},
       ])
     ).to.be.revertedWithCustomError(shop, "ShopItemAlreadyExists");
 
@@ -205,7 +214,7 @@ describe("Shop", function () {
     const {shop} = await loadFixture(deployContracts);
     await shop.addBuyableItems([
       {tokenId: EstforConstants.BRONZE_SHIELD, price: 500},
-      {tokenId: EstforConstants.RAW_MINNUS, price: 300}
+      {tokenId: EstforConstants.RAW_MINNUS, price: 300},
     ]);
 
     // Check that it's in the shop
@@ -215,7 +224,7 @@ describe("Shop", function () {
     await expect(
       shop.addBuyableItems([
         {tokenId: EstforConstants.BRONZE_SHIELD, price: 200},
-        {tokenId: EstforConstants.RAW_MINNUS, price: 400}
+        {tokenId: EstforConstants.RAW_MINNUS, price: 400},
       ])
     ).to.be.revertedWithCustomError(shop, "ShopItemAlreadyExists");
 
@@ -224,14 +233,14 @@ describe("Shop", function () {
       shop.editItems([
         {tokenId: EstforConstants.BRONZE_SHIELD, price: 200},
         {tokenId: EstforConstants.RAW_MINNUS, price: 400},
-        {tokenId: EstforConstants.BRONZE_SWORD, price: 10}
+        {tokenId: EstforConstants.BRONZE_SWORD, price: 10},
       ])
     ).to.be.revertedWithCustomError(shop, "ShopItemDoesNotExist");
     await shop.addBuyableItems([{tokenId: EstforConstants.BRONZE_SWORD, price: 20}]);
     await shop.editItems([
       {tokenId: EstforConstants.BRONZE_SHIELD, price: 300},
       {tokenId: EstforConstants.RAW_MINNUS, price: 400},
-      {tokenId: EstforConstants.BRONZE_SWORD, price: 10}
+      {tokenId: EstforConstants.BRONZE_SWORD, price: 10},
     ]);
 
     // Check that it's in the shop
@@ -298,6 +307,16 @@ describe("Shop", function () {
       // Increase time to the start of the 3rd week of the promotion
       await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600));
     }
+    // If in correct week, check we're on the correct day (as it only runs from day 0-4 - Thurs-Sun unix epoch days)
+    if (thirdWeekMod >= 2) {
+      // what day are we on
+      const currentDay = Math.floor(Date.now() / 1000 / (24 * 3600)) % 7;
+      if (currentDay >= 4) {
+        // Mon-Wed
+        // Increase time to the start of the 3rd week of the promotion
+        await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + (21 - currentDay) * 24 * 3600));
+      }
+    }
 
     const quantityBought = 2;
     // Hasn't approved brush yet
@@ -362,6 +381,16 @@ describe("Shop", function () {
     if (thirdWeekMod < 2) {
       // Increase time to the start of the 3rd week of the promotion
       await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + (2 - thirdWeekMod) * 7 * 24 * 3600));
+    }
+    // If in correct week, check we're on the correct day (as it only runs from day 0-4 - Thurs-Sun unix epoch days)
+    if (thirdWeekMod >= 2) {
+      // what day are we on
+      const currentDay = Math.floor(Date.now() / 1000 / (24 * 3600)) % 7;
+      if (currentDay >= 4) {
+        // Mon-Wed
+        // Increase time to the start of the 3rd week of the promotion
+        await time.increaseTo(Math.floor(Math.floor(Date.now() / 1000) + (21 - currentDay) * 24 * 3600));
+      }
     }
 
     await brush.mint(alice, 450);
@@ -436,7 +465,7 @@ describe("Shop", function () {
     const priceSapphireAmulet = splitBrush / minItemQuantityBeforeSellsAllowed;
     expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
       BigInt(priceShield),
-      BigInt(priceSapphireAmulet)
+      BigInt(priceSapphireAmulet),
     ]);
     await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
     await ethers.provider.send("evm_mine", []);
@@ -707,8 +736,8 @@ describe("Shop", function () {
         {
           ...EstforTypes.defaultItemInput,
           tokenId: EstforConstants.ORICHALCUM_ARMOR,
-          equipPosition: EstforTypes.EquipPosition.BODY
-        }
+          equipPosition: EstforTypes.EquipPosition.BODY,
+        },
       ]);
       await expect(shop.addUnsellableItems([EstforConstants.ORICHALCUM_ARMOR])).to.not.be.reverted;
     });
@@ -767,7 +796,7 @@ describe("Shop", function () {
       const priceSapphireAmulet = splitBrush / minItemQuantityBeforeSellsAllowed;
       expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
         BigInt(priceShield),
-        BigInt(priceSapphireAmulet)
+        BigInt(priceSapphireAmulet),
       ]);
       await ethers.provider.send("evm_increaseTime", [sellingCutoffDuration]);
       await ethers.provider.send("evm_mine", []);
@@ -778,7 +807,7 @@ describe("Shop", function () {
       expect(await shop.liquidatePrice(EstforConstants.BRONZE_SHIELD)).to.eq(priceShieldAfterUnsellable);
       expect(await shop.liquidatePrices([EstforConstants.BRONZE_SHIELD, EstforConstants.SAPPHIRE_AMULET])).to.eql([
         BigInt(priceShieldAfterUnsellable),
-        BigInt(0)
+        BigInt(0),
       ]);
     });
 
@@ -812,7 +841,7 @@ describe("Shop", function () {
       await shop.addUnsellableItems([
         EstforConstants.BRONZE_SWORD,
         EstforConstants.RAW_MINNUS,
-        EstforConstants.SAPPHIRE_AMULET
+        EstforConstants.SAPPHIRE_AMULET,
       ]);
 
       // 2 exist in the world
@@ -840,5 +869,189 @@ describe("Shop", function () {
         .to.emit(shop, "NewAllocation")
         .withArgs(EstforConstants.BRONZE_SHIELD, totalBrush / numItems);
     });
+  });
+
+  it("reverts when non-owner sets the supporter pack token", async () => {
+    const {shop, bob, usdc} = await loadFixture(deployContracts);
+    await expect(shop.connect(bob).setSupporterPackToken(usdc)).to.be.revertedWithCustomError(
+      shop,
+      "OwnableUnauthorizedAccount"
+    );
+  });
+
+  it("reverts when non-owner sets supporter packs", async () => {
+    const {shop, bob} = await loadFixture(deployContracts);
+    await expect(
+      shop.connect(bob).setSupporterPacks(
+        [1],
+        [
+          {
+            price: 100,
+            itemTokenIds: [1],
+            itemQuantities: [1],
+            amountRemaining: 10,
+            startTimestamp: Math.floor(new Date().valueOf() / 1000),
+            brushToGive: parseEther("1"),
+          },
+        ]
+      )
+    ).to.be.revertedWithCustomError(shop, "OwnableUnauthorizedAccount");
+  });
+
+  it("reverts when owner sets length mismatched supporter packs", async () => {
+    const {shop, owner} = await loadFixture(deployContracts);
+    await expect(
+      shop.connect(owner).setSupporterPacks(
+        [1, 2],
+        [
+          {
+            price: 100,
+            itemTokenIds: [1],
+            itemQuantities: [1],
+            amountRemaining: 10,
+            startTimestamp: Math.floor(new Date().valueOf() / 1000),
+            brushToGive: parseEther("1"),
+          },
+        ]
+      )
+    ).to.be.revertedWithCustomError(shop, "LengthMismatch");
+  });
+
+  it("allows owner to set supporter packs", async () => {
+    const {shop, owner} = await loadFixture(deployContracts);
+    await expect(
+      shop.connect(owner).setSupporterPacks(
+        [1],
+        [
+          {
+            price: 100,
+            itemTokenIds: [1],
+            itemQuantities: [1],
+            amountRemaining: 10,
+            startTimestamp: Math.floor(new Date().valueOf() / 1000),
+            brushToGive: parseEther("1"),
+          },
+        ]
+      )
+    )
+      .to.emit(shop, "SetSupporterPacks")
+      .withArgs([1], [[100n, [1n], [1n], 10n, BigInt(Math.floor(new Date().valueOf() / 1000)), parseEther("1")]]);
+  });
+
+  it("can buy supporter pack", async () => {
+    const {shop, owner, bob, brush, usdc, itemNFT, dev} = await loadFixture(deployContracts);
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 10,
+          startTimestamp: Math.floor(new Date().valueOf() / 1000),
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.emit(shop, "BuySupporterPack").withArgs(
+      bob.address,
+      bob.address,
+      1, // pack id
+      3, // total usdc price
+      1 // quantity
+    );
+
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SHIELD)).to.eq(1);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SWORD)).to.eq(2);
+    expect(await brush.balanceOf(bob.address)).to.eq(parseEther("2"));
+    expect(await usdc.balanceOf(dev.getAddress())).to.eq(3);
+  });
+
+  it("can buy multiple supporter packs", async () => {
+    const {shop, owner, bob, brush, usdc, itemNFT, dev} = await loadFixture(deployContracts);
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 10,
+          startTimestamp: Math.floor(new Date().valueOf() / 1000),
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 3)).to.emit(shop, "BuySupporterPack").withArgs(
+      bob.address,
+      bob.address,
+      1, // pack id
+      9, // total usdc price
+      3 // quantity
+    );
+
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SHIELD)).to.eq(3);
+    expect(await itemNFT.balanceOf(bob.address, EstforConstants.BRONZE_SWORD)).to.eq(6);
+    expect(await brush.balanceOf(bob.address)).to.eq(parseEther("6"));
+    expect(await usdc.balanceOf(dev.getAddress())).to.eq(9);
+  });
+
+  it("should revert when no packs remaining", async () => {
+    const {shop, owner, bob, usdc} = await loadFixture(deployContracts);
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 1,
+          startTimestamp: Math.floor(new Date().valueOf() / 1000),
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.emit(shop, "BuySupporterPack").withArgs(
+      bob.address,
+      bob.address,
+      1, // pack id
+      3, // total usdc price
+      1 // quantity
+    );
+
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.be.revertedWithCustomError(
+      shop,
+      "SupporterPackInsufficientRemaining"
+    );
+  });
+
+  it("should revert when no pack currently running", async () => {
+    const {shop, owner, bob, usdc} = await loadFixture(deployContracts);
+
+    await shop.connect(owner).setSupporterPacks(
+      [1],
+      [
+        {
+          price: 3,
+          itemTokenIds: [EstforConstants.BRONZE_SHIELD, EstforConstants.BRONZE_SWORD],
+          itemQuantities: [1, 2],
+          amountRemaining: 1,
+          startTimestamp: Math.floor((await time.latest()) + 86400), // start tomorrow
+          brushToGive: parseEther("2"),
+        },
+      ]
+    );
+
+    await usdc.connect(bob).approve(shop, 10);
+    await expect(shop.connect(bob).buySupporterPack(1, bob.address, 1)).to.be.revertedWithCustomError(
+      shop,
+      "SupporterPackNotStarted"
+    );
   });
 });
