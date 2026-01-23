@@ -25,6 +25,7 @@ import {Marketplace, Cosmetics, GlobalEvents, GlobalEvents__factory, Players__fa
 import {cosmeticInfos} from "./data/cosmetics";
 import {EstforConstants} from "@paintswap/estfor-definitions";
 import {Skill} from "@paintswap/estfor-definitions/types";
+import {parseEther} from "ethers";
 
 async function main() {
   const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
@@ -34,7 +35,7 @@ async function main() {
     `Deploy marketplace using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`
   );
 
-  const timeout = 300 * 1000; // 5 minutes
+  const timeout = 60 * 1000; // 1 minute
 
   const playersIface = Players__factory.createInterface();
   const globalEventsIface = GlobalEvents__factory.createInterface();
@@ -281,16 +282,16 @@ async function main() {
         [1],
         [
           [
-            1,
+            15_000_000,
             [
               EstforConstants.AVATAR_001_CHIMP,
               EstforConstants.BORDER_001_ARCANE_PORTAL,
               EstforConstants.SUPPORT_001_TROPHY,
             ],
             [1, 1, 1],
-            100, // brush received
+            1000,
             Math.floor(Date.now() / 1000),
-            1, // usdc price (6 decimals)
+            parseEther("2000"),
           ],
         ],
       ]),
@@ -310,7 +311,7 @@ async function main() {
             rewardItemTokenId: EstforConstants.RIFT_COIN,
             rewardItemAmountPerInput: 1,
             inputItemTokenId: EstforConstants.RIFT_CRYSTAL,
-            inputItemMaxAmount: 1000,
+            inputItemMaxAmount: 150_000,
             totalInputAmount: 0,
           },
         ],

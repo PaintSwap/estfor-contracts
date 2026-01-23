@@ -18,19 +18,19 @@ async function main() {
   const worldActions = await ethers.getContractAt("WorldActions", WORLD_ACTIONS_ADDRESS);
 
   const newActionChoiceIds = new Set([
-    // EstforConstants.ACTIONCHOICE_ALCHEMY_WQ_I_III,
-    EstforConstants.ACTIONCHOICE_FORGING_WQ_I_V,
+    EstforConstants.ACTIONCHOICE_ALCHEMY_WQ_I_III,
+    // EstforConstants.ACTIONCHOICE_FORGING_WQ_I_V,
   ]);
 
-  const actionChoiceIndices = allActionChoiceIdsForging.reduce((indices: number[], actionChoiceId, index) => {
+  const actionChoiceIndices = allActionChoiceIdsAlchemy.reduce((indices: number[], actionChoiceId, index) => {
     if (newActionChoiceIds.has(actionChoiceId)) {
       indices.push(index);
     }
     return indices;
   }, []);
 
-  const actionChoices = actionChoiceIndices.map((index) => allActionChoicesForging[index]);
-  const actionChoiceIds = actionChoiceIndices.map((index) => allActionChoiceIdsForging[index]);
+  const actionChoices = actionChoiceIndices.map((index) => allActionChoicesAlchemy[index]);
+  const actionChoiceIds = actionChoiceIndices.map((index) => allActionChoiceIdsAlchemy[index]);
 
   if (actionChoices.length !== newActionChoiceIds.size || actionChoiceIds.length !== newActionChoiceIds.size) {
     console.error("ActionChoiceIds not found");
@@ -43,7 +43,7 @@ async function main() {
         to: ethers.getAddress(WORLD_ACTIONS_ADDRESS),
         value: "0",
         data: iface.encodeFunctionData("addBulkActionChoices", [
-          [EstforConstants.ACTION_FORGING_BASE],
+          [EstforConstants.ACTION_ALCHEMY_BASE],
           [actionChoiceIds],
           [actionChoices],
         ]),
@@ -52,7 +52,7 @@ async function main() {
       await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
     } else {
       const tx = await worldActions.addBulkActionChoices(
-        [EstforConstants.ACTION_FORGING_BASE],
+        [EstforConstants.ACTION_ALCHEMY_BASE],
         [actionChoiceIds],
         [actionChoices]
       );

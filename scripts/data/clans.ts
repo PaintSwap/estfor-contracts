@@ -14,30 +14,30 @@ export const allClanTiers: Tier[] = [
     maxMemberCapacity: 3,
     maxBankCapacity: 5,
     maxImageId: 10000,
-    price: parseEther("100"),
-    minimumAge: 0
+    price: parseEther("200"),
+    minimumAge: 0,
   },
   {
     id: 2,
     maxMemberCapacity: 10,
     maxBankCapacity: 20,
     maxImageId: 20000,
-    price: parseEther("350"),
-    minimumAge: 0
+    price: parseEther("700"),
+    minimumAge: 0,
   },
   {
     id: 3,
     maxMemberCapacity: 50,
     maxBankCapacity: 75,
     maxImageId: 30000,
-    price: parseEther("2000"),
-    minimumAge: 0
-  }
+    price: parseEther("3000"),
+    minimumAge: 0,
+  },
 ];
 
 export const allClanTiersBeta: Tier[] = allClanTiers.map((tier) => {
   return {
     ...tier,
-    price: tier.price / 10n
+    price: tier.price / 10n,
   };
 });
