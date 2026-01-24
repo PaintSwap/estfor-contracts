@@ -8217,7 +8217,7 @@ export const allActionChoicesForging: ActionChoiceInput[] = [
     isFullModeOnly: true,
     skillDiffs: [0],
     rate: 0.1 * 1000,
-    xpPerHour: 3000,
+    xpPerHour: 300,
     inputTokenIds: [EstforConstants.BLIGHT_VEIN_ORE, EstforConstants.RIFT_FUEL],
     inputAmounts: [10, 10],
     outputTokenId: EstforConstants.RIFT_CRYSTAL,

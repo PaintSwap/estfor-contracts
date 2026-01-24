@@ -20110,7 +20110,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "WQ1_LORE_PAGE_5.json",
-    name: "About the Rift-Sown Almanac - Supplementary Material",
+    name: "About the Rift-Sown Almanac Page 5",
     isAvailable: true,
     questPrerequisiteId: 0,
     isCollectionItem: false,
