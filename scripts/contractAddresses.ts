@@ -54,6 +54,7 @@ let marketplace;
 let cosmetics;
 let usdc;
 let globalEvent;
+let blackMarketTrader;
 
 // Third party stuff chain specific addresses
 const chainId = process.env.CHAIN_ID;
@@ -123,6 +124,7 @@ if (!isBeta) {
   marketplace = "0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1";
   cosmetics = "0xb30b177b6c8c21370a72d7cada5f627519c91432";
   globalEvent = "0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2";
+  blackMarketTrader = "";
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -141,14 +143,14 @@ if (!isBeta) {
   clans = "0x84d9d334c5b64fcbcb17d6b853a0434818d052bb";
   wishingWell = "0xb2570777de043adbc7bfcc4bfed747e2e44fbeea";
   bank = "0x72598e7d7a6652ebb29026f83512bce1455999f6";
-  petNFTLibrary = "0xc782815771443b1007a1ee92483ee9ff907dad0d";
+  petNFTLibrary = "0x2FFe92B4b38e9bc8b236ab610ac6073DCF2464a7";
   petNFT = "0x7ca7f680517150c8e1ed5a6dd5db80cdc6934082";
-  playersLibrary = "0xc9ceda474642e39f05c3e8fed75b3f45ed4ae210";
-  playersImplQueueActions = "0x9669c88141d7902e00db0b09d9f3de2d0dea39f3";
-  playersImplProcessActions = "0xa1915897aeac20dd40dc9712bdda672585299763";
-  playersImplRewards = "0x8d25433bb482fa6df6a4bc79752bbad0fb74b5a9";
-  playersImplMisc = "0xe078e54a3df10764bf51b3009205cd547e1a68f6";
-  playersImplMisc1 = "0x8be5a4253b3f43758ae748ef21e1cc86a046af1a";
+  playersLibrary = "0xfa7B7e2167BDd85Faf02B2d5E42b0601374E9edc";
+  playersImplQueueActions = "0x2d6be4704aedff55280a1102129f4737cfa79be8";
+  playersImplProcessActions = "0x6b734d59932e69b29f27fe51d1377098b54dbaf7";
+  playersImplRewards = "0x9f37122f03fd24b089d597f330c874638e29ff5b";
+  playersImplMisc = "0x77cfa3f90d1b183e8e67350428d721313cbbc822";
+  playersImplMisc1 = "0x4d85d84a0d1ceabb592a4b8a4dbdbd96b77233ee";
   players = "0x4f60948bea953693b4dcd7ea414a2198c3646c97";
   promotionsLibrary = "0xaf79ca769a02381daca6f7736c51e3ad01ac571c";
   promotions = "0xa4f0adf443b48b52827f8c1f56d2f2ab76ae43ab";
@@ -172,6 +174,7 @@ if (!isBeta) {
   marketplace = "0x3935866043766b86f30593bd17a787cc0105f7e0";
   cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
   globalEvent = "0x8d61f3135a9f39b685b9765976e6a0f0572aeca5";
+  blackMarketTrader = "0xac619719cdcf1fc03438c7b9aff737993feae851";
 }
 
 export const BRIDGE_ADDRESS = bridge;
@@ -233,6 +236,7 @@ export const MARKETPLACE_ADDRESS = marketplace;
 export const COSMETICS_ADDRESS = cosmetics;
 export const USDC_ADDRESS = usdc;
 export const GLOBAL_EVENT_ADDRESS = globalEvent;
+export const BLACK_MARKET_TRADER_ADDRESS = blackMarketTrader;
 
 // VRF
 export const VRF_ADDRESS = vrf;

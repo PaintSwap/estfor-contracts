@@ -378,6 +378,10 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       uint256 prevPointsAccruedExclBaseBoost;
       CombatStyle combatStyle = queuedAction.combatStyle._asCombatStyle();
       Skill skill = _getSkillFromChoiceOrStyle(actionChoice, combatStyle, queuedAction.actionId);
+
+      // Calculate pet XP bonus for non-combat actions
+      uint8 petBonusXPPercent = _getPetBonusXPPercent(from, queuedAction.petId, skill, veryStartTime, isCombat);
+
       (pointsAccrued, pointsAccruedExclBaseBoost) = _getPointsAccrued(
         playerId,
         queuedAction,
@@ -385,7 +389,8 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
         skill,
         xpElapsedTime + prevXPElapsedTime,
         pendingQueuedActionState.equipmentStates,
-        checkpointEquipments
+        checkpointEquipments,
+        petBonusXPPercent
       );
 
       if (prevProcessedTime != 0) {
@@ -396,7 +401,8 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
           skill,
           prevXPElapsedTime,
           pendingQueuedActionState.equipmentStates,
-          checkpointEquipments
+          checkpointEquipments,
+          petBonusXPPercent
         );
 
         pointsAccrued -= uint32(prevPointsAccrued);
@@ -956,6 +962,27 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     }
   }
 
+  function _getPetBonusXPPercent(
+    address from,
+    uint256 petId,
+    Skill skill,
+    uint256 actionStartTime,
+    bool isCombat
+  ) private view returns (uint8 petBonusXPPercent) {
+    if (petId == 0) {
+      return 0;
+    }
+    Pet memory pet = _petNFT.getPet(petId);
+    // Check pet is still owned by the player and was assigned before the action started
+    if (pet.owner != from || pet.lastAssignmentTimestamp > actionStartTime) {
+      return 0; 
+    }
+    // Check if pet's skill enhancement matches the action skill and is not a combat skill
+    if (pet.skillEnhancement1 == skill && !isCombat) {
+      petBonusXPPercent = pet.skillPercentageEnhancement1;
+    }
+  }
+
   function _getPointsAccrued(
     uint256 playerId,
     QueuedAction storage queuedAction,
@@ -963,7 +990,8 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
     Skill skill,
     uint256 xpElapsedTime,
     PendingQueuedActionEquipmentState[] memory pendingQueuedActionEquipmentStates,
-    CheckpointEquipments storage checkpointEquipments
+    CheckpointEquipments storage checkpointEquipments,
+    uint8 petBonusXPPercent
   ) private view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     (pointsAccrued, pointsAccruedExclBaseBoost) = PlayersLibrary.getPointsAccrued(
       _players[playerId],
@@ -979,7 +1007,8 @@ contract PlayersImplRewards is PlayersBase, IPlayersRewardsDelegateView {
       _fullAttireBonus[skill].bonusXPPercent,
       _fullAttireBonus[skill].itemTokenIds,
       pendingQueuedActionEquipmentStates,
-      checkpointEquipments
+      checkpointEquipments,
+      petBonusXPPercent
     );
   }
 
