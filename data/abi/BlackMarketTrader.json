@@ -1,0 +1,778 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AcceptedItemNotSet",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "name": "AddressEmptyCode",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialisedToday",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "ERC1967InvalidImplementation",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ERC1967NonPayable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FailedCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ItemCannotBeBought",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ItemDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ItemStockInsufficient",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoItemsInShop",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "coordinator",
+        "type": "address"
+      }
+    ],
+    "name": "OnlyVRFCoordinator",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PriceCannotBeZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "QuantityCannotBeZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RequestDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ShopAvailabilityNotDetermined",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ShopClosed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ShopItemAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ShopItemDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UUPSUnauthorizedCallContext",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "slot",
+        "type": "bytes32"
+      }
+    ],
+    "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "itemId",
+        "type": "uint16"
+      }
+    ],
+    "name": "AcceptedItemIdSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint128",
+            "name": "price",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint16",
+            "name": "tokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "amountPerPurchase",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "currentStock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "stock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BlackMarketTrader.ShopItem[]",
+        "name": "shopItems",
+        "type": "tuple[]"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "AddShopItems",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "tokenId",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "quantity",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "price",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "amountPerPurchase",
+        "type": "uint16"
+      }
+    ],
+    "name": "Buy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint128",
+            "name": "price",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint16",
+            "name": "tokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "amountPerPurchase",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "currentStock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "stock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct BlackMarketTrader.ShopItem[]",
+        "name": "shopItems",
+        "type": "tuple[]"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "EditShopItems",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "version",
+        "type": "uint64"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "tokenIds",
+        "type": "uint16[]"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RemoveShopItems",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "numWords",
+        "type": "uint256"
+      }
+    ],
+    "name": "RequestSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "activeTokenIds",
+        "type": "uint16[]"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ShopActiveItemsUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "coordinator",
+        "type": "address"
+      }
+    ],
+    "name": "VRFCoordinatorSet",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint128",
+            "name": "price",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint16",
+            "name": "tokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "amountPerPurchase",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "currentStock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "stock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct BlackMarketTrader.ShopItem[]",
+        "name": "items",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "addShopItems",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "tokenId",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "quantity",
+        "type": "uint16"
+      }
+    ],
+    "name": "buy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint128",
+            "name": "price",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint16",
+            "name": "tokenId",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "amountPerPurchase",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "currentStock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "stock",
+            "type": "uint16"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct BlackMarketTrader.ShopItem[]",
+        "name": "itemsToEdit",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "editShopItems",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "initialiseShopItemsForEvent",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ItemNFT",
+        "name": "itemNFT",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "paintswapVRFConsumer",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "randomWords",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "rawFulfillRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "tokenIds",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeShopItems",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "numActions",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestCost",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "globalEventId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "itemId",
+        "type": "uint16"
+      }
+    ],
+    "name": "setAcceptedItemId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]

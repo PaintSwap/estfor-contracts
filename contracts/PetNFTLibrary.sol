@@ -150,6 +150,9 @@ library PetNFTLibrary {
     if (skin == PetSkin.ANNIV2) {
       return "Anniv2";
     }
+    if (skin == PetSkin.RIFT) {
+      return "Rift";
+    }
     revert InvalidSkin(skin);
   }
 
@@ -178,7 +181,9 @@ library PetNFTLibrary {
     if (petEnhancementType == PetEnhancementType.RANGED_AND_DEFENCE) {
       return "RangedAndDefence";
     }
-
+    if (petEnhancementType == PetEnhancementType.ALCHEMY) {
+      return "Alchemy";
+    }
     revert InvalidPetEnhancementType(petEnhancementType);
   }
 

@@ -3442,4 +3442,59 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
+  {
+    tokenId: EstforConstants.RIFT_EGG_TIER1,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.RIFT_EGG_TIER2,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.RIFT_EGG_TIER3,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.RIFT_EGG_TIER4,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.RIFT_EGG_TIER5,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.BORDER_002_RIFT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ALCHEMY_HAT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ALCHEMY_BODY,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ALCHEMY_TROUSERS,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ALCHEMY_BOOTS,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.ALCHEMY_BRACERS,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
 ];
