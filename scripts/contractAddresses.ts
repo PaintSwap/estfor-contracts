@@ -93,14 +93,14 @@ if (!isBeta) {
   clans = "0xbc6ed9e6cb54661ed9682c5055a6631d92e9e1d0";
   wishingWell = "0x1207d2f1dc47a9228f20e9d0ce5094ff08bcb00b";
   bank = "0x144884e1b42ccc9c648adee9b5dc1479ce1c8fe3";
-  petNFTLibrary = "0xa117b910a35e922a51b2a07ab24d2c4b493a5489";
+  petNFTLibrary = "0x30B11Fa95AeE89bA8B700343600E0B7DdF7d48f2";
   petNFT = "0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed";
-  playersLibrary = "0x99e7d54c349173c61b536876c6fd47106e47ebf6";
-  playersImplQueueActions = "0xd04fda860cf0c5ffd56cbc5eba2158830eebbdb1";
-  playersImplProcessActions = "0xbc06ef8ec18d9360446143bcda901e2a93e61637";
-  playersImplRewards = "0xe6d103a7b67cc15a2126147fce7608a3b6f86355";
-  playersImplMisc = "0xa69185b3acdd83c7cd5f2491d847a92ff67ec208";
-  playersImplMisc1 = "0x88401b200947cf3bf306e583a2da2f1f8f880ce6";
+  playersLibrary = "0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2";
+  playersImplQueueActions = "0xc57cdf889520344f7d73c6ae3ef29dfd533d7239";
+  playersImplProcessActions = "0x719e000bd66e61aed40079bebab0efebbd33d947";
+  playersImplRewards = "0x2df7f3a3d625f0b1ea04ceb8fdf66218616853a9";
+  playersImplMisc = "0xf9d36e92eafc49f4fc39fe768c4388385adddd36";
+  playersImplMisc1 = "0x99a738b795c5e85192fe1733cd9d30ab25fd3f93";
   players = "0xefa670aad6d5921236e9655f346ca13a5c56481b";
   promotionsLibrary = "0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9";
   promotions = "0xaf48a8a12f29e30b3831392aa2ee6344d07d188b";
@@ -124,7 +124,7 @@ if (!isBeta) {
   marketplace = "0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1";
   cosmetics = "0xb30b177b6c8c21370a72d7cada5f627519c91432";
   globalEvent = "0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2";
-  blackMarketTrader = "";
+  blackMarketTrader = "0x4f9911214d811b5acdc4d1911067f614e81c808e";
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
