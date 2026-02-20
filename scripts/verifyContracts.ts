@@ -106,9 +106,7 @@ async function main() {
 */
   // await verifyContracts(["0x9f76DE2260CF0E2c08CDF0628E7f00b03c37b861"] /* addresses */, [[VRF_ADDRESS]]);
 
-  // await verifyContracts([PLAYER_NFT_ADDRESS]);
-  await verifyContracts([PLAYERS_ADDRESS]);
-  await verifyContracts([PLAYER_NFT_ADDRESS]);
+  await verifyContracts([PET_NFT_LIBRARY_ADDRESS]);
   await verifyContracts([COSMETICS_ADDRESS]);
   await verifyContracts([PLAYERS_IMPL_MISC1_ADDRESS]);
   await verifyContracts([PLAYERS_IMPL_MISC_ADDRESS]);
@@ -116,6 +114,16 @@ async function main() {
   await verifyContracts([PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS]);
   await verifyContracts([PLAYERS_IMPL_REWARDS_ADDRESS]);
   // await verifyContracts([GLOBAL_EVENT_ADDRESS]);
+  await verifyContracts([PLAYERS_ADDRESS]);
+  await verifyContracts([PLAYERS_IMPL_MISC1_ADDRESS]);
+  await verifyContracts([PLAYERS_IMPL_MISC_ADDRESS]);
+  await verifyContracts([PLAYERS_IMPL_PROCESS_ACTIONS_ADDRESS]);
+  await verifyContracts([PLAYERS_IMPL_QUEUE_ACTIONS_ADDRESS]);
+  await verifyContracts([PLAYERS_IMPL_REWARDS_ADDRESS]);
+  await verifyContracts([PLAYERS_LIBRARY_ADDRESS]);
+  await verifyContracts([PASSIVE_ACTIONS_ADDRESS]);
+  await verifyContracts([INSTANT_VRF_ACTIONS_ADDRESS]);
+  await verifyContracts([INSTANT_ACTIONS_ADDRESS]);
 }
 
 main().catch((error) => {

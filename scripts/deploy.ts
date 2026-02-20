@@ -45,6 +45,7 @@ import {
   GlobalEvents,
   GameSubsidisationRegistry,
   UsageBasedSessionModule,
+  BlackMarketTrader,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -464,6 +465,15 @@ async function main() {
   ])) as unknown as Cosmetics;
   await cosmetics.waitForDeployment();
   console.log(`cosmetics = "${(await cosmetics.getAddress()).toLowerCase()}"`);
+
+  const BlackMarketTrader = await ethers.getContractFactory("BlackMarketTrader");
+  const blackMarketTrader = (await upgrades.deployProxy(BlackMarketTrader, [
+    owner.address,
+    await itemNFT.getAddress(),
+    await vrf.getAddress(),
+  ])) as unknown as BlackMarketTrader;
+  await blackMarketTrader.waitForDeployment();
+  console.log(`blackMarketTrader = "${(await blackMarketTrader.getAddress()).toLowerCase()}"`);
 
   const buyPath: [string, string] = [await wftm.getAddress(), await brush.getAddress()];
   const Quests = await ethers.getContractFactory("Quests");
@@ -1172,6 +1182,7 @@ async function main() {
       bridge,
       cosmetics,
       globalEvents,
+      blackMarketTrader,
     ],
     true
   );

@@ -1125,7 +1125,8 @@ library PlayersLibrary {
     uint8 bonusAttirePercent,
     uint16[5] calldata expectedItemTokenIds,
     PendingQueuedActionEquipmentState[] calldata pendingQueuedActionEquipmentStates,
-    CheckpointEquipments calldata checkpointEquipments
+    CheckpointEquipments calldata checkpointEquipments,
+    uint8 petBonusXPPercent
   ) external view returns (uint32 pointsAccrued, uint32 pointsAccruedExclBaseBoost) {
     Skill skill = skillId._asSkill();
     bool isCombatSkill = queuedAction.combatStyle._isCombatStyle();
@@ -1233,8 +1234,20 @@ library PlayersLibrary {
       pendingQueuedActionEquipmentStates,
       checkpointEquipments
     );
+    pointsAccrued += _extraXPFromPet(xpElapsedTime, xpPerHour, petBonusXPPercent);
     pointsAccruedExclBaseBoost = pointsAccrued;
     pointsAccrued += _extraFromAvatar(player, skill, xpElapsedTime, xpPerHour);
+  }
+
+  function _extraXPFromPet(
+    uint256 elapsedTime,
+    uint24 xpPerHour,
+    uint8 bonusPercent
+  ) internal pure returns (uint32 extraPointsAccrued) {
+    if (bonusPercent == 0) {
+      return 0;
+    }
+    extraPointsAccrued = uint32((elapsedTime * xpPerHour * bonusPercent) / (3600 * 100));
   }
 
   function _extraXPFromFullAttire(

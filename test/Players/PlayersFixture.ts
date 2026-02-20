@@ -41,6 +41,7 @@ import {
   GlobalEvents,
   GameSubsidisationRegistry,
   UsageBasedSessionModule,
+  BlackMarketTrader,
 } from "../../typechain-types";
 import {MAX_TIME} from "../utils";
 import {allTerritories, allBattleSkills} from "../../scripts/data/territories";
@@ -383,6 +384,15 @@ export const playersFixture = async function () {
 
   const oracleAddress = await dev.getAddress();
 
+  const BlackMarketTrader = await ethers.getContractFactory("BlackMarketTrader");
+  const blackMarketTrader = (await upgrades.deployProxy(
+    BlackMarketTrader,
+    [owner.address, await itemNFT.getAddress(), await mockVRF.getAddress()],
+    {
+      kind: "uups",
+    }
+  )) as unknown as BlackMarketTrader;
+
   const maxInstantVRFActionAmount = 64n;
   const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions");
   const instantVRFActions = (await upgrades.deployProxy(
@@ -716,6 +726,7 @@ export const playersFixture = async function () {
       raids,
       cosmetics,
       globalEvents,
+      blackMarketTrader,
     ],
     true
   );
@@ -869,5 +880,6 @@ export const playersFixture = async function () {
     globalEvents,
     gameSubsidisationRegistry,
     usageBasedSessionModule,
+    blackMarketTrader,
   };
 };

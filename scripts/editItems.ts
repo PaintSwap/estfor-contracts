@@ -13,10 +13,10 @@ async function main() {
   console.log(`Edit items using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const itemNFT = await ethers.getContractAt("ItemNFT", ITEM_NFT_ADDRESS);
-  const itemsToEdit = new Set(allItems.map((item) => item.tokenId));
+  const itemsToEdit = new Set([EstforConstants.BORDER_002_RIFT]);
 
-  // const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
-  const items = allItems;
+  const items = allItems.filter((item) => itemsToEdit.has(item.tokenId));
+  // const items = allItems;
 
   if (items.length !== itemsToEdit.size) {
     console.log("Cannot find all items");
