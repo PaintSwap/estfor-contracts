@@ -20353,7 +20353,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "BORDER_002_RIFT.json",
-    name: "Rift Portal",
+    name: "Blight Arc",
     isAvailable: true,
     questPrerequisiteId: 0,
     isCollectionItem: false,
