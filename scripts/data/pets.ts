@@ -18,7 +18,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER2,
@@ -37,7 +37,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER3,
@@ -56,7 +56,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
     percentageStarThreshold: 18,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER4,
@@ -75,7 +75,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_TIER5,
@@ -94,7 +94,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER1,
@@ -113,7 +113,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER2,
@@ -132,7 +132,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER3,
@@ -151,7 +151,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
     percentageStarThreshold: 18,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER4,
@@ -170,7 +170,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_TIER5,
@@ -189,7 +189,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER1,
@@ -208,7 +208,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER2,
@@ -227,7 +227,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER3,
@@ -246,7 +246,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
     percentageStarThreshold: 18,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER4,
@@ -265,7 +265,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_TIER5,
@@ -284,7 +284,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER1,
@@ -303,7 +303,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER2,
@@ -322,7 +322,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER3,
@@ -341,7 +341,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 18,
     percentageStarThreshold: 18,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER4,
@@ -360,7 +360,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_DEFENCE_TIER5,
@@ -379,7 +379,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER1,
@@ -398,7 +398,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
     percentageStarThreshold: 41,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER2,
@@ -417,7 +417,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 42,
     percentageStarThreshold: 60,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER3,
@@ -436,7 +436,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 75,
     percentageStarThreshold: 83,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER4,
@@ -455,7 +455,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 109,
     percentageStarThreshold: 110,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_HEALTH_TIER5,
@@ -474,7 +474,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 127,
     percentageStarThreshold: 141,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER1,
@@ -493,7 +493,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 9,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER2,
@@ -512,7 +512,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER3,
@@ -531,7 +531,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 18,
     percentageStarThreshold: 18,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER4,
@@ -550,7 +550,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MELEE_AND_DEFENCE_TIER5,
@@ -569,7 +569,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER1,
@@ -588,7 +588,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 9,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER2,
@@ -607,7 +607,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER3,
@@ -626,7 +626,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 18,
     percentageStarThreshold: 18,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER4,
@@ -645,7 +645,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_MAGIC_AND_DEFENCE_TIER5,
@@ -664,7 +664,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER1,
@@ -683,7 +683,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 9,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER2,
@@ -702,7 +702,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER3,
@@ -721,7 +721,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 18,
     percentageStarThreshold: 18,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER4,
@@ -740,7 +740,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_DEFAULT_RANGED_AND_DEFENCE_TIER5,
@@ -759,7 +759,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER1,
@@ -778,7 +778,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER2,
@@ -797,7 +797,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER3,
@@ -816,7 +816,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER4,
@@ -835,7 +835,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_TIER5,
@@ -854,7 +854,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER1,
@@ -873,7 +873,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER2,
@@ -892,7 +892,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER3,
@@ -911,7 +911,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER4,
@@ -930,7 +930,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_TIER5,
@@ -949,7 +949,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER1,
@@ -968,7 +968,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER2,
@@ -987,7 +987,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER3,
@@ -1006,7 +1006,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER4,
@@ -1025,7 +1025,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_TIER5,
@@ -1044,7 +1044,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER1,
@@ -1063,7 +1063,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER2,
@@ -1082,7 +1082,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER3,
@@ -1101,7 +1101,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER4,
@@ -1120,7 +1120,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_DEFENCE_TIER5,
@@ -1139,7 +1139,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER1,
@@ -1158,7 +1158,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 37,
     percentageStarThreshold: 61,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER2,
@@ -1177,7 +1177,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 62,
     percentageStarThreshold: 90,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER3,
@@ -1196,7 +1196,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 112,
     percentageStarThreshold: 124,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER4,
@@ -1215,7 +1215,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 163,
     percentageStarThreshold: 165,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_HEALTH_TIER5,
@@ -1234,7 +1234,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 190,
     percentageStarThreshold: 211,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER1,
@@ -1253,7 +1253,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER2,
@@ -1272,7 +1272,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER3,
@@ -1291,7 +1291,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER4,
@@ -1310,7 +1310,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MELEE_AND_DEFENCE_TIER5,
@@ -1329,7 +1329,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 40,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER1,
@@ -1348,7 +1348,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER2,
@@ -1367,7 +1367,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER3,
@@ -1386,7 +1386,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER4,
@@ -1405,7 +1405,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_MAGIC_AND_DEFENCE_TIER5,
@@ -1424,7 +1424,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 40,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER1,
@@ -1443,7 +1443,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER2,
@@ -1462,7 +1462,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER3,
@@ -1481,7 +1481,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER4,
@@ -1500,7 +1500,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_OG_RANGED_AND_DEFENCE_TIER5,
@@ -1519,7 +1519,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 40,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER1,
@@ -1538,7 +1538,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER2,
@@ -1557,7 +1557,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER3,
@@ -1576,7 +1576,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER4,
@@ -1595,7 +1595,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_TIER5,
@@ -1614,7 +1614,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
     percentageStarThreshold: 25,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER1,
@@ -1633,7 +1633,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER2,
@@ -1652,7 +1652,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER3,
@@ -1671,7 +1671,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER4,
@@ -1690,7 +1690,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_TIER5,
@@ -1709,7 +1709,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
     percentageStarThreshold: 25,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER1,
@@ -1728,7 +1728,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER2,
@@ -1747,7 +1747,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER3,
@@ -1766,7 +1766,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER4,
@@ -1785,7 +1785,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_TIER5,
@@ -1804,7 +1804,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
     percentageStarThreshold: 25,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER1,
@@ -1823,7 +1823,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 8,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER2,
@@ -1842,7 +1842,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER3,
@@ -1861,7 +1861,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER4,
@@ -1880,7 +1880,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_DEFENCE_TIER5,
@@ -1899,7 +1899,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 25,
     percentageStarThreshold: 25,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER1,
@@ -1918,7 +1918,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
     percentageStarThreshold: 38,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER2,
@@ -1937,7 +1937,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 38,
     percentageStarThreshold: 55,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER3,
@@ -1956,7 +1956,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 67,
     percentageStarThreshold: 76,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER4,
@@ -1975,7 +1975,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 101,
     percentageStarThreshold: 105,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_HEALTH_TIER5,
@@ -1994,7 +1994,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 119,
     percentageStarThreshold: 134,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER1,
@@ -2013,7 +2013,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
     percentageStarThreshold: 8,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER2,
@@ -2032,7 +2032,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER3,
@@ -2051,7 +2051,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
     percentageStarThreshold: 17,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER4,
@@ -2070,7 +2070,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MELEE_AND_DEFENCE_TIER5,
@@ -2089,7 +2089,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 24,
     percentageStarThreshold: 24,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER1,
@@ -2108,7 +2108,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
     percentageStarThreshold: 8,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER2,
@@ -2127,7 +2127,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER3,
@@ -2146,7 +2146,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
     percentageStarThreshold: 17,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER4,
@@ -2165,7 +2165,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_MAGIC_AND_DEFENCE_TIER5,
@@ -2184,7 +2184,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 24,
     percentageStarThreshold: 24,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER1,
@@ -2203,7 +2203,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
     percentageStarThreshold: 8,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER2,
@@ -2222,7 +2222,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER3,
@@ -2241,7 +2241,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
     percentageStarThreshold: 17,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER4,
@@ -2260,7 +2260,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ONEKIN_RANGED_AND_DEFENCE_TIER5,
@@ -2279,7 +2279,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 24,
     percentageStarThreshold: 24,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER1,
@@ -2298,7 +2298,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 5,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER2,
@@ -2317,7 +2317,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER3,
@@ -2336,7 +2336,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER4,
@@ -2355,7 +2355,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_TIER5,
@@ -2374,7 +2374,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER1,
@@ -2393,7 +2393,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 5,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER2,
@@ -2412,7 +2412,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER3,
@@ -2431,7 +2431,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER4,
@@ -2450,7 +2450,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_TIER5,
@@ -2469,7 +2469,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER1,
@@ -2488,7 +2488,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 5,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER2,
@@ -2507,7 +2507,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER3,
@@ -2526,7 +2526,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER4,
@@ -2545,7 +2545,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_TIER5,
@@ -2564,7 +2564,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER1,
@@ -2583,7 +2583,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 5,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER2,
@@ -2602,7 +2602,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 20,
     percentageStarThreshold: 7,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER3,
@@ -2621,7 +2621,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 9,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER4,
@@ -2640,7 +2640,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 12,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_DEFENCE_TIER5,
@@ -2659,7 +2659,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 40,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER1,
@@ -2678,7 +2678,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 37,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER2,
@@ -2697,7 +2697,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 62,
     percentageStarThreshold: 31,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER3,
@@ -2716,7 +2716,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 112,
     percentageStarThreshold: 42,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER4,
@@ -2735,7 +2735,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 163,
     percentageStarThreshold: 56,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_HEALTH_TIER5,
@@ -2754,7 +2754,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 190,
     percentageStarThreshold: 71,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER1,
@@ -2773,7 +2773,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 5,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER2,
@@ -2792,7 +2792,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
     percentageStarThreshold: 8,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER3,
@@ -2811,7 +2811,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 10,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER4,
@@ -2830,7 +2830,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 11,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MELEE_AND_DEFENCE_TIER5,
@@ -2849,7 +2849,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 41,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER1,
@@ -2868,7 +2868,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 5,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER2,
@@ -2887,7 +2887,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
     percentageStarThreshold: 8,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER3,
@@ -2906,7 +2906,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 10,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER4,
@@ -2925,7 +2925,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 11,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_MAGIC_AND_DEFENCE_TIER5,
@@ -2944,7 +2944,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 41,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER1,
@@ -2963,7 +2963,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 5,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER2,
@@ -2982,7 +2982,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 21,
     percentageStarThreshold: 8,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER3,
@@ -3001,7 +3001,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 27,
     percentageStarThreshold: 10,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER4,
@@ -3020,7 +3020,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 11,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_FROST_RANGED_AND_DEFENCE_TIER5,
@@ -3039,7 +3039,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 41,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER1,
@@ -3058,7 +3058,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER2,
@@ -3077,7 +3077,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER3,
@@ -3096,7 +3096,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER4,
@@ -3115,7 +3115,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_TIER5,
@@ -3134,7 +3134,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER1,
@@ -3153,7 +3153,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER2,
@@ -3172,7 +3172,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER3,
@@ -3191,7 +3191,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER4,
@@ -3210,7 +3210,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_TIER5,
@@ -3229,7 +3229,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER1,
@@ -3248,7 +3248,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER2,
@@ -3267,7 +3267,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER3,
@@ -3286,7 +3286,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER4,
@@ -3305,7 +3305,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_TIER5,
@@ -3324,7 +3324,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER1,
@@ -3343,7 +3343,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 5,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER2,
@@ -3362,7 +3362,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 7,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER3,
@@ -3381,7 +3381,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 9,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER4,
@@ -3400,7 +3400,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 12,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_DEFENCE_TIER5,
@@ -3419,7 +3419,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 14,
     percentageStarThreshold: 40,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER1,
@@ -3438,7 +3438,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 13,
     percentageStarThreshold: 61,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER2,
@@ -3457,7 +3457,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 21,
     percentageStarThreshold: 90,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER3,
@@ -3476,7 +3476,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 38,
     percentageStarThreshold: 124,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER4,
@@ -3495,7 +3495,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 55,
     percentageStarThreshold: 165,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_HEALTH_TIER5,
@@ -3514,7 +3514,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 64,
     percentageStarThreshold: 211,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER1,
@@ -3533,7 +3533,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 5,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER2,
@@ -3552,7 +3552,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER3,
@@ -3571,7 +3571,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 10,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER4,
@@ -3590,7 +3590,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 11,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MELEE_AND_DEFENCE_TIER5,
@@ -3609,7 +3609,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 41,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER1,
@@ -3628,7 +3628,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 5,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER2,
@@ -3647,7 +3647,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER3,
@@ -3666,7 +3666,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 10,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER4,
@@ -3685,7 +3685,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 11,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_MAGIC_AND_DEFENCE_TIER5,
@@ -3704,7 +3704,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 41,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER1,
@@ -3723,7 +3723,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 5,
     percentageStarThreshold: 14,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER2,
@@ -3742,7 +3742,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 8,
     percentageStarThreshold: 21,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER3,
@@ -3761,7 +3761,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 10,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER4,
@@ -3780,7 +3780,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 11,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_CRYSTAL_RANGED_AND_DEFENCE_TIER5,
@@ -3799,7 +3799,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 14,
     percentageStarThreshold: 41,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER1,
@@ -3818,7 +3818,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER2,
@@ -3837,7 +3837,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER3,
@@ -3856,7 +3856,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER4,
@@ -3875,7 +3875,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_TIER5,
@@ -3894,7 +3894,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER1,
@@ -3913,7 +3913,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER2,
@@ -3932,7 +3932,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER3,
@@ -3951,7 +3951,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER4,
@@ -3970,7 +3970,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_TIER5,
@@ -3989,7 +3989,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER1,
@@ -4008,7 +4008,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER2,
@@ -4027,7 +4027,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER3,
@@ -4046,7 +4046,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER4,
@@ -4065,7 +4065,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_TIER5,
@@ -4084,7 +4084,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER1,
@@ -4103,7 +4103,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER2,
@@ -4122,7 +4122,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER3,
@@ -4141,7 +4141,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER4,
@@ -4160,7 +4160,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_DEFENCE_TIER5,
@@ -4179,7 +4179,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER1,
@@ -4198,7 +4198,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 43,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER2,
@@ -4217,7 +4217,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 45,
     percentageStarThreshold: 63,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER3,
@@ -4236,7 +4236,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 79,
     percentageStarThreshold: 87,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER4,
@@ -4255,7 +4255,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 114,
     percentageStarThreshold: 115,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_HEALTH_TIER5,
@@ -4274,7 +4274,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 133,
     percentageStarThreshold: 147,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER1,
@@ -4293,7 +4293,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER2,
@@ -4312,7 +4312,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER3,
@@ -4331,7 +4331,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER4,
@@ -4350,7 +4350,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MELEE_AND_DEFENCE_TIER5,
@@ -4369,7 +4369,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
     percentageStarThreshold: 39,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER1,
@@ -4388,7 +4388,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER2,
@@ -4407,7 +4407,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER3,
@@ -4426,7 +4426,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER4,
@@ -4445,7 +4445,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_MAGIC_AND_DEFENCE_TIER5,
@@ -4464,7 +4464,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
     percentageStarThreshold: 39,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER1,
@@ -4483,7 +4483,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER2,
@@ -4502,7 +4502,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER3,
@@ -4521,7 +4521,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER4,
@@ -4540,7 +4540,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV1_RANGED_AND_DEFENCE_TIER5,
@@ -4559,7 +4559,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
     percentageStarThreshold: 39,
-    isTransferable: false
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER1,
@@ -4578,7 +4578,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER2,
@@ -4597,7 +4597,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER3,
@@ -4616,7 +4616,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER4,
@@ -4635,7 +4635,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_TIER5,
@@ -4654,7 +4654,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER1,
@@ -4673,7 +4673,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER2,
@@ -4692,7 +4692,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER3,
@@ -4711,7 +4711,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER4,
@@ -4730,7 +4730,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_TIER5,
@@ -4749,7 +4749,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER1,
@@ -4768,7 +4768,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER2,
@@ -4787,7 +4787,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER3,
@@ -4806,7 +4806,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER4,
@@ -4825,7 +4825,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_TIER5,
@@ -4844,7 +4844,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER1,
@@ -4863,7 +4863,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 17,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER2,
@@ -4882,7 +4882,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 26,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER3,
@@ -4901,7 +4901,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 35,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER4,
@@ -4920,7 +4920,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 44,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_DEFENCE_TIER5,
@@ -4939,7 +4939,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 53,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER1,
@@ -4958,7 +4958,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 65,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER2,
@@ -4977,7 +4977,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 101,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER3,
@@ -4996,7 +4996,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 157,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER4,
@@ -5015,7 +5015,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 213,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_HEALTH_TIER5,
@@ -5034,7 +5034,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 228,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER1,
@@ -5053,7 +5053,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER2,
@@ -5072,7 +5072,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 28,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER3,
@@ -5091,7 +5091,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 35,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER4,
@@ -5110,7 +5110,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 42,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER5,
@@ -5129,7 +5129,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 53,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER1,
@@ -5148,7 +5148,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER2,
@@ -5167,7 +5167,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 28,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER3,
@@ -5186,7 +5186,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 35,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER4,
@@ -5205,7 +5205,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 42,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_MAGIC_AND_DEFENCE_TIER5,
@@ -5224,7 +5224,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 53,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER1,
@@ -5243,7 +5243,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 17,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER2,
@@ -5262,7 +5262,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 28,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER3,
@@ -5281,7 +5281,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 35,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER4,
@@ -5300,7 +5300,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 42,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_KRAGSTYR_RANGED_AND_DEFENCE_TIER5,
@@ -5319,7 +5319,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 53,
     percentageStarThreshold: 255,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_TIER1,
@@ -5338,7 +5338,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_TIER2,
@@ -5357,7 +5357,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_TIER3,
@@ -5376,7 +5376,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_TIER4,
@@ -5395,7 +5395,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_TIER5,
@@ -5414,7 +5414,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_TIER1,
@@ -5433,7 +5433,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_TIER2,
@@ -5452,7 +5452,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_TIER3,
@@ -5471,7 +5471,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_TIER4,
@@ -5490,7 +5490,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_TIER5,
@@ -5509,7 +5509,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_TIER1,
@@ -5528,7 +5528,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_TIER2,
@@ -5547,7 +5547,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_TIER3,
@@ -5566,7 +5566,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_TIER4,
@@ -5585,7 +5585,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_TIER5,
@@ -5604,7 +5604,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_DEFENCE_TIER1,
@@ -5623,7 +5623,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 11,
     percentageStarThreshold: 11,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_DEFENCE_TIER2,
@@ -5642,7 +5642,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 16,
     percentageStarThreshold: 16,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_DEFENCE_TIER3,
@@ -5661,7 +5661,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 22,
     percentageStarThreshold: 22,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_DEFENCE_TIER4,
@@ -5680,7 +5680,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 27,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_DEFENCE_TIER5,
@@ -5699,7 +5699,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 33,
     percentageStarThreshold: 33,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_HEALTH_TIER1,
@@ -5718,7 +5718,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 27,
     percentageStarThreshold: 43,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_HEALTH_TIER2,
@@ -5737,7 +5737,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 45,
     percentageStarThreshold: 63,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_HEALTH_TIER3,
@@ -5756,7 +5756,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 79,
     percentageStarThreshold: 87,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_HEALTH_TIER4,
@@ -5775,7 +5775,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 114,
     percentageStarThreshold: 115,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_HEALTH_TIER5,
@@ -5794,7 +5794,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 0],
     fixedStarThreshold: 133,
     percentageStarThreshold: 147,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER1,
@@ -5813,7 +5813,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER2,
@@ -5832,7 +5832,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER3,
@@ -5842,7 +5842,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
     skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
-    skillMinLevels: [20, 30],
+    skillMinLevels: [20, 20],
     skillFixedMins: [7, 7],
     skillFixedMaxs: [14, 14],
     skillFixedIncrements: [1, 1],
@@ -5851,7 +5851,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER4,
@@ -5861,7 +5861,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
     skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
-    skillMinLevels: [40, 50],
+    skillMinLevels: [40, 40],
     skillFixedMins: [9, 9],
     skillFixedMaxs: [17, 17],
     skillFixedIncrements: [1, 1],
@@ -5870,7 +5870,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER5,
@@ -5880,7 +5880,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.MELEE_AND_DEFENCE,
     skillEnhancements: [Skill.MELEE, Skill.DEFENCE],
-    skillMinLevels: [50, 70],
+    skillMinLevels: [50, 50],
     skillFixedMins: [11, 11],
     skillFixedMaxs: [21, 21],
     skillFixedIncrements: [1, 1],
@@ -5889,7 +5889,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
     percentageStarThreshold: 39,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_AND_DEFENCE_TIER1,
@@ -5908,7 +5908,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_AND_DEFENCE_TIER2,
@@ -5927,7 +5927,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_AND_DEFENCE_TIER3,
@@ -5937,7 +5937,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
     skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
-    skillMinLevels: [20, 30],
+    skillMinLevels: [20, 20],
     skillFixedMins: [7, 7],
     skillFixedMaxs: [14, 14],
     skillFixedIncrements: [1, 1],
@@ -5946,7 +5946,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_AND_DEFENCE_TIER4,
@@ -5956,7 +5956,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
     skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
-    skillMinLevels: [40, 50],
+    skillMinLevels: [40, 40],
     skillFixedMins: [9, 9],
     skillFixedMaxs: [17, 17],
     skillFixedIncrements: [1, 1],
@@ -5965,7 +5965,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_MAGIC_AND_DEFENCE_TIER5,
@@ -5975,7 +5975,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.MAGIC_AND_DEFENCE,
     skillEnhancements: [Skill.MAGIC, Skill.DEFENCE],
-    skillMinLevels: [50, 70],
+    skillMinLevels: [50, 50],
     skillFixedMins: [11, 11],
     skillFixedMaxs: [21, 21],
     skillFixedIncrements: [1, 1],
@@ -5984,7 +5984,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
     percentageStarThreshold: 39,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_AND_DEFENCE_TIER1,
@@ -6003,7 +6003,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 13,
     percentageStarThreshold: 13,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_AND_DEFENCE_TIER2,
@@ -6022,7 +6022,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 20,
     percentageStarThreshold: 20,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_AND_DEFENCE_TIER3,
@@ -6032,7 +6032,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
     skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
-    skillMinLevels: [20, 30],
+    skillMinLevels: [20, 20],
     skillFixedMins: [7, 7],
     skillFixedMaxs: [14, 14],
     skillFixedIncrements: [1, 1],
@@ -6041,7 +6041,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 26,
     percentageStarThreshold: 26,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_AND_DEFENCE_TIER4,
@@ -6051,7 +6051,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
     skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
-    skillMinLevels: [40, 50],
+    skillMinLevels: [40, 40],
     skillFixedMins: [9, 9],
     skillFixedMaxs: [17, 17],
     skillFixedIncrements: [1, 1],
@@ -6060,7 +6060,7 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 32,
     percentageStarThreshold: 32,
-    isTransferable: true
+    isTransferable: true,
   },
   {
     baseId: EstforConstants.PET_ANNIV2_RANGED_AND_DEFENCE_TIER5,
@@ -6070,7 +6070,7 @@ export const allBasePets: BasePetInput[] = [
     skin: PetSkin.ANNIV2,
     enhancementType: PetEnhancementType.RANGED_AND_DEFENCE,
     skillEnhancements: [Skill.RANGED, Skill.DEFENCE],
-    skillMinLevels: [50, 70],
+    skillMinLevels: [50, 50],
     skillFixedMins: [11, 11],
     skillFixedMaxs: [21, 21],
     skillFixedIncrements: [1, 1],
@@ -6079,6 +6079,101 @@ export const allBasePets: BasePetInput[] = [
     skillPercentageIncrements: [1, 1],
     fixedStarThreshold: 39,
     percentageStarThreshold: 39,
-    isTransferable: true
-  }
+    isTransferable: true,
+  },
+  {
+    baseId: EstforConstants.PET_RIFT_ALCHEMY_TIER1,
+    description:
+      'The Vipera does not eat meat or plants; it breathes the volatile exhaust of the forge and the bitter steam of the alembic. By coiling around an Alchemist’s arm, it acts as a secondary nervous system, filtering the chaotic feedback of the Rift and feeding the "distilled" knowledge directly into its master\'s mind.',
+    tier: 1,
+    skin: PetSkin.RIFT,
+    enhancementType: PetEnhancementType.ALCHEMY,
+    skillEnhancements: [Skill.ALCHEMY, Skill.NONE],
+    skillMinLevels: [1, 0],
+    skillFixedMins: [0, 0],
+    skillFixedMaxs: [0, 0],
+    skillFixedIncrements: [0, 0],
+    skillPercentageMins: [1, 0],
+    skillPercentageMaxs: [5, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 1,
+    percentageStarThreshold: 4,
+    isTransferable: true,
+  },
+  {
+    baseId: EstforConstants.PET_RIFT_ALCHEMY_TIER2,
+    description:
+      'The Vipera does not eat meat or plants; it breathes the volatile exhaust of the forge and the bitter steam of the alembic. By coiling around an Alchemist’s arm, it acts as a secondary nervous system, filtering the chaotic feedback of the Rift and feeding the "distilled" knowledge directly into its master\'s mind.',
+    tier: 2,
+    skin: PetSkin.RIFT,
+    enhancementType: PetEnhancementType.ALCHEMY,
+    skillEnhancements: [Skill.ALCHEMY, Skill.NONE],
+    skillMinLevels: [10, 0],
+    skillFixedMins: [0, 0],
+    skillFixedMaxs: [0, 0],
+    skillFixedIncrements: [0, 0],
+    skillPercentageMins: [4, 0],
+    skillPercentageMaxs: [8, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 1,
+    percentageStarThreshold: 7,
+    isTransferable: true,
+  },
+  {
+    baseId: EstforConstants.PET_RIFT_ALCHEMY_TIER3,
+    description:
+      'The Vipera does not eat meat or plants; it breathes the volatile exhaust of the forge and the bitter steam of the alembic. By coiling around an Alchemist’s arm, it acts as a secondary nervous system, filtering the chaotic feedback of the Rift and feeding the "distilled" knowledge directly into its master\'s mind.',
+    tier: 3,
+    skin: PetSkin.RIFT,
+    enhancementType: PetEnhancementType.ALCHEMY,
+    skillEnhancements: [Skill.ALCHEMY, Skill.NONE],
+    skillMinLevels: [25, 0],
+    skillFixedMins: [0, 0],
+    skillFixedMaxs: [0, 0],
+    skillFixedIncrements: [0, 0],
+    skillPercentageMins: [7, 0],
+    skillPercentageMaxs: [11, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 1,
+    percentageStarThreshold: 10,
+    isTransferable: true,
+  },
+  {
+    baseId: EstforConstants.PET_RIFT_ALCHEMY_TIER4,
+    description:
+      'The Vipera does not eat meat or plants; it breathes the volatile exhaust of the forge and the bitter steam of the alembic. By coiling around an Alchemist’s arm, it acts as a secondary nervous system, filtering the chaotic feedback of the Rift and feeding the "distilled" knowledge directly into its master\'s mind.',
+    tier: 4,
+    skin: PetSkin.RIFT,
+    enhancementType: PetEnhancementType.ALCHEMY,
+    skillEnhancements: [Skill.ALCHEMY, Skill.NONE],
+    skillMinLevels: [40, 0],
+    skillFixedMins: [0, 0],
+    skillFixedMaxs: [0, 0],
+    skillFixedIncrements: [0, 0],
+    skillPercentageMins: [10, 0],
+    skillPercentageMaxs: [14, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 1,
+    percentageStarThreshold: 13,
+    isTransferable: true,
+  },
+  {
+    baseId: EstforConstants.PET_RIFT_ALCHEMY_TIER5,
+    description:
+      'The Vipera does not eat meat or plants; it breathes the volatile exhaust of the forge and the bitter steam of the alembic. By coiling around an Alchemist’s arm, it acts as a secondary nervous system, filtering the chaotic feedback of the Rift and feeding the "distilled" knowledge directly into its master\'s mind.',
+    tier: 5,
+    skin: PetSkin.RIFT,
+    enhancementType: PetEnhancementType.ALCHEMY,
+    skillEnhancements: [Skill.ALCHEMY, Skill.NONE],
+    skillMinLevels: [60, 0],
+    skillFixedMins: [0, 0],
+    skillFixedMaxs: [0, 0],
+    skillFixedIncrements: [0, 0],
+    skillPercentageMins: [13, 0],
+    skillPercentageMaxs: [20, 0],
+    skillPercentageIncrements: [1, 0],
+    fixedStarThreshold: 1,
+    percentageStarThreshold: 18,
+    isTransferable: true,
+  },
 ];

@@ -12,7 +12,8 @@ enum PetSkin {
   CRYSTAL,
   ANNIV1,
   KRAGSTYR,
-  ANNIV2
+  ANNIV2,
+  RIFT
 }
 
 enum PetEnhancementType {
@@ -24,7 +25,8 @@ enum PetEnhancementType {
   HEALTH,
   MELEE_AND_DEFENCE,
   MAGIC_AND_DEFENCE,
-  RANGED_AND_DEFENCE
+  RANGED_AND_DEFENCE,
+  ALCHEMY
 }
 
 struct Pet {

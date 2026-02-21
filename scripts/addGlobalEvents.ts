@@ -18,12 +18,12 @@ async function main() {
   const globalEventIds = [1];
   const globalEventInfo = [
     {
-      startTime: Math.floor(Date.now() / 1000),
-      endTime: 0,
+      startTime: Math.floor(new Date("2026-01-23").valueOf() / 1000),
+      endTime: Math.floor(new Date("2026-04-27").valueOf() / 1000),
       rewardItemTokenId: EstforConstants.RIFT_COIN,
       rewardItemAmountPerInput: 1,
       inputItemTokenId: EstforConstants.RIFT_CRYSTAL,
-      inputItemMaxAmount: 1000,
+      inputItemMaxAmount: 150_000,
       totalInputAmount: 0, // totalInputAmount isn't actually set on the contract, it's just part of the struct
     },
   ];
