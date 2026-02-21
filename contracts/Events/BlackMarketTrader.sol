@@ -221,6 +221,8 @@ contract BlackMarketTrader is
       require(itemsToEdit[i].price != 0, PriceCannotBeZero());
       item.price = itemsToEdit[i].price;
       item.stock = itemsToEdit[i].stock;
+      item.currentStock = itemsToEdit[i].stock; // Reset stock to new stock amount when edited
+      item.amountPerPurchase = itemsToEdit[i].amountPerPurchase;
     }
     emit EditShopItems(itemsToEdit, globalEventId);
   }
