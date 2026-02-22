@@ -44,7 +44,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
 
   uint48 public constant MAX_SESSION_DURATION = 30 days;
   uint256 public constant MAX_BATCH_SIZE = 50;
-  uint16 public constant DEFAULT_SESSION_OPS_PER_DAY = 3;
+  uint16 public constant DEFAULT_SESSION_OPS_PER_DAY = 5;
   bytes32 private constant SESSION_TYPEHASH = keccak256(
     "UsageBasedSession(address safe,address target,bytes data,uint256 nonce,uint48 sessionDeadline)"
   );

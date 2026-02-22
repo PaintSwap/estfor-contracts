@@ -15,7 +15,7 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
   console.log(
-    `Deploy blackMarketTrader using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`
+    `Deploy account abstraction contracts using account: ${proposer.address} on chain id ${network.chainId}, useSafe: ${useSafe}`
   );
 
   const timeout = 60 * 1000; // 1 minute
@@ -50,11 +50,14 @@ async function main() {
     transactionSet.push({
       to: await usageBasedSessionModule.getAddress(),
       value: "0",
-      data: usageBasedSessionModuleIface.encodeFunctionData("setWhitelistedSigner", [SUBSIDY_SIGNERS, true]),
+      data: usageBasedSessionModuleIface.encodeFunctionData("setWhitelistedSigner", [
+        SUBSIDY_SIGNERS.map((s) => ethers.getAddress(s)),
+        true,
+      ]),
       operation: OperationType.Call,
     });
 
-    const contractAddresses = groups.flatMap((g) => g.selectors.map((s) => s.contract));
+    const contractAddresses = groups.flatMap((g) => g.selectors.map((s) => ethers.getAddress(s.contract)));
     const selectors = groups.flatMap((g) => g.selectors.map((s) => s.selector));
     const groupIds = groups.flatMap((g) => g.selectors.map((s) => s.groupId));
 

@@ -181,13 +181,13 @@ if (!isBeta) {
   cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
   globalEvent = "0x8d61f3135a9f39b685b9765976e6a0f0572aeca5";
   blackMarketTrader = "0xac619719cdcf1fc03438c7b9aff737993feae851";
-  usageBasedSessionModule = "";
-  gameSubsidisationRegistry = "";
+  usageBasedSessionModule = "0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e4";
+  gameSubsidisationRegistry = "0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0";
   subsidySigners = [
     "0xd774bf717A0AfC12F511728Abe06a37e437923D2",
     "0x2047f1aaEb79CbDC51c730D3dc121EE76E5e1F14",
     "0x5B6283015D5eFCca3f268f4D805F961209BaCa70",
-    "0x1Bf3c9b8e7C1a5A4D2b9B1c3E7e5F8a2A1d3E4f5",
+    "0x1C88Ba0C339a87d7cd9826065A93079cA47D0e15",
     "0x85A05274359dAAF8615b0362dcde9f1F2bf57f28",
   ];
 }
