@@ -18,6 +18,11 @@ contract TestSessionSafe is ERC1155Holder {
     module.enableSession(sessionKey, duration);
   }
 
+  function callRevokeSession(UsageBasedSessionModule module) external {
+    require(msg.sender == owner, "Not owner");
+    module.revokeSession();
+  }
+
   function execTransactionFromModule(address to, uint256 value, bytes calldata data, Enum.Operation operation)
     external
     returns (bool success)

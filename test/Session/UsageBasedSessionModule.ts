@@ -100,14 +100,7 @@ describe("UsageBasedSessionModule", function () {
   describe("enableSession & revokeSession", function () {
     it("fails to enable a session with zero address session key", async () => {
       const {module, safe} = await setupSession(2);
-      // Revoke first
-      await safe.execTransactionFromModule(
-        await module.getAddress(),
-        0,
-        module.interface.encodeFunctionData("revokeSession"),
-        0
-      );
-
+      // ZeroSessionKey is checked before ExistingSessionActive / SessionOpsPerDayLimitReached
       await expect(
         safe.callEnableSession(await module.getAddress(), ethers.ZeroAddress, 3600)
       ).to.be.revertedWithCustomError(module, "ZeroSessionKey");
@@ -115,13 +108,7 @@ describe("UsageBasedSessionModule", function () {
 
     it("fails to enable a session with zero duration", async () => {
       const {module, safe} = await setupSession(2);
-      await safe.execTransactionFromModule(
-        await module.getAddress(),
-        0,
-        module.interface.encodeFunctionData("revokeSession"),
-        0
-      );
-
+      // InvalidSessionDuration is checked before ExistingSessionActive / SessionOpsPerDayLimitReached
       await expect(
         safe.callEnableSession(await module.getAddress(), ethers.Wallet.createRandom().address, 0)
       ).to.be.revertedWithCustomError(module, "InvalidSessionDuration");
@@ -129,13 +116,7 @@ describe("UsageBasedSessionModule", function () {
 
     it("fails to enable a session with duration exceeding max", async () => {
       const {module, safe} = await setupSession(2);
-      await safe.execTransactionFromModule(
-        await module.getAddress(),
-        0,
-        module.interface.encodeFunctionData("revokeSession"),
-        0
-      );
-
+      // InvalidSessionDuration is checked before ExistingSessionActive / SessionOpsPerDayLimitReached
       const maxDuration = await module.MAX_SESSION_DURATION();
       await expect(
         safe.callEnableSession(await module.getAddress(), ethers.Wallet.createRandom().address, Number(maxDuration) + 1)
@@ -151,6 +132,7 @@ describe("UsageBasedSessionModule", function () {
 
     it("revokes an active session", async () => {
       const {module, safe} = await setupSession(2);
+      // No time advance needed — daily op limit allows this revoke
       const revokeData = module.interface.encodeFunctionData("revokeSession");
       await expect(safe.execTransactionFromModule(await module.getAddress(), 0, revokeData, 0)).to.emit(
         module,
@@ -596,6 +578,191 @@ describe("UsageBasedSessionModule", function () {
 
       expect(balanceAfter).to.be.closeTo(balanceBefore, ethers.parseEther("0.001"));
       expect(balanceAfter).to.be.gte(balanceBefore - receipt!.gasUsed * receipt!.gasPrice);
+    });
+  });
+
+  describe("Session operation daily limit", function () {
+    it("revokeSession reverts with SessionOpsPerDayLimitReached after exhausting daily limit", async () => {
+      const {usageBasedSessionModule, owner, gameSubsidisationRegistry} = await deployContracts();
+      const module = usageBasedSessionModule;
+      // Set limit to 1 op per day so the single enableSession in setup exhausts it
+      await module.setSessionOpsPerDay(1);
+
+      const Safe = await ethers.getContractFactory("TestSessionSafe");
+      const safe = (await Safe.deploy(owner.address)) as any;
+      const Target = await ethers.getContractFactory("TestSessionTarget");
+      const target = await Target.deploy();
+      const sel = target.interface.getFunction("doAction")!.selector;
+      await gameSubsidisationRegistry.setFunctionGroup(await target.getAddress(), sel, 1);
+      await gameSubsidisationRegistry.setGroupLimit(1, 5);
+      await module.setWhitelistedSigner([owner.address], true);
+      await owner.sendTransaction({to: await module.getAddress(), value: ethers.parseEther("1")});
+
+      // enableSession consumes the 1 allowed op
+      await safe.callEnableSession(module, ethers.Wallet.createRandom().address, 3600);
+
+      // revokeSession should now revert — daily limit exhausted
+      await expect(safe.callRevokeSession(module)).to.be.revertedWithCustomError(
+        module,
+        "SessionOpsPerDayLimitReached"
+      );
+    });
+
+    it("revokeSession succeeds within daily limit", async () => {
+      const {module, safe} = await setupSession(2); // default 3 ops/day — enable used 1
+      const revokeData = module.interface.encodeFunctionData("revokeSession");
+      await expect(safe.execTransactionFromModule(await module.getAddress(), 0, revokeData, 0)).to.emit(
+        module,
+        "SessionRevoked"
+      );
+
+      const session = await module.getSession(await safe.getAddress());
+      expect(session.sessionKey).to.eq(ethers.ZeroAddress);
+    });
+
+    it("enableSession reverts with SessionOpsPerDayLimitReached after exhausting daily ops", async () => {
+      const {module, safe} = await setupSession(2); // default 3 ops/day — enable used op 1
+
+      // Revoke (op 2)
+      await safe.execTransactionFromModule(
+        await module.getAddress(),
+        0,
+        module.interface.encodeFunctionData("revokeSession"),
+        0
+      );
+
+      // Re-enable (op 3 — uses last allowed op)
+      const newKey = ethers.Wallet.createRandom();
+      await safe.callEnableSession(await module.getAddress(), newKey.address, 3600);
+
+      // Revoke again would need op 4 — should fail
+      await expect(safe.callRevokeSession(module)).to.be.revertedWithCustomError(
+        module,
+        "SessionOpsPerDayLimitReached"
+      );
+    });
+
+    it("enableSession reverts with SessionOpsPerDayLimitReached when daily limit exhausted", async () => {
+      const {usageBasedSessionModule, owner, gameSubsidisationRegistry} = await deployContracts();
+      const module = usageBasedSessionModule;
+      await module.setSessionOpsPerDay(2); // 2 ops/day
+
+      const Safe = await ethers.getContractFactory("TestSessionSafe");
+      const safe = (await Safe.deploy(owner.address)) as any;
+      const Target = await ethers.getContractFactory("TestSessionTarget");
+      const target = await Target.deploy();
+      const sel = target.interface.getFunction("doAction")!.selector;
+      await gameSubsidisationRegistry.setFunctionGroup(await target.getAddress(), sel, 1);
+      await module.setWhitelistedSigner([owner.address], true);
+      await owner.sendTransaction({to: await module.getAddress(), value: ethers.parseEther("1")});
+
+      // Enable (op 1)
+      await safe.callEnableSession(module, ethers.Wallet.createRandom().address, 3600);
+
+      // Revoke (op 2 — exhausts limit)
+      await safe.execTransactionFromModule(
+        await module.getAddress(),
+        0,
+        module.interface.encodeFunctionData("revokeSession"),
+        0
+      );
+
+      // Enable again should fail — limit of 2 reached
+      await expect(
+        safe.callEnableSession(module, ethers.Wallet.createRandom().address, 3600)
+      ).to.be.revertedWithCustomError(module, "SessionOpsPerDayLimitReached");
+    });
+
+    it("enableSession succeeds on a new day after exhausting previous day's limit", async () => {
+      const {usageBasedSessionModule, owner, gameSubsidisationRegistry} = await deployContracts();
+      const module = usageBasedSessionModule;
+      await module.setSessionOpsPerDay(2); // 2 ops/day
+
+      const Safe = await ethers.getContractFactory("TestSessionSafe");
+      const safe = (await Safe.deploy(owner.address)) as any;
+      const Target = await ethers.getContractFactory("TestSessionTarget");
+      const target = await Target.deploy();
+      const sel = target.interface.getFunction("doAction")!.selector;
+      await gameSubsidisationRegistry.setFunctionGroup(await target.getAddress(), sel, 1);
+      await module.setWhitelistedSigner([owner.address], true);
+      await owner.sendTransaction({to: await module.getAddress(), value: ethers.parseEther("1")});
+
+      // Exhaust today's 2 ops: enable (op 1) + revoke (op 2)
+      await safe.callEnableSession(module, ethers.Wallet.createRandom().address, 86400 * 2); // 2-day session
+      await safe.execTransactionFromModule(
+        await module.getAddress(),
+        0,
+        module.interface.encodeFunctionData("revokeSession"),
+        0
+      );
+
+      // Further ops blocked today
+      await expect(
+        safe.callEnableSession(module, ethers.Wallet.createRandom().address, 3600)
+      ).to.be.revertedWithCustomError(module, "SessionOpsPerDayLimitReached");
+
+      // Advance to the next day
+      await ethers.provider.send("evm_increaseTime", [24 * 3600]);
+      await ethers.provider.send("evm_mine", []);
+
+      // Should succeed on new day
+      const newKey = ethers.Wallet.createRandom();
+      await expect(safe.callEnableSession(module, newKey.address, 3600)).to.emit(module, "SessionEnabled");
+      const session = await module.getSession(await safe.getAddress());
+      expect(session.sessionKey).to.eq(newKey.address);
+    });
+
+    it("opDay and opCount are preserved after revokeSession", async () => {
+      const {module, safe} = await setupSession(2); // default 3 ops/day — enable used op 1
+
+      // Revoke (op 2)
+      await safe.execTransactionFromModule(
+        await module.getAddress(),
+        0,
+        module.interface.encodeFunctionData("revokeSession"),
+        0
+      );
+
+      // Session is deleted but opDay/opCount must be preserved
+      const session = await module.getSession(await safe.getAddress());
+      expect(session.sessionKey).to.eq(ethers.ZeroAddress);
+      expect(session.opDay).to.be.gt(0n);
+      expect(session.opCount).to.eq(2n);
+
+      // Immediately re-enabling must succeed (op 3 is still within the 3-op limit)
+      const newKey = ethers.Wallet.createRandom();
+      await expect(safe.callEnableSession(await module.getAddress(), newKey.address, 3600)).to.emit(
+        module,
+        "SessionEnabled"
+      );
+    });
+
+    it("owner can update sessionOpsPerDay", async () => {
+      const {module} = await setupSession(2);
+      const newLimit = 5;
+      await expect(module.setSessionOpsPerDay(newLimit)).to.emit(module, "SessionOpsPerDayUpdated").withArgs(newLimit);
+      expect(await module.getSessionOpsPerDay()).to.eq(newLimit);
+    });
+
+    it("non-owner cannot update sessionOpsPerDay", async () => {
+      const {module} = await setupSession(2);
+      const [, other] = await ethers.getSigners();
+      await expect(module.connect(other).setSessionOpsPerDay(5)).to.be.revertedWithCustomError(
+        module,
+        "OwnableUnauthorizedAccount"
+      );
+    });
+
+    it("setSessionOpsPerDay reverts if zero", async () => {
+      const {module} = await setupSession(2);
+      await expect(module.setSessionOpsPerDay(0)).to.be.revertedWithCustomError(module, "InvalidSessionDuration");
+    });
+
+    it("getSessionOpsPerDay returns the configured value", async () => {
+      const {module} = await setupSession(2);
+      expect(await module.getSessionOpsPerDay()).to.eq(3n); // default 3
+      await module.setSessionOpsPerDay(5);
+      expect(await module.getSessionOpsPerDay()).to.eq(5n);
     });
   });
 

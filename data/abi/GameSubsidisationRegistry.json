@@ -43,6 +43,11 @@
   },
   {
     "inputs": [],
+    "name": "LengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -169,6 +174,35 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_contract",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "_selector",
+        "type": "bytes4"
+      }
+    ],
+    "name": "getGroupAndLimit",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "groupId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "limit",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_groupId",
         "type": "uint256"
@@ -257,6 +291,29 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "_contracts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bytes4[]",
+        "name": "_selectors",
+        "type": "bytes4[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_groupIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setFunctionGroups",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_groupId",
         "type": "uint256"
@@ -268,6 +325,24 @@
       }
     ],
     "name": "setGroupLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_groupIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_limits",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setGroupLimits",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -27,12 +27,35 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
     return _groupDailyLimits[_groupId];
   }
 
+  function getGroupAndLimit(address _contract, bytes4 _selector) external view override returns (uint256 groupId, uint256 limit) {
+    groupId = _functionToLimitGroup[_contract][_selector];
+    limit = _groupDailyLimits[groupId];
+  }
+
   function setFunctionGroup(address _contract, bytes4 _selector, uint256 _groupId) external override onlyOwner {
     _functionToLimitGroup[_contract][_selector] = _groupId;
   }
 
+  function setFunctionGroups(
+    address[] calldata _contracts,
+    bytes4[] calldata _selectors,
+    uint256[] calldata _groupIds
+  ) external override onlyOwner {
+    require(_contracts.length == _selectors.length && _selectors.length == _groupIds.length, LengthMismatch());
+    for (uint256 i = 0; i < _contracts.length; ++i) {
+      _functionToLimitGroup[_contracts[i]][_selectors[i]] = _groupIds[i];
+    }
+  }
+
   function setGroupLimit(uint256 _groupId, uint256 _limit) external override onlyOwner {
     _groupDailyLimits[_groupId] = _limit;
+  }
+
+  function setGroupLimits(uint256[] calldata _groupIds, uint256[] calldata _limits) external override onlyOwner {
+    require(_groupIds.length == _limits.length, LengthMismatch());
+    for (uint256 i = 0; i < _groupIds.length; ++i) {
+      _groupDailyLimits[_groupIds[i]] = _limits[i];
+    }
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

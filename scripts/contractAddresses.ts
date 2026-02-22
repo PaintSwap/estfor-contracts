@@ -55,6 +55,9 @@ let cosmetics;
 let usdc;
 let globalEvent;
 let blackMarketTrader;
+let usageBasedSessionModule;
+let gameSubsidisationRegistry;
+let subsidySigners: string[] = [];
 
 // Third party stuff chain specific addresses
 const chainId = process.env.CHAIN_ID;
@@ -125,6 +128,9 @@ if (!isBeta) {
   cosmetics = "0xb30b177b6c8c21370a72d7cada5f627519c91432";
   globalEvent = "0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2";
   blackMarketTrader = "0x4f9911214d811b5acdc4d1911067f614e81c808e";
+  usageBasedSessionModule = "";
+  gameSubsidisationRegistry = "";
+  subsidySigners = [];
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -175,6 +181,15 @@ if (!isBeta) {
   cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
   globalEvent = "0x8d61f3135a9f39b685b9765976e6a0f0572aeca5";
   blackMarketTrader = "0xac619719cdcf1fc03438c7b9aff737993feae851";
+  usageBasedSessionModule = "";
+  gameSubsidisationRegistry = "";
+  subsidySigners = [
+    "0xd774bf717A0AfC12F511728Abe06a37e437923D2",
+    "0x2047f1aaEb79CbDC51c730D3dc121EE76E5e1F14",
+    "0x5B6283015D5eFCca3f268f4D805F961209BaCa70",
+    "0x1Bf3c9b8e7C1a5A4D2b9B1c3E7e5F8a2A1d3E4f5",
+    "0x85A05274359dAAF8615b0362dcde9f1F2bf57f28",
+  ];
 }
 
 export const BRIDGE_ADDRESS = bridge;
@@ -237,6 +252,9 @@ export const COSMETICS_ADDRESS = cosmetics;
 export const USDC_ADDRESS = usdc;
 export const GLOBAL_EVENT_ADDRESS = globalEvent;
 export const BLACK_MARKET_TRADER_ADDRESS = blackMarketTrader;
+export const USAGE_BASED_SESSION_MODULE_ADDRESS = usageBasedSessionModule;
+export const GAME_SUBSIDISATION_REGISTRY_ADDRESS = gameSubsidisationRegistry;
+export const SUBSIDY_SIGNERS = subsidySigners;
 
 // VRF
 export const VRF_ADDRESS = vrf;
