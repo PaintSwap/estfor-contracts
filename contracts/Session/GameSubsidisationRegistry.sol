@@ -9,6 +9,7 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
   // Group 0 = Disabled, Group 1 = Basic, Group 2 = Combat, etc.
   mapping(address => mapping(bytes4 => uint256)) private _functionToLimitGroup;
   mapping(uint256 => uint256) private _groupDailyLimits;
+  uint256 private constant FEEM_PROJECT_ID = 15;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
   constructor() {
@@ -56,6 +57,13 @@ contract GameSubsidisationRegistry is UUPSUpgradeable, OwnableUpgradeable, IGame
     for (uint256 i = 0; i < _groupIds.length; ++i) {
       _groupDailyLimits[_groupIds[i]] = _limits[i];
     }
+  }
+
+  function registerFeeM() external {
+    (bool _success,) = address(0xDC2B0D2Dd2b7759D97D50db4eabDC36973110830).call(
+        abi.encodeWithSignature("selfRegister(uint256)", FEEM_PROJECT_ID)
+    );
+    require(_success, "FeeM registration failed");
   }
 
   function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}

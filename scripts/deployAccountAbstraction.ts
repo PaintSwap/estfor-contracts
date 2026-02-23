@@ -76,6 +76,18 @@ async function main() {
       data: gameRegistryIface.encodeFunctionData("setGroupLimits", [limitGroupIds, limits]),
       operation: OperationType.Call,
     });
+    transactionSet.push({
+      to: await gameSubsidisationRegistry.getAddress(),
+      value: "0",
+      data: gameRegistryIface.encodeFunctionData("registerFeeM", []),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: await usageBasedSessionModule.getAddress(),
+      value: "0",
+      data: usageBasedSessionModuleIface.encodeFunctionData("registerFeeM", []),
+      operation: OperationType.Call,
+    });
     await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
   }
 }

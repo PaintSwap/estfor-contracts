@@ -48,6 +48,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   bytes32 private constant SESSION_TYPEHASH = keccak256(
     "UsageBasedSession(address safe,address target,bytes data,uint256 nonce,uint48 sessionDeadline)"
   );
+  uint256 private constant FEEM_PROJECT_ID = 15;
 
   struct GroupUsage {
     uint40 day; // day number (UTC)
@@ -270,6 +271,13 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
 
   function unpause() external onlyOwner {
     _unpause();
+  }
+
+  function registerFeeM() external {
+    (bool _success,) = address(0xDC2B0D2Dd2b7759D97D50db4eabDC36973110830).call(
+        abi.encodeWithSignature("selfRegister(uint256)", FEEM_PROJECT_ID)
+    );
+    require(_success, "FeeM registration failed");
   }
 
   function getGasOverhead() external view returns (uint256) {
