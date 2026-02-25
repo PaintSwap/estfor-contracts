@@ -79,13 +79,13 @@ async function main() {
     transactionSet.push({
       to: await gameSubsidisationRegistry.getAddress(),
       value: "0",
-      data: gameRegistryIface.encodeFunctionData("registerFeeM", []),
+      data: gameRegistryIface.encodeFunctionData("registerFeeM"),
       operation: OperationType.Call,
     });
     transactionSet.push({
       to: await usageBasedSessionModule.getAddress(),
       value: "0",
-      data: usageBasedSessionModuleIface.encodeFunctionData("registerFeeM", []),
+      data: usageBasedSessionModuleIface.encodeFunctionData("registerFeeM"),
       operation: OperationType.Call,
     });
     await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);

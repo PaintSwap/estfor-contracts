@@ -22,6 +22,11 @@
   },
   {
     "inputs": [],
+    "name": "AllItemsFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "BatchTooLarge",
     "type": "error"
   },
@@ -854,6 +859,47 @@
     ],
     "name": "setWhitelistedSigner",
     "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "safe",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct UsageBasedSessionModule.ExecuteParams[]",
+        "name": "params",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "simulateBatch",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "gasUsed",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },

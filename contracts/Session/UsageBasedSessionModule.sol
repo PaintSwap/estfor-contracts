@@ -30,6 +30,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   error BatchTooLarge();
   error ZeroAddress();
   error SessionOpsPerDayLimitReached();
+  error AllItemsFailed();
 
   event SessionEnabled(address indexed safe, address indexed sessionKey, uint48 deadline);
   event SessionRevoked(address indexed safe);
@@ -159,17 +160,41 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
       }
     }
 
+    require(successCount > 0, AllItemsFailed()); // Prevent submission of single batch items that fail and waste gas repeatedly
+
     // Only refund if at least one item succeeded (prevents drain via all-failing batches)
-    if (successCount > 0) {
-      uint256 gasUsed = startGas - gasleft() + _gasOverhead + msg.data.length * 16;
-      uint256 refundAmount = gasUsed * tx.gasprice;
-      if (refundAmount > 0) {
-        (bool refundSuccess, ) = msg.sender.call{value: refundAmount}(""); // Refund the relayer directly
-        if (!refundSuccess) {
-          emit RelayerRefundFailed(msg.sender, refundAmount);
-        }
+    uint256 gasUsed = startGas - gasleft() + _gasOverhead + msg.data.length * 16;
+    uint256 refundAmount = gasUsed * tx.gasprice;
+    if (refundAmount > 0) {
+      (bool refundSuccess, ) = msg.sender.call{value: refundAmount}(""); // Refund the relayer directly
+      if (!refundSuccess) {
+        emit RelayerRefundFailed(msg.sender, refundAmount);
       }
     }
+  }
+
+  /**
+   * @notice Simulate executeBatch and return the gas consumed without committing state.
+   * Intended to be called via eth_call (staticcall at the JSON-RPC level) by the relayer
+   * to obtain an accurate gas estimate.
+   *
+   * Why this is needed: estimateGas binary-searches for the minimum gas at which the
+   * outer function does not revert.  Because executeBatch wraps every sub-call in
+   * try/catch, a probe with insufficient gas causes all sub-calls to silently OOG —
+   * the outer function still returns normally — so the search converges on a value that
+   * is many times too low (typically ~7× for a 7-item batch).  Calling simulateBatch
+   * via eth_call runs the actual execution path with the full block gas budget and
+   * returns the true gas consumed, which the relayer then uses as the gas limit.
+   */
+  function simulateBatch(ExecuteParams[] calldata params) external whenNotPaused returns (uint256 gasUsed) {
+    require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
+    require(params.length > 0, NoBatchItems());
+    require(params.length <= MAX_BATCH_SIZE, BatchTooLarge());
+    uint256 startGas = gasleft();
+    for (uint256 i = 0; i < params.length; i++) {
+      try this.executeSingle(params[i]) {} catch {}
+    }
+    gasUsed = startGas - gasleft();
   }
 
   /**

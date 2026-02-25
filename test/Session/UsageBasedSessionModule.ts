@@ -146,10 +146,21 @@ describe("UsageBasedSessionModule", function () {
 
   describe("execute requirements", function () {
     it("fails if data is too short", async () => {
-      const {module, safe} = await setupSession(2);
+      const {module, safe, sessionKey, target, sessionDeadline} = await setupSession(2);
       const data = "0x123456";
+      const validData = target.interface.encodeFunctionData("doAction");
+      const goodSig = await signCall(
+        sessionKey,
+        safe,
+        target,
+        validData,
+        0n,
+        sessionDeadline,
+        await module.getAddress()
+      );
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: ethers.ZeroAddress, data, signature: "0x"},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -157,7 +168,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("fails if no session is active", async () => {
-      const {module, safe, target} = await setupSession(2);
+      const {module, safe, target, sessionKey, owner} = await setupSession(2);
       await safe.execTransactionFromModule(
         await module.getAddress(),
         0,
@@ -165,9 +176,27 @@ describe("UsageBasedSessionModule", function () {
         0
       );
 
+      // Create a second safe with an active session to provide the required passing item
+      const Safe2 = await ethers.getContractFactory("TestSessionSafe");
+      const safe2 = (await Safe2.deploy(owner.address)) as any;
+      const sessionKey2 = ethers.Wallet.createRandom();
+      await safe2.callEnableSession(module, sessionKey2.address, 3600);
+      const session2 = await module.getSession(await safe2.getAddress());
+      const validData = target.interface.encodeFunctionData("doAction");
+      const goodSig = await signCall(
+        sessionKey2,
+        safe2,
+        target,
+        validData,
+        0n,
+        session2.deadline,
+        await module.getAddress()
+      );
+
       const data = "0x12345678";
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: "0x"},
+        {safe: await safe2.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -175,17 +204,35 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("fails if session has expired", async () => {
-      const {module, safe, target, sessionKey, sessionDeadline, selector} = await setupSession(2);
+      const {module, safe, target, sessionKey, sessionDeadline, selector, owner} = await setupSession(2);
 
       // Fast forward time
       await ethers.provider.send("evm_increaseTime", [3601]);
       await ethers.provider.send("evm_mine", []);
+
+      // Create a second safe with a new session after the time advance to provide the required passing item
+      const Safe2 = await ethers.getContractFactory("TestSessionSafe");
+      const safe2 = (await Safe2.deploy(owner.address)) as any;
+      const sessionKey2 = ethers.Wallet.createRandom();
+      await safe2.callEnableSession(module, sessionKey2.address, 3600);
+      const session2 = await module.getSession(await safe2.getAddress());
+      const validData = target.interface.encodeFunctionData("doAction");
+      const goodSig = await signCall(
+        sessionKey2,
+        safe2,
+        target,
+        validData,
+        0n,
+        session2.deadline,
+        await module.getAddress()
+      );
 
       const data = target.interface.encodeFunctionData("doAction");
       const signature = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
+        {safe: await safe2.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -193,7 +240,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("fails if action is not permitted (groupId 0)", async () => {
-      const {module, safe, sessionKey, sessionDeadline} = await setupSession(2);
+      const {module, safe, sessionKey, sessionDeadline, target} = await setupSession(2);
 
       // Use a DIFFERENT target or different selector
       const Target = await ethers.getContractFactory("TestSessionTarget");
@@ -210,8 +257,20 @@ describe("UsageBasedSessionModule", function () {
         await module.getAddress()
       );
 
+      const validData = target.interface.encodeFunctionData("doAction");
+      const goodSig = await signCall(
+        sessionKey,
+        safe,
+        target,
+        validData,
+        0n,
+        sessionDeadline,
+        await module.getAddress()
+      );
+
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await unmappedTarget.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -223,7 +282,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("fails if target call reverts", async () => {
-      const {module, safe, sessionKey, sessionDeadline, gameSubsidisationRegistry} = await setupSession(2);
+      const {module, safe, sessionKey, sessionDeadline, gameSubsidisationRegistry, target} = await setupSession(2);
 
       // Deploy a reverting target
       const RevertingTarget = await ethers.getContractFactory("TestSessionRevertingTarget");
@@ -243,8 +302,20 @@ describe("UsageBasedSessionModule", function () {
         await module.getAddress()
       );
 
+      const validData = target.interface.encodeFunctionData("doAction");
+      const goodSig = await signCall(
+        sessionKey,
+        safe,
+        target,
+        validData,
+        0n,
+        sessionDeadline,
+        await module.getAddress()
+      );
+
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await revertingTarget.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -252,7 +323,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("rejects calls signed by the wrong key", async () => {
-      const {safe, target, module, sessionDeadline, selector} = await setupSession(2);
+      const {safe, target, module, sessionDeadline, selector, sessionKey} = await setupSession(2);
       const badSessionKey = ethers.Wallet.createRandom();
 
       const data = target.interface.encodeFunctionData("doAction");
@@ -266,8 +337,11 @@ describe("UsageBasedSessionModule", function () {
         await module.getAddress()
       );
 
+      const goodSig = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
+
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -279,9 +353,11 @@ describe("UsageBasedSessionModule", function () {
       const data = target.interface.encodeFunctionData("doAction");
       // Use nonce 1 instead of 0
       const signature = await signCall(sessionKey, safe, target, data, 1n, sessionDeadline, await module.getAddress());
+      const goodSig = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -306,8 +382,11 @@ describe("UsageBasedSessionModule", function () {
         await module.getAddress()
       );
 
+      const goodSig = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
+
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -315,7 +394,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("enforces group daily limits", async () => {
-      const {sessionKey, safe, target, module, sessionDeadline, selector} = await setupSession(2);
+      const {sessionKey, safe, target, module, sessionDeadline, selector, owner} = await setupSession(2);
 
       const data = target.interface.encodeFunctionData("doAction");
 
@@ -329,9 +408,26 @@ describe("UsageBasedSessionModule", function () {
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig1},
       ]);
 
+      // Set up a second safe with a fresh session to provide the required passing item
+      const Safe2 = await ethers.getContractFactory("TestSessionSafe");
+      const safe2 = (await Safe2.deploy(owner.address)) as any;
+      const sessionKey2 = ethers.Wallet.createRandom();
+      await safe2.callEnableSession(module, sessionKey2.address, 3600);
+      const session2 = await module.getSession(await safe2.getAddress());
+      const goodSig = await signCall(
+        sessionKey2,
+        safe2,
+        target,
+        data,
+        0n,
+        session2.deadline,
+        await module.getAddress()
+      );
+
       const sig2 = await signCall(sessionKey, safe, target, data, 2n, sessionDeadline, await module.getAddress());
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig2},
+        {safe: await safe2.getAddress(), target: await target.getAddress(), data, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -495,7 +591,9 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("enforces separate daily limits for different groups in the same batch", async () => {
-      const {sessionKey, safe, target, module, sessionDeadline, gameSubsidisationRegistry} = await setupSession(1);
+      const {sessionKey, safe, target, module, sessionDeadline, gameSubsidisationRegistry, owner} = await setupSession(
+        1
+      );
 
       const groupId1 = 1n;
       const groupId2 = 2n;
@@ -526,11 +624,31 @@ describe("UsageBasedSessionModule", function () {
       await expect(tx).to.not.emit(module, "BatchItemFailed");
       expect(await target.calls()).to.eq(2);
 
+      // Set up a second safe with a second target (in group 1) to provide the required passing item for tx2
+      const Safe2 = await ethers.getContractFactory("TestSessionSafe");
+      const safe2 = (await Safe2.deploy(owner.address)) as any;
+      const sessionKey2 = ethers.Wallet.createRandom();
+      await safe2.callEnableSession(module, sessionKey2.address, 3600);
+      const session2 = await module.getSession(await safe2.getAddress());
+      const Target2 = await ethers.getContractFactory("TestSessionTarget");
+      const target2 = (await Target2.deploy()) as any;
+      await gameSubsidisationRegistry.setFunctionGroup(await target2.getAddress(), selector, groupId1);
+      const goodSig = await signCall(
+        sessionKey2,
+        safe2,
+        target2,
+        data,
+        0n,
+        session2.deadline,
+        await module.getAddress()
+      );
+
       // Group 3 (unset, defaults to 0) should fail because group 0 has no limit/quota initialized or exceeds 0
       const sig3 = await signCall(sessionKey, safe, target, data, 2n, sessionDeadline, await module.getAddress());
       await gameSubsidisationRegistry.setFunctionGroup(await target.getAddress(), selector, 0n);
       const tx2 = await module.executeBatch([
         {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig3},
+        {safe: await safe2.getAddress(), target: await target2.getAddress(), data, signature: goodSig},
       ]);
       await expect(tx2).to.emit(module, "BatchItemFailed");
     });
@@ -609,7 +727,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("revokeSession succeeds within daily limit", async () => {
-      const {module, safe} = await setupSession(2); // default 3 ops/day — enable used 1
+      const {module, safe} = await setupSession(2); // default 5 ops/day — enable used 1
       const revokeData = module.interface.encodeFunctionData("revokeSession");
       await expect(safe.execTransactionFromModule(await module.getAddress(), 0, revokeData, 0)).to.emit(
         module,
@@ -621,7 +739,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("enableSession reverts with SessionOpsPerDayLimitReached after exhausting daily ops", async () => {
-      const {module, safe} = await setupSession(2); // default 3 ops/day — enable used op 1
+      const {module, safe} = await setupSession(2); // default 5 ops/day — enable used op 1
 
       // Revoke (op 2)
       await safe.execTransactionFromModule(
@@ -631,11 +749,23 @@ describe("UsageBasedSessionModule", function () {
         0
       );
 
-      // Re-enable (op 3 — uses last allowed op)
-      const newKey = ethers.Wallet.createRandom();
-      await safe.callEnableSession(await module.getAddress(), newKey.address, 3600);
+      // Re-enable (op 3)
+      const newKey1 = ethers.Wallet.createRandom();
+      await safe.callEnableSession(await module.getAddress(), newKey1.address, 3600);
 
-      // Revoke again would need op 4 — should fail
+      // Revoke (op 4)
+      await safe.execTransactionFromModule(
+        await module.getAddress(),
+        0,
+        module.interface.encodeFunctionData("revokeSession"),
+        0
+      );
+
+      // Re-enable (op 5 — uses last allowed op)
+      const newKey2 = ethers.Wallet.createRandom();
+      await safe.callEnableSession(await module.getAddress(), newKey2.address, 3600);
+
+      // Revoke again would need op 6 — should fail
       await expect(safe.callRevokeSession(module)).to.be.revertedWithCustomError(
         module,
         "SessionOpsPerDayLimitReached"
@@ -713,7 +843,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("opDay and opCount are preserved after revokeSession", async () => {
-      const {module, safe} = await setupSession(2); // default 3 ops/day — enable used op 1
+      const {module, safe} = await setupSession(2); // default 5 ops/day — enable used op 1
 
       // Revoke (op 2)
       await safe.execTransactionFromModule(
@@ -729,7 +859,7 @@ describe("UsageBasedSessionModule", function () {
       expect(session.opDay).to.be.gt(0n);
       expect(session.opCount).to.eq(2n);
 
-      // Immediately re-enabling must succeed (op 3 is still within the 3-op limit)
+      // Immediately re-enabling must succeed (op 3 is still within the 5-op limit)
       const newKey = ethers.Wallet.createRandom();
       await expect(safe.callEnableSession(await module.getAddress(), newKey.address, 3600)).to.emit(
         module,
@@ -760,9 +890,9 @@ describe("UsageBasedSessionModule", function () {
 
     it("getSessionOpsPerDay returns the configured value", async () => {
       const {module} = await setupSession(2);
-      expect(await module.getSessionOpsPerDay()).to.eq(3n); // default 3
-      await module.setSessionOpsPerDay(5);
-      expect(await module.getSessionOpsPerDay()).to.eq(5n);
+      expect(await module.getSessionOpsPerDay()).to.eq(5n); // default 5
+      await module.setSessionOpsPerDay(3);
+      expect(await module.getSessionOpsPerDay()).to.eq(3n);
     });
   });
 
@@ -908,6 +1038,32 @@ describe("UsageBasedSessionModule", function () {
         {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data2, signature: sig2},
       ]);
 
+      // Set up a second safe with a fresh session to provide the required passing item for the 3rd batch
+      const [owner] = await ethers.getSigners();
+      const Safe2 = await ethers.getContractFactory("TestSessionSafe");
+      const safe2 = (await Safe2.deploy(owner.address)) as any;
+      const sessionKey2 = ethers.Wallet.createRandom();
+      await safe2.callEnableSession(module, sessionKey2.address, 3600);
+      const session2 = await module.getSession(await safe2.getAddress());
+      const data4 = playerNFT.interface.encodeFunctionData("mint", [
+        avatarId,
+        "FourthHero" + 4,
+        "",
+        "",
+        "",
+        false,
+        true,
+      ]);
+      const goodSig = await signCall(
+        sessionKey2,
+        safe2,
+        playerNFT,
+        data4,
+        0n,
+        session2.deadline,
+        await module.getAddress()
+      );
+
       // Third mint should fail due to group limit
       const data3 = playerNFT.interface.encodeFunctionData("mint", [
         avatarId,
@@ -921,6 +1077,7 @@ describe("UsageBasedSessionModule", function () {
       const sig3 = await signCall(sessionKey, safe, playerNFT, data3, 2n, sessionDeadline, await module.getAddress());
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data3, signature: sig3},
+        {safe: await safe2.getAddress(), target: await playerNFT.getAddress(), data: data4, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -932,7 +1089,7 @@ describe("UsageBasedSessionModule", function () {
     });
 
     it("rejects PlayerNFT mint with invalid session key signature", async () => {
-      const {safe, playerNFT, avatarId, module, sessionDeadline} = await setupPlayerNFTSession(5);
+      const {safe, playerNFT, avatarId, module, sessionDeadline, sessionKey} = await setupPlayerNFTSession(5);
       const badSessionKey = ethers.Wallet.createRandom();
 
       const data = playerNFT.interface.encodeFunctionData("mint", [
@@ -954,8 +1111,28 @@ describe("UsageBasedSessionModule", function () {
         await module.getAddress()
       );
 
+      const validData = playerNFT.interface.encodeFunctionData("mint", [
+        avatarId,
+        "GoodKeyHero",
+        "",
+        "",
+        "",
+        false,
+        true,
+      ]);
+      const goodSig = await signCall(
+        sessionKey,
+        safe,
+        playerNFT,
+        validData,
+        0n,
+        sessionDeadline,
+        await module.getAddress()
+      );
+
       const tx = module.executeBatch([
         {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: validData, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
