@@ -898,6 +898,11 @@
         "internalType": "uint256",
         "name": "gasUsed",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "successCount",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",

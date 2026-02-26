@@ -186,13 +186,15 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
    * via eth_call runs the actual execution path with the full block gas budget and
    * returns the true gas consumed, which the relayer then uses as the gas limit.
    */
-  function simulateBatch(ExecuteParams[] calldata params) external whenNotPaused returns (uint256 gasUsed) {
+  function simulateBatch(ExecuteParams[] calldata params) external whenNotPaused returns (uint256 gasUsed, uint256 successCount) {
     require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
     require(params.length > 0, NoBatchItems());
     require(params.length <= MAX_BATCH_SIZE, BatchTooLarge());
     uint256 startGas = gasleft();
     for (uint256 i = 0; i < params.length; i++) {
-      try this.executeSingle(params[i]) {} catch {}
+      try this.executeSingle(params[i]) {
+        ++successCount;
+      } catch {}
     }
     gasUsed = startGas - gasleft();
   }
