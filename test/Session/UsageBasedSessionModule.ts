@@ -123,13 +123,6 @@ describe("UsageBasedSessionModule", function () {
       ).to.be.revertedWithCustomError(module, "InvalidSessionDuration");
     });
 
-    it("fails to enable a session if one is already active", async () => {
-      const {module, safe} = await setupSession(2);
-      await expect(
-        safe.callEnableSession(await module.getAddress(), ethers.Wallet.createRandom().address, 3600)
-      ).to.be.revertedWithCustomError(module, "ExistingSessionActive");
-    });
-
     it("revokes an active session", async () => {
       const {module, safe} = await setupSession(2);
       // No time advance needed — daily op limit allows this revoke

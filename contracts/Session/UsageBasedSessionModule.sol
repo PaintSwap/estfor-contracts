@@ -14,7 +14,6 @@ import {IGameSubsidisationRegistry} from "../interfaces/IGameSubsidisationRegist
 /// @title UsageBasedSessionModule
 /// @notice A module for Gnosis Safe that allows for session keys with rate-limited actions
 contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
-  error ExistingSessionActive();
   error NoSessionKey();
   error ActionNotPermitted();
   error GroupLimitReached();
@@ -105,7 +104,6 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     require(_duration > 0 && _duration <= MAX_SESSION_DURATION, InvalidSessionDuration());
 
     Session storage session = _sessions[msg.sender];
-    require(session.deadline < block.timestamp, ExistingSessionActive());
 
     uint32 today = uint32(block.timestamp / 1 days);
     if (session.opDay == today) {

@@ -80,11 +80,6 @@
   },
   {
     "inputs": [],
-    "name": "ExistingSessionActive",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "ExpectedPause",
     "type": "error"
   },
