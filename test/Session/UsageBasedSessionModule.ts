@@ -57,7 +57,8 @@ describe("UsageBasedSessionModule", function () {
     data: string,
     nonce: bigint,
     sessionDeadline: bigint,
-    moduleAddress: string
+    moduleAddress: string,
+    value: bigint = 0n
   ) {
     const network = await ethers.provider.getNetwork();
     const domain = {
@@ -71,6 +72,7 @@ describe("UsageBasedSessionModule", function () {
         {name: "safe", type: "address"},
         {name: "target", type: "address"},
         {name: "data", type: "bytes"},
+        {name: "value", type: "uint256"},
         {name: "nonce", type: "uint256"},
         {name: "sessionDeadline", type: "uint48"},
       ],
@@ -79,6 +81,7 @@ describe("UsageBasedSessionModule", function () {
       safe: await safe.getAddress(),
       target: await target.getAddress(),
       data,
+      value,
       nonce,
       sessionDeadline,
     };
@@ -92,7 +95,9 @@ describe("UsageBasedSessionModule", function () {
     const data = target.interface.encodeFunctionData("doAction");
     const signature = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
-    await module.executeBatch([{safe: await safe.getAddress(), target: await target.getAddress(), data, signature}]);
+    await module.executeBatch([
+      {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
+    ]);
 
     expect(await target.calls()).to.eq(1);
   });
@@ -152,8 +157,14 @@ describe("UsageBasedSessionModule", function () {
         await module.getAddress()
       );
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: ethers.ZeroAddress, data, signature: "0x"},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
+        {safe: await safe.getAddress(), target: ethers.ZeroAddress, data, value: 0n, signature: "0x"},
+        {
+          safe: await safe.getAddress(),
+          target: await target.getAddress(),
+          data: validData,
+          value: 0n,
+          signature: goodSig,
+        },
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -188,8 +199,14 @@ describe("UsageBasedSessionModule", function () {
 
       const data = "0x12345678";
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: "0x"},
-        {safe: await safe2.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: "0x"},
+        {
+          safe: await safe2.getAddress(),
+          target: await target.getAddress(),
+          data: validData,
+          value: 0n,
+          signature: goodSig,
+        },
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -224,8 +241,14 @@ describe("UsageBasedSessionModule", function () {
       const signature = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
-        {safe: await safe2.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
+        {
+          safe: await safe2.getAddress(),
+          target: await target.getAddress(),
+          data: validData,
+          value: 0n,
+          signature: goodSig,
+        },
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -262,8 +285,14 @@ describe("UsageBasedSessionModule", function () {
       );
 
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await unmappedTarget.getAddress(), data, signature},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
+        {safe: await safe.getAddress(), target: await unmappedTarget.getAddress(), data, value: 0n, signature},
+        {
+          safe: await safe.getAddress(),
+          target: await target.getAddress(),
+          data: validData,
+          value: 0n,
+          signature: goodSig,
+        },
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -307,8 +336,14 @@ describe("UsageBasedSessionModule", function () {
       );
 
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await revertingTarget.getAddress(), data, signature},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data: validData, signature: goodSig},
+        {safe: await safe.getAddress(), target: await revertingTarget.getAddress(), data, value: 0n, signature},
+        {
+          safe: await safe.getAddress(),
+          target: await target.getAddress(),
+          data: validData,
+          value: 0n,
+          signature: goodSig,
+        },
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -333,8 +368,8 @@ describe("UsageBasedSessionModule", function () {
       const goodSig = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: goodSig},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -349,8 +384,8 @@ describe("UsageBasedSessionModule", function () {
       const goodSig = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: goodSig},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -378,8 +413,8 @@ describe("UsageBasedSessionModule", function () {
       const goodSig = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: goodSig},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -393,12 +428,12 @@ describe("UsageBasedSessionModule", function () {
 
       const sig0 = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
       await module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig0},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: sig0},
       ]);
 
       const sig1 = await signCall(sessionKey, safe, target, data, 1n, sessionDeadline, await module.getAddress());
       await module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig1},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: sig1},
       ]);
 
       // Set up a second safe with a fresh session to provide the required passing item
@@ -419,8 +454,8 @@ describe("UsageBasedSessionModule", function () {
 
       const sig2 = await signCall(sessionKey, safe, target, data, 2n, sessionDeadline, await module.getAddress());
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig2},
-        {safe: await safe2.getAddress(), target: await target.getAddress(), data, signature: goodSig},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: sig2},
+        {safe: await safe2.getAddress(), target: await target.getAddress(), data, value: 0n, signature: goodSig},
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -471,9 +506,27 @@ describe("UsageBasedSessionModule", function () {
       );
 
       const params = [
-        {safe: await safe.getAddress(), target: await target.getAddress(), data: dataSuccess, signature: sig0},
-        {safe: await safe.getAddress(), target: await revertingTarget.getAddress(), data: dataFail, signature: sig1},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data: dataSuccess, signature: sig2},
+        {
+          safe: await safe.getAddress(),
+          target: await target.getAddress(),
+          data: dataSuccess,
+          value: 0n,
+          signature: sig0,
+        },
+        {
+          safe: await safe.getAddress(),
+          target: await revertingTarget.getAddress(),
+          data: dataFail,
+          value: 0n,
+          signature: sig1,
+        },
+        {
+          safe: await safe.getAddress(),
+          target: await target.getAddress(),
+          data: dataSuccess,
+          value: 0n,
+          signature: sig2,
+        },
       ];
 
       const tx = await module.executeBatch(params);
@@ -536,8 +589,14 @@ describe("UsageBasedSessionModule", function () {
       );
 
       const params = [
-        {safe: await setup1.safe.getAddress(), target: await setup1.target.getAddress(), data: data1, signature: sig1},
-        {safe: await safe2.getAddress(), target: await target2.getAddress(), data: data2, signature: sig2},
+        {
+          safe: await setup1.safe.getAddress(),
+          target: await setup1.target.getAddress(),
+          data: data1,
+          value: 0n,
+          signature: sig1,
+        },
+        {safe: await safe2.getAddress(), target: await target2.getAddress(), data: data2, value: 0n, signature: sig2},
       ];
 
       const tx = await module.executeBatch(params);
@@ -564,8 +623,8 @@ describe("UsageBasedSessionModule", function () {
       const signature = await signCall(sessionKey, safe, target, data, 0n, sessionDeadline, await module.getAddress());
 
       const params = [
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
       ];
 
       const tx = await module.executeBatch(params);
@@ -603,7 +662,7 @@ describe("UsageBasedSessionModule", function () {
 
       // Submit first call (consumes group 1 quota)
       await module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig1},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: sig1},
       ]);
       expect(await target.calls()).to.eq(1);
 
@@ -612,7 +671,7 @@ describe("UsageBasedSessionModule", function () {
       const sig2 = await signCall(sessionKey, safe, target, data, 1n, sessionDeadline, await module.getAddress());
 
       const tx = await module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig2},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: sig2},
       ]);
       await expect(tx).to.not.emit(module, "BatchItemFailed");
       expect(await target.calls()).to.eq(2);
@@ -640,8 +699,8 @@ describe("UsageBasedSessionModule", function () {
       const sig3 = await signCall(sessionKey, safe, target, data, 2n, sessionDeadline, await module.getAddress());
       await gameSubsidisationRegistry.setFunctionGroup(await target.getAddress(), selector, 0n);
       const tx2 = await module.executeBatch([
-        {safe: await safe.getAddress(), target: await target.getAddress(), data, signature: sig3},
-        {safe: await safe2.getAddress(), target: await target2.getAddress(), data, signature: goodSig},
+        {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature: sig3},
+        {safe: await safe2.getAddress(), target: await target2.getAddress(), data, value: 0n, signature: goodSig},
       ]);
       await expect(tx2).to.emit(module, "BatchItemFailed");
     });
@@ -657,7 +716,9 @@ describe("UsageBasedSessionModule", function () {
       await expect(
         module
           .connect(other)
-          .executeBatch([{safe: await safe.getAddress(), target: await target.getAddress(), data, signature}])
+          .executeBatch([
+            {safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature},
+          ])
       ).to.be.revertedWithCustomError(module, "UnauthorizedSigner");
     });
 
@@ -677,9 +738,12 @@ describe("UsageBasedSessionModule", function () {
       const balanceBefore = await ethers.provider.getBalance(otherWhitelisted.address);
       const tx = await module
         .connect(otherWhitelisted)
-        .executeBatch([{safe: await safe.getAddress(), target: await target.getAddress(), data, signature}], {
-          gasPrice,
-        });
+        .executeBatch(
+          [{safe: await safe.getAddress(), target: await target.getAddress(), data, value: 0n, signature}],
+          {
+            gasPrice,
+          }
+        );
       const receipt = await tx.wait();
       const balanceAfter = await ethers.provider.getBalance(otherWhitelisted.address);
 
@@ -977,7 +1041,7 @@ describe("UsageBasedSessionModule", function () {
       );
 
       const tx = await module.executeBatch([
-        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data, signature},
+        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data, value: 0n, signature},
       ]);
       const receipt = await tx.wait();
 
@@ -1013,7 +1077,7 @@ describe("UsageBasedSessionModule", function () {
       ]);
       const sig1 = await signCall(sessionKey, safe, playerNFT, data1, 0n, sessionDeadline, await module.getAddress());
       await module.executeBatch([
-        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data1, signature: sig1},
+        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data1, value: 0n, signature: sig1},
       ]);
 
       // Second mint with different name
@@ -1028,7 +1092,7 @@ describe("UsageBasedSessionModule", function () {
       ]);
       const sig2 = await signCall(sessionKey, safe, playerNFT, data2, 1n, sessionDeadline, await module.getAddress());
       await module.executeBatch([
-        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data2, signature: sig2},
+        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data2, value: 0n, signature: sig2},
       ]);
 
       // Set up a second safe with a fresh session to provide the required passing item for the 3rd batch
@@ -1069,8 +1133,14 @@ describe("UsageBasedSessionModule", function () {
       ]);
       const sig3 = await signCall(sessionKey, safe, playerNFT, data3, 2n, sessionDeadline, await module.getAddress());
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data3, signature: sig3},
-        {safe: await safe2.getAddress(), target: await playerNFT.getAddress(), data: data4, signature: goodSig},
+        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: data3, value: 0n, signature: sig3},
+        {
+          safe: await safe2.getAddress(),
+          target: await playerNFT.getAddress(),
+          data: data4,
+          value: 0n,
+          signature: goodSig,
+        },
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")
@@ -1124,8 +1194,14 @@ describe("UsageBasedSessionModule", function () {
       );
 
       const tx = module.executeBatch([
-        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data, signature},
-        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data: validData, signature: goodSig},
+        {safe: await safe.getAddress(), target: await playerNFT.getAddress(), data, value: 0n, signature},
+        {
+          safe: await safe.getAddress(),
+          target: await playerNFT.getAddress(),
+          data: validData,
+          value: 0n,
+          signature: goodSig,
+        },
       ]);
       await expect(tx)
         .to.emit(module, "BatchItemFailed")

@@ -46,7 +46,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   uint256 public constant MAX_BATCH_SIZE = 50;
   uint16 public constant DEFAULT_SESSION_OPS_PER_DAY = 5;
   bytes32 private constant SESSION_TYPEHASH = keccak256(
-    "UsageBasedSession(address safe,address target,bytes data,uint256 nonce,uint48 sessionDeadline)"
+    "UsageBasedSession(address safe,address target,bytes data,uint256 value,uint256 nonce,uint48 sessionDeadline)"
   );
   uint256 private constant FEEM_PROJECT_ID = 15;
 
@@ -71,6 +71,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     address safe;
     address target;
     bytes data;
+    uint256 value;
     bytes signature;
   }
 
@@ -202,10 +203,10 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
   */
   function executeSingle(ExecuteParams calldata params) external {
     require(msg.sender == address(this), OnlyInternal());
-    _execute(params.safe, params.target, params.data, params.signature);
+    _execute(params.safe, params.target, params.data, params.value, params.signature);
   }
 
-  function _execute(address safe, address target, bytes calldata data, bytes calldata signature) internal {
+  function _execute(address safe, address target, bytes calldata data, uint256 value, bytes calldata signature) internal {
     require(data.length >= 4, InvalidCallData());
 
     // 1. Basic Session Check
@@ -240,6 +241,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
           safe,
           target,
           keccak256(data),
+          value,
           currentNonce,
           session.deadline
         )
@@ -252,7 +254,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     group.count = uint40(currentUsage + 1);
 
     // 4. Verify Signature & Execute via Safe
-    bool success = ISafe(safe).execTransactionFromModule(target, 0, data, Enum.Operation.Call);
+    bool success = ISafe(safe).execTransactionFromModule(target, value, data, Enum.Operation.Call);
     require(success, ModuleCallFailed());
 
     emit SessionNonceIncremented(safe, user.nonce);

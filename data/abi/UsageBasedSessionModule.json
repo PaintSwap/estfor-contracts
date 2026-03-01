@@ -598,6 +598,11 @@
             "type": "bytes"
           },
           {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          },
+          {
             "internalType": "bytes",
             "name": "signature",
             "type": "bytes"
@@ -631,6 +636,11 @@
             "internalType": "bytes",
             "name": "data",
             "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
           },
           {
             "internalType": "bytes",
@@ -875,6 +885,11 @@
             "internalType": "bytes",
             "name": "data",
             "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
           },
           {
             "internalType": "bytes",
