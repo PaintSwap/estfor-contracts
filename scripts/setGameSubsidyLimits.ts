@@ -1,7 +1,7 @@
 import {ethers} from "hardhat";
 import {GAME_SUBSIDISATION_REGISTRY_ADDRESS, GLOBAL_EVENT_ADDRESS} from "./contractAddresses";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {getSafeUpgradeTransaction, initialiseSafe, sendTransactionSetToSafe} from "./utils";
+import {getSafeUpgradeTransaction, initialiseSafe, isBeta, sendTransactionSetToSafe} from "./utils";
 import {OperationType, MetaTransactionData} from "@safe-global/types-kit";
 import {GameSubsidisationRegistry__factory} from "../typechain-types";
 import {groups} from "./data/groupSubsidyLimits";
@@ -23,7 +23,7 @@ async function main() {
     const groupIds = groups.flatMap((g) => g.selectors.map((s) => s.groupId));
 
     const limitGroupIds = groups.map((g) => g.groupId);
-    const limits = groups.map((g) => g.limit);
+    const limits = groups.map((g) => g.limit * (isBeta ? 10 : 1)); // In beta we set higher limits to allow more testing, will be reduced to intended limits for mainnet launch
 
     transactionSet.push({
       to: GAME_SUBSIDISATION_REGISTRY_ADDRESS,

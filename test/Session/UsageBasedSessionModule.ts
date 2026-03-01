@@ -1,4 +1,5 @@
 import {loadFixture, setNextBlockBaseFeePerGas} from "@nomicfoundation/hardhat-network-helpers";
+import {anyValue} from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import {expect} from "chai";
 import {ethers} from "hardhat";
 import {GameSubsidisationRegistry, UsageBasedSessionModule, PlayerNFT} from "../../typechain-types";
@@ -542,10 +543,10 @@ describe("UsageBasedSessionModule", function () {
       // Verify nonces incremented (total 2 successful increments)
       await expect(tx)
         .to.emit(module, "SessionNonceIncremented")
-        .withArgs(await safe.getAddress(), 1n);
+        .withArgs(await safe.getAddress(), 1n, 1n, 1n, anyValue, 5n);
       await expect(tx)
         .to.emit(module, "SessionNonceIncremented")
-        .withArgs(await safe.getAddress(), 2n);
+        .withArgs(await safe.getAddress(), 2n, 1n, 2n, anyValue, 5n);
     });
 
     it("executes a batch with mixed success and failure (different safes)", async () => {
@@ -614,7 +615,7 @@ describe("UsageBasedSessionModule", function () {
       // Verify success for safe1
       await expect(tx)
         .to.emit(module, "SessionNonceIncremented")
-        .withArgs(await setup1.safe.getAddress(), 1n);
+        .withArgs(await setup1.safe.getAddress(), 1n, 1n, 1n, anyValue, 5n);
     });
 
     it("handles duplicate items in a single batch (replay protection)", async () => {

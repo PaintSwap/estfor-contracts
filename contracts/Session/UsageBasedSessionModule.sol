@@ -33,7 +33,7 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
 
   event SessionEnabled(address indexed safe, address indexed sessionKey, uint48 deadline);
   event SessionRevoked(address indexed safe);
-  event SessionNonceIncremented(address indexed safe, uint256 newNonce);
+  event SessionNonceIncremented(address indexed safe, uint256 newNonce, uint256 groupId, uint256 groupUsageCount, uint256 groupUsageDay, uint256 groupUsageLimit);
   event WhitelistedSignersUpdated(address[] signers, bool whitelisted);
   event BatchItemFailed(address indexed safe, bytes4 selector, bytes errorData);
   event RelayerRefundFailed(address indexed relayer, uint256 amount);
@@ -185,15 +185,18 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
    * via eth_call runs the actual execution path with the full block gas budget and
    * returns the true gas consumed, which the relayer then uses as the gas limit.
    */
-  function simulateBatch(ExecuteParams[] calldata params) external whenNotPaused returns (uint256 gasUsed, uint256 successCount) {
+  function simulateBatch(ExecuteParams[] calldata params) external nonReentrant whenNotPaused returns (uint256 gasUsed, uint256 successCount, bytes[] memory errors) {
     require(_whitelistedSigners[msg.sender], UnauthorizedSigner());
     require(params.length > 0, NoBatchItems());
     require(params.length <= MAX_BATCH_SIZE, BatchTooLarge());
+    errors = new bytes[](params.length);
     uint256 startGas = gasleft();
     for (uint256 i = 0; i < params.length; i++) {
       try this.executeSingle(params[i]) {
         ++successCount;
-      } catch {}
+      } catch (bytes memory reason) {
+        errors[i] = reason;
+      }
     }
     gasUsed = startGas - gasleft();
   }
@@ -253,11 +256,15 @@ contract UsageBasedSessionModule is UUPSUpgradeable, OwnableUpgradeable, EIP712U
     user.nonce = currentNonce + 1;
     group.count = uint40(currentUsage + 1);
 
-    // 4. Verify Signature & Execute via Safe
+    // 4. Fund Safe with required value, then execute via Safe
+    if (value > 0) {
+      (bool funded, ) = safe.call{value: value}("");
+      require(funded, ModuleCallFailed());
+    }
     bool success = ISafe(safe).execTransactionFromModule(target, value, data, Enum.Operation.Call);
     require(success, ModuleCallFailed());
 
-    emit SessionNonceIncremented(safe, user.nonce);
+    emit SessionNonceIncremented(safe, user.nonce, groupId, group.count, group.day, limit);
   }
 
   function setWhitelistedSigner(address[] calldata signers, bool whitelisted) external onlyOwner {
