@@ -4,6 +4,7 @@ import {
   BLACK_MARKET_TRADER_ADDRESS,
   BRUSH_ADDRESS,
   CLANS_ADDRESS,
+  COMBATANTS_HELPER_ADDRESS,
   COSMETICS_ADDRESS,
   GLOBAL_EVENT_ADDRESS,
   INSTANT_ACTIONS_ADDRESS,
@@ -24,6 +25,7 @@ import {
   BankRelay__factory,
   BlackMarketTrader__factory,
   Clans__factory,
+  CombatantsHelper__factory,
   Cosmetics__factory,
   GlobalEvents__factory,
   InstantActions__factory,
@@ -62,6 +64,7 @@ const passiveActionsIface = PassiveActions__factory.createInterface();
 const marketPlaceIface = Marketplace__factory.createInterface();
 const randomnessBeaconIface = RandomnessBeacon__factory.createInterface();
 const orderbookIface = OrderBook__factory.createInterface();
+const combatantsHelperIface = CombatantsHelper__factory.createInterface();
 const brushMinimalAbi = ["function approve(address spender, uint256 amount) external returns (bool)"];
 const brushIface = new ethers.Interface(brushMinimalAbi);
 
@@ -364,6 +367,11 @@ export const groups = [
     groupId: 10, // Locked Bank Vault group
     limit: 8,
     selectors: [
+      {
+        groupId: 10,
+        contract: COMBATANTS_HELPER_ADDRESS,
+        selector: combatantsHelperIface.getFunction("assignCombatants").selector,
+      },
       {
         groupId: 10,
         contract: LOCKED_BANK_VAULTS_ADDRESS,
