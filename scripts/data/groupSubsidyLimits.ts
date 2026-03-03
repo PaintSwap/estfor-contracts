@@ -99,6 +99,11 @@ export const groups = [
         contract: COSMETICS_ADDRESS,
         selector: cosmeticIface.getFunction("removeCosmetic").selector,
       },
+      {
+        groupId: 2,
+        contract: PLAYER_NFT_ADDRESS,
+        selector: playerNFTIface.getFunction("setApprovalForAll").selector,
+      },
     ],
   },
   {
@@ -180,6 +185,11 @@ export const groups = [
         groupId: 4,
         contract: RANDOMNESS_BEACON_ADDRESS,
         selector: randomnessBeaconIface.getFunction("requestRandomWords").selector,
+      },
+      {
+        groupId: 4,
+        contract: PLAYERS_ADDRESS,
+        selector: playersIface.getFunction("donate").selector,
       },
     ],
   },
@@ -408,6 +418,11 @@ export const groups = [
         contract: PET_NFT_ADDRESS,
         selector: petNFTIface.getFunction("editPet").selector,
       },
+      {
+        groupId: 11,
+        contract: PET_NFT_ADDRESS,
+        selector: petNFTIface.getFunction("setApprovalForAll").selector,
+      },
     ],
   },
   {
@@ -428,6 +443,11 @@ export const groups = [
         groupId: 12,
         contract: ITEM_NFT_ADDRESS,
         selector: itemNFTIface.getFunction("safeTransferFrom").selector,
+      },
+      {
+        groupId: 12,
+        contract: ITEM_NFT_ADDRESS,
+        selector: itemNFTIface.getFunction("setApprovalForAll").selector,
       },
     ],
   },
