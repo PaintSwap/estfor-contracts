@@ -16,6 +16,7 @@ import {
   PET_NFT_ADDRESS,
   PLAYER_NFT_ADDRESS,
   PLAYERS_ADDRESS,
+  PROMOTIONS_ADDRESS,
   RANDOMNESS_BEACON_ADDRESS,
   SHOP_ADDRESS,
   TERRITORIES_ADDRESS,
@@ -38,6 +39,7 @@ import {
   PetNFT__factory,
   PlayerNFT__factory,
   Players__factory,
+  Promotions__factory,
   RandomnessBeacon__factory,
   Shop__factory,
   Territories__factory,
@@ -65,7 +67,13 @@ const marketPlaceIface = Marketplace__factory.createInterface();
 const randomnessBeaconIface = RandomnessBeacon__factory.createInterface();
 const orderbookIface = OrderBook__factory.createInterface();
 const combatantsHelperIface = CombatantsHelper__factory.createInterface();
-const brushMinimalAbi = ["function approve(address spender, uint256 amount) external returns (bool)"];
+const promotionsIface = Promotions__factory.createInterface();
+const brushMinimalAbi = [
+  "function approve(address spender, uint256 amount) external returns (bool)",
+  "function transfer(address to, uint256 amount) external",
+  "function transferFromBulk(address from, address[] calldata tos, uint256[] calldata amounts) external",
+  "function transferBulk(address[] calldata tos, uint256[] calldata amounts) external",
+];
 const brushIface = new ethers.Interface(brushMinimalAbi);
 
 export const groups = [
@@ -104,6 +112,16 @@ export const groups = [
         contract: PLAYER_NFT_ADDRESS,
         selector: playerNFTIface.getFunction("setApprovalForAll").selector,
       },
+      {
+        groupId: 2,
+        contract: PLAYER_NFT_ADDRESS,
+        selector: playerNFTIface.getFunction("safeTransferFrom").selector,
+      },
+      {
+        groupId: 2,
+        contract: PLAYER_NFT_ADDRESS,
+        selector: playerNFTIface.getFunction("safeBatchTransferFrom").selector,
+      },
     ],
   },
   {
@@ -140,6 +158,11 @@ export const groups = [
         groupId: 4,
         contract: PLAYERS_ADDRESS,
         selector: playersIface.getFunction("activateQuest").selector,
+      },
+      {
+        groupId: 4,
+        contract: PLAYERS_ADDRESS,
+        selector: playersIface.getFunction("setActivePlayer").selector,
       },
       {
         groupId: 4,
@@ -334,6 +357,21 @@ export const groups = [
         contract: BANK_RELAY_ADDRESS,
         selector: bankRelayIface.getFunction("withdrawTokenToMany").selector,
       },
+      {
+        groupId: 7,
+        contract: BANK_RELAY_ADDRESS,
+        selector: bankRelayIface.getFunction("withdrawItemsAtBank").selector,
+      },
+      {
+        groupId: 7,
+        contract: BANK_RELAY_ADDRESS,
+        selector: bankRelayIface.getFunction("withdrawItemsBulkAtBank").selector,
+      },
+      {
+        groupId: 7,
+        contract: BANK_RELAY_ADDRESS,
+        selector: bankRelayIface.getFunction("withdrawTokenToManyAtBank").selector,
+      },
     ],
   },
   {
@@ -422,6 +460,16 @@ export const groups = [
         groupId: 11,
         contract: PET_NFT_ADDRESS,
         selector: petNFTIface.getFunction("setApprovalForAll").selector,
+      },
+      {
+        groupId: 11,
+        contract: PET_NFT_ADDRESS,
+        selector: petNFTIface.getFunction("safeTransferFrom").selector,
+      },
+      {
+        groupId: 11,
+        contract: PET_NFT_ADDRESS,
+        selector: petNFTIface.getFunction("safeBatchTransferFrom").selector,
       },
     ],
   },
@@ -530,13 +578,44 @@ export const groups = [
     ],
   },
   {
-    groupId: 16, // Brush ERC20 group (just the approve selector)
+    groupId: 16, // Brush ERC20 group
     limit: 10,
     selectors: [
       {
         groupId: 16,
         contract: BRUSH_ADDRESS,
         selector: brushIface.getFunction("approve")!.selector,
+      },
+      {
+        groupId: 16,
+        contract: BRUSH_ADDRESS,
+        selector: brushIface.getFunction("transfer")!.selector,
+      },
+      {
+        groupId: 16,
+        contract: BRUSH_ADDRESS,
+        selector: brushIface.getFunction("transferFromBulk")!.selector,
+      },
+      {
+        groupId: 16,
+        contract: BRUSH_ADDRESS,
+        selector: brushIface.getFunction("transferBulk")!.selector,
+      },
+    ],
+  },
+  {
+    groupId: 17, // Promotions group
+    limit: 5,
+    selectors: [
+      {
+        groupId: 17,
+        contract: PROMOTIONS_ADDRESS,
+        selector: promotionsIface.getFunction("payMissedPromotionDays")!.selector,
+      },
+      {
+        groupId: 17,
+        contract: PROMOTIONS_ADDRESS,
+        selector: promotionsIface.getFunction("mintPromotion")!.selector,
       },
     ],
   },

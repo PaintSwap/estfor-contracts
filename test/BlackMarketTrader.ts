@@ -276,6 +276,11 @@ describe("BlackMarketTrader", function () {
     ]);
     await blackMarketTrader.addShopItems([item], globalEventId);
 
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
+
     // Initialise without items (should fail)
     await expect(blackMarketTrader.initialiseShopItemsForEvent(2)).to.be.revertedWithCustomError(
       blackMarketTrader,
@@ -562,6 +567,11 @@ describe("BlackMarketTrader", function () {
 
     const cost = await blackMarketTrader.requestCost(1);
 
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
+
     // First initialise
     const tx = await blackMarketTrader.initialiseShopItemsForEvent(globalEventId, {value: cost});
     const requestId = Number((await getEventLog(tx, blackMarketTrader, "RequestSent")).requestId);
@@ -580,6 +590,11 @@ describe("BlackMarketTrader", function () {
     await blackMarketTrader.addShopItems([item], globalEventId);
 
     const cost = await blackMarketTrader.requestCost(1);
+
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
 
     // First initialise - request sent but NOT fulfilled yet
     await blackMarketTrader.initialiseShopItemsForEvent(globalEventId, {value: cost});
@@ -986,6 +1001,11 @@ describe("BlackMarketTrader", function () {
 
     await blackMarketTrader.addShopItems(items, globalEventId);
 
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
+
     const cost = await blackMarketTrader.requestCost(1);
     const tx = await blackMarketTrader.initialiseShopItemsForEvent(globalEventId, {value: cost});
     const requestId = Number((await getEventLog(tx, blackMarketTrader, "RequestSent")).requestId);
@@ -1094,6 +1114,11 @@ describe("BlackMarketTrader", function () {
     await blackMarketTrader.addShopItems([item], globalEventId);
 
     const cost = await blackMarketTrader.requestCost(1);
+
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
 
     // Alice (non-owner) should be able to initialise
     await expect(blackMarketTrader.connect(alice).initialiseShopItemsForEvent(globalEventId, {value: cost})).to.emit(
@@ -1210,6 +1235,11 @@ describe("BlackMarketTrader", function () {
     const numWords = Math.ceil(numItems / 16);
     expect(numWords).to.equal(3);
 
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
+
     const cost = await blackMarketTrader.requestCost(numWords);
     const tx = await blackMarketTrader.initialiseShopItemsForEvent(globalEventId, {value: cost});
     const requestId = Number((await getEventLog(tx, blackMarketTrader, "RequestSent")).requestId);
@@ -1237,6 +1267,11 @@ describe("BlackMarketTrader", function () {
     await itemNFT.addItems(itemInputs);
     await blackMarketTrader.addShopItems(shopItems, globalEventId);
 
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
+
     const tx = await blackMarketTrader.initialiseShopItemsForEvent(globalEventId, {
       value: await blackMarketTrader.requestCost(1),
     });
@@ -1258,6 +1293,11 @@ describe("BlackMarketTrader", function () {
 
     await itemNFT.addItems(itemInputs);
     await blackMarketTrader.addShopItems(shopItems, globalEventId);
+
+    const currentTimestamp = await time.latest();
+    const currentWeek = Math.floor(currentTimestamp / (7 * 24 * 3600));
+    const week1 = (Math.floor(currentWeek / 3) + 1) * 3 + 1;
+    await time.increaseTo(week1 * 7 * 24 * 3600);
 
     const tx = await blackMarketTrader.initialiseShopItemsForEvent(globalEventId, {
       value: await blackMarketTrader.requestCost(2),

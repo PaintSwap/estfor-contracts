@@ -7,7 +7,19 @@ import {
   UsageBasedSessionModule__factory,
   GameSubsidisationRegistry__factory,
 } from "../typechain-types";
-import {SUBSIDY_SIGNERS} from "./contractAddresses";
+import {
+  BLACK_MARKET_TRADER_ADDRESS,
+  CLAN_BATTLE_LIBRARY_ADDRESS,
+  ESTFOR_LIBRARY_ADDRESS,
+  INSTANT_VRF_ACTIONS_ADDRESS,
+  LOCKED_BANK_VAULTS_ADDRESS,
+  LOCKED_BANK_VAULTS_LIBRARY_ADDRESS,
+  PLAYERS_LIBRARY_ADDRESS,
+  PVP_BATTLEGROUND_ADDRESS,
+  RAIDS_ADDRESS,
+  SUBSIDY_SIGNERS,
+  TERRITORIES_ADDRESS,
+} from "./contractAddresses";
 import {groups} from "./data/groupSubsidyLimits";
 
 async function main() {
@@ -45,8 +57,76 @@ async function main() {
       await verifyContracts([await gameSubsidisationRegistry.getAddress()]);
     }
 
+    const BlackMarketTrader = await ethers.getContractFactory("BlackMarketTrader", proposer);
+    const blackMarketTrader = (await upgrades.prepareUpgrade(BLACK_MARKET_TRADER_ADDRESS, BlackMarketTrader, {
+      kind: "uups",
+    })) as string;
+    console.log(`blackMarketTrader = "${blackMarketTrader.toLowerCase()}"`);
+
+    const InstantVRFActions = await ethers.getContractFactory("InstantVRFActions", proposer);
+    const instantVRFActions = (await upgrades.prepareUpgrade(INSTANT_VRF_ACTIONS_ADDRESS, InstantVRFActions, {
+      kind: "uups",
+      timeout,
+    })) as string;
+    console.log(`instantVRFActions = "${instantVRFActions}"`);
+
+    const PVPBattleground = await ethers.getContractFactory("PVPBattleground", proposer);
+    const pvpBattleground = (await upgrades.prepareUpgrade(PVP_BATTLEGROUND_ADDRESS, PVPBattleground, {
+      kind: "uups",
+      timeout,
+    })) as string;
+    console.log(`pvpBattleground = "${pvpBattleground}"`);
+
+    const estforLibrary = await ethers.getContractAt("EstforLibrary", ESTFOR_LIBRARY_ADDRESS);
+    const clanBattleLibrary = await ethers.getContractAt("ClanBattleLibrary", CLAN_BATTLE_LIBRARY_ADDRESS);
+    const lockedBankVaultsLibrary = await ethers.getContractAt(
+      "LockedBankVaultsLibrary",
+      LOCKED_BANK_VAULTS_LIBRARY_ADDRESS
+    );
+    const playersLibrary = await ethers.getContractAt("PlayersLibrary", PLAYERS_LIBRARY_ADDRESS);
+
+    const LockedBankVaults = await ethers.getContractFactory("LockedBankVaults", {
+      libraries: {
+        EstforLibrary: await estforLibrary.getAddress(),
+        LockedBankVaultsLibrary: await lockedBankVaultsLibrary.getAddress(),
+        ClanBattleLibrary: await clanBattleLibrary.getAddress(),
+      },
+      signer: proposer,
+    });
+    const lockedBankVaults = (await upgrades.prepareUpgrade(LOCKED_BANK_VAULTS_ADDRESS, LockedBankVaults, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    })) as string;
+    console.log(`lockedBankVaults = ${lockedBankVaults}`);
+
+    const Territories = await ethers.getContractFactory("Territories", proposer);
+    const territories = (await upgrades.prepareUpgrade(TERRITORIES_ADDRESS, Territories, {
+      kind: "uups",
+      timeout,
+      unsafeSkipStorageCheck: true,
+    })) as string;
+    console.log(`territories = ${territories}`);
+
+    const Raids = await ethers.getContractFactory("Raids", {
+      libraries: {PlayersLibrary: await playersLibrary.getAddress()},
+      signer: proposer,
+    });
+    const raids = (await upgrades.prepareUpgrade(RAIDS_ADDRESS, Raids, {
+      kind: "uups",
+      unsafeAllow: ["external-library-linking"],
+      timeout,
+    })) as string;
+    console.log(`raids = ${raids}`);
+
     const transactionSet: MetaTransactionData[] = [];
     // Set addresses and approvals
+    transactionSet.push(getSafeUpgradeTransaction(TERRITORIES_ADDRESS, territories));
+    transactionSet.push(getSafeUpgradeTransaction(RAIDS_ADDRESS, raids));
+    transactionSet.push(getSafeUpgradeTransaction(INSTANT_VRF_ACTIONS_ADDRESS, instantVRFActions));
+    transactionSet.push(getSafeUpgradeTransaction(BLACK_MARKET_TRADER_ADDRESS, blackMarketTrader));
+    transactionSet.push(getSafeUpgradeTransaction(LOCKED_BANK_VAULTS_ADDRESS, lockedBankVaults));
+    transactionSet.push(getSafeUpgradeTransaction(PVP_BATTLEGROUND_ADDRESS, pvpBattleground));
     transactionSet.push({
       to: await usageBasedSessionModule.getAddress(),
       value: "0",
