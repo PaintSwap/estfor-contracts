@@ -254,6 +254,16 @@ export const groups = [
       {
         groupId: 6,
         contract: CLANS_ADDRESS,
+        selector: clansIface.getFunction("setJoinRequestsEnabled").selector,
+      },
+      {
+        groupId: 6,
+        contract: CLANS_ADDRESS,
+        selector: clansIface.getFunction("renounceOwnershipTo").selector,
+      },
+      {
+        groupId: 6,
+        contract: CLANS_ADDRESS,
         selector: clansIface.getFunction("changeRank").selector,
       },
       {
