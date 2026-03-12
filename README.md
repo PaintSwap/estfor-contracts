@@ -96,7 +96,9 @@ ActivityPoints [0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2](https://sonicscan.or
 Marketplace [0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1](https://sonicscan.org/address/0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1)  
 Cosmetics [0xb30b177b6c8c21370a72d7cada5f627519c91432](https://sonicscan.org/address/0xb30b177b6c8c21370a72d7cada5f627519c91432)  
 Global Events [0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2](https://sonicscan.org/address/0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2)  
-Black Market Trader [0x4f9911214d811b5acdc4d1911067f614e81c808e](https://sonicscan.org/address/0x4f9911214d811b5acdc4d1911067f614e81c808e)
+Black Market Trader [0x4f9911214d811b5acdc4d1911067f614e81c808e](https://sonicscan.org/address/0x4f9911214d811b5acdc4d1911067f614e81c808e)  
+Game Subsidisation Registry [0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30](https://sonicscan.org/address/0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30)  
+Usage Based Session Module [0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7](https://sonicscan.org/address/0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7)
 
 ### Sonic mainnet beta deployed contract addresses:
 

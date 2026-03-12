@@ -128,9 +128,15 @@ if (!isBeta) {
   cosmetics = "0xb30b177b6c8c21370a72d7cada5f627519c91432";
   globalEvent = "0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2";
   blackMarketTrader = "0x4f9911214d811b5acdc4d1911067f614e81c808e";
-  usageBasedSessionModule = "";
-  gameSubsidisationRegistry = "";
-  subsidySigners = [];
+  usageBasedSessionModule = "0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7";
+  gameSubsidisationRegistry = "0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30";
+  subsidySigners = [
+    "0x6c980c2F2113a99EDC2625503fBEE96d38441f01",
+    "0x26a30b8Cc05A6773C5251A8A5Aa4E1f4965CDE5A",
+    "0xF62ACe4bE570834daaDDcd48CE1Be30845BC9aa1",
+    "0x6610F8bC65A4dB8A038F0e217ceD8c0d21658D02",
+    "0xF2C54Ebcf54AC6a429D7C4847063973D9D2c3B5c",
+  ];
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";

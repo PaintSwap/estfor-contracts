@@ -21,6 +21,7 @@ import {
   TERRITORIES_ADDRESS,
 } from "./contractAddresses";
 import {groups} from "./data/groupSubsidyLimits";
+import {parseEther} from "ethers";
 
 async function main() {
   const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
@@ -168,6 +169,20 @@ async function main() {
       data: usageBasedSessionModuleIface.encodeFunctionData("registerFeeM"),
       operation: OperationType.Call,
     });
+    let i = 0;
+    for (const signer of SUBSIDY_SIGNERS) {
+      let value = parseEther("10");
+      if (i === 0) {
+        value = parseEther("100");
+      }
+      transactionSet.push({
+        to: signer,
+        value: value.toString(),
+        data: "0x",
+        operation: OperationType.Call,
+      });
+      i++;
+    }
     await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
   }
 }
