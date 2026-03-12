@@ -83,7 +83,8 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
     bool attackInProgress;
   }
 
-  uint256 private constant NUM_WORDS = 3;
+  uint256 private constant NUM_WORDS = 3;  
+  address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
   IPlayers private _players;
   uint64 private _nextPendingAttackId;
@@ -274,7 +275,7 @@ contract PVPBattleground is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFCon
   }
 
   function _requestRandomWords() private returns (uint256 requestId) {
-    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, msg.value);
+    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, DAO_MULTISIG_ADDRESS, msg.value);
   }
 
   function determineBattleOutcome(

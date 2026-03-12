@@ -131,6 +131,7 @@ contract LockedBankVaults is
   uint256 private constant NUM_WORDS = 7;
   uint256 private constant NUM_PACKED_VAULTS = 2;
   uint40 private constant CLAN_XP_GAINED_WIN = 10;
+  address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
   Skill[] private _comparableSkills;
   uint64 private _nextPendingAttackId;
@@ -602,7 +603,7 @@ contract LockedBankVaults is
 
   function _requestRandomWords() private returns (uint256 requestId) {
     uint256 gasPayment = _calculateRequestPriceNative(_expectedGasLimitFulfill);
-    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, gasPayment);
+    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, DAO_MULTISIG_ADDRESS, gasPayment);
   }
 
   function getAttackCost() public view returns (uint256) {

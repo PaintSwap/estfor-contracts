@@ -61,6 +61,8 @@ contract BlackMarketTrader is
   }
 
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 140_000;
+  address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
+  
   ItemNFT private _itemNFT;
 
   mapping(uint256 globalEventId => ShopCollection) private _shopCollections;
@@ -140,7 +142,7 @@ contract BlackMarketTrader is
     requestId = _requestRandomnessPayInNative(
       callbackGasLimitForRequests(numWords),
       numWords,
-      msg.sender,
+      DAO_MULTISIG_ADDRESS,
       msg.value
     );
   }
@@ -221,6 +223,8 @@ contract BlackMarketTrader is
       require(itemsToEdit[i].price != 0, PriceCannotBeZero());
       item.price = itemsToEdit[i].price;
       item.stock = itemsToEdit[i].stock;
+      item.currentStock = itemsToEdit[i].stock; // Reset stock to new stock amount when edited
+      item.amountPerPurchase = itemsToEdit[i].amountPerPurchase;
     }
     emit EditShopItems(itemsToEdit, globalEventId);
   }

@@ -94,6 +94,7 @@ contract InstantVRFActions is
 
   uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 140_000;
   uint256 private constant MAX_INPUTS_PER_ACTION = 3; // This needs to be the max across all strategies
+  address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
   ItemNFT private _itemNFT;
   Players private _players;
@@ -353,7 +354,7 @@ contract InstantVRFActions is
     requestId = _requestRandomnessPayInNative(
       callbackGasLimitForRequests(numActions),
       numRandomWords,
-      msg.sender,
+      DAO_MULTISIG_ADDRESS,
       msg.value
     );
   }

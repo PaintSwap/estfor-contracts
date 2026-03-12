@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "solidity-security": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "080c10be84baecfb396906abb085f16ec3e70b027a9355becb4a394c47da0b80"
+    }
+  }
+}

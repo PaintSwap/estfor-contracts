@@ -24,5 +24,8 @@
 - Do NOT add getter functions for mappings or arrays. Instead, emit events when data is added/updated and read data off-chain via events or direct storage reads. Contract size is more important than on-chain convenience functions.
 - Always follow Checks-Effects-Interactions pattern to prevent reentrancy issues. Update contract state before making any external calls.
 - Contract owners are expected to be Gnosis Safe multisigs. There are some scripts that may still use single EOA accounts as they haven't been updated yet. For new scripts, prefer the proposal pattern using `prepareUpgrade` and use the util function `sendTransactionSetToSafe` in `scripts/utils.ts`.
+- Use openzeppelin libraries for common functionalities like ERC standards, access control, upgradeability, and security features. Avoid reinventing the wheel.
+- Use `pnpm test <file>` to run specific test files during development for faster feedback.
+- Do not use `pnpm hardhat test <file>` as it forces a full recompile which slows down the workflow.
 
 If anything here feels off or incomplete, tell me what to clarify or expand.

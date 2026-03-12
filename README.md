@@ -92,11 +92,13 @@ CombatantsHelper [0xc754d621239b5830264f8c8e302c21ffe48625fc](https://sonicscan.
 TerritoryTreasury [0x4b1da5984c89312f852c798154a171a5ddc07d43](https://sonicscan.org/address/0x4b1da5984c89312f852c798154a171a5ddc07d43)  
 BankRegistry [0xf213febd3889c5bf18086356e7eff79e2a9fe391](https://sonicscan.org/address/0xf213febd3889c5bf18086356e7eff79e2a9fe391)  
 BankFactory [0x76af5869f1b902f7a16c128a1daa7734819ec327](https://sonicscan.org/address/0x76af5869f1b902f7a16c128a1daa7734819ec327)  
-ActivityPoints [0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2](https://sonicscan.org/address/0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2)
-Marketplace [0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1](https://sonicscan.org/address/0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1)
-Cosmetics [0xb30b177b6c8c21370a72d7cada5f627519c91432](https://sonicscan.org/address/0xb30b177b6c8c21370a72d7cada5f627519c91432)
-Global Events [0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2](https://sonicscan.org/address/0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2)
-Black Market Trader [0x4f9911214d811b5acdc4d1911067f614e81c808e](https://sonicscan.org/address/0x4f9911214d811b5acdc4d1911067f614e81c808e)
+ActivityPoints [0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2](https://sonicscan.org/address/0x84527c02bb28ce7c32ca4182ad0541a2a9a561d2)  
+Marketplace [0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1](https://sonicscan.org/address/0x7ba7b9193883e944645fc41d4a16c9516c6c5dc1)  
+Cosmetics [0xb30b177b6c8c21370a72d7cada5f627519c91432](https://sonicscan.org/address/0xb30b177b6c8c21370a72d7cada5f627519c91432)  
+Global Events [0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2](https://sonicscan.org/address/0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2)  
+Black Market Trader [0x4f9911214d811b5acdc4d1911067f614e81c808e](https://sonicscan.org/address/0x4f9911214d811b5acdc4d1911067f614e81c808e)  
+Game Subsidisation Registry [0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30](https://sonicscan.org/address/0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30)  
+Usage Based Session Module [0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7](https://sonicscan.org/address/0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7)
 
 ### Sonic mainnet beta deployed contract addresses:
 
@@ -144,11 +146,13 @@ CombatantsHelper [0x7fa2b4c19093e0777d72235ea28d302f53227fa0](https://sonicscan.
 TerritoryTreasury [0x5d1429f842891ea0ed80e856762b48bc117ac2a8](https://sonicscan.org/address/0x5d1429f842891ea0ed80e856762b48bc117ac2a8)  
 BankRegistry [0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6](https://sonicscan.org/address/0x7e7664ff2717889841c758ddfa7a1c6473a8a4d6)  
 BankFactory [0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c](https://sonicscan.org/address/0x5497f4b12092d2a8bff8a9e1640ef68e44613f8c)  
-ActivityPoints [0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a](https://sonicscan.org/address/0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a)
-Marketplace [0x3935866043766b86f30593bd17a787cc0105f7e0](https://sonicscan.org/address/0x3935866043766b86f30593bd17a787cc0105f7e0)
-Cosmetics [0x9ac94b923333406d1c8b390ab606f90d6526c187](https://sonicscan.org/address/0x9ac94b923333406d1c8b390ab606f90d6526c187)
-Global Events [0x8d61f3135a9f39b685b9765976e6a0f0572aeca5](https://sonicscan.org/address/0x8d61f3135a9f39b685b9765976e6a0f0572aeca5)
-Black Market Trader [0xac619719cdcf1fc03438c7b9aff737993feae851](https://sonicscan.org/address/0xac619719cdcf1fc03438c7b9aff737993feae851)
+ActivityPoints [0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a](https://sonicscan.org/address/0x7fdf947ada5b8979e8aa05c373e1a6ed7457348a)  
+Marketplace [0x3935866043766b86f30593bd17a787cc0105f7e0](https://sonicscan.org/address/0x3935866043766b86f30593bd17a787cc0105f7e0)  
+Cosmetics [0x9ac94b923333406d1c8b390ab606f90d6526c187](https://sonicscan.org/address/0x9ac94b923333406d1c8b390ab606f90d6526c187)  
+Global Events [0x8d61f3135a9f39b685b9765976e6a0f0572aeca5](https://sonicscan.org/address/0x8d61f3135a9f39b685b9765976e6a0f0572aeca5)  
+Black Market Trader [0xac619719cdcf1fc03438c7b9aff737993feae851](https://sonicscan.org/address/0xac619719cdcf1fc03438c7b9aff737993feae851)  
+Game Subsidisation Registry [0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0](https://sonicscan.org/address/0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0)  
+Usage Based Session Module [0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41](https://sonicscan.org/address/0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41)
 
 ### Other addresses:
 

@@ -133,6 +133,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
 
   uint256 private constant NUM_WORDS = 3;
   uint256 private constant CALLBACK_GAS_LIMIT_SPAWN = 500_000;
+  address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
   uint40 private _nextRaidId;
   uint40 private _currentRaidExpireTime;
@@ -231,7 +232,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     _raidSpawnRequestId = _requestRandomnessPayInNative(
       CALLBACK_GAS_LIMIT_SPAWN,
       NUM_WORDS,
-      msg.sender,
+      DAO_MULTISIG_ADDRESS,
       _calculateRequestPriceNative(CALLBACK_GAS_LIMIT_SPAWN)
     );
     _currentRaidExpireTime = uint40(block.timestamp + _spawnRaidCooldown);
@@ -260,7 +261,7 @@ contract Raids is UUPSUpgradeable, OwnableUpgradeable, PaintswapVRFConsumerUpgra
     uint40 currentRaid = _nextRaidId;
     require(raidId < currentRaid && raidId >= currentRaid - NUM_WORDS, RaidDoesNotExist());
 
-    uint256 requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, msg.value);
+    uint256 requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, DAO_MULTISIG_ADDRESS, msg.value);
 
     _requestIdToPendingRaidAttack[requestId].raidId = raidId;
     _requestIdToPendingRaidAttack[requestId].clanId = clanId;

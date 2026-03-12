@@ -73,6 +73,8 @@
     "deployInstantVRFActionTestData": "npx hardhat run scripts/deployInstantVRFActionTestData.ts",
     "deployWinter26Release": "npx hardhat run scripts/deployWinter26Release.ts",
     "deployBlackMarketTrader": "npx hardhat run scripts/deployBlackMarketTrader.ts",
+    "deployAccountAbstraction": "npx hardhat run scripts/deployAccountAbstraction.ts",
+    "setGameSubsidyLimits": "npx hardhat run scripts/setGameSubsidyLimits.ts",
     "upgradeVRF": "npx hardhat run scripts/integratePaintswapVRF.ts",
     "addCosmetics": "npx hardhat run scripts/addCosmetics.ts",
     "addItems": "npx hardhat run scripts/addItems.ts",

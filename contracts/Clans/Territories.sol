@@ -165,6 +165,7 @@ contract Territories is
   uint256 public constant PERCENTAGE_EMISSION_MUL = 10;
   uint256 public constant HARVESTING_COOLDOWN = 8 hours;
   uint40 private constant CLAN_XP_GAINED_ON_TERRITORY_WIN = 10;
+  address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
   mapping(uint256 pendingAttackId => PendingAttack pendingAttack) private _pendingAttacks;
   mapping(uint256 requestId => uint256 pendingAttackId) private _requestToPendingAttackIds;
@@ -535,7 +536,7 @@ contract Territories is
   }
 
   function _requestRandomWords() private returns (uint256 requestId) {
-    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, msg.sender, msg.value);
+    requestId = _requestRandomnessPayInNative(_expectedGasLimitFulfill, NUM_WORDS, DAO_MULTISIG_ADDRESS, msg.value);
   }
 
   function _claimTerritory(uint256 territoryId, uint256 attackingClanId) private {

@@ -55,6 +55,9 @@ let cosmetics;
 let usdc;
 let globalEvent;
 let blackMarketTrader;
+let usageBasedSessionModule;
+let gameSubsidisationRegistry;
+let subsidySigners: string[] = [];
 
 // Third party stuff chain specific addresses
 const chainId = process.env.CHAIN_ID;
@@ -125,6 +128,15 @@ if (!isBeta) {
   cosmetics = "0xb30b177b6c8c21370a72d7cada5f627519c91432";
   globalEvent = "0x6aca0ec5ad8158ab112f0fdf76e2c3ed6bfa11e2";
   blackMarketTrader = "0x4f9911214d811b5acdc4d1911067f614e81c808e";
+  usageBasedSessionModule = "0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7";
+  gameSubsidisationRegistry = "0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30";
+  subsidySigners = [
+    "0x6c980c2F2113a99EDC2625503fBEE96d38441f01",
+    "0x26a30b8Cc05A6773C5251A8A5Aa4E1f4965CDE5A",
+    "0xF62ACe4bE570834daaDDcd48CE1Be30845BC9aa1",
+    "0x6610F8bC65A4dB8A038F0e217ceD8c0d21658D02",
+    "0xF2C54Ebcf54AC6a429D7C4847063973D9D2c3B5c",
+  ];
 } else {
   bridge = "0x4a4988daecaad326aec386e70fb0e6e6af5bda1a";
   worldActions = "0x3a965bf890e5ac353603420cc8d4c821d1f8a765";
@@ -175,6 +187,15 @@ if (!isBeta) {
   cosmetics = "0x9ac94b923333406d1c8b390ab606f90d6526c187";
   globalEvent = "0x8d61f3135a9f39b685b9765976e6a0f0572aeca5";
   blackMarketTrader = "0xac619719cdcf1fc03438c7b9aff737993feae851";
+  usageBasedSessionModule = "0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e4";
+  gameSubsidisationRegistry = "0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0";
+  subsidySigners = [
+    "0xd774bf717A0AfC12F511728Abe06a37e437923D2",
+    "0x2047f1aaEb79CbDC51c730D3dc121EE76E5e1F14",
+    "0x5B6283015D5eFCca3f268f4D805F961209BaCa70",
+    "0x1C88Ba0C339a87d7cd9826065A93079cA47D0e15",
+    "0x85A05274359dAAF8615b0362dcde9f1F2bf57f28",
+  ];
 }
 
 export const BRIDGE_ADDRESS = bridge;
@@ -237,6 +258,9 @@ export const COSMETICS_ADDRESS = cosmetics;
 export const USDC_ADDRESS = usdc;
 export const GLOBAL_EVENT_ADDRESS = globalEvent;
 export const BLACK_MARKET_TRADER_ADDRESS = blackMarketTrader;
+export const USAGE_BASED_SESSION_MODULE_ADDRESS = usageBasedSessionModule;
+export const GAME_SUBSIDISATION_REGISTRY_ADDRESS = gameSubsidisationRegistry;
+export const SUBSIDY_SIGNERS = subsidySigners;
 
 // VRF
 export const VRF_ADDRESS = vrf;
