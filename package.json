@@ -94,6 +94,7 @@
     "clearPlayerPromotion": "npx hardhat run scripts/clearPlayerPromotion.ts",
     "addQuests": "npx hardhat run scripts/addQuests.ts",
     "editQuests": "npx hardhat run scripts/editQuests.ts",
+    "removeQuests": "npx hardhat run scripts/removeQuests.ts",
     "addActions": "npx hardhat run scripts/addActions.ts",
     "editActions": "npx hardhat run scripts/editActions.ts",
     "addActionChoices": "npx hardhat run scripts/addActionChoices.ts",
