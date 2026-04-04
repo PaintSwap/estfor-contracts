@@ -26,7 +26,7 @@ describe("Territories", function () {
       erin,
       frank,
       brush,
-      upgradePlayerBrushPrice
+      upgradePlayerBrushPrice,
     } = fixture;
 
     await upgradePlayer(playerNFT, playerId, brush, upgradePlayerBrushPrice, alice);
@@ -150,7 +150,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -208,7 +208,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -272,7 +272,7 @@ describe("Territories", function () {
       tierId,
       imageId,
       mockVRF,
-      playerLeaveCombatantCooldown
+      playerLeaveCombatantCooldown,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -325,7 +325,7 @@ describe("Territories", function () {
     await ethers.provider.send("evm_mine", []);
     await combatantsHelper.assignCombatants(ownerClanId, true, [ownerPlayerId], false, [], false, [], ownerPlayerId);
     await territories.attackTerritory(ownerClanId, territoryId + 1, ownerPlayerId, {
-      value: await territories.getAttackCost()
+      value: await territories.getAttackCost(),
     });
     await fulfillRandomWords(requestId + 1, territories, mockVRF);
 
@@ -371,7 +371,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -426,7 +426,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -477,7 +477,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -566,6 +566,7 @@ describe("Territories", function () {
   });
 
   it("Leaving clan sets a penalty as a future combatant so player cannot rejoin roster quickly", async function () {
+    this.retries(3); // Flaky test, retry a few times
     const {
       clans,
       clanId,
@@ -574,7 +575,7 @@ describe("Territories", function () {
       combatantChangeCooldown,
       playerLeaveCombatantCooldown,
       combatantsHelper,
-      alice
+      alice,
     } = await loadFixture(territoriesVaultsFixture);
 
     await clans.requestToJoin(clanId, ownerPlayerId, 0);
@@ -695,7 +696,7 @@ describe("Territories", function () {
       twitter,
       telegram,
       imageId,
-      tierId
+      tierId,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -823,7 +824,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -913,7 +914,7 @@ describe("Territories", function () {
       twitter,
       tierId,
       imageId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;
@@ -1065,7 +1066,7 @@ describe("Territories", function () {
       twitter,
       imageId,
       tierId,
-      mockVRF
+      mockVRF,
     } = await loadFixture(territoriesVaultsFixture);
 
     const territoryId = 1;

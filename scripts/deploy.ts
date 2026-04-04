@@ -46,6 +46,7 @@ import {
   GameSubsidisationRegistry,
   UsageBasedSessionModule,
   BlackMarketTrader,
+  PetNFTReroll,
 } from "../typechain-types";
 import {
   deployMockPaintSwapContracts,
@@ -401,15 +402,7 @@ async function main() {
   const OrderBook = await ethers.getContractFactory("OrderBook");
   const orderBook = (await upgrades.deployProxy(
     OrderBook,
-    [
-      await itemNFT.getAddress(),
-      await brush.getAddress(),
-      DEV_ADDRESS,
-      30,
-      30,
-      maxOrdersPerPrice,
-      ACTIVITY_POINTS_ADDRESS,
-    ],
+    [await itemNFT.getAddress(), await brush.getAddress(), DEV_ADDRESS, 30, 30, maxOrdersPerPrice],
     {
       kind: "uups",
       timeout,
@@ -576,6 +569,17 @@ async function main() {
   )) as unknown as PetNFT;
   await petNFT.waitForDeployment();
   console.log(`petNFT = "${(await petNFT.getAddress()).toLowerCase()}"`);
+
+  const PetNFTReroll = await ethers.getContractFactory("PetNFTReroll");
+  const petNFTReroll = (await upgrades.deployProxy(
+    PetNFTReroll,
+    [owner.address, await itemNFT.getAddress(), await petNFT.getAddress(), await vrf.getAddress()],
+    {
+      kind: "uups",
+    }
+  )) as unknown as PetNFTReroll;
+  await petNFTReroll.waitForDeployment();
+  console.log(`petNFTReroll = "${(await petNFTReroll.getAddress()).toLowerCase()}"`);
 
   const playersLibrary = await ethers.deployContract("PlayersLibrary");
   await playersLibrary.waitForDeployment();
@@ -1016,7 +1020,6 @@ async function main() {
     await quests.getAddress(),
     await shop.getAddress(),
     await wishingWell.getAddress(),
-    await orderBook.getAddress(),
     await clans.getAddress(),
     await lockedBankVaults.getAddress(),
     await territories.getAddress(),
@@ -1183,11 +1186,24 @@ async function main() {
       cosmetics,
       globalEvents,
       blackMarketTrader,
+      petNFTReroll,
     ],
     true
   );
   await tx.wait();
   console.log("itemNFT.setApproved");
+
+  tx = await itemNFT.setApprovedBurners([petNFTReroll], true);
+  await tx.wait();
+  console.log("itemNFT.setApprovedBurners");
+
+  tx = await petNFT.setApprovedMinters([petNFTReroll], true);
+  await tx.wait();
+  console.log("petNFT.setApprovedMinters");
+
+  tx = await petNFT.setApprovedBurners([petNFTReroll], true);
+  await tx.wait();
+  console.log("petNFT.setApprovedBurners");
 
   tx = await raids.initializeAddresses(combatantsHelper, bankFactory);
   await tx.wait();
@@ -1282,7 +1298,10 @@ async function main() {
     const chunk = allOrderBookTokenIdInfos.slice(i, i + chunkSize);
     chunk.forEach((tokenIdInfo) => {
       tokenIds.push(tokenIdInfo.tokenId);
-      tokenIdInfos.push({tick: tokenIdInfo.tick, minQuantity: tokenIdInfo.minQuantity});
+      tokenIdInfos.push({
+        tick: tokenIdInfo.tick,
+        minQuantity: tokenIdInfo.minQuantity,
+      });
     });
     const tx = await orderBook.setTokenIdInfos(tokenIds, tokenIdInfos);
     await tx.wait();

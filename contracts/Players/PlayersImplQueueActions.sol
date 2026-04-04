@@ -20,6 +20,8 @@ contract PlayersImplQueueActions is PlayersBase {
   using SkillLibrary for Skill;
   using CombatStyleLibrary for uint8;
 
+  uint8 private constant BOOST_STABILIZER_INTERVAL = 10;
+
   function startActions(
     uint256 playerId,
     QueuedActionInput[] memory queuedActionInputs,
@@ -213,8 +215,15 @@ contract PlayersImplQueueActions is PlayersBase {
       }
     }
 
+    bool hasBoostStabilizer = _itemNFT.balanceOf(from, BOOST_STABLILIZER_10) != 0;
+    uint8 boostConsumeTracker = _boostConsumeTracker[playerId] + 1;
+    bool shouldSkipBurn = hasBoostStabilizer && boostConsumeTracker == BOOST_STABILIZER_INTERVAL;
+    _boostConsumeTracker[playerId] = boostConsumeTracker == BOOST_STABILIZER_INTERVAL ? 0 : boostConsumeTracker;
+
     // Burn it after in case we minted same one again
-    _itemNFT.burn(from, itemTokenId, 1);
+    if (!shouldSkipBurn) {
+      _itemNFT.burn(from, itemTokenId, 1);
+    }
 
     playerBoost.startTime = boostStartTimestamp;
     playerBoost.duration = item.boostDuration;

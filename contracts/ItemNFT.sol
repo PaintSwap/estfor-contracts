@@ -20,6 +20,8 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
   event AddItems(ItemInput[] items);
   event EditItems(ItemInput[] items);
   event RemoveItems(uint16[] tokenIds);
+  event SetApproved(address[] accounts, bool isApproved);
+  event SetApprovedBurners(address[] accounts, bool isApproved);
 
   error IdTooHigh();
   error ItemNotTransferable();
@@ -53,6 +55,7 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
   mapping(uint256 itemId => CombatStats combatStats) private _combatStats;
   mapping(uint256 itemId => Item item) private _items;
   mapping(address account => bool isApproved) private _approvals;
+  mapping(address account => bool isApprovedBurner) private _burnerApprovals;
 
   modifier onlyMinters() {
     address sender = _msgSender();
@@ -62,7 +65,7 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
 
   modifier onlyBurners(address from) {
     address sender = _msgSender();
-    require(sender == from || isApprovedForAll(from, sender), NotBurner());
+    require(sender == from || isApprovedForAll(from, sender) || _burnerApprovals[sender], NotBurner());
     _;
   }
 
@@ -405,6 +408,16 @@ contract ItemNFT is UUPSUpgradeable, OwnableUpgradeable, ERC1155Upgradeable, IER
     for (uint256 i = 0; i < accounts.length; ++i) {
       _approvals[accounts[i]] = isApproved;
     }
+
+    emit SetApproved(accounts, isApproved);
+  }
+
+  function setApprovedBurners(address[] calldata accounts, bool isApproved) external onlyOwner {
+    for (uint256 i = 0; i < accounts.length; ++i) {
+      _burnerApprovals[accounts[i]] = isApproved;
+    }
+
+    emit SetApprovedBurners(accounts, isApproved);
   }
 
   function setBaseURI(string calldata baseURI) external onlyOwner {

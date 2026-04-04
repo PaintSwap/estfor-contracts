@@ -207,6 +207,8 @@ abstract contract PlayersBase {
   address internal _bridge; // TODO: Remove later
 
   IActivityPoints internal _activityPoints;
+  
+  mapping(uint256 playerId => uint8 boostConsumeTracker) internal _boostConsumeTracker;
 
   modifier onlyPlayerNFT() {
     require(msg.sender == address(_playerNFT), NotPlayerNFT());

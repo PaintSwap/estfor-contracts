@@ -73,6 +73,8 @@ uint16 constant BOOST_RESERVED_6 = BOOST_BASE + 20;
 uint16 constant BOOST_MAX = 13055;
 
 uint16 constant SPECIAL_BASE = 13312;
+uint16 constant BOOST_STABLILIZER_10 = SPECIAL_BASE + 3;
+uint16 constant PET_SHARD = SPECIAL_BASE + 4;
 uint16 constant SPECIAL_MAX = 13567;
 
 // Miscs

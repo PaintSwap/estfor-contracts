@@ -24,16 +24,16 @@ const defaultConfig: SolcUserConfig = {
       enabled: true,
       runs: 9999999,
       details: {
-        yul: true
-      }
+        yul: true,
+      },
     },
     viaIR: true,
     outputSelection: {
       "*": {
-        "*": ["storageLayout"]
-      }
-    }
-  }
+        "*": ["storageLayout"],
+      },
+    },
+  },
 };
 
 const mediumRunsConfig: SolcUserConfig = {
@@ -42,9 +42,9 @@ const mediumRunsConfig: SolcUserConfig = {
     ...defaultConfig.settings,
     optimizer: {
       ...defaultConfig.settings.optimizer,
-      runs: 5000
-    }
-  }
+      runs: 5000,
+    },
+  },
 };
 
 const lowRunsConfig: SolcUserConfig = {
@@ -53,9 +53,9 @@ const lowRunsConfig: SolcUserConfig = {
     ...defaultConfig.settings,
     optimizer: {
       ...defaultConfig.settings.optimizer,
-      runs: 1000
-    }
-  }
+      runs: 1000,
+    },
+  },
 };
 
 const lowestRunsConfig: SolcUserConfig = {
@@ -64,9 +64,9 @@ const lowestRunsConfig: SolcUserConfig = {
     ...defaultConfig.settings,
     optimizer: {
       ...defaultConfig.settings.optimizer,
-      runs: 320
-    }
-  }
+      runs: 320,
+    },
+  },
 };
 
 const privateKey = process.env.PRIVATE_KEY as string;
@@ -75,16 +75,16 @@ const privateKey1 = process.env.PRIVATE_KEY1 as string;
 const hardhatAccounts: HardhatNetworkAccountUserConfig[] = [
   {
     privateKey,
-    balance: ethers.parseEther("100000").toString()
+    balance: ethers.parseEther("100000").toString(),
   },
   {
     privateKey: privateKey1,
-    balance: ethers.parseEther("100000").toString()
+    balance: ethers.parseEther("100000").toString(),
   },
   {
     privateKey: process.env.PROPOSER_PRIVATE_KEY as string,
-    balance: ethers.parseEther("100000").toString()
-  }
+    balance: ethers.parseEther("100000").toString(),
+  },
 ];
 
 const config: HardhatUserConfig = {
@@ -106,12 +106,12 @@ const config: HardhatUserConfig = {
       "contracts/ItemNFT.sol": mediumRunsConfig,
       "contracts/PetNFT.sol": lowestRunsConfig,
       "contracts/PlayerNFT.sol": mediumRunsConfig,
-      "contracts/Bazaar/OrderBook.sol": lowRunsConfig
-    }
+      "contracts/Bazaar/OrderBook.sol": lowestRunsConfig,
+    },
   },
   gasReporter: {
     enabled: true,
-    showMethodSig: true
+    showMethodSig: true,
   },
   networks: {
     hardhat: {
@@ -123,43 +123,43 @@ const config: HardhatUserConfig = {
         process.env.USE_HARDHAT_FORK === "true"
           ? {
               url: process.env.SONIC_RPC as string,
-              blockNumber: process.env.FORK_BLOCK_NUMBER ? Number(process.env.FORK_BLOCK_NUMBER) : undefined
+              blockNumber: process.env.FORK_BLOCK_NUMBER ? Number(process.env.FORK_BLOCK_NUMBER) : undefined,
             }
-          : undefined
+          : undefined,
     },
     sonic: {
       url: process.env.SONIC_RPC,
       accounts: [
         process.env.PRIVATE_KEY as string,
         process.env.PRIVATE_KEY1 as string,
-        process.env.PROPOSER_PRIVATE_KEY as string
-      ]
+        process.env.PROPOSER_PRIVATE_KEY as string,
+      ],
     },
     "sonic-blaze": {
       url: process.env.SONIC_BLAZE_RPC,
-      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string]
+      accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
     },
     fantom: {
       url: process.env.FANTOM_RPC,
       accounts: [process.env.PRIVATE_KEY as string, process.env.PRIVATE_KEY1 as string],
-      gasPrice: Number(parseUnits("100", "gwei"))
-    }
+      gasPrice: Number(parseUnits("100", "gwei")),
+    },
   },
   external: {
     contracts: [
       {
         // Specify the exact path
         artifacts: "node_modules/@layerzerolabs/test-devtools-evm-hardhat/artifacts",
-        deploy: "node_modules/@layerzerolabs/test-devtools-evm-hardhat/deploy"
-      }
+        deploy: "node_modules/@layerzerolabs/test-devtools-evm-hardhat/deploy",
+      },
     ],
     deployments: {
-      hardhat: ["node_modules/@layerzerolabs/test-devtools-evm-hardhat/deployments/hardhat"]
-    }
+      hardhat: ["node_modules/@layerzerolabs/test-devtools-evm-hardhat/deployments/hardhat"],
+    },
   },
   mocha: {
     timeout: 240 * 1000,
-    slow: 1
+    slow: 1,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY as string,
@@ -169,16 +169,16 @@ const config: HardhatUserConfig = {
         chainId: 146,
         urls: {
           apiURL: "https://api.etherscan.io/v2/api",
-          browserURL: "https://sonicscan.org"
-        }
-      }
-    ]
+          browserURL: "https://sonicscan.org",
+        },
+      },
+    ],
   },
   contractSizer: {
     alphaSort: true,
     runOnCompile: true,
     disambiguatePaths: false,
-    except: ["test", "@openzeppelin", "@layerzerolabs"]
+    except: ["test", "@openzeppelin", "@layerzerolabs"],
   },
   abiExporter: {
     path: "./data/abi",
@@ -187,11 +187,11 @@ const config: HardhatUserConfig = {
     flat: true,
     spacing: 2,
     format: "json",
-    except: ["/interfaces", "/test", "/helper", "@openzeppelin", "@layerzerolabs"]
+    except: ["/interfaces", "/test", "/helper", "@openzeppelin", "@layerzerolabs"],
   },
   typechain: {
-    target: "ethers-v6"
-  }
+    target: "ethers-v6",
+  },
 };
 
 export default config;

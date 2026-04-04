@@ -17,6 +17,11 @@
   },
   {
     "inputs": [],
+    "name": "ClaimableAmountTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ClaimingTooManyOrders",
     "type": "error"
   },
@@ -596,9 +601,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint72",
+        "internalType": "uint256",
         "name": "price",
-        "type": "uint72"
+        "type": "uint256"
       }
     ],
     "name": "allOrdersAtPrice",
@@ -649,9 +654,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint72",
+            "internalType": "uint256",
             "name": "price",
-            "type": "uint72"
+            "type": "uint256"
           }
         ],
         "internalType": "struct IOrderBook.CancelOrder[]",
@@ -671,9 +676,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint72",
+            "internalType": "uint256",
             "name": "price",
-            "type": "uint72"
+            "type": "uint256"
           },
           {
             "internalType": "uint24",
@@ -711,9 +716,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint72",
+            "internalType": "uint256",
             "name": "price",
-            "type": "uint72"
+            "type": "uint256"
           }
         ],
         "internalType": "struct IOrderBook.CancelOrder[]",
@@ -857,9 +862,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint72",
+        "internalType": "uint256",
         "name": "price",
-        "type": "uint72"
+        "type": "uint256"
       }
     ],
     "name": "getNode",
@@ -962,11 +967,6 @@
         "internalType": "uint16",
         "name": "maxOrdersPerPrice",
         "type": "uint16"
-      },
-      {
-        "internalType": "contract IActivityPoints",
-        "name": "activityPoints",
-        "type": "address"
       }
     ],
     "name": "initialize",
@@ -989,9 +989,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint72",
+            "internalType": "uint256",
             "name": "price",
-            "type": "uint72"
+            "type": "uint256"
           },
           {
             "internalType": "uint24",
@@ -1076,9 +1076,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint72",
+        "internalType": "uint256",
         "name": "price",
-        "type": "uint72"
+        "type": "uint256"
       }
     ],
     "name": "nodeExists",
@@ -1199,19 +1199,6 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "activityPoints",
-        "type": "address"
-      }
-    ],
-    "name": "setActivityPoints",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
