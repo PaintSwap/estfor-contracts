@@ -9,6 +9,7 @@ import {
 import {MetaTransactionData, OperationType} from "@safe-global/types-kit";
 import {
   BRUSH_ADDRESS,
+  COSMETICS_ADDRESS,
   DEV_ADDRESS,
   ESTFOR_LIBRARY_ADDRESS,
   ITEM_NFT_ADDRESS,
@@ -77,6 +78,13 @@ async function main() {
   })) as string;
   console.log(`petNFT = "${petNFT.toLowerCase()}"`);
 
+  const Cosmetics = await ethers.getContractFactory("Cosmetics", proposer);
+  const cosmetics = (await upgrades.prepareUpgrade(COSMETICS_ADDRESS, Cosmetics, {
+    kind: "uups",
+    timeout,
+  })) as string;
+  console.log(`cosmetics = "${cosmetics.toLowerCase()}"`);
+
   const Players = await ethers.getContractFactory("Players", proposer);
   const players = (await upgrades.prepareUpgrade(PLAYERS_ADDRESS, Players, {
     kind: "uups",
@@ -130,6 +138,7 @@ async function main() {
   const transactionSet: MetaTransactionData[] = [
     getSafeUpgradeTransaction(ITEM_NFT_ADDRESS, itemNFT),
     getSafeUpgradeTransaction(PET_NFT_ADDRESS, petNFT),
+    getSafeUpgradeTransaction(COSMETICS_ADDRESS, cosmetics),
     getSafeUpgradeTransaction(PLAYERS_ADDRESS, players),
     {
       to: ethers.getAddress(PLAYERS_ADDRESS),

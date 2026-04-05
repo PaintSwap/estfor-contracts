@@ -148348,7 +148348,7 @@
             "label": "_itemNFT",
             "offset": 0,
             "slot": "0",
-            "type": "t_contract(IItemNFT)56681",
+            "type": "t_contract(IItemNFT)77799",
             "contract": "Cosmetics",
             "src": "contracts\\Cosmetics.sol:24"
           },
@@ -148356,7 +148356,7 @@
             "label": "_playerNFT",
             "offset": 0,
             "slot": "1",
-            "type": "t_contract(IPlayerNFT)56807",
+            "type": "t_contract(IPlayerNFT)77932",
             "contract": "Cosmetics",
             "src": "contracts\\Cosmetics.sol:25"
           },
@@ -148364,7 +148364,7 @@
             "label": "_cosmetics",
             "offset": 0,
             "slot": "2",
-            "type": "t_mapping(t_uint16,t_struct(CosmeticInfo)55695_storage)",
+            "type": "t_mapping(t_uint16,t_struct(CosmeticInfo)76744_storage)",
             "contract": "Cosmetics",
             "src": "contracts\\Cosmetics.sol:26"
           },
@@ -148372,7 +148372,7 @@
             "label": "_equippedCosmetics",
             "offset": 0,
             "slot": "3",
-            "type": "t_mapping(t_uint256,t_mapping(t_enum(EquipPosition)55377,t_uint16))",
+            "type": "t_mapping(t_uint256,t_mapping(t_enum(EquipPosition)76426,t_uint16))",
             "contract": "Cosmetics",
             "src": "contracts\\Cosmetics.sol:27"
           }
@@ -148386,7 +148386,7 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_struct(InitializableStorage)988_storage": {
+          "t_struct(InitializableStorage)1126_storage": {
             "label": "struct Initializable.InitializableStorage",
             "members": [
               {
@@ -148404,7 +148404,7 @@
             ],
             "numberOfBytes": "32"
           },
-          "t_struct(OwnableStorage)928_storage": {
+          "t_struct(OwnableStorage)1066_storage": {
             "label": "struct OwnableUpgradeable.OwnableStorage",
             "members": [
               {
@@ -148420,15 +148420,15 @@
             "label": "uint64",
             "numberOfBytes": "8"
           },
-          "t_contract(IItemNFT)56681": {
+          "t_contract(IItemNFT)77799": {
             "label": "contract IItemNFT",
             "numberOfBytes": "20"
           },
-          "t_contract(IPlayerNFT)56807": {
+          "t_contract(IPlayerNFT)77932": {
             "label": "contract IPlayerNFT",
             "numberOfBytes": "20"
           },
-          "t_enum(EquipPosition)55377": {
+          "t_enum(EquipPosition)76426": {
             "label": "enum EquipPosition",
             "members": [
               "NONE",
@@ -148459,24 +148459,24 @@
             ],
             "numberOfBytes": "1"
           },
-          "t_mapping(t_enum(EquipPosition)55377,t_uint16)": {
+          "t_mapping(t_enum(EquipPosition)76426,t_uint16)": {
             "label": "mapping(enum EquipPosition => uint16)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint16,t_struct(CosmeticInfo)55695_storage)": {
+          "t_mapping(t_uint16,t_struct(CosmeticInfo)76744_storage)": {
             "label": "mapping(uint16 => struct CosmeticInfo)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_mapping(t_enum(EquipPosition)55377,t_uint16))": {
+          "t_mapping(t_uint256,t_mapping(t_enum(EquipPosition)76426,t_uint16))": {
             "label": "mapping(uint256 => mapping(enum EquipPosition => uint16))",
             "numberOfBytes": "32"
           },
-          "t_struct(CosmeticInfo)55695_storage": {
+          "t_struct(CosmeticInfo)76744_storage": {
             "label": "struct CosmeticInfo",
             "members": [
               {
                 "label": "cosmeticPosition",
-                "type": "t_enum(EquipPosition)55377",
+                "type": "t_enum(EquipPosition)76426",
                 "offset": 0,
                 "slot": "0"
               },
@@ -164026,6 +164026,209 @@
           "t_uint80": {
             "label": "uint80",
             "numberOfBytes": "10"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "1d111f36ba9050fbbbeff5ef94edcbb1821308a71381c882760de284a4341fe2": {
+      "address": "0x721F742aDF2C08949ab72eBed58990CBD3A1eac2",
+      "txHash": "0x5d0e7c79bc83cbdf71adaa65a8b855ff0b5b74675609978d0bc8721026cf48e3",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IItemNFT)78410",
+            "contract": "Cosmetics",
+            "src": "contracts\\Cosmetics.sol:24"
+          },
+          {
+            "label": "_playerNFT",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IPlayerNFT)78543",
+            "contract": "Cosmetics",
+            "src": "contracts\\Cosmetics.sol:25"
+          },
+          {
+            "label": "_cosmetics",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint16,t_struct(CosmeticInfo)77355_storage)",
+            "contract": "Cosmetics",
+            "src": "contracts\\Cosmetics.sol:26"
+          },
+          {
+            "label": "_equippedCosmetics",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_mapping(t_enum(EquipPosition)77037,t_uint16))",
+            "contract": "Cosmetics",
+            "src": "contracts\\Cosmetics.sol:27"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)1126_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)1066_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(IItemNFT)78410": {
+            "label": "contract IItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlayerNFT)78543": {
+            "label": "contract IPlayerNFT",
+            "numberOfBytes": "20"
+          },
+          "t_enum(EquipPosition)77037": {
+            "label": "enum EquipPosition",
+            "members": [
+              "NONE",
+              "HEAD",
+              "NECK",
+              "BODY",
+              "ARMS",
+              "LEGS",
+              "FEET",
+              "RING",
+              "SPARE2",
+              "LEFT_HAND",
+              "RIGHT_HAND",
+              "BOTH_HANDS",
+              "QUIVER",
+              "MAGIC_BAG",
+              "FOOD",
+              "AUX",
+              "BOOST_VIAL",
+              "EXTRA_BOOST_VIAL",
+              "GLOBAL_BOOST_VIAL",
+              "CLAN_BOOST_VIAL",
+              "PASSIVE_BOOST_VIAL",
+              "LOCKED_VAULT",
+              "TERRITORY",
+              "AVATAR",
+              "AVATAR_BORDER",
+              "TITLE"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_enum(EquipPosition)77037,t_uint16)": {
+            "label": "mapping(enum EquipPosition => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint16,t_struct(CosmeticInfo)77355_storage)": {
+            "label": "mapping(uint16 => struct CosmeticInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_enum(EquipPosition)77037,t_uint16))": {
+            "label": "mapping(uint256 => mapping(enum EquipPosition => uint16))",
+            "numberOfBytes": "32"
+          },
+          "t_struct(CosmeticInfo)77355_storage": {
+            "label": "struct CosmeticInfo",
+            "members": [
+              {
+                "label": "cosmeticPosition",
+                "type": "t_enum(EquipPosition)77037",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "itemTokenId",
+                "type": "t_uint16",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "avatarId",
+                "type": "t_uint24",
+                "offset": 3,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
           }
         },
         "namespaces": {
