@@ -4,6 +4,9 @@
   "description": "Contracts for the game Estfor Kingdom",
   "repository": "https://github.com/PaintSwap/estfor-contracts",
   "license": "MIT",
+  "engines": {
+    "node": ">=24.14.1"
+  },
   "devDependencies": {
     "@layerzerolabs/lz-evm-protocol-v2": "^3.0.12",
     "@layerzerolabs/oapp-evm": "^0.1.0",
@@ -21,7 +24,7 @@
     "@openzeppelin/contracts": "workspace:*",
     "@openzeppelin/contracts-upgradeable": "workspace:*",
     "@openzeppelin/hardhat-upgrades": "^3.9.1",
-    "@paintswap/estfor-definitions": "2.0.104",
+    "@paintswap/estfor-definitions": "2.0.106",
     "@paintswap/vrf": "^0.0.10",
     "@safe-global/api-kit": "^4.0.1",
     "@safe-global/protocol-kit": "^6.1.2",

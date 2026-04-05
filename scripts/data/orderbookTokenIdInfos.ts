@@ -3497,4 +3497,39 @@ export const allOrderBookTokenIdInfos: TokenIdInfo[] = [
     tick: ethers.parseEther("0.00001").toString(),
     minQuantity: "1",
   },
+  {
+    tokenId: EstforConstants.MOUNTAIN_ROOT_SHIELD,
+    tick: ethers.parseEther("0.0001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.PET_SHARD,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.BOOST_STABLILIZER_10,
+    tick: ethers.parseEther("0.0001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.COSMETIC_RIFT_HAT,
+    tick: ethers.parseEther("0.00001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.TITLE_WQ1_TOP5,
+    tick: ethers.parseEther("0.0001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.TITLE_WQ1_TOP50,
+    tick: ethers.parseEther("0.0001").toString(),
+    minQuantity: "1",
+  },
+  {
+    tokenId: EstforConstants.TITLE_WQ1_ALL,
+    tick: ethers.parseEther("0.0001").toString(),
+    minQuantity: "1",
+  },
 ];
