@@ -159,6 +159,12 @@ async function main() {
       operation: OperationType.Call,
     },
     {
+      to: ethers.getAddress(ITEM_NFT_ADDRESS),
+      value: "0",
+      data: itemNFTIface.encodeFunctionData("setApproved", [[orderBookAddress], true]),
+      operation: OperationType.Call,
+    },
+    {
       to: ethers.getAddress(PET_NFT_ADDRESS),
       value: "0",
       data: petNFTIface.encodeFunctionData("setApprovedBurners", [[petNFTRerollAddress], true]),
