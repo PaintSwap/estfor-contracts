@@ -155,7 +155,7 @@ Global Events [0x8d61f3135a9f39b685b9765976e6a0f0572aeca5](https://sonicscan.org
 Black Market Trader [0xac619719cdcf1fc03438c7b9aff737993feae851](https://sonicscan.org/address/0xac619719cdcf1fc03438c7b9aff737993feae851)  
 Game Subsidisation Registry [0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0](https://sonicscan.org/address/0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0)  
 Usage Based Session Module [0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41](https://sonicscan.org/address/0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e41)  
-PetNFTReroll [0x5f30f5b26b7fdd773fc6a22954dbb6287047835a](https://sonicscan.org/address/0x5f30f5b26b7fdd773fc6a22954dbb6287047835a)  
+PetNFTReroll [0xf19E53bE6813ceA6e77d48Fd6b13055dc8804296](https://sonicscan.org/address/0xf19E53bE6813ceA6e77d48Fd6b13055dc8804296)  
 OrderbookV2 [0xe2fbd6923dccec4f212e0a040806d099f744f07b](https://sonicscan.org/address/0xe2fbd6923dccec4f212e0a040806d099f744f07b)
 
 ### Other addresses:

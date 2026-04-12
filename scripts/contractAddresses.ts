@@ -191,7 +191,7 @@ if (!isBeta) {
   blackMarketTrader = "0xac619719cdcf1fc03438c7b9aff737993feae851";
   usageBasedSessionModule = "0x71f7f7c98477de38e2f1a0217af0e1dc0fbf19e4";
   gameSubsidisationRegistry = "0xe42d998ec0ec2c5d217c8b54c9522b4224d1bdb0";
-  petNFTReroll = "0x5f30f5b26b7fdd773fc6a22954dbb6287047835a";
+  petNFTReroll = "0xf19E53bE6813ceA6e77d48Fd6b13055dc8804296";
   orderbookV2 = "0xe2fbd6923dccec4f212e0a040806d099f744f07b";
   subsidySigners = [
     "0xd774bf717A0AfC12F511728Abe06a37e437923D2",
