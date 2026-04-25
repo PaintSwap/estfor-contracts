@@ -164262,6 +164262,157 @@
           ]
         }
       }
+    },
+    "825f914c5dc868de2d2f71f290b5ae95fdc01b6e5a6a1acd052d4cc2d00e93c8": {
+      "address": "0x6550D23710Df53a85a66e6C2FBe34EC304b417fe",
+      "txHash": "0xf0dffe1c7c0f6565c89f6c471ffeb98c54fe8a1c7a8eb196f2d4eb3547784b23",
+      "layout": {
+        "solcVersion": "0.8.28",
+        "storage": [
+          {
+            "label": "_itemNFT",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(ItemNFT)12535",
+            "contract": "PetNFTReroll",
+            "src": "contracts\\PetNFTReroll.sol:37"
+          },
+          {
+            "label": "_petNFT",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(PetNFT)15425",
+            "contract": "PetNFTReroll",
+            "src": "contracts\\PetNFTReroll.sol:38"
+          },
+          {
+            "label": "_requestIdToOwner",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_struct(PetRerollInfo)16198_storage)",
+            "contract": "PetNFTReroll",
+            "src": "contracts\\PetNFTReroll.sol:39"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)73_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)13_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(ItemNFT)12535": {
+            "label": "contract ItemNFT",
+            "numberOfBytes": "20"
+          },
+          "t_contract(PetNFT)15425": {
+            "label": "contract PetNFT",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_struct(PetRerollInfo)16198_storage)": {
+            "label": "mapping(uint256 => struct PetNFTReroll.PetRerollInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(PetRerollInfo)16198_storage": {
+            "label": "struct PetNFTReroll.PetRerollInfo",
+            "members": [
+              {
+                "label": "petBaseId",
+                "type": "t_uint24",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "originalPetTokenId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "from",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint24": {
+            "label": "uint24",
+            "numberOfBytes": "3"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
     }
   }
 }

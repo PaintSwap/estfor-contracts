@@ -23,8 +23,9 @@ contract PetNFTReroll is
     error NoRandomWords();
 
     event CompletePetReroll(address indexed user, uint256 indexed originalPetTokenId, uint256 indexed newPetTokenId, uint256 requestId);
+    event RequestPetReroll(address indexed user, uint256 indexed petTokenId, uint256 requestId);
 
-  uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 140_000;
+  uint256 private constant CALLBACK_GAS_LIMIT_PER_ACTION = 180_000;
   address private constant DAO_MULTISIG_ADDRESS = 0xC7073F6317813C3EDB09FA2d19A6cA259A9d4aD9;
 
   struct PetRerollInfo {
@@ -74,11 +75,15 @@ modifier isOwnerOfPet(uint256 petId) {
   function rerollPet(uint256 petTokenId) external payable isOwnerOfPet(petTokenId) isOwnerOfPetShard() {
     uint256 requestId = _requestRandomWords(1);
     Pet memory pet = _petNFT.getPet(petTokenId);
+
+    _itemNFT.burn(_msgSender(), PET_SHARD, 1);
+    _petNFT.burn(_msgSender(), petTokenId);
     _requestIdToOwner[requestId] = PetRerollInfo({
       petBaseId: pet.baseId,
       originalPetTokenId: petTokenId,
       from: _msgSender()
     });
+    emit RequestPetReroll(_msgSender(), petTokenId, requestId);
   }
 
   function _requestRandomWords(uint256 numWords) private returns (uint256 requestId) {
@@ -99,8 +104,6 @@ modifier isOwnerOfPet(uint256 petId) {
     basePetIds[0] = rerollInfo.petBaseId;
 
     uint256[] memory newPetTokenIds = _petNFT.mintBatch(rerollInfo.from, basePetIds, randomWords[0]);
-    _itemNFT.burn(rerollInfo.from, PET_SHARD, 1);
-    _petNFT.burn(rerollInfo.from, rerollInfo.originalPetTokenId);
 
     delete _requestIdToOwner[requestId];
     emit CompletePetReroll(rerollInfo.from, rerollInfo.originalPetTokenId, newPetTokenIds[0], requestId);
