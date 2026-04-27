@@ -15,13 +15,7 @@ async function main() {
 
   const worldActions = await ethers.getContractAt("WorldActions", WORLD_ACTIONS_ADDRESS);
 
-  const actionIds = new Set([
-    EstforConstants.ACTION_MINING_GATE,
-    EstforConstants.ACTION_MINING_PETRIFIED_GARDEN,
-    EstforConstants.ACTION_MINING_BURIED_COURTYARD,
-    EstforConstants.ACTION_MINING_GILDED_HALLS,
-    EstforConstants.ACTION_MINING_THRONE_ROOM,
-  ]);
+  const actionIds = new Set([EstforConstants.ACTION_MINING_WQ_I_I]);
 
   const actions = allActions.filter((action) => actionIds.has(action.actionId));
   if (actions.length !== actionIds.size) {

@@ -11,7 +11,7 @@ import {
   allActionChoicesMagic,
   allActionChoicesMelee,
   allActionChoicesRanged,
-  allActionChoicesSmithing
+  allActionChoicesSmithing,
 } from "./data/actionChoices";
 import {
   allActionChoiceIdsAlchemy,
@@ -24,13 +24,17 @@ import {
   allActionChoiceIdsMagic,
   allActionChoiceIdsMelee,
   allActionChoiceIdsRanged,
-  allActionChoiceIdsSmithing
+  allActionChoiceIdsSmithing,
 } from "./data/actionChoiceIds";
 import {EstforConstants} from "@paintswap/estfor-definitions";
-import {getChainId} from "./utils";
+import {getChainId, initialiseSafe, sendTransactionSetToSafe} from "./utils";
+import {MetaTransactionData, OperationType} from "@safe-global/types-kit";
+import {WorldActions__factory} from "../typechain-types";
 
 async function main() {
-  const [owner] = await ethers.getSigners();
+  const [owner, , proposer] = await ethers.getSigners(); // 0 is old deployer, 2 is proposer for Safe (new deployer)
+  const network = await ethers.provider.getNetwork();
+  const {useSafe, apiKit, protocolKit} = await initialiseSafe(network);
   console.log(`Edit action choices using account: ${owner.address} on chain id ${await getChainId(owner)}`);
 
   const worldActions = await ethers.getContractAt("WorldActions", WORLD_ACTIONS_ADDRESS);
@@ -66,7 +70,7 @@ async function main() {
     fletchingActionId,
     alchemyActionId,
     forgingActionId,
-    farmingActionId
+    farmingActionId,
   ];
 
   const allActionChoiceIds = [
@@ -77,7 +81,7 @@ async function main() {
     allActionChoiceIdsFletching,
     allActionChoiceIdsAlchemy,
     allActionChoiceIdsForging,
-    allActionChoiceIdsFarming
+    allActionChoiceIdsFarming,
   ];
 
   const allActionChoices = [
@@ -88,23 +92,54 @@ async function main() {
     allActionChoicesFletching,
     allActionChoicesAlchemy,
     allActionChoicesForging,
-    allActionChoicesFarming
+    allActionChoicesFarming,
   ];
 
-  console.log("Editing all non-combat action choices...");
+  if (useSafe) {
+    const transactionSet: MetaTransactionData[] = [];
+    const iface = WorldActions__factory.createInterface();
 
-  let tx = await worldActions.editActionChoices(genericCombatActionId, allActionChoiceIdsMelee, allActionChoicesMelee);
-  await tx.wait();
-  tx = await worldActions.editActionChoices(genericCombatActionId, allActionChoiceIdsRanged, allActionChoicesRanged);
-  await tx.wait();
-  tx = await worldActions.editActionChoices(genericCombatActionId, allActionChoiceIdsMagic, allActionChoicesMagic);
-  await tx.wait();
+    transactionSet.push({
+      to: ethers.getAddress(WORLD_ACTIONS_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("editActionChoices", [
+        forgingActionId,
+        allActionChoiceIdsForging,
+        allActionChoicesForging,
+      ]),
+      operation: OperationType.Call,
+    });
+    transactionSet.push({
+      to: ethers.getAddress(WORLD_ACTIONS_ADDRESS),
+      value: "0",
+      data: iface.encodeFunctionData("editActionChoices", [
+        alchemyActionId,
+        allActionChoiceIdsAlchemy,
+        allActionChoicesAlchemy,
+      ]),
+      operation: OperationType.Call,
+    });
+    await sendTransactionSetToSafe(network, protocolKit, apiKit, transactionSet, proposer);
+  } else {
+    console.log("Editing all non-combat action choices...");
 
-  for (let i = 0; i < allActionIds.length; ++i) {
-    const actionId = allActionIds[i];
-    let tx = await worldActions.editActionChoices(actionId, allActionChoiceIds[i], allActionChoices[i]);
+    let tx = await worldActions.editActionChoices(
+      genericCombatActionId,
+      allActionChoiceIdsMelee,
+      allActionChoicesMelee
+    );
     await tx.wait();
-    console.log("Edit action choices for action ", actionId);
+    tx = await worldActions.editActionChoices(genericCombatActionId, allActionChoiceIdsRanged, allActionChoicesRanged);
+    await tx.wait();
+    tx = await worldActions.editActionChoices(genericCombatActionId, allActionChoiceIdsMagic, allActionChoicesMagic);
+    await tx.wait();
+
+    for (let i = 0; i < allActionIds.length; ++i) {
+      const actionId = allActionIds[i];
+      let tx = await worldActions.editActionChoices(actionId, allActionChoiceIds[i], allActionChoices[i]);
+      await tx.wait();
+      console.log("Edit action choices for action ", actionId);
+    }
   }
 
   console.log("All action choices edited successfully.");

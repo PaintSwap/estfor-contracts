@@ -4690,7 +4690,7 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_MINING_WQ_I_I,
     info: {
       skill: Skill.MINING,
-      isAvailable: true,
+      isAvailable: false,
       actionChoiceRequired: false,
       xpPerHour: 300,
       numSpawned: 0 * 1000,
@@ -4727,7 +4727,7 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_WOODCUTTING_WQ_I_II,
     info: {
       skill: Skill.WOODCUTTING,
-      isAvailable: true,
+      isAvailable: false,
       actionChoiceRequired: false,
       xpPerHour: 200,
       numSpawned: 0 * 1000,
@@ -4763,7 +4763,7 @@ export const allActions: ActionInput[] = [
     actionId: EstforConstants.ACTION_THIEVING_WQ_I_IV,
     info: {
       skill: Skill.THIEVING,
-      isAvailable: true,
+      isAvailable: false,
       actionChoiceRequired: false,
       xpPerHour: 200,
       numSpawned: 0 * 1000,

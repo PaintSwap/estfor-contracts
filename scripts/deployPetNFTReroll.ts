@@ -97,19 +97,6 @@ async function main() {
   const {playersImplQueueActions, playersImplProcessActions, playersImplRewards, playersImplMisc, playersImplMisc1} =
     await deployPlayerImplementations(await playersLibrary.getAddress(), proposer);
 
-  const PetNFTReroll = await ethers.getContractFactory("PetNFTReroll", proposer);
-  const petNFTReroll = await upgrades.deployProxy(
-    PetNFTReroll,
-    [DAO_MULTISIG_ADDRESS, ITEM_NFT_ADDRESS, PET_NFT_ADDRESS, VRF_ADDRESS],
-    {
-      kind: "uups",
-    }
-  );
-  await petNFTReroll.waitForDeployment();
-
-  const petNFTRerollAddress = await petNFTReroll.getAddress();
-  console.log(`petNFTReroll = "${petNFTRerollAddress.toLowerCase()}"`);
-
   // Price compression changes the stored order price representation, so existing live orders must stay on the old book.
   // Deploy a brand new OrderBook and seed it separately rather than upgrading the existing bazaar proxy in place.
   const OrderBook = await ethers.getContractFactory("OrderBook", proposer);
@@ -125,6 +112,20 @@ async function main() {
 
   const orderBookAddress = await orderBook.getAddress();
   console.log(`orderBook = "${orderBookAddress.toLowerCase()}"`);
+
+  const PetNFTReroll = await ethers.getContractFactory("PetNFTReroll", proposer);
+  const petNFTReroll = await upgrades.deployProxy(
+    PetNFTReroll,
+    [DAO_MULTISIG_ADDRESS, ITEM_NFT_ADDRESS, PET_NFT_ADDRESS, VRF_ADDRESS],
+    {
+      kind: "uups",
+      timeout,
+    }
+  );
+  await petNFTReroll.waitForDeployment();
+
+  const petNFTRerollAddress = await petNFTReroll.getAddress();
+  console.log(`petNFTReroll = "${petNFTRerollAddress.toLowerCase()}"`);
 
   const transferOwnershipTx = await orderBook.transferOwnership(DAO_MULTISIG_ADDRESS);
   await transferOwnershipTx.wait();

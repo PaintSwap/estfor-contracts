@@ -89,7 +89,7 @@ if (!isBeta) {
   shop = "0x80b78e431b6e52027debe297cd8ba614820a2f1b";
   royaltyReceiver = "0x6c01e51d7254e5d3a3d844d2d56c35dd8abfa753";
   adminAccess = "0x3977a0e1a9f7564ce20cd88a22ae76d13386087a";
-  itemNFTLibrary = "0xe5440a37964fdfb7456c292d31471d80d7f6046b";
+  itemNFTLibrary = "0xefba3016f46b06b98fae8a8b8f9df17567a824d3";
   itemNFT = "0x8970c63da309d5359a579c2f53bfd64f72b7b706";
   bazaar = "0x0d6d3794c858b512716e77e05588d4f1fc264319";
   estforLibrary = "0xe3223eaf0e260b54a8ce777ac9f4a972310370c0";
@@ -101,11 +101,11 @@ if (!isBeta) {
   petNFTLibrary = "0x30B11Fa95AeE89bA8B700343600E0B7DdF7d48f2";
   petNFT = "0xe97f8165d9d8d6835abdf7a814ba55dd09b7b1ed";
   playersLibrary = "0x8548737b2579C2dA6458C5B0360DBb3a749BFdf2";
-  playersImplQueueActions = "0xc57cdf889520344f7d73c6ae3ef29dfd533d7239";
-  playersImplProcessActions = "0x719e000bd66e61aed40079bebab0efebbd33d947";
-  playersImplRewards = "0x2df7f3a3d625f0b1ea04ceb8fdf66218616853a9";
-  playersImplMisc = "0xf9d36e92eafc49f4fc39fe768c4388385adddd36";
-  playersImplMisc1 = "0x99a738b795c5e85192fe1733cd9d30ab25fd3f93";
+  playersImplQueueActions = "0x609a8ebad0f8837b6209b98e71ebe35c53c75fa2";
+  playersImplProcessActions = "0x0a2f19d4729f0060fd9b113bfe7ff830fc0cc27c";
+  playersImplRewards = "0x086e4e3dd7e30232d5c3cedae83fec8ee0f9ddb6";
+  playersImplMisc = "0x692ff62bf6434240b0107ab131e45c49c7a59c3f";
+  playersImplMisc1 = "0x3b14d1e2407e0723a3c45b11ec654e0862cc53b9";
   players = "0xefa670aad6d5921236e9655f346ca13a5c56481b";
   promotionsLibrary = "0x201ffa5be3886d19ef2f18da877ff3b9e34d10c9";
   promotions = "0xaf48a8a12f29e30b3831392aa2ee6344d07d188b";
@@ -132,6 +132,8 @@ if (!isBeta) {
   blackMarketTrader = "0x4f9911214d811b5acdc4d1911067f614e81c808e";
   usageBasedSessionModule = "0x144e54c35d3362f41dd39ade9ba709a2ee6a2af7";
   gameSubsidisationRegistry = "0xdfe85d3a75f80eb7d07d6ead00de3e02a88aae30";
+  petNFTReroll = "0x85b9e4e41998910d398553ba5690938094a56463";
+  orderbookV2 = "0xf114eff305cdac968ff276494ec69379170ed570";
   subsidySigners = [
     "0x6c980c2F2113a99EDC2625503fBEE96d38441f01",
     "0x26a30b8Cc05A6773C5251A8A5Aa4E1f4965CDE5A",
