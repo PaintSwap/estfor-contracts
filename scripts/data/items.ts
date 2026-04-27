@@ -20515,7 +20515,7 @@ export const allItems: ItemInput[] = [
     boostValue: 0,
     boostDuration: 0,
     metadataURI: "TITLE_WQ1_TOP5.json",
-    name: "One of the Unshakeable Five",
+    name: "One of the Unshakeable Ten",
     isAvailable: true,
     questPrerequisiteId: 0,
     isCollectionItem: false,
